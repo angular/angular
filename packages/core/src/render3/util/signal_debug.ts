@@ -29,8 +29,10 @@ import {
 export interface DebugSignalGraphNode {
   kind: string;
   id: string;
+  epoch: number;
   label?: string;
   value?: unknown;
+  debuggableFn?: () => unknown;
 }
 
 export interface DebugSignalGraphEdge {
@@ -107,29 +109,35 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
     }
 
     // collect node
-    if (isComputedNode(consumer) || isSignalNode(consumer)) {
+    if (isComputedNode(consumer)) {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         value: consumer.value,
         kind: consumer.kind,
+        epoch: consumer.version,
+        debuggableFn: consumer.computation,
         id,
       });
-    } else if (isTemplateEffectNode(consumer)) {
+    } else if (isSignalNode(consumer)) {
+      debugSignalGraphNodes.push({
+        label: consumer.debugName,
+        value: consumer.value,
+        kind: consumer.kind,
+        epoch: consumer.version,
+        id,
+      });
+    }else if (isTemplateEffectNode(consumer)) {
       debugSignalGraphNodes.push({
         label: consumer.debugName ?? consumer.lView?.[HOST]?.tagName?.toLowerCase?.(),
         kind: consumer.kind,
-        id,
-      });
-    } else if (isEffectNode(consumer)) {
-      debugSignalGraphNodes.push({
-        label: consumer.debugName,
-        kind: consumer.kind,
+        epoch: consumer.version,
         id,
       });
     } else {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         kind: consumer.kind,
+        epoch: consumer.version,
         id,
       });
     }

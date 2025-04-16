@@ -19,6 +19,7 @@ import {
 export interface DebugSignalGraphNode {
   id: string;
   kind: string;
+  epoch: number;
   label?: string;
   preview: Descriptor;
 }
@@ -324,6 +325,8 @@ export interface Events {
   
   getSignalNestedProperties: (position: SignalNodePosition, path: string[]) => void;
   signalNestedProperties: (position: SignalNodePosition, data: Properties, path: string[]) => void;
+
+  toggleLogging: (position: SignalNodePosition) => void;
 
   getNestedProperties: (position: DirectivePosition, path: string[]) => void;
   nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;

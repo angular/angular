@@ -1,8 +1,10 @@
 @if (treeControl()) {
   <mat-tree class="property-list" [dataSource]="dataSource()" [treeControl]="treeControl()">
     <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node" matTreeNodePadding>
-      <span class="name non-expandable">{{ node.prop.name }}</span
-      >:&nbsp;
+      @if (node.level > 0) {
+        <span class="name non-expandable">{{ node.prop.name }}</span
+        >:&nbsp;
+      }
       {{node.prop.descriptor.preview}}
     </mat-tree-node>
     <mat-tree-node
@@ -15,8 +17,10 @@
           {{ treeControl().isExpanded(node) ? 'expand_more' : 'chevron_right' }}
         </mat-icon>
         &nbsp;
-        <span class="name">{{ node.prop.name }}</span
-        >:
+        @if (node.level > 0) {
+          <span class="name">{{ node.prop.name }}</span
+          >:
+        }
         <span class="value">
           {{ node.prop.descriptor.preview }}
         </span>

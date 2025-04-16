@@ -21,6 +21,7 @@ export interface Property {
   selector: 'ng-signals-value-tree',
   templateUrl: './signals-value-tree.component.html',
   imports: [MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatIcon],
+  styleUrl: './signals-value-tree.component.scss',
 })
 export class SignalsValueTreeComponent {
   readonly treeControl = input.required<FlatTreeControl<FlatNode>>();

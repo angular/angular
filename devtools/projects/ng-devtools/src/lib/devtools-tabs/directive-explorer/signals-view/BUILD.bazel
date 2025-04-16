@@ -5,6 +5,7 @@ package(default_visibility = ["//visibility:public"])
 
 _STYLE_SRCS = [
     "signals-tab.component.scss",
+    "signals-value-tree.component.scss",
 ]
 
 _STYLE_LABELS = [
@@ -34,6 +35,7 @@ ng_module(
         "signals-value-tree.component.html",
     ] + _STYLE_LABELS,
     deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//devtools/projects/protocol",
         "//packages/common",

@@ -16,12 +16,14 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {arrayifyProps, SignalDataSource} from './signal-data-source';
 import {DataSource} from '@angular/cdk/collections';
 import {MatTreeFlattener} from '@angular/material/tree';
+import {MatIcon} from '@angular/material/icon';
+import { ApplicationOperations } from '../../../application-operations/index';
 
 @Component({
   templateUrl: './signals-tab.component.html',
   selector: 'ng-signals-tab',
   styleUrl: './signals-tab.component.scss',
-  imports: [SignalsValueTreeComponent],
+  imports: [SignalsValueTreeComponent, MatIcon],
 })
 export class SignalsTabComponent {
   private svgComponent = viewChild.required<ElementRef>('component');
@@ -35,6 +37,8 @@ export class SignalsTabComponent {
   private signalGraph = signal<DebugSignalGraph | null>(null);
 
   private selected = signal<string | null>(null);
+
+  private _appOperations = inject(ApplicationOperations);
 
   protected selectedNode = computed(() => {
     const signalGraph = this.signalGraph();
@@ -134,5 +138,26 @@ export class SignalsTabComponent {
       this.svgComponent().nativeElement,
       this.selected,
     );
+  }
+
+  gotoSource() {
+    const selected = this.selected();
+    if (!selected) {
+      return;
+    }
+    this._appOperations.inspectSignal({
+      element: this.currentElement()!,
+      signalId: selected,
+    });
+  }
+
+  toggleLogging() {
+    const selected = this.selected();
+    if (!selected) {
+      return;
+    }
+    this._messageBus.emit('toggleLogging', [
+      {element: this.currentElement()!, signalId: selected}
+    ])
   }
 }
