@@ -10,7 +10,7 @@ import {
   inject,
   Injectable,
   Renderer2,
-  ɵRuntimeError as RuntimeError,
+  ɵformatRuntimeError as formatRuntimeError,
   DOCUMENT,
 } from '@angular/core';
 
@@ -30,6 +30,7 @@ import {DEFAULT_PRELOADED_IMAGES_LIMIT, PRELOADED_IMAGES} from './tokens';
 export class PreloadLinkCreator {
   private readonly preloadedImages = inject(PRELOADED_IMAGES);
   private readonly document = inject(DOCUMENT);
+  private errorShown = false;
 
   /**
    * @description Add a preload `<link>` to the `<head>` of the `index.html` that is served from the
@@ -48,17 +49,21 @@ export class PreloadLinkCreator {
    * @param sizes The value of the `sizes` attribute passed in to the `<img>` tag
    */
   createPreloadLinkTag(renderer: Renderer2, src: string, srcset?: string, sizes?: string): void {
-    if (ngDevMode) {
-      if (this.preloadedImages.size >= DEFAULT_PRELOADED_IMAGES_LIMIT) {
-        throw new RuntimeError(
+    if (
+      ngDevMode &&
+      !this.errorShown &&
+      this.preloadedImages.size >= DEFAULT_PRELOADED_IMAGES_LIMIT
+    ) {
+      this.errorShown = true;
+      console.warn(
+        formatRuntimeError(
           RuntimeErrorCode.TOO_MANY_PRELOADED_IMAGES,
-          ngDevMode &&
-            `The \`NgOptimizedImage\` directive has detected that more than ` +
-              `${DEFAULT_PRELOADED_IMAGES_LIMIT} images were marked as priority. ` +
-              `This might negatively affect an overall performance of the page. ` +
-              `To fix this, remove the "priority" attribute from images with less priority.`,
-        );
-      }
+          `The \`NgOptimizedImage\` directive has detected that more than ` +
+            `${DEFAULT_PRELOADED_IMAGES_LIMIT} images were marked as priority. ` +
+            `This might negatively affect an overall performance of the page. ` +
+            `To fix this, remove the "priority" attribute from images with less priority.`,
+        ),
+      );
     }
 
     if (this.preloadedImages.has(src)) {
