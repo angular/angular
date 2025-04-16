@@ -22,6 +22,8 @@ export const ɵWRITABLE_SIGNAL = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
 
 /**
  * A `Signal` with a value that can be mutated via a setter interface.
+ *
+ * @publicApi 17.0
  */
 export interface WritableSignal<T> extends Signal<T> {
   [ɵWRITABLE_SIGNAL]: T;

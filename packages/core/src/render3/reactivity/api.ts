@@ -15,6 +15,8 @@ import {SIGNAL} from '../../../primitives/signals';
  * call it.
  *
  * Ordinary values can be turned into `Signal`s with the `signal` function.
+ *
+ * @publicApi 17.0
  */
 export type Signal<T> = (() => T) & {
   [SIGNAL]: unknown;
@@ -22,6 +24,8 @@ export type Signal<T> = (() => T) & {
 
 /**
  * Checks if the given `value` is a reactive `Signal`.
+ *
+ * @publicApi 17.0
  */
 export function isSignal(value: unknown): value is Signal<unknown> {
   return typeof value === 'function' && (value as Signal<unknown>)[SIGNAL] !== undefined;

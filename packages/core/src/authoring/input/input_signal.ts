@@ -42,7 +42,7 @@ export interface InputOptions<T, TransformT> {
 /**
  * Signal input options without the transform option.
  *
- * @publicAPI
+ * @publicApi 19.0
  */
 export type InputOptionsWithoutTransform<T> =
   // Note: We still keep a notion of `transform` for auto-completion.
@@ -82,7 +82,7 @@ export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
  *
  * @see {@link InputSignal} for additional information.
  *
- * @publicAPI
+ * @publicApi 19.0
  */
 export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
   [SIGNAL]: InputSignalNode<T, TransformT>;
@@ -99,7 +99,7 @@ export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
  *
  * @see {@link InputOptionsWithTransform} for inputs with transforms.
  *
- * @publicAPI
+ * @publicApi 19.0
  */
 export interface InputSignal<T> extends InputSignalWithTransform<T, T> {}
 

@@ -23,7 +23,7 @@ const identityFn = <T>(v: T) => v;
 /**
  * Creates a writable signal whose value is initialized and reset by the linked, reactive computation.
  *
- * @publicApi
+ * @publicApi 20.0
  */
 export function linkedSignal<D>(
   computation: () => D,
@@ -36,7 +36,7 @@ export function linkedSignal<D>(
  *
  * Note: The computation is reactive, meaning the linked signal will automatically update whenever any of the signals used within the computation change.
  *
- * @publicApi
+ * @publicApi 20.0
  */
 export function linkedSignal<S, D>(options: {
   source: () => S;

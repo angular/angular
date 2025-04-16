@@ -89,14 +89,18 @@ export interface HasRenderableParams {
 }
 
 export interface HasDeprecatedFlag {
-  isDeprecated: boolean;
+  deprecated: {version: string | undefined} | undefined;
   deprecationMessage: string | null;
 }
 
 export interface HasDeveloperPreviewFlag {
-  isDeveloperPreview: boolean;
+  developerPreview: {version: string | undefined} | undefined;
 }
 
 export interface hasExperimentalFlag {
-  isExperimental: boolean;
+  experimental: {version: string | undefined} | undefined;
+}
+
+export interface HasStableFlag {
+  stable: {version: string | undefined} | undefined;
 }

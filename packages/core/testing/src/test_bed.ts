@@ -154,7 +154,7 @@ export interface TestBed {
   /**
    * Execute any pending effects.
    *
-   * @developerPreview
+   * @developerPreview 17.0
    */
   flushEffects(): void;
 }
@@ -803,7 +803,7 @@ export class TestBedImpl implements TestBed {
   /**
    * Execute any pending effects.
    *
-   * @developerPreview
+   * @developerPreview 17.0
    */
   flushEffects(): void {
     this.inject(EffectScheduler).flush();

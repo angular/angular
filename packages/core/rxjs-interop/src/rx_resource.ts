@@ -20,7 +20,7 @@ import {Observable, Subscription} from 'rxjs';
 /**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
  *
- * @experimental
+ * @experimental 19.0
  */
 export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
   loader: (params: ResourceLoaderParams<R>) => Observable<T>;
@@ -30,7 +30,7 @@ export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
  * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
  * resource's value.
  *
- * @experimental
+ * @experimental 19.0
  */
 export function rxResource<T, R>(
   opts: RxResourceOptions<T, R> & {defaultValue: NoInfer<T>},
@@ -40,7 +40,7 @@ export function rxResource<T, R>(
  * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
  * resource's value.
  *
- * @experimental
+ * @experimental 19.0
  */
 export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined> {

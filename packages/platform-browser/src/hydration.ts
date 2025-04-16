@@ -93,8 +93,7 @@ export function withHttpTransferCacheOptions(
 /**
  * Enables support for hydrating i18n blocks.
  *
- * @developerPreview
- * @publicApi
+ * @developerPreview 18.0
  */
 export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSupport> {
   return hydrationFeature(HydrationFeatureKind.I18nSupport, ɵwithI18nSupport());
@@ -133,7 +132,7 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
  *   providers: [provideClientHydration(withIncrementalHydration())]
  * });
  * ```
- * @experimental
+ * @experimental 19.0
  * @publicApi
  * @see {@link provideClientHydration}
  */
@@ -218,7 +217,7 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * @param features Optional features to configure additional hydration behaviors.
  * @returns A set of providers to enable hydration.
  *
- * @publicApi
+ * @publicApi 17.0
  */
 export function provideClientHydration(
   ...features: HydrationFeature<HydrationFeatureKind>[]

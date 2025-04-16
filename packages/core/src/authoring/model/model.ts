@@ -101,7 +101,7 @@ export interface ModelFunction {
  * }
  * ```
  *
- * @publicAPI
+ * @publicApi 19.0
  * @initializerApiFunction
  */
 export const model: ModelFunction = (() => {
