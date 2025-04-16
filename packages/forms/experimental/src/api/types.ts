@@ -7,7 +7,7 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
-import {MetadataKey} from '@angular/forms/experimental/src/api/metadata';
+import {MetadataKey} from './metadata';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
