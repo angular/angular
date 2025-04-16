@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {json, normalize, virtualFs, workspaces} from '@angular-devkit/core';
 import {Tree} from '@angular-devkit/schematics';
+import {readWorkspace, TargetDefinition} from '@schematics/angular/utility';
+import {normalize} from 'node:path/posix';
 
 /**
  * Gets all tsconfig paths from a CLI project by reading the workspace configuration
@@ -21,7 +22,7 @@ export async function getProjectTsConfigPaths(
   const buildPaths = new Set<string>();
   const testPaths = new Set<string>();
 
-  const workspace = await getWorkspace(tree);
+  const workspace = await readWorkspace(tree, '/');
   for (const [, project] of workspace.projects) {
     for (const [name, target] of project.targets) {
       if (name !== 'build' && name !== 'test') {
@@ -52,8 +53,8 @@ export async function getProjectTsConfigPaths(
 
 /** Get options for all configurations for the passed builder target. */
 function* allTargetOptions(
-  target: workspaces.TargetDefinition,
-): Iterable<[string | undefined, Record<string, json.JsonValue | undefined>]> {
+  target: TargetDefinition,
+): Iterable<[string | undefined, Record<string, unknown>]> {
   if (target.options) {
     yield [undefined, target.options];
   }
@@ -67,37 +68,4 @@ function* allTargetOptions(
       yield [name, options];
     }
   }
-}
-
-function createHost(tree: Tree): workspaces.WorkspaceHost {
-  return {
-    async readFile(path: string): Promise<string> {
-      const data = tree.read(path);
-      if (!data) {
-        throw new Error('File not found.');
-      }
-
-      return virtualFs.fileBufferToString(data);
-    },
-    async writeFile(path: string, data: string): Promise<void> {
-      return tree.overwrite(path, data);
-    },
-    async isDirectory(path: string): Promise<boolean> {
-      // Approximate a directory check.
-      // We don't need to consider empty directories and hence this is a good enough approach.
-      // This is also per documentation, see:
-      // https://angular.dev/tools/cli/schematics-for-libraries#get-the-project-configuration
-      return !tree.exists(path) && tree.getDir(path).subfiles.length > 0;
-    },
-    async isFile(path: string): Promise<boolean> {
-      return tree.exists(path);
-    },
-  };
-}
-
-async function getWorkspace(tree: Tree): Promise<workspaces.WorkspaceDefinition> {
-  const host = createHost(tree);
-  const {workspace} = await workspaces.readWorkspace('/', host);
-
-  return workspace;
 }
