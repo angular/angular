@@ -22,6 +22,10 @@
     animation: appear 1.5s;
   }
 
+  .non-element {
+    color: var(--color-tree-node-non-element-name);
+  }
+
   .tree-node-info {
     display: flex;
 

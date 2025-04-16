@@ -7,6 +7,7 @@
  */
 
 import {indexForest} from './';
+import {DevToolsNode} from 'protocol';
 
 describe('indexForest', () => {
   it('should work with an empty forest', () => {
@@ -42,7 +43,9 @@ describe('indexForest', () => {
               component: null,
               children: [],
               onPush: false,
-            },
+              defer: null,
+              hasNativeElement: true,
+            } as DevToolsNode & {hasNativeElement?: boolean},
             {
               element: 'Child1_2',
               directives: [],
@@ -54,9 +57,13 @@ describe('indexForest', () => {
               },
               children: [],
               onPush: false,
-            },
+              defer: null,
+              hasNativeElement: true,
+            } as DevToolsNode & {hasNativeElement?: boolean},
           ],
           onPush: false,
+          defer: null,
+          hasNativeElement: true,
         },
         {
           element: 'Parent2',
@@ -76,7 +83,9 @@ describe('indexForest', () => {
               component: null,
               children: [],
               onPush: true,
-            },
+              defer: null,
+              hasNativeElement: true,
+            } as DevToolsNode & {hasNativeElement?: boolean},
             {
               element: 'Child2_2',
               directives: [
@@ -93,9 +102,13 @@ describe('indexForest', () => {
               hydration: null,
               children: [],
               onPush: true,
-            },
+              defer: null,
+              hasNativeElement: true,
+            } as DevToolsNode & {hasNativeElement?: boolean},
           ],
           onPush: true,
+          defer: null,
+          hasNativeElement: true,
         },
       ]),
     ).toEqual([
@@ -127,6 +140,8 @@ describe('indexForest', () => {
             hydration: null,
             children: [],
             onPush: false,
+            defer: null,
+            hasNativeElement: true,
           },
           {
             element: 'Child1_2',
@@ -139,10 +154,14 @@ describe('indexForest', () => {
             },
             hydration: null,
             children: [],
+            defer: null,
             onPush: false,
+            hasNativeElement: true,
           },
         ],
+        defer: null,
         onPush: false,
+        hasNativeElement: true,
       },
       {
         element: 'Parent2',
@@ -164,6 +183,8 @@ describe('indexForest', () => {
             hydration: null,
             children: [],
             onPush: true,
+            defer: null,
+            hasNativeElement: true,
           },
           {
             element: 'Child2_2',
@@ -182,9 +203,13 @@ describe('indexForest', () => {
             children: [],
             hydration: null,
             onPush: true,
+            defer: null,
+            hasNativeElement: true,
           },
         ],
         onPush: true,
+        defer: null,
+        hasNativeElement: true,
       },
     ]);
   });
