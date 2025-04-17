@@ -4,7 +4,6 @@
 
 ```ts
 
-import * as _angular_core from '@angular/core';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
@@ -1450,14 +1449,18 @@ export function provideAppInitializer(initializerFn: () => Observable<unknown> |
 export function provideBrowserGlobalErrorListeners(): EnvironmentProviders;
 
 // @public
-export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
+export function provideCheckNoChangesConfig(options: {
+    exhaustive: false;
+}): EnvironmentProviders;
 
 // @public
-export function provideExperimentalCheckNoChangesForDebug(options: {
+export function provideCheckNoChangesConfig(options: {
     interval?: number;
-    useNgZoneOnStable?: boolean;
-    exhaustive?: boolean;
-}): _angular_core.EnvironmentProviders;
+    exhaustive: true;
+}): EnvironmentProviders;
+
+// @public
+export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
 export function provideNgReflectAttributes(): EnvironmentProviders;

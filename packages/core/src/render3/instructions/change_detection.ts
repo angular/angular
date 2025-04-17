@@ -137,8 +137,10 @@ function detectChangesInViewWhileDirty(lView: LView, mode: ChangeDetectionMode) 
   }
 }
 
-export function checkNoChangesInternal(lView: LView, mode: CheckNoChangesMode) {
-  setIsInCheckNoChangesMode(mode);
+export function checkNoChangesInternal(lView: LView, exhaustive: boolean) {
+  setIsInCheckNoChangesMode(
+    exhaustive ? CheckNoChangesMode.Exhaustive : CheckNoChangesMode.OnlyDirtyViews,
+  );
   try {
     detectChangesInternal(lView);
   } finally {

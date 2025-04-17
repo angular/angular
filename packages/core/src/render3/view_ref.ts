@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {
+  USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT,
+  UseExhaustiveCheckNoChanges,
+} from '../change_detection/use_exhaustive_check_no_changes';
 import type {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import type {ApplicationRef} from '../core';
@@ -23,6 +27,7 @@ import {
   CONTEXT,
   DECLARATION_LCONTAINER,
   FLAGS,
+  INJECTOR,
   LView,
   LViewFlags,
   PARENT,
@@ -46,6 +51,7 @@ interface ChangeDetectorRefInterface extends ChangeDetectorRef {}
 export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterface {
   private _appRef: ApplicationRef | null = null;
   private _attachedToViewContainer = false;
+  private readonly exhaustive: boolean = USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT;
 
   get rootNodes(): any[] {
     const lView = this._lView;
@@ -74,7 +80,14 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
      * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
      */
     private _cdRefInjectingView?: LView,
-  ) {}
+  ) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      this.exhaustive = this._lView[INJECTOR].get(
+        UseExhaustiveCheckNoChanges,
+        USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT,
+      );
+    }
+  }
 
   get context(): T {
     return this._lView[CONTEXT] as unknown as T;
@@ -320,9 +333,8 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * introduce other changes.
    */
   checkNoChanges(): void {
-    if (ngDevMode) {
-      checkNoChangesInternal(this._lView, CheckNoChangesMode.OnlyDirtyViews);
-    }
+    if (!ngDevMode) return;
+    checkNoChangesInternal(this._lView, this.exhaustive);
   }
 
   attachToViewContainerRef() {
