@@ -1,0 +1,24 @@
+<mat-accordion class="example-headers-align" multi>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header collapsedHeight="2.5rem" expandedHeight="2.5rem">
+      <div class="dep-data">
+        <div class="dep-pill" matTooltipPosition="left" matTooltip="Dependency injection token">
+          {{ dependency().token }}
+        </div>
+        @if (dependency().flags?.optional) {
+          <div class="dep-pill flagged">Optional</div>
+        }
+        @if (dependency().flags?.host) {
+          <div class="dep-pill flagged">Host</div>
+        }
+        @if (dependency().flags?.self) {
+          <div class="dep-pill flagged">Self</div>
+        }
+        @if (dependency().flags?.skipSelf) {
+          <div class="dep-pill flagged">SkipSelf</div>
+        }
+      </div>
+    </mat-expansion-panel-header>
+    <ng-resolution-path [path]="dependency().resolutionPath!"></ng-resolution-path>
+  </mat-expansion-panel>
+</mat-accordion>

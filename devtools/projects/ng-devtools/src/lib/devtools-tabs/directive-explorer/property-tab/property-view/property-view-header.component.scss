@@ -2,12 +2,13 @@
 
 mat-toolbar {
   @extend %body-medium-01;
-  padding-left: 10px;
+  padding: 0.25rem 0.625rem;
   justify-content: space-between;
   text-overflow: ellipsis;
   overflow: hidden;
   line-height: 25px;
   height: auto;
+  border-bottom: 1px solid var(--color-separator);
 }
 
 .mat-icon-button {
