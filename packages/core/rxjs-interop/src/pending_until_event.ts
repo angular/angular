@@ -16,7 +16,7 @@ import {MonoTypeOperatorFunction, Observable} from 'rxjs';
  *
  * @param injector The `Injector` to use during creation. If this is not provided, the current injection context will be used instead (via `inject`).
  *
- * @experimental
+ * @developerPreview
  */
 export function pendingUntilEvent<T>(injector?: Injector): MonoTypeOperatorFunction<T> {
   if (injector === undefined) {
