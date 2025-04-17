@@ -28,11 +28,15 @@
   </as-split-area>
   <as-split-area size="40" minSize="25" class="prop-split">
     <div class="property-tab-wrapper">
-      <ng-property-tab
-        [currentSelectedElement]="currentSelectedElement()!"
-        (inspect)="inspect($event)"
-        (viewSource)="viewSource($event)"
-      />
+      @if (currentSelectedElement(); as currentSelectedElement) {
+        <ng-property-tab
+          [currentSelectedElement]="currentSelectedElement"
+          (inspect)="inspect($event)"
+          (viewSource)="viewSource($event)"
+        />
+      } @else {
+        <p class="no-selected-element">No selected element</p>
+      }
     </div>
     @if (isHydrationEnabled) {
       <div class="hydration">

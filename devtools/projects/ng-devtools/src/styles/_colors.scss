@@ -49,6 +49,7 @@ $_colors: (
   transparent-02: oklch(0% 0 0 / 0.35),
   transparent-03: oklch(0% 0 0 / 0.2),
   transparent-04: oklch(0% 0 0 / 0.05),
+  transparent-05: oklch(0% 0 0 / 0),
 );
 
 @mixin _light-colors {
