@@ -8,7 +8,7 @@
 
 import {NgForOf, PercentPipe} from '@angular/common';
 import {
-  afterRender,
+  afterNextRender,
   ClassProvider,
   Component,
   Directive,
@@ -475,7 +475,7 @@ describe('getInjectorMetadata', () => {
       elementRef = inject(ElementRef);
 
       constructor() {
-        afterRender(() => afterLazyComponentRendered(this));
+        afterNextRender(() => afterLazyComponentRendered(this));
       }
     }
 

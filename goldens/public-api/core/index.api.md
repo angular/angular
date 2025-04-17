@@ -37,17 +37,6 @@ export function afterNextRender<E = never, W = never, M = never>(spec: {
 export function afterNextRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
 
 // @public
-export function afterRender<E = never, W = never, M = never>(spec: {
-    earlyRead?: () => E;
-    write?: (...args: ɵFirstAvailable<[E]>) => W;
-    mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
-    read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
-}, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
-
-// @public
-export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
-
-// @public
 export function afterRenderEffect(callback: (onCleanup: EffectCleanupRegisterFn) => void, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
 
 // @public

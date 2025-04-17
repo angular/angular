@@ -106,12 +106,7 @@ export {createComponent, reflectComponentType, ComponentMirror} from './render3/
 export {isStandalone} from './render3/def_getters';
 export {AfterRenderRef} from './render3/after_render/api';
 export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
-export {
-  AfterRenderOptions,
-  afterRender,
-  afterNextRender,
-  ɵFirstAvailable,
-} from './render3/after_render/hooks';
+export {AfterRenderOptions, afterNextRender, ɵFirstAvailable} from './render3/after_render/hooks';
 export {inputBinding, outputBinding, twoWayBinding} from './render3/dynamic_bindings';
 export {ApplicationConfig, mergeApplicationConfig} from './application/application_config';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
