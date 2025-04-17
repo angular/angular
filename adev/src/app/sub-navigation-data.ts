@@ -793,8 +793,13 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Using RxJS with Angular',
         children: [
           {
-            label: 'Signals interop',
+            label: 'Overview',
             path: 'ecosystem/rxjs-interop',
+            contentPath: 'ecosystem/rxjs-interop/overview',
+          },
+          {
+            label: 'Signals interop',
+            path: 'ecosystem/rxjs-interop/signals-interop',
             contentPath: 'ecosystem/rxjs-interop/signals-interop',
           },
           {
