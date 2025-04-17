@@ -137,7 +137,7 @@ $_colors: (
   $rgb-map: ();
 
   @each $name, $color in $map {
-    $rgb-map: map-merge(
+    $rgb-map: map.merge(
       $rgb-map,
       (
         $name: color.to-space($color, rgb),
