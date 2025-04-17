@@ -114,24 +114,34 @@ export class SignalsGraphVisualizer {
 
     const selected = this._selected();
     const node = this.nodeg
-      .selectAll('foreignObject')
-      .data(this.nodes)
-      .join((e) => {
-        const obj = e.append('foreignObject');
-        const outer = obj
-          .append('xhtml:div')
-          .on('click', (e, x) => this._selected.set(x.id))
-          .attr('class', (x) => `node-label kind-${x.kind} ${x.id == selected ? 'selected' : ''}`);
-        outer
-          .append('div')
-          .classed('header', true)
-          .text((x) => x.label ?? 'Unnamed');
-        outer
-          .append('div')
-          .classed('body', true)
-          .text((x) => x.preview.preview);
-        return obj;
-      })
+      .selectAll<SVGForeignObjectElement, SimulationNode>('foreignObject')
+      .data(this.nodes, (d) => d.id)
+      .join(
+        (e) => {
+          const obj = e.append('foreignObject');
+          const outer = obj
+            .append('xhtml:div')
+            .on('click', (e, x) => this._selected.set(x.id))
+            .attr(
+              'class',
+              (x) => `node-label kind-${x.kind} ${x.id == selected ? 'selected' : ''}`,
+            );
+          outer
+            .append('div')
+            .classed('header', true)
+            .text((x) => x.label ?? 'Unnamed');
+          outer
+            .append('div')
+            .classed('body', true)
+            .text((x) => x.preview.preview);
+          return obj;
+        },
+        (obj) => {
+          obj.select('.header').text((x) => x.label ?? 'Unnamed');
+          obj.select('.body').text((x) => x.preview.preview);
+          return obj;
+        },
+      )
       .attr('width', this.config.nodeSize[0])
       .attr('height', this.config.nodeSize[1]);
 
