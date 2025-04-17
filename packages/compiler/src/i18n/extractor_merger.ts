@@ -82,7 +82,7 @@ class _Visitor implements html.Visitor {
   private _blockChildren!: html.Node[];
   private _blockStartDepth!: number;
 
-  // {<icu message>}
+  // icu message
   private _inIcu!: boolean;
 
   // set to void 0 when not in a section
