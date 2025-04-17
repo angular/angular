@@ -49,7 +49,7 @@ export {
   provideZonelessChangeDetection as provideExperimentalZonelessChangeDetection,
 } from './change_detection/scheduling/zoneless_scheduling_impl';
 export {PendingTasks} from './pending_tasks';
-export {provideExperimentalCheckNoChangesForDebug} from './change_detection/scheduling/exhaustive_check_no_changes';
+export {provideCheckNoChangesConfig} from './change_detection/provide_check_no_changes_config';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export {
   APP_ID,
