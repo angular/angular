@@ -291,7 +291,7 @@ export class DirectiveExplorerComponent {
   }
 
   handleSelect(node: FlatNode): void {
-    this.directiveForest()?.handleSelect(node);
+    this.directiveForest()?.selectAndEnsureVisible(node);
   }
 
   handleSetParents(parents: FlatNode[] | null): void {
