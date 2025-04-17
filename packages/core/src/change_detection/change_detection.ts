@@ -36,6 +36,7 @@ export {
   KeyValueDifferFactory,
   KeyValueDiffers,
 } from './differs/keyvalue_differs';
+
 export {PipeTransform} from './pipe_transform';
 
 /**
