@@ -1638,14 +1638,7 @@ export interface ResourceRef<T> extends WritableResource<T> {
 }
 
 // @public
-export enum ResourceStatus {
-    Error = 1,
-    Idle = 0,
-    Loading = 2,
-    Local = 5,
-    Reloading = 3,
-    Resolved = 4
-}
+export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resolved' | 'local';
 
 // @public
 export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<Signal<ResourceStreamItem<T>>>;
