@@ -6,17 +6,16 @@
 }
 
 .element-header {
+  @extend %body-bold-01;
   display: flex;
   justify-content: space-between;
   width: 100%;
   align-items: center;
-  @extend %body-bold-01;
+  height: 32px; /* Same as mat-expansion-panel-header height */
 
   .component-name,
   .element-name {
     margin-left: 0.625rem;
-    font-weight: 700;
-    height: 32px; /* Same as mat-expansion-panel-header height */
   }
 }
 

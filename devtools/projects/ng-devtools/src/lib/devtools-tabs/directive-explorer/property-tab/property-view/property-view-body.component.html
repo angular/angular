@@ -4,7 +4,7 @@
     @if (deps && deps.length > 0) {
       <div class="mat-accordion-content">
         <mat-expansion-panel [expanded]="true">
-          <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
+          <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
             <mat-panel-title>
               Injected Services
               <a
@@ -26,7 +26,7 @@
       <div class="mat-accordion-content" cdkDrag>
         @if (panel.controls().dataSource.data.length > 0) {
           <mat-expansion-panel [expanded]="true">
-            <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
+            <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
               <mat-panel-title>{{ panel.title() }}</mat-panel-title>
             </mat-expansion-panel-header>
             <ng-property-view-tree

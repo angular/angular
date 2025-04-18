@@ -23,11 +23,11 @@ import {
   DirectiveTreeData,
 } from '../../property-resolver/directive-property-resolver';
 import {FlatNode} from '../../property-resolver/element-property-resolver';
-import {ResolutionPathComponent} from '../../../dependency-injection/resolution-path/resolution-path.component';
 import {PropertyViewTreeComponent} from './property-view-tree.component';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {DependencyViewerComponent} from './dependency-viewer.component';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -103,91 +103,6 @@ export class PropertyViewBodyComponent {
       directivePosition: this.controller().directivePosition,
     });
   }
-}
-
-@Component({
-  selector: 'ng-dependency-viewer',
-  template: `
-    <mat-accordion class="example-headers-align" multi>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header collapsedHeight="2.5rem" expandedHeight="2.5rem">
-          <div class="dep-data">
-            <div
-              class="dep-pill"
-              matTooltipPosition="left"
-              matTooltip="Dependency injection token"
-            >{{ dependency().token }}</div>
-              @if (dependency().flags?.optional) {
-                <div class="dep-pill flagged">Optional</div>
-              } @if (dependency().flags?.host) {
-                <div class="dep-pill flagged">Host</div>
-              } @if (dependency().flags?.self) {
-                <div class="dep-pill flagged">Self</div>
-              } @if (dependency().flags?.skipSelf) {
-                <div class="dep-pill flagged">SkipSelf</div>
-              }
-          </div>
-        </mat-expansion-panel-header>
-        <ng-resolution-path [path]="dependency().resolutionPath!"></ng-resolution-path>
-      </mat-expansion-panel>
-    </mat-accordion>
-  `,
-  styles: [
-    `
-      :host {
-        .dep-data {
-          display: flex;
-          flex-wrap: nowrap;
-          gap: 0.5rem;
-        }
-
-        .dep-pill {
-          background: color-mix(in srgb, var(--quinary-contrast), var(--senary-contrast));
-          padding: 0.125rem 0.5rem;
-          border-radius: 1rem;
-
-          &.flagged {
-            background: var(--quinary-contrast);
-          }
-        }
-
-        .mat-expansion-panel {
-          position: relative;
-          border-bottom: none;
-          background: none;
-
-          mat-expansion-panel-header {
-            padding-right: 1.2rem;
-          }
-        }
-
-        &:not(:last-of-type) {
-          .mat-expansion-panel {
-            &::after {
-              content: '';
-              position: absolute;
-              width: calc(100% - 1rem);
-              height: 1px;
-              background: color-mix(in srgb, var(--quinary-contrast), var(--senary-contrast));
-              bottom: 0;
-              left: 0.5rem;
-            }
-
-            &.mat-expanded {
-              &::after {
-                width: 100%;
-                left: 0;
-              }
-            }
-          }
-        }
-      }
-    `,
-  ],
-  imports: [MatExpansionModule, MatTooltip, ResolutionPathComponent],
-})
-export class DependencyViewerComponent {
-  readonly dependency = input.required<SerializedInjectedService>();
 }
 
 @Component({
