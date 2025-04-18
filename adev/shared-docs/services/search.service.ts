@@ -55,8 +55,8 @@ export class Search {
   private readonly client = inject(ALGOLIA_CLIENT);
 
   searchResults = resource({
-    request: () => this.searchQuery() || undefined, // coerces empty string to undefined
-    loader: async ({request: query, abortSignal}) => {
+    params: () => this.searchQuery() || undefined, // coerces empty string to undefined
+    loader: async ({params: query, abortSignal}) => {
       // Until we have a better alternative we debounce by awaiting for a short delay.
       await wait(SEARCH_DELAY, abortSignal);
 

@@ -315,7 +315,7 @@ class HttpResourceImpl<T>
   ) {
     super(
       request,
-      ({request, abortSignal}) => {
+      ({params: request, abortSignal}) => {
         let sub: Subscription;
 
         // Track the abort listener so it can be removed if the Observable completes (as a memory
