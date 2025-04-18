@@ -485,7 +485,7 @@ function createInjectReplacementCall(
   if (literalProps.size > 0) {
     args.push(
       ts.factory.createObjectLiteralExpression(
-        Array.from(literalProps, (prop) =>
+        Array.from(literalProps).map((prop) =>
           ts.factory.createPropertyAssignment(prop, ts.factory.createTrue()),
         ),
       ),
