@@ -19,7 +19,7 @@ import {
   ɵNotificationSource as NotificationSource,
   ɵViewRef as ViewRef,
   ɵisViewDirty as isViewDirty,
-  ɵmarkForRefresh as markForRefresh,
+  ɵmarkViewForRefresh as markViewForRefresh,
   OutputRef,
 } from '@angular/core';
 import {merge, Observable, ReplaySubject} from 'rxjs';
@@ -181,7 +181,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
         // guarantees the view will be checked even if the input is being set from within change
         // detection. This provides backwards compatibility, since we used to unconditionally
         // schedule change detection in addition to the current zone run.
-        markForRefresh(this.componentRef!.changeDetectorRef as ViewRef<unknown>);
+        markViewForRefresh((this.componentRef!.changeDetectorRef as ViewRef<unknown>)._lView);
 
         // Notifying the scheduler with `NotificationSource.CustomElement` causes a `tick()` to be
         // scheduled unconditionally, even if the scheduler is otherwise disabled.

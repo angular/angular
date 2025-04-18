@@ -368,7 +368,3 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
 export function isViewDirty(view: ViewRef<unknown>): boolean {
   return requiresRefreshOrTraversal(view._lView) || !!(view._lView[FLAGS] & LViewFlags.Dirty);
 }
-
-export function markForRefresh(view: ViewRef<unknown>): void {
-  markViewForRefresh(view['_cdRefInjectingView'] || view._lView);
-}

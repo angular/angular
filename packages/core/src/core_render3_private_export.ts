@@ -295,11 +295,8 @@ export {
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
   GlobalDevModeUtils as ɵGlobalDevModeUtils,
 } from './render3/util/global_utils';
-export {
-  ViewRef as ɵViewRef,
-  isViewDirty as ɵisViewDirty,
-  markForRefresh as ɵmarkForRefresh,
-} from './render3/view_ref';
+export {ViewRef as ɵViewRef, isViewDirty as ɵisViewDirty} from './render3/view_ref';
+export {markViewForRefresh as ɵmarkViewForRefresh} from './render3/util/view_utils';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
   bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,
