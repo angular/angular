@@ -28,7 +28,7 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
 // @public
 export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
     // (undocumented)
-    loader: (params: ResourceLoaderParams<R>) => Observable<T>;
+    stream: (params: ResourceLoaderParams<R>) => Observable<T>;
 }
 
 // @public
