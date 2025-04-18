@@ -24,7 +24,7 @@ import {
 import {MockPlatformLocation} from '@angular/common/testing';
 import {computeMsgId} from '@angular/compiler';
 import {
-  afterRender,
+  afterRenderEffect,
   ApplicationRef,
   ChangeDetectorRef,
   Component,
@@ -45,6 +45,7 @@ import {
   provideExperimentalZonelessChangeDetection,
   Provider,
   QueryList,
+  signal,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -90,6 +91,7 @@ import {
 } from './hydration_utils';
 
 import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
+import {sign} from 'crypto';
 
 describe('platform-server full application hydration integration', () => {
   beforeEach(() => {
@@ -4849,11 +4851,17 @@ describe('platform-server full application hydration integration', () => {
         class SimpleComponent {
           isServer = isPlatformServer(inject(PLATFORM_ID));
           elementRef = inject(ElementRef);
+          counter = signal(0);
 
           constructor() {
-            afterRender(() => {
+            afterRenderEffect(() => {
+              this.counter();
               observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
             });
+          }
+
+          ngDoCheck() {
+            this.counter.update((v) => v + 1);
           }
         }
 
@@ -4892,9 +4900,10 @@ describe('platform-server full application hydration integration', () => {
         class SimpleComponent {
           isServer = isPlatformServer(inject(PLATFORM_ID));
           elementRef = inject(ElementRef);
-
+          counter = signal(0);
           constructor() {
-            afterRender(() => {
+            afterRenderEffect(() => {
+              this.counter();
               observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
             });
 
@@ -4902,6 +4911,10 @@ describe('platform-server full application hydration integration', () => {
             new Promise<void>((resolve) => {
               setTimeout(resolve, 0);
             });
+          }
+
+          ngDoCheck() {
+            this.counter.update((v) => v + 1);
           }
         }
 

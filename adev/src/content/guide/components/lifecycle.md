@@ -72,8 +72,8 @@ process.
       <td>Runs once the next time that <strong>all</strong> components have been rendered to the DOM.</td>
     </tr>
     <tr>
-      <td><code>afterRender</code></td>
-      <td>Runs every time <strong>all</strong> components have been rendered to the DOM.</td>
+      <td><code>afterRenderEffect</code></td>
+      <td>Runs every time <strong>all</strong> components have been rendered to the DOM and one the signal dependecies has changes</td>
     </tr>
     <tr>
       <td>Destruction</td>
@@ -219,16 +219,16 @@ here, attempting to
 change any state in this method results in
 an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
-### afterRender and afterNextRender
+### afterRenderEffect and afterNextRender
 
-The `afterRender` and `afterNextRender` functions let you register a **render callback** to be
+The `afterRenderEffect` and `afterNextRender` functions let you register a **render callback** to be
 invoked after Angular has finished rendering _all components_ on the page into the DOM.
 
 These functions are different from the other lifecycle hooks described in this guide. Rather than a
 class method, they are standalone functions that accept a callback. The execution of render
 callbacks are not tied to any specific component instance, but instead an application-wide hook.
 
-`afterRender` and `afterNextRender` must be called in
+`afterRenderEffect` and `afterNextRender` must be called in
 an [injection context](guide/di/dependency-injection-context), typically a
 component's constructor.
 
@@ -239,7 +239,7 @@ Render callbacks do not run during server-side rendering or during build-time pr
 
 #### afterRender phases
 
-When using `afterRender` or `afterNextRender`, you can optionally split the work into phases. The
+When using `afterRenderEffect` or `afterNextRender`, you can optionally split the work into phases. The
 phase gives you control over the sequencing of DOM operations, letting you sequence _write_
 operations before _read_ operations in order to minimize
 [layout thrashing](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing). In order to
@@ -327,7 +327,7 @@ ngDoCheck-->ngAfterViewInit
 ngAfterContentInit-->ngAfterContentChecked
 ngAfterViewInit-->ngAfterViewChecked
 end
-CHANGE--Rendering-->afterRender
+CHANGE--Rendering-->afterNextRender
 ```
 
 ### Subsequent updates
@@ -340,7 +340,7 @@ ngOnChanges-->ngDoCheck
 ngDoCheck-->ngAfterContentChecked;
 ngDoCheck-->ngAfterViewChecked
 end
-CHANGE--Rendering-->afterRender
+CHANGE--Rendering-->afterNextRender
 ```
 
 ### Ordering with directives

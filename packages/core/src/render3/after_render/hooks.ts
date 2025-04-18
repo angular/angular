@@ -33,7 +33,7 @@ export type ɵFirstAvailable<T extends unknown[]> = T extends [infer H, ...infer
   : [];
 
 /**
- * Options passed to `afterRender` and `afterNextRender`.
+ * Options passed to `afterNextRender` and `afterRenderEffect`.
  *
  * @publicApi
  */
@@ -128,8 +128,6 @@ export interface AfterRenderOptions {
  *   }
  * }
  * ```
- *
- * @developerPreview
  */
 export function afterRender<E = never, W = never, M = never>(
   spec: {
@@ -190,8 +188,6 @@ export function afterRender<E = never, W = never, M = never>(
  *   }
  * }
  * ```
- *
- * @developerPreview
  */
 export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
 
@@ -302,7 +298,7 @@ export function afterRender(
  * }
  * ```
  *
- * @developerPreview
+ * @publicApi
  */
 export function afterNextRender<E = never, W = never, M = never>(
   spec: {
@@ -418,7 +414,7 @@ function getHooks(
 }
 
 /**
- * Shared implementation for `afterRender` and `afterNextRender`.
+ * Shared implementation for `afterNextRender`.
  */
 function afterRenderImpl(
   callbackOrSpec:
@@ -435,7 +431,7 @@ function afterRenderImpl(
 ): AfterRenderRef {
   const manager = injector.get(AfterRenderManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
-  // tree-shaken if `afterRender` and `afterNextRender` aren't used.
+  // tree-shaken if `afterNextRender` isn't used.
   manager.impl ??= injector.get(AfterRenderImpl);
 
   const tracing = injector.get(TracingService, null, {optional: true});
