@@ -15,7 +15,7 @@ import {
 } from '../../../ng-devtools-backend/src/lib/component-tree';
 
 import {ElementPosition, SignalNodePosition} from 'protocol';
-import { ngDebugClient } from 'devtools/projects/ng-devtools-backend/src/lib/ng-debug-api/ng-debug-api';
+import { ngDebugClient } from '../../../ng-devtools-backend/src/lib/ng-debug-api/ng-debug-api';
 
 export const initializeExtendedWindowOperations = () => {
   extendWindowOperations(globalThis, {inspectedApplication: chromeWindowExtensions});

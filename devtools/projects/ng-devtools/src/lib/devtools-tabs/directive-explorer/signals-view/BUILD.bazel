@@ -36,6 +36,7 @@ ng_module(
     ] + _STYLE_LABELS,
     deps = [
         "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//devtools/projects/protocol",
         "//packages/common",

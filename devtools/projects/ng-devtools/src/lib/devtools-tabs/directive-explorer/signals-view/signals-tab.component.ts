@@ -17,7 +17,8 @@ import {arrayifyProps, SignalDataSource} from './signal-data-source';
 import {DataSource} from '@angular/cdk/collections';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {MatIcon} from '@angular/material/icon';
-import { ApplicationOperations } from '../../../application-operations/index';
+import {ApplicationOperations} from '../../../application-operations/index';
+import {FrameManager} from '../../../application-services/frame_manager';
 
 @Component({
   templateUrl: './signals-tab.component.html',
@@ -39,6 +40,7 @@ export class SignalsTabComponent {
   private selected = signal<string | null>(null);
 
   private _appOperations = inject(ApplicationOperations);
+  private readonly _frameManager = inject(FrameManager);
 
   protected selectedNode = computed(() => {
     const signalGraph = this.signalGraph();
@@ -145,10 +147,14 @@ export class SignalsTabComponent {
     if (!selected) {
       return;
     }
-    this._appOperations.inspectSignal({
-      element: this.currentElement()!,
-      signalId: selected,
-    });
+    const frame = this._frameManager.selectedFrame();
+    this._appOperations.inspectSignal(
+      {
+        element: this.currentElement()!,
+        signalId: selected,
+      },
+      frame!,
+    );
   }
 
   toggleLogging() {
@@ -156,8 +162,6 @@ export class SignalsTabComponent {
     if (!selected) {
       return;
     }
-    this._messageBus.emit('toggleLogging', [
-      {element: this.currentElement()!, signalId: selected}
-    ])
+    this._messageBus.emit('toggleLogging', [{element: this.currentElement()!, signalId: selected}]);
   }
 }
