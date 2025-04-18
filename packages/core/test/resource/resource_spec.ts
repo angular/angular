@@ -84,14 +84,14 @@ describe('resource', () => {
     });
 
     // a freshly created resource is in the loading state
-    expect(echoResource.status()).toBe(ResourceStatus.Loading);
+    expect(echoResource.status()).toBe('loading');
     expect(echoResource.isLoading()).toBeTrue();
     expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toBeUndefined();
     expect(echoResource.error()).toBe(undefined);
     TestBed.tick();
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.status()).toBe('resolved');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual({counter: 0});
@@ -100,7 +100,7 @@ describe('resource', () => {
     counter.update((c) => c + 1);
     TestBed.tick();
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.status()).toBe('resolved');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual({counter: 1});
@@ -123,7 +123,7 @@ describe('resource', () => {
     TestBed.tick();
     await flushMicrotasks();
 
-    expect(prevStatus).toBe(ResourceStatus.Idle);
+    expect(prevStatus).toBe('idle');
   });
 
   it('should expose errors thrown during resource loading', async () => {
@@ -138,7 +138,7 @@ describe('resource', () => {
     TestBed.tick();
     await backend.reject(requestParam, 'Something went wrong....');
 
-    expect(echoResource.status()).toBe(ResourceStatus.Error);
+    expect(echoResource.status()).toBe('error');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toEqual(undefined);
@@ -163,7 +163,7 @@ describe('resource', () => {
     TestBed.tick();
     await backend.flush();
 
-    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.status()).toBe('resolved');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual('ok');
@@ -173,7 +173,7 @@ describe('resource', () => {
     TestBed.tick();
     await backend.flush();
 
-    expect(echoResource.status()).toBe(ResourceStatus.Error);
+    expect(echoResource.status()).toBe('error');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toEqual(undefined);
@@ -210,9 +210,9 @@ describe('resource', () => {
 
     // The resource should still be loading. Ticking (triggering the 2nd effect)
     // should not change the loading status.
-    expect(res.status()).toBe(ResourceStatus.Loading);
+    expect(res.status()).toBe('loading');
     appRef.tick();
-    expect(res.status()).toBe(ResourceStatus.Loading);
+    expect(res.status()).toBe('loading');
     expect(resolve.length).toBe(2);
 
     // Resolve the second load.
@@ -220,7 +220,7 @@ describe('resource', () => {
     await flushMicrotasks();
 
     // We should see the resolved value.
-    expect(res.status()).toBe(ResourceStatus.Resolved);
+    expect(res.status()).toBe('resolved');
     expect(res.value()).toBe(1);
   });
 
@@ -262,7 +262,7 @@ describe('resource', () => {
     });
 
     TestBed.tick();
-    expect(echoResource.status()).toBe(ResourceStatus.Idle);
+    expect(echoResource.status()).toBe('idle');
     expect(echoResource.isLoading()).toBeFalse();
 
     counter.set(10);
@@ -296,7 +296,7 @@ describe('resource', () => {
     counter.update((c) => c + 1);
     TestBed.tick();
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.status()).toBe('resolved');
     expect(echoResource.value()).toEqual({counter: 1});
     expect(echoResource.error()).toBe(undefined);
 
@@ -328,7 +328,7 @@ describe('resource', () => {
 
     injector.destroy();
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Idle);
+    expect(echoResource.status()).toBe('idle');
     expect(echoResource.value()).toBe(undefined);
     expect(echoResource.error()).toBe(undefined);
 
@@ -361,7 +361,7 @@ describe('resource', () => {
     echoResource.destroy();
     await backend.flush();
 
-    expect(echoResource.status()).toBe(ResourceStatus.Idle);
+    expect(echoResource.status()).toBe('idle');
     expect(echoResource.value()).toBe(undefined);
     expect(echoResource.error()).toBe(undefined);
 
@@ -388,7 +388,7 @@ describe('resource', () => {
     unrelated.set('b');
     TestBed.tick();
     // there is no chang in the status
-    expect(res.status()).toBe(ResourceStatus.Resolved);
+    expect(res.status()).toBe('resolved');
     await backend.flush();
     // there is no chang in the value
     expect(res.value()).toBe('0:0');
@@ -406,13 +406,13 @@ describe('resource', () => {
     TestBed.tick();
     await backend.flush();
 
-    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.status()).toBe('resolved');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.value()).toEqual({counter: 0});
     expect(echoResource.error()).toBe(undefined);
 
     echoResource.value.set({counter: 100});
-    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.status()).toBe('local');
     expect(echoResource.isLoading()).toBeFalse();
     expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual({counter: 100});
@@ -421,13 +421,13 @@ describe('resource', () => {
     counter.set(1);
     TestBed.tick();
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.status()).toBe('resolved');
     expect(echoResource.value()).toEqual({counter: 1});
     expect(echoResource.error()).toBe(undefined);
 
     // state setter is also exposed on the resource directly
     echoResource.set({counter: 200});
-    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.status()).toBe('local');
     expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual({counter: 200});
   });
@@ -442,17 +442,17 @@ describe('resource', () => {
 
     TestBed.tick();
     await backend.flush();
-    expect(res.status()).toBe(ResourceStatus.Resolved);
+    expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('0:0');
     expect(res.error()).toBe(undefined);
 
     res.reload();
-    expect(res.status()).toBe(ResourceStatus.Reloading);
+    expect(res.status()).toBe('reloading');
     expect(res.value()).toBe('0:0');
 
     TestBed.tick();
     await backend.flush();
-    expect(res.status()).toBe(ResourceStatus.Resolved);
+    expect(res.status()).toBe('resolved');
     expect(res.isLoading()).toBeFalse();
     expect(res.value()).toBe('0:1');
     expect(res.error()).toBe(undefined);
@@ -474,12 +474,12 @@ describe('resource', () => {
     });
 
     res.value.set(5);
-    expect(res.status()).toBe(ResourceStatus.Local);
+    expect(res.status()).toBe('local');
     expect(res.value()).toBe(5);
     expect(res.error()).toBe(undefined);
 
     res.value.set(10);
-    expect(res.status()).toBe(ResourceStatus.Local);
+    expect(res.status()).toBe('local');
     expect(res.value()).toBe(5); // equality blocked writes
     expect(res.error()).toBe(undefined);
   });
@@ -509,24 +509,24 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
     // Idle to start.
-    expect(echoResource.status()).toBe(ResourceStatus.Idle);
+    expect(echoResource.status()).toBe('idle');
     // Switch to loading state should be synchronous.
     request.set(1);
-    expect(echoResource.status()).toBe(ResourceStatus.Loading);
+    expect(echoResource.status()).toBe('loading');
     // And back to idle.
     request.set(undefined);
-    expect(echoResource.status()).toBe(ResourceStatus.Idle);
+    expect(echoResource.status()).toBe('idle');
     // Allow the load to proceed.
     request.set(2);
     TestBed.tick();
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.status()).toBe('resolved');
     // Reload state should be synchronous.
     echoResource.reload();
-    expect(echoResource.status()).toBe(ResourceStatus.Reloading);
+    expect(echoResource.status()).toBe('reloading');
     // Back to idle.
     request.set(undefined);
-    expect(echoResource.status()).toBe(ResourceStatus.Idle);
+    expect(echoResource.status()).toBe('idle');
   });
   it('set() should abort a pending load', async () => {
     const request = signal<number | undefined>(1);
@@ -540,22 +540,22 @@ describe('resource', () => {
     // Fully resolve the resource to start.
     TestBed.tick();
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.status()).toBe('resolved');
     // Trigger loading state.
     request.set(2);
-    expect(echoResource.status()).toBe(ResourceStatus.Loading);
+    expect(echoResource.status()).toBe('loading');
     // Set the resource to a new value.
     echoResource.set(3);
     // Now run the effect, which should be a no-op as the resource was set to a local value.
     TestBed.tick();
     // We should still be in local state.
-    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.status()).toBe('local');
     expect(echoResource.value()).toBe(3);
     // Flush the resource
     await backend.flush();
     await appRef.whenStable();
     // We should still be in local state.
-    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.status()).toBe('local');
     expect(echoResource.value()).toBe(3);
   });
 
@@ -571,22 +571,22 @@ describe('resource', () => {
     // Fully resolve the resource to start.
     TestBed.tick();
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Resolved);
+    expect(echoResource.status()).toBe('resolved');
     // Trigger reloading state.
     echoResource.reload();
-    expect(echoResource.status()).toBe(ResourceStatus.Reloading);
+    expect(echoResource.status()).toBe('reloading');
     // Set the resource to a new value.
     echoResource.set(3);
     // Now run the effect, which should be a no-op as the resource was set to a local value.
     TestBed.tick();
     // We should still be in local state.
-    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.status()).toBe('local');
     expect(echoResource.value()).toBe(3);
     // Flush the resource
     await backend.flush();
     await appRef.whenStable();
     // We should still be in local state.
-    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.status()).toBe('local');
     expect(echoResource.value()).toBe(3);
   });
 
@@ -598,7 +598,7 @@ describe('resource', () => {
     });
 
     await appRef.whenStable();
-    expect(res.status()).toBe(ResourceStatus.Resolved);
+    expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('done');
   });
 
@@ -610,7 +610,7 @@ describe('resource', () => {
     });
 
     await appRef.whenStable();
-    expect(res.status()).toBe(ResourceStatus.Error);
+    expect(res.status()).toBe('error');
     expect(res.error()).toBe('fail');
   });
 
@@ -688,7 +688,7 @@ describe('resource', () => {
     // Start the initial load.
     TestBed.tick();
     await Promise.resolve();
-    expect(echoResource.status()).toBe(ResourceStatus.Loading);
+    expect(echoResource.status()).toBe('loading');
     expect(echoResource.value()).toBe(undefined);
     expect(echoResource.error()).toBe(undefined);
     expect(aborted).toEqual([]);
@@ -697,7 +697,7 @@ describe('resource', () => {
     echoResource.set(null);
     TestBed.tick();
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.status()).toBe('local');
     expect(echoResource.value()).toBe(null);
     expect(echoResource.error()).toBe(undefined);
     expect(aborted).toEqual([{counter: 0}]);
@@ -706,7 +706,7 @@ describe('resource', () => {
     echoResource.reload();
     TestBed.tick();
     await Promise.resolve();
-    expect(echoResource.status()).toBe(ResourceStatus.Reloading);
+    expect(echoResource.status()).toBe('reloading');
     expect(echoResource.value()).toBe(null);
     expect(echoResource.error()).toBe(undefined);
     expect(aborted).toEqual([{counter: 0}]);
@@ -714,7 +714,7 @@ describe('resource', () => {
     // Interrupt the reload with the same value as before.
     echoResource.set(null);
     await backend.flush();
-    expect(echoResource.status()).toBe(ResourceStatus.Local);
+    expect(echoResource.status()).toBe('local');
     expect(echoResource.value()).toBe(null);
     expect(echoResource.error()).toBe(undefined);
     expect(aborted).toEqual([{counter: 0}, {counter: 0}]);

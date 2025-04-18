@@ -47,8 +47,7 @@ The `ResourceLoaderParams` object contains three properties: `request`, `previou
 | `previous`    | An object with a `status` property, containing the previous `ResourceStatus`.                                                                    |
 | `abortSignal` | An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). See [Aborting requests](#aborting-requests) below for details. |
 
-
-If the `request` computation returns `undefined`, the loader function does not run and the resource status becomes `Idle`.
+If the `request` computation returns `undefined`, the loader function does not run and the resource status becomes `'idle'`.
 
 ### Aborting requests
 
@@ -100,15 +99,15 @@ The resource object has several signal properties for reading the status of the 
 | `isLoading` | Whether the resource loader is currently running.                                                               |
 | `status`    | The resource's specific `ResourceStatus`, as described below.                                                   |
 
-The `status` signal provides a specific `ResourceStatus` that describes the state of the resource.
+The `status` signal provides a specific `ResourceStatus` that describes the state of the resource using a string constant.
 
-| Status      | `value()`         | Description                                                                  |
-| ----------- | :---------------- | ---------------------------------------------------------------------------- |
-| `Idle`      | `undefined`       | The resource has no valid request and the loader has not run.                |
-| `Error`     | `undefined`       | The loader has encountered an error.                                         |
-| `Loading`   | `undefined`       | The loader is running as a result of the `request` value changing.           |
-| `Reloading` | Previous value    | The loader is running as a result calling of the resource's `reload` method. |
-| `Resolved`  | Resolved value    | The loader has completed.                                                    |
-| `Local`     | Locally set value | The resource's value has been set locally via `.set()` or `.update()`        |
+| Status        | `value()`         | Description                                                                  |
+| ------------- | :---------------- | ---------------------------------------------------------------------------- |
+| `'idle'`      | `undefined`       | The resource has no valid request and the loader has not run.                |
+| `'error'`     | `undefined`       | The loader has encountered an error.                                         |
+| `'loading'`   | `undefined`       | The loader is running as a result of the `request` value changing.           |
+| `'reloading'` | Previous value    | The loader is running as a result calling of the resource's `reload` method. |
+| `'resolved'`  | Resolved value    | The loader has completed.                                                    |
+| `'local'`     | Locally set value | The resource's value has been set locally via `.set()` or `.update()`        |
 
 You can use this status information to conditionally display user interface elements, such loading indicators and error messages.

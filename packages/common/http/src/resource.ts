@@ -301,9 +301,7 @@ class HttpResourceImpl<T>
   });
 
   readonly headers = computed(() =>
-    this.status() === ResourceStatus.Resolved || this.status() === ResourceStatus.Error
-      ? this._headers()
-      : undefined,
+    this.status() === 'resolved' || this.status() === 'error' ? this._headers() : undefined,
   );
   readonly progress = this._progress.asReadonly();
   readonly statusCode = this._statusCode.asReadonly();
