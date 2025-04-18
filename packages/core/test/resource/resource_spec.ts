@@ -78,8 +78,8 @@ describe('resource', () => {
     const counter = signal(0);
     const backend = new MockEchoBackend();
     const echoResource = resource({
-      request: () => ({counter: counter()}),
-      loader: (params) => backend.fetch(params.request),
+      params: () => ({counter: counter()}),
+      loader: (params) => backend.fetch(params.params),
       injector: TestBed.inject(Injector),
     });
 
@@ -130,8 +130,8 @@ describe('resource', () => {
     const backend = new MockEchoBackend();
     const requestParam = {};
     const echoResource = resource({
-      request: () => requestParam,
-      loader: (params) => backend.fetch(params.request),
+      params: () => requestParam,
+      loader: (params) => backend.fetch(params.params),
       injector: TestBed.inject(Injector),
     });
 
@@ -149,9 +149,9 @@ describe('resource', () => {
     const backend = new MockEchoBackend();
     const counter = signal(0);
     const echoResource = resource({
-      request: () => ({counter: counter()}),
+      params: () => ({counter: counter()}),
       loader: (params) => {
-        if (params.request.counter % 2 === 0) {
+        if (params.params.counter % 2 === 0) {
           return Promise.resolve('ok');
         } else {
           throw new Error('KO');
@@ -186,10 +186,10 @@ describe('resource', () => {
     const request = signal(0);
     let resolve: Array<() => void> = [];
     const res = resource({
-      request,
-      loader: async ({request}) => {
+      params: request,
+      loader: async ({params}) => {
         const p = Promise.withResolvers<number>();
-        resolve.push(() => p.resolve(request));
+        resolve.push(() => p.resolve(params));
         return p.promise;
       },
       injector: TestBed.inject(Injector),
@@ -228,9 +228,9 @@ describe('resource', () => {
     const DEFAULT: string[] = [];
     const request = signal(0);
     const res = resource({
-      request,
-      loader: async ({request}) => {
-        if (request === 2) {
+      params: request,
+      loader: async ({params}) => {
+        if (params === 2) {
           throw new Error('err');
         }
         return ['data'];
@@ -256,8 +256,8 @@ describe('resource', () => {
     const counter = signal(0);
     const backend = new MockEchoBackend();
     const echoResource = resource({
-      request: () => (counter() > 5 ? {counter: counter()} : undefined),
-      loader: (params) => backend.fetch(params.request),
+      params: () => (counter() > 5 ? {counter: counter()} : undefined),
+      loader: (params) => backend.fetch(params.params),
       injector: TestBed.inject(Injector),
     });
 
@@ -275,12 +275,12 @@ describe('resource', () => {
     const backend = new MockEchoBackend<{counter: number}>();
     const aborted: {counter: number}[] = [];
     const echoResource = resource<{counter: number}, {counter: number}>({
-      request: () => ({counter: counter()}),
-      loader: ({request, abortSignal}) => {
-        abortSignal.addEventListener('abort', () => backend.abort(request));
-        return backend.fetch(request).catch((reason) => {
+      params: () => ({counter: counter()}),
+      loader: ({params, abortSignal}) => {
+        abortSignal.addEventListener('abort', () => backend.abort(params));
+        return backend.fetch(params).catch((reason) => {
           if (reason === 'aborted') {
-            aborted.push(request);
+            aborted.push(params);
           }
           throw new Error(reason);
         });
@@ -309,12 +309,12 @@ describe('resource', () => {
     const aborted: {counter: number}[] = [];
     const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
     const echoResource = resource<{counter: number}, {counter: number}>({
-      request: () => ({counter: counter()}),
-      loader: ({request, abortSignal}) => {
-        abortSignal.addEventListener('abort', () => backend.abort(request));
-        return backend.fetch(request).catch((reason) => {
+      params: () => ({counter: counter()}),
+      loader: ({params, abortSignal}) => {
+        abortSignal.addEventListener('abort', () => backend.abort(params));
+        return backend.fetch(params).catch((reason) => {
           if (reason === 'aborted') {
-            aborted.push(request);
+            aborted.push(params);
           }
           throw new Error(reason);
         });
@@ -341,12 +341,12 @@ describe('resource', () => {
     const aborted: {counter: number}[] = [];
     const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
     const echoResource = resource<{counter: number}, {counter: number}>({
-      request: () => ({counter: counter()}),
-      loader: ({request, abortSignal}) => {
-        abortSignal.addEventListener('abort', () => backend.abort(request));
-        return backend.fetch(request).catch((reason) => {
+      params: () => ({counter: counter()}),
+      loader: ({params, abortSignal}) => {
+        abortSignal.addEventListener('abort', () => backend.abort(params));
+        return backend.fetch(params).catch((reason) => {
           if (reason === 'aborted') {
-            aborted.push(request);
+            aborted.push(params);
           }
           throw new Error(reason);
         });
@@ -372,11 +372,11 @@ describe('resource', () => {
     const unrelated = signal('a');
     const backend = new MockResponseCountingBackend();
     const res = resource<string, number>({
-      request: () => 0,
+      params: () => 0,
       loader: (params) => {
         // read reactive state and assure it is _not_ tracked
         unrelated();
-        return backend.fetch(params.request);
+        return backend.fetch(params.params);
       },
       injector: TestBed.inject(Injector),
     });
@@ -398,8 +398,8 @@ describe('resource', () => {
     const counter = signal(0);
     const backend = new MockEchoBackend();
     const echoResource = resource({
-      request: () => ({counter: counter()}),
-      loader: (params) => backend.fetch(params.request),
+      params: () => ({counter: counter()}),
+      loader: (params) => backend.fetch(params.params),
       injector: TestBed.inject(Injector),
     });
 
@@ -435,8 +435,8 @@ describe('resource', () => {
   it('should allow re-fetching data', async () => {
     const backend = new MockResponseCountingBackend();
     const res = resource<string, number>({
-      request: () => 0,
-      loader: (params) => backend.fetch(params.request),
+      params: () => 0,
+      loader: (params) => backend.fetch(params.params),
       injector: TestBed.inject(Injector),
     });
 
@@ -504,8 +504,8 @@ describe('resource', () => {
     const request = signal<number | undefined>(undefined);
     const backend = new MockEchoBackend();
     const echoResource = resource({
-      request,
-      loader: (params) => backend.fetch(params.request),
+      params: request,
+      loader: (params) => backend.fetch(params.params),
       injector: TestBed.inject(Injector),
     });
     // Idle to start.
@@ -532,8 +532,8 @@ describe('resource', () => {
     const request = signal<number | undefined>(1);
     const backend = new MockEchoBackend();
     const echoResource = resource({
-      request,
-      loader: (params) => backend.fetch(params.request),
+      params: request,
+      loader: (params) => backend.fetch(params.params),
       injector: TestBed.inject(Injector),
     });
     const appRef = TestBed.inject(ApplicationRef);
@@ -563,8 +563,8 @@ describe('resource', () => {
     const request = signal<number | undefined>(1);
     const backend = new MockEchoBackend();
     const echoResource = resource({
-      request,
-      loader: (params) => backend.fetch(params.request),
+      params: request,
+      loader: (params) => backend.fetch(params.params),
       injector: TestBed.inject(Injector),
     });
     const appRef = TestBed.inject(ApplicationRef);
@@ -642,9 +642,9 @@ describe('resource', () => {
     const stream = signal<{value: number} | {error: unknown}>({value: 0});
     const request = signal(1);
     const res = resource({
-      request,
-      stream: async ({request}) => {
-        if (request === 1) {
+      params: request,
+      stream: async ({params}) => {
+        if (params === 1) {
           return stream;
         } else {
           return signal({value: 0});
@@ -672,12 +672,12 @@ describe('resource', () => {
     const backend = new MockEchoBackend<{counter: number} | null>();
     const aborted: ({counter: number} | null)[] = [];
     const echoResource = resource<{counter: number} | null, {counter: number} | null>({
-      request: () => ({counter: counter()}),
-      loader: ({request, abortSignal}) => {
-        abortSignal.addEventListener('abort', () => backend.abort(request));
-        return backend.fetch(request).catch((reason) => {
+      params: () => ({counter: counter()}),
+      loader: ({params, abortSignal}) => {
+        abortSignal.addEventListener('abort', () => backend.abort(params));
+        return backend.fetch(params).catch((reason) => {
           if (reason === 'aborted') {
-            aborted.push(request);
+            aborted.push(params);
           }
           throw new Error(reason);
         });

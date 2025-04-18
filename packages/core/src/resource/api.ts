@@ -128,7 +128,7 @@ export interface ResourceRef<T> extends WritableResource<T> {
  * @experimental
  */
 export interface ResourceLoaderParams<R> {
-  request: Exclude<NoInfer<R>, undefined>;
+  params: NoInfer<Exclude<R, undefined>>;
   abortSignal: AbortSignal;
   previous: {
     status: ResourceStatus;
@@ -163,7 +163,7 @@ export interface BaseResourceOptions<T, R> {
    *
    * If a request function isn't provided, the loader won't rerun unless the resource is reloaded.
    */
-  request?: () => R;
+  params?: () => R;
 
   /**
    * The value which will be returned from the resource when a server value is unavailable, such as

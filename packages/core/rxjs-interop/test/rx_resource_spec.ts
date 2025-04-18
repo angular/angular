@@ -30,8 +30,8 @@ describe('rxResource()', () => {
     let unsub = false;
     let lastSeenRequest: number = 0;
     rxResource({
-      request,
-      loader: ({request}) => {
+      params: request,
+      loader: ({params: request}) => {
         lastSeenRequest = request;
         return new Observable((sub) => {
           if (request === 2) {

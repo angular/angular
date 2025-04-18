@@ -20,6 +20,7 @@ import {
   ResourceStreamingLoader,
   StreamingResourceOptions,
   ResourceStreamItem,
+  ResourceLoaderParams,
 } from './api';
 
 import {ValueEqualityFn} from '../../primitives/signals';
@@ -58,9 +59,12 @@ export function resource<T, R>(
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined> {
   options?.injector || assertInInjectionContext(resource);
-  const request = (options.request ?? (() => null)) as () => R;
+  const oldNameForParams = (
+    options as ResourceOptions<T, R> & {request: ResourceOptions<T, R>['params']}
+  ).request;
+  const params = (options.params ?? oldNameForParams ?? (() => null)) as () => R;
   return new ResourceImpl<T | undefined, R>(
-    request,
+    params,
     getLoader(options),
     options.defaultValue,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
@@ -308,12 +312,14 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       // which side of the `await` they are.
       const stream = await untracked(() => {
         return this.loaderFn({
+          params: extRequest.request as Exclude<R, undefined>,
+          // TODO(alxhub): cleanup after g3 removal of `request` alias.
           request: extRequest.request as Exclude<R, undefined>,
           abortSignal,
           previous: {
             status: previousStatus,
           },
-        });
+        } as ResourceLoaderParams<R>);
       });
 
       // If this request has been aborted, or the current request no longer
