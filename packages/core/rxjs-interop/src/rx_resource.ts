@@ -23,7 +23,7 @@ import {Observable, Subscription} from 'rxjs';
  * @experimental
  */
 export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
-  loader: (params: ResourceLoaderParams<R>) => Observable<T>;
+  stream: (params: ResourceLoaderParams<R>) => Observable<T>;
 }
 
 /**
@@ -67,7 +67,13 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
         resolve = undefined;
       }
 
-      sub = opts.loader(params).subscribe({
+      // TODO(alxhub): remove after g3 updated to rename loader -> stream
+      const streamFn = opts.stream ?? (opts as {loader?: RxResourceOptions<T, R>['stream']}).loader;
+      if (streamFn === undefined) {
+        throw new Error(`Must provide \`stream\` option.`);
+      }
+
+      sub = streamFn(params).subscribe({
         next: (value) => send({value}),
         error: (error) => send({error}),
         complete: () => {

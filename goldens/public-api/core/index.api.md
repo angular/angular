@@ -177,7 +177,7 @@ export interface BaseResourceOptions<T, R> {
     defaultValue?: NoInfer<T>;
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
-    request?: () => R;
+    params?: () => R;
 }
 
 // @public
@@ -1616,11 +1616,11 @@ export interface ResourceLoaderParams<R> {
     // (undocumented)
     abortSignal: AbortSignal;
     // (undocumented)
+    params: NoInfer<Exclude<R, undefined>>;
+    // (undocumented)
     previous: {
         status: ResourceStatus;
     };
-    // (undocumented)
-    request: Exclude<NoInfer<R>, undefined>;
 }
 
 // @public (undocumented)
@@ -1634,14 +1634,7 @@ export interface ResourceRef<T> extends WritableResource<T> {
 }
 
 // @public
-export enum ResourceStatus {
-    Error = 1,
-    Idle = 0,
-    Loading = 2,
-    Local = 5,
-    Reloading = 3,
-    Resolved = 4
-}
+export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resolved' | 'local';
 
 // @public
 export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<Signal<ResourceStreamItem<T>>>;

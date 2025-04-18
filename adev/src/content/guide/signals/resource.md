@@ -14,24 +14,24 @@ import {resource, Signal} from '@angular/core';
 const userId: Signal<string> = getUserId();
 
 const userResource = resource({
-  // Define a reactive request computation.
-  // The request value recomputes whenever any read signals change.
-  request: () => ({id: userId()}),
+  // Define a reactive computation.
+  // The params value recomputes whenever any read signals change.
+  params: () => ({id: userId()}),
 
   // Define an async loader that retrieves data.
-  // The resource calls this function every time the `request` value changes.
-  loader: ({request}) => fetchUser(request),
+  // The resource calls this function every time the `params` value changes.
+  loader: ({params}) => fetchUser(params),
 });
 
 // Create a computed signal based on the result of the resource's loader function.
 const firstName = computed(() => userResource.value().firstName);
 ```
 
-The `resource` function accepts a `ResourceOptions` object with two main properties: `request` and `loader`.
+The `resource` function accepts a `ResourceOptions` object with two main properties: `params` and `loader`.
 
-The `request` property defines a reactive computation that produce a request value. Whenever signals read in this computation change, the resource produces a new request value, similar to `computed`.
+The `params` property defines a reactive computation that produces a parameter value. Whenever signals read in this computation change, the resource produces a new parameter value, similar to `computed`.
 
-The `loader` property defines a `ResourceLoader`— an async function that retrieves some state. The resource calls the loader every time the `request` computation produces a new value, passing that value to the loader. See [Resource loaders](#resource-loaders) below for more details.
+The `loader` property defines a `ResourceLoader`— an async function that retrieves some state. The resource calls the loader every time the `params` computation produces a new value, passing that value to the loader. See [Resource loaders](#resource-loaders) below for more details.
 
 `Resource` has a `value` signal that contains the results of the loader.
 
@@ -39,20 +39,19 @@ The `loader` property defines a `ResourceLoader`— an async function that retri
 
 When creating a resource, you specify a `ResourceLoader`. This loader is an async function that accepts a single parameter— a `ResourceLoaderParams` object— and returns a value.
 
-The `ResourceLoaderParams` object contains three properties: `request`, `previous`, and `abortSignal`.
+The `ResourceLoaderParams` object contains three properties: `params`, `previous`, and `abortSignal`.
 
 | Property      | Description                                                                                                                                      |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `request`     | The value of the resource's `request` computation.                                                                                               |
+| `params`      | The value of the resource's `params` computation.                                                                                                |
 | `previous`    | An object with a `status` property, containing the previous `ResourceStatus`.                                                                    |
 | `abortSignal` | An [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). See [Aborting requests](#aborting-requests) below for details. |
 
-
-If the `request` computation returns `undefined`, the loader function does not run and the resource status becomes `Idle`.
+If the `params` computation returns `undefined`, the loader function does not run and the resource status becomes `'idle'`.
 
 ### Aborting requests
 
-A resource aborts an outstanding request if the `request` computation changes while the resource is loading.
+A resource aborts an outstanding loading operation if the `params` computation changes while the resource is loading.
 
 You can use the `abortSignal` in `ResourceLoaderParams` to respond to aborted requests. For example, the native `fetch` function accepts an `AbortSignal`:
 
@@ -60,7 +59,7 @@ You can use the `abortSignal` in `ResourceLoaderParams` to respond to aborted re
 const userId: Signal<string> = getUserId();
 
 const userResource = resource({
-  request: () => ({id: userId()}),
+  params: () => ({id: userId()}),
   loader: ({request, abortSignal}): Promise<User> => {
     // fetch cancels any outstanding HTTP requests when the given `AbortSignal`
     // indicates that the request has been aborted.
@@ -79,8 +78,8 @@ You can programmatically trigger a resource's `loader` by calling the `reload` m
 const userId: Signal<string> = getUserId();
 
 const userResource = resource({
-  request: () => ({id: userId()}),
-  loader: ({request}) => fetchUser(request),
+  params: () => ({id: userId()}),
+  loader: ({params}) => fetchUser(params),
 });
 
 // ...
@@ -100,15 +99,15 @@ The resource object has several signal properties for reading the status of the 
 | `isLoading` | Whether the resource loader is currently running.                                                               |
 | `status`    | The resource's specific `ResourceStatus`, as described below.                                                   |
 
-The `status` signal provides a specific `ResourceStatus` that describes the state of the resource.
+The `status` signal provides a specific `ResourceStatus` that describes the state of the resource using a string constant.
 
-| Status      | `value()`         | Description                                                                  |
-| ----------- | :---------------- | ---------------------------------------------------------------------------- |
-| `Idle`      | `undefined`       | The resource has no valid request and the loader has not run.                |
-| `Error`     | `undefined`       | The loader has encountered an error.                                         |
-| `Loading`   | `undefined`       | The loader is running as a result of the `request` value changing.           |
-| `Reloading` | Previous value    | The loader is running as a result calling of the resource's `reload` method. |
-| `Resolved`  | Resolved value    | The loader has completed.                                                    |
-| `Local`     | Locally set value | The resource's value has been set locally via `.set()` or `.update()`        |
+| Status        | `value()`         | Description                                                                  |
+| ------------- | :---------------- | ---------------------------------------------------------------------------- |
+| `'idle'`      | `undefined`       | The resource has no valid request and the loader has not run.                |
+| `'error'`     | `undefined`       | The loader has encountered an error.                                         |
+| `'loading'`   | `undefined`       | The loader is running as a result of the `request` value changing.           |
+| `'reloading'` | Previous value    | The loader is running as a result calling of the resource's `reload` method. |
+| `'resolved'`  | Resolved value    | The loader has completed.                                                    |
+| `'local'`     | Locally set value | The resource's value has been set locally via `.set()` or `.update()`        |
 
 You can use this status information to conditionally display user interface elements, such loading indicators and error messages.
