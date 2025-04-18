@@ -301,9 +301,7 @@ class HttpResourceImpl<T>
   });
 
   readonly headers = computed(() =>
-    this.status() === ResourceStatus.Resolved || this.status() === ResourceStatus.Error
-      ? this._headers()
-      : undefined,
+    this.status() === 'resolved' || this.status() === 'error' ? this._headers() : undefined,
   );
   readonly progress = this._progress.asReadonly();
   readonly statusCode = this._statusCode.asReadonly();
@@ -401,8 +399,8 @@ class HttpResponseResource implements Resource<HttpResponseBase | undefined> {
       // There are two kinds of errors which can occur in an HTTP request: HTTP errors or normal JS
       // errors. Since we have a response for HTTP errors, we report `Resolved` status even if the
       // overall request is considered to be in an Error state.
-      if (parent.status() === ResourceStatus.Error) {
-        return this.value() !== undefined ? ResourceStatus.Resolved : ResourceStatus.Error;
+      if (parent.status() === 'error') {
+        return this.value() !== undefined ? 'resolved' : 'error';
       }
       return parent.status();
     });
