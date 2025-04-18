@@ -19,6 +19,7 @@ import {
   Route,
   SerializedInjector,
   SerializedProviderRecord,
+  SignalNodePosition,
 } from 'protocol';
 import {debounceTime} from 'rxjs/operators';
 import {
@@ -51,9 +52,9 @@ import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} 
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
 import {parseRoutes} from './router-tree';
-import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
+import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
-import {serializeDirectiveState} from './state-serializer/state-serializer';
+import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 
@@ -84,6 +85,8 @@ export const subscribeToClientEvents = (
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
 
+  messageBus.on('getSignalNestedProperties', getSignalNestedPropertiesCallback(messageBus))
+
   messageBus.on('updateState', updateState);
 
   messageBus.on('enableTimingAPI', enableTimingAPI);
@@ -96,6 +99,8 @@ export const subscribeToClientEvents = (
   messageBus.on('log', ({message, level}) => {
     console[level](`[Angular DevTools]: ${message}`);
   });
+
+  messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
@@ -212,6 +217,49 @@ const getNestedPropertiesCallback =
       }
     }
     messageBus.emit('nestedProperties', [
+      position,
+      {props: serializeDirectiveState(data)},
+      propPath,
+    ]);
+    return;
+  };
+
+  const getSignalNestedPropertiesCallback =
+  (messageBus: MessageBus<Events>) => (position: SignalNodePosition, propPath: string[]) => {
+    const emitEmpty = () => messageBus.emit('signalNestedProperties', [position, {props: {}}, propPath]);
+    const node = queryDirectiveForest(
+      position.element,
+      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    );
+    if (!node) {
+      return emitEmpty();
+    }
+
+    const injector = getInjectorFromElementNode(node.nativeElement!);
+    if (!injector) {
+      return emitEmpty();
+    }
+    
+    const ng = ngDebugClient();
+    
+    const signalGraph = ng.ɵgetSignalGraph?.(injector)
+    if (!signalGraph) {
+      return emitEmpty();
+    }
+
+    const current = signalGraph.nodes.find((node) => node.id === position.signalId);
+    if (!current) {
+      return emitEmpty();
+    }
+    
+    let data = current.value as object;
+    for (const prop of propPath) {
+      data = (data as Record<string, object>)[prop];
+      if (!data) {
+        console.error('Cannot access the properties', propPath, 'of', node);
+      }
+    }
+    messageBus.emit('signalNestedProperties', [
       position,
       {props: serializeDirectiveState(data)},
       propPath,
@@ -536,4 +584,36 @@ const logProvider = (
   }
 
   console.groupEnd();
+};
+const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: ElementPosition) => {
+  const ng = ngDebugClient();
+
+  // get injector from position
+  const node = queryDirectiveForest(
+    element,
+    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+  );
+  if (!node) {
+    return;
+  }
+
+  const injector = getInjectorFromElementNode(node.nativeElement!);
+
+  if (!injector) {
+    return;
+  }
+
+  const graph = ng.ɵgetSignalGraph?.(injector);
+  if (graph) {
+    const nodes = graph.nodes.map((node) => {
+      return {
+        id: node.id,
+        kind: node.kind,
+        label: node.label,
+        epoch: node.epoch,
+        preview: serializeValue(node.value),
+      };
+    })
+    messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
+  }
 };

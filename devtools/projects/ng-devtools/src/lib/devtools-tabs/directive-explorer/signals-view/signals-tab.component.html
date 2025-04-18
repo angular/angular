@@ -1,0 +1,21 @@
+<svg #component></svg>
+@if (selectedNode()) {
+  <div class="overlay">
+    <div class="header">
+      <button (click)="gotoSource()">
+        <mat-icon> arrow_outwards </mat-icon>
+      </button>
+      <button (click)="toggleLogging()">
+        <mat-icon> terminal </mat-icon>
+      </button>
+    </div>
+    <div>Name: {{selectedNode()!.label ?? 'Unnamed'}}</div>
+    <div>Type: {{selectedNode()!.kind}}</div>
+    <div>Epoch: {{selectedNode()!.epoch}}</div>
+
+    <ng-signals-value-tree [dataSource]="dataSource()!" [treeControl]="treeControl()" />
+  </div>
+}
+@if (empty()) {
+  <div class="no-signals">No signals in this component</div>
+}
