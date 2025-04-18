@@ -719,3 +719,67 @@ providers: [
 ```
 
 When using `RouterModule.forRoot`, this is configured with the `useHash: true` in the second argument: `RouterModule.forRoot(routes, {useHash: true})`.
+
+## Reusing routes with `RouteReuseStrategy`
+
+By default, Angular destroys a routed component when navigating away and recreates it when returning. This can lead to performance issues or loss of component state. To override this behavior, implement a custom `RouteReuseStrategy` to cache and reuse components.
+
+<docs-workflow>
+
+<docs-step title="Create a custom strategy">
+
+Create a class that implements RouteReuseStrategy and define logic for storing and retrieving components.
+
+```ts
+@Injectable()
+export class CustomReuseStrategy implements RouteReuseStrategy {
+  storedHandles = new Map<string, DetachedRouteHandle>();
+
+  shouldDetach(route: ActivatedRouteSnapshot): boolean {
+    return !!route.data['reuse'];
+  }
+
+  store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle): void {
+    if (route.routeConfig?.path) {
+      this.storedHandles.set(route.routeConfig.path, handle);
+    }
+  }
+
+  shouldAttach(route: ActivatedRouteSnapshot): boolean {
+    return !!route.routeConfig?.path && this.storedHandles.has(route.routeConfig.path);
+  }
+
+  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
+    return route.routeConfig?.path ? this.storedHandles.get(route.routeConfig.path) ?? null : null;
+  }
+
+  shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+    return future.routeConfig === curr.routeConfig;
+  }
+}
+```
+</docs-step>
+<docs-step title="Provide your strategy">
+Register the custom strategy in your app configuration.
+
+```ts
+providers: [
+  { provide: RouteReuseStrategy, useClass: CustomReuseStrategy }
+]
+```
+</docs-step>
+
+<docs-step title="Enable reuse on specific routes">
+Add a data property with reuse: true to routes you want to cache.
+
+```ts
+const routes: Routes = [
+  { path: 'first-component', component: FirstComponent, data: { reuse: true } },
+  { path: 'second-component', component: SecondComponent },
+];
+```
+</docs-step>
+
+</docs-workflow>
+
+This is especially useful in data-heavy views like dashboards or list pages where you want to preserve scroll position, filters, or unsaved changes.
