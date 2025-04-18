@@ -13,7 +13,7 @@ import {
   ErrorHandler,
   VERSION,
   inject,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   provideEnvironmentInitializer,
 } from '@angular/core';
 import {
@@ -38,7 +38,7 @@ import {routerProviders} from './router_providers';
 export const appConfig: ApplicationConfig = {
   providers: [
     routerProviders,
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideClientHydration(),
     provideHttpClient(withFetch()),
     provideEnvironmentInitializer(() => inject(AnalyticsService)),

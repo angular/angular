@@ -10,7 +10,7 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {ExampleViewer} from './example-viewer.component';
 import {ExampleMetadata, ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
-import {Component, provideExperimentalZonelessChangeDetection, ComponentRef} from '@angular/core';
+import {Component, provideZonelessChangeDetection, ComponentRef} from '@angular/core';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Clipboard} from '@angular/cdk/clipboard';
@@ -36,7 +36,7 @@ describe('ExampleViewer', () => {
       imports: [ExampleViewer],
       providers: [
         // TODO: Find why tests warn that zone.js is still loaded
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: ActivatedRoute, useValue: {snapshot: {fragment: 'fragment'}}},
       ],

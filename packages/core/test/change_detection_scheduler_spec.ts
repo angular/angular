@@ -26,7 +26,7 @@ import {
   NgZone,
   Output,
   PLATFORM_ID,
-  provideExperimentalZonelessChangeDetection as provideZonelessChangeDetection,
+  provideZonelessChangeDetection as provideZonelessChangeDetection,
   provideZoneChangeDetection,
   signal,
   TemplateRef,

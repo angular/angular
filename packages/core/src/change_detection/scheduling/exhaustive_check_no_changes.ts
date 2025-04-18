@@ -34,7 +34,7 @@ import {ZONELESS_ENABLED} from './zoneless_scheduling';
  *     and will always check all views, regardless of their "dirty" state and `ChangeDetectionStrategy`.
  *
  * When the `useNgZoneOnStable` option is `true`, this function will provide its own `NgZone` implementation and needs
- * to come after any other `NgZone` provider, including `provideZoneChangeDetection()` and `provideExperimentalZonelessChangeDetection()`.
+ * to come after any other `NgZone` provider, including `provideZoneChangeDetection()` and `provideZonelessChangeDetection()`.
  *
  * @experimental
  * @publicApi

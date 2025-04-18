@@ -1458,9 +1458,6 @@ export function provideExperimentalCheckNoChangesForDebug(options: {
 }): _angular_core.EnvironmentProviders;
 
 // @public
-export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders;
-
-// @public
 export function providePlatformInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
@@ -1471,6 +1468,11 @@ export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
 
 // @public
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;
+
+// @public
+function provideZonelessChangeDetection(): EnvironmentProviders;
+export { provideZonelessChangeDetection as provideExperimentalZonelessChangeDetection }
+export { provideZonelessChangeDetection }
 
 // @public
 export interface Query {
