@@ -384,5 +384,6 @@ export function isViewDirty(view: ViewRef<unknown>): boolean {
 }
 
 export function markForRefresh(view: ViewRef<unknown>): void {
-  markViewForRefresh(view['_cdRefInjectingView'] || view._lView);
+  // This function is only used by elements where _cdRefInjectingView is the same as _lView
+  markViewForRefresh(view._lView);
 }
