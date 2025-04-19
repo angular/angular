@@ -723,6 +723,25 @@ runInEachFileSystem(() => {
       expect((fooEntry as PropertyEntry).type).toBe('string');
     });
 
+    it('should not extract a constructor without parameters', () => {
+      env.write(
+        'index.ts',
+        `
+        export class MyClass {
+          constructor() {}
+
+          foo: string;
+        }`,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(1); // only foo, no constructor
+      const [fooEntry] = classEntry.members as PropertyEntry[];
+      expect(fooEntry.name).toBe('foo');
+    });
+
     it('should extract members of a class from .d.ts', () => {
       env.write(
         'index.d.ts',
