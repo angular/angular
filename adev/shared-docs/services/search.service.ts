@@ -49,8 +49,6 @@ export const provideAlgoliaSearchClient = (config: Environment): Provider => {
 export class Search {
   readonly searchQuery = signal('');
 
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly router = inject(Router);
   private readonly config = inject(ENVIRONMENT);
   private readonly client = inject(ALGOLIA_CLIENT);
 
@@ -103,10 +101,6 @@ export class Search {
     },
   });
 
-  constructor() {
-    this.resetSearchQueryOnNavigationEnd();
-  }
-
   private getUniqueSearchResultItems(items: SearchResult[]): SearchResult[] {
     const uniqueUrls = new Set<string>();
 
@@ -132,15 +126,6 @@ export class Search {
       }
       return false;
     });
-  }
-
-  private resetSearchQueryOnNavigationEnd(): void {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.searchQuery.set('');
-      });
   }
 
   private parseResult(response: SearchResponses<unknown>): SearchResultItem[] | undefined {
