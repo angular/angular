@@ -1,10 +1,16 @@
 # Components in Angular
 
-Components are the foundational building blocks for any Angular application. Each component has three parts:
+A Component in Angular is a TypeScript class that controls a piece of the HTML UI, known as the view.
 
-* TypeScript class
-* HTML template
-* CSS styles
+It consists of:
+
+Class – Handles logic (written in TypeScript).
+
+Template – The HTML that the user sees.
+
+Styles – CSS/SCSS specific to that component.
+
+Metadata – Defined using the @Component decorator.
 
 In this activity, you'll learn how to update the template and styles of a component.
 
