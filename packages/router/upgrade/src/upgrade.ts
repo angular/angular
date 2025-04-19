@@ -17,7 +17,15 @@ import {UpgradeModule} from '@angular/upgrade/static';
  *
  * @usageNotes
  *
- * <code-example language="typescript">
+ * For standalone applications:
+ * ```ts
+ * export const appConfig: ApplicationConfig = {
+ *   providers: [RouterUpgradeInitializer],
+ * };
+ * ```
+ *
+ * For NgModule based applications:
+ * ```ts
  * @NgModule({
  *  imports: [
  *   RouterModule.forRoot(SOME_ROUTES),
@@ -30,7 +38,7 @@ import {UpgradeModule} from '@angular/upgrade/static';
  * export class AppModule {
  *   ngDoBootstrap() {}
  * }
- * </code-example>
+ * ```
  *
  * @publicApi
  */
