@@ -67,8 +67,12 @@ export class VersionManager {
       //   displayName: `rc`,
       //   version: 'rc',
       // },
+
+      // We always want to point to the versioned URL 
+      // As once the version is archived you want the latest version in the drop down 
+      // to point to the archived site
       {
-        url: 'https://angular.dev/',
+        url: this.getAdevDocsUrl(this.currentMajorVersion),
         displayName: this.getVersion(this.currentMajorVersion),
         version: this.currentVersionMode,
       },
