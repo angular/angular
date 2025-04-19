@@ -145,5 +145,19 @@ runInEachFileSystem(() => {
       expect(genericEntry.constraint).toBeUndefined();
       expect(genericEntry.default).toBeUndefined();
     });
+
+    it('should extract type predicates as return type of type guards', () => {
+      env.write(
+        'index.ts',
+        `export function isSignal(value: unknown): value is Signal<unknown> {}`,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const [functionEntry] = docs as FunctionEntry[];
+      expect(functionEntry.implementation.returnType).toBe('value is Signal<unknown>');
+      expect(functionEntry.signatures[0].returnType).toBe('value is Signal<unknown>');
+    });
   });
 });
