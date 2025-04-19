@@ -772,9 +772,21 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     if (!directive.isInScope) {
       const importOn = standaloneTraitOrNgModule(templateTypeChecker, this.component);
 
-      codeActions =
+      const codeActionsCache =
         importOn !== null
           ? getCodeActionToImportTheDirectiveDeclaration(this.compiler, importOn, directive)
+          : undefined;
+
+      /**
+       * The `codeActionsCache` maybe include multiple actions, but we only want to show the one of them.
+       *
+       * For example, the `mat-card` component is a standalone component, and it's also exported by a module.
+       * There will be two actions to import the `mat-card` component, one is to import the `MatCardModule`
+       * and another is to import the `MatCardComponent`.
+       */
+      codeActions =
+        codeActionsCache !== undefined && codeActionsCache.length > 0
+          ? [codeActionsCache[0]]
           : undefined;
     }
 
