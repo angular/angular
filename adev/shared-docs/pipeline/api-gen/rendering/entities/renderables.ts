@@ -18,6 +18,7 @@ import {
   JsDocTagEntry,
   MemberEntry,
   ParameterEntry,
+  PipeEntry,
   TypeAliasEntry,
 } from '../entities';
 
@@ -55,6 +56,12 @@ export type TypeAliasEntryRenderable = TypeAliasEntry & DocEntryRenderable & Has
 
 /** Documentation entity for a TypeScript class augmented transformed content for rendering. */
 export type ClassEntryRenderable = ClassEntry &
+  DocEntryRenderable &
+  HasRenderableToc & {
+    members: MemberEntryRenderable[];
+  };
+
+export type PipeEntryRenderable = PipeEntry &
   DocEntryRenderable &
   HasRenderableToc & {
     members: MemberEntryRenderable[];

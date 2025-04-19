@@ -229,6 +229,7 @@ export class PipeDecoratorHandler
       isStandalone: analysis.meta.isStandalone,
       decorator: analysis.decorator,
       isExplicitlyDeferred: false,
+      isPure: analysis.meta.pure,
     });
 
     this.injectableRegistry.registerInjectable(node, {

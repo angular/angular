@@ -7,8 +7,8 @@
  */
 
 import {h} from 'preact';
-import {EntryType, isDocEntryWithSourceInfo} from '../entities';
-import {DocEntryRenderable} from '../entities/renderables';
+import {EntryType, isDocEntryWithSourceInfo, PipeEntry} from '../entities';
+import {DocEntryRenderable, PipeEntryRenderable} from '../entities/renderables';
 import {
   HEADER_CLASS_NAME,
   HEADER_ENTRY_CATEGORY,
@@ -18,7 +18,7 @@ import {
 import {DocsPillRow} from './docs-pill-row';
 
 /** Component to render a header of the API page. */
-export function HeaderApi(props: {entry: DocEntryRenderable; showFullDescription?: boolean}) {
+export function HeaderApi(props: {entry: DocEntryRenderable | PipeEntryRenderable; showFullDescription?: boolean}) {
   const entry = props.entry;
 
   // TODO: This link point to the main branch.
@@ -48,6 +48,12 @@ export function HeaderApi(props: {entry: DocEntryRenderable; showFullDescription
           {entry.isExperimental && (
             <div className={`${HEADER_ENTRY_LABEL} type-experimental full`}>
               <a href="/reference/releases#experimental">Experimental</a>
+            </div>
+          )}
+
+          {entry.entryType === EntryType.Pipe && !(entry as PipeEntry).isPure && (
+            <div className={`${HEADER_ENTRY_LABEL} type-impure-pipe full`}>
+              Impure
             </div>
           )}
         </div>
