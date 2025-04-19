@@ -802,6 +802,7 @@ function prepareDeclarations(
         isStandalone: false,
         decorator: null,
         isExplicitlyDeferred: false,
+        isPure: true,
       });
     }
   }
@@ -947,6 +948,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         decorator: null,
         isExplicitlyDeferred: false,
+        isPure: true,
       });
     }
   }

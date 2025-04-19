@@ -353,6 +353,7 @@ export interface PipeMeta {
   name: string;
   nameExpr: ts.Expression | null;
   isStandalone: boolean;
+  isPure: boolean;
   decorator: ts.Decorator | null;
   isExplicitlyDeferred: boolean;
 }
