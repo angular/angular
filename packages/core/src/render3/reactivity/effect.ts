@@ -19,7 +19,6 @@ import {
 } from '../../../primitives/signals';
 import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
 import {markAncestorsForTraversal} from '../util/view_utils';
-import {InjectionToken} from '../../di/injection_token';
 import {inject} from '../../di/injector_compatibility';
 import {Injector} from '../../di/injector';
 import {assertNotInReactiveContext} from './asserts';
@@ -200,15 +199,6 @@ export interface ViewEffectNode extends EffectNode {
 export interface RootEffectNode extends EffectNode {
   scheduler: EffectScheduler;
 }
-
-/**
- * Not public API, which guarantees `EffectScheduler` only ever comes from the application root
- * injector.
- */
-export const APP_EFFECT_SCHEDULER = /* @__PURE__ */ new InjectionToken('', {
-  providedIn: 'root',
-  factory: () => inject(EffectScheduler),
-});
 
 export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 'notifier'> =
   /* @__PURE__ */ (() => ({
