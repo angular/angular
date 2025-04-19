@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 /* tslint:disable:no-console  */
-import {Component, Directive, EventEmitter, NgModule} from '@angular/core';
+import {Component, Directive, output} from '@angular/core';
 
 // #docregion component-input
 @Component({
   selector: 'app-bank-account',
   inputs: ['bankName', 'id: account-id'],
   template: ` Bank Name: {{ bankName }} Account Id: {{ id }} `,
-  standalone: false,
 })
 export class BankAccountComponent {
   bankName: string | null = null;
@@ -25,8 +24,8 @@ export class BankAccountComponent {
 
 @Component({
   selector: 'app-my-input',
-  template: ` <app-bank-account bankName="RBC" account-id="4747"> </app-bank-account> `,
-  standalone: false,
+  template: ` <app-bank-account bankName="RBC" account-id="4747" /> `,
+  imports: [BankAccountComponent],
 })
 export class MyInputComponent {}
 // #enddocregion component-input
@@ -35,11 +34,10 @@ export class MyInputComponent {}
 @Directive({
   selector: 'app-interval-dir',
   outputs: ['everySecond', 'fiveSecs: everyFiveSeconds'],
-  standalone: false,
 })
 export class IntervalDirComponent {
-  everySecond = new EventEmitter<string>();
-  fiveSecs = new EventEmitter<string>();
+  everySecond = output<string>();
+  fiveSecs = output<string>();
 
   constructor() {
     setInterval(() => this.everySecond.emit('event'), 1000);
@@ -50,10 +48,9 @@ export class IntervalDirComponent {
 @Component({
   selector: 'app-my-output',
   template: `
-    <app-interval-dir (everySecond)="onEverySecond()" (everyFiveSeconds)="onEveryFiveSeconds()">
-    </app-interval-dir>
+    <app-interval-dir (everySecond)="onEverySecond()" (everyFiveSeconds)="onEveryFiveSeconds()" />
   `,
-  standalone: false,
+  imports: [IntervalDirComponent],
 })
 export class MyOutputComponent {
   onEverySecond() {
@@ -64,8 +61,3 @@ export class MyOutputComponent {
   }
 }
 // #enddocregion component-output-interval
-
-@NgModule({
-  declarations: [BankAccountComponent, MyInputComponent, IntervalDirComponent, MyOutputComponent],
-})
-export class AppModule {}
