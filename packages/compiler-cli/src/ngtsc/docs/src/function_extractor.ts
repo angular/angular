@@ -32,14 +32,7 @@ export class FunctionExtractor {
     // TODO: is there any real situation in which the signature would not be available here?
     //     Is void a better type?
     const signature = this.typeChecker.getSignatureFromDeclaration(this.exportDeclaration);
-    const returnType = signature
-      ? this.typeChecker.typeToString(
-          this.typeChecker.getReturnTypeOfSignature(signature),
-          undefined,
-          // This ensures that e.g. `T | undefined` is not reduced to `T`.
-          ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
-        )
-      : 'unknown';
+    const returnType = signature ? extractReturnType(signature, this.typeChecker) : 'unknown';
 
     const implementation =
       findImplementationOfFunction(this.exportDeclaration, this.typeChecker) ??
@@ -149,13 +142,22 @@ export function extractCallSignatures(name: string, typeChecker: ts.TypeChecker,
     jsdocTags: extractJsDocTags(decl),
     params: extractAllParams(decl.parameters, typeChecker),
     rawComment: extractRawJsDoc(decl),
-    returnType: typeChecker.typeToString(
-      typeChecker.getReturnTypeOfSignature(signature),
-      undefined,
-      // This ensures that e.g. `T | undefined` is not reduced to `T`.
-      ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
-    ),
+    returnType: extractReturnType(signature, typeChecker),
   }));
+}
+
+function extractReturnType(signature: ts.Signature, typeChecker: ts.TypeChecker): string {
+  // Handling Type Predicates
+  if (signature?.declaration?.type && ts.isTypePredicateNode(signature.declaration.type)) {
+    return signature.declaration.type.getText();
+  }
+
+  return typeChecker.typeToString(
+    typeChecker.getReturnTypeOfSignature(signature),
+    undefined,
+    // This ensures that e.g. `T | undefined` is not reduced to `T`.
+    ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
+  );
 }
 
 /** Finds the implementation of the given function declaration overload signature. */
