@@ -604,6 +604,7 @@
   "signal",
   "signalAsReadonlyFn",
   "signalSetFn",
+  "stashEventListeners",
   "storeLViewOnDestroy",
   "storeListenerCleanup",
   "stringify",
