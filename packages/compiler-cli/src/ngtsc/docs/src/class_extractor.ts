@@ -117,7 +117,11 @@ class ClassExtractor {
       return this.extractClassProperty(memberDeclaration);
     } else if (ts.isAccessor(memberDeclaration)) {
       return this.extractGetterSetter(memberDeclaration);
-    } else if (ts.isConstructorDeclaration(memberDeclaration)) {
+    } else if (
+      ts.isConstructorDeclaration(memberDeclaration) &&
+      memberDeclaration.parameters.length > 0
+    ) {
+      memberDeclaration;
       return this.extractConstructor(memberDeclaration);
     }
 
