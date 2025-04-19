@@ -7,9 +7,8 @@
  */
 
 import {animate, style, transition, trigger} from '@angular/animations';
-import {Platform} from '@angular/cdk/platform';
 import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
-import {Events, MessageBus} from 'protocol';
+import {Events, MessageBus, SupportedApis} from 'protocol';
 import {interval} from 'rxjs';
 
 import {FrameManager} from './application-services/frame_manager';
@@ -62,6 +61,11 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   readonly angularVersion = signal<string | undefined>(undefined);
   readonly angularIsInDevMode = signal(true);
   readonly hydration = signal(false);
+  readonly supportedApis = signal<SupportedApis>({
+    profiler: false,
+    dependencyInjection: false,
+    routes: false,
+  });
   readonly ivy = signal<boolean | undefined>(undefined);
 
   readonly supportedVersion = computed(() => {
@@ -96,13 +100,14 @@ export class DevToolsComponent implements OnInit, OnDestroy {
     this._themeService.initializeThemeWatcher();
     this._browserStyles.initBrowserSpecificStyles();
 
-    this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration}) => {
+    this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration, supportedApis}) => {
       this.angularStatus.set(version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST);
       this.angularVersion.set(version);
       this.angularIsInDevMode.set(devMode);
       this.ivy.set(ivy);
       this._interval$.unsubscribe();
       this.hydration.set(hydration);
+      this.supportedApis.set(supportedApis);
     });
   }
 
