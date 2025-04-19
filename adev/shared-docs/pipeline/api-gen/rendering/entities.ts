@@ -133,7 +133,8 @@ export interface DirectiveEntry extends ClassEntry {
 export interface PipeEntry extends ClassEntry {
   pipeName: string;
   isStandalone: boolean;
-  // TODO: add `isPure`.
+  isPure: boolean;
+  usage: string;
 }
 
 export interface FunctionSignatureMetadata extends DocEntry {

@@ -83,6 +83,10 @@
       --label-theme: var(--symbolic-teal);
     }
 
+    &.type-impure-pipe {
+      --label-theme: var(--symbolic-pink);
+    }
+
     &.type-ng_module {
       --label-theme: var(--symbolic-brown);
     }
