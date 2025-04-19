@@ -1,6 +1,28 @@
-<ng-property-tab-header [currentSelectedElement]="currentSelectedElement()" />
-<ng-property-tab-body
-  (inspect)="inspect.emit($event)"
-  (viewSource)="viewSource.emit($event)"
-  [currentSelectedElement]="currentSelectedElement()"
-/>
+@let currentSelectedElement = this.currentSelectedElement();
+
+@if (currentSelectedElement) {
+  <ng-property-tab-header [currentSelectedElement]="currentSelectedElement" />
+  <ng-property-tab-body
+    (inspect)="inspect.emit($event)"
+    (viewSource)="viewSource.emit($event)"
+    [currentSelectedElement]="currentSelectedElement"
+  />
+
+  @let hydration = currentSelectedElement.hydration;
+  @if (hydration && hydration.status === 'dehydrated') {
+    <div>This component is dehydrated</div>
+
+    <!-- TODO(mri): Add additional info, maybe a link on what dehydrated nodes are -->
+  }
+
+  @if (currentSelectedElement.defer) {
+    <!-- TODO(mri): Improve the trigger data structure for better display -->
+    <ul>
+      @for (trigger of currentSelectedElement.defer.triggers; track $index) {
+        <li>{{trigger}}</li>
+      }
+    </ul>
+
+    <!--TODO(mri) What additional details would we want in sidepanel for defer blocks  -->
+  }
+}

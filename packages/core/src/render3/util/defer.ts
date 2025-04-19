@@ -20,15 +20,18 @@ import {
 } from '../../defer/interfaces';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../../defer/registry';
 import {getLDeferBlockDetails} from '../../defer/utils';
+import {NUM_ROOT_NODES} from '../../hydration/interfaces';
+import {NGH_DEFER_BLOCKS_KEY} from '../../hydration/utils';
+import {TransferState} from '../../transfer_state';
 import {assertLView} from '../assert';
 import {collectNativeNodes} from '../collect_native_nodes';
 import {getLContext} from '../context_discovery';
-import {CONTAINER_HEADER_OFFSET} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, NATIVE} from '../interfaces/container';
 import {INJECTOR, LView, TVIEW} from '../interfaces/view';
 import {getNativeByTNode} from './view_utils';
 
 /** Retrieved information about a `@defer` block. */
-interface DeferBlockData {
+export interface DeferBlockData {
   /** Current state of the block. */
   state: 'placeholder' | 'loading' | 'complete' | 'error' | 'initial';
 
@@ -90,9 +93,13 @@ export function getDeferBlocks(node: Node): DeferBlockData[] {
  * @param results Array to which to add blocks once they're found.
  */
 function findDeferBlocks(node: Node, lView: LView, results: DeferBlockData[]) {
-  const registry = lView[INJECTOR].get(DEHYDRATED_BLOCK_REGISTRY, null, {optional: true});
+  const viewInjector = lView[INJECTOR];
+  const registry = viewInjector.get(DEHYDRATED_BLOCK_REGISTRY, null, {optional: true});
   const blocks: DeferBlockDetails[] = [];
   getDeferBlocksInternal(lView, blocks);
+
+  const transferState = viewInjector.get(TransferState);
+  const deferBlockParents = transferState.get(NGH_DEFER_BLOCKS_KEY, {});
 
   for (const details of blocks) {
     const native = getNativeByTNode(details.tNode, details.lView);
@@ -107,6 +114,7 @@ function findDeferBlocks(node: Node, lView: LView, results: DeferBlockData[]) {
     const tDetails = details.tDetails;
     const renderedLView = getRendererLView(details);
     const rootNodes: Node[] = [];
+    const hydrationState = inferHydrationState(tDetails, lDetails, registry);
 
     if (renderedLView !== null) {
       collectNativeNodes(
@@ -115,11 +123,28 @@ function findDeferBlocks(node: Node, lView: LView, results: DeferBlockData[]) {
         renderedLView[TVIEW].firstChild,
         rootNodes,
       );
+    } else if (hydrationState === 'dehydrated') {
+      // We'll find the number of root nodes in the transfer state and
+      // collect that number of elements that precede the defer block comment node.
+
+      const deferId = lDetails[SSR_UNIQUE_ID]!;
+      const deferData = deferBlockParents[deferId];
+      const numberOfRootNodes = deferData[NUM_ROOT_NODES];
+
+      let collectedNodeCount = 0;
+      const deferBlockCommentNode = details.lContainer[NATIVE] as Node;
+      let currentNode: Node | null = deferBlockCommentNode.previousSibling;
+
+      while (collectedNodeCount < numberOfRootNodes && currentNode) {
+        rootNodes.unshift(currentNode);
+        currentNode = currentNode.previousSibling;
+        collectedNodeCount++;
+      }
     }
 
     const data: DeferBlockData = {
       state: stringifyState(lDetails[DEFER_BLOCK_STATE]),
-      incrementalHydrationState: inferHydrationState(tDetails, lDetails, registry),
+      incrementalHydrationState: hydrationState,
       hasErrorBlock: tDetails.errorTmplIndex !== null,
       loadingBlock: {
         exists: tDetails.loadingTmplIndex !== null,
