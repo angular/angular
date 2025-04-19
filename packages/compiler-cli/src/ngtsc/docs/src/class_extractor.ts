@@ -503,6 +503,8 @@ class PipeExtractor extends ClassExtractor {
       pipeName: this.metadata.name,
       entryType: EntryType.Pipe,
       isStandalone: this.metadata.isStandalone,
+      usage: extractPipeSyntax(this.metadata, this.declaration as ts.ClassDeclaration),
+      isPure: this.metadata.isPure,
     };
   }
 }
@@ -560,4 +562,23 @@ export function extractInterface(
 ): InterfaceEntry {
   const extractor = new ClassExtractor(declaration, typeChecker);
   return extractor.extract();
+}
+
+function extractPipeSyntax(metadata: PipeMeta, classDeclaration: ts.ClassDeclaration): string {
+  const transformParams = classDeclaration.members.find((member) => {
+    return (
+      ts.isMethodDeclaration(member) &&
+      member.name &&
+      ts.isIdentifier(member.name) &&
+      member.name.getText() === 'transform'
+    );
+  }) as ts.MethodDeclaration;
+
+  let paramNames = transformParams.parameters.map((param) => {
+    return param.name.getText();
+  });
+  // value is the first argument, it's already referenced before the pipe
+  paramNames = paramNames.slice(1);
+
+  return `{{ value_expression | ${metadata.name}${paramNames.length ? ':' + paramNames.join(':') : ''} }}`;
 }

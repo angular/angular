@@ -107,6 +107,13 @@ export interface ClassEntry extends DocEntry {
   implements: string[];
 }
 
+export interface PipeEntry extends ClassEntry {
+  pipeName: string;
+  isStandalone: boolean;
+  usage: string;
+  isPure: boolean;
+}
+
 // From an API doc perspective, class and interfaces are identical.
 
 /** Documentation entity for a TypeScript interface. */
@@ -133,7 +140,8 @@ export interface DirectiveEntry extends ClassEntry {
 export interface PipeEntry extends ClassEntry {
   pipeName: string;
   isStandalone: boolean;
-  // TODO: add `isPure`.
+  isPure: boolean;
+  usage: string;
 }
 
 export interface FunctionSignatureMetadata extends DocEntry {

@@ -383,6 +383,7 @@ function fakePipe(ref: Reference<ClassDeclaration>): PipeMeta {
     isStandalone: false,
     decorator: null,
     isExplicitlyDeferred: false,
+    isPure: false,
   };
 }
 

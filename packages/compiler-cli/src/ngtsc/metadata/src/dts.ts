@@ -257,6 +257,7 @@ export class DtsMetadataReader implements MetadataReader {
       name,
       nameExpr: null,
       isStandalone,
+      isPure: null!, // The DTS has no idea about that
       decorator: null,
       isExplicitlyDeferred: false,
     };
