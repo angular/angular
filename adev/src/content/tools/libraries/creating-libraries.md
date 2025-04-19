@@ -29,7 +29,7 @@ It is also an excellent indication to consumers of the registry to differentiate
 
 </docs-callout>
 
-The `ng generate` command creates the `projects/my-lib` folder in your workspace, which contains a component and a service inside an NgModule.
+The `ng generate` command creates the `projects/my-lib` folder in your workspace, which contains a component.
 
 HELPFUL: For more details on how a library project is structured, refer to the [Library project files](reference/configs/file-structure#library-project-files) section of the [Project File Structure guide](reference/configs/file-structure).
 
@@ -69,11 +69,10 @@ This builder, among other things, ensures that the library is always built with 
 
 To make library code reusable you must define a public API for it.
 This "user layer" defines what is available to consumers of your library.
-A user of your library should be able to access public functionality \(such as NgModules, service providers and general utility functions\) through a single import path.
+A user of your library should be able to access public functionality \(such as service providers and general utility functions\) through a single import path.
 
 The public API for your library is maintained in the `public-api.ts` file in your library folder.
 Anything exported from this file is made public when your library is imported into an application.
-Use an NgModule to expose services and components.
 
 Your library should supply documentation \(typically a README file\) for installation and maintenance.
 
@@ -100,7 +99,7 @@ Here are some things to consider in migrating application functionality to a lib
         This practice lets the compiler leave the service out of the bundle if it never gets injected into the application that imports the library.
         For more about this, see [Tree-shakable providers](guide/di/lightweight-injection-tokens).
 
-  * If you register global service providers or share providers across multiple NgModules, use the [`forRoot()` and `forChild()` design patterns](guide/ngmodules/singleton-services) provided by the [RouterModule](api/router/RouterModule)
+  * If you register global service providers expose a `provideXYZ()` provider function.
   * If your library provides optional services that might not be used by all client applications, support proper tree-shaking for that case by using the [lightweight token design pattern](guide/di/lightweight-injection-tokens)
 
 ## Integrating with the CLI using code-generation schematics
