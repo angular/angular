@@ -32,7 +32,6 @@ ng_module(
         "//packages/animations",
         "//packages/core",
         "//packages/forms",
-        "//packages/platform-browser-dynamic",
         "@npm//@angular/cdk",
         "@npm//@angular/material",
         "@npm//@types",

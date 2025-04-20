@@ -32,7 +32,6 @@ ts_test_library(
     deps = [
         ":highlighter",
         "//packages/core",
-        "//packages/platform-browser-dynamic",
         "@npm//@types",
     ],
 )
@@ -70,7 +69,6 @@ ts_test_library(
         ":router_tree",
         "//devtools/projects/protocol",
         "//packages/core",
-        "//packages/platform-browser-dynamic",
         "//packages/router",
         "@npm//@types",
     ],

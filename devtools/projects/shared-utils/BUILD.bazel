@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,7 +15,6 @@ ts_library(
     ),
     deps = [
         "//packages/core",
-        "//packages/platform-browser-dynamic",
         "@npm//@types",
     ],
 )
@@ -32,7 +31,6 @@ ts_test_library(
     deps = [
         ":shared-utils",
         "//packages/core",
-        "//packages/platform-browser-dynamic",
         "@npm//@types",
     ],
 )

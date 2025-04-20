@@ -56,7 +56,6 @@ ng_module(
         "//packages/common",
         "//packages/common/http",
         "//packages/core",
-        "//packages/platform-browser-dynamic",
     ],
 )
 
