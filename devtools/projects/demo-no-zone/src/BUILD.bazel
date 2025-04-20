@@ -1,5 +1,5 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 load("//tools:defaults.bzl", "esbuild", "http_server")
 
 package(default_visibility = ["//:__subpackages__"])
@@ -12,7 +12,6 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "@npm//@types",
         "@npm//rxjs",
     ],
