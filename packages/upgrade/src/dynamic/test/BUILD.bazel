@@ -10,7 +10,6 @@ ts_library(
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "//packages/upgrade",
         "//packages/upgrade/src/common",
         "//packages/upgrade/src/common/test/helpers",

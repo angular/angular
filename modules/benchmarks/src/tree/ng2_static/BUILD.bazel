@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "ts_library")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
+load("//tools:defaults.bzl", "esbuild", "http_server", "ts_library")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -14,7 +14,6 @@ ts_library(
         "//packages/compiler",
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
     ],
 )
 

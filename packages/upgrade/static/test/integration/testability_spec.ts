@@ -8,8 +8,7 @@
 
 import {destroyPlatform, NgModule, Testability, NgZone} from '@angular/core';
 import {fakeAsync, flush, tick} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {UpgradeModule} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -38,7 +37,7 @@ withEachNg1Version(() => {
       const element = html('<div></div>');
       window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module);
 
       setTimeout(() => {
         (<any>window).angular.resumeBootstrap();
@@ -62,7 +61,7 @@ withEachNg1Version(() => {
       const element = html('<div></div>');
       window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module);
 
       tick(100);
 
@@ -76,7 +75,7 @@ withEachNg1Version(() => {
       const ng1Module = angular.module_('ng1', []);
       const element = html('<div></div>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         const zone = upgrade.injector.get(NgZone);
         let ng2Stable = false;
         let ng1Stable = false;
@@ -103,7 +102,7 @@ withEachNg1Version(() => {
       const ng1Module = angular.module_('ng1', []);
       const element = html('<div></div>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         const ng2Testability: Testability = upgrade.injector.get(Testability);
         const $interval: angular.IIntervalService = upgrade.$injector.get('$interval');
 

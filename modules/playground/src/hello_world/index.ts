@@ -7,8 +7,7 @@
  */
 
 import {Component, Directive, ElementRef, Injectable, NgModule, Renderer2} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
@@ -64,4 +63,4 @@ export class HelloCmp {
 @NgModule({declarations: [HelloCmp, RedDec], bootstrap: [HelloCmp], imports: [BrowserModule]})
 export class ExampleModule {}
 
-platformBrowserDynamic().bootstrapModule(ExampleModule);
+platformBrowser().bootstrapModule(ExampleModule);

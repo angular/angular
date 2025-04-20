@@ -21,8 +21,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import * as angular from '../../../src/common/src/angular1';
 import {$EXCEPTION_HANDLER, $SCOPE} from '../../../src/common/src/constants';
@@ -82,7 +81,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
           expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
         });
       }));
@@ -128,7 +127,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
         });
       }));
@@ -181,7 +180,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
         });
       }));
@@ -230,7 +229,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
         });
       }));
@@ -279,7 +278,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
         });
       }));
@@ -335,7 +334,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('Hello, Angular!');
         });
       }));
@@ -385,7 +384,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           tick(500);
           expect(multiTrim(element.textContent)).toBe('');
 
@@ -439,7 +438,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           tick(500);
           expect(multiTrim(element.textContent)).toBe('');
 
@@ -537,7 +536,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('');
         });
       }));
@@ -603,7 +602,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           const ng1 = element.querySelector('ng1')!;
           const ng1Controller = angular.element(ng1).controller?.('ng1');
 
@@ -683,7 +682,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           const ng1 = element.querySelector('ng1')!;
           const ng1Controller = angular.element(ng1).controller?.('ng1');
 
@@ -765,7 +764,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           const ng1 = element.querySelector('ng1')!;
           const ng1Controller = angular.element(ng1).controller?.('ng1');
 
@@ -839,7 +838,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           const ng1 = element.querySelector('ng1')!;
           const ng1Controller = angular.element(ng1).controller?.('ng1');
 
@@ -940,7 +939,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe(
             'Hello Savkin, Victor, SF; A: VICTOR; B: SAVKIN; C: sf | ' +
               'Hello TEST; A: First; B: Last; C: City | ' +
@@ -1021,7 +1020,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           const ng1s = element.querySelectorAll('ng1')!;
           const ng1Controller0 = angular.element(ng1s[0]).controller?.('ng1');
           const ng1Controller1 = angular.element(ng1s[1]).controller?.('ng1');
@@ -1111,7 +1110,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           const ng1 = element.querySelector('[ng1]')!;
           const ng1Controller = angular.element(ng1).controller?.('ng1');
 
@@ -1189,7 +1188,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-x></ng2-x>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(grandParentNodeName).toBe('NG2-X');
         });
       }));
@@ -1247,7 +1246,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(log).toEqual(['ng1-ctrl', 'ng1-pre']);
         });
       }));
@@ -1301,7 +1300,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(log).toEqual(['ng1A-pre', 'ng1B-post']);
         });
       }));
@@ -1355,7 +1354,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(log).toEqual(['ng1B-post', 'ng1A-post']);
         });
       }));
@@ -1409,7 +1408,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(log).toEqual(['ng1B-post', 'ng1A-post']);
         });
       }));
@@ -1465,7 +1464,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(log).toEqual(['ng1-post', 'ng1-$post']);
         });
       }));
@@ -1540,7 +1539,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('scope; isClass; NG1; published');
         });
       }));
@@ -1619,7 +1618,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe(
             'Scope: WORKS; Controller: | Scope: ; Controller: WORKS',
           );
@@ -1678,7 +1677,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('WORKS');
         });
       }));
@@ -1737,7 +1736,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('WORKS GREAT');
         });
       }));
@@ -1796,7 +1795,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(compiledContent)).toBe('Hello, {{ $ctrl.name }}!');
           expect(multiTrim(getCurrentContent())).toBe('Hello, world!');
         });
@@ -1860,7 +1859,7 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng2></ng2>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
             expect(multiTrim(document.body.textContent)).toBe('Pre: foo | Post: foo');
           });
         }));
@@ -1921,7 +1920,7 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng2></ng2>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
             expect(multiTrim(element.textContent)).toBe('Required: ng1A');
           });
         }));
@@ -2018,19 +2017,19 @@ withEachNg1Version(() => {
           const elementB = html(`<ng2-b></ng2-b>`);
           const elementC = html(`<ng2-c></ng2-c>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, elementA, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, elementA, ng1Module).then(() => {
             expect(mockExceptionHandler).toHaveBeenCalledWith(
               new Error("Unable to find required 'iDoNotExist' in upgraded directive 'ng1A'."),
             );
           });
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, elementB, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, elementB, ng1Module).then(() => {
             expect(mockExceptionHandler).toHaveBeenCalledWith(
               new Error("Unable to find required '^iDoNotExist' in upgraded directive 'ng1B'."),
             );
           });
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, elementC, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, elementC, ng1Module).then(() => {
             expect(mockExceptionHandler).toHaveBeenCalledWith(
               new Error("Unable to find required '^^iDoNotExist' in upgraded directive 'ng1C'."),
             );
@@ -2086,7 +2085,7 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng2></ng2>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
             expect(mockExceptionHandler).not.toHaveBeenCalled();
           });
         }));
@@ -2171,7 +2170,7 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng1-a></ng1-a>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
             expect(multiTrim(element.textContent)).toBe('ng1A(ng2(ng1B() | ng1C()))');
           });
         }));
@@ -2245,7 +2244,7 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng1-a></ng1-a>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
             expect(multiTrim(element.textContent)).toBe(
               'ng1A(ng2(ng1B( ng1A: | ^ng1A: A | ^^ng1A: A | ng1B: B | ^ng1B: B | ^^ng1B: )))',
             );
@@ -2310,7 +2309,7 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html(`<ng1-a></ng1-a>`);
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
             expect(multiTrim(element.textContent)).toBe('$onInit: ng1A');
           });
         }));
@@ -2383,7 +2382,7 @@ withEachNg1Version(() => {
           // Bootstrap
           const element = html('<ng1-a></ng1-a>');
 
-          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+          bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
             expect(multiTrim(element.textContent)).toBe('ng1A: A | ng1B: B | ng1C: C');
           });
         }));
@@ -2456,7 +2455,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(multiTrim(element.textContent)).toBe('ng2A(ng1(foo | ))');
 
           ng2ComponentAInstance.value = 'baz';
@@ -2530,7 +2529,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(multiTrim(element.textContent)).toBe('ng2(ng1(from-ng2) | ng1(from-ng1))');
 
           ng1ControllerInstances.forEach((ctrl) => (ctrl.value = 'ng1-foo'));
@@ -2602,7 +2601,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(foo1foo2)|y(bar1bar2)))');
 
           ng2ComponentInstance.x = 'baz';
@@ -2687,7 +2686,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(multiTrim(element.textContent, true)).toBe(
             'ng2(ng1(default((foo)foo-bar(bar)))|ng1(default(fallback-ng1)))',
           );
@@ -2776,7 +2775,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(multiTrim(element.textContent, true)).toBe(
             'ng2(ng1(x(ng2X)|y(ng1Y))|ng1(x(ng1X)|y(ng2Y)))',
           );
@@ -2842,7 +2841,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(errorMessage).toContain("Required transclusion slot 'slotY' on directive: ng1");
         });
       }));
@@ -2913,7 +2912,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(foo1)|default(bar2)))');
 
           ng2ComponentInstance.x = 'baz';
@@ -3024,7 +3023,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           // Initial change
           expect(scopeOnChanges.calls.count()).toBe(1);
           expect(controllerOnChangesA).not.toHaveBeenCalled();
@@ -3183,7 +3182,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           // Initial change
           expect(scopeOnChangesA.calls.count()).toBe(1);
           expect(scopeOnChangesB).not.toHaveBeenCalled();
@@ -3326,7 +3325,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('Called: yes | Called: yes');
         });
       }));
@@ -3405,7 +3404,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('Called: no | Called: no');
         });
       }));
@@ -3485,7 +3484,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('Called: yes | Called: yes');
         });
       }));
@@ -3564,7 +3563,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe('Called: no | Called: no');
         });
       }));
@@ -3642,7 +3641,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           // Get to a stable `$digest` state.
           $digest(adapter);
 
@@ -3737,7 +3736,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           // Initial change
           expect(scopeDoCheck).not.toHaveBeenCalled();
 
@@ -3830,7 +3829,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html('<ng2 [show]="!destroyFromNg2" ng-if="!destroyFromNg1"></ng2>');
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           const $rootScope = adapter.$injector.get('$rootScope') as angular.IRootScopeService;
 
           expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
@@ -3939,7 +3938,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html('<ng2 [show]="!destroyFromNg2" ng-if="!destroyFromNg1"></ng2>');
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           const $rootScope = adapter.$injector.get('$rootScope') as angular.IRootScopeService;
 
           expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
@@ -4029,7 +4028,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe(
             '$onChanges > $onInit > $doCheck > $postLink',
           );
@@ -4101,7 +4100,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(scopeDestroyListener).not.toHaveBeenCalled();
 
           ng2ComponentAInstance.destroyIt = true;
@@ -4177,7 +4176,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(elementDestroyListener).not.toHaveBeenCalled();
           expect(descendantDestroyListener).not.toHaveBeenCalled();
 
@@ -4256,7 +4255,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           expect(ng1ComponentElement.data!('test')).toBe(1);
           expect(ng1ComponentElement.contents!().data!('test')).toBe(2);
 
@@ -4337,7 +4336,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2-a></ng2-a>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           (ng1DescendantElement[0] as HTMLElement).click();
           expect(elementClickListener).toHaveBeenCalledTimes(1);
           expect(descendantClickListener).toHaveBeenCalledTimes(1);
@@ -4404,7 +4403,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
           const getWatcherCount: () => number = () =>
             (ng2Component.$scope as any).$$watchers.length;
           const baseWatcherCount = getWatcherCount();
@@ -4479,7 +4478,7 @@ withEachNg1Version(() => {
       // Bootstrap
       const element = html(`<ng2-a></ng2-a>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
         expect(multiTrim(document.body.textContent)).toBe('ng2A(ng1X(ng2B))');
       });
     }));
@@ -4597,7 +4596,7 @@ withEachNg1Version(() => {
       // Bootstrap
       const element = html(`<ng2-a></ng2-a>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((adapter) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((adapter) => {
         // Initial value propagation.
         // (ng2A > ng1X > ng2B)
         expect(multiTrim(document.body.textContent)).toBe(
@@ -4768,7 +4767,7 @@ withEachNg1Version(() => {
       // Bootstrap
       const element = html(`<ng2-a></ng2-a>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
         expect(multiTrim(document.body.textContent)).toBe(
           'ng2A(ng1A(ng2B(ng1B(^^ng1A: ng1A | ?^^ng1B: | ^ng1B: ng1B))))',
         );
@@ -4809,7 +4808,7 @@ withEachNg1Version(() => {
         // Bootstrap
         const element = html(`<ng2></ng2>`);
 
-        bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+        bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
           expect(multiTrim(element.textContent)).toBe(`I'm from AngularJS!`);
         });
       }));
