@@ -22,11 +22,9 @@ import {
   Output,
   SimpleChange,
   SimpleChanges,
-  Testability,
 } from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import * as angular from '../../common/src/angular1';
 import {$EXCEPTION_HANDLER, $ROOT_SCOPE} from '../../common/src/constants';
@@ -99,7 +97,7 @@ withEachNg1Version(() => {
       }));
 
       it('should support the compilerOptions argument', waitForAsync(() => {
-        const platformRef = platformBrowserDynamic();
+        const platformRef = platformBrowser();
         spyOn(platformRef, 'bootstrapModule').and.callThrough();
         spyOn(platformRef, 'bootstrapModuleFactory').and.callThrough();
 
@@ -137,7 +135,7 @@ withEachNg1Version(() => {
       }));
 
       it('should destroy the AngularJS app when `PlatformRef` is destroyed', waitForAsync(() => {
-        const platformRef = platformBrowserDynamic();
+        const platformRef = platformBrowser();
         const adapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
         const ng1Module = angular.module_('ng1', []);
 

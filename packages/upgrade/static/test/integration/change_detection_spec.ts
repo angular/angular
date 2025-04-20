@@ -18,8 +18,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import {waitForAsync} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -51,7 +50,7 @@ withEachNg1Version(() => {
         .module_('ng1', [])
         .directive('myApp', downgradeComponent({component: AppComponent}));
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
         const ngZone: NgZone = upgrade.ngZone;
 
@@ -144,7 +143,7 @@ withEachNg1Version(() => {
         });
 
       const element = html("<div>{{reset(); l('1A');}}<ng2>{{l('1B')}}</ng2>{{l('1C')}}</div>");
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
         expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
       });
@@ -204,7 +203,7 @@ withEachNg1Version(() => {
         .module_('ng1', [])
         .directive('myApp', downgradeComponent({component: AppComponent}));
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         appComponent.value = 5;
       });
     }));

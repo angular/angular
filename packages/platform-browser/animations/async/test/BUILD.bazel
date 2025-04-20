@@ -14,7 +14,6 @@ ts_library(
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/animations/async",
         "//packages/platform-browser/testing",

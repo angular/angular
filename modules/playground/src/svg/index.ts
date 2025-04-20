@@ -7,8 +7,7 @@
  */
 
 import {Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Component({
   selector: '[svg-group]',
@@ -29,4 +28,4 @@ export class SvgApp {}
 @NgModule({bootstrap: [SvgApp], declarations: [SvgApp, SvgGroup], imports: [BrowserModule]})
 export class ExampleModule {}
 
-platformBrowserDynamic().bootstrapModule(ExampleModule);
+platformBrowser().bootstrapModule(ExampleModule);

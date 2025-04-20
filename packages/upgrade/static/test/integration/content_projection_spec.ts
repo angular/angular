@@ -16,8 +16,7 @@ import {
   NgModule,
 } from '@angular/core';
 import {waitForAsync} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -67,7 +66,7 @@ withEachNg1Version(() => {
 
       const element = html("<div>{{ 'ng1[' }}<ng2>~{{ ngContent }}~</ng2>{{ ']' }}</div>");
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(document.body.textContent).toEqual('ng1[NG2(~ng1-content~)]');
       });
     }));
@@ -107,7 +106,7 @@ withEachNg1Version(() => {
            </ng2>
          `);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(document.body.textContent)).toBe('ng2-a( 123 )ng2-b( 456 )ng2-c( 789 )');
       });
     }));
@@ -156,7 +155,7 @@ withEachNg1Version(() => {
 
       const element = html("<div>{{ 'ng1(' }}<ng2></ng2>{{ ')' }}</div>");
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(document.body.textContent).toEqual('ng1(ng2(ng1(ng2-transclude)))');
       });
     }));
@@ -188,7 +187,7 @@ withEachNg1Version(() => {
         '<ng2><div ng-if="true" class="ng1a">1a</div><div' + ' class="ng1b">1b</div></ng2>',
       );
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(document.body.textContent).toEqual('2a(1a)2b(1b)');
       });
     }));

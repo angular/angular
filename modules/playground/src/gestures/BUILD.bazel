@@ -10,7 +10,6 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "@npm//@types/hammerjs",
     ],
 )

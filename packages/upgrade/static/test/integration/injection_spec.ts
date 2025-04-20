@@ -8,8 +8,7 @@
 
 import {destroyPlatform, InjectionToken, Injector, NgModule} from '@angular/core';
 import {waitForAsync} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import * as angular from '../../../src/common/src/angular1';
 import {$INJECTOR, INJECTOR_KEY} from '../../../src/common/src/constants';
@@ -46,7 +45,7 @@ withEachNg1Version(() => {
         .module_('ng1Module', [])
         .factory('ng2Service', downgradeInjectable(Ng2Service));
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, html('<div>'), ng1Module).then((upgrade) => {
         const ng1Injector = upgrade.$injector;
         expect(ng1Injector.get('ng2Service')).toBe('ng2 service value');
       });
@@ -75,7 +74,7 @@ withEachNg1Version(() => {
       // create the ng1 module that will import an ng2 service
       const ng1Module = angular.module_('ng1Module', []).value('ng1Service', 'ng1 service value');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, html('<div>'), ng1Module).then((upgrade) => {
         const ng2Injector = upgrade.injector;
         expect(ng2Injector.get(Ng1Service)).toBe('ng1 service value');
       });
@@ -97,7 +96,7 @@ withEachNg1Version(() => {
         ngDoBootstrap() {}
       }
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module).then(() => {
+      bootstrap(platformBrowser(), Ng2Module, html('<div>'), ng1Module).then(() => {
         expect(runBlockTriggered).toBeTruthy();
       });
     }));
@@ -126,7 +125,7 @@ withEachNg1Version(() => {
 
       const ng1Module = angular.module_('ng1Module', []);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
+      bootstrap(platformBrowser(), Ng2Module, html('<div>'), ng1Module)
         .then((upgrade) => expect(wrappedBootstrapCalled).toBe(true))
         .then(() => setAngularJSGlobal(n)); // Reset the AngularJS global.
     }));

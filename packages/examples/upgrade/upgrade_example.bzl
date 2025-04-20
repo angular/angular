@@ -16,7 +16,6 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = [
             "@npm//@types/jasmine",
             "//packages/core",
             "//packages/platform-browser",
-            "//packages/platform-browser-dynamic",
             "//packages/upgrade/static",
             "//packages/core/testing",
             "//packages/upgrade/static/testing",

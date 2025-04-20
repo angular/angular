@@ -18,13 +18,12 @@ import {
   Testability,
   Type,
 } from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import '@angular/compiler';
 
 import {
   bootstrap,
   element as angularElement,
   IAngularBootstrapConfig,
-  IAugmentedJQuery,
   IInjectorService,
   IModule,
   IProvideService,
@@ -55,6 +54,7 @@ import {
 } from '../../common/src/util';
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
+import {platformBrowser} from '@angular/platform-browser';
 
 // Needed for the global `Zone` ambient types to be available.
 import type {} from 'zone.js';
@@ -556,7 +556,7 @@ export class UpgradeAdapter {
     let rootScopePrototype: any;
     const upgradeAdapter = this;
     const ng1Module = angularModule(this.idPrefix, modules);
-    const platformRef = platformBrowserDynamic();
+    const platformRef = platformBrowser();
 
     const ngZone = new NgZone({
       enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec'),

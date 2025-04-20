@@ -51,11 +51,10 @@ import {
 import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '../../index';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {provideAnimations, provideNoopAnimations} from '../../animations';
 import {expect} from '../../testing/src/matchers';
 
-import {bootstrapApplication} from '../../src/browser';
+import {bootstrapApplication, platformBrowser} from '../../src/browser';
 
 @Component({
   selector: 'non-existent',
@@ -178,7 +177,7 @@ function bootstrap(
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
   })
   class TestModule {}
-  return platformBrowserDynamic(platformProviders).bootstrapModule(TestModule);
+  return platformBrowser(platformProviders).bootstrapModule(TestModule);
 }
 
 describe('bootstrap factory method', () => {
@@ -277,7 +276,7 @@ describe('bootstrap factory method', () => {
 
     it('should reuse existing platform', async () => {
       const platformProviders = [{provide: NAME, useValue: 'Name via DI (Platform level)'}];
-      platformBrowserDynamic(platformProviders);
+      platformBrowser(platformProviders);
 
       await bootstrapApplication(ComponentWithDeps);
       expect(el.innerText).toBe('Hello from Name via DI (Platform level)!');
@@ -743,7 +742,7 @@ describe('bootstrap factory method', () => {
 
   it('should run platform initializers', (done) => {
     inject([Log], (log: Log) => {
-      const p = createPlatformFactory(platformBrowserDynamic, 'someName', [
+      const p = createPlatformFactory(platformBrowser, 'someName', [
         {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init1'), multi: true},
         {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init2'), multi: true},
       ])();
@@ -774,7 +773,7 @@ describe('bootstrap factory method', () => {
       ngDoBootstrap() {}
     }
 
-    await expectAsync(platformBrowserDynamic().bootstrapModule(SomeModule)).toBeResolved();
+    await expectAsync(platformBrowser().bootstrapModule(SomeModule)).toBeResolved();
   });
 
   it('should register each application with the testability registry', async () => {
@@ -843,7 +842,7 @@ describe('bootstrap factory method', () => {
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
       })
       class TestModuleA {}
-      platformBrowserDynamic()
+      platformBrowser()
         .bootstrapModule(TestModuleA)
         .then((ref) => {
           log.length = 0;

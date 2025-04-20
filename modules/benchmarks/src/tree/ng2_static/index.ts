@@ -9,7 +9,7 @@
 import '@angular/compiler';
 
 import {ApplicationRef, enableProdMode} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {platformBrowser} from '@angular/platform-browser';
 
 import {bindAction, profile} from '../../util';
 import {buildTree, emptyTree, initTreeUtils} from '../util';
@@ -37,7 +37,7 @@ function init() {
 
   const appModule = createAppModule();
 
-  platformBrowserDynamic()
+  platformBrowser()
     .bootstrapModule(appModule)
     .then((ref) => {
       const injector = ref.injector;

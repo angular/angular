@@ -16,8 +16,7 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {createCustomElement, NgElement} from '../src/create-custom-element';
 
@@ -28,7 +27,7 @@ describe('slots', () => {
     testContainer = document.createElement('div');
     document.body.appendChild(testContainer);
     destroyPlatform();
-    platformBrowserDynamic()
+    platformBrowser()
       .bootstrapModule(TestModule)
       .then((ref) => {
         const injector = ref.injector;

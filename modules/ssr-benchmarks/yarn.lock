@@ -110,11 +110,6 @@
     ora "5.4.1"
     rxjs "7.8.1"
 
-"@angular/animations@file:../../dist/packages-dist/animations":
-  version "19.1.0-next.0"
-  dependencies:
-    tslib "^2.3.0"
-
 "@angular/build@19.0.0":
   version "19.0.0"
   resolved "https://registry.yarnpkg.com/@angular/build/-/build-19.0.0.tgz#d3ce049930646748659e9c2b8a2dbe3808d01590"
@@ -192,11 +187,6 @@
     tslib "^2.3.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "19.1.0-next.0"
-  dependencies:
-    tslib "^2.3.0"
-
-"@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
   version "19.1.0-next.0"
   dependencies:
     tslib "^2.3.0"

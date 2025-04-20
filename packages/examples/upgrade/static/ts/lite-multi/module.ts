@@ -17,8 +17,7 @@ import {
   NgModule,
   StaticProvider,
 } from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {
   downgradeComponent,
   downgradeInjectable,
@@ -81,11 +80,11 @@ export class Ng2BModule {
 
 // The downgraded Angular modules.
 const downgradedNg2AModule = downgradeModule((extraProviders: StaticProvider[]) =>
-  (getPlatform() || platformBrowserDynamic(extraProviders)).bootstrapModule(Ng2AModule),
+  (getPlatform() || platformBrowser(extraProviders)).bootstrapModule(Ng2AModule),
 );
 
 const downgradedNg2BModule = downgradeModule((extraProviders: StaticProvider[]) =>
-  (getPlatform() || platformBrowserDynamic(extraProviders)).bootstrapModule(Ng2BModule),
+  (getPlatform() || platformBrowser(extraProviders)).bootstrapModule(Ng2BModule),
 );
 
 // The AngularJS app including downgraded modules, components and injectables.

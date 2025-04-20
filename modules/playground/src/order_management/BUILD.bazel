@@ -10,7 +10,6 @@ ng_module(
         "//packages/core",
         "//packages/forms",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
     ],
 )
 

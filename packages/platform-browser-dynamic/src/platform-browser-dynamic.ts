@@ -9,5 +9,3 @@
 export {VERSION} from './version';
 export {JitCompilerFactory} from './compiler_factory';
 export {platformBrowserDynamic} from './platform_providers';
-
-export * from './private_export';
