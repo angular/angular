@@ -1044,5 +1044,5 @@ function convertDeclareInjectorFacadeToMetadata(
 
 export function publishFacade(global: any) {
   const ng: ExportedCompilerFacade = global.ng || (global.ng = {});
-  ng.ɵcompilerFacade = new CompilerFacadeImpl();
+  ng.ɵcompilerFacade ??= new CompilerFacadeImpl();
 }

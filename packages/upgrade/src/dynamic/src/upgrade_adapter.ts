@@ -18,13 +18,12 @@ import {
   Testability,
   Type,
 } from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {platformBrowser} from '@angular/platform-browser';
 
 import {
   bootstrap,
   element as angularElement,
   IAngularBootstrapConfig,
-  IAugmentedJQuery,
   IInjectorService,
   IModule,
   IProvideService,
@@ -55,6 +54,7 @@ import {
 } from '../../common/src/util';
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
+import {publishFacade} from '@angular/compiler';
 
 // Needed for the global `Zone` ambient types to be available.
 import type {} from 'zone.js';
@@ -167,6 +167,10 @@ export class UpgradeAdapter {
         'UpgradeAdapter cannot be instantiated without an NgModule of the Angular app.',
       );
     }
+
+    // UpgradeAdapter requires the JIT Compiler to compile
+    // By publishing the facade here we prevent to make the upgrade package side-effect full .
+    publishFacade(globalThis);
   }
 
   /**
@@ -556,7 +560,7 @@ export class UpgradeAdapter {
     let rootScopePrototype: any;
     const upgradeAdapter = this;
     const ng1Module = angularModule(this.idPrefix, modules);
-    const platformRef = platformBrowserDynamic();
+    const platformRef = platformBrowser();
 
     const ngZone = new NgZone({
       enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec'),
@@ -636,6 +640,7 @@ export class UpgradeAdapter {
             class DynamicNgUpgradeModule {
               ngDoBootstrap() {}
             }
+
             platformRef
               .bootstrapModule(DynamicNgUpgradeModule, [this.compilerOptions!, {ngZone}])
               .then((ref: NgModuleRef<any>) => {
