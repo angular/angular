@@ -1,5 +1,5 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,7 +15,6 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "//packages/forms",
-        "//packages/platform-browser-dynamic",
         "@npm//@angular/cdk",
         "@npm//@angular/material",
         "@npm//@types",
