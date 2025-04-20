@@ -53,13 +53,23 @@ export function getGlobalLocale(): string {
  *
  * @usageNotes
  * ### Example
- *
+ * In standalone apps:
  * ```ts
- * import { LOCALE_ID } from '@angular/core';
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { LOCALE_ID, ApplicationConfig } from '@angular/core';
  * import { AppModule } from './app/app.module';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * const appConfig: ApplicationConfig = {
+ *   providers: [{provide: LOCALE_ID, useValue: 'en-US' }]
+ * };
+ * ```
+ *
+ * In module based apps:
+ * ```ts
+ * import { LOCALE_ID } from '@angular/core';
+ * import { platformBrowser } from '@angular/platform-browser';
+ * import { AppModule } from './app/app.module';
+ *
+ * platformBrowser().bootstrapModule(AppModule, {
  *   providers: [{provide: LOCALE_ID, useValue: 'en-US' }]
  * });
  * ```
@@ -93,12 +103,22 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  *
  * @usageNotes
  * ### Example
- *
+ * In standalone apps:
  * ```ts
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { LOCALE_ID, ApplicationConfig } from '@angular/core';
  * import { AppModule } from './app/app.module';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * const appConfig: ApplicationConfig = {
+ *   providers: [{provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' }]
+ * };
+ * ```
+ *
+ * In module based apps:
+ * ```ts
+ * import { platformBrowser } from '@angular/platform-browser';
+ * import { AppModule } from './app/app.module';
+ *
+ * platformBrowser().bootstrapModule(AppModule, {
  *   providers: [{provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' }]
  * });
  * ```
@@ -121,16 +141,26 @@ export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
  *
  * @usageNotes
  * ### Example
+ * In standalone apps:
+ * ```ts
+ * import { LOCALE_ID, ApplicationConfig } from '@angular/core';
+ * import { AppModule } from './app/app.module';
  *
+ * const appConfig: ApplicationConfig = {
+ *   providers: [{provide: TRANSLATIONS, useValue: translations }]
+ * };
+ * ```
+ *
+ * In module based apps:
  * ```ts
  * import { TRANSLATIONS } from '@angular/core';
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { platformBrowser } from '@angular/platform-browser';
  * import { AppModule } from './app/app.module';
  *
  * // content of your translation file
  * const translations = '....';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * platformBrowser().bootstrapModule(AppModule, {
  *   providers: [{provide: TRANSLATIONS, useValue: translations }]
  * });
  * ```
@@ -147,13 +177,23 @@ export const TRANSLATIONS = new InjectionToken<string>(ngDevMode ? 'Translations
  *
  * @usageNotes
  * ### Example
- *
+ * In standalone apps:
  * ```ts
- * import { TRANSLATIONS_FORMAT } from '@angular/core';
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { LOCALE_ID, ApplicationConfig } from '@angular/core';
  * import { AppModule } from './app/app.module';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * const appConfig: ApplicationConfig = {
+ *   providers: [{provide: TRANSLATIONS_FORMAT, useValue: 'xlf' }]
+ * };
+ * ```
+ *
+ * In module based apps: *
+ * ```ts
+ * import { TRANSLATIONS_FORMAT } from '@angular/core';
+ * import { platformBrowser } from '@angular/platform-browser';
+ * import { AppModule } from './app/app.module';
+ *
+ * platformBrowser().bootstrapModule(AppModule, {
  *   providers: [{provide: TRANSLATIONS_FORMAT, useValue: 'xlf' }]
  * });
  * ```
@@ -177,10 +217,10 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>(
  * ### Example
  * ```ts
  * import { MissingTranslationStrategy } from '@angular/core';
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { platformBrowser } from '@angular/platform-browser';
  * import { AppModule } from './app/app.module';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * platformBrowser().bootstrapModule(AppModule, {
  *   missingTranslation: MissingTranslationStrategy.Error
  * });
  * ```
