@@ -104,8 +104,19 @@ const globalErrorListeners = new InjectionToken<void>(ngDevMode ? 'GlobalErrorLi
       e.preventDefault();
     };
 
-    window.addEventListener('unhandledrejection', rejectionListener);
-    window.addEventListener('error', errorListener);
+    const setupEventListeners = () => {
+      window.addEventListener('unhandledrejection', rejectionListener);
+      window.addEventListener('error', errorListener);
+    };
+
+    // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
+    // the scope of this functionality.
+    if (typeof Zone !== 'undefined') {
+      Zone.root.run(setupEventListeners);
+    } else {
+      setupEventListeners();
+    }
+
     inject(DestroyRef).onDestroy(() => {
       window.removeEventListener('error', errorListener);
       window.removeEventListener('unhandledrejection', rejectionListener);
