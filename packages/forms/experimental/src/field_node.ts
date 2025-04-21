@@ -58,24 +58,41 @@ export class FieldNode implements FieldState<unknown> {
       value: this.value,
       resolve: <U>(target: FieldPath<U>): Field<U> => {
         const currentPathKeys = this.pathKeys;
+        const targetPathNode = FieldPathNode.unwrapFieldPath(target);
 
-        const targetNode = FieldPathNode.unwrapFieldPath(target);
         if (!(this.root.logicPath instanceof FieldRootPathNode)) {
           throw Error('Expected root of FieldNode tree to have a FieldRootPathNode.');
         }
-        const prefix = this.root.logicPath.subroots.get(targetNode.root);
+        const prefix = this.root.logicPath.subroots.get(targetPathNode.root);
         if (!prefix) {
           throw Error('Path is not part of this field tree.');
         }
 
-        const targetPathKeys = [...prefix, ...targetNode.keys];
+        const targetPathKeys = [...prefix, ...targetPathNode.keys];
 
-        // Navigate from the root to the target field, replacing dynamic placeholders with their
-        // value from the current context.
-        let field: FieldNode = this.root;
-        for (let idx = 0; idx < targetPathKeys.length; idx++) {
-          const key = targetPathKeys[idx] === DYNAMIC ? currentPathKeys[idx] : targetPathKeys[idx];
-          field = field.getChild(key)!;
+        // Navigate from `currentPath` to `targetPath`. As an example, suppose that:
+        // currentPath = [A, B, C, D]
+        // targetPath = [A, B, X, Y, Z]
+
+        // Firstly, find the length of the shared prefix between the two paths. In our example, this
+        // is the prefix [A, B], so we would expect a `sharedPrefixLength` of 2.
+        const sharedPrefixLength = lengthOfSharedPrefix(currentPathKeys, targetPathNode.keys);
+
+        // Walk up the graph until we arrive at the common ancestor, which could be the root node if
+        // there is no shared prefix. In our example, this will require 2 up steps, navigating from
+        // D to B.
+        let requiredUpSteps = currentPathKeys.length - sharedPrefixLength;
+        let field: FieldNode = this;
+        while (requiredUpSteps-- > 0) {
+          field = field.parent!;
+        }
+
+        // Now, we can navigate from the closest ancestor to the target, e.g. from B through X, Y,
+        // and then to Z.
+        for (let idx = sharedPrefixLength; idx < targetPathKeys.length; idx++) {
+          const property =
+            targetPathKeys[idx] === DYNAMIC ? currentPathKeys[idx] : targetPathKeys[idx];
+          field = field.getChild(property)!;
         }
 
         return field.fieldProxy as Field<U>;
@@ -397,3 +414,15 @@ const FIELD_PROXY_HANDLER: ProxyHandler<FieldNode> = {
     return undefined;
   },
 };
+
+function lengthOfSharedPrefix(currentPath: PropertyKey[], targetPath: PropertyKey[]): number {
+  const minLength = Math.min(targetPath.length, currentPath.length);
+  let sharedPrefixLength = 0;
+  while (
+    sharedPrefixLength < minLength &&
+    targetPath[sharedPrefixLength] === currentPath[sharedPrefixLength]
+  ) {
+    sharedPrefixLength++;
+  }
+  return sharedPrefixLength;
+}
