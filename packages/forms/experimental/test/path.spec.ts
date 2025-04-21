@@ -10,7 +10,7 @@ import {signal} from '@angular/core';
 import {FieldPath, Schema} from '../public_api';
 import {validate} from '../src/api/logic';
 import {apply, applyEach, applyWhen, form} from '../src/api/structure';
-import {FieldPathNode} from '../src/path_node';
+import {FieldPathNode, FieldRootPathNode} from '../src/path_node';
 
 describe('path', () => {
   describe('roots', () => {
@@ -41,7 +41,7 @@ describe('path', () => {
           );
         }),
       );
-      const topRoots = FieldPathNode.unwrapFieldPath(rootPath).subroots;
+      const topRoots = (FieldPathNode.unwrapFieldPath(rootPath) as FieldRootPathNode).subroots;
       expect(topRoots.size).toBe(5);
       expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[0]))).toEqual([]);
       expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[1]))).toEqual([]);

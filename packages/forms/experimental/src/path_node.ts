@@ -7,28 +7,20 @@ import {DYNAMIC, FieldLogicNode, Predicate} from './logic_node';
 const PATH = Symbol('PATH');
 
 export class FieldPathNode {
-  readonly root: FieldPathNode;
-  readonly logic: FieldLogicNode;
+  readonly root: FieldRootPathNode;
   private readonly children = new Map<PropertyKey, FieldPathNode>();
-  readonly subroots = new Map<FieldPathNode, PropertyKey[]>();
 
   readonly fieldPathProxy: FieldPath<any> = new Proxy(
     this,
     FIELD_PATH_PROXY_HANDLER,
   ) as unknown as FieldPath<any>;
 
-  private constructor(
+  protected constructor(
     readonly keys: PropertyKey[],
-    logic: FieldLogicNode,
-    root: FieldPathNode | undefined,
+    readonly logic: FieldLogicNode,
+    root: FieldRootPathNode | undefined,
   ) {
-    this.logic = logic;
-    if (root === undefined) {
-      this.root = this;
-      this.subroots.set(this, []);
-    } else {
-      this.root = root;
-    }
+    this.root = root ?? (this as unknown as FieldRootPathNode);
   }
 
   get element(): FieldPathNode {
@@ -45,7 +37,7 @@ export class FieldPathNode {
     return this.children.get(key)!;
   }
 
-  mergeIn(other: FieldPathNode) {
+  mergeIn(other: FieldRootPathNode) {
     this.logic.mergeIn(other.logic);
     for (const [root, pathKeys] of other.subroots) {
       this.root.subroots.set(root, [...this.keys, ...pathKeys]);
@@ -55,9 +47,13 @@ export class FieldPathNode {
   static unwrapFieldPath(formPath: FieldPath<unknown>): FieldPathNode {
     return (formPath as any)[PATH] as FieldPathNode;
   }
+}
 
-  static newRoot(predicate: Predicate | undefined): FieldPathNode {
-    return new FieldPathNode([], FieldLogicNode.newRoot(predicate), undefined);
+export class FieldRootPathNode extends FieldPathNode {
+  readonly subroots = new Map<FieldPathNode, PropertyKey[]>([[this, []]]);
+
+  constructor(predicate: Predicate | undefined) {
+    super([], FieldLogicNode.newRoot(predicate), undefined);
   }
 }
 

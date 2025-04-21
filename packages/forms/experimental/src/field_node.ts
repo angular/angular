@@ -18,7 +18,7 @@ import type {
   ValidationResult,
 } from './api/types';
 import {DYNAMIC, FieldLogicNode} from './logic_node';
-import {FieldPathNode} from './path_node';
+import {FieldPathNode, FieldRootPathNode} from './path_node';
 import {deepSignal} from './util/deep_signal';
 
 /**
@@ -60,6 +60,9 @@ export class FieldNode implements FieldState<unknown> {
         const currentPathKeys = this.pathKeys;
 
         const targetNode = FieldPathNode.unwrapFieldPath(target);
+        if (!(this.root.logicPath instanceof FieldRootPathNode)) {
+          throw Error('Expected root of FieldNode tree to have a FieldRootPathNode.');
+        }
         const prefix = this.root.logicPath.subroots.get(targetNode.root);
         if (!prefix) {
           throw Error('Path is not part of this field tree.');

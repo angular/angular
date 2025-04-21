@@ -9,7 +9,7 @@
 import {WritableSignal} from '@angular/core';
 
 import {FieldNode} from '../field_node';
-import {FieldPathNode} from '../path_node';
+import {FieldPathNode, FieldRootPathNode} from '../path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema';
 import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
 
@@ -52,7 +52,7 @@ import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
  * @template The type of the data model.
  */
 export function form<T>(model: WritableSignal<T>, schema?: NoInfer<Schema<T>>): Field<T> {
-  const pathNode = FieldPathNode.newRoot(undefined);
+  const pathNode = new FieldRootPathNode(undefined);
   if (schema !== undefined) {
     new SchemaImpl(schema).apply(pathNode);
   }
@@ -120,7 +120,7 @@ export function apply<T>(path: FieldPath<T>, schema: NoInfer<Schema<T>>): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const schemaRootPathNode = FieldPathNode.newRoot(undefined);
+  const schemaRootPathNode = new FieldRootPathNode(undefined);
   new SchemaImpl(schema).apply(schemaRootPathNode);
   pathNode.mergeIn(schemaRootPathNode);
 }
@@ -140,7 +140,7 @@ export function applyWhen<T>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const schemaRootPathNode = FieldPathNode.newRoot({fn: logic, path});
+  const schemaRootPathNode = new FieldRootPathNode({fn: logic, path});
   new SchemaImpl(schema).apply(schemaRootPathNode);
   pathNode.mergeIn(schemaRootPathNode);
 }
