@@ -15,7 +15,6 @@ import {
   Compiler,
   CompilerFactory,
   Component,
-  effect,
   EnvironmentInjector,
   InjectionToken,
   Injector,
@@ -23,7 +22,6 @@ import {
   NgModule,
   NgZone,
   PlatformRef,
-  ProviderToken,
   provideZoneChangeDetection,
   RendererFactory2,
   TemplateRef,
@@ -48,6 +46,7 @@ import {ApplicationRef} from '../src/application/application_ref';
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
 import {take} from 'rxjs/operators';
+import {compileNgModuleFactory} from '../src/application/application_ngmodule_factory_compiler';
 
 let serverPlatformModule: Promise<Type<ServerModule>> | null = null;
 if (isNode) {
@@ -677,30 +676,27 @@ describe('bootstrap', () => {
         initializerDone = true;
       }, 1);
 
-      const compilerFactory: CompilerFactory = defaultPlatform.injector.get(CompilerFactory, null)!;
-      const moduleFactory = compilerFactory
-        .createCompiler()
-        .compileModuleSync(
-          await createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]),
-        );
+      const moduleType = await createModule([
+        {provide: APP_INITIALIZER, useValue: () => promise, multi: true},
+      ]);
+      const moduleFactory = await compileNgModuleFactory(defaultPlatform.injector, {}, moduleType);
+
       defaultPlatform.bootstrapModuleFactory(moduleFactory).then((_) => {
         expect(initializerDone).toBe(true);
       });
     }));
 
     it('should rethrow sync errors even if the exceptionHandler is not rethrowing', waitForAsync(async () => {
-      const compilerFactory: CompilerFactory = defaultPlatform.injector.get(CompilerFactory, null)!;
-      const moduleFactory = compilerFactory.createCompiler().compileModuleSync(
-        await createModule([
-          {
-            provide: APP_INITIALIZER,
-            useValue: () => {
-              throw 'Test';
-            },
-            multi: true,
+      const moduleType = await createModule([
+        {
+          provide: APP_INITIALIZER,
+          useValue: () => {
+            throw 'Test';
           },
-        ]),
-      );
+          multi: true,
+        },
+      ]);
+      const moduleFactory = await compileNgModuleFactory(defaultPlatform.injector, {}, moduleType);
       expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
       // Error rethrown will be seen by the exception handler since it's after
       // construction.
@@ -708,14 +704,10 @@ describe('bootstrap', () => {
     }));
 
     it('should rethrow promise errors even if the exceptionHandler is not rethrowing', waitForAsync(async () => {
-      const compilerFactory: CompilerFactory = defaultPlatform.injector.get(CompilerFactory, null)!;
-      const moduleFactory = compilerFactory
-        .createCompiler()
-        .compileModuleSync(
-          await createModule([
-            {provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true},
-          ]),
-        );
+      const moduleType = await createModule([
+        {provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true},
+      ]);
+      const moduleFactory = await compileNgModuleFactory(defaultPlatform.injector, {}, moduleType);
       defaultPlatform.bootstrapModuleFactory(moduleFactory).then(
         () => expect(false).toBe(true),
         (e) => {
