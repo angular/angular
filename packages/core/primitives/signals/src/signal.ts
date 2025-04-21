@@ -59,13 +59,16 @@ export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): Si
   const getter = (() => signalGetFn(node)) as SignalGetter<T>;
   (getter as any)[SIGNAL] = node;
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
-    getter.toString = () => `[Signal${debugName}: ${node.value}]`;
+    getter.toString = () => `[${createSignalDebugName(node)}: ${node.value}]`;
   }
 
   runPostProducerCreatedFn(node);
 
   return getter;
+}
+
+function createSignalDebugName<T>(node: SignalNode<T>) {
+  return `Signal${node.debugName ? ' (' + node.debugName + ')' : ''}`;
 }
 
 /**
@@ -77,11 +80,14 @@ export function createSignalTuple<T>(
 ): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>] {
   const getter = createSignal(initialValue, equal);
   const node = getter[SIGNAL];
-  return [
-    getter,
-    (newValue: T) => signalSetFn(node, newValue),
-    (updateFn: (value: T) => T) => signalUpdateFn(node, updateFn),
-  ];
+  const debugName = node.debugName;
+  const set = (newValue: T) => signalSetFn(node, newValue);
+  const update = (updateFn: (value: T) => T) => signalUpdateFn(node, updateFn);
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    set.toString = () => `[${createSignalDebugName} Setter:${node.value}]`;
+    update.toString = () => `[${createSignalDebugName} Updater:${node.value}]`;
+  }
+  return [getter, set, update];
 }
 
 export function setPostSignalSetFn(fn: ReactiveHookFn | null): ReactiveHookFn | null {
