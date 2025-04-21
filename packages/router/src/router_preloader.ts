@@ -6,13 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  Compiler,
-  createEnvironmentInjector,
-  EnvironmentInjector,
-  Injectable,
-  OnDestroy,
-} from '@angular/core';
+import {createEnvironmentInjector, EnvironmentInjector, Injectable, OnDestroy} from '@angular/core';
 import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, mergeAll, mergeMap} from 'rxjs/operators';
 
@@ -84,7 +78,6 @@ export class RouterPreloader implements OnDestroy {
 
   constructor(
     private router: Router,
-    compiler: Compiler,
     private injector: EnvironmentInjector,
     private preloadingStrategy: PreloadingStrategy,
     private loader: RouterConfigLoader,
