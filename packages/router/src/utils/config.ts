@@ -141,25 +141,29 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
         `Invalid configuration of route '${fullPath}': children and loadChildren cannot be used together`,
       );
     }
-    if (route.redirectTo && (route.component || route.loadComponent)) {
-      throw new RuntimeError(
-        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
-        `Invalid configuration of route '${fullPath}': redirectTo and component/loadComponent cannot be used together`,
-      );
-    }
     if (route.component && route.loadComponent) {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_ROUTE_CONFIG,
         `Invalid configuration of route '${fullPath}': component and loadComponent cannot be used together`,
       );
     }
-    if (route.redirectTo && route.canActivate) {
-      throw new RuntimeError(
-        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
-        `Invalid configuration of route '${fullPath}': redirectTo and canActivate cannot be used together. Redirects happen before activation ` +
-          `so canActivate will never be executed.`,
-      );
+
+    if (route.redirectTo) {
+      if (route.component || route.loadComponent) {
+        throw new RuntimeError(
+          RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+          `Invalid configuration of route '${fullPath}': redirectTo and component/loadComponent cannot be used together`,
+        );
+      }
+      if (route.canMatch || route.canActivate) {
+        throw new RuntimeError(
+          RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+          `Invalid configuration of route '${fullPath}': redirectTo and ${route.canMatch ? 'canMatch' : 'canActivate'} cannot be used together.` +
+            `Redirects happen before guards are executed.`,
+        );
+      }
     }
+
     if (route.path && route.matcher) {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_ROUTE_CONFIG,
