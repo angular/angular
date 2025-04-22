@@ -2646,6 +2646,18 @@ describe('R3 template transform', () => {
           /Binding is not supported in a directive context/,
         );
       });
+
+      it('should not allow named references', () => {
+        const pattern = /Cannot specify a value for a local reference in this context/;
+        expect(() => parseSelectorless('<MyComp #foo="bar"/>')).toThrowError(pattern);
+        expect(() => parseSelectorless('<div @Dir(#foo="bar")></div>')).toThrowError(pattern);
+      });
+
+      it('should not allow duplicate references', () => {
+        const pattern = /Duplicate reference names are not allowed/;
+        expect(() => parseSelectorless('<MyComp #foo #foo/>')).toThrowError(pattern);
+        expect(() => parseSelectorless('<div @Dir(#foo #foo)></div>')).toThrowError(pattern);
+      });
     });
   });
 });
