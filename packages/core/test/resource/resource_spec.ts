@@ -89,7 +89,7 @@ describe('resource', () => {
     expect(echoResource.hasValue()).toBeFalse();
     expect(echoResource.value()).toBeUndefined();
     expect(echoResource.error()).toBe(undefined);
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
     expect(echoResource.isLoading()).toBeFalse();
@@ -98,7 +98,7 @@ describe('resource', () => {
     expect(echoResource.error()).toBe(undefined);
 
     counter.update((c) => c + 1);
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
     expect(echoResource.isLoading()).toBeFalse();
@@ -120,7 +120,7 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
 
-    TestBed.flushEffects();
+    TestBed.tick();
     await flushMicrotasks();
 
     expect(prevStatus).toBe(ResourceStatus.Idle);
@@ -135,7 +135,7 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
 
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.reject(requestParam, 'Something went wrong....');
 
     expect(echoResource.status()).toBe(ResourceStatus.Error);
@@ -160,7 +160,7 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
 
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
 
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
@@ -170,7 +170,7 @@ describe('resource', () => {
     expect(echoResource.error()).toBe(undefined);
 
     counter.update((value) => value + 1);
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
 
     expect(echoResource.status()).toBe(ResourceStatus.Error);
@@ -261,12 +261,12 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
 
-    TestBed.flushEffects();
+    TestBed.tick();
     expect(echoResource.status()).toBe(ResourceStatus.Idle);
     expect(echoResource.isLoading()).toBeFalse();
 
     counter.set(10);
-    TestBed.flushEffects();
+    TestBed.tick();
     expect(echoResource.isLoading()).toBeTrue();
   });
 
@@ -289,12 +289,12 @@ describe('resource', () => {
     });
 
     // start a request without resolving the previous one
-    TestBed.flushEffects();
+    TestBed.tick();
     await Promise.resolve();
 
     // start a new request and resolve all
     counter.update((c) => c + 1);
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
     expect(echoResource.value()).toEqual({counter: 1});
@@ -323,7 +323,7 @@ describe('resource', () => {
     });
 
     // start a request without resolving the previous one
-    TestBed.flushEffects();
+    TestBed.tick();
     await Promise.resolve();
 
     injector.destroy();
@@ -355,7 +355,7 @@ describe('resource', () => {
     });
 
     // start a request without resolving the previous one
-    TestBed.flushEffects();
+    TestBed.tick();
     await Promise.resolve();
 
     echoResource.destroy();
@@ -381,12 +381,12 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
 
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(res.value()).toBe('0:0');
 
     unrelated.set('b');
-    TestBed.flushEffects();
+    TestBed.tick();
     // there is no chang in the status
     expect(res.status()).toBe(ResourceStatus.Resolved);
     await backend.flush();
@@ -403,7 +403,7 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
 
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
 
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
@@ -419,7 +419,7 @@ describe('resource', () => {
     expect(echoResource.error()).toBe(undefined);
 
     counter.set(1);
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
     expect(echoResource.value()).toEqual({counter: 1});
@@ -440,7 +440,7 @@ describe('resource', () => {
       injector: TestBed.inject(Injector),
     });
 
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(res.status()).toBe(ResourceStatus.Resolved);
     expect(res.value()).toBe('0:0');
@@ -450,7 +450,7 @@ describe('resource', () => {
     expect(res.status()).toBe(ResourceStatus.Reloading);
     expect(res.value()).toBe('0:0');
 
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(res.status()).toBe(ResourceStatus.Resolved);
     expect(res.isLoading()).toBeFalse();
@@ -459,9 +459,9 @@ describe('resource', () => {
 
     // calling refresh multiple times should _not_ result in multiple requests
     res.reload();
-    TestBed.flushEffects();
+    TestBed.tick();
     res.reload();
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(res.value()).toBe('0:2');
   });
@@ -518,7 +518,7 @@ describe('resource', () => {
     expect(echoResource.status()).toBe(ResourceStatus.Idle);
     // Allow the load to proceed.
     request.set(2);
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
     // Reload state should be synchronous.
@@ -538,7 +538,7 @@ describe('resource', () => {
     });
     const appRef = TestBed.inject(ApplicationRef);
     // Fully resolve the resource to start.
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
     // Trigger loading state.
@@ -547,7 +547,7 @@ describe('resource', () => {
     // Set the resource to a new value.
     echoResource.set(3);
     // Now run the effect, which should be a no-op as the resource was set to a local value.
-    TestBed.flushEffects();
+    TestBed.tick();
     // We should still be in local state.
     expect(echoResource.status()).toBe(ResourceStatus.Local);
     expect(echoResource.value()).toBe(3);
@@ -569,7 +569,7 @@ describe('resource', () => {
     });
     const appRef = TestBed.inject(ApplicationRef);
     // Fully resolve the resource to start.
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(echoResource.status()).toBe(ResourceStatus.Resolved);
     // Trigger reloading state.
@@ -578,7 +578,7 @@ describe('resource', () => {
     // Set the resource to a new value.
     echoResource.set(3);
     // Now run the effect, which should be a no-op as the resource was set to a local value.
-    TestBed.flushEffects();
+    TestBed.tick();
     // We should still be in local state.
     expect(echoResource.status()).toBe(ResourceStatus.Local);
     expect(echoResource.value()).toBe(3);
@@ -686,7 +686,7 @@ describe('resource', () => {
     });
 
     // Start the initial load.
-    TestBed.flushEffects();
+    TestBed.tick();
     await Promise.resolve();
     expect(echoResource.status()).toBe(ResourceStatus.Loading);
     expect(echoResource.value()).toBe(undefined);
@@ -695,7 +695,7 @@ describe('resource', () => {
 
     // Interrupt by setting a value before the request has resolved.
     echoResource.set(null);
-    TestBed.flushEffects();
+    TestBed.tick();
     await backend.flush();
     expect(echoResource.status()).toBe(ResourceStatus.Local);
     expect(echoResource.value()).toBe(null);
@@ -704,7 +704,7 @@ describe('resource', () => {
 
     // Reload the resource to trigger another request.
     echoResource.reload();
-    TestBed.flushEffects();
+    TestBed.tick();
     await Promise.resolve();
     expect(echoResource.status()).toBe(ResourceStatus.Reloading);
     expect(echoResource.value()).toBe(null);

@@ -37,6 +37,7 @@ import {
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
+  ApplicationRef,
 } from '../../src/core';
 
 import {ComponentFixture} from './component_fixture';
@@ -154,9 +155,16 @@ export interface TestBed {
   /**
    * Execute any pending effects.
    *
-   * @developerPreview
+   * @deprecated use `TestBed.tick()` instead
    */
   flushEffects(): void;
+
+  /**
+   * Execute any pending work required to synchronize model to the UI.
+   *
+   * @publicApi
+   */
+  tick(): void;
 }
 
 let _nextRootElementId = 0;
@@ -392,6 +400,10 @@ export class TestBedImpl implements TestBed {
 
   static flushEffects(): void {
     return TestBedImpl.INSTANCE.flushEffects();
+  }
+
+  static tick(): void {
+    return TestBedImpl.INSTANCE.tick();
   }
 
   // Properties
@@ -803,10 +815,19 @@ export class TestBedImpl implements TestBed {
   /**
    * Execute any pending effects.
    *
-   * @developerPreview
+   * @deprecated use `TestBed.tick()` instead
    */
   flushEffects(): void {
     this.inject(EffectScheduler).flush();
+  }
+
+  /**
+   * Execute any pending work required to synchronize model to the UI.
+   *
+   * @publicApi
+   */
+  tick(): void {
+    this.inject(ApplicationRef).tick();
   }
 }
 

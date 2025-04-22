@@ -268,11 +268,11 @@ describe('reactivity', () => {
       const log: number[] = [];
       TestBed.runInInjectionContext(() => effect(() => log.push(counter())));
 
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(log).toEqual([0]);
 
       counter.set(1);
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(log).toEqual([0, 1]);
     });
 
@@ -282,11 +282,11 @@ describe('reactivity', () => {
       const log: number[] = [];
       effect(() => log.push(counter()), {injector: TestBed.inject(Injector)});
 
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(log).toEqual([0]);
 
       counter.set(1);
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(log).toEqual([0, 1]);
     });
 
@@ -300,16 +300,16 @@ describe('reactivity', () => {
         injector: TestBed.inject(Injector),
       });
 
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(log).toEqual([0]);
 
       counter.set(1);
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(log).toEqual([0, 1]);
 
       ref.destroy();
       counter.set(2);
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(log).toEqual([0, 1]);
     });
 
@@ -518,11 +518,11 @@ describe('reactivity', () => {
         );
         expect(effectCounter).toBe(0);
         effectRef.destroy();
-        TestBed.flushEffects();
+        TestBed.tick();
         expect(effectCounter).toBe(0);
 
         counter.set(2);
-        TestBed.flushEffects();
+        TestBed.tick();
         expect(effectCounter).toBe(0);
       });
 
@@ -543,11 +543,11 @@ describe('reactivity', () => {
         fixture.detectChanges();
         expect(effectCounter).toBe(0);
 
-        TestBed.flushEffects();
+        TestBed.tick();
         expect(effectCounter).toBe(0);
 
         fixture.componentInstance.counter.set(2);
-        TestBed.flushEffects();
+        TestBed.tick();
         expect(effectCounter).toBe(0);
       });
     });
@@ -558,7 +558,7 @@ describe('reactivity', () => {
       const counter = signal(0);
 
       effect(() => counter.set(1), {injector: TestBed.inject(Injector)});
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(counter()).toBe(1);
     });
 
@@ -804,7 +804,7 @@ describe('reactivity', () => {
         }
 
         const fixture = TestBed.createComponent(TestCmp);
-        TestBed.flushEffects();
+        TestBed.tick();
         expect(log).toEqual([]);
         fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
@@ -882,7 +882,7 @@ describe('reactivity', () => {
         fixture.componentInstance.vcr.createComponent(TestCmp);
 
         // Verify that simply creating the component didn't schedule the effect.
-        TestBed.flushEffects();
+        TestBed.tick();
         expect(log).toEqual([]);
 
         // Running change detection should schedule and run the effect.
@@ -914,7 +914,7 @@ describe('reactivity', () => {
         }
 
         const fixture = TestBed.createComponent(TestCmp);
-        TestBed.flushEffects();
+        TestBed.tick();
         expect(log).toEqual([]);
         fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);

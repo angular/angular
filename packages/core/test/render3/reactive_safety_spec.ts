@@ -236,5 +236,5 @@ function expectNotToThrowInReactiveContext(fn: () => void): void {
     },
     {injector},
   );
-  TestBed.flushEffects();
+  TestBed.tick();
 }
