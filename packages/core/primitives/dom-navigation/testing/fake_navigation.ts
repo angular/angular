@@ -100,11 +100,32 @@ export class FakeNavigation implements Navigation {
     return this.currentEntryIndex < this.entriesArr.length - 1;
   }
 
-  constructor(
-    private readonly window: Pick<Window, 'dispatchEvent'>,
-    private readonly createEventTarget: () => EventTarget,
-    startURL: `http${string}`,
-  ) {
+  private readonly createEventTarget: () => EventTarget;
+  private readonly _window: Pick<
+    Window,
+    'addEventListener' | 'removeEventListener' | 'dispatchEvent'
+  >;
+  get window(): Pick<Window, 'addEventListener' | 'removeEventListener'> {
+    return this._window;
+  }
+
+  constructor(document: Document, startURL: `http${string}`) {
+    this.createEventTarget = () => {
+      try {
+        // `document.createElement` because NodeJS `EventTarget` is
+        // incompatible with Domino's `Event`. That is, attempting to
+        // dispatch an event created by Domino's patched `Event` will
+        // throw an error since it is not an instance of a real Node
+        // `Event`.
+        return document.createElement('div');
+      } catch {
+        // Fallback to a basic EventTarget if `document.createElement`
+        // fails. This can happen with tests that pass in a value for document
+        // that is stubbed.
+        return new EventTarget();
+      }
+    };
+    this._window = document.defaultView ?? this.createEventTarget();
     this.eventTarget = this.createEventTarget();
     // First entry.
     this.setInitialEntryForTesting(startURL);
@@ -495,10 +516,10 @@ export class FakeNavigation implements Navigation {
     const popStateEvent = createPopStateEvent({
       state: navigateEvent.destination.getHistoryState(),
     });
-    this.window.dispatchEvent(popStateEvent);
+    this._window.dispatchEvent(popStateEvent);
     if (navigateEvent.hashChange) {
       const hashchangeEvent = createHashChangeEvent(oldUrl, this.currentEntry.url!);
-      this.window.dispatchEvent(hashchangeEvent);
+      this._window.dispatchEvent(hashchangeEvent);
     }
   }
 
