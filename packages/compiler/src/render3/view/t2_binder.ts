@@ -88,12 +88,12 @@ type ReferenceMap<DirectiveT> = Map<
   | Element
   | {
       directive: DirectiveT;
-      node: Element | Template;
+      node: Element | Template | Component | Directive;
     }
 >;
 
 /** Mapping between AST nodes and the directives that have been matched on them. */
-type MatchedDirectives<DirectiveT> = Map<Template | Element, DirectiveT[]>;
+type MatchedDirectives<DirectiveT> = Map<Template | Element | Component, DirectiveT[]>;
 
 /**
  * Mapping between a scoped not and the template entities that exist in it.
@@ -275,9 +275,9 @@ class Scope implements Visitor {
   readonly namedEntities = new Map<string, TemplateEntity>();
 
   /**
-   * Set of elements that belong to this scope.
+   * Set of element-like nodes that belong to this scope.
    */
-  readonly elementsInScope = new Set<Element>();
+  readonly elementLikeInScope = new Set<Element | Component>();
 
   /**
    * Child `Scope`s for immediately nested `ScopedNode`s.
@@ -345,15 +345,7 @@ class Scope implements Visitor {
   }
 
   visitElement(element: Element) {
-    element.directives.forEach((node) => node.visit(this));
-
-    // `Element`s in the template may have `Reference`s which are captured in the scope.
-    element.references.forEach((node) => this.visitReference(node));
-
-    // Recurse into the `Element`'s children.
-    element.children.forEach((node) => node.visit(this));
-
-    this.elementsInScope.add(element);
+    this.visitElementLike(element);
   }
 
   visitTemplate(template: Template) {
@@ -430,11 +422,11 @@ class Scope implements Visitor {
   }
 
   visitComponent(component: Component) {
-    throw new Error('TODO');
+    this.visitElementLike(component);
   }
 
   visitDirective(directive: Directive) {
-    throw new Error('TODO');
+    directive.references.forEach((current) => this.visitReference(current));
   }
 
   // Unused visitors.
@@ -446,6 +438,13 @@ class Scope implements Visitor {
   visitIcu(icu: Icu) {}
   visitDeferredTrigger(trigger: DeferredTrigger) {}
   visitUnknownBlock(block: UnknownBlock) {}
+
+  private visitElementLike(node: Element | Component) {
+    node.directives.forEach((current) => current.visit(this));
+    node.references.forEach((current) => this.visitReference(current));
+    node.children.forEach((current) => current.visit(this));
+    this.elementLikeInScope.add(node);
+  }
 
   private maybeDeclare(thing: TemplateEntity) {
     // Declare something with a name, as long as that name isn't taken.
@@ -551,84 +550,6 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     this.visitElementOrTemplate(template);
   }
 
-  visitElementOrTemplate(node: Element | Template): void {
-    const directives: DirectiveT[] = [];
-
-    if (this.directiveMatcher instanceof SelectorMatcher) {
-      // First, determine the HTML shape of the node for the purpose of directive matching.
-      // Do this by building up a `CssSelector` for the node.
-      const cssSelector = createCssSelectorFromNode(node);
-
-      this.directiveMatcher.match(cssSelector, (_selector, results) => directives.push(...results));
-
-      if (directives.length > 0) {
-        this.directives.set(node, directives);
-        if (!this.isInDeferBlock) {
-          this.eagerDirectives.push(...directives);
-        }
-      }
-    } else {
-      throw new Error('TODO');
-    }
-
-    // Resolve any references that are created on this node.
-    node.references.forEach((ref) => {
-      let dirTarget: DirectiveT | null = null;
-
-      // If the reference expression is empty, then it matches the "primary" directive on the node
-      // (if there is one). Otherwise it matches the host node itself (either an element or
-      // <ng-template> node).
-      if (ref.value.trim() === '') {
-        // This could be a reference to a component if there is one.
-        dirTarget = directives.find((dir) => dir.isComponent) || null;
-      } else {
-        // This should be a reference to a directive exported via exportAs.
-        dirTarget =
-          directives.find(
-            (dir) => dir.exportAs !== null && dir.exportAs.some((value) => value === ref.value),
-          ) || null;
-        // Check if a matching directive was found.
-        if (dirTarget === null) {
-          // No matching directive was found - this reference points to an unknown target. Leave it
-          // unmapped.
-          return;
-        }
-      }
-
-      if (dirTarget !== null) {
-        // This reference points to a directive.
-        this.references.set(ref, {directive: dirTarget, node});
-      } else {
-        // This reference points to the node itself.
-        this.references.set(ref, node);
-      }
-    });
-
-    // Associate attributes/bindings on the node with directives or with the node itself.
-    type BoundNode = BoundAttribute | BoundEvent | TextAttribute;
-    const setAttributeBinding = (
-      attribute: BoundNode,
-      ioType: keyof Pick<DirectiveMeta, 'inputs' | 'outputs'>,
-    ) => {
-      const dir = directives.find((dir) => dir[ioType].hasBindingPropertyName(attribute.name));
-      const binding = dir !== undefined ? dir : node;
-      this.bindings.set(attribute, binding);
-    };
-
-    // Node inputs (bound attributes) and text attributes can be bound to an
-    // input on a directive.
-    node.inputs.forEach((input) => setAttributeBinding(input, 'inputs'));
-    node.attributes.forEach((attr) => setAttributeBinding(attr, 'inputs'));
-    if (node instanceof Template) {
-      node.templateAttrs.forEach((attr) => setAttributeBinding(attr, 'inputs'));
-    }
-    // Node outputs (bound events) can be bound to an output on a directive.
-    node.outputs.forEach((output) => setAttributeBinding(output, 'outputs'));
-
-    // Recurse into the node's children.
-    node.children.forEach((child) => child.visit(this));
-  }
-
   visitDeferredBlock(deferred: DeferredBlock): void {
     const wasInDeferBlock = this.isInDeferBlock;
     this.isInDeferBlock = true;
@@ -684,12 +605,165 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     content.children.forEach((child) => child.visit(this));
   }
 
-  visitComponent(component: Component) {
-    throw new Error('TODO');
+  visitComponent(node: Component): void {
+    const directives: DirectiveT[] = [];
+    let componentMetas: DirectiveT[] | null = null;
+
+    if (this.directiveMatcher instanceof SelectorlessMatcher) {
+      componentMetas = this.directiveMatcher.match(node.componentName);
+
+      if (componentMetas !== null) {
+        directives.push(...componentMetas);
+      }
+
+      for (const directive of node.directives) {
+        const directiveMetas = this.directiveMatcher.match(directive.name);
+
+        if (directiveMetas !== null) {
+          directives.push(...directiveMetas);
+        }
+      }
+    }
+
+    this.trackMatchedDirectives(node, directives);
+
+    if (componentMetas !== null) {
+      this.trackSelectorlessBindings(node, componentMetas);
+    }
+
+    node.directives.forEach((directive) => directive.visit(this));
+    node.children.forEach((child) => child.visit(this));
   }
 
-  visitDirective(directive: Directive) {
-    throw new Error('TODO');
+  visitDirective(node: Directive): void {
+    const directives =
+      this.directiveMatcher instanceof SelectorlessMatcher
+        ? this.directiveMatcher.match(node.name)
+        : null;
+
+    if (directives !== null) {
+      this.trackSelectorlessBindings(node, directives);
+    }
+  }
+
+  private visitElementOrTemplate(node: Element | Template): void {
+    const directives: DirectiveT[] = [];
+
+    if (this.directiveMatcher instanceof SelectorMatcher) {
+      // First, determine the HTML shape of the node for the purpose of directive matching.
+      // Do this by building up a `CssSelector` for the node.
+      const cssSelector = createCssSelectorFromNode(node);
+
+      this.directiveMatcher.match(cssSelector, (_selector, results) => {
+        directives.push(...results);
+      });
+
+      this.trackSelectorMatchedBindings(node, directives);
+    } else {
+      for (const directive of node.directives) {
+        const matchedDirectives = this.directiveMatcher.match(directive.name);
+
+        if (matchedDirectives !== null) {
+          directives.push(...matchedDirectives);
+        }
+      }
+    }
+
+    this.trackMatchedDirectives(node, directives);
+    node.directives.forEach((directive) => directive.visit(this));
+    node.children.forEach((child) => child.visit(this));
+  }
+
+  private trackMatchedDirectives(
+    node: Template | Element | Component,
+    directives: DirectiveT[],
+  ): void {
+    if (directives.length > 0) {
+      this.directives.set(node, directives);
+      if (!this.isInDeferBlock) {
+        this.eagerDirectives.push(...directives);
+      }
+    }
+  }
+
+  private trackSelectorlessBindings(node: Component | Directive, metas: DirectiveT[]): void {
+    const setBinding = (
+      meta: DirectiveT,
+      attribute: BoundAttribute | BoundEvent | TextAttribute,
+      ioType: keyof Pick<DirectiveMeta, 'inputs' | 'outputs'>,
+    ) => {
+      if (meta[ioType].hasBindingPropertyName(attribute.name)) {
+        this.bindings.set(attribute, meta);
+      }
+    };
+
+    for (const meta of metas) {
+      node.inputs.forEach((input) => setBinding(meta, input, 'inputs'));
+      node.attributes.forEach((attr) => setBinding(meta, attr, 'inputs'));
+      node.outputs.forEach((output) => setBinding(meta, output, 'outputs'));
+    }
+
+    // TODO(crisbeto): currently it's unclear how references should behave under selectorless,
+    // given that there's one named class which can bring in multiple host directives.
+    // For the time being only register the first directive as the reference target.
+    if (metas.length > 0) {
+      node.references.forEach((ref) => this.references.set(ref, {directive: metas[0], node: node}));
+    }
+  }
+
+  private trackSelectorMatchedBindings(node: Element | Template, directives: DirectiveT[]): void {
+    // Resolve any references that are created on this node.
+    node.references.forEach((ref) => {
+      let dirTarget: DirectiveT | null = null;
+
+      // If the reference expression is empty, then it matches the "primary" directive on the node
+      // (if there is one). Otherwise it matches the host node itself (either an element or
+      // <ng-template> node).
+      if (ref.value.trim() === '') {
+        // This could be a reference to a component if there is one.
+        dirTarget = directives.find((dir) => dir.isComponent) || null;
+      } else {
+        // This should be a reference to a directive exported via exportAs.
+        dirTarget =
+          directives.find(
+            (dir) => dir.exportAs !== null && dir.exportAs.some((value) => value === ref.value),
+          ) || null;
+        // Check if a matching directive was found.
+        if (dirTarget === null) {
+          // No matching directive was found - this reference points to an unknown target. Leave it
+          // unmapped.
+          return;
+        }
+      }
+
+      if (dirTarget !== null) {
+        // This reference points to a directive.
+        this.references.set(ref, {directive: dirTarget, node});
+      } else {
+        // This reference points to the node itself.
+        this.references.set(ref, node);
+      }
+    });
+
+    // Associate attributes/bindings on the node with directives or with the node itself.
+    const setAttributeBinding = (
+      attribute: BoundAttribute | BoundEvent | TextAttribute,
+      ioType: keyof Pick<DirectiveMeta, 'inputs' | 'outputs'>,
+    ) => {
+      const dir = directives.find((dir) => dir[ioType].hasBindingPropertyName(attribute.name));
+      const binding = dir !== undefined ? dir : node;
+      this.bindings.set(attribute, binding);
+    };
+
+    // Node inputs (bound attributes) and text attributes can be bound to an
+    // input on a directive.
+    node.inputs.forEach((input) => setAttributeBinding(input, 'inputs'));
+    node.attributes.forEach((attr) => setAttributeBinding(attr, 'inputs'));
+    if (node instanceof Template) {
+      node.templateAttrs.forEach((attr) => setAttributeBinding(attr, 'inputs'));
+    }
+    // Node outputs (bound events) can be bound to an output on a directive.
+    node.outputs.forEach((output) => setAttributeBinding(output, 'outputs'));
   }
 
   // Unused visitors.
@@ -870,11 +944,17 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   visitComponent(component: Component) {
-    throw new Error('TODO');
+    component.inputs.forEach(this.visitNode);
+    component.outputs.forEach(this.visitNode);
+    component.directives.forEach(this.visitNode);
+    component.children.forEach(this.visitNode);
+    component.references.forEach(this.visitNode);
   }
 
   visitDirective(directive: Directive) {
-    throw new Error('TODO');
+    directive.inputs.forEach(this.visitNode);
+    directive.outputs.forEach(this.visitNode);
+    directive.references.forEach(this.visitNode);
   }
 
   // Unused template visitors
@@ -1171,7 +1251,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     return null;
   }
 
-  isDeferred(element: Element): boolean {
+  isDeferred(element: Element | Component): boolean {
     for (const block of this.deferredBlocks) {
       if (!this.deferredScopes.has(block)) {
         continue;
@@ -1182,7 +1262,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
       while (stack.length > 0) {
         const current = stack.pop()!;
 
-        if (current.elementsInScope.has(element)) {
+        if (current.elementLikeInScope.has(element)) {
           return true;
         }
 
@@ -1216,7 +1296,11 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
       return target;
     }
 
-    if (target instanceof Template) {
+    if (
+      target instanceof Template ||
+      target.node instanceof Component ||
+      target.node instanceof Directive
+    ) {
       return null;
     }
 

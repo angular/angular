@@ -10,12 +10,14 @@ import {AST} from '../../expression_parser/ast';
 import {
   BoundAttribute,
   BoundEvent,
+  Component,
   Content,
   DeferredBlock,
   DeferredBlockError,
   DeferredBlockLoading,
   DeferredBlockPlaceholder,
   DeferredTrigger,
+  Directive,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
@@ -48,7 +50,7 @@ export type ScopedNode =
 export type ReferenceTarget<DirectiveT> =
   | {
       directive: DirectiveT;
-      node: Element | Template;
+      node: Element | Template | Component | Directive;
     }
   | Element
   | Template;
@@ -181,7 +183,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * For a given template node (either an `Element` or a `Template`), get the set of directives
    * which matched the node, if any.
    */
-  getDirectivesOfNode(node: Element | Template): DirectiveT[] | null;
+  getDirectivesOfNode(node: Element | Template | Component): DirectiveT[] | null;
 
   /**
    * For a given `Reference`, get the reference's target - either an `Element`, a `Template`, or
@@ -270,5 +272,5 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
   /**
    * Whether a given node is located in a `@defer` block.
    */
-  isDeferred(node: Element): boolean;
+  isDeferred(node: Element | Component): boolean;
 }
