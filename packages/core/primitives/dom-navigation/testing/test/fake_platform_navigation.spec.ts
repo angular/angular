@@ -43,7 +43,7 @@ describe('navigation', () => {
   });
 
   beforeEach(() => {
-    const navigation = new FakeNavigation(window, 'https://test.com');
+    const navigation = new FakeNavigation(document, 'https://test.com');
     const navigateEvents: FakeNavigateEvent[] = [];
     let nextNavigateEventResolve!: (value: FakeNavigateEvent) => void;
     let nextNavigateEventPromise = new Promise<FakeNavigateEvent>((resolve) => {
