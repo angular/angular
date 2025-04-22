@@ -9,24 +9,24 @@
 import {FieldPath, Schema} from './api/types';
 import {FieldPathNode} from './path_node';
 
-let currentKey: symbol | undefined = undefined;
+let currentRoot: FieldPathNode | undefined = undefined;
 
 export class SchemaImpl {
   constructor(readonly schemaFn: Schema<any>) {}
 
   apply(path: FieldPathNode): void {
-    let prevKey = currentKey;
+    let prevRoot = currentRoot;
     try {
-      currentKey = path.key;
+      currentRoot = path.root;
       this.schemaFn(path.fieldPathProxy);
     } finally {
-      currentKey = prevKey;
+      currentRoot = prevRoot;
     }
   }
 }
 
 export function assertPathIsCurrent(path: FieldPath<unknown>): void {
-  if (currentKey !== FieldPathNode.extractFromPath(path).key) {
+  if (currentRoot !== FieldPathNode.unwrapFieldPath(path).root) {
     throw new Error(`🚨👮 Wrong path! 👮🚨
 
 This error happens when using a path from outside of schema:

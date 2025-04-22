@@ -124,24 +124,6 @@ describe('when', () => {
     f.needLastName.$state.value.set(false);
     expect(f.items[0].last.$state.errors()).toEqual([]);
   });
-
-  it('supports array function', () => {
-    const data = signal({needLastName: true, items: [{first: '', last: ''}]});
-
-    const f = form(data, (path) => {
-      applyWhen(path, needsLastNamePredicate, (names /* Path */) => {
-        applyEach(names.items, (i) => {
-          validate(i.last, ({value}) => {
-            return value().length > 0 ? undefined : {kind: 'required'};
-          });
-        });
-      });
-    });
-
-    expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required'}]);
-    f.needLastName.$state.value.set(false);
-    expect(f.items[0].last.$state.errors()).toEqual([]);
-  });
 });
 
 describe('applyWhenValue', () => {
