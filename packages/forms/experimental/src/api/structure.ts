@@ -9,7 +9,7 @@
 import {WritableSignal} from '@angular/core';
 
 import {FieldNode} from '../field_node';
-import {FieldPathNode} from '../path_node';
+import {FieldPathNode, FieldRootPathNode} from '../path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema';
 import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
 
@@ -52,11 +52,11 @@ import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
  * @template The type of the data model.
  */
 export function form<T>(model: WritableSignal<T>, schema?: NoInfer<Schema<T>>): Field<T> {
-  const pathImpl = FieldPathNode.newRoot();
+  const pathNode = new FieldRootPathNode(undefined);
   if (schema !== undefined) {
-    new SchemaImpl(schema).apply(pathImpl);
+    new SchemaImpl(schema).apply(pathNode);
   }
-  const fieldRoot = FieldNode.newRoot(model, pathImpl.logic);
+  const fieldRoot = FieldNode.newRoot(model, pathNode);
   return fieldRoot.fieldProxy as Field<T>;
 }
 
@@ -96,7 +96,7 @@ export function form<T>(model: WritableSignal<T>, schema?: NoInfer<Schema<T>>): 
 export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<Schema<T>>): void {
   assertPathIsCurrent(path);
 
-  const elementPath = FieldPathNode.extractFromPath(path).element.fieldPathProxy;
+  const elementPath = FieldPathNode.unwrapFieldPath(path).element.fieldPathProxy;
   apply(elementPath, schema);
 }
 
@@ -119,8 +119,10 @@ export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<Schema<T>>): 
 export function apply<T>(path: FieldPath<T>, schema: NoInfer<Schema<T>>): void {
   assertPathIsCurrent(path);
 
-  const childPathImpl = FieldPathNode.extractFromPath(path).withNewKey();
-  new SchemaImpl(schema).apply(childPathImpl);
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  const schemaRootPathNode = new FieldRootPathNode(undefined);
+  new SchemaImpl(schema).apply(schemaRootPathNode);
+  pathNode.mergeIn(schemaRootPathNode);
 }
 
 /**
@@ -137,11 +139,10 @@ export function applyWhen<T>(
 ): void {
   assertPathIsCurrent(path);
 
-  const predicatedPathImpl = FieldPathNode.extractFromPath(path).withPredicate({
-    fn: logic,
-    path,
-  });
-  new SchemaImpl(schema).apply(predicatedPathImpl);
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  const schemaRootPathNode = new FieldRootPathNode({fn: logic, path});
+  new SchemaImpl(schema).apply(schemaRootPathNode);
+  pathNode.mergeIn(schemaRootPathNode);
 }
 
 /**

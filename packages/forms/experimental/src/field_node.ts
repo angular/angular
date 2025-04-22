@@ -7,6 +7,7 @@
  */
 
 import {computed, linkedSignal, Signal, signal, untracked, WritableSignal} from '@angular/core';
+import {MetadataKey} from './api/metadata';
 import type {
   Field,
   FieldContext,
@@ -16,10 +17,9 @@ import type {
   SubmittedStatus,
   ValidationResult,
 } from './api/types';
-import {FieldLogicNode} from './logic_node';
-import {FieldPathNode} from './path_node';
+import {DYNAMIC, FieldLogicNode} from './logic_node';
+import {FieldPathNode, FieldRootPathNode} from './path_node';
 import {deepSignal} from './util/deep_signal';
-import {MetadataKey} from './api/metadata';
 
 /**
  * Internal node in the form graph for a given field.
@@ -57,8 +57,18 @@ export class FieldNode implements FieldState<unknown> {
     return (this._fieldContext ??= {
       value: this.value,
       resolve: <U>(target: FieldPath<U>): Field<U> => {
-        const currentPath = this.logic.pathKeys;
-        const targetPath = FieldPathNode.extractFromPath(target).logic.pathKeys;
+        const currentPathKeys = this.pathKeys;
+        const targetPathNode = FieldPathNode.unwrapFieldPath(target);
+
+        if (!(this.root.logicPath instanceof FieldRootPathNode)) {
+          throw Error('Expected root of FieldNode tree to have a FieldRootPathNode.');
+        }
+        const prefix = this.root.logicPath.subroots.get(targetPathNode.root);
+        if (!prefix) {
+          throw Error('Path is not part of this field tree.');
+        }
+
+        const targetPathKeys = [...prefix, ...targetPathNode.keys];
 
         // Navigate from `currentPath` to `targetPath`. As an example, suppose that:
         // currentPath = [A, B, C, D]
@@ -66,12 +76,12 @@ export class FieldNode implements FieldState<unknown> {
 
         // Firstly, find the length of the shared prefix between the two paths. In our example, this
         // is the prefix [A, B], so we would expect a `sharedPrefixLength` of 2.
-        const sharedPrefixLength = lengthOfSharedPrefix(currentPath, targetPath);
+        const sharedPrefixLength = lengthOfSharedPrefix(currentPathKeys, targetPathNode.keys);
 
         // Walk up the graph until we arrive at the common ancestor, which could be the root node if
         // there is no shared prefix. In our example, this will require 2 up steps, navigating from
         // D to B.
-        let requiredUpSteps = currentPath.length - sharedPrefixLength;
+        let requiredUpSteps = currentPathKeys.length - sharedPrefixLength;
         let field: FieldNode = this;
         while (requiredUpSteps-- > 0) {
           field = field.parent!;
@@ -79,8 +89,10 @@ export class FieldNode implements FieldState<unknown> {
 
         // Now, we can navigate from the closest ancestor to the target, e.g. from B through X, Y,
         // and then to Z.
-        for (let idx = sharedPrefixLength; idx < targetPath.length; idx++) {
-          field = field.getChild(targetPath[idx])!;
+        for (let idx = sharedPrefixLength; idx < targetPathKeys.length; idx++) {
+          const property =
+            targetPathKeys[idx] === DYNAMIC ? currentPathKeys[idx] : targetPathKeys[idx];
+          field = field.getChild(property)!;
         }
 
         return field.fieldProxy as Field<U>;
@@ -88,11 +100,28 @@ export class FieldNode implements FieldState<unknown> {
     });
   }
 
+  private readonly root: FieldNode;
+
+  private readonly pathKeys: PropertyKey[];
+
+  private logic: FieldLogicNode;
+
   private constructor(
     readonly value: WritableSignal<unknown>,
-    private readonly logic: FieldLogicNode,
+    private readonly logicPath: FieldPathNode,
     readonly parent: FieldNode | undefined,
+    readonly keyInParent: PropertyKey | undefined,
   ) {
+    this.logic = logicPath.logic;
+
+    if (parent !== undefined && keyInParent !== undefined) {
+      this.root = parent.root;
+      this.pathKeys = [...parent.pathKeys, keyInParent];
+    } else {
+      this.root = this;
+      this.pathKeys = [];
+    }
+
     // We use a `linkedSignal` to preserve the instances of `FieldNode` for each child field even if
     // the value of this field changes its object identity.
     this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FieldNode> | undefined>({
@@ -294,24 +323,27 @@ export class FieldNode implements FieldState<unknown> {
       }
 
       // Determine the logic for the field that we're defining.
-      let childLogic: FieldLogicNode | undefined;
+      let childPath: FieldPathNode | undefined;
       if (Array.isArray(value)) {
         // Fields for array elements have their logic defined by the `element` mechanism.
         // TODO: other dynamic data
-        childLogic = this.logic.element;
+        childPath = this.logicPath.getChild(DYNAMIC);
       } else {
         // Fields for plain properties exist in our logic node's child map.
-        childLogic = this.logic.getChild(key);
+        childPath = this.logicPath.getChild(key);
       }
       childrenMap ??= new Map<PropertyKey, FieldNode>();
-      childrenMap.set(key, new FieldNode(deepSignal(this.value, key as never), childLogic, this));
+      childrenMap.set(
+        key,
+        new FieldNode(deepSignal(this.value, key as never), childPath, this, key),
+      );
     }
 
     return childrenMap;
   }
 
-  static newRoot<T>(value: WritableSignal<T>, logic: FieldLogicNode): FieldNode {
-    return new FieldNode(value, logic, undefined);
+  static newRoot<T>(value: WritableSignal<T>, path: FieldPathNode): FieldNode {
+    return new FieldNode(value, path, undefined, undefined);
   }
 }
 
