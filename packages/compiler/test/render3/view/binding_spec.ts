@@ -9,13 +9,9 @@
 import * as e from '../../../src/expression_parser/ast';
 import * as a from '../../../src/render3/r3_ast';
 import {DirectiveMeta, InputOutputPropertySet} from '../../../src/render3/view/t2_api';
-import {
-  DirectiveMatcher,
-  findMatchingDirectivesAndPipes,
-  R3TargetBinder,
-} from '../../../src/render3/view/t2_binder';
+import {findMatchingDirectivesAndPipes, R3TargetBinder} from '../../../src/render3/view/t2_binder';
 import {parseTemplate, ParseTemplateOptions} from '../../../src/render3/view/template';
-import {CssSelector, SelectorMatcher} from '../../../src/directive_matching';
+import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../../src/directive_matching';
 
 import {findExpression} from './util';
 
@@ -1017,6 +1013,274 @@ describe('t2 binding', () => {
       const binder = new R3TargetBinder(makeSelectorMatcher());
       const res = binder.bind({template: template.nodes});
       expect(res.getUsedPipes()).toEqual(['number', 'date']);
+    });
+  });
+
+  describe('selectorless', () => {
+    const options: ParseTemplateOptions = {enableSelectorless: true};
+    const baseMeta = {
+      selector: null,
+      inputs: new IdentityInputMapping([]),
+      outputs: new IdentityInputMapping([]),
+      exportAs: null,
+      isStructural: false,
+      ngContentSelectors: null,
+      preserveWhitespaces: false,
+      animationTriggerNames: null,
+      isComponent: false,
+    };
+
+    function makeSelectorlessMatcher(
+      directives: DirectiveMeta[],
+    ): SelectorlessMatcher<DirectiveMeta[]> {
+      const registry = new Map<string, DirectiveMeta[]>();
+
+      for (const dir of directives) {
+        registry.set(dir.name, [dir]);
+      }
+
+      return new SelectorlessMatcher(registry);
+    }
+
+    it('should resolve all selectorless directives that were applied to a component node', () => {
+      const template = parseTemplate('<MyComp @Dir @OtherDir/>', '', options);
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'MyComp',
+            isComponent: true,
+          },
+          {
+            ...baseMeta,
+            name: 'Dir',
+          },
+          {
+            ...baseMeta,
+            name: 'OtherDir',
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      const node = template.nodes[0] as a.Component;
+      const directives = res.getDirectivesOfNode(node)!;
+      expect(directives.map((d) => d.name)).toEqual(['MyComp', 'Dir', 'OtherDir']);
+    });
+
+    it('should resolve all selectorless directives that were applied to an element node', () => {
+      const template = parseTemplate('<div @Dir @OtherDir></div>', '', options);
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'Dir',
+          },
+          {
+            ...baseMeta,
+            name: 'OtherDir',
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      const node = template.nodes[0] as a.Element;
+      const directives = res.getDirectivesOfNode(node)!;
+      expect(directives.map((d) => d.name)).toEqual(['Dir', 'OtherDir']);
+    });
+
+    it('should resolve a reference on a component node to the component', () => {
+      const template = parseTemplate('<MyComp #foo/>', '', options);
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'MyComp',
+            isComponent: true,
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      const node = template.nodes[0] as a.Component;
+      const reference = node.references[0];
+      const result = res.getReferenceTarget(reference) as {node: a.Node; directive: DirectiveMeta};
+      expect(result.node).toBe(node);
+      expect(result.directive.name).toBe('MyComp');
+    });
+
+    it('should resolve a reference on a directive node to the component', () => {
+      const template = parseTemplate('<div @Dir(#foo)></div>', '', options);
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'Dir',
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      const node = template.nodes[0] as a.Element;
+      const directive = node.directives[0];
+      const reference = directive.references[0];
+      const result = res.getReferenceTarget(reference) as {node: a.Node; directive: DirectiveMeta};
+      expect(result.node).toBe(directive);
+      expect(result.directive.name).toBe('Dir');
+    });
+
+    it('should get consumer of component bindings', () => {
+      const template = parseTemplate(
+        '<MyComp [input]="value" static="value" (output)="doStuff()" [doesNotExist]="value" [attr.input]="value"/>',
+        '',
+        options,
+      );
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'MyComp',
+            isComponent: true,
+            inputs: new IdentityInputMapping(['input', 'static']),
+            outputs: new IdentityInputMapping(['output']),
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      const node = template.nodes[0] as a.Component;
+      const input = node.inputs[0];
+      const staticAttr = node.attributes[0];
+      const output = node.outputs[0];
+      const doesNotExist = node.inputs[1];
+      const attrBinding = node.attributes[1];
+
+      expect((res.getConsumerOfBinding(input) as DirectiveMeta)?.name).toBe('MyComp');
+      expect((res.getConsumerOfBinding(staticAttr) as DirectiveMeta)?.name).toBe('MyComp');
+      expect((res.getConsumerOfBinding(output) as DirectiveMeta)?.name).toBe('MyComp');
+      expect(res.getConsumerOfBinding(doesNotExist)).toBe(null);
+      expect(res.getConsumerOfBinding(attrBinding)).toBe(null);
+    });
+
+    it('should get consumer of directive bindings', () => {
+      const template = parseTemplate(
+        '<div @Dir([input]="value" static="value" (output)="doStuff()" [doesNotExist]="value")></div>',
+        '',
+        options,
+      );
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'Dir',
+            inputs: new IdentityInputMapping(['input', 'static']),
+            outputs: new IdentityInputMapping(['output']),
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      const node = template.nodes[0] as a.Element;
+      const directive = node.directives[0];
+      const input = directive.inputs[0];
+      const staticAttr = directive.attributes[0];
+      const output = directive.outputs[0];
+      const doesNotExist = directive.inputs[1];
+
+      expect((res.getConsumerOfBinding(input) as DirectiveMeta)?.name).toBe('Dir');
+      expect((res.getConsumerOfBinding(staticAttr) as DirectiveMeta)?.name).toBe('Dir');
+      expect((res.getConsumerOfBinding(output) as DirectiveMeta)?.name).toBe('Dir');
+      expect(res.getConsumerOfBinding(doesNotExist)).toBe(null);
+    });
+
+    it('should get eagerly-used selectorless directives', () => {
+      const template = parseTemplate('<MyComp @Dir @OtherDir/>', '', options);
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'MyComp',
+            isComponent: true,
+          },
+          {
+            ...baseMeta,
+            name: 'Dir',
+          },
+          {
+            ...baseMeta,
+            name: 'OtherDir',
+          },
+          {
+            ...baseMeta,
+            name: 'UnusedDir',
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir', 'OtherDir']);
+      expect(res.getEagerlyUsedDirectives().map((dir) => dir.name)).toEqual([
+        'MyComp',
+        'Dir',
+        'OtherDir',
+      ]);
+    });
+
+    it('should get deferred selectorless directives', () => {
+      const template = parseTemplate('@defer {<MyComp @Dir @OtherDir/>}', '', options);
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'MyComp',
+            isComponent: true,
+          },
+          {
+            ...baseMeta,
+            name: 'Dir',
+          },
+          {
+            ...baseMeta,
+            name: 'OtherDir',
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir', 'OtherDir']);
+      expect(res.getEagerlyUsedDirectives().map((dir) => dir.name)).toEqual([]);
+    });
+
+    it('should get selectorless directives nested in other code', () => {
+      const template = parseTemplate(
+        `
+        <section>
+          @if (someCond) {
+            <MyComp>
+              <div>
+                <h1>
+                  <span @Dir></span>
+                </h1>
+              </div>
+            </MyComp>
+          }
+        </section>
+      `,
+        '',
+        options,
+      );
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'MyComp',
+            isComponent: true,
+          },
+          {
+            ...baseMeta,
+            name: 'Dir',
+          },
+          {
+            ...baseMeta,
+            name: 'UnusedDir',
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      expect(res.getUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir']);
+      expect(res.getEagerlyUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir']);
     });
   });
 });
