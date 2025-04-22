@@ -11,6 +11,8 @@ import {
   LOCATION_INITIALIZED,
   LocationStrategy,
   ViewportScroller,
+  Location,
+  ɵNavigationAdapterForLocation,
 } from '@angular/common';
 import {
   APP_BOOTSTRAP_LISTENER,
@@ -26,10 +28,11 @@ import {
   provideAppInitializer,
   Provider,
   runInInjectionContext,
-  Type,
   ɵperformanceMarkFeature as performanceMarkFeature,
   ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
   ɵpublishExternalGlobalUtil,
+  provideEnvironmentInitializer,
+  Type,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -52,6 +55,8 @@ import {
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
 import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
+import {StateManager} from './statemanager/state_manager';
+import {NavigationStateManager} from './statemanager/navigation_state_manager';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -229,6 +234,31 @@ export function withInMemoryScrolling(
         return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, options);
       },
     },
+  ];
+  return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
+}
+
+export function withPlatformNavigation() {
+  const providers = [
+    {provide: StateManager, useExisting: NavigationStateManager},
+    {provide: Location, useClass: ɵNavigationAdapterForLocation},
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? [
+          provideEnvironmentInitializer(() => {
+            const locationInstance = inject(Location);
+            if (!(locationInstance instanceof ɵNavigationAdapterForLocation)) {
+              const locationConstructorName = (locationInstance as any).constructor.name;
+              let message =
+                `'withPlatformNavigation' provides a 'Location' implementation that ensures navigation APIs are consistently used.` +
+                ` An instance of ${locationConstructorName} was found instead.`;
+              if (locationConstructorName === 'SpyLocation') {
+                message += ` One of 'RouterTestingModule' or 'provideLocationMocks' was likely used. 'withPlatformNavigation' does not work with these because they override the Location implementation.`;
+              }
+              throw new Error(message);
+            }
+          }),
+        ]
+      : [],
   ];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
 }
