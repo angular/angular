@@ -162,7 +162,7 @@
     "@actions/github": "^6.0.0",
     "@angular-devkit/architect-cli": "0.2000.0-next.6",
     "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#94729f43b53fb611c71c695733d2fb3d873cd25d",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#12f9c88e06a6d235d7d3410be9df52442eb552ba",
     "@babel/plugin-proposal-async-generator-functions": "7.20.7",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^8.0.0",
