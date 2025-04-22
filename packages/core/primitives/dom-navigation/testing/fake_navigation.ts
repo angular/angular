@@ -101,10 +101,11 @@ export class FakeNavigation implements Navigation {
   }
 
   constructor(
-    private readonly window: Window,
+    private readonly window: Pick<Window, 'dispatchEvent'>,
+    private readonly createEventTarget: () => EventTarget,
     startURL: `http${string}`,
   ) {
-    this.eventTarget = this.window.document.createElement('div');
+    this.eventTarget = this.createEventTarget();
     // First entry.
     this.setInitialEntryForTesting(startURL);
   }
@@ -122,18 +123,14 @@ export class FakeNavigation implements Navigation {
       );
     }
     const currentInitialEntry = this.entriesArr[0];
-    this.entriesArr[0] = new FakeNavigationHistoryEntry(
-      this.window.document.createElement('div'),
-      new URL(url).toString(),
-      {
-        index: 0,
-        key: currentInitialEntry?.key ?? String(this.nextKey++),
-        id: currentInitialEntry?.id ?? String(this.nextId++),
-        sameDocument: true,
-        historyState: options?.historyState,
-        state: options.state,
-      },
-    );
+    this.entriesArr[0] = new FakeNavigationHistoryEntry(this.eventTarget, new URL(url).toString(), {
+      index: 0,
+      key: currentInitialEntry?.key ?? String(this.nextKey++),
+      id: currentInitialEntry?.id ?? String(this.nextId++),
+      sameDocument: true,
+      historyState: options?.historyState,
+      state: options.state,
+    });
   }
 
   /** Returns whether the initial entry is still eligible to be set. */
@@ -430,8 +427,7 @@ export class FakeNavigation implements Navigation {
   /** Cleans up resources. */
   dispose(): void {
     // Recreate eventTarget to release current listeners.
-    // `document.createElement` because NodeJS `EventTarget` is incompatible with Domino's `Event`.
-    this.eventTarget = this.window.document.createElement('div');
+    this.eventTarget = this.createEventTarget();
     this.disposed = true;
   }
 
@@ -532,18 +528,14 @@ export class FakeNavigation implements Navigation {
     if (navigationType === 'push' || navigationType === 'replace') {
       const index = this.currentEntryIndex;
       const key = navigationType === 'push' ? String(this.nextKey++) : this.currentEntry.key;
-      const newNHE = new FakeNavigationHistoryEntry(
-        this.window.document.createElement('div'),
-        destination.url,
-        {
-          id: String(this.nextId++),
-          key,
-          index,
-          sameDocument: true,
-          state: destination.getState(),
-          historyState: destination.getHistoryState(),
-        },
-      );
+      const newNHE = new FakeNavigationHistoryEntry(this.eventTarget, destination.url, {
+        id: String(this.nextId++),
+        key,
+        index,
+        sameDocument: true,
+        state: destination.getState(),
+        historyState: destination.getHistoryState(),
+      });
       this.entriesArr[this.currentEntryIndex] = newNHE;
     }
     result.committedResolve(this.currentEntry);

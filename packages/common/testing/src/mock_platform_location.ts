@@ -280,13 +280,21 @@ export class MockPlatformLocation implements PlatformLocation {
   }
 }
 
+/** Used to coordinate dispatching popState/hashChange events from FakeNavigation to the listeners in PlatformLocation. */
+export const WINDOW_TARGET = new InjectionToken<
+  Pick<Window, 'addEventListener' | 'removeEventListener' | 'dispatchEvent'>
+>('window', {
+  providedIn: 'root',
+  factory: () => inject(DOCUMENT).defaultView ?? new EventTarget(),
+});
+
 /**
  * Mock implementation of URL state.
  */
 @Injectable()
 export class FakeNavigationPlatformLocation implements PlatformLocation {
   private _platformNavigation = inject(PlatformNavigation) as FakeNavigation;
-  private window = inject(DOCUMENT).defaultView!;
+  private readonly window = inject(WINDOW_TARGET);
 
   constructor() {
     if (!(this._platformNavigation instanceof FakeNavigation)) {
