@@ -1,3 +1,50 @@
+<a name="20.0.0-next.8"></a>
+# 20.0.0-next.8 (2025-04-23)
+## Breaking Changes
+### compiler
+- 'in' in an expression now refers to the operator
+### core
+- `provideExperimentalZonelessChangeDetection` is
+  renamed to `provideZonelessChangeDetection` as it is now "Developer
+  Preview" rather than "Experimental".
+### router
+- The `RedirectFn` can now return `Observable` or
+  `Promise`. Any code that directly calls functions returning this type
+  may need to be adjusted to account for this.
+- Several methods in the public API of the Router which
+  required writable arrays have now been updated to accept readonly
+  arrays when no mutations are done.
+## Deprecations
+### platform-server
+- `@angular/platform-server/testing`
+  
+  Use e2e tests to verify SSR behavior instead.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1b8e7ab9fe](https://github.com/angular/angular/commit/1b8e7ab9fe46901979389b377be4232e11092260) | feat | support the `in` keyword in Binary expression ([#58432](https://github.com/angular/angular/pull/58432)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [953c4b2580](https://github.com/angular/angular/commit/953c4b25808b357e78bf1cf6b2ef8b4a84ffaf49) | feat | Move zoneless change detection to dev preview ([#60748](https://github.com/angular/angular/pull/60748)) |
+| [0ac949c266](https://github.com/angular/angular/commit/0ac949c266637ab723430ff17adb1af58b14fa0d) | fix | do not run change detection on global error events ([#60944](https://github.com/angular/angular/pull/60944)) |
+| [0162ceb427](https://github.com/angular/angular/commit/0162ceb427243e065d2cd81042451d705838d090) | fix | inject migration should treat `@Attribute` as optional ([#60916](https://github.com/angular/angular/pull/60916)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [be995623cd](https://github.com/angular/angular/commit/be995623cd9604633384c8697dc0c1bf6066e756) | fix | make NgForm emit FormSubmittedEvent and FormResetEvent ([#60887](https://github.com/angular/angular/pull/60887)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2240a21c97](https://github.com/angular/angular/commit/2240a21c9703f3b1945a37ebe86428a8daf40b36) | refactor | deprecate the testing entry point ([#60915](https://github.com/angular/angular/pull/60915)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [62de7d930a](https://github.com/angular/angular/commit/62de7d930a5d2f3cc39b6bf38dedbe3e9d938842) | feat | add asynchronous redirects ([#60863](https://github.com/angular/angular/pull/60863)) |
+| [2419060fef](https://github.com/angular/angular/commit/2419060fef4e59a5633c29bfd5d55e2d5a17dd00) | fix | relax required types on router commands to readonly array ([#60345](https://github.com/angular/angular/pull/60345)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.8"></a>
 # 19.2.8 (2025-04-23)
 ### forms
