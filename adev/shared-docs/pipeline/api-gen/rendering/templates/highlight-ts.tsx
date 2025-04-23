@@ -11,8 +11,9 @@ import {RawHtml} from './raw-html';
 import {codeToHtml} from '../shiki/shiki';
 
 /** Component to render a header of the CLI page. */
-export function HighlightTypeScript(props: {code: string; }) {
+export function HighlightTypeScript(props: {code: string}) {
   const result = codeToHtml(props.code, 'typescript');
+  const withScrollTrack = result.replace(/^(<pre class="shiki)/, '$1 docs-mini-scroll-track');
 
-  return <RawHtml value={result} />;
+  return <RawHtml value={withScrollTrack} />;
 }

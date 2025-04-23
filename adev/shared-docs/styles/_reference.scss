@@ -140,13 +140,10 @@
 
         code {
           font-size: 0.875rem;
+          overflow: hidden;
 
           &:has(pre) {
             padding: 0;
-          }
-
-          &:not(pre *) {
-            padding: 0 0.3rem;
           }
         }
 
