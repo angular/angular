@@ -59,16 +59,13 @@ export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): Si
   const getter = (() => signalGetFn(node)) as SignalGetter<T>;
   (getter as any)[SIGNAL] = node;
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    getter.toString = () => `[${createSignalDebugName(node)}: ${node.value}]`;
+    const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
+    getter.toString = () => `[Signal${debugName}: ${node.value}]`;
   }
 
   runPostProducerCreatedFn(node);
 
   return getter;
-}
-
-function createSignalDebugName<T>(node: SignalNode<T>) {
-  return `Signal${node.debugName ? ' (' + node.debugName + ')' : ''}`;
 }
 
 /**
@@ -80,13 +77,8 @@ export function createSignalTuple<T>(
 ): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>] {
   const getter = createSignal(initialValue, equal);
   const node = getter[SIGNAL];
-  const debugName = node.debugName;
   const set = (newValue: T) => signalSetFn(node, newValue);
   const update = (updateFn: (value: T) => T) => signalUpdateFn(node, updateFn);
-  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    set.toString = () => `[${createSignalDebugName} Setter:${node.value}]`;
-    update.toString = () => `[${createSignalDebugName} Updater:${node.value}]`;
-  }
   return [getter, set, update];
 }
 
