@@ -53,7 +53,10 @@ export function ngDebugProfilerApiIsSupported(): boolean {
   const roots = getRoots();
   return (
     !!roots.length &&
-    !roots.some((el) => ng.getDirectiveMetadata?.(el)?.framework === Framework.Wiz)
+    !roots.some((el) => {
+      const comp = ng.getComponent!(el)!;
+      return ng.getDirectiveMetadata?.(comp)?.framework === Framework.Wiz;
+    })
   );
 }
 
@@ -66,6 +69,9 @@ export function ngDebugRoutesApiIsSupported(): boolean {
   const roots = getRoots();
   return (
     !!roots.length &&
-    !roots.some((el) => ng.getDirectiveMetadata?.(el)?.framework === Framework.Wiz)
+    !roots.some((el) => {
+      const comp = ng.getComponent!(el)!;
+      return ng.getDirectiveMetadata?.(comp)?.framework === Framework.Wiz;
+    })
   );
 }
