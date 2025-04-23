@@ -1,12 +1,3 @@
-<a name="19.2.8"></a>
-# 19.2.8 (2025-04-23)
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ea4a211216](https://github.com/angular/angular/commit/ea4a21121681c78652f314c78c58390dca25f266) | fix | make NgForm emit FormSubmittedEvent and FormResetEvent ([#60887](https://github.com/angular/angular/pull/60887)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="19.2.7"></a>
 # 19.2.7 (2025-04-16)
 ### common
