@@ -826,7 +826,7 @@ function prepareDeclarations(
     for (const meta of directives) {
       registry.set(meta.name, [meta, ...hostDirectiveResolder.resolve(meta)]);
     }
-    return {matcher: new SelectorlessMatcher<DirectiveMeta[]>(registry), pipes};
+    return {matcher: new SelectorlessMatcher<DirectiveMeta>(registry), pipes};
   } else {
     const matcher = new SelectorMatcher<DirectiveMeta[]>();
     for (const meta of directives) {
