@@ -231,6 +231,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestForBlock(unit, node);
     } else if (node instanceof t.LetDeclaration) {
       ingestLetDeclaration(unit, node);
+    } else if (node instanceof t.Component) {
+      // TODO(crisbeto): account for selectorless nodes.
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }

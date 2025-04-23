@@ -272,6 +272,7 @@ export class ComponentDecoratorHandler
     private readonly enableHmr: boolean,
     private readonly implicitStandaloneValue: boolean,
     private readonly typeCheckHostBindings: boolean,
+    private readonly enableSelectorless: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -279,6 +280,7 @@ export class ComponentDecoratorHandler
       usePoisonedData: this.usePoisonedData,
       enableBlockSyntax: this.enableBlockSyntax,
       enableLetSyntax: this.enableLetSyntax,
+      enableSelectorless: this.enableSelectorless,
       preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
     };
 
@@ -308,6 +310,7 @@ export class ComponentDecoratorHandler
     usePoisonedData: boolean;
     enableBlockSyntax: boolean;
     enableLetSyntax: boolean;
+    enableSelectorless: boolean;
     preserveSignificantWhitespace?: boolean;
   };
 
@@ -705,6 +708,7 @@ export class ComponentDecoratorHandler
             usePoisonedData: this.usePoisonedData,
             enableBlockSyntax: this.enableBlockSyntax,
             enableLetSyntax: this.enableLetSyntax,
+            enableSelectorless: this.enableSelectorless,
             preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
           },
           this.compilationMode,

@@ -121,6 +121,13 @@ export interface InternalOptions {
    */
   _enableHmr?: boolean;
 
+  /**
+   * Whether selectorless is enabled.
+   *
+   * @internal
+   */
+  _enableSelectorless?: boolean;
+
   // TODO(crisbeto): this is a temporary flag that will be removed in v20.
   /**
    * Whether to check the event side of two-way bindings.
