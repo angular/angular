@@ -64,6 +64,7 @@ export {
   ApplicationInitStatus,
   provideAppInitializer,
 } from './application/application_init';
+export {IdleService, provideIdleServiceWith} from './defer/idle_service';
 export * from './zone';
 export * from './render';
 export * from './linker';

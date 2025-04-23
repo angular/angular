@@ -8,6 +8,7 @@
 
 import {Injector, inject, ɵɵdefineInjectable} from '../di';
 import {NgZone} from '../zone';
+import {IDLE_SERVICE} from './idle_service';
 
 /**
  * Helper function to schedule a callback to be invoked when a browser becomes idle.
@@ -21,18 +22,6 @@ export function onIdle(callback: VoidFunction, injector: Injector) {
   scheduler.add(callback);
   return cleanupFn;
 }
-
-/**
- * Use shims for the `requestIdleCallback` and `cancelIdleCallback` functions for
- * environments where those functions are not available (e.g. Node.js and Safari).
- *
- * Note: we wrap the `requestIdleCallback` call into a function, so that it can be
- * overridden/mocked in test environment and picked up by the runtime code.
- */
-const _requestIdleCallback = () =>
-  typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout;
-const _cancelIdleCallback = () =>
-  typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
 
 /**
  * Helper service to schedule `requestIdleCallback`s for batches of defer blocks,
@@ -55,8 +44,7 @@ export class IdleScheduler {
 
   ngZone = inject(NgZone);
 
-  requestIdleCallbackFn = _requestIdleCallback().bind(globalThis);
-  cancelIdleCallbackFn = _cancelIdleCallback().bind(globalThis);
+  private readonly idleService = inject(IDLE_SERVICE);
 
   add(callback: VoidFunction) {
     const target = this.executingCallbacks ? this.deferred : this.current;
@@ -105,12 +93,12 @@ export class IdleScheduler {
     };
     // Ensure that the callback runs in the NgZone since
     // the `requestIdleCallback` is not currently patched by Zone.js.
-    this.idleId = this.requestIdleCallbackFn(() => this.ngZone.run(callback)) as number;
+    this.idleId = this.idleService.requestOnIdle(() => this.ngZone.run(callback));
   }
 
   private cancelIdleCallback() {
     if (this.idleId !== null) {
-      this.cancelIdleCallbackFn(this.idleId);
+      this.idleService.cancelOnIdle(this.idleId);
       this.idleId = null;
     }
   }
