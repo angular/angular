@@ -109,7 +109,7 @@ export class FakeNavigation implements Navigation {
     return this._window;
   }
 
-  constructor(document: Document, startURL: `http${string}`) {
+  constructor(doc: Document, startURL: `http${string}`) {
     this.createEventTarget = () => {
       try {
         // `document.createElement` because NodeJS `EventTarget` is
@@ -117,7 +117,7 @@ export class FakeNavigation implements Navigation {
         // dispatch an event created by Domino's patched `Event` will
         // throw an error since it is not an instance of a real Node
         // `Event`.
-        return document.createElement('div');
+        return doc.createElement('div');
       } catch {
         // Fallback to a basic EventTarget if `document.createElement`
         // fails. This can happen with tests that pass in a value for document
