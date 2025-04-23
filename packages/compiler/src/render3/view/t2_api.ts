@@ -272,5 +272,18 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
   /**
    * Whether a given node is located in a `@defer` block.
    */
-  isDeferred(node: Element | Component): boolean;
+  isDeferred(node: Element): boolean;
+
+  /**
+   * Returns the directives that are owned by a specific component/directive node. This is either
+   * the directive being referenced itself or its host directives.
+   * @param node Node for which to retrieve the owned directives.
+   */
+  getOwnedDirectives(node: Component | Directive): DirectiveT[] | null;
+
+  /**
+   * Checks whether a component/directive that was referenced directly in the template exists.
+   * @param name Name of the component/directive.
+   */
+  referencedDirectiveExists(name: string): boolean;
 }

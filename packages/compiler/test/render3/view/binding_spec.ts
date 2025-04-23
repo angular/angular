@@ -1032,7 +1032,7 @@ describe('t2 binding', () => {
 
     function makeSelectorlessMatcher(
       directives: DirectiveMeta[],
-    ): SelectorlessMatcher<DirectiveMeta[]> {
+    ): SelectorlessMatcher<DirectiveMeta> {
       const registry = new Map<string, DirectiveMeta[]>();
 
       for (const dir of directives) {
@@ -1281,6 +1281,71 @@ describe('t2 binding', () => {
       const res = binder.bind({template: template.nodes});
       expect(res.getUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir']);
       expect(res.getEagerlyUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir']);
+    });
+
+    it('should get the directives that are owned by a specific directive', () => {
+      const template = parseTemplate('<MyComp @Dir/>', '', options);
+      const registry = new Map<string, DirectiveMeta[]>([
+        [
+          'MyComp',
+          [
+            {
+              ...baseMeta,
+              name: 'MyComp',
+              isComponent: true,
+            },
+            {
+              ...baseMeta,
+              name: 'CompHostDir',
+            },
+          ],
+        ],
+        [
+          'Dir',
+          [
+            {
+              ...baseMeta,
+              name: 'Dir',
+            },
+            {
+              ...baseMeta,
+              name: 'HostDir',
+            },
+          ],
+        ],
+      ]);
+
+      const binder = new R3TargetBinder(new SelectorlessMatcher(registry));
+      const res = binder.bind({template: template.nodes});
+      const component = template.nodes[0] as a.Component;
+      const directive = component.directives[0];
+      expect(res.getOwnedDirectives(component)?.map((d) => d.name)).toEqual([
+        'MyComp',
+        'CompHostDir',
+      ]);
+      expect(res.getOwnedDirectives(directive)?.map((d) => d.name)).toEqual(['Dir', 'HostDir']);
+    });
+
+    it('should check whether a referenced directive exists', () => {
+      const template = parseTemplate('<MyComp @MissingDir/><MissingComp @Dir/>', '', options);
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'MyComp',
+            isComponent: true,
+          },
+          {
+            ...baseMeta,
+            name: 'Dir',
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      expect(res.referencedDirectiveExists('MyComp')).toBe(true);
+      expect(res.referencedDirectiveExists('Dir')).toBe(true);
+      expect(res.referencedDirectiveExists('MissingDir')).toBe(false);
+      expect(res.referencedDirectiveExists('MissingComp')).toBe(false);
     });
   });
 });

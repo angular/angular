@@ -93,7 +93,10 @@ type ReferenceMap<DirectiveT> = Map<
 >;
 
 /** Mapping between AST nodes and the directives that have been matched on them. */
-type MatchedDirectives<DirectiveT> = Map<Template | Element | Component, DirectiveT[]>;
+type MatchedDirectives<DirectiveT> = Map<Template | Element | Component | Directive, DirectiveT[]>;
+
+/** Mapping between AST nodes and the directives that they own. */
+type OwnedDirectives<DirectiveT> = Map<Component | Directive, DirectiveT[]>;
 
 /**
  * Mapping between a scoped not and the template entities that exist in it.
@@ -162,7 +165,7 @@ export function findMatchingDirectivesAndPipes(template: string, directiveSelect
 /** Object used to match template nodes to directives. */
 export type DirectiveMatcher<DirectiveT extends DirectiveMeta> =
   | SelectorMatcher<DirectiveT[]>
-  | SelectorlessMatcher<DirectiveT[]>;
+  | SelectorlessMatcher<DirectiveT>;
 
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
@@ -182,7 +185,9 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     }
 
     const directives: MatchedDirectives<DirectiveT> = new Map();
+    const ownedDirectives: OwnedDirectives<DirectiveT> = new Map();
     const eagerDirectives: DirectiveT[] = [];
+    const missingDirectives = new Set<string>();
     const bindings: BindingsMap<DirectiveT> = new Map();
     const references: ReferenceMap<DirectiveT> = new Map();
     const scopedNodeEntities: ScopedNodeEntities = new Map();
@@ -210,7 +215,9 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         target.template,
         this.directiveMatcher,
         directives,
+        ownedDirectives,
         eagerDirectives,
+        missingDirectives,
         bindings,
         references,
       );
@@ -247,7 +254,9 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     return new R3BoundTarget(
       target,
       directives,
+      ownedDirectives,
       eagerDirectives,
+      missingDirectives,
       bindings,
       references,
       expressions,
@@ -503,7 +512,9 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   private constructor(
     private directiveMatcher: DirectiveMatcher<DirectiveT>,
     private directives: MatchedDirectives<DirectiveT>,
+    private ownedDirectives: OwnedDirectives<DirectiveT>,
     private eagerDirectives: DirectiveT[],
+    private missingDirectives: Set<string>,
     private bindings: BindingsMap<DirectiveT>,
     private references: ReferenceMap<DirectiveT>,
   ) {}
@@ -524,14 +535,18 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     template: Node[],
     directiveMatcher: DirectiveMatcher<DirectiveT>,
     directives: MatchedDirectives<DirectiveT>,
+    ownedDirectives: OwnedDirectives<DirectiveT>,
     eagerDirectives: DirectiveT[],
+    missingDirectives: Set<string>,
     bindings: BindingsMap<DirectiveT>,
     references: ReferenceMap<DirectiveT>,
   ): void {
     const matcher = new DirectiveBinder(
       directiveMatcher,
       directives,
+      ownedDirectives,
       eagerDirectives,
+      missingDirectives,
       bindings,
       references,
     );
@@ -606,29 +621,30 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitComponent(node: Component): void {
-    const directives: DirectiveT[] = [];
-    let componentMetas: DirectiveT[] | null = null;
-
     if (this.directiveMatcher instanceof SelectorlessMatcher) {
-      componentMetas = this.directiveMatcher.match(node.componentName);
+      const componentMatches = this.directiveMatcher.match(node.componentName);
+      const directives: DirectiveT[] = [];
 
-      if (componentMetas !== null) {
-        directives.push(...componentMetas);
+      if (componentMatches.length > 0) {
+        directives.push(...componentMatches);
+        this.ownedDirectives.set(node, componentMatches);
+      } else {
+        this.missingDirectives.add(node.componentName);
       }
 
       for (const directive of node.directives) {
         const directiveMetas = this.directiveMatcher.match(directive.name);
 
-        if (directiveMetas !== null) {
+        if (directiveMetas.length > 0) {
           directives.push(...directiveMetas);
+          this.ownedDirectives.set(directive, directiveMetas);
+        } else {
+          this.missingDirectives.add(directive.name);
         }
       }
-    }
 
-    this.trackMatchedDirectives(node, directives);
-
-    if (componentMetas !== null) {
-      this.trackSelectorlessBindings(node, componentMetas);
+      this.trackMatchedDirectives(node, directives);
+      this.trackSelectorlessBindings(node, componentMatches);
     }
 
     node.directives.forEach((directive) => directive.visit(this));
@@ -641,7 +657,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
         ? this.directiveMatcher.match(node.name)
         : null;
 
-    if (directives !== null) {
+    if (directives !== null && directives.length > 0) {
       this.trackSelectorlessBindings(node, directives);
     }
   }
@@ -663,8 +679,11 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
       for (const directive of node.directives) {
         const matchedDirectives = this.directiveMatcher.match(directive.name);
 
-        if (matchedDirectives !== null) {
+        if (matchedDirectives.length > 0) {
           directives.push(...matchedDirectives);
+          this.ownedDirectives.set(directive, matchedDirectives);
+        } else {
+          this.missingDirectives.add(directive.name);
         }
       }
     }
@@ -687,6 +706,10 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   private trackSelectorlessBindings(node: Component | Directive, metas: DirectiveT[]): void {
+    if (metas.length === 0) {
+      return;
+    }
+
     const setBinding = (
       meta: DirectiveT,
       attribute: BoundAttribute | BoundEvent | TextAttribute,
@@ -706,9 +729,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     // TODO(crisbeto): currently it's unclear how references should behave under selectorless,
     // given that there's one named class which can bring in multiple host directives.
     // For the time being only register the first directive as the reference target.
-    if (metas.length > 0) {
-      node.references.forEach((ref) => this.references.set(ref, {directive: metas[0], node: node}));
-    }
+    node.references.forEach((ref) => this.references.set(ref, {directive: metas[0], node: node}));
   }
 
   private trackSelectorMatchedBindings(node: Element | Template, directives: DirectiveT[]): void {
@@ -1118,7 +1139,9 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
   constructor(
     readonly target: Target,
     private directives: MatchedDirectives<DirectiveT>,
+    private ownedDirectives: OwnedDirectives<DirectiveT>,
     private eagerDirectives: DirectiveT[],
+    private missingDirectives: Set<string>,
     private bindings: BindingsMap<DirectiveT>,
     private references: ReferenceMap<DirectiveT>,
     private exprTargets: Map<AST, TemplateEntity>,
@@ -1137,7 +1160,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     return this.scopedNodeEntities.get(node) ?? new Set();
   }
 
-  getDirectivesOfNode(node: Element | Template): DirectiveT[] | null {
+  getDirectivesOfNode(node: Element | Template | Component): DirectiveT[] | null {
     return this.directives.get(node) || null;
   }
 
@@ -1251,7 +1274,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     return null;
   }
 
-  isDeferred(element: Element | Component): boolean {
+  isDeferred(element: Element): boolean {
     for (const block of this.deferredBlocks) {
       if (!this.deferredScopes.has(block)) {
         continue;
@@ -1271,6 +1294,14 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     }
 
     return false;
+  }
+
+  getOwnedDirectives(node: Component | Directive): DirectiveT[] | null {
+    return this.ownedDirectives.get(node) || null;
+  }
+
+  referencedDirectiveExists(name: string): boolean {
+    return !this.missingDirectives.has(name);
   }
 
   /**
