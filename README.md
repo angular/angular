@@ -127,7 +127,6 @@ Join the conversation and help the community.
 - [X (formerly Twitter)][X (formerly Twitter)]
 - [Bluesky][bluesky]
 - [Discord][discord]
-- [Gitter][gitter]
 - [YouTube][youtube]
 - [StackOverflow][stackoverflow]
 - Find a Local [Meetup][meetup]
