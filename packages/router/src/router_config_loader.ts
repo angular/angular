@@ -7,16 +7,15 @@
  */
 
 import {
-  Compiler,
+  createNgModule,
   EnvironmentInjector,
-  inject,
   Injectable,
   InjectionToken,
   Injector,
   NgModuleFactory,
   Type,
 } from '@angular/core';
-import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
+import {ConnectableObservable, Observable, of, Subject} from 'rxjs';
 import {finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
 import {DefaultExport, LoadedRouterConfig, Route, Routes} from './models';
@@ -44,7 +43,6 @@ export class RouterConfigLoader {
   private childrenLoaders = new WeakMap<Route, Observable<LoadedRouterConfig>>();
   onLoadStartListener?: (r: Route) => void;
   onLoadEndListener?: (r: Route) => void;
-  private readonly compiler = inject(Compiler);
 
   loadComponent(route: Route): Observable<Type<unknown>> {
     if (this.componentLoaders.get(route)) {
@@ -53,9 +51,8 @@ export class RouterConfigLoader {
       return of(route._loadedComponent);
     }
 
-    if (this.onLoadStartListener) {
-      this.onLoadStartListener(route);
-    }
+    this.onLoadStartListener?.(route);
+
     const loadRunner = wrapIntoObservable(route.loadComponent!()).pipe(
       map(maybeUnwrapDefaultExport),
       tap((component) => {
@@ -85,15 +82,9 @@ export class RouterConfigLoader {
       return of({routes: route._loadedRoutes, injector: route._loadedInjector});
     }
 
-    if (this.onLoadStartListener) {
-      this.onLoadStartListener(route);
-    }
-    const moduleFactoryOrRoutes$ = loadChildren(
-      route,
-      this.compiler,
-      parentInjector,
-      this.onLoadEndListener,
-    );
+    this.onLoadStartListener?.(route);
+
+    const moduleFactoryOrRoutes$ = loadChildren(route, parentInjector, this.onLoadEndListener);
     const loadRunner = moduleFactoryOrRoutes$.pipe(
       finalize(() => {
         this.childrenLoaders.delete(route);
@@ -119,33 +110,38 @@ export class RouterConfigLoader {
  */
 export function loadChildren(
   route: Route,
-  compiler: Compiler,
   parentInjector: Injector,
   onLoadEndListener?: (r: Route) => void,
 ): Observable<LoadedRouterConfig> {
   return wrapIntoObservable(route.loadChildren!()).pipe(
     map(maybeUnwrapDefaultExport),
     mergeMap((t) => {
-      if (t instanceof NgModuleFactory || Array.isArray(t)) {
+      if (Array.isArray(t)) {
         return of(t);
       } else {
-        return from(compiler.compileModuleAsync(t));
+        // Using `Promise.resolve()` to preserve the execution order
+        // that existed previously when `compileModuleAsync` was called
+        // (since it returned a promise).
+        return Promise.resolve(t);
       }
     }),
-    map((factoryOrRoutes: NgModuleFactory<any> | Routes) => {
-      if (onLoadEndListener) {
-        onLoadEndListener(route);
-      }
+    map((ngModuleOrRoutes: NgModuleFactory<any> | Type<any> | Routes) => {
+      onLoadEndListener?.(route);
       // This injector comes from the `NgModuleRef` when lazy loading an `NgModule`. There is
       // no injector associated with lazy loading a `Route` array.
       let injector: EnvironmentInjector | undefined;
       let rawRoutes: Route[];
       let requireStandaloneComponents = false;
-      if (Array.isArray(factoryOrRoutes)) {
-        rawRoutes = factoryOrRoutes;
+      if (Array.isArray(ngModuleOrRoutes)) {
+        rawRoutes = ngModuleOrRoutes;
         requireStandaloneComponents = true;
       } else {
-        injector = factoryOrRoutes.create(parentInjector).injector;
+        const ngModuleRef =
+          ngModuleOrRoutes instanceof NgModuleFactory
+            ? ngModuleOrRoutes.create(parentInjector)
+            : createNgModule(ngModuleOrRoutes, parentInjector);
+
+        injector = ngModuleRef.injector;
         // When loading a module that doesn't provide `RouterModule.forChild()` preloader
         // will get stuck in an infinite loop. The child module's Injector will look to
         // its parent `Injector` when it doesn't find any ROUTES so it will return routes
