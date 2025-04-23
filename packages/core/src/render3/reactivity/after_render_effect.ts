@@ -40,8 +40,8 @@ import {LView} from '../interfaces/view';
 import {ViewContext} from '../view_context';
 import {assertNotInReactiveContext} from './asserts';
 
-const NOT_SET = Symbol('NOT_SET');
-const EMPTY_CLEANUP_SET = new Set<() => void>();
+const NOT_SET = /* @__PURE__ */ Symbol('NOT_SET');
+const EMPTY_CLEANUP_SET = /* @__PURE__ */ new Set<() => void>();
 
 /** Callback type for an `afterRenderEffect` phase effect */
 type AfterRenderPhaseEffectHook = (
