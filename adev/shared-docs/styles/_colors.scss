@@ -276,6 +276,7 @@
 // LIGHT MODE (Explicit)
 .docs-light-mode {
   background-color: #ffffff;
+  color-scheme: light;
   @include root-definitions();
   @include mdc-definitions();
   .docs-invert-mode {
@@ -287,6 +288,7 @@
 // DARK MODE (Explicit)
 .docs-dark-mode {
   background-color: oklch(16.93% 0.004 285.95);
+  color-scheme: dark;
   @include root-definitions();
   @include dark-mode-definitions();
   @include mdc-definitions();
