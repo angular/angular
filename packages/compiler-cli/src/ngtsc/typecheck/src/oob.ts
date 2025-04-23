@@ -13,6 +13,8 @@ import {
   PropertyWrite,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
+  TmplAstComponent,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
@@ -23,6 +25,7 @@ import {
   TmplAstReference,
   TmplAstSwitchBlockCase,
   TmplAstTemplate,
+  TmplAstTextAttribute,
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
 } from '@angular/compiler';
@@ -125,7 +128,7 @@ export interface OutOfBandDiagnosticRecorder {
   /** Reports required inputs that haven't been bound. */
   missingRequiredInputs(
     id: TypeCheckId,
-    element: TmplAstElement | TmplAstTemplate,
+    element: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
     directiveName: string,
     isComponent: boolean,
     inputAliases: string[],
@@ -185,6 +188,34 @@ export interface OutOfBandDiagnosticRecorder {
    * @param current the `TmplAstLetDeclaration` which is invalid.
    */
   conflictingDeclaration(id: TypeCheckId, current: TmplAstLetDeclaration): void;
+
+  /**
+   * Reports that a named template dependency (e.g. `<Missing/>`) is not available.
+   * @param id Type checking ID of the template in which the dependency is declared.
+   * @param node Node that declares the dependency.
+   */
+  missingNamedTemplateDependency(id: TypeCheckId, node: TmplAstComponent | TmplAstDirective): void;
+
+  /**
+   * Reports that a templace dependency of the wrong kind has been referenced at a specific position
+   * (e.g. `<SomeDirective/>`).
+   * @param id Type checking ID of the template in which the dependency is declared.
+   * @param node Node that declares the dependency.
+   */
+  incorrectTemplateDependencyType(id: TypeCheckId, node: TmplAstComponent | TmplAstDirective): void;
+
+  /**
+   * Reports a binding inside directive syntax that does not match any of the inputs/outputs of
+   * the directive.
+   * @param id Type checking ID of the template in which the directive was defined.
+   * @param directive Directive that contains the binding.
+   * @param node Node declaring the binding.
+   */
+  unclaimedDirectiveBinding(
+    id: TypeCheckId,
+    directive: TmplAstDirective,
+    node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
+  ): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -467,7 +498,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
   missingRequiredInputs(
     id: TypeCheckId,
-    element: TmplAstElement | TmplAstTemplate,
+    element: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
     directiveName: string,
     isComponent: boolean,
     inputAliases: string[],
@@ -652,6 +683,58 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         decl.sourceSpan,
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.CONFLICTING_LET_DECLARATION),
+        errorMsg,
+      ),
+    );
+  }
+
+  missingNamedTemplateDependency(id: TypeCheckId, node: TmplAstComponent | TmplAstDirective): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.startSourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.MISSING_NAMED_TEMPLATE_DEPENDENCY),
+        // Wording is meant to mimic the wording TS uses in their diagnostic for missing symbols.
+        `Cannot find name "${node instanceof TmplAstDirective ? node.name : node.componentName}".`,
+      ),
+    );
+  }
+
+  incorrectTemplateDependencyType(
+    id: TypeCheckId,
+    node: TmplAstComponent | TmplAstDirective,
+  ): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.startSourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE),
+        `Incorrect reference type. Type must be an ${node instanceof TmplAstComponent ? '@Component' : '@Directive'}.`,
+      ),
+    );
+  }
+
+  unclaimedDirectiveBinding(
+    id: TypeCheckId,
+    directive: TmplAstDirective,
+    node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
+  ): void {
+    const errorMsg =
+      `Directive ${directive.name} does not have an ` +
+      `${node instanceof TmplAstBoundEvent ? 'output' : 'input'} named "${node.name}". ` +
+      `Bindings to directives must target existing inputs or outputs.`;
+
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.keySpan || node.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.UNCLAIMED_DIRECTIVE_BINDING),
         errorMsg,
       ),
     );

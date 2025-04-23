@@ -17,8 +17,13 @@ import {
   R3TargetBinder,
   SelectorlessMatcher,
   SelectorMatcher,
+  TmplAstBoundAttribute,
+  TmplAstBoundEvent,
+  TmplAstComponent,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstLetDeclaration,
+  TmplAstTextAttribute,
 } from '@angular/compiler';
 import {readFileSync} from 'fs';
 import path from 'path';
@@ -1023,4 +1028,17 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
     target: TmplAstLetDeclaration,
   ): void {}
   conflictingDeclaration(id: TypeCheckId, current: TmplAstLetDeclaration): void {}
+  missingNamedTemplateDependency(
+    id: TypeCheckId,
+    node: TmplAstComponent | TmplAstDirective,
+  ): void {}
+  unclaimedDirectiveBinding(
+    id: TypeCheckId,
+    directive: TmplAstDirective,
+    node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
+  ): void {}
+  incorrectTemplateDependencyType(
+    id: TypeCheckId,
+    node: TmplAstComponent | TmplAstDirective,
+  ): void {}
 }

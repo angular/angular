@@ -162,6 +162,17 @@ export enum ErrorCode {
    */
   NON_STANDALONE_NOT_ALLOWED = 2023,
 
+  /**
+   * Raised when a named template dependency isn't defined in the component's source file.
+   */
+  MISSING_NAMED_TEMPLATE_DEPENDENCY = 2024,
+
+  /**
+   * Raised if an incorrect type is used for a named template dependency (e.g. directive
+   * class used as a component).
+   */
+  INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE = 2025,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
@@ -373,6 +384,12 @@ export enum ErrorCode {
 
   /** A `@let` declaration conflicts with another symbol in the same scope. */
   CONFLICTING_LET_DECLARATION = 8017,
+
+  /**
+   * A binding inside selectorless directive syntax did
+   * not match any inputs/outputs of the directive.
+   */
+  UNCLAIMED_DIRECTIVE_BINDING = 8018,
 
   /**
    * A two way binding in a template has an incorrect syntax,
