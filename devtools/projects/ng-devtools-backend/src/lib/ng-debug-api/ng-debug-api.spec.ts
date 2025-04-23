@@ -25,9 +25,10 @@ const mockRoot = () => {
 };
 
 /** Creates an `ng` object with a `getDirectiveMetadata` mock. */
-const createNgWithDirectiveMetadata = (
-  framework: Framework,
-): Partial<Record<keyof Ng, () => void>> => ({
+const fakeNgGlobal = (framework: Framework): Partial<Record<keyof Ng, () => void>> => ({
+  getComponent(): {} {
+    return {};
+  },
   getDirectiveMetadata(): Partial<ɵDirectiveDebugMetadata> {
     return {
       framework,
@@ -79,15 +80,15 @@ describe('ng-debug-api', () => {
     beforeEach(() => mockRoot());
 
     it('should support Profiler API', () => {
-      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Angular);
+      (globalThis as any).ng = fakeNgGlobal(Framework.Angular);
       expect(ngDebugProfilerApiIsSupported()).toBeTrue();
 
-      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.ACX);
+      (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
       expect(ngDebugProfilerApiIsSupported()).toBeTrue();
     });
 
     it('should NOT support Profiler API', () => {
-      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Wiz);
+      (globalThis as any).ng = fakeNgGlobal(Framework.Wiz);
 
       expect(ngDebugRoutesApiIsSupported()).toBeFalse();
     });
@@ -99,15 +100,15 @@ describe('ng-debug-api', () => {
     beforeEach(() => mockRoot());
 
     it('should support Routes API', () => {
-      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Angular);
+      (globalThis as any).ng = fakeNgGlobal(Framework.Angular);
       expect(ngDebugRoutesApiIsSupported()).toBeTrue();
 
-      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.ACX);
+      (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
       expect(ngDebugRoutesApiIsSupported()).toBeTrue();
     });
 
     it('should NOT support Routes API', () => {
-      (globalThis as any).ng = createNgWithDirectiveMetadata(Framework.Wiz);
+      (globalThis as any).ng = fakeNgGlobal(Framework.Wiz);
 
       expect(ngDebugRoutesApiIsSupported()).toBeFalse();
     });
