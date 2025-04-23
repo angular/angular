@@ -1152,7 +1152,8 @@ class TcbDomSchemaCheckerOp extends TcbOp {
     if (this.checkElement && isTemplateElement) {
       this.tcb.domSchemaChecker.checkElement(
         this.tcb.id,
-        element,
+        element.name,
+        element.startSourceSpan,
         this.tcb.schemas,
         this.tcb.hostIsStandalone,
       );
@@ -1175,7 +1176,7 @@ class TcbDomSchemaCheckerOp extends TcbOp {
         if (isTemplateElement) {
           this.tcb.domSchemaChecker.checkTemplateElementProperty(
             this.tcb.id,
-            element,
+            element.name,
             propertyName,
             binding.sourceSpan,
             this.tcb.schemas,
