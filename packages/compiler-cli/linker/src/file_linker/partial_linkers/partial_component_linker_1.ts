@@ -120,6 +120,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       i18nNormalizeLineEndingsInICUs: isInline,
       enableBlockSyntax,
       enableLetSyntax,
+      // TODO(crisbeto): figure out how this is enabled.
+      enableSelectorless: false,
     });
     if (template.errors !== null) {
       const errors = template.errors.map((err) => err.toString()).join('\n');

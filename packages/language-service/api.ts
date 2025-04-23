@@ -43,6 +43,11 @@ export interface PluginConfig {
   enableLetSyntax?: false;
 
   /**
+   * Whether selectorless is enabled.
+   */
+  enableSelectorless?: true;
+
+  /**
    * A list of diagnostic codes that should be supressed in the language service.
    */
   suppressAngularDiagnosticCodes?: number[];
