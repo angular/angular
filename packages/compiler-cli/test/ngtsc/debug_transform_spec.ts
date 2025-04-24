@@ -488,7 +488,7 @@ runInEachFileSystem(() => {
               declare function equal(): boolean;
 
               const testSignal = signal(123);
-              const testComputed = computed(() => testSignal(), { equal: () => true });
+              const testComputed = computed(() => testSignal(), { equal });
             `,
           );
           env.driveMain();
@@ -579,7 +579,7 @@ runInEachFileSystem(() => {
                   template: ''
               }) class MyComponent {
                   testSignal = signal(123);
-                  testComputed = computed(() => this.testSignal(), { equal: () => true });
+                  testComputed = computed(() => this.testSignal(), { equal });
               }
             `,
           );
@@ -603,7 +603,7 @@ runInEachFileSystem(() => {
                   template: ''
               }) class MyComponent {
                   testSignal = signal(123);
-                  testComputed = computed(() => this.testSignal(), { equal: () => true });
+                  testComputed = computed(() => this.testSignal(), { equal });
               }
             `,
           );
@@ -741,7 +741,7 @@ runInEachFileSystem(() => {
                   testComputed: Signal<number>;
                   constructor() {
                       this.testSignal = signal(123);
-                      this.testComputed = computed(() => this.testSignal(), { equal: () => true });
+                      this.testComputed = computed(() => this.testSignal(), { equal });
                   }
               }
             `,
