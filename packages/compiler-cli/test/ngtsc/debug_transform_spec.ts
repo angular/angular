@@ -229,11 +229,13 @@ runInEachFileSystem(() => {
             `
               import {signal, Component} from '@angular/core';
 
+              declare function equal(): boolean;
+
               @Component({
                   template: ''
               }) class MyComponent
               {
-                  testSignal = signal('Hello World', { equal: () => true });
+                  testSignal = signal('Hello World', { equal });
               }
             `,
           );
@@ -241,9 +243,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
-          expect(builtContent).toContain(
-            `signal("Hello World", { equal: /* @__PURE__ */ __name(() => !0, "equal") });`,
-          );
+          expect(builtContent).toContain(`signal("Hello World", { equal });`);
           expect(builtContent).not.toContain('ngDevMode');
           expect(builtContent).not.toContain('debugName');
         });
