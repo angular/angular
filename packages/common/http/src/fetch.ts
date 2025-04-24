@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, InjectionToken, NgZone} from '@angular/core';
+import {
+  DestroyRef,
+  inject,
+  Injectable,
+  InjectionToken,
+  NgZone,
+  ɵɵdefineInjectable,
+} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -52,6 +59,42 @@ export const FETCH_BACKEND = new InjectionToken<FetchBackend>(
 );
 
 /**
+ * Provides an injectable class that can be used in a unit testing environment
+ * to avoid accessing private properties and instead use the public API available for testing.
+ */
+export class FetchAborters extends Set<AbortController> {
+  /** @nocollapse */
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
+    token: FetchAborters,
+    providedIn: 'root',
+    factory: () => new FetchAborters(),
+  });
+
+  constructor() {
+    super();
+
+    const destroyRef = inject(DestroyRef);
+    destroyRef.onDestroy(() => {
+      const aborters = this;
+      if (aborters.size === 0) {
+        return;
+      }
+
+      const abortersArray = Array.from(aborters.values());
+      aborters.clear();
+      // Abort any pending HTTP requests when the application is destroyed to
+      // prevent memory leaks and the execution of operations that should not
+      // occur once resources are released. For example, if an HTTP response is
+      // returned after the application is destroyed and someone calls `runInInjectionContext`,
+      // it would throw an error indicating that the injector has already been destroyed.
+      // This ensures a graceful cleanup, ensuring that no requests proceed once the
+      // root injector is destroyed.
+      abortersArray.forEach((aborter) => aborter.abort());
+    });
+  }
+}
+
+/**
  * Uses `fetch` to send requests to a backend server.
  *
  * This `FetchBackend` requires the support of the
@@ -70,13 +113,15 @@ export class FetchBackend implements HttpBackend {
   private readonly fetchImpl =
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
+  private readonly aborters = inject(FetchAborters);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
       const aborter = new AbortController();
-      this.doRequest(request, aborter.signal, observer).then(noop, (error) =>
-        observer.error(new HttpErrorResponse({error})),
-      );
+      this.aborters.add(aborter);
+      this.doRequest(request, aborter.signal, observer)
+        .then(noop, (error) => observer.error(new HttpErrorResponse({error})))
+        .finally(() => this.aborters.delete(aborter));
       return () => aborter.abort();
     });
   }

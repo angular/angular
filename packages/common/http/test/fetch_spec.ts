@@ -21,7 +21,7 @@ import {
   provideHttpClient,
   withFetch,
 } from '../public_api';
-import {FetchBackend, FetchFactory} from '../src/fetch';
+import {FetchAborters, FetchBackend, FetchFactory} from '../src/fetch';
 
 function trackEvents(obs: Observable<any>): Promise<any[]> {
   return obs
@@ -289,6 +289,58 @@ describe('FetchBackend', async () => {
       },
     });
     fetchMock.mockAbortEvent();
+  });
+
+  describe('root injector is destroyed', () => {
+    it('aborts a request once root injector is destroyed', async () => {
+      const assertion = {
+        abortHappened: false,
+        error: <HttpErrorResponse | null>null,
+      };
+
+      const aborters = TestBed.inject(FetchAborters);
+
+      expect(aborters.size).toEqual(0);
+
+      const request = new HttpRequest('GET', '/test');
+      backend.handle(request).subscribe({
+        error: (error: HttpErrorResponse) => {
+          assertion.abortHappened = true;
+          assertion.error = error;
+        },
+      });
+
+      // Ensure that an abort controller is saved in the list.
+      expect(aborters.size).toEqual(1);
+      expect(assertion).toEqual({abortHappened: false, error: null});
+
+      // Since there is only 1 abort controller, we can retrieve it by calling `values()`
+      // on the set and accessing the first element.
+      const abortSpy = spyOn([...aborters.values()][0], 'abort').and.callThrough();
+
+      // We still need to manually reject the promise because we are in a unit test environment.
+      // However, the unit test ensures that `abort()` is called on the abort controller
+      // when the root injector is destroyed.
+      // The `mockAbortEvent` is unrelated to abort controllers;
+      // it is only responsible for rejecting a promise.
+      fetchMock.mockAbortEvent();
+
+      // `resetTestingModule` triggers the destruction of the root injector.
+      // We cannot inject the `ApplicationRef` and invoke `destroy()` because
+      // it would attempt to call `resetTestingModule()` and throw an error
+      // indicating that the injector has already been destroyed.
+      TestBed.resetTestingModule();
+
+      // Ensure that `abort()` is called on the abort controller after
+      // triggering the destruction of the root injector.
+      expect(abortSpy).toHaveBeenCalled();
+
+      // Wait until a promise is rejected.
+      await Promise.resolve();
+
+      expect(assertion.abortHappened).toEqual(true);
+      expect(assertion.error!.error).toBeInstanceOf(DOMException);
+    });
   });
 
   describe('progress events', () => {
