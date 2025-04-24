@@ -355,13 +355,15 @@ runInEachFileSystem(() => {
             `
               import {signal, Component, WritableSignal} from '@angular/core';
 
+              declare function equal(): boolean;
+
               @Component({
                   template: ''
               }) class MyComponent
               {
                   testSignal: WritableSignal<string>;
                   constructor() {
-                      this.testSignal = signal('Hello World', { equal: () => true });
+                      this.testSignal = signal('Hello World', { equal });
                   }
               }
             `,
@@ -370,9 +372,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
-          expect(builtContent).toContain(
-            `signal("Hello World", { equal: /* @__PURE__ */ __name(() => !0, "equal") });`,
-          );
+          expect(builtContent).toContain(`signal("Hello World", { equal });`);
           expect(builtContent).not.toContain('ngDevMode');
           expect(builtContent).not.toContain('debugName');
         });
@@ -485,6 +485,8 @@ runInEachFileSystem(() => {
             'test.ts',
             `
               import {signal, computed} from '@angular/core';
+              declare function equal(): boolean;
+
               const testSignal = signal(123);
               const testComputed = computed(() => testSignal(), { equal: () => true });
             `,
@@ -494,7 +496,7 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
           expect(builtContent).toContain(
-            `testComputed = computed(() => testSignal(), { debugName: "testComputed", equal: /* @__PURE__ */ __name(() => !0, "equal") });`,
+            `testComputed = computed(() => testSignal(), { debugName: "testComputed", equal });`,
           );
         });
       });
@@ -571,6 +573,8 @@ runInEachFileSystem(() => {
             `
               import {signal, computed, Component} from '@angular/core';
 
+              declare function equal(): boolean;
+
               @Component({
                   template: ''
               }) class MyComponent {
@@ -583,9 +587,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
-          expect(builtContent).toContain(
-            `computed(() => this.testSignal(), { equal: /* @__PURE__ */ __name(() => !0, "equal")`,
-          );
+          expect(builtContent).toContain(`computed(() => this.testSignal(), { equal })`);
           expect(builtContent).not.toContain('ngDevMode');
           expect(builtContent).not.toContain('debugName');
         });
@@ -595,6 +597,7 @@ runInEachFileSystem(() => {
             'test.ts',
             `
               import {signal, computed, Component} from '@angular/core';
+              declare function equal(): boolean;
 
               @Component({
                   template: ''
@@ -609,7 +612,7 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
           expect(builtContent).toContain(
-            `computed(() => this.testSignal(), { debugName: "testComputed", equal: /* @__PURE__ */ __name(() => !0, "equal") });`,
+            `computed(() => this.testSignal(), { debugName: "testComputed", equal });`,
           );
         });
       });
@@ -701,6 +704,7 @@ runInEachFileSystem(() => {
             'test.ts',
             `
               import {signal, computed, Component, WritableSignal, Signal} from '@angular/core';
+              declare function equal(): boolean;
 
               @Component({
                   template: ''
@@ -709,7 +713,7 @@ runInEachFileSystem(() => {
                   testComputed: Signal<number>;
                   constructor() {
                       this.testSignal = signal(123);
-                      this.testComputed = computed(() => this.testSignal(), { equal: () => true });
+                      this.testComputed = computed(() => this.testSignal(), { equal });
                   }
               }
             `,
@@ -718,9 +722,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
-          expect(builtContent).toContain(
-            `computed(() => this.testSignal(), { equal: /* @__PURE__ */ __name(() => !0, "equal")`,
-          );
+          expect(builtContent).toContain(`computed(() => this.testSignal(), { equal })`);
           expect(builtContent).not.toContain('ngDevMode');
           expect(builtContent).not.toContain('debugName');
         });
@@ -730,6 +732,7 @@ runInEachFileSystem(() => {
             'test.ts',
             `
               import {signal, computed, Component, WritableSignal, Signal} from '@angular/core';
+              declare function equal(): boolean;
 
               @Component({
                   template: ''
@@ -748,7 +751,7 @@ runInEachFileSystem(() => {
           const jsContents = env.getContents('test.js');
           const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
           expect(builtContent).toContain(
-            `computed(() => this.testSignal(), { debugName: "testComputed", equal: /* @__PURE__ */ __name(() => !0, "equal") });`,
+            `computed(() => this.testSignal(), { debugName: "testComputed", equal });`,
           );
         });
       });
