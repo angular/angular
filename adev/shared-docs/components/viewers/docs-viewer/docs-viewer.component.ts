@@ -47,8 +47,7 @@ export const DOCS_VIEWER_SELECTOR = 'docs-viewer';
 export const DOCS_CODE_SELECTOR = '.docs-code';
 export const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
 // TODO: Update the branch/sha
-export const GITHUB_CONTENT_URL =
-  'https://github.com/angular/angular/blob/main/adev/src/content/examples/';
+export const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/main/';
 
 @Component({
   selector: DOCS_VIEWER_SELECTOR,
