@@ -6,24 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  Component,
-  EventEmitter,
-  NgZone,
-  afterRender,
-  provideZoneChangeDetection,
-} from '../../src/core';
-import {
-  TestBed,
-  fakeAsync,
-  flush,
-  flushMicrotasks,
-  inject,
-  tick,
-  waitForAsync,
-} from '../../testing';
-import {Log} from '../../testing/src/testing_internal';
 import {firstValueFrom} from 'rxjs';
+import {Component, EventEmitter, NgZone, provideZoneChangeDetection} from '../../src/core';
+import {TestBed, fakeAsync, flush, flushMicrotasks, inject, waitForAsync} from '../../testing';
+import {Log} from '../../testing/src/testing_internal';
 
 import {scheduleCallbackWithRafRace as scheduler} from '../../src/util/callback_scheduler';
 import {global} from '../../src/util/global';

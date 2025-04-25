@@ -10,7 +10,7 @@ import {AsyncPipe} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
 import {
   afterNextRender,
-  afterRender,
+  afterEveryRender,
   ApplicationRef,
   ChangeDetectorRef,
   Component,
@@ -303,7 +303,7 @@ describe('Angular with zoneless enabled', () => {
         })
         class App {
           @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
-          unused = afterRender(() => {
+          unused = afterEveryRender(() => {
             renderHookCalls++;
           });
 
@@ -639,7 +639,7 @@ describe('Angular with zoneless enabled', () => {
   it('should not run change detection twice if manual tick called when CD was scheduled', async () => {
     let changeDetectionRuns = 0;
     TestBed.runInInjectionContext(() => {
-      afterRender(() => {
+      afterEveryRender(() => {
         changeDetectionRuns++;
       });
     });
@@ -787,7 +787,7 @@ describe('Angular with scheduler and ZoneJS', () => {
   it('will not schedule change detection if listener callback is outside the zone', async () => {
     let renders = 0;
     TestBed.runInInjectionContext(() => {
-      afterRender(() => {
+      afterEveryRender(() => {
         renders++;
       });
     });
@@ -902,7 +902,7 @@ describe('Angular with scheduler and ZoneJS', () => {
 
     let changeDetectionRuns = 0;
     TestBed.runInInjectionContext(() => {
-      afterRender(() => {
+      afterEveryRender(() => {
         changeDetectionRuns++;
       });
     });
@@ -945,7 +945,7 @@ describe('Angular with scheduler and ZoneJS', () => {
 
     let ticks = 0;
     TestBed.runInInjectionContext(() => {
-      afterRender(() => {
+      afterEveryRender(() => {
         ticks++;
       });
     });
@@ -973,7 +973,7 @@ describe('Angular with scheduler and ZoneJS', () => {
 
     let ticks = 0;
     TestBed.runInInjectionContext(() => {
-      afterRender(() => {
+      afterEveryRender(() => {
         ticks++;
       });
     });

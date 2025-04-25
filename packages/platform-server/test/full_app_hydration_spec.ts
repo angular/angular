@@ -24,7 +24,7 @@ import {
 import {MockPlatformLocation} from '@angular/common/testing';
 import {computeMsgId} from '@angular/compiler';
 import {
-  afterRender,
+  afterEveryRender,
   ApplicationRef,
   ChangeDetectorRef,
   Component,
@@ -4847,7 +4847,7 @@ describe('platform-server full application hydration integration', () => {
           elementRef = inject(ElementRef);
 
           constructor() {
-            afterRender(() => {
+            afterEveryRender(() => {
               observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
             });
           }
@@ -4890,7 +4890,7 @@ describe('platform-server full application hydration integration', () => {
           elementRef = inject(ElementRef);
 
           constructor() {
-            afterRender(() => {
+            afterEveryRender(() => {
               observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
             });
 
