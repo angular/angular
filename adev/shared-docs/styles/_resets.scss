@@ -164,6 +164,9 @@
     --mat-tab-header-active-focus-label-text-color: var(--primary-contrast);
     --mat-tab-header-active-hover-label-text-color: var(--primary-contrast);
     --mat-tab-header-active-focus-indicator-color: var(--bright-blue);
+    --mat-tab-active-focus-label-text-color: transparent;
+    --mat-tab-inactive-label-text-color: var(--tertiary-contrast);
+    --mat-tab-inactive-hover-label-text-color: var(--primary-contrast);
     --mat-tab-header-active-hover-indicator-color: color-mix(
       in srgb,
       var(--bright-blue) 40%,
