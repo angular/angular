@@ -13,7 +13,7 @@ import {TestBed} from '../../testing';
 import {
   AfterContentChecked,
   AfterContentInit,
-  afterRender,
+  afterEveryRender,
   AfterViewChecked,
   AfterViewInit,
   Component,
@@ -510,7 +510,7 @@ describe('profiler', () => {
         template: '',
       })
       class MyComponent {
-        arRef = afterRender(() => {});
+        arRef = afterEveryRender(() => {});
       }
 
       const fixture = TestBed.createComponent(MyComponent);

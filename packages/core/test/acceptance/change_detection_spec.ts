@@ -7,10 +7,10 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {BehaviorSubject} from 'rxjs';
 import {
   ApplicationRef,
-  NgZone,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -22,26 +22,21 @@ import {
   EventEmitter,
   inject,
   Input,
-  NgModule,
   OnInit,
   Output,
+  provideCheckNoChangesConfig,
+  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   QueryList,
+  ɵRuntimeError as RuntimeError,
+  ɵRuntimeErrorCode as RuntimeErrorCode,
   TemplateRef,
   Type,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-  provideCheckNoChangesConfig,
-  provideZonelessChangeDetection,
-  ɵRuntimeError as RuntimeError,
-  ɵRuntimeErrorCode as RuntimeErrorCode,
-  afterRender,
-  PLATFORM_ID,
-  provideZoneChangeDetection,
 } from '../../src/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '../../testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {BehaviorSubject} from 'rxjs';
 
 describe('change detection', () => {
   it('can provide zone and zoneless (last one wins like any other provider) in TestBed', () => {

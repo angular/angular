@@ -25,6 +25,17 @@ export interface AfterContentInit {
 }
 
 // @public
+export function afterEveryRender<E = never, W = never, M = never>(spec: {
+    earlyRead?: () => E;
+    write?: (...args: ɵFirstAvailable<[E]>) => W;
+    mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
+    read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
+}, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
+
+// @public
+export function afterEveryRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
+
+// @public
 export function afterNextRender<E = never, W = never, M = never>(spec: {
     earlyRead?: () => E;
     write?: (...args: ɵFirstAvailable<[E]>) => W;
@@ -34,19 +45,6 @@ export function afterNextRender<E = never, W = never, M = never>(spec: {
 
 // @public
 export function afterNextRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
-
-// @public
-function afterRender<E = never, W = never, M = never>(spec: {
-    earlyRead?: () => E;
-    write?: (...args: ɵFirstAvailable<[E]>) => W;
-    mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
-    read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
-}, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
-
-// @public
-function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
-export { afterRender as afterEveryRender }
-export { afterRender }
 
 // @public
 export function afterRenderEffect(callback: (onCleanup: EffectCleanupRegisterFn) => void, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
