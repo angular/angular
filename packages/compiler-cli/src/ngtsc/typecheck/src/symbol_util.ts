@@ -44,7 +44,9 @@ function isSignalSymbol(symbol: ts.Symbol): boolean {
       return (
         (ts.isInterfaceDeclaration(decl) || ts.isTypeAliasDeclaration(decl)) &&
         SIGNAL_FNS.has(decl.name.text) &&
-        (fileName.includes('@angular/core') || fileName.includes('angular2/rc/packages/core'))
+        (fileName.includes('@angular/core') ||
+          fileName.includes('angular2/rc/packages/core') ||
+          fileName.includes('bin/packages/core')) // for local usage in some tests
       );
     })
   );

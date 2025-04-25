@@ -62,6 +62,7 @@ import {
 } from './comments';
 import {TypeCheckData} from './context';
 import {isAccessExpression} from './ts_util';
+import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
 
 /**
  * Generates and caches `Symbol`s for various template structures for a given component.
@@ -255,7 +256,7 @@ export class SymbolBuilder {
 
   private getDirectiveMeta(
     host: TmplAstTemplate | TmplAstElement,
-    directiveDeclaration: ts.Declaration,
+    directiveDeclaration: ts.ClassDeclaration,
   ): TypeCheckableDirectiveMeta | null {
     let directives = this.typeCheckData.boundTarget.getDirectivesOfNode(host);
 
@@ -279,7 +280,32 @@ export class SymbolBuilder {
       return null;
     }
 
-    return directives.find((m) => m.ref.node === directiveDeclaration) ?? null;
+    const directive = directives.find((m) => m.ref.node === directiveDeclaration);
+    if (directive) {
+      return directive;
+    }
+
+    const originalFile = (directiveDeclaration.getSourceFile() as MaybeSourceFileWithOriginalFile)[
+      NgOriginalFile
+    ];
+
+    // This is a preliminary check ahead of a more expensive search
+    const hasPotentialCandidate = directives.find(
+      (m) => m.ref.node.name.text === directiveDeclaration.name?.text,
+    );
+
+    if (originalFile && hasPotentialCandidate) {
+      // In case the TCB has been inlined because of a non exported declaration
+      // We will instead find a matching class
+      // And if found one, look for it in the directives array
+      const classWithSameName = findMatchingDirective(originalFile, directiveDeclaration);
+      if (classWithSameName) {
+        return directives.find((m) => m.ref.node === classWithSameName) ?? null;
+      }
+    }
+
+    // Really nothing was found
+    return null;
   }
 
   private getDirectiveModule(declaration: ts.ClassDeclaration): ClassDeclaration | null {
@@ -861,4 +887,40 @@ function unwrapSignalInputWriteTAccessor(expr: ts.LeftHandSideExpression): null 
     fieldExpr: expr.expression,
     typeExpr: expr,
   };
+}
+
+function findMatchingDirective(
+  sourceFile: ts.SourceFile,
+  directiveDeclaration: ts.ClassDeclaration,
+) {
+  // Because of https://github.com/microsoft/typescript/issues/9998 we need to trick the compiler
+  let classWithSameName: ts.ClassDeclaration = null!;
+
+  function visit(node: ts.Node): void {
+    if (
+      ts.isClassDeclaration(node) &&
+      node.name?.text === directiveDeclaration.name?.text &&
+      getDeclarationDepth(node) === getDeclarationDepth(directiveDeclaration) &&
+      node.getText() === directiveDeclaration.getText() // compares text content
+    ) {
+      classWithSameName = node;
+      return;
+    }
+    ts.forEachChild(node, visit);
+  }
+  ts.forEachChild(sourceFile, visit);
+
+  return classWithSameName;
+}
+
+function getDeclarationDepth(decl: ts.Declaration): number {
+  let depth = 0;
+  let node: ts.Node | undefined = decl.parent;
+
+  while (node) {
+    depth++;
+    node = node.parent;
+  }
+
+  return depth;
 }

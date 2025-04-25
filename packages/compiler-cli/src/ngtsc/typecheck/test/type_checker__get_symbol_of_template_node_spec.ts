@@ -55,7 +55,10 @@ import {
   ngForTypeCheckTarget,
   setup as baseTestSetup,
   TypeCheckingTarget,
+  createNgCompilerForFile,
 } from '../testing';
+import {TsCreateProgramDriver} from '../../program_driver';
+import {findNodeInFile} from '../src/tcb_util';
 
 runInEachFileSystem(() => {
   describe('TemplateTypeChecker.getSymbolOfNode', () => {
@@ -2107,10 +2110,107 @@ runInEachFileSystem(() => {
 
       const nodes = templateTypeChecker.getTemplate(cmp)!;
 
-      const symbol = templateTypeChecker.getSymbolOfNode(nodes[0] as TmplAstElement, cmp)!;
+      const symbol = templateTypeChecker.getSymbolOfNode(nodes[0], cmp)!;
       assertElementSymbol(symbol);
       expect(symbol.tcbLocation.tcbPath).toBe(sf.fileName);
       expect(symbol.tcbLocation.isShimFile).toBe(false);
+    });
+
+    it('finds the directive when relying on inline TCB', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = baseTestSetup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `<div *foo="exp"></div>`,
+            'BarCmp': '',
+          },
+          source: `
+          class BarCmp{}
+
+          export class TestCmp {}
+          export class Foo {}
+
+        `,
+          declarations: [
+            {
+              type: 'directive',
+              name: 'Foo',
+              selector: `[foo]`,
+            },
+            {
+              name: 'TestCmp',
+              type: 'directive',
+              selector: `[test-cmp]`,
+            },
+            {
+              name: 'BarCmp',
+              type: 'directive',
+              selector: `[bar-cmp]`,
+            },
+          ],
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const testCmp = getClass(sf, 'TestCmp');
+      const nodes = templateTypeChecker.getTemplate(testCmp)!;
+
+      const symbol = templateTypeChecker.getSymbolOfNode(nodes[0], testCmp)!;
+      assertTemplateSymbol(symbol);
+      expect(symbol.directives.length).toBe(1);
+      expect(symbol.directives[0].selector).toBe('[foo]');
+    });
+
+    it('finds the right directive when relying on inline TCB and having multiple classes with the same name in the scope', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = baseTestSetup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `<div *foo="exp"></div>`,
+            'BarCmp': '',
+          },
+          source: `
+          class BarCmp{}
+
+          export class Foo {}
+          export class TestCmp {
+            foo() {
+              // The test should not match this class
+              class Foo {
+                ThisIsNotTheClassYoureLookingFor = true;
+              }
+              return Foo;
+            }
+          }
+        `,
+          declarations: [
+            {
+              type: 'directive',
+              name: 'Foo',
+              selector: `[foo]`,
+            },
+            {
+              name: 'TestCmp',
+              type: 'directive',
+              selector: `[test-cmp]`,
+            },
+            {
+              name: 'BarCmp',
+              type: 'directive',
+              selector: `[bar-cmp]`,
+            },
+          ],
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const testCmp = getClass(sf, 'TestCmp');
+      const nodes = templateTypeChecker.getTemplate(testCmp)!;
+
+      const symbol = templateTypeChecker.getSymbolOfNode(nodes[0], testCmp)!;
+      assertTemplateSymbol(symbol);
+      expect(symbol.directives.length).toBe(1);
+      expect(symbol.directives[0].selector).toBe('[foo]');
     });
 
     it('has correct tcb location for components with TCBs in a type-checking shim file', () => {
@@ -2130,6 +2230,42 @@ runInEachFileSystem(() => {
       assertElementSymbol(symbol);
       expect(symbol.tcbLocation.tcbPath).not.toBe(sf.fileName);
       expect(symbol.tcbLocation.isShimFile).toBe(true);
+    });
+
+    it('should trigger diagnostic for nested component in function', () => {
+      // This test is more complex as we're testing the diagnostic against a component
+      // that can't be referenced because it's nested in a function.
+
+      const {compiler, sourceFile} = createNgCompilerForFile(`
+              import {Component, Directive} from '@angular/core';
+    
+              @Directive({ selector: '[foo]' })
+              export class FooDir {}
+    
+              export function foo() {
+                @Component({
+                  imports: [FooDir],
+                  template: '<div *foo></div>',
+                })
+                class MyCmp {}
+              }
+          `);
+
+      const templateTypeChecker = compiler.getTemplateTypeChecker();
+
+      let myCmpClass = findNodeInFile(
+        sourceFile,
+        (node): node is ts.ClassDeclaration =>
+          ts.isClassDeclaration(node) && node.name?.text === 'MyCmp',
+      )!;
+
+      const nodes = templateTypeChecker.getTemplate(myCmpClass)!;
+      const symbol = templateTypeChecker.getSymbolOfNode(nodes[0], myCmpClass)!;
+
+      assertTemplateSymbol(symbol);
+      expect(symbol.kind).toBe(SymbolKind.Template);
+      expect(symbol.directives.length).toBe(1);
+      expect(symbol.directives[0].selector).toBe('[foo]');
     });
   });
 });
