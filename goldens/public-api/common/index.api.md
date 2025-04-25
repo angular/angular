@@ -959,8 +959,8 @@ export const VERSION: Version;
 // @public
 export abstract class ViewportScroller {
     abstract getScrollPosition(): [number, number];
-    abstract scrollToAnchor(anchor: string): void;
-    abstract scrollToPosition(position: [number, number]): void;
+    abstract scrollToAnchor(anchor: string, options?: ScrollOptions): void;
+    abstract scrollToPosition(position: [number, number], options?: ScrollOptions): void;
     abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
     abstract setOffset(offset: [number, number] | (() => [number, number])): void;
     // (undocumented)
