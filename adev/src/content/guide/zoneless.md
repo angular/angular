@@ -161,7 +161,7 @@ it is acceptable to use `fixture.changeDetectorRef.markForCheck()`.
 ### Debug-mode check to ensure updates are detected
 
 Angular also provides an additional tool to help verify that an application is making
-updates to state in a zoneless-compatible way. `provideCheckNoChangesConfig({exhaustive: true, interval: <milliseconds>})`
+updates to state in a zoneless-compatible way. `provideExperimentalCheckNoChangesForDebug`
 can be used to periodically check to ensure that no bindings have been updated
 without a notification. Angular throws `ExpressionChangedAfterItHasBeenCheckedError`
 if there is an updated binding that would not have refreshed by the zoneless change

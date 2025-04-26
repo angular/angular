@@ -28,7 +28,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
-import {provideCheckNoChangesConfig} from '@angular/core/src/change_detection/provide_check_no_changes_config';
+import {provideExperimentalCheckNoChangesForDebug} from '../../src/change_detection/scheduling/exhaustive_check_no_changes';
 import {ComponentFixture, TestBed} from '../../testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {of} from 'rxjs';
@@ -1123,7 +1123,7 @@ describe('change detection for transplanted views', () => {
   });
   it('does not cause infinite loops with exhaustive checkNoChanges', async () => {
     TestBed.configureTestingModule({
-      providers: [provideCheckNoChangesConfig({interval: 1, exhaustive: true})],
+      providers: [provideExperimentalCheckNoChangesForDebug({interval: 1})],
     });
     const errorSpy = spyOn(console, 'error').and.callFake((...v) => {
       fail('console errored with ' + v);
