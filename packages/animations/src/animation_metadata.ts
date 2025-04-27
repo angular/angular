@@ -118,7 +118,7 @@ export enum AnimationMetadataType {
   Sequence = 2,
   /**
    * Contains a set of animation steps.
-   * See `{@link /api/animations/group group()}`
+   * See `group()`
    */
   Group = 3,
   /**
