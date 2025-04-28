@@ -22,14 +22,10 @@ class HeroService {}
 The next step is to make it available in the DI by providing it.
 A dependency can be provided in multiple places:
 
-- [Understanding dependency injection](#understanding-dependency-injection)
-  - [Providing a dependency](#providing-a-dependency)
-    - [**Preferred**: At the application root level using `providedIn`](#preferred-at-the-application-root-level-using-providedin)
-    - [At the Component level](#at-the-component-level)
-    - [At the application root level using `ApplicationConfig`](#at-the-application-root-level-using-applicationconfig)
-    - [`NgModule` based applications](#ngmodule-based-applications)
-  - [Injecting/consuming a dependency](#injectingconsuming-a-dependency)
-  - [What's next](#whats-next)
+- [**Preferred**: At the application root level using `providedIn`](#preferred-at-the-application-root-level-using-providedin)
+- [At the Component level](#at-the-component-level)
+- [At the application root level using `ApplicationConfig`](#at-the-application-root-level-using-applicationconfig)
+- [`NgModule` based applications](#ngmodule-based-applications)
 
 ### **Preferred**: At the application root level using `providedIn`
 
