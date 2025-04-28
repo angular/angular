@@ -162,7 +162,7 @@ describe('demo (with TestBed):', () => {
     // beforeEach(waitForAsync(() => {
     //   TestBed.configureTestingModule()
     //     // Compile everything in DemoModule
-    //     .compileComponents();
+    //     ;
     // }));
 
     it('should create a component with inline template', () => {

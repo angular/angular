@@ -28,7 +28,7 @@ describe('BannerComponent (external files)', () => {
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         imports: [BannerComponent],
-      }).compileComponents(); // compile template and css
+      }); // compile template and css
     });
     // #enddocregion async-before-each
 
@@ -49,7 +49,7 @@ describe('BannerComponent (external files)', () => {
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         imports: [BannerComponent],
-      }).compileComponents();
+      });
       fixture = TestBed.createComponent(BannerComponent);
       component = fixture.componentInstance;
       h1 = fixture.nativeElement.querySelector('h1');

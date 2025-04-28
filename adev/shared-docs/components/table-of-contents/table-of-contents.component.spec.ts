@@ -49,7 +49,7 @@ describe('TableOfContents', () => {
           useValue: fakeWindow,
         },
       ],
-    }).compileComponents();
+    });
 
     const tableOfContentsLoaderSpy = TestBed.inject(TableOfContentsLoader);
     spyOn(tableOfContentsLoaderSpy, 'buildTableOfContent').and.returnValue();

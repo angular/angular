@@ -10,7 +10,7 @@ describe('Favorite Color Component', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [FavoriteColorReactiveComponent],
-    }).compileComponents();
+    });
   }));
 
   beforeEach(() => {

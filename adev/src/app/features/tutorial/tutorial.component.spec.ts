@@ -111,7 +111,7 @@ describe('Tutorial', () => {
       },
     });
 
-    await TestBed.compileComponents();
+    await TestBed;
 
     fixture = TestBed.createComponent(Tutorial);
     component = fixture.componentInstance;
