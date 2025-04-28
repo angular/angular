@@ -7,7 +7,7 @@ generate_guides(
     ]),
     data = [
         "//adev/src/assets/images:dependency_injection.svg",
-        "//adev/src/content/examples",
+        "//adev/src/content/examples/resolution-modifiers",
     ],
     mermaid_blocks = True,
     visibility = ["//adev:__subpackages__"],

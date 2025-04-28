@@ -23,9 +23,7 @@ APPLICATION_FILES = [
     exclude = [
         "src/**/*.spec.ts",
     ],
-) + [
-    "//adev/src/content/examples:embeddable",
-]
+)
 
 TEST_FILES = APPLICATION_FILES + [
     "karma.conf.js",
@@ -42,6 +40,7 @@ APPLICATION_ASSETS = [
     "//adev/src/assets/icons",
     "//adev/src/assets:api",
     "//adev/src/assets:content",
+    "//adev/src/assets:examples",
 ]
 
 APPLICATION_DEPS = [

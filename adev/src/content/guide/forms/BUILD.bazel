@@ -7,7 +7,11 @@ generate_guides(
     ]),
     data = [
         "//adev/src/assets/images:overview.svg",
-        "//adev/src/content/examples",
+        "//adev/src/content/examples/dynamic-form",
+        "//adev/src/content/examples/form-validation",
+        "//adev/src/content/examples/forms",
+        "//adev/src/content/examples/forms-overview",
+        "//adev/src/content/examples/reactive-forms",
     ],
     mermaid_blocks = True,
     visibility = ["//adev:__subpackages__"],

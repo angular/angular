@@ -7,7 +7,7 @@ generate_guides(
     ]),
     data = [
         "//adev/src/assets/images:components.svg",
-        "//adev/src/content/examples",
+        "//adev/src/content/examples/accessibility",
     ],
     visibility = ["//adev:__subpackages__"],
 )

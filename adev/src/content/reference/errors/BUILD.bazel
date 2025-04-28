@@ -22,7 +22,7 @@ generate_guides(
         ":files",
     ],
     data = [
-        "//adev/src/content/examples",
+        "//adev/src/content/examples/errors",
     ],
 )
 

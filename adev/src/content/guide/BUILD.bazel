@@ -6,7 +6,8 @@ generate_guides(
         "*.md",
     ]),
     data = [
-        "//adev/src/content/examples",
+        "//adev/src/content/examples/elements",
+        "//adev/src/content/examples/security",
     ],
     visibility = ["//adev:__subpackages__"],
 )

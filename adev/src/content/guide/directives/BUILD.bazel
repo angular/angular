@@ -7,7 +7,9 @@ generate_guides(
     ]),
     data = [
         "//adev/src/assets/images:directives.svg",
-        "//adev/src/content/examples",
+        "//adev/src/content/examples/attribute-directives",
+        "//adev/src/content/examples/built-in-directives",
+        "//adev/src/content/examples/structural-directives",
     ],
     visibility = ["//adev:__subpackages__"],
 )

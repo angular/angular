@@ -1,0 +1,8 @@
+load("//adev/shared-docs:index.bzl", "docs_example")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+docs_example(
+    name = "router",
+    example_srcs = glob(["**/*"]),
+)

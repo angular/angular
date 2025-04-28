@@ -88,6 +88,43 @@ copy_to_directory(
 )
 
 copy_to_directory(
+    name = "examples",
+    srcs = [
+        "//adev/src/content/examples/accessibility",
+        "//adev/src/content/examples/angular-compiler-options",
+        "//adev/src/content/examples/animations",
+        "//adev/src/content/examples/attribute-directives",
+        "//adev/src/content/examples/bootstrapping",
+        "//adev/src/content/examples/built-in-directives",
+        "//adev/src/content/examples/dependency-injection",
+        "//adev/src/content/examples/dynamic-form",
+        "//adev/src/content/examples/elements",
+        "//adev/src/content/examples/form-validation",
+        "//adev/src/content/examples/forms",
+        "//adev/src/content/examples/forms-overview",
+        "//adev/src/content/examples/i18n",
+        "//adev/src/content/examples/injection-token",
+        "//adev/src/content/examples/inputs-outputs",
+        "//adev/src/content/examples/pipes",
+        "//adev/src/content/examples/reactive-forms",
+        "//adev/src/content/examples/resolution-modifiers",
+        "//adev/src/content/examples/router",
+        "//adev/src/content/examples/router-tutorial",
+        "//adev/src/content/examples/routing-with-urlmatcher",
+        "//adev/src/content/examples/schematics-for-libraries",
+        "//adev/src/content/examples/security",
+        "//adev/src/content/examples/service-worker-getting-started",
+        "//adev/src/content/examples/setup",
+        "//adev/src/content/examples/ssr",
+        "//adev/src/content/examples/structural-directives",
+        "//adev/src/content/examples/testing",
+    ],
+    replace_prefixes = {
+        "adev/**/examples/": "",
+    },
+)
+
+copy_to_directory(
     name = "tutorials",
     srcs = [
         "//adev/src/content/tutorials/deferrable-views",

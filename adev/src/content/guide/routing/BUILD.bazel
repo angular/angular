@@ -7,7 +7,9 @@ generate_guides(
     ]),
     data = [
         "//adev/src/assets/images:routing.svg",
-        "//adev/src/content/examples",
+        "//adev/src/content/examples/router",
+        "//adev/src/content/examples/router-tutorial",
+        "//adev/src/content/examples/routing-with-urlmatcher",
     ],
     visibility = ["//adev:__subpackages__"],
 )

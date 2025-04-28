@@ -6,7 +6,7 @@ generate_guides(
         "*.md",
     ]),
     data = [
-        "//adev/src/content/examples",
+        "//adev/src/content/examples/angular-compiler-options",
     ],
     visibility = ["//adev:__subpackages__"],
 )

@@ -6,7 +6,7 @@ generate_guides(
         "*.md",
     ]),
     data = [
-        "//adev/src/content/examples",
+        "//adev/src/content/examples/angular-linker-plugin",
     ],
     visibility = ["//adev:__subpackages__"],
 )
