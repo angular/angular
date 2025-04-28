@@ -3,6 +3,10 @@ load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
 def _generate_stackblitz(ctx):
     """Implementation of the stackblitz generator rule"""
 
+    # If no stackblitz.json file is present in the sources, we cannot generate a stackblitz.
+    if len([file for file in ctx.files.example_srcs if (file.short_path == "%s/%s" % (ctx.label.package, "stackblitz.json"))]) == 0:
+        return []
+
     # Determine the stackblitz template base directory
     # Create an initial string of length greater than the length the stackblitz template path will
     # be. This is used so that the first file path we encounter is used as the initial value.
