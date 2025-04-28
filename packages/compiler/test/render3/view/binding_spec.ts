@@ -1031,25 +1031,39 @@ describe('t2 binding', () => {
     };
 
     function makeSelectorlessMatcher(
-      directives: DirectiveMeta[],
+      directives: (DirectiveMeta | {root: DirectiveMeta; additionalDirectives: DirectiveMeta[]})[],
     ): SelectorlessMatcher<DirectiveMeta> {
       const registry = new Map<string, DirectiveMeta[]>();
+      const isSingleDirective = (value: any): value is DirectiveMeta =>
+        !value.root && !value.additionalDirectives;
 
       for (const dir of directives) {
-        registry.set(dir.name, [dir]);
+        if (isSingleDirective(dir)) {
+          registry.set(dir.name, [dir]);
+        } else {
+          registry.set(dir.root.name, [dir.root, ...dir.additionalDirectives]);
+        }
       }
 
       return new SelectorlessMatcher(registry);
     }
 
-    it('should resolve all selectorless directives that were applied to a component node', () => {
+    it('should resolve directives applied on a component node', () => {
       const template = parseTemplate('<MyComp @Dir @OtherDir/>', '', options);
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
           {
-            ...baseMeta,
-            name: 'MyComp',
-            isComponent: true,
+            root: {
+              ...baseMeta,
+              name: 'MyComp',
+              isComponent: true,
+            },
+            additionalDirectives: [
+              {
+                ...baseMeta,
+                name: 'MyHostDir',
+              },
+            ],
           },
           {
             ...baseMeta,
@@ -1063,11 +1077,43 @@ describe('t2 binding', () => {
       );
       const res = binder.bind({template: template.nodes});
       const node = template.nodes[0] as a.Component;
-      const directives = res.getDirectivesOfNode(node)!;
-      expect(directives.map((d) => d.name)).toEqual(['MyComp', 'Dir', 'OtherDir']);
+      expect(res.getDirectivesOfNode(node)?.map((d) => d.name)).toEqual(['MyComp', 'MyHostDir']);
     });
 
-    it('should resolve all selectorless directives that were applied to an element node', () => {
+    it('should resolve directives applied on a directive node', () => {
+      const template = parseTemplate('<MyComp @Dir @OtherDir/>', '', options);
+      const binder = new R3TargetBinder(
+        makeSelectorlessMatcher([
+          {
+            ...baseMeta,
+            name: 'MyComp',
+            isComponent: true,
+          },
+          {
+            root: {
+              ...baseMeta,
+              name: 'Dir',
+            },
+            additionalDirectives: [
+              {
+                ...baseMeta,
+                name: 'HostDir',
+              },
+            ],
+          },
+          {
+            ...baseMeta,
+            name: 'OtherDir',
+          },
+        ]),
+      );
+      const res = binder.bind({template: template.nodes});
+      const dirs = (template.nodes[0] as a.Component).directives;
+      expect(res.getDirectivesOfNode(dirs[0])?.map((d) => d.name)).toEqual(['Dir', 'HostDir']);
+      expect(res.getDirectivesOfNode(dirs[1])?.map((d) => d.name)).toEqual(['OtherDir']);
+    });
+
+    it('should not apply selectorless directives on an element node', () => {
       const template = parseTemplate('<div @Dir @OtherDir></div>', '', options);
       const binder = new R3TargetBinder(
         makeSelectorlessMatcher([
@@ -1083,8 +1129,7 @@ describe('t2 binding', () => {
       );
       const res = binder.bind({template: template.nodes});
       const node = template.nodes[0] as a.Element;
-      const directives = res.getDirectivesOfNode(node)!;
-      expect(directives.map((d) => d.name)).toEqual(['Dir', 'OtherDir']);
+      expect(res.getDirectivesOfNode(node)).toBe(null);
     });
 
     it('should resolve a reference on a component node to the component', () => {
@@ -1281,49 +1326,6 @@ describe('t2 binding', () => {
       const res = binder.bind({template: template.nodes});
       expect(res.getUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir']);
       expect(res.getEagerlyUsedDirectives().map((dir) => dir.name)).toEqual(['MyComp', 'Dir']);
-    });
-
-    it('should get the directives that are owned by a specific directive', () => {
-      const template = parseTemplate('<MyComp @Dir/>', '', options);
-      const registry = new Map<string, DirectiveMeta[]>([
-        [
-          'MyComp',
-          [
-            {
-              ...baseMeta,
-              name: 'MyComp',
-              isComponent: true,
-            },
-            {
-              ...baseMeta,
-              name: 'CompHostDir',
-            },
-          ],
-        ],
-        [
-          'Dir',
-          [
-            {
-              ...baseMeta,
-              name: 'Dir',
-            },
-            {
-              ...baseMeta,
-              name: 'HostDir',
-            },
-          ],
-        ],
-      ]);
-
-      const binder = new R3TargetBinder(new SelectorlessMatcher(registry));
-      const res = binder.bind({template: template.nodes});
-      const component = template.nodes[0] as a.Component;
-      const directive = component.directives[0];
-      expect(res.getOwnedDirectives(component)?.map((d) => d.name)).toEqual([
-        'MyComp',
-        'CompHostDir',
-      ]);
-      expect(res.getOwnedDirectives(directive)?.map((d) => d.name)).toEqual(['Dir', 'HostDir']);
     });
 
     it('should check whether a referenced directive exists', () => {

@@ -471,21 +471,17 @@ class TcbTemplateBodyOp extends TcbOp {
     let guard: ts.Expression | null = null;
     const directiveGuards: ts.Expression[] = [];
 
-    // If selectorless is enabled, the inputs are derived from the individual directive nodes
-    // which need to be accumulated. Otherwise they're derived from the template itself.
-    if (this.tcb.env.config.selectorlessEnabled) {
-      for (const directive of this.template.directives) {
-        this.addDirectiveGuards(
-          directiveGuards,
-          directive,
-          this.tcb.boundTarget.getOwnedDirectives(directive),
-        );
-      }
-    } else {
+    this.addDirectiveGuards(
+      directiveGuards,
+      this.template,
+      this.tcb.boundTarget.getDirectivesOfNode(this.template),
+    );
+
+    for (const directive of this.template.directives) {
       this.addDirectiveGuards(
         directiveGuards,
-        this.template,
-        this.tcb.boundTarget.getDirectivesOfNode(this.template),
+        directive,
+        this.tcb.boundTarget.getDirectivesOfNode(directive),
       );
     }
 
@@ -2609,9 +2605,7 @@ class Scope {
 
     // Don't resolve directives when selectorless is enabled and treat all the inputs on the element
     // as unclaimed. In selectorless the inputs are defined either in component or directive nodes.
-    const directives = this.tcb.env.config.selectorlessEnabled
-      ? null
-      : this.tcb.boundTarget.getDirectivesOfNode(node);
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
 
     if (directives === null || directives.length === 0) {
       // If there are no directives, then all inputs are unclaimed inputs, so queue an operation
@@ -2668,9 +2662,7 @@ class Scope {
     // Don't resolve directives when selectorless is enabled and treat all the outputs on the
     // element as unclaimed. In selectorless the outputs are defined either in component or
     // directive nodes.
-    const directives = this.tcb.env.config.selectorlessEnabled
-      ? null
-      : this.tcb.boundTarget.getDirectivesOfNode(node);
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
 
     if (directives === null || directives.length === 0) {
       // If there are no directives, then all outputs are unclaimed outputs, so queue an operation
@@ -2713,12 +2705,12 @@ class Scope {
 
   private appendInputsOfSelectorlessNode(node: TmplAstComponent | TmplAstDirective): void {
     // Only resolve the directives that were brought in by this specific directive.
-    const ownedDirectives = this.tcb.boundTarget.getOwnedDirectives(node);
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
     const claimedInputs = new Set<string>();
 
-    if (ownedDirectives !== null && ownedDirectives.length > 0) {
+    if (directives !== null && directives.length > 0) {
       const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
-      for (const dir of ownedDirectives) {
+      for (const dir of directives) {
         this.appendDirectiveInputs(dir, node, dirMap);
 
         for (const propertyName of dir.inputs.propertyNames) {
@@ -2752,11 +2744,11 @@ class Scope {
 
   private appendOutputsOfSelectorlessNode(node: TmplAstComponent | TmplAstDirective): void {
     // Only resolve the directives that were brought in by this specific directive.
-    const ownedDirectives = this.tcb.boundTarget.getOwnedDirectives(node);
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
     const claimedOutputs = new Set<string>();
 
-    if (ownedDirectives !== null && ownedDirectives.length > 0) {
-      for (const dir of ownedDirectives) {
+    if (directives !== null && directives.length > 0) {
+      for (const dir of directives) {
         this.opQueue.push(new TcbDirectiveOutputsOp(this.tcb, this, node, dir));
 
         for (const outputProperty of dir.outputs.propertyNames) {
@@ -2823,11 +2815,11 @@ class Scope {
       }
 
       // Check that the class is a directive class.
-      const ownedDirectives = this.tcb.boundTarget.getOwnedDirectives(directive);
+      const directives = this.tcb.boundTarget.getDirectivesOfNode(directive);
       if (
-        ownedDirectives === null ||
-        ownedDirectives.length === 0 ||
-        ownedDirectives.some((dir) => dir.isComponent)
+        directives === null ||
+        directives.length === 0 ||
+        directives.some((dir) => dir.isComponent)
       ) {
         this.tcb.oobRecorder.incorrectTemplateDependencyType(this.tcb.id, directive);
         continue;
@@ -2847,7 +2839,17 @@ class Scope {
 
       if (node instanceof TmplAstElement) {
         const claimedInputs = new Set<string>();
-        const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+        let directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+
+        for (const dirNode of node.directives) {
+          const directiveResults = this.tcb.boundTarget.getDirectivesOfNode(dirNode);
+
+          if (directiveResults !== null && directiveResults.length > 0) {
+            directives ??= [];
+            directives.push(...directiveResults);
+          }
+        }
+
         let hasDirectives: boolean;
         if (directives === null || directives.length === 0) {
           hasDirectives = false;
@@ -2903,11 +2905,11 @@ class Scope {
     }
 
     // Check that the class is a component.
-    const ownedDirectives = this.tcb.boundTarget.getOwnedDirectives(node);
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
     if (
-      ownedDirectives === null ||
-      ownedDirectives.length === 0 ||
-      !ownedDirectives.some((dir) => dir.isComponent)
+      directives === null ||
+      directives.length === 0 ||
+      directives.every((dir) => !dir.isComponent)
     ) {
       this.tcb.oobRecorder.incorrectTemplateDependencyType(this.tcb.id, node);
       return;

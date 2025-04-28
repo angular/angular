@@ -48,15 +48,15 @@ export type ScopedNode =
 
 /** Possible values that a reference can be resolved to. */
 export type ReferenceTarget<DirectiveT> =
-  | {
-      directive: DirectiveT;
-      node: Element | Template | Component | Directive;
-    }
+  | {directive: DirectiveT; node: DirectiveOwner}
   | Element
   | Template;
 
 /** Entity that is local to the template and defined within the template. */
 export type TemplateEntity = Reference | Variable | LetDeclaration;
+
+/** Nodes that can have directives applied to them. */
+export type DirectiveOwner = Element | Template | Component | Directive;
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
@@ -183,7 +183,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * For a given template node (either an `Element` or a `Template`), get the set of directives
    * which matched the node, if any.
    */
-  getDirectivesOfNode(node: Element | Template | Component): DirectiveT[] | null;
+  getDirectivesOfNode(node: DirectiveOwner): DirectiveT[] | null;
 
   /**
    * For a given `Reference`, get the reference's target - either an `Element`, a `Template`, or
@@ -273,13 +273,6 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * Whether a given node is located in a `@defer` block.
    */
   isDeferred(node: Element): boolean;
-
-  /**
-   * Returns the directives that are owned by a specific component/directive node. This is either
-   * the directive being referenced itself or its host directives.
-   * @param node Node for which to retrieve the owned directives.
-   */
-  getOwnedDirectives(node: Component | Directive): DirectiveT[] | null;
 
   /**
    * Checks whether a component/directive that was referenced directly in the template exists.
