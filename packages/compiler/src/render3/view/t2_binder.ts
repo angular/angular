@@ -166,7 +166,7 @@ export type DirectiveMatcher<DirectiveT extends DirectiveMeta> =
  * target.
  */
 export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetBinder<DirectiveT> {
-  constructor(private directiveMatcher: DirectiveMatcher<DirectiveT>) {}
+  constructor(private directiveMatcher: DirectiveMatcher<DirectiveT> | null) {}
 
   /**
    * Perform a binding operation on the given `Target` and return a `BoundTarget` which contains
@@ -203,15 +203,17 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
       //   - bindings: Map of inputs, outputs, and attributes to the directive/element that claims
       //     them. TODO(alxhub): handle multiple directives claiming an input/output/etc.
       //   - references: Map of #references to their targets.
-      DirectiveBinder.apply(
-        target.template,
-        this.directiveMatcher,
-        directives,
-        eagerDirectives,
-        missingDirectives,
-        bindings,
-        references,
-      );
+      if (this.directiveMatcher !== null) {
+        DirectiveBinder.apply(
+          target.template,
+          this.directiveMatcher,
+          directives,
+          eagerDirectives,
+          missingDirectives,
+          bindings,
+          references,
+        );
+      }
 
       // Finally, run the TemplateBinder to bind references, variables, and other entities within the
       // template. This extracts all the metadata that doesn't depend on directive matching.

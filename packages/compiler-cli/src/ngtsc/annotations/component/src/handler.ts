@@ -1944,7 +1944,7 @@ export class ComponentDecoratorHandler
     template: ComponentTemplate,
   ): Map<TmplAstDeferredBlock, DeferredComponentDependency[]> {
     const deferBlocks = new Map<TmplAstDeferredBlock, DeferredComponentDependency[]>();
-    const directivelessBinder = new R3TargetBinder<DirectiveMeta>(new SelectorMatcher());
+    const directivelessBinder = new R3TargetBinder<DirectiveMeta>(null);
     const bound = directivelessBinder.bind({template: template.nodes});
     const deferredBlocks = bound.getDeferBlocks();
 
