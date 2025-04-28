@@ -15,5 +15,5 @@ export function HighlightTypeScript(props: {code: string}) {
   const result = codeToHtml(props.code, 'typescript');
   const withScrollTrack = result.replace(/^(<pre class="shiki)/, '$1 docs-mini-scroll-track');
 
-  return <RawHtml value={withScrollTrack} />;
+  return <RawHtml value={withScrollTrack} className="docs-code" />;
 }
