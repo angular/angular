@@ -138,20 +138,16 @@
           border-radius: 0.25rem;
         }
 
-        code {
-          font-size: 0.875rem;
-          overflow: hidden;
+        .docs-code {
+          flex: 1;
 
-          &:has(pre) {
-            padding: 0;
+          button[docs-copy-source-code] {
+            display: none;
           }
         }
 
-        pre {
-          margin: 0;
-
-          /* Do we have a better alternative ? */
-          overflow: auto;
+        code {
+          font-size: 0.875rem;
         }
 
         h3 {
