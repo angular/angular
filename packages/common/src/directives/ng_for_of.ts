@@ -167,7 +167,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * @ngModule CommonModule
  * @publicApi
  *
- * @deprecated Use the @for block instead. Intent to remove in v22
+ * @deprecated Use the `@for` block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngFor][ngForOf]',
