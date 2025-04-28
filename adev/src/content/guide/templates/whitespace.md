@@ -61,4 +61,4 @@ You can tell Angular to preserve whitespace in a template by specifying `preserv
 
 Avoid setting this option unless absolutely necessary. Preserving whitespace can cause Angular to produce significantly more nodes while rendering, slowing down your application.
 
-You can additionally use a special HTML entity unique to Angular, `&ngsp;`. This entity produces a single space character that's preserved in the compiled output.
+You can additionally use a special HTML entity unique to Angular, `&nbsp;`. This entity produces a single space character that's preserved in the compiled output.
