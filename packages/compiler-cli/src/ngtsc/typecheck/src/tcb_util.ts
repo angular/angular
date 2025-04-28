@@ -168,25 +168,21 @@ export function findTypeCheckBlock(
   id: TypeCheckId,
   isDiagnosticRequest: boolean,
 ): ts.Node | null {
+  // This prioritised-level statements using a breadth-first search
+  // This is usually sufficient to find the TCB we're looking for
   for (const stmt of file.statements) {
     if (ts.isFunctionDeclaration(stmt) && getTypeCheckId(stmt, file, isDiagnosticRequest) === id) {
       return stmt;
     }
   }
 
-  // In case the TCB we're looking for is nested
-  // This happens for example when a directive is declared inside a function
-
-  // Pre-check if we can expect to find the id in the file
-  if (file.text.includes(id)) {
-    return findNodeInFile(
-      file,
-      (node) =>
-        ts.isFunctionDeclaration(node) && getTypeCheckId(node, file, isDiagnosticRequest) === id,
-    );
-  }
-
-  return null;
+  // In case the TCB we're looking for is nested (which is not common)
+  // eg: when a directive is declared inside a function, as it can happen in test files
+  return findNodeInFile(
+    file,
+    (node) =>
+      ts.isFunctionDeclaration(node) && getTypeCheckId(node, file, isDiagnosticRequest) === id,
+  );
 }
 
 /**

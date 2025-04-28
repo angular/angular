@@ -2126,6 +2126,7 @@ runInEachFileSystem(() => {
             'BarCmp': '',
           },
           source: `
+          /* Declare a non-exported component to force using an inline TCB */
           class BarCmp{}
 
           export class TestCmp {}
@@ -2232,28 +2233,28 @@ runInEachFileSystem(() => {
       expect(symbol.tcbLocation.isShimFile).toBe(true);
     });
 
-    it('should trigger diagnostic for nested component in function', () => {
+    it('find the directive when the class is nested in a function', () => {
       // This test is more complex as we're testing the diagnostic against a component
       // that can't be referenced because it's nested in a function.
 
       const {compiler, sourceFile} = createNgCompilerForFile(`
-              import {Component, Directive} from '@angular/core';
-    
-              @Directive({ selector: '[foo]' })
-              export class FooDir {}
-    
-              export function foo() {
-                @Component({
-                  imports: [FooDir],
-                  template: '<div *foo></div>',
-                })
-                class MyCmp {}
-              }
-          `);
+        import {Component, Directive} from '@angular/core';
+
+        @Directive({ selector: '[foo]' })
+        export class FooDir {}
+
+        export function foo() {
+          @Component({
+            imports: [FooDir],
+            template: '<div *foo></div>',
+          })
+          class MyCmp {}
+        }
+      `);
 
       const templateTypeChecker = compiler.getTemplateTypeChecker();
 
-      let myCmpClass = findNodeInFile(
+      const myCmpClass = findNodeInFile(
         sourceFile,
         (node): node is ts.ClassDeclaration =>
           ts.isClassDeclaration(node) && node.name?.text === 'MyCmp',

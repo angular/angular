@@ -289,18 +289,20 @@ export class SymbolBuilder {
       NgOriginalFile
     ];
 
-    // This is a preliminary check ahead of a more expensive search
-    const hasPotentialCandidate = directives.find(
-      (m) => m.ref.node.name.text === directiveDeclaration.name?.text,
-    );
+    if (originalFile !== undefined) {
+      // This is a preliminary check ahead of a more expensive search
+      const hasPotentialCandidate = directives.find(
+        (m) => m.ref.node.name.text === directiveDeclaration.name?.text,
+      );
 
-    if (originalFile && hasPotentialCandidate) {
-      // In case the TCB has been inlined because of a non exported declaration
-      // We will instead find a matching class
-      // And if found one, look for it in the directives array
-      const classWithSameName = findMatchingDirective(originalFile, directiveDeclaration);
-      if (classWithSameName) {
-        return directives.find((m) => m.ref.node === classWithSameName) ?? null;
+      if (hasPotentialCandidate) {
+        // In case the TCB has been inlined,
+        // We will look for a matching class
+        // If we find one, we look for it in the directives array
+        const classWithSameName = findMatchingDirective(originalFile, directiveDeclaration);
+        if (classWithSameName !== null) {
+          return directives.find((m) => m.ref.node === classWithSameName) ?? null;
+        }
       }
     }
 
@@ -889,28 +891,47 @@ function unwrapSignalInputWriteTAccessor(expr: ts.LeftHandSideExpression): null 
   };
 }
 
+/**
+ * Looks for a class declaration in the original source file that matches a given directive
+ * from the type check source file.
+ *
+ * @param originalSourceFile The original source where the runtime code resides
+ * @param directiveDeclarationInTypeCheckSourceFile The directive from the type check source file
+ */
 function findMatchingDirective(
-  sourceFile: ts.SourceFile,
-  directiveDeclaration: ts.ClassDeclaration,
-) {
-  // Because of https://github.com/microsoft/typescript/issues/9998 we need to trick the compiler
-  let classWithSameName: ts.ClassDeclaration = null!;
+  originalSourceFile: ts.SourceFile,
+  directiveDeclarationInTypeCheckSourceFile: ts.ClassDeclaration,
+): ts.ClassDeclaration | null {
+  let sameDeclarationInOriginalFile: ts.ClassDeclaration | null = null;
+
+  const typecheckDirectiveDeclarationDepth = getDeclarationDepth(
+    directiveDeclarationInTypeCheckSourceFile,
+  );
+
+  const className = directiveDeclarationInTypeCheckSourceFile.name?.text ?? '';
+  // We build an index of the class declarations with the same name
+  // To then compare the indexes to confirm we found the right class declaration
+  const ogClasses = collectClassesWithName(originalSourceFile, className);
+  const typcheckClasses = collectClassesWithName(
+    directiveDeclarationInTypeCheckSourceFile.getSourceFile(),
+    className,
+  );
 
   function visit(node: ts.Node): void {
     if (
       ts.isClassDeclaration(node) &&
-      node.name?.text === directiveDeclaration.name?.text &&
-      getDeclarationDepth(node) === getDeclarationDepth(directiveDeclaration) &&
-      node.getText() === directiveDeclaration.getText() // compares text content
+      node.name?.text === directiveDeclarationInTypeCheckSourceFile.name?.text &&
+      getDeclarationDepth(node) === typecheckDirectiveDeclarationDepth &&
+      ogClasses.indexOf(node) === typcheckClasses.indexOf(directiveDeclarationInTypeCheckSourceFile)
     ) {
-      classWithSameName = node;
+      sameDeclarationInOriginalFile = node;
       return;
     }
     ts.forEachChild(node, visit);
   }
-  ts.forEachChild(sourceFile, visit);
+  ts.forEachChild(originalSourceFile, visit);
 
-  return classWithSameName;
+  return sameDeclarationInOriginalFile;
 }
 
 function getDeclarationDepth(decl: ts.Declaration): number {
@@ -923,4 +944,26 @@ function getDeclarationDepth(decl: ts.Declaration): number {
   }
 
   return depth;
+}
+
+/**
+ * Builds a list of class declarations of a given name
+ * Is used as a index based reference to compare class declarations
+ * between the typecheck source file and the original source file
+ */
+function collectClassesWithName(
+  sourceFile: ts.SourceFile,
+  className: string,
+): ts.ClassDeclaration[] {
+  const classes: ts.ClassDeclaration[] = [];
+  function visit(node: ts.Node) {
+    if (ts.isClassDeclaration(node) && node.name?.text === className) {
+      classes.push(node);
+    } else {
+      ts.forEachChild(node, visit);
+    }
+  }
+  sourceFile.forEachChild(visit);
+
+  return classes;
 }
