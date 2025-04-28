@@ -38,16 +38,14 @@ export const signatureCard = (
     <div id={opts.id} class={REFERENCE_MEMBER_CARD}>
       <header class={REFERENCE_MEMBER_CARD_HEADER}>
         {printSignaturesAsHeader ? (
-          <code>
-            <HighlightTypeScript
-              code={printInitializerFunctionSignatureLine(
-                name,
-                signature,
-                // Always omit types in signature headers, to keep them short.
-                true,
-              )}
-            />
-          </code>
+          <HighlightTypeScript
+            code={printInitializerFunctionSignatureLine(
+              name,
+              signature,
+              // Always omit types in signature headers, to keep them short.
+              true,
+            )}
+          />
         ) : (
           <>
             <h3>{name}</h3>
