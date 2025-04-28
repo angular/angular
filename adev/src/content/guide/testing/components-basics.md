@@ -42,7 +42,7 @@ ng generate component banner --inline-template --inline-style --module app
 
 It also generates an initial test file for the component, `banner-external.component.spec.ts`, that looks like this:
 
-<docs-code header="app/banner/banner-external.component.spec.ts (initial)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v1"/>
+<docs-code header="app/banner/banner-external.component.spec.ts (initial)" example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="v1"/>
 
 HELPFUL: Because `compileComponents` is asynchronous, it uses the [`waitForAsync`](api/core/testing/waitForAsync) utility function imported from `@angular/core/testing`.
 
@@ -57,11 +57,11 @@ The rest of the file is boilerplate setup code anticipating more advanced tests 
 You'll learn about these advanced test features in the following sections.
 For now, you can radically reduce this test file to a more manageable size:
 
-<docs-code header="app/banner/banner-initial.component.spec.ts (minimal)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v2"/>
+<docs-code header="app/banner/banner-initial.component.spec.ts (minimal)" example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="v2"/>
 
 In this example, the metadata object passed to `TestBed.configureTestingModule` simply declares `BannerComponent`, the component to test.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="configureTestingModule"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="configureTestingModule"/>
 
 HELPFUL: There's no need to declare or import anything else.
 The default test module is pre-configured with something like the `BrowserModule` from `@angular/platform-browser`.
@@ -73,7 +73,7 @@ Optional `override` methods can further fine-tune aspects of the configuration.
 
 After configuring `TestBed`, you call its `createComponent()` method.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="createComponent"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="createComponent"/>
 
 `TestBed.createComponent()` creates an instance of the `BannerComponent`, adds a corresponding element to the test-runner DOM, and returns a [`ComponentFixture`](#componentfixture).
 
@@ -90,18 +90,18 @@ The [ComponentFixture](api/core/testing/ComponentFixture) is a test harness for 
 
 Access the component instance through the fixture and confirm it exists with a Jasmine expectation:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="componentInstance"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="componentInstance"/>
 
 ### `beforeEach()`
 
 You will add more tests as this component evolves.
 Rather than duplicate the `TestBed` configuration for each test, you refactor to pull the setup into a Jasmine `beforeEach()` and some supporting variables:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v3"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="v3"/>
 
 Now add a test that gets the component's element from `fixture.nativeElement` and looks for the expected text.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-2"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-2"/>
 
 ### `nativeElement`
 
@@ -117,17 +117,17 @@ Knowing that it is an `HTMLElement` of some sort, use the standard HTML `querySe
 
 Here's another test that calls `HTMLElement.querySelector` to get the paragraph element and look for the banner text:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-3"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-3"/>
 
 ### `DebugElement`
 
 The Angular *fixture* provides the component's element directly through the `fixture.nativeElement`.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="nativeElement"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="nativeElement"/>
 
 This is actually a convenience method, implemented as `fixture.debugElement.nativeElement`.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="debugElement-nativeElement"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="debugElement-nativeElement"/>
 
 There's a good reason for this circuitous path to the element.
 
@@ -142,13 +142,13 @@ Because the sample tests for this guide are designed to run only in a browser, a
 
 Here's the previous test, re-implemented with `fixture.debugElement.nativeElement`:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-4"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-4"/>
 
 The `DebugElement` has other methods and properties that are useful in tests, as you'll see elsewhere in this guide.
 
 You import the `DebugElement` symbol from the Angular core library.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="import-debug-element"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="import-debug-element"/>
 
 ### `By.css()`
 
@@ -164,11 +164,11 @@ These query methods take a *predicate* function that returns `true` when a node 
 You create a *predicate* with the help of a `By` class imported from a library for the runtime platform.
 Here's the `By` import for the browser platform:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="import-by"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="import-by"/>
 
 The following example re-implements the previous test with `DebugElement.query()` and the browser's `By.css` method.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-5"/>
+<docs-code example="testing" path="src/app/banner/banner-initial.component.spec.ts" visibleRegion="v4-test-5"/>
 
 Some noteworthy observations:
 

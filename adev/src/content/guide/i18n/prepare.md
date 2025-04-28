@@ -23,11 +23,11 @@ HELPFUL: The `i18n` attribute is a custom attribute that the Angular tools and c
 
 The following `<h1>` tag displays a simple English language greeting, "Hello i18n!".
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="greeting"/>
+<docs-code header="src/app/app.component.html" example="i18n" path="doc-files/app.component.html" visibleRegion="greeting"/>
 
 To mark the greeting for translation, add the `i18n` attribute to the `<h1>` tag.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute"/>
+<docs-code header="src/app/app.component.html" example="i18n" path="doc-files/app.component.html" visibleRegion="i18n-attribute"/>
 
 
 ### using conditional statement with `i18n`
@@ -35,8 +35,8 @@ To mark the greeting for translation, add the `i18n` attribute to the `<h1>` tag
 The following `<div>` tag will display translated text as part of `div` and `aria-label` based on toggle status 
 
 <docs-code-multifile>
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html"  visibleRegion="i18n-conditional"/>
-    <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts" visibleLines="[[14,21],[33,37]]"/>
+    <docs-code header="src/app/app.component.html" example="i18n" path="src/app/app.component.html"  visibleRegion="i18n-conditional"/>
+    <docs-code header="src/app/app.component.ts" example="i18n" path="src/app/app.component.ts" visibleLines="[[14,21],[33,37]]"/>
 </docs-code-multifile>
 
 ### Translate inline text without HTML element
@@ -47,7 +47,7 @@ HELPFUL: Each HTML element creates a new DOM element.
 To avoid creating a new DOM element, wrap the text in an `<ng-container>` element.
 The following example shows the `<ng-container>` element transformed into a non-displayed HTML comment.
 
-<docs-code path="adev/src/content/examples/i18n/src/app/app.component.html" visibleRegion="i18n-ng-container"/>
+<docs-code example="i18n" path="src/app/app.component.html" visibleRegion="i18n-ng-container"/>
 
 ## Mark element attributes for translations
 
@@ -73,7 +73,7 @@ i18n-{attribute_name}="{meaning}|{description}@@{id}"
 To translate the title of an image, review this example.
 The following example displays an image with a `title` attribute.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-title"/>
+<docs-code header="src/app/app.component.html" example="i18n" path="doc-files/app.component.html" visibleRegion="i18n-title"/>
 
 To mark the title attribute for translation, complete the following action.
 
@@ -81,7 +81,7 @@ To mark the title attribute for translation, complete the following action.
 
    The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
 
-   <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" visibleRegion="i18n-title-translate"/>
+   <docs-code header="src/app/app.component.html" example="i18n" path="src/app/app.component.html" visibleRegion="i18n-title-translate"/>
 
 ## Mark text in component code
 
@@ -153,7 +153,7 @@ Add a _description_ of the text message as the value of the `i18n` attribute or 
 
 The following example shows the value of the `i18n` attribute.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-desc"/>
+<docs-code header="src/app/app.component.html" example="i18n" path="doc-files/app.component.html" visibleRegion="i18n-attribute-desc"/>
 
 The following example shows the value of the [`$localize`][ApiLocalizeInitLocalize] tagged message string with a description.
 
@@ -174,7 +174,7 @@ For example, you may want to specify that the `<h1>` tag is a site header that y
 
 The following example shows how to specify that the `<h1>` tag must be translated as a header or referenced elsewhere.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-meaning"/>
+<docs-code header="src/app/app.component.html" example="i18n" path="doc-files/app.component.html" visibleRegion="i18n-attribute-meaning"/>
 
 The result is any text marked with `site header`, as the _meaning_ is translated exactly the same way.
 
@@ -289,7 +289,7 @@ The default locale \(`en-US`\) uses a very simple `plural()` function that doesn
 Another locale with a simple `plural()` function is `es`.
 The following code example shows the [en-US `plural()`][GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18] function.
 
-<docs-code path="adev/src/content/examples/i18n/doc-files/locale_plural_function.ts" class="no-box" hideCopy/>
+<docs-code example="i18n" path="doc-files/locale_plural_function.ts" class="no-box" hideCopy/>
 
 The `plural()` function only returns 1 \(`one`\) or 5 \(`other`\).
 The `few` category never matches.
@@ -329,7 +329,7 @@ updated one minute ago
 Use HTML markup and [interpolations](guide/templates/binding#render-dynamic-text-with-text-interpolation).
 The following code example shows how to use the `plural` clause to express the previous three situations in a `<span>` element.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" visibleRegion="i18n-plural"/>
+<docs-code header="src/app/app.component.html" example="i18n" path="src/app/app.component.html" visibleRegion="i18n-plural"/>
 
 Review the following details in the previous code example.
 
@@ -422,14 +422,14 @@ The `gender` property binds the outputs to each of following string values.
 The `select` clause maps the values to the appropriate translations.
 The following code example shows `gender` property used with the select clause.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" visibleRegion="i18n-select"/>
+<docs-code header="src/app/app.component.html" example="i18n" path="src/app/app.component.html" visibleRegion="i18n-select"/>
 
 #### `gender` and `minutes` example
 
 Combine different clauses together, such as the `plural` and `select` clauses.
 The following code example shows nested clauses based on the `gender` and `minutes` examples.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" visibleRegion="i18n-nested"/>
+<docs-code header="src/app/app.component.html" example="i18n" path="src/app/app.component.html" visibleRegion="i18n-nested"/>
 
 ## What's next
 

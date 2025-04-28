@@ -234,7 +234,7 @@ In this example, there is a parent provider and injecting the service will retur
 Another example shows the component class with a provider for `FlowerService`.
 In this case, the injector looks no further than the current `ElementInjector` because it finds the `FlowerService` and returns the tulip <code>&#x1F337;</code>.
 
-<docs-code header="src/app/self/self.component.ts" path="adev/src/content/examples/resolution-modifiers/src/app/self/self.component.ts" visibleRegion="self-component"/>
+<docs-code header="src/app/self/self.component.ts" example="resolution-modifiers" path="src/app/self/self.component.ts" visibleRegion="self-component"/>
 
 ### `skipSelf`
 
