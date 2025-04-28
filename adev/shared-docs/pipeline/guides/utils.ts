@@ -48,3 +48,11 @@ export function loadWorkspaceRelativeFile(filePath: string): string {
   }
   return readFileSync(fullFilePath, {encoding: 'utf-8'});
 }
+
+export function loadExampleRelativeFile(example: string, path: string): string {
+  const fullFilePath = join(WORKSPACE_DIR, 'adev/src/content/examples/', example, path);
+  if (!existsSync(fullFilePath)) {
+    throw Error(`Cannot find ${path} in the ${example} example, full path: ${fullFilePath}`);
+  }
+  return readFileSync(fullFilePath, {encoding: 'utf-8'});
+}

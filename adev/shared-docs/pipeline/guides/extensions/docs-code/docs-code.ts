@@ -9,7 +9,7 @@
 import {TokenizerThis, RendererThis} from 'marked';
 import {CodeToken, formatCode} from './format/index';
 import {FileType, removeEslintComments} from './sanitizers/eslint';
-import {loadWorkspaceRelativeFile} from '../../utils';
+import {loadExampleRelativeFile, loadWorkspaceRelativeFile} from '../../utils';
 
 /** Marked token for a custom docs element. */
 export interface DocsCodeToken extends CodeToken {
@@ -30,6 +30,7 @@ const languageRule = /language="([^"]*)"/;
 const visibleLinesRule = /visibleLines="([^"]*)"/;
 const visibleRegionRule = /visibleRegion="([^"]*)"/;
 const previewRule = /preview/;
+const exampleNameRule = /example="([^"]*)"/;
 
 export const docsCodeExtension = {
   name: 'docs-code',
@@ -51,10 +52,15 @@ export const docsCodeExtension = {
       const visibleLines = visibleLinesRule.exec(attr);
       const visibleRegion = visibleRegionRule.exec(attr);
       const preview = previewRule.exec(attr) ? true : false;
+      const exampleName = exampleNameRule.exec(attr)?.[1] || undefined;
 
       let code = match[2]?.trim() ?? '';
       if (path && path[1]) {
-        code = loadWorkspaceRelativeFile(path[1]);
+        if (exampleName !== undefined) {
+          code = loadExampleRelativeFile(exampleName, path[1]);
+        } else {
+          code = loadWorkspaceRelativeFile(path[1]);
+        }
         // Remove ESLint Comments
         const fileType: FileType | undefined = path[1]?.split('.').pop() as FileType;
         code = removeEslintComments(code, fileType);
@@ -73,6 +79,7 @@ export const docsCodeExtension = {
         visibleLines: visibleLines?.[1],
         visibleRegion: visibleRegion?.[1],
         preview: preview,
+        example: exampleName,
       };
       return token;
     }

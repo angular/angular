@@ -36,6 +36,8 @@ export interface CodeToken extends Tokens.Generic {
   preview?: boolean;
   /* The lines to display highlighting on */
   highlight?: string;
+  /** The name of the example being shown in the code */
+  example?: string;
 
   /** The generated diff metadata if created in the code formating process. */
   diffMetadata?: DiffMetadata;
@@ -83,6 +85,9 @@ function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
   }
   if (token.header) {
     el.setAttribute('header', token.header);
+  }
+  if (token.example) {
+    el.setAttribute('example', token.example);
   }
 
   // Boolean value attributes
