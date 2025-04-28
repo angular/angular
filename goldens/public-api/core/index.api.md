@@ -1476,9 +1476,7 @@ export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;
 
 // @public
-function provideZonelessChangeDetection(): EnvironmentProviders;
-export { provideZonelessChangeDetection as provideExperimentalZonelessChangeDetection }
-export { provideZonelessChangeDetection }
+export function provideZonelessChangeDetection(): EnvironmentProviders;
 
 // @public
 export interface Query {

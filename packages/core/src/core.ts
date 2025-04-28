@@ -43,11 +43,7 @@ export {
   provideZoneChangeDetection,
   NgZoneOptions,
 } from './change_detection/scheduling/ng_zone_scheduling';
-export {
-  provideZonelessChangeDetection,
-  // TODO(atscott): Remove after internal LSC for name change
-  provideZonelessChangeDetection as provideExperimentalZonelessChangeDetection,
-} from './change_detection/scheduling/zoneless_scheduling_impl';
+export {provideZonelessChangeDetection} from './change_detection/scheduling/zoneless_scheduling_impl';
 export {PendingTasks} from './pending_tasks';
 export {provideCheckNoChangesConfig} from './change_detection/provide_check_no_changes_config';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
