@@ -57,8 +57,6 @@ export function form<T>(model: WritableSignal<T>, schema?: NoInfer<Schema<T>>): 
     new SchemaImpl(schema).apply(pathNode);
   }
   const fieldRoot = FieldNode.newRoot(model, pathNode);
-
-  (pathNode as FieldPathNode).initResources(fieldRoot.fieldContext);
   return fieldRoot.fieldProxy as Field<T>;
 }
 
