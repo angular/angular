@@ -3,11 +3,11 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 
 describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [RouterModule.forRoot([])],
       declarations: [AppComponent],
-    }).compileComponents();
+    });
   });
 
   it('should create the app', () => {

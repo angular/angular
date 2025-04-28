@@ -1059,12 +1059,10 @@ describe('TestBed', () => {
         declarations: [App],
         // AppModule -> ModuleB -> ModuleA (to be overridden)
         imports: [AppModule],
-      })
-        .overrideModule(ModuleA, {
-          remove: {declarations: [CompA], exports: [CompA]},
-          add: {declarations: [MockCompA], exports: [MockCompA]},
-        })
-        .compileComponents();
+      }).overrideModule(ModuleA, {
+        remove: {declarations: [CompA], exports: [CompA]},
+        add: {declarations: [MockCompA], exports: [MockCompA]},
+      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -1089,8 +1087,7 @@ describe('TestBed', () => {
         .overrideModule(ModuleB, {
           remove: {declarations: [CompB], exports: [CompB]},
           add: {declarations: [MockCompB], exports: [MockCompB]},
-        })
-        .compileComponents();
+        });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -1312,25 +1309,23 @@ describe('TestBed', () => {
 
     TestBed.configureTestingModule({
       imports: [TestModule],
-    })
-      .overrideModule(TestModule, {
-        remove: {
-          providers: [
-            // Removing the cycle named "a" should result in removing the provider for "a".
-            // Note: although this removes a different instance than the one provided, metadata
-            // overrides compare objects by value, not by reference.
-            {provide: CYCLES, useValue: new Cyclic('a'), multi: true},
+    }).overrideModule(TestModule, {
+      remove: {
+        providers: [
+          // Removing the cycle named "a" should result in removing the provider for "a".
+          // Note: although this removes a different instance than the one provided, metadata
+          // overrides compare objects by value, not by reference.
+          {provide: CYCLES, useValue: new Cyclic('a'), multi: true},
 
-            // Also attempt to remove a cycle named "B" (which does not exist) to verify that
-            // objects are correctly compared by value.
-            {provide: CYCLES, useValue: new Cyclic('B'), multi: true},
-          ],
-        },
-        add: {
-          providers: [{provide: CYCLES, useValue: new Cyclic('c'), multi: true}],
-        },
-      })
-      .compileComponents();
+          // Also attempt to remove a cycle named "B" (which does not exist) to verify that
+          // objects are correctly compared by value.
+          {provide: CYCLES, useValue: new Cyclic('B'), multi: true},
+        ],
+      },
+      add: {
+        providers: [{provide: CYCLES, useValue: new Cyclic('c'), multi: true}],
+      },
+    });
 
     const values = TestBed.inject(CYCLES);
     expect(values.map((v) => v.name)).toEqual(['b', 'c']);
@@ -1676,6 +1671,7 @@ describe('TestBed', () => {
         set: {template: `Override of a nested template! <cmp-a />`},
       });
 
+      // This is only required because the components are AOT compiled and thus include setClassMetadataAsync
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(RootAotComponent);
@@ -1762,6 +1758,7 @@ describe('TestBed', () => {
       TestBed.configureTestingModule({imports: [ParentCmp], providers: [COMMON_PROVIDERS]});
       TestBed.overrideProvider(ImportantService, {useValue: {value: 'overridden'}});
 
+      // This is only required because the component has setClassMetadataAsync
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(ParentCmp);
@@ -1787,6 +1784,7 @@ describe('TestBed', () => {
         },
       });
 
+      // This is only required because the components are AOT compiled and thus include setClassMetadataAsync
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(RootAotComponent);
@@ -2220,9 +2218,9 @@ describe('TestBed', () => {
       imports: [TestingModule],
       declarations: [AppComponent],
       providers: [{provide: InjectedString, useValue: {value: 'initial'}}],
-    }).compileComponents();
+    });
 
-    TestBed.overrideProvider(InjectedString, {useValue: {value: 'changed'}}).compileComponents();
+    TestBed.overrideProvider(InjectedString, {useValue: {value: 'changed'}});
 
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
