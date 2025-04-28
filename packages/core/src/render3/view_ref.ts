@@ -51,7 +51,7 @@ interface ChangeDetectorRefInterface extends ChangeDetectorRef {}
 export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterface {
   private _appRef: ApplicationRef | null = null;
   private _attachedToViewContainer = false;
-  private readonly exhaustive: boolean = USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT;
+  private exhaustive?: boolean;
 
   get rootNodes(): any[] {
     const lView = this._lView;
@@ -80,14 +80,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
      * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
      */
     private _cdRefInjectingView?: LView,
-  ) {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      this.exhaustive = this._lView[INJECTOR].get(
-        UseExhaustiveCheckNoChanges,
-        USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT,
-      );
-    }
-  }
+  ) {}
 
   get context(): T {
     return this._lView[CONTEXT] as unknown as T;
@@ -334,6 +327,15 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    */
   checkNoChanges(): void {
     if (!ngDevMode) return;
+
+    try {
+      this.exhaustive ??= this._lView[INJECTOR].get(
+        UseExhaustiveCheckNoChanges,
+        USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT,
+      );
+    } catch {
+      this.exhaustive = USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT;
+    }
     checkNoChangesInternal(this._lView, this.exhaustive);
   }
 
