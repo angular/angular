@@ -10,7 +10,7 @@ describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({declarations: [AppComponent]}).compileComponents();
+    TestBed.configureTestingModule({declarations: [AppComponent]});
   }));
 
   beforeEach(() => {

@@ -7,7 +7,7 @@ describe('MyLibComponent', () => {
   let fixture: ComponentFixture<MyLibComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({declarations: [MyLibComponent]}).compileComponents();
+    TestBed.configureTestingModule({declarations: [MyLibComponent]});
   }));
 
   beforeEach(() => {

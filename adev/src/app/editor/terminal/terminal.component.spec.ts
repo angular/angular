@@ -36,7 +36,7 @@ describe('Terminal', () => {
           useValue: fakeWindow,
         },
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(Terminal);
     component = fixture.componentInstance;
