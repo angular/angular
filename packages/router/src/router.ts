@@ -321,6 +321,9 @@ export class Router {
 
     const urlTree = this.parseUrl(url);
     this.scheduleNavigation(urlTree, source, restoredState, extras).catch((e) => {
+      if (this.disposed) {
+        return;
+      }
       this.injector.get(ɵINTERNAL_APPLICATION_ERROR_HANDLER)(e);
     });
   }

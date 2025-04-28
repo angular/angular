@@ -13,10 +13,9 @@ import {
   Component,
   NgModule,
   ɵConsole as Console,
-  provideZonelessChangeDetection,
   signal,
 } from '@angular/core';
-import {fakeAsync, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {
   ActivationEnd,
@@ -38,11 +37,9 @@ import {
 
 import {provideRouter} from '../../src/provide_router';
 import {
-  advance,
   BlankCmp,
   CollectParamsCmp,
   ComponentRecordingRoutePathAndUrl,
-  createRoot,
   EmptyQueryParamsCmp,
   expectEvents,
   onlyNavigationStartAndEnd,
@@ -59,6 +56,8 @@ import {
   TestModule,
   TwoOutletsCmp,
   UserCmp,
+  createRoot,
+  advance,
 } from './integration_helpers';
 import {guardsIntegrationSuite} from './guards.spec';
 import {lazyLoadingIntegrationSuite} from './lazy_loading.spec';
@@ -83,24 +82,23 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         providers: [
           {provide: Console, useValue: noopConsole},
           provideRouter([{path: 'simple', component: SimpleCmp}]),
-          provideZonelessChangeDetection(),
           browserAPI === 'navigation' ? ɵprovideFakePlatformNavigation() : [],
         ],
       });
     });
 
-    it('should navigate with a provided config', fakeAsync(() => {
+    it('should navigate with a provided config', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.navigateByUrl('/simple');
-      advance(fixture);
+      await advance(fixture);
 
       expect(location.path()).toEqual('/simple');
-    }));
+    });
 
-    it('should navigate from ngOnInit hook', fakeAsync(() => {
+    it('should navigate from ngOnInit hook', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
       router.resetConfig([
@@ -108,12 +106,12 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         {path: 'one', component: RouteCmp},
       ]);
 
-      const fixture = createRoot(router, RootCmpWithOnInit);
+      const fixture = await createRoot(router, RootCmpWithOnInit);
       expect(location.path()).toEqual('/one');
       expect(fixture.nativeElement).toHaveText('route');
-    }));
+    });
 
-    it('Should work inside ChangeDetectionStrategy.OnPush components', fakeAsync(() => {
+    it('Should work inside ChangeDetectionStrategy.OnPush components', async () => {
       @Component({
         selector: 'root-cmp',
         template: `<router-outlet></router-outlet>`,
@@ -138,7 +136,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       TestBed.configureTestingModule({imports: [TestModule]});
 
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -153,19 +151,19 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         },
       ]);
 
-      advance(fixture);
+      await advance(fixture);
       router.navigateByUrl('on');
-      advance(fixture);
+      await advance(fixture);
       router.navigateByUrl('on/push');
-      advance(fixture);
+      await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('it works!');
-    }));
+    });
 
-    it('should not error when no url left and no children are matching', fakeAsync(() => {
+    it('should not error when no url left and no children are matching', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -176,22 +174,22 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/team/33/simple');
-      advance(fixture);
+      await advance(fixture);
 
       expect(location.path()).toEqual('/team/33/simple');
       expect(fixture.nativeElement).toHaveText('team 33 [ simple, right:  ]');
 
       router.navigateByUrl('/team/33');
-      advance(fixture);
+      await advance(fixture);
 
       expect(location.path()).toEqual('/team/33');
       expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
-    }));
+    });
 
-    it('should work when an outlet is in an ngIf', fakeAsync(() => {
+    it('should work when an outlet is in an ngIf', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -202,12 +200,12 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/child/simple');
-      advance(fixture);
+      await advance(fixture);
 
       expect(location.path()).toEqual('/child/simple');
-    }));
+    });
 
-    it('should work when an outlet is added/removed', fakeAsync(() => {
+    it('should work when an outlet is added/removed', async () => {
       @Component({
         selector: 'someRoot',
         template: `[<div *ngIf="cond()"><router-outlet></router-outlet></div>]`,
@@ -220,7 +218,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       const router: Router = TestBed.inject(Router);
 
-      const fixture = createRoot(router, RootCmpWithLink);
+      const fixture = await createRoot(router, RootCmpWithLink);
 
       router.resetConfig([
         {path: 'simple', component: SimpleCmp},
@@ -228,19 +226,19 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/simple');
-      advance(fixture);
+      await advance(fixture);
       expect(fixture.nativeElement).toHaveText('[simple]');
 
       fixture.componentInstance.cond.set(false);
-      advance(fixture);
+      await advance(fixture);
       expect(fixture.nativeElement).toHaveText('[]');
 
       fixture.componentInstance.cond.set(true);
-      advance(fixture);
+      await advance(fixture);
       expect(fixture.nativeElement).toHaveText('[simple]');
-    }));
+    });
 
-    it('should update location when navigating', fakeAsync(() => {
+    it('should update location when navigating', async () => {
       @Component({
         template: `record`,
         standalone: false,
@@ -259,92 +257,92 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: 'record/:id', component: RecordLocationCmp}]);
 
       router.navigateByUrl('/record/22');
-      advance(fixture);
+      await advance(fixture);
 
       const c = fixture.debugElement.children[1].componentInstance;
       expect(location.path()).toEqual('/record/22');
       expect(c.storedPath).toEqual('/record/22');
 
       router.navigateByUrl('/record/33');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/record/33');
-    }));
+    });
 
-    it('should skip location update when using NavigationExtras.skipLocationChange with navigateByUrl', fakeAsync(() => {
+    it('should skip location update when using NavigationExtras.skipLocationChange with navigateByUrl', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
       const fixture = TestBed.createComponent(RootCmp);
-      advance(fixture);
+      await advance(fixture);
 
       router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
 
       router.navigateByUrl('/team/22');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/team/22');
 
       expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
 
       router.navigateByUrl('/team/33', {skipLocationChange: true});
-      advance(fixture);
+      await advance(fixture);
 
       expect(location.path()).toEqual('/team/22');
 
       expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
-    }));
+    });
 
-    it('should skip location update when using NavigationExtras.skipLocationChange with navigate', fakeAsync(() => {
+    it('should skip location update when using NavigationExtras.skipLocationChange with navigate', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
       const fixture = TestBed.createComponent(RootCmp);
-      advance(fixture);
+      await advance(fixture);
 
       router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
 
       router.navigate(['/team/22']);
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/team/22');
 
       expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
 
       router.navigate(['/team/33'], {skipLocationChange: true});
-      advance(fixture);
+      await advance(fixture);
 
       expect(location.path()).toEqual('/team/22');
 
       expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
-    }));
+    });
 
-    it('should navigate after navigation with skipLocationChange', fakeAsync(() => {
+    it('should navigate after navigation with skipLocationChange', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
       const fixture = TestBed.createComponent(RootCmpWithNamedOutlet);
-      advance(fixture);
+      await advance(fixture);
 
       router.resetConfig([{path: 'show', outlet: 'main', component: SimpleCmp}]);
 
       router.navigate([{outlets: {main: 'show'}}], {skipLocationChange: true});
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('');
 
       expect(fixture.nativeElement).toHaveText('main [simple]');
 
       router.navigate([{outlets: {main: null}}], {skipLocationChange: true});
-      advance(fixture);
+      await advance(fixture);
 
       expect(location.path()).toEqual('');
 
       expect(fixture.nativeElement).toHaveText('main []');
-    }));
+    });
 
-    it('should navigate back and forward', fakeAsync(() => {
+    it('should navigate back and forward', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -365,51 +363,51 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       });
 
       router.navigateByUrl('/team/33/simple');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/team/33/simple');
       const simpleNavStart = event!;
 
       router.navigateByUrl('/team/22/user/victor');
-      advance(fixture);
+      await advance(fixture);
       const userVictorNavStart = event!;
 
       location.back();
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/team/33/simple');
       expect(event!.navigationTrigger).toEqual('popstate');
       expect(event!.restoredState!.navigationId).toEqual(simpleNavStart.id);
 
       location.forward();
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/team/22/user/victor');
       expect(event!.navigationTrigger).toEqual('popstate');
       expect(event!.restoredState!.navigationId).toEqual(userVictorNavStart.id);
-    }));
+    });
 
-    it('should navigate to the same url when config changes', fakeAsync(() => {
+    it('should navigate to the same url when config changes', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: 'a', component: SimpleCmp}]);
 
       router.navigate(['/a']);
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/a');
       expect(fixture.nativeElement).toHaveText('simple');
 
       router.resetConfig([{path: 'a', component: RouteCmp}]);
 
       router.navigate(['/a']);
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/a');
       expect(fixture.nativeElement).toHaveText('route');
-    }));
+    });
 
-    it('should navigate when locations changes', fakeAsync(() => {
+    it('should navigate when locations changes', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -423,15 +421,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       router.events.forEach((e) => onlyNavigationStartAndEnd(e) && recordedEvents.push(e));
 
       router.navigateByUrl('/team/22/user/victor');
-      advance(fixture);
+      await advance(fixture);
 
       location.go('/team/22/user/fedor');
       location.historyGo(0);
-      advance(fixture);
+      await advance(fixture);
 
       location.go('/team/22/user/fedor');
       location.historyGo(0);
-      advance(fixture);
+      await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('team 22 [ user fedor, right:  ]');
 
@@ -441,17 +439,17 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         [NavigationStart, '/team/22/user/fedor'],
         [NavigationEnd, '/team/22/user/fedor'],
       ]);
-    }));
+    });
 
-    it('should update the location when the matched route does not change', fakeAsync(() => {
+    it('should update the location when the matched route does not change', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: '**', component: CollectParamsCmp}]);
 
       router.navigateByUrl('/one/two');
-      advance(fixture);
+      await advance(fixture);
       const cmp = fixture.debugElement.children[1].componentInstance;
       expect(location.path()).toEqual('/one/two');
       expect(fixture.nativeElement).toHaveText('collect-params');
@@ -459,15 +457,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(cmp.recordedUrls()).toEqual(['one/two']);
 
       router.navigateByUrl('/three/four');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/three/four');
       expect(fixture.nativeElement).toHaveText('collect-params');
       expect(cmp.recordedUrls()).toEqual(['one/two', 'three/four']);
-    }));
+    });
 
-    it('should support secondary routes', fakeAsync(() => {
+    it('should support secondary routes', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -481,14 +479,14 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/team/22/(user/victor//right:simple)');
-      advance(fixture);
+      await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('team 22 [ user victor, right: simple ]');
-    }));
+    });
 
-    it('should support secondary routes in separate commands', fakeAsync(() => {
+    it('should support secondary routes in separate commands', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -502,16 +500,16 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/team/22/user/victor');
-      advance(fixture);
+      await advance(fixture);
       router.navigate(['team/22', {outlets: {right: 'simple'}}]);
-      advance(fixture);
+      await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('team 22 [ user victor, right: simple ]');
-    }));
+    });
 
-    it('should support secondary routes as child of empty path parent', fakeAsync(() => {
+    it('should support secondary routes as child of empty path parent', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -522,14 +520,14 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/(right:simple)');
-      advance(fixture);
+      await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('team  [ , right: simple ]');
-    }));
+    });
 
-    it('should deactivate outlets', fakeAsync(() => {
+    it('should deactivate outlets', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -543,17 +541,17 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/team/22/(user/victor//right:simple)');
-      advance(fixture);
+      await advance(fixture);
 
       router.navigateByUrl('/team/22/user/victor');
-      advance(fixture);
+      await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('team 22 [ user victor, right:  ]');
-    }));
+    });
 
-    it('should deactivate nested outlets', fakeAsync(() => {
+    it('should deactivate nested outlets', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -568,59 +566,59 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/team/22/(user/victor//right:simple)');
-      advance(fixture);
+      await advance(fixture);
 
       router.navigateByUrl('/');
-      advance(fixture);
+      await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('');
-    }));
+    });
 
-    it('should set query params and fragment', fakeAsync(() => {
+    it('should set query params and fragment', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: 'query', component: QueryParamsAndFragmentCmp}]);
 
       router.navigateByUrl('/query?name=1#fragment1');
-      advance(fixture);
+      await advance(fixture);
       expect(fixture.nativeElement).toHaveText('query: 1 fragment: fragment1');
 
       router.navigateByUrl('/query?name=2#fragment2');
-      advance(fixture);
+      await advance(fixture);
       expect(fixture.nativeElement).toHaveText('query: 2 fragment: fragment2');
-    }));
+    });
 
-    it('should handle empty or missing fragments', fakeAsync(() => {
+    it('should handle empty or missing fragments', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: 'query', component: QueryParamsAndFragmentCmp}]);
 
       router.navigateByUrl('/query#');
-      advance(fixture);
+      await advance(fixture);
       expect(fixture.nativeElement).toHaveText('query:  fragment: ');
 
       router.navigateByUrl('/query');
-      advance(fixture);
+      await advance(fixture);
       expect(fixture.nativeElement).toHaveText('query:  fragment: null');
-    }));
+    });
 
-    it('should ignore null and undefined query params', fakeAsync(() => {
+    it('should ignore null and undefined query params', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: 'query', component: EmptyQueryParamsCmp}]);
 
       router.navigate(['query'], {queryParams: {name: 1, age: null, page: undefined}});
-      advance(fixture);
+      await advance(fixture);
       const cmp = fixture.debugElement.children[1].componentInstance;
       expect(cmp.recordedParams).toEqual([{name: '1'}]);
-    }));
+    });
 
-    it('should push params only when they change', fakeAsync(() => {
+    it('should push params only when they change', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -631,7 +629,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/team/22/user/victor');
-      advance(fixture);
+      await advance(fixture);
       const team = fixture.debugElement.children[1].componentInstance;
       const user = fixture.debugElement.children[1].children[1].componentInstance;
 
@@ -641,17 +639,17 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(user.snapshotParams).toEqual([{name: 'victor'}]);
 
       router.navigateByUrl('/team/22/user/fedor');
-      advance(fixture);
+      await advance(fixture);
 
       expect(team.recordedParams).toEqual([{id: '22'}]);
       expect(team.snapshotParams).toEqual([{id: '22'}]);
       expect(user.recordedParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
       expect(user.snapshotParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
-    }));
+    });
 
-    it('should work when navigating to /', fakeAsync(() => {
+    it('should work when navigating to /', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {path: '', pathMatch: 'full', component: SimpleCmp},
@@ -659,19 +657,19 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/user/victor');
-      advance(fixture);
+      await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('user victor');
 
       router.navigateByUrl('/');
-      advance(fixture);
+      await advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('simple');
-    }));
+    });
 
-    it('should cancel in-flight navigations', fakeAsync(() => {
+    it('should cancel in-flight navigations', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
@@ -679,14 +677,14 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       router.events.forEach((e) => recordedEvents.push(e));
 
       router.navigateByUrl('/user/init');
-      advance(fixture);
+      await advance(fixture);
 
       const user = fixture.debugElement.children[1].componentInstance;
 
       let r1: any, r2: any;
       router.navigateByUrl('/user/victor').then((_) => (r1 = _));
       router.navigateByUrl('/user/fedor').then((_) => (r2 = _));
-      advance(fixture);
+      await advance(fixture);
 
       expect(r1).toEqual(false); // returns false because it was canceled
       expect(r2).toEqual(true); // returns true because it was successful
@@ -722,16 +720,16 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         [ChildActivationEnd],
         [NavigationEnd, '/user/fedor'],
       ]);
-    }));
+    });
 
-    it('should properly set currentNavigation when cancelling in-flight navigations', fakeAsync(() => {
+    it('should properly set currentNavigation when cancelling in-flight navigations', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
       router.navigateByUrl('/user/init');
-      advance(fixture);
+      await advance(fixture);
 
       router.navigateByUrl('/user/victor');
       expect(router.getCurrentNavigation()).not.toBe(null);
@@ -739,16 +737,16 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       // Due to https://github.com/angular/angular/issues/29389, this would be `false`
       // when running a second navigation.
       expect(router.getCurrentNavigation()).not.toBe(null);
-      advance(fixture);
+      await advance(fixture);
 
       expect(router.getCurrentNavigation()).toBe(null);
       expect(fixture.nativeElement).toHaveText('user fedor');
-    }));
+    });
 
-    it('should replace state when path is equal to current path', fakeAsync(() => {
+    it('should replace state when path is equal to current path', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -762,23 +760,23 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/team/33/simple');
-      advance(fixture);
+      await advance(fixture);
 
       router.navigateByUrl('/team/22/user/victor');
-      advance(fixture);
+      await advance(fixture);
 
       router.navigateByUrl('/team/22/user/victor');
-      advance(fixture);
+      await advance(fixture);
 
       location.back();
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/team/33/simple');
-    }));
+    });
 
-    it('should handle componentless paths', fakeAsync(() => {
+    it('should handle componentless paths', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmpWithTwoOutlets);
+      const fixture = await createRoot(router, RootCmpWithTwoOutlets);
 
       router.resetConfig([
         {
@@ -793,33 +791,33 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       // navigate to a componentless route
       router.navigateByUrl('/parent/11/(simple//right:user/victor)');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
       expect(fixture.nativeElement).toHaveText('primary [simple] right [user victor]');
 
       // navigate to the same route with different params (reuse)
       router.navigateByUrl('/parent/22/(simple//right:user/fedor)');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/parent/22/(simple//right:user/fedor)');
       expect(fixture.nativeElement).toHaveText('primary [simple] right [user fedor]');
 
       // navigate to a normal route (check deactivation)
       router.navigateByUrl('/user/victor');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/user/victor');
       expect(fixture.nativeElement).toHaveText('primary [user victor] right []');
 
       // navigate back to a componentless route
       router.navigateByUrl('/parent/11/(simple//right:user/victor)');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/parent/11/(simple//right:user/victor)');
       expect(fixture.nativeElement).toHaveText('primary [simple] right [user victor]');
-    }));
+    });
 
-    it('should not deactivate aux routes when navigating from a componentless routes', fakeAsync(() => {
+    it('should not deactivate aux routes when navigating from a componentless routes', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
-      const fixture = createRoot(router, TwoOutletsCmp);
+      const fixture = await createRoot(router, TwoOutletsCmp);
 
       router.resetConfig([
         {path: 'simple', component: SimpleCmp},
@@ -828,17 +826,17 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ]);
 
       router.navigateByUrl('/componentless/simple(aux:user/victor)');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/componentless/simple(aux:user/victor)');
       expect(fixture.nativeElement).toHaveText('[ simple, aux: user victor ]');
 
       router.navigateByUrl('/simple(aux:user/victor)');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/simple(aux:user/victor)');
       expect(fixture.nativeElement).toHaveText('[ simple, aux: user victor ]');
-    }));
+    });
 
-    it('should emit an event when an outlet gets activated', fakeAsync(() => {
+    it('should emit an event when an outlet gets activated', async () => {
       @Component({
         selector: 'container',
         template: `<router-outlet (activate)="recordActivate($event)" (deactivate)="recordDeactivate($event)"></router-outlet>`,
@@ -861,7 +859,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       const router: Router = TestBed.inject(Router);
 
-      const fixture = createRoot(router, Container);
+      const fixture = await createRoot(router, Container);
       const cmp = fixture.componentInstance;
 
       router.resetConfig([
@@ -873,35 +871,35 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       cmp.deactivations = [];
 
       router.navigateByUrl('/blank');
-      advance(fixture);
+      await advance(fixture);
 
       expect(cmp.activations.length).toEqual(1);
       expect(cmp.activations[0] instanceof BlankCmp).toBe(true);
 
       router.navigateByUrl('/simple');
-      advance(fixture);
+      await advance(fixture);
 
       expect(cmp.activations.length).toEqual(2);
       expect(cmp.activations[1] instanceof SimpleCmp).toBe(true);
       expect(cmp.deactivations.length).toEqual(1);
       expect(cmp.deactivations[0] instanceof BlankCmp).toBe(true);
-    }));
+    });
 
-    it('should update url and router state before activating components', fakeAsync(() => {
+    it('should update url and router state before activating components', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: 'cmp', component: ComponentRecordingRoutePathAndUrl}]);
 
       router.navigateByUrl('/cmp');
-      advance(fixture);
+      await advance(fixture);
 
       const cmp: ComponentRecordingRoutePathAndUrl =
         fixture.debugElement.children[1].componentInstance;
 
       expect(cmp.url).toBe('/cmp');
       expect(cmp.path.length).toEqual(2);
-    }));
+    });
 
     navigationErrorsIntegrationSuite();
     eagerUrlUpdateStrategyIntegrationSuite();

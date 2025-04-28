@@ -7,7 +7,7 @@
  */
 import {filter, tap, first} from 'rxjs/operators';
 import {Event} from '../../index';
-import {fakeAsync, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {
   Router,
@@ -28,9 +28,9 @@ import {createRoot, RootCmp, BlankCmp, UserCmp, advance, expectEvents} from './i
 
 export function routerEventsIntegrationSuite() {
   describe('route events', () => {
-    it('should fire matching (Child)ActivationStart/End events', fakeAsync(() => {
+    it('should fire matching (Child)ActivationStart/End events', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
@@ -38,7 +38,7 @@ export function routerEventsIntegrationSuite() {
       router.events.forEach((e) => recordedEvents.push(e));
 
       router.navigateByUrl('/user/fedor');
-      advance(fixture);
+      await advance(fixture);
 
       const event3 = recordedEvents[3] as ChildActivationStart;
       const event9 = recordedEvents[9] as ChildActivationEnd;
@@ -70,11 +70,11 @@ export function routerEventsIntegrationSuite() {
         [ChildActivationEnd],
         [NavigationEnd, '/user/fedor'],
       ]);
-    }));
+    });
 
-    it('should allow redirection in NavigationStart', fakeAsync(() => {
+    it('should allow redirection in NavigationStart', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {path: 'blank', component: UserCmp},
@@ -99,54 +99,54 @@ export function routerEventsIntegrationSuite() {
       });
 
       router.navigate(['/user/:fedor']);
-      advance(fixture);
+      await advance(fixture);
 
       expect(navigateSpy.calls.mostRecent().args[1]!.queryParams);
-    }));
+    });
 
-    it('should stop emitting events after the router is destroyed', fakeAsync(() => {
+    it('should stop emitting events after the router is destroyed', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
       let events = 0;
       const subscription = router.events.subscribe(() => events++);
 
       router.navigateByUrl('/user/frodo');
-      advance(fixture);
+      await advance(fixture);
       expect(events).toBeGreaterThan(0);
 
       const previousCount = events;
       router.dispose();
       router.navigateByUrl('/user/bilbo');
-      advance(fixture);
+      await advance(fixture);
 
       expect(events).toBe(previousCount);
       subscription.unsubscribe();
-    }));
+    });
 
-    it('should resolve navigation promise with false after the router is destroyed', fakeAsync(() => {
+    it('should resolve navigation promise with false after the router is destroyed', async () => {
       const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
       let result = null as boolean | null;
       const callback = (r: boolean) => (result = r);
       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
       router.navigateByUrl('/user/frodo').then(callback);
-      advance(fixture);
+      await advance(fixture);
       expect(result).toBe(true);
       result = null as boolean | null;
 
       router.dispose();
 
       router.navigateByUrl('/user/bilbo').then(callback);
-      advance(fixture);
+      await advance(fixture);
       expect(result).toBe(false);
       result = null as boolean | null;
 
       router.navigate(['/user/bilbo']).then(callback);
-      advance(fixture);
+      await advance(fixture);
       expect(result).toBe(false);
-    }));
+    });
   });
 }

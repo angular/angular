@@ -16,7 +16,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 
-describe('recognize', async () => {
+describe('recognize', () => {
   it('should work', async () => {
     const s = await recognize([{path: 'a', component: ComponentA}], 'a');
     checkActivatedRoute(s.root, '', {}, RootComponent);
@@ -165,7 +165,7 @@ describe('recognize', async () => {
     checkActivatedRoute(c[1], 'c', {c1: '1111', c2: '2222'}, ComponentC, 'left');
   });
 
-  describe('data', async () => {
+  describe('data', () => {
     it('should set static data', async () => {
       const s = await recognize([{path: 'a', data: {one: 1}, component: ComponentA}], 'a');
       const r: ActivatedRouteSnapshot = s.root.firstChild!;
@@ -246,8 +246,8 @@ describe('recognize', async () => {
     });
   });
 
-  describe('empty path', async () => {
-    describe('root', async () => {
+  describe('empty path', () => {
+    describe('root', () => {
       it('should work', async () => {
         const s = await recognize([{path: '', component: ComponentA}], '');
         checkActivatedRoute(s.root.firstChild!, '', {}, ComponentA);
@@ -286,7 +286,7 @@ describe('recognize', async () => {
       });
     });
 
-    describe('aux split is in the middle', async () => {
+    describe('aux split is in the middle', () => {
       it('should match (non-terminal)', async () => {
         const s = await recognize(
           [
@@ -363,7 +363,7 @@ describe('recognize', async () => {
       });
     });
 
-    describe('aux split at the end (no right child)', async () => {
+    describe('aux split at the end (no right child)', () => {
       it('should match (non-terminal)', async () => {
         const s = await recognize(
           [
@@ -445,7 +445,7 @@ describe('recognize', async () => {
       });
     });
 
-    describe('split at the end (right child)', async () => {
+    describe('split at the end (right child)', () => {
       it('should match (non-terminal)', async () => {
         const s = await recognize(
           [
@@ -475,7 +475,7 @@ describe('recognize', async () => {
       });
     });
 
-    describe('with outlets', async () => {
+    describe('with outlets', () => {
       it('should work when outlet is a child of empty path parent', async () => {
         const s = await recognize(
           [
@@ -579,14 +579,14 @@ describe('recognize', async () => {
     });
   });
 
-  describe('wildcards', async () => {
+  describe('wildcards', () => {
     it('should support simple wildcards', async () => {
       const s = await recognize([{path: '**', component: ComponentA}], 'a/b/c/d;a1=11');
       checkActivatedRoute(s.root.firstChild!, 'a/b/c/d', {a1: '11'}, ComponentA);
     });
   });
 
-  describe('componentless routes', async () => {
+  describe('componentless routes', () => {
     it('should work', async () => {
       const s = await recognize(
         [
@@ -669,7 +669,7 @@ describe('recognize', async () => {
     });
   });
 
-  describe('empty URL leftovers', async () => {
+  describe('empty URL leftovers', () => {
     it('should not throw when no children matching', async () => {
       const s = await recognize(
         [{path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]}],
@@ -699,7 +699,7 @@ describe('recognize', async () => {
     });
   });
 
-  describe('custom path matchers', async () => {
+  describe('custom path matchers', () => {
     it('should run once', async () => {
       let calls = 0;
       const matcher: UrlMatcher = (s) => {
@@ -765,7 +765,7 @@ describe('recognize', async () => {
     });
   });
 
-  describe('query parameters', async () => {
+  describe('query parameters', () => {
     it('should support query params', async () => {
       const config = [{path: 'a', component: ComponentA}];
       const s = await recognize(config, 'a?q=11');
@@ -785,7 +785,7 @@ describe('recognize', async () => {
     });
   });
 
-  describe('fragment', async () => {
+  describe('fragment', () => {
     it('should support fragment', async () => {
       const config = [{path: 'a', component: ComponentA}];
       const s = await recognize(config, 'a#f1');

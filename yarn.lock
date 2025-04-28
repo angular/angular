@@ -317,7 +317,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a":
   version "0.0.0-2670abf637fa155971cdd1f7e570a7f234922a65"
-  uid ce04ec6cf7604014191821a637e60964a1a3bb4a
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a"
   dependencies:
     "@angular/benchpress" "0.3.0"
@@ -466,7 +465,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#1a12d97905f4af88ccc0b582864907729d23e23e":
   version "0.0.0-a4538b2474d3c551f0217c3d1f5f3a99cf4f8eb7"
-  uid "1a12d97905f4af88ccc0b582864907729d23e23e"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#1a12d97905f4af88ccc0b582864907729d23e23e"
   dependencies:
     "@google-cloud/spanner" "7.19.1"
@@ -8102,8 +8100,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af":
-  version "2.1.6+git"
-  uid "8f228f8862540c6ccd14f76b5a1d9bb5458618af"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af"
 
 dompurify@^3.2.4:

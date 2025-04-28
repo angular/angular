@@ -16,9 +16,9 @@ import {
   InjectionToken,
   EnvironmentInjector,
 } from '@angular/core';
-import {fakeAsync, TestBed, tick, ComponentFixture} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {Subject, Observable, of, concat} from 'rxjs';
-import {delay, tap, mapTo, first, takeWhile, last} from 'rxjs/operators';
+import {tap, mapTo, first, takeWhile, last, switchMap} from 'rxjs/operators';
 import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
@@ -55,9 +55,7 @@ import {wrapIntoObservable} from '../../src/utils/collection';
 import {RouterTestingHarness} from '../../testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {
-  createRoot,
   TeamCmp,
-  advance,
   RootCmp,
   BlankCmp,
   expectEvents,
@@ -69,7 +67,10 @@ import {
   TwoOutletsCmp,
   UserCmp,
   ModuleWithBlankCmpAsRoute,
+  createRoot,
+  advance,
 } from './integration_helpers';
+import {timeout} from '../helpers';
 
 export function guardsIntegrationSuite() {
   describe('guards', () => {
@@ -92,9 +93,9 @@ export function guardsIntegrationSuite() {
           }
         }
 
-        it('should not thrown an unhandled promise rejection', fakeAsync(async () => {
+        it('should not thrown an unhandled promise rejection', async () => {
           const router = TestBed.inject(Router);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           const onUnhandledrejection = jasmine.createSpy();
           window.addEventListener('unhandledrejection', onUnhandledrejection);
@@ -113,14 +114,14 @@ export function guardsIntegrationSuite() {
           window.removeEventListener('unhandledrejection', onUnhandledrejection);
 
           expect(onUnhandledrejection).not.toHaveBeenCalled();
-        }));
+        });
       });
 
       describe('should not activate a route when CanActivate returns false', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           const recordedEvents: Event[] = [];
           router.events.forEach((e) => recordedEvents.push(e));
@@ -128,7 +129,7 @@ export function guardsIntegrationSuite() {
           router.resetConfig([{path: 'team/:id', component: TeamCmp, canActivate: [() => false]}]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
 
           expect(location.path()).toEqual('');
           expectEvents(recordedEvents, [
@@ -141,14 +142,14 @@ export function guardsIntegrationSuite() {
             [NavigationCancel, '/team/22'],
           ]);
           expect((recordedEvents[5] as GuardsCheckEnd).shouldActivate).toBe(false);
-        }));
+        });
       });
 
       describe('should not activate a route when CanActivate returns false (componentless route)', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -159,24 +160,24 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('parent/team/22');
-          advance(fixture);
+          await advance(fixture);
 
           expect(location.path()).toEqual('');
-        }));
+        });
       });
 
       describe('should activate a route when CanActivate returns true', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([{path: 'team/:id', component: TeamCmp, canActivate: [() => true]}]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/22');
-        }));
+        });
       });
 
       describe('should work when given a class', () => {
@@ -190,25 +191,25 @@ export function guardsIntegrationSuite() {
           TestBed.configureTestingModule({providers: [AlwaysTrue]});
         });
 
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([{path: 'team/:id', component: TeamCmp, canActivate: [AlwaysTrue]}]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
 
           expect(location.path()).toEqual('/team/22');
-        }));
+        });
       });
 
       describe('should work when returns an observable', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -224,16 +225,16 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('');
-        }));
+        });
       });
 
       describe('should work when returns a promise', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -252,13 +253,13 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/22');
 
           router.navigateByUrl('/team/33');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/22');
-        }));
+        });
       });
 
       describe('should reset the location when cancelling a navigation', () => {
@@ -268,10 +269,10 @@ export function guardsIntegrationSuite() {
           });
         });
 
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {path: 'one', component: SimpleCmp},
@@ -279,18 +280,18 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/one');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/one');
 
           location.go('/two');
           location.historyGo(0);
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/one');
-        }));
+        });
       });
 
       describe('should redirect to / when guard returns false', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
           router.resetConfig([
@@ -312,14 +313,14 @@ export function guardsIntegrationSuite() {
 
           const fixture = TestBed.createComponent(RootCmp);
           router.navigateByUrl('/one');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('');
           expect(fixture.nativeElement).toHaveText('simple');
-        }));
+        });
       });
 
       describe('should redirect when guard returns UrlTree', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
           const recordedEvents: Event[] = [];
@@ -341,7 +342,7 @@ export function guardsIntegrationSuite() {
           const fixture = TestBed.createComponent(RootCmp);
           router.navigateByUrl('/one');
 
-          advance(fixture);
+          await advance(fixture);
 
           expect(location.path()).toEqual('/redirected');
           expect(fixture.nativeElement).toHaveText('simple');
@@ -367,9 +368,9 @@ export function guardsIntegrationSuite() {
             [ChildActivationEnd, undefined],
             [NavigationEnd, '/redirected'],
           ]);
-        }));
+        });
 
-        it('works with root url', fakeAsync(() => {
+        it('works with root url', async () => {
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
           const recordedEvents: Event[] = [];
@@ -390,7 +391,7 @@ export function guardsIntegrationSuite() {
           const fixture = TestBed.createComponent(RootCmp);
           router.navigateByUrl('/one');
 
-          advance(fixture);
+          await advance(fixture);
 
           expect(location.path()).toEqual('');
           expect(fixture.nativeElement).toHaveText('simple');
@@ -416,9 +417,9 @@ export function guardsIntegrationSuite() {
             [ChildActivationEnd, undefined],
             [NavigationEnd, '/'],
           ]);
-        }));
+        });
 
-        it('replaces URL when URL is updated eagerly so back button can still work', fakeAsync(() => {
+        it('replaces URL when URL is updated eagerly so back button can still work', async () => {
           TestBed.configureTestingModule({
             providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
           });
@@ -433,23 +434,23 @@ export function guardsIntegrationSuite() {
             },
             {path: 'redirected', component: SimpleCmp},
           ]);
-          createRoot(router, RootCmp);
+          await createRoot(router, RootCmp);
           router.navigateByUrl('/one');
           const urlChanges: string[] = [];
           location.onUrlChange((change) => {
             urlChanges.push(change);
           });
 
-          tick();
+          await timeout();
 
           expect(location.path()).toEqual('/redirected');
           expect(urlChanges).toEqual(['/one', '/redirected']);
           location.back();
-          tick();
+          await timeout();
           expect(location.path()).toEqual('');
-        }));
+        });
 
-        it('should resolve navigateByUrl promise after redirect finishes', fakeAsync(() => {
+        it('should resolve navigateByUrl promise after redirect finishes', async () => {
           TestBed.configureTestingModule({
             providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
           });
@@ -465,16 +466,16 @@ export function guardsIntegrationSuite() {
             },
             {path: 'redirected', component: SimpleCmp},
           ]);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
           router.navigateByUrl('/one').then((v) => {
             resolvedPath = location.path();
           });
 
-          tick();
+          await timeout();
           expect(resolvedPath).toBe('/redirected');
-        }));
+        });
 
-        it('can redirect to 404 without changing the URL', fakeAsync(() => {
+        it('can redirect to 404 without changing the URL', async () => {
           TestBed.configureTestingModule({
             providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
           });
@@ -491,16 +492,16 @@ export function guardsIntegrationSuite() {
             },
             {path: '404', component: SimpleCmp},
           ]);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
           router.navigateByUrl('/one');
 
-          advance(fixture);
+          await advance(fixture);
 
           expect(location.path()).toEqual('/one');
           expect(router.url.toString()).toEqual('/404');
-        }));
+        });
 
-        it('can redirect while changing state object', fakeAsync(() => {
+        it('can redirect while changing state object', async () => {
           TestBed.configureTestingModule({
             providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
           });
@@ -517,14 +518,14 @@ export function guardsIntegrationSuite() {
             },
             {path: 'redirected', component: SimpleCmp},
           ]);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
           router.navigateByUrl('/one');
 
-          advance(fixture);
+          await advance(fixture);
 
           expect(location.path()).toEqual('/redirected');
           expect(location.getState()).toEqual(jasmine.objectContaining({test: 1}));
-        }));
+        });
       });
 
       it('can redirect to 404 without changing the URL', async () => {
@@ -602,11 +603,11 @@ export function guardsIntegrationSuite() {
           });
         });
 
-        function configureRouter(
+        async function configureRouter(
           router: Router,
           runGuardsAndResolvers: RunGuardsAndResolvers,
-        ): ComponentFixture<RootCmpWithTwoOutlets> {
-          const fixture = createRoot(router, RootCmpWithTwoOutlets);
+        ): Promise<ComponentFixture<RootCmpWithTwoOutlets>> {
+          const fixture = await createRoot(router, RootCmpWithTwoOutlets);
 
           router.resetConfig([
             {
@@ -667,13 +668,13 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/a');
-          advance(fixture);
+          await advance(fixture);
           return fixture;
         }
 
-        it('should rerun guards and resolvers when params change', fakeAsync(() => {
+        it('should rerun guards and resolvers when params change', async () => {
           const router = TestBed.inject(Router);
-          const fixture = configureRouter(router, 'paramsChange');
+          const fixture = await configureRouter(router, 'paramsChange');
 
           const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
           const recordedData: Data[] = [];
@@ -683,24 +684,24 @@ export function guardsIntegrationSuite() {
           expect(recordedData).toEqual([{data: 0}]);
 
           router.navigateByUrl('/a;p=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(2);
           expect(recordedData).toEqual([{data: 0}, {data: 1}]);
 
           router.navigateByUrl('/a;p=2');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(3);
           expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
 
           router.navigateByUrl('/a;p=2?q=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(3);
           expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
-        }));
+        });
 
-        it('should rerun guards and resolvers when query params change', fakeAsync(() => {
+        it('should rerun guards and resolvers when query params change', async () => {
           const router = TestBed.inject(Router);
-          const fixture = configureRouter(router, 'paramsOrQueryParamsChange');
+          const fixture = await configureRouter(router, 'paramsOrQueryParamsChange');
 
           const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
           const recordedData: Data[] = [];
@@ -710,29 +711,29 @@ export function guardsIntegrationSuite() {
           expect(recordedData).toEqual([{data: 0}]);
 
           router.navigateByUrl('/a;p=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(2);
           expect(recordedData).toEqual([{data: 0}, {data: 1}]);
 
           router.navigateByUrl('/a;p=2');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(3);
           expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
 
           router.navigateByUrl('/a;p=2?q=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(4);
           expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}]);
 
           router.navigateByUrl('/a;p=2(right:b)?q=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(4);
           expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}]);
-        }));
+        });
 
-        it('should always rerun guards and resolvers', fakeAsync(() => {
+        it('should always rerun guards and resolvers', async () => {
           const router = TestBed.inject(Router);
-          const fixture = configureRouter(router, 'always');
+          const fixture = await configureRouter(router, 'always');
 
           const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
           const recordedData: Data[] = [];
@@ -742,38 +743,40 @@ export function guardsIntegrationSuite() {
           expect(recordedData).toEqual([{data: 0}]);
 
           router.navigateByUrl('/a;p=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(2);
           expect(recordedData).toEqual([{data: 0}, {data: 1}]);
 
           router.navigateByUrl('/a;p=2');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(3);
           expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
 
           router.navigateByUrl('/a;p=2?q=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(4);
           expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}]);
 
           router.navigateByUrl('/a;p=2(right:b)?q=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(5);
           expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}, {data: 4}]);
 
           // Issue #39030, always running guards and resolvers should not throw
           // when navigating away from a component with a throwing constructor.
-          expect(() => {
-            router.navigateByUrl('/throwing').catch(() => {});
-            advance(fixture);
-            router.navigateByUrl('/a;p=1');
-            advance(fixture);
-          }).not.toThrow();
-        }));
+          await expectAsync(
+            (async () => {
+              router.navigateByUrl('/throwing').catch(() => {});
+              await advance(fixture);
+              router.navigateByUrl('/a;p=1');
+              await advance(fixture);
+            })(),
+          ).not.toBeRejected();
+        });
 
-        it('should rerun rerun guards and resolvers when path params change', fakeAsync(() => {
+        it('should rerun rerun guards and resolvers when path params change', async () => {
           const router = TestBed.inject(Router);
-          const fixture = configureRouter(router, 'pathParamsChange');
+          const fixture = await configureRouter(router, 'pathParamsChange');
 
           const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
           const recordedData: Data[] = [];
@@ -785,70 +788,70 @@ export function guardsIntegrationSuite() {
 
           // Changing any optional params will not result in running guards or resolvers
           router.navigateByUrl('/a;p=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(1);
           expect(recordedData).toEqual([{data: 0}]);
 
           router.navigateByUrl('/a;p=2');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(1);
           expect(recordedData).toEqual([{data: 0}]);
 
           router.navigateByUrl('/a;p=2?q=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(1);
           expect(recordedData).toEqual([{data: 0}]);
 
           router.navigateByUrl('/a;p=2(right:b)?q=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(1);
           expect(recordedData).toEqual([{data: 0}]);
 
           // Change to new route with path param should run guards and resolvers
           router.navigateByUrl('/c/paramValue');
-          advance(fixture);
+          await advance(fixture);
 
           expect(guardRunCount).toEqual(2);
 
           // Modifying a path param should run guards and resolvers
           router.navigateByUrl('/c/paramValueChanged');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(3);
 
           // Adding optional params should not cause guards/resolvers to run
           router.navigateByUrl('/c/paramValueChanged;p=1?q=2');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(3);
-        }));
+        });
 
-        it('should rerun when a parent segment changes', fakeAsync(() => {
+        it('should rerun when a parent segment changes', async () => {
           const router = TestBed.inject(Router);
-          const fixture = configureRouter(router, 'pathParamsChange');
+          const fixture = await configureRouter(router, 'pathParamsChange');
 
           const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
 
           // Land on an initial page
           router.navigateByUrl('/d/1;dd=11/e/2;dd=22');
-          advance(fixture);
+          await advance(fixture);
 
           expect(guardRunCount).toEqual(2);
 
           // Changes cause re-run on the config with the guard
           router.navigateByUrl('/d/1;dd=11/e/3;ee=22');
-          advance(fixture);
+          await advance(fixture);
 
           expect(guardRunCount).toEqual(3);
 
           // Changes to the parent also cause re-run
           router.navigateByUrl('/d/2;dd=11/e/3;ee=22');
-          advance(fixture);
+          await advance(fixture);
 
           expect(guardRunCount).toEqual(4);
-        }));
+        });
 
-        it('should rerun rerun guards and resolvers when path or query params change', fakeAsync(() => {
+        it('should rerun rerun guards and resolvers when path or query params change', async () => {
           const router = TestBed.inject(Router);
-          const fixture = configureRouter(router, 'pathParamsOrQueryParamsChange');
+          const fixture = await configureRouter(router, 'pathParamsOrQueryParamsChange');
 
           const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
           const recordedData: Data[] = [];
@@ -860,31 +863,31 @@ export function guardsIntegrationSuite() {
 
           // Changing matrix params will not result in running guards or resolvers
           router.navigateByUrl('/a;p=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(1);
           expect(recordedData).toEqual([{data: 0}]);
 
           router.navigateByUrl('/a;p=2');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(1);
           expect(recordedData).toEqual([{data: 0}]);
 
           // Adding query params will re-run guards/resolvers
           router.navigateByUrl('/a;p=2?q=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(2);
           expect(recordedData).toEqual([{data: 0}, {data: 1}]);
 
           // Changing query params will re-run guards/resolvers
           router.navigateByUrl('/a;p=2?q=2');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(3);
           expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
-        }));
+        });
 
-        it('should allow a predicate function to determine when to run guards and resolvers', fakeAsync(() => {
+        it('should allow a predicate function to determine when to run guards and resolvers', async () => {
           const router = TestBed.inject(Router);
-          const fixture = configureRouter(router, (from, to) => to.paramMap.get('p') === '2');
+          const fixture = await configureRouter(router, (from, to) => to.paramMap.get('p') === '2');
 
           const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
           const recordedData: Data[] = [];
@@ -896,28 +899,28 @@ export function guardsIntegrationSuite() {
 
           // Adding `p` param shouldn't cause re-run
           router.navigateByUrl('/a;p=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(1);
           expect(recordedData).toEqual([{data: 0}]);
 
           // Re-run should trigger on p=2
           router.navigateByUrl('/a;p=2');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(2);
           expect(recordedData).toEqual([{data: 0}, {data: 1}]);
 
           // Any other changes don't pass the predicate
           router.navigateByUrl('/a;p=3?q=1');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(2);
           expect(recordedData).toEqual([{data: 0}, {data: 1}]);
 
           // Changing query params will re-run guards/resolvers
           router.navigateByUrl('/a;p=3?q=2');
-          advance(fixture);
+          await advance(fixture);
           expect(guardRunCount).toEqual(2);
           expect(recordedData).toEqual([{data: 0}, {data: 1}]);
-        }));
+        });
       });
 
       describe('should wait for parent to complete', () => {
@@ -934,9 +937,9 @@ export function guardsIntegrationSuite() {
           return promise;
         }
 
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router = TestBed.inject(Router);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -965,11 +968,9 @@ export function guardsIntegrationSuite() {
             },
           ]);
 
-          router.navigateByUrl('/parent/child');
-          advance(fixture);
-          tick(15);
+          await router.navigateByUrl('/parent/child');
           expect(log).toEqual(['parent', 'child']);
-        }));
+        });
       });
     });
 
@@ -985,10 +986,10 @@ export function guardsIntegrationSuite() {
       });
 
       describe('should not deactivate a route when CanDeactivate returns false', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router: Router = TestBed.inject(Router);
           const location: Location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -1003,26 +1004,26 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/22');
 
           let successStatus: boolean = false;
           router.navigateByUrl('/team/33')!.then((res) => (successStatus = res));
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/33');
           expect(successStatus).toEqual(true);
 
           let canceledStatus: boolean = false;
           router.navigateByUrl('/team/44')!.then((res) => (canceledStatus = res));
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/33');
           expect(canceledStatus).toEqual(false);
-        }));
+        });
 
-        it('works with componentless routes', fakeAsync(() => {
+        it('works with componentless routes', async () => {
           const router: Router = TestBed.inject(Router);
           const location: Location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -1052,11 +1053,11 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/grandparent/parent/child/simple');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/grandparent/parent/child/simple');
 
           router.navigateByUrl('/simple');
-          advance(fixture);
+          await advance(fixture);
 
           const child = fixture.debugElement.children[1].componentInstance;
 
@@ -1065,12 +1066,12 @@ export function guardsIntegrationSuite() {
           [1, 2, 3].forEach((i) => expect(log[i].component).toBeNull());
           expect(child instanceof SimpleCmp).toBeTruthy();
           expect(child).not.toBe(log[0].component);
-        }));
+        });
 
-        it('works with aux routes', fakeAsync(() => {
+        it('works with aux routes', async () => {
           const router: Router = TestBed.inject(Router);
           const location: Location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -1089,20 +1090,20 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/two-outlets/(a//aux:b)');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/two-outlets/(a//aux:b)');
 
           router.navigate(['two-outlets', {outlets: {aux: null}}]);
-          advance(fixture);
+          await advance(fixture);
 
           expect(log.map((a: any) => a.path)).toEqual(['b']);
           expect(location.path()).toEqual('/two-outlets/a');
-        }));
+        });
 
-        it('works with a nested route', fakeAsync(() => {
+        it('works with a nested route', async () => {
           const router: Router = TestBed.inject(Router);
           const location: Location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -1124,24 +1125,24 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/team/22/user/victor');
-          advance(fixture);
+          await advance(fixture);
 
           // this works because we can deactivate victor
           router.navigateByUrl('/team/33');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/33');
 
           router.navigateByUrl('/team/33/user/fedor');
-          advance(fixture);
+          await advance(fixture);
 
           // this doesn't work cause we cannot deactivate fedor
           router.navigateByUrl('/team/44');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/33/user/fedor');
-        }));
+        });
       });
 
-      it('should use correct component to deactivate forChild route', fakeAsync(() => {
+      it('should use correct component to deactivate forChild route', async () => {
         const router: Router = TestBed.inject(Router);
         @Component({
           selector: 'admin',
@@ -1164,7 +1165,7 @@ export function guardsIntegrationSuite() {
         })
         class LazyLoadedModule {}
 
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {
@@ -1176,17 +1177,17 @@ export function guardsIntegrationSuite() {
         ]);
 
         router.navigateByUrl('/a');
-        advance(fixture);
+        await advance(fixture);
         router.navigateByUrl('/b');
-        advance(fixture);
+        await advance(fixture);
 
         expect(log[0].component).toBeInstanceOf(AdminComponent);
-      }));
+      });
 
-      it('should not create a route state if navigation is canceled', fakeAsync(() => {
+      it('should not create a route state if navigation is canceled', async () => {
         const router: Router = TestBed.inject(Router);
         const location: Location = TestBed.inject(Location);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {
@@ -1200,20 +1201,20 @@ export function guardsIntegrationSuite() {
         ]);
 
         router.navigateByUrl('/main/component1');
-        advance(fixture);
+        await advance(fixture);
 
         router.navigateByUrl('/main/component2');
-        advance(fixture);
+        await advance(fixture);
 
         const teamCmp = fixture.debugElement.children[1].componentInstance;
         expect(teamCmp.route.firstChild.url.value[0].path).toEqual('component1');
         expect(location.path()).toEqual('/main/component1');
-      }));
+      });
 
-      it('should not run CanActivate when CanDeactivate returns false', fakeAsync(() => {
+      it('should not run CanActivate when CanDeactivate returns false', async () => {
         const router: Router = TestBed.inject(Router);
         const location: Location = TestBed.inject(Location);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {
@@ -1248,19 +1249,19 @@ export function guardsIntegrationSuite() {
         ]);
 
         router.navigateByUrl('/main/component1');
-        advance(fixture);
+        await advance(fixture);
         expect(location.path()).toEqual('/main/component1');
 
         router.navigateByUrl('/main/component2');
-        advance(fixture);
+        await advance(fixture);
         expect(location.path()).toEqual('/main/component1');
         expect(log).toEqual(['called']);
-      }));
+      });
 
-      it('should call guards every time when navigating to the same url over and over again', fakeAsync(() => {
+      it('should call guards every time when navigating to the same url over and over again', async () => {
         const router: Router = TestBed.inject(Router);
         const location: Location = TestBed.inject(Location);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {
@@ -1277,18 +1278,18 @@ export function guardsIntegrationSuite() {
         ]);
 
         router.navigateByUrl('/simple');
-        advance(fixture);
+        await advance(fixture);
 
         router.navigateByUrl('/blank');
-        advance(fixture);
+        await advance(fixture);
         expect(log).toEqual(['called']);
         expect(location.path()).toEqual('/simple');
 
         router.navigateByUrl('/blank');
-        advance(fixture);
+        await advance(fixture);
         expect(log).toEqual(['called', 'called']);
         expect(location.path()).toEqual('/simple');
-      }));
+      });
 
       describe('next state', () => {
         let log: string[];
@@ -1312,10 +1313,10 @@ export function guardsIntegrationSuite() {
           });
         });
 
-        it('should pass next state as the 4 argument when guard is a class', fakeAsync(() => {
+        it('should pass next state as the 4 argument when guard is a class', async () => {
           const router: Router = TestBed.inject(Router);
           const location: Location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -1339,19 +1340,19 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/22');
 
           router.navigateByUrl('/team/33');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/33');
           expect(log).toEqual(['/team/22', '/team/33']);
-        }));
+        });
 
-        it('should pass next state as the 4 argument when guard is a function', fakeAsync(() => {
+        it('should pass next state as the 4 argument when guard is a function', async () => {
           const router: Router = TestBed.inject(Router);
           const location: Location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -1367,14 +1368,14 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/22');
 
           router.navigateByUrl('/team/33');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/33');
           expect(log).toEqual(['/team/22', '/team/33']);
-        }));
+        });
       });
 
       describe('should work when given a class', () => {
@@ -1388,10 +1389,10 @@ export function guardsIntegrationSuite() {
           TestBed.configureTestingModule({providers: [AlwaysTrue]});
         });
 
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router: Router = TestBed.inject(Router);
           const location: Location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -1402,20 +1403,20 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/22');
 
           router.navigateByUrl('/team/33');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/33');
-        }));
+        });
       });
 
       describe('should work when returns an observable', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router: Router = TestBed.inject(Router);
           const location: Location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -1432,22 +1433,22 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/22');
 
           router.navigateByUrl('/team/33');
-          advance(fixture);
+          await advance(fixture);
           expect(location.path()).toEqual('/team/22');
-        }));
+        });
       });
     });
 
     describe('CanActivateChild', () => {
       describe('should be invoked when activating a child', () => {
-        it('works', fakeAsync(() => {
+        it('works', async () => {
           const router: Router = TestBed.inject(Router);
           const location: Location = TestBed.inject(Location);
-          const fixture = createRoot(router, RootCmp);
+          const fixture = await createRoot(router, RootCmp);
 
           router.resetConfig([
             {
@@ -1458,18 +1459,18 @@ export function guardsIntegrationSuite() {
           ]);
 
           router.navigateByUrl('/team/22');
-          advance(fixture);
+          await advance(fixture);
 
           expect(location.path()).toEqual('/team/22');
 
           router.navigateByUrl('/team/33')!.catch(() => {});
-          advance(fixture);
+          await advance(fixture);
 
           expect(location.path()).toEqual('/team/22');
-        }));
+        });
       });
 
-      it('should find the guard provided in lazy loaded module', fakeAsync(() => {
+      it('should find the guard provided in lazy loaded module', async () => {
         const router: Router = TestBed.inject(Router);
         const location: Location = TestBed.inject(Location);
         @Component({
@@ -1506,16 +1507,16 @@ export function guardsIntegrationSuite() {
         })
         class LazyLoadedModule {}
 
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([{path: 'admin', loadChildren: () => LazyLoadedModule}]);
 
         router.navigateByUrl('/admin');
-        advance(fixture);
+        await advance(fixture);
 
         expect(location.path()).toEqual('/admin');
         expect(fixture.nativeElement).toHaveText('lazy-loaded');
-      }));
+      });
     });
 
     describe('CanLoad', () => {
@@ -1535,7 +1536,7 @@ export function guardsIntegrationSuite() {
         });
       });
 
-      it('should not load children when CanLoad returns false', fakeAsync(() => {
+      it('should not load children when CanLoad returns false', async () => {
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);
 
@@ -1552,7 +1553,7 @@ export function guardsIntegrationSuite() {
         })
         class LoadedModule {}
 
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {path: 'lazyFalse', canLoad: [() => false], loadChildren: () => LoadedModule},
@@ -1564,7 +1565,7 @@ export function guardsIntegrationSuite() {
 
         // failed navigation
         router.navigateByUrl('/lazyFalse/loaded');
-        advance(fixture);
+        await advance(fixture);
 
         expect(location.path()).toEqual('');
 
@@ -1582,7 +1583,7 @@ export function guardsIntegrationSuite() {
 
         // successful navigation
         router.navigateByUrl('/lazyTrue/loaded');
-        advance(fixture);
+        await advance(fixture);
 
         expect(location.path()).toEqual('/lazyTrue/loaded');
 
@@ -1605,12 +1606,12 @@ export function guardsIntegrationSuite() {
           [ChildActivationEnd],
           [NavigationEnd, '/lazyTrue/loaded'],
         ]);
-      }));
+      });
 
-      it('should support navigating from within the guard', fakeAsync(() => {
+      it('should support navigating from within the guard', async () => {
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {
@@ -1630,7 +1631,7 @@ export function guardsIntegrationSuite() {
         router.events.forEach((e) => recordedEvents.push(e));
 
         router.navigateByUrl('/lazyFalse/loaded');
-        advance(fixture);
+        await advance(fixture);
 
         expect(location.path()).toEqual('/blank');
 
@@ -1656,12 +1657,12 @@ export function guardsIntegrationSuite() {
         expect((recordedEvents[1] as NavigationCancel).code).toBe(
           NavigationCancellationCode.SupersededByNewNavigation,
         );
-      }));
+      });
 
-      it('should support returning UrlTree from within the guard', fakeAsync(() => {
+      it('should support returning UrlTree from within the guard', async () => {
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {
@@ -1676,7 +1677,7 @@ export function guardsIntegrationSuite() {
         router.events.forEach((e) => recordedEvents.push(e));
 
         router.navigateByUrl('/lazyFalse/loaded');
-        advance(fixture);
+        await advance(fixture);
 
         expect(location.path()).toEqual('/blank');
 
@@ -1702,11 +1703,11 @@ export function guardsIntegrationSuite() {
         expect((recordedEvents[1] as NavigationCancel).code).toBe(
           NavigationCancellationCode.Redirect,
         );
-      }));
+      });
 
       // Regression where navigateByUrl with false CanLoad no longer resolved `false` value on
       // navigateByUrl promise: https://github.com/angular/angular/issues/26284
-      it('should resolve navigateByUrl promise after CanLoad executes', fakeAsync(() => {
+      it('should resolve navigateByUrl promise after CanLoad executes', async () => {
         const router = TestBed.inject(Router);
 
         @Component({
@@ -1722,7 +1723,7 @@ export function guardsIntegrationSuite() {
         })
         class LazyLoadedModule {}
 
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {path: 'lazy-false', canLoad: [() => false], loadChildren: () => LazyLoadedModule},
@@ -1734,17 +1735,17 @@ export function guardsIntegrationSuite() {
         router.navigateByUrl('/lazy-false').then((v) => {
           navFalseResult = v;
         });
-        advance(fixture);
+        await advance(fixture);
         router.navigateByUrl('/lazy-true').then((v) => {
           navTrueResult = v;
         });
-        advance(fixture);
+        await advance(fixture);
 
         expect(navFalseResult).toBe(false);
         expect(navTrueResult).toBe(true);
-      }));
+      });
 
-      it('should execute CanLoad only once', fakeAsync(() => {
+      it('should execute CanLoad only once', async () => {
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);
         @Component({
@@ -1760,7 +1761,7 @@ export function guardsIntegrationSuite() {
         })
         class LazyLoadedModule {}
 
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {
@@ -1776,21 +1777,21 @@ export function guardsIntegrationSuite() {
         ]);
 
         router.navigateByUrl('/lazy/loaded');
-        advance(fixture);
+        await advance(fixture);
         expect(location.path()).toEqual('/lazy/loaded');
         expect(canLoadRunCount).toEqual(1);
 
         router.navigateByUrl('/');
-        advance(fixture);
+        await advance(fixture);
         expect(location.path()).toEqual('');
 
         router.navigateByUrl('/lazy/loaded');
-        advance(fixture);
+        await advance(fixture);
         expect(location.path()).toEqual('/lazy/loaded');
         expect(canLoadRunCount).toEqual(1);
-      }));
+      });
 
-      it('cancels guard execution when a new navigation happens', fakeAsync(() => {
+      it('cancels guard execution when a new navigation happens', async () => {
         @Injectable({providedIn: 'root'})
         class DelayedGuard {
           static delayedExecutions = 0;
@@ -1798,7 +1799,7 @@ export function guardsIntegrationSuite() {
           canLoad() {
             DelayedGuard.canLoadCalls++;
             return of(true).pipe(
-              delay(1000),
+              switchMap((v) => new Promise((r) => setTimeout(r, 10)).then(() => v)),
               tap(() => {
                 DelayedGuard.delayedExecutions++;
               }),
@@ -1810,24 +1811,26 @@ export function guardsIntegrationSuite() {
           {path: 'a', canLoad: [DelayedGuard], loadChildren: () => [], component: SimpleCmp},
           {path: 'team/:id', component: TeamCmp},
         ]);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.navigateByUrl('/a');
-        tick(10);
+        await timeout(1);
         // The delayed guard should have started
         expect(DelayedGuard.canLoadCalls).toEqual(1);
-        router.navigateByUrl('/team/1');
-        advance(fixture, 1000);
+        await router.navigateByUrl('/team/1');
         expect(fixture.nativeElement.innerHTML).toContain('team');
         // The delayed guard should not execute the delayed condition because a new navigation
         // cancels the current one and unsubscribes from intermediate results.
         expect(DelayedGuard.delayedExecutions).toEqual(0);
-      }));
+      });
     });
 
     describe('should run CanLoad guards concurrently', () => {
       function delayObservable(delayMs: number): Observable<boolean> {
-        return of(delayMs).pipe(delay(delayMs), mapTo(true));
+        return of(delayMs).pipe(
+          switchMap((v) => new Promise((r) => setTimeout(r, delayMs)).then(() => v)),
+          mapTo(true),
+        );
       }
 
       let log: string[];
@@ -1848,7 +1851,7 @@ export function guardsIntegrationSuite() {
       };
       const returnUrlTree = () => {
         const router = inject(Router);
-        return delayObservable(15).pipe(
+        return delayObservable(14).pipe(
           mapTo(router.parseUrl('/redirected')),
           tap({next: () => log.push('returnUrlTree')}),
         );
@@ -1858,7 +1861,7 @@ export function guardsIntegrationSuite() {
         log = [];
       });
 
-      it('should only execute canLoad guards of routes being activated', fakeAsync(() => {
+      it('should only execute canLoad guards of routes being activated', async () => {
         const router = TestBed.inject(Router);
 
         router.resetConfig([
@@ -1876,13 +1879,12 @@ export function guardsIntegrationSuite() {
           },
         ]);
 
-        router.navigateByUrl('/lazy');
-        tick(5);
+        await router.navigateByUrl('/lazy');
         expect(log.length).toEqual(1);
         expect(log).toEqual(['guard1']);
-      }));
+      });
 
-      it('should execute canLoad guards', fakeAsync(() => {
+      it('should execute canLoad guards', async () => {
         const router = TestBed.inject(Router);
 
         router.resetConfig([
@@ -1893,14 +1895,13 @@ export function guardsIntegrationSuite() {
           },
         ]);
 
-        router.navigateByUrl('/lazy');
-        tick(5);
+        await router.navigateByUrl('/lazy');
 
         expect(log.length).toEqual(2);
         expect(log).toEqual(['guard2', 'guard1']);
-      }));
+      });
 
-      it('should redirect with UrlTree if higher priority guards have resolved', fakeAsync(() => {
+      it('should redirect with UrlTree if higher priority guards have resolved', async () => {
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);
 
@@ -1913,15 +1914,14 @@ export function guardsIntegrationSuite() {
           {path: 'redirected', component: SimpleCmp},
         ]);
 
-        router.navigateByUrl('/lazy');
-        tick(15);
+        await router.navigateByUrl('/lazy');
 
         expect(log.length).toEqual(3);
         expect(log).toEqual(['guard2', 'guard1', 'returnUrlTree']);
         expect(location.path()).toEqual('/redirected');
-      }));
+      });
 
-      it('should redirect with UrlTree if UrlTree is lower priority', fakeAsync(() => {
+      it('should redirect with UrlTree if UrlTree is lower priority', async () => {
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);
 
@@ -1934,13 +1934,12 @@ export function guardsIntegrationSuite() {
           {path: 'redirected', component: SimpleCmp},
         ]);
 
-        router.navigateByUrl('/lazy');
-        tick(15);
+        await router.navigateByUrl('/lazy');
 
         expect(log.length).toEqual(2);
         expect(log).toEqual(['guard1', 'returnUrlTree']);
         expect(location.path()).toEqual('/redirected');
-      }));
+      });
     });
 
     describe('order', () => {
@@ -1956,10 +1955,10 @@ export function guardsIntegrationSuite() {
         });
       });
 
-      it('should call guards in the right order', fakeAsync(() => {
+      it('should call guards in the right order', async () => {
         const router = TestBed.inject(Router);
         const logger = TestBed.inject(Logger);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {
@@ -1977,10 +1976,10 @@ export function guardsIntegrationSuite() {
         ]);
 
         router.navigateByUrl('/team/22');
-        advance(fixture);
+        await advance(fixture);
 
         router.navigateByUrl('/team/33');
-        advance(fixture);
+        await advance(fixture);
 
         expect(logger.logs).toEqual([
           'canActivateChild_parent',
@@ -1990,12 +1989,12 @@ export function guardsIntegrationSuite() {
           'canActivateChild_parent',
           'canActivate_team',
         ]);
-      }));
+      });
 
-      it('should call deactivate guards from bottom to top', fakeAsync(() => {
+      it('should call deactivate guards from bottom to top', async () => {
         const router = TestBed.inject(Router);
         const logger = TestBed.inject(Logger);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([
           {
@@ -2018,13 +2017,13 @@ export function guardsIntegrationSuite() {
         ]);
 
         router.navigateByUrl('/team/22');
-        advance(fixture);
+        await advance(fixture);
 
         router.navigateByUrl('/team/33');
-        advance(fixture);
+        await advance(fixture);
 
         expect(logger.logs).toEqual(['canDeactivate_simple', 'canDeactivate_team']);
-      }));
+      });
     });
 
     describe('canMatch', () => {
@@ -2037,7 +2036,7 @@ export function guardsIntegrationSuite() {
         }
       }
 
-      it('falls back to second route when canMatch returns false', fakeAsync(() => {
+      it('falls back to second route when canMatch returns false', async () => {
         const router = TestBed.inject(Router);
         router.resetConfig([
           {
@@ -2047,14 +2046,14 @@ export function guardsIntegrationSuite() {
           },
           {path: 'a', component: SimpleCmp},
         ]);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.navigateByUrl('/a');
-        advance(fixture);
+        await advance(fixture);
         expect(fixture.nativeElement.innerHTML).toContain('simple');
-      }));
+      });
 
-      it('uses route when canMatch returns true', fakeAsync(() => {
+      it('uses route when canMatch returns true', async () => {
         const router = TestBed.inject(Router);
         TestBed.inject(ConfigurableGuard).result = Promise.resolve(true);
         router.resetConfig([
@@ -2065,14 +2064,14 @@ export function guardsIntegrationSuite() {
           },
           {path: 'a', component: BlankCmp},
         ]);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.navigateByUrl('/a');
-        advance(fixture);
+        await advance(fixture);
         expect(fixture.nativeElement.innerHTML).toContain('simple');
-      }));
+      });
 
-      it('can return UrlTree from canMatch guard', fakeAsync(() => {
+      it('can return UrlTree from canMatch guard', async () => {
         const router = TestBed.inject(Router);
         TestBed.inject(ConfigurableGuard).result = Promise.resolve(
           router.createUrlTree(['/team/1']),
@@ -2085,14 +2084,14 @@ export function guardsIntegrationSuite() {
           },
           {path: 'team/:id', component: TeamCmp},
         ]);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.navigateByUrl('/a');
-        advance(fixture);
+        await advance(fixture);
         expect(fixture.nativeElement.innerHTML).toContain('team');
-      }));
+      });
 
-      it('can return UrlTree from CanMatchFn guard', fakeAsync(() => {
+      it('can return UrlTree from CanMatchFn guard', async () => {
         const canMatchTeamSection = new InjectionToken('CanMatchTeamSection');
         const canMatchFactory: (router: Router) => CanMatchFn = (router: Router) => () =>
           router.createUrlTree(['/team/1']);
@@ -2108,14 +2107,14 @@ export function guardsIntegrationSuite() {
           {path: 'a', canMatch: [canMatchTeamSection], component: SimpleCmp},
           {path: 'team/:id', component: TeamCmp},
         ]);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.navigateByUrl('/a');
-        advance(fixture);
+        await advance(fixture);
         expect(fixture.nativeElement.innerHTML).toContain('team');
-      }));
+      });
 
-      it('runs canMatch guards provided in lazy module', fakeAsync(() => {
+      it('runs canMatch guards provided in lazy module', async () => {
         const router = TestBed.inject(Router);
         @Component({
           selector: 'lazy',
@@ -2162,23 +2161,23 @@ export function guardsIntegrationSuite() {
         })
         class LoadedModule {}
 
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
         router.navigateByUrl('/lazy/loaded/child');
-        advance(fixture);
+        await advance(fixture);
 
         expect(TestBed.inject(Location).path()).toEqual('/lazy/loaded/child');
         expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
-      }));
+      });
 
-      it('cancels guard execution when a new navigation happens', fakeAsync(() => {
+      it('cancels guard execution when a new navigation happens', async () => {
         @Injectable({providedIn: 'root'})
         class DelayedGuard {
           static delayedExecutions = 0;
           canMatch() {
             return of(true).pipe(
-              delay(1000),
+              switchMap((v) => new Promise((r) => setTimeout(r, 10)).then(() => v)),
               tap(() => {
                 DelayedGuard.delayedExecutions++;
               }),
@@ -2199,10 +2198,10 @@ export function guardsIntegrationSuite() {
           {path: 'a', canMatch: [ConfigurableGuard, DelayedGuard], component: SimpleCmp},
           {path: 'team/:id', component: TeamCmp},
         ]);
-        const fixture = createRoot(router, RootCmp);
+        const fixture = await createRoot(router, RootCmp);
 
         router.navigateByUrl('/a');
-        advance(fixture);
+        await advance(fixture);
         expect(fixture.nativeElement.innerHTML).toContain('team');
 
         expect(configurableMatchSpy.calls.count()).toEqual(1);
@@ -2214,16 +2213,16 @@ export function guardsIntegrationSuite() {
         // The delayed guard should still have executed once because guards are executed at the
         // same time
         expect(delayedGuardSpy.calls.count()).toEqual(1);
-      }));
+      });
     });
 
-    it('should allow guards as functions', fakeAsync(() => {
+    it('should allow guards as functions', async () => {
       @Component({
         template: '',
       })
       class BlankCmp {}
       const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
       const guards = {
         canActivate() {
           return true;
@@ -2264,18 +2263,18 @@ export function guardsIntegrationSuite() {
       ]);
 
       router.navigateByUrl('/');
-      advance(fixture);
+      await advance(fixture);
       expect(guards.canMatch).toHaveBeenCalled();
       expect(guards.canLoad).toHaveBeenCalled();
       expect(guards.canActivate).toHaveBeenCalled();
       expect(guards.canActivateChild).toHaveBeenCalled();
 
       router.navigateByUrl('/other');
-      advance(fixture);
+      await advance(fixture);
       expect(guards.canDeactivate).toHaveBeenCalled();
-    }));
+    });
 
-    it('should allow DI in plain function guards', fakeAsync(() => {
+    it('should allow DI in plain function guards', async () => {
       @Component({
         template: '',
       })
@@ -2286,7 +2285,7 @@ export function guardsIntegrationSuite() {
         value = true;
       }
       const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
       const guards = {
         canActivate() {
           return inject(State).value;
@@ -2327,18 +2326,18 @@ export function guardsIntegrationSuite() {
       ]);
 
       router.navigateByUrl('/');
-      advance(fixture);
+      await advance(fixture);
       expect(guards.canMatch).toHaveBeenCalled();
       expect(guards.canLoad).toHaveBeenCalled();
       expect(guards.canActivate).toHaveBeenCalled();
       expect(guards.canActivateChild).toHaveBeenCalled();
 
       router.navigateByUrl('/other');
-      advance(fixture);
+      await advance(fixture);
       expect(guards.canDeactivate).toHaveBeenCalled();
-    }));
+    });
 
-    it('can run functional guards serially', fakeAsync(() => {
+    it('can run functional guards serially', async () => {
       function runSerially(
         guards: CanActivateFn[] | CanActivateChildFn[],
       ): CanActivateFn | CanActivateChildFn {
@@ -2359,18 +2358,18 @@ export function guardsIntegrationSuite() {
 
       const guard1: CanActivateFn = () =>
         of(true).pipe(
-          delay(100),
+          switchMap((v) => new Promise((r) => setTimeout(r, 4)).then(() => v)),
           tap(() => guardDone.push('guard1')),
         );
       const guard2: CanActivateFn = () => of(true).pipe(tap(() => guardDone.push('guard2')));
       const guard3: CanActivateFn = () =>
         of(true).pipe(
-          delay(50),
+          switchMap((v) => new Promise((r) => setTimeout(r, 2)).then(() => v)),
           tap(() => guardDone.push('guard3')),
         );
       const guard4: CanActivateFn = () =>
         of(true).pipe(
-          delay(200),
+          switchMap((v) => new Promise((r) => setTimeout(r, 6)).then(() => v)),
           tap(() => guardDone.push('guard4')),
         );
       const router = TestBed.inject(Router);
@@ -2381,14 +2380,8 @@ export function guardsIntegrationSuite() {
           canActivate: [runSerially([guard1, guard2, guard3, guard4])],
         },
       ]);
-      router.navigateByUrl('');
-
-      tick(100);
-      expect(guardDone).toEqual(['guard1', 'guard2']);
-      tick(50);
-      expect(guardDone).toEqual(['guard1', 'guard2', 'guard3']);
-      tick(200);
+      await router.navigateByUrl('');
       expect(guardDone).toEqual(['guard1', 'guard2', 'guard3', 'guard4']);
-    }));
+    });
   });
 }

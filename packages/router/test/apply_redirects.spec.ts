@@ -7,9 +7,9 @@
  */
 
 import {EnvironmentInjector, inject, Injectable} from '@angular/core';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Observable, of} from 'rxjs';
-import {delay, tap, timeout} from 'rxjs/operators';
+import {TestBed} from '@angular/core/testing';
+import {firstValueFrom, Observable, of} from 'rxjs';
+import {switchMap, tap, timeout as rxjsTimeout} from 'rxjs/operators';
 
 import {Route, Routes} from '../src/models';
 import {recognize} from '../src/recognize';
@@ -24,6 +24,7 @@ import {
   UrlTree,
 } from '../src/url_tree';
 import {getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
+import {timeout} from './helpers';
 
 describe('redirects', () => {
   const serializer = new DefaultUrlSerializer();
@@ -723,7 +724,9 @@ describe('redirects', () => {
         'loader',
         ['loadChildren'],
       );
-      loader.loadChildren.and.returnValue(of(loadedConfig).pipe(delay(0)));
+      loader.loadChildren.and.returnValue(
+        of(loadedConfig).pipe(switchMap((v) => new Promise((r) => setTimeout(r, 0)).then(() => v))),
+      );
 
       const config: Routes = [
         {path: '', loadChildren: jasmine.createSpy('matchChildren')},
@@ -804,7 +807,7 @@ describe('redirects', () => {
       });
     });
 
-    it('should load all matching configurations of empty path, including an auxiliary outlets', fakeAsync(() => {
+    it('should load all matching configurations of empty path, including an auxiliary outlets', async () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentA}],
         injector: TestBed.inject(EnvironmentInjector),
@@ -815,7 +818,7 @@ describe('redirects', () => {
         loadChildren: (injector: any, p: Route) => {
           loadCalls++;
           return of(loadedConfig).pipe(
-            delay(100 * loadCalls),
+            switchMap((v) => new Promise((r) => setTimeout(r, 10 * loadCalls)).then(() => v)),
             tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
           );
         },
@@ -835,14 +838,14 @@ describe('redirects', () => {
         serializer,
       ).subscribe();
       expect(loadCalls).toBe(1);
-      tick(100);
+      await timeout(10);
       expect(loaded).toEqual(['root']);
       expect(loadCalls).toBe(2);
-      tick(200);
+      await timeout(20);
       expect(loaded).toEqual(['root', 'aux']);
-    }));
+    });
 
-    it('should not try to load any matching configuration if previous load completed', fakeAsync(() => {
+    it('should not try to load any matching configuration if previous load completed', async () => {
       const loadedConfig = {
         routes: [{path: 'a', component: ComponentA}],
         injector: TestBed.inject(EnvironmentInjector),
@@ -853,7 +856,7 @@ describe('redirects', () => {
         loadChildren: (injector: any, p: Route) => {
           loadCalls++;
           return of(loadedConfig).pipe(
-            delay(100 * loadCalls),
+            switchMap((v) => new Promise((r) => setTimeout(r, 10 * loadCalls)).then(() => v)),
             tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
           );
         },
@@ -870,7 +873,7 @@ describe('redirects', () => {
         serializer,
       ).subscribe();
       expect(loadCalls).toBe(1);
-      tick(50);
+      await timeout(5);
       expect(loaded).toEqual([]);
       recognize(
         TestBed.inject(EnvironmentInjector),
@@ -880,10 +883,10 @@ describe('redirects', () => {
         tree('xyz/b'),
         serializer,
       ).subscribe();
-      tick(50);
+      await timeout(5);
       expect(loaded).toEqual(['children']);
       expect(loadCalls).toBe(2);
-      tick(200);
+      await timeout(20);
       recognize(
         TestBed.inject(EnvironmentInjector),
         <any>loader,
@@ -892,10 +895,10 @@ describe('redirects', () => {
         tree('xyz/c'),
         serializer,
       ).subscribe();
-      tick(50);
+      await timeout(5);
       expect(loadCalls).toBe(2);
-      tick(300);
-    }));
+      await timeout(30);
+    });
 
     it('loads only the first match when two Routes with the same outlet have the same path', () => {
       const loadedConfig = {
@@ -930,20 +933,20 @@ describe('redirects', () => {
       expect(loaded).toEqual(['first']);
     });
 
-    it('should load the configuration of empty root path if the entry is an aux outlet', fakeAsync(() => {
+    it('should load the configuration of empty root path if the entry is an aux outlet', async () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentA}],
         injector: TestBed.inject(EnvironmentInjector),
       };
       let loaded: string[] = [];
-      const rootDelay = 100;
+      const rootDelay = 10;
       const auxDelay = 1;
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
         loadChildren: (injector: any, p: Route) => {
           const delayMs =
             (p.loadChildren! as jasmine.Spy).and.identity === 'aux' ? auxDelay : rootDelay;
           return of(loadedConfig).pipe(
-            delay(delayMs),
+            switchMap((v) => new Promise((r) => setTimeout(r, delayMs)).then(() => v)),
             tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
           );
         },
@@ -955,18 +958,18 @@ describe('redirects', () => {
         {path: '', loadChildren: jasmine.createSpy('root')},
       ];
 
-      recognize(
-        TestBed.inject(EnvironmentInjector),
-        <any>loader,
-        null,
-        config,
-        tree('(popup:modal)'),
-        serializer,
-      ).subscribe();
-      tick(auxDelay);
-      tick(rootDelay);
+      await firstValueFrom(
+        recognize(
+          TestBed.inject(EnvironmentInjector),
+          <any>loader,
+          null,
+          config,
+          tree('(popup:modal)'),
+          serializer,
+        ),
+      );
       expect(loaded.sort()).toEqual(['aux', 'root'].sort());
-    }));
+    });
   });
 
   describe('empty paths', () => {
@@ -1865,7 +1868,7 @@ function checkRedirect(
     new DefaultUrlSerializer(),
     paramsInheritanceStrategy,
   )
-    .pipe(timeout(redirectionTimeout))
+    .pipe(rxjsTimeout(redirectionTimeout))
     .subscribe({
       next: (v) => callback(v.tree, v.state),
       error: (e) => {
