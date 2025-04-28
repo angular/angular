@@ -263,6 +263,7 @@ def pkg_npm(name, deps = [], validate = True, **kwargs):
 def karma_web_test_suite(
         name,
         external = [],
+        zoneless = False,
         browsers = [
             "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium",
             "@npm//@angular/build-tooling/bazel/browsers/firefox:firefox",
@@ -271,9 +272,8 @@ def karma_web_test_suite(
     """Default values for karma_web_test_suite"""
 
     # Default value for bootstrap
-    bootstrap = kwargs.pop("bootstrap", []) + [
-        "//tools/testing:browser",
-    ]
+    bootstrap = kwargs.pop("bootstrap", [])
+    bootstrap.extend(["//tools/testing:browser_zoneless"] if zoneless else ["//tools/testing:browser"])
 
     # Add common deps
     deps = kwargs.pop("deps", [])

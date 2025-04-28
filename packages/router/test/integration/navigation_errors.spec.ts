@@ -8,7 +8,7 @@
 import {inject, Injectable} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Location} from '@angular/common';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {
   Router,
   NavigationStart,
@@ -34,22 +34,23 @@ import {
 } from '../../src';
 import {RouterTestingHarness} from '../../testing';
 import {
-  createRoot,
   RootCmp,
   BlankCmp,
   UserCmp,
-  advance,
   expectEvents,
   SimpleCmp,
   ThrowingCmp,
   ConditionalThrowingCmp,
   EmptyQueryParamsCmp,
+  createRoot,
+  advance,
 } from './integration_helpers';
+import {timeout} from '../helpers';
 
 export function navigationErrorsIntegrationSuite() {
-  it('should handle failed navigations gracefully', fakeAsync(() => {
+  it('should handle failed navigations gracefully', async () => {
     const router = TestBed.inject(Router);
-    const fixture = createRoot(router, RootCmp);
+    const fixture = await createRoot(router, RootCmp);
 
     router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
@@ -58,11 +59,11 @@ export function navigationErrorsIntegrationSuite() {
 
     let e: any;
     router.navigateByUrl('/invalid').catch((_) => (e = _));
-    advance(fixture);
+    await advance(fixture);
     expect(e.message).toContain('Cannot match any routes');
 
     router.navigateByUrl('/user/fedor');
-    advance(fixture);
+    await advance(fixture);
 
     expect(fixture.nativeElement).toHaveText('user fedor');
 
@@ -82,7 +83,7 @@ export function navigationErrorsIntegrationSuite() {
       [ChildActivationEnd],
       [NavigationEnd, '/user/fedor'],
     ]);
-  }));
+  });
 
   it('should be able to provide an error handler with DI dependencies', async () => {
     @Injectable({providedIn: 'root'})
@@ -219,13 +220,13 @@ export function navigationErrorsIntegrationSuite() {
 
   // Errors should behave the same for both deferred and eager URL update strategies
   (['deferred', 'eager'] as const).forEach((urlUpdateStrategy) => {
-    it('should dispatch NavigationError after the url has been reset back', fakeAsync(() => {
+    it('should dispatch NavigationError after the url has been reset back', async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
       });
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {path: 'simple', component: SimpleCmp},
@@ -233,7 +234,7 @@ export function navigationErrorsIntegrationSuite() {
       ]);
 
       router.navigateByUrl('/simple');
-      advance(fixture);
+      await advance(fixture);
 
       let routerUrlBeforeEmittingError = '';
       let locationUrlBeforeEmittingError = '';
@@ -244,13 +245,13 @@ export function navigationErrorsIntegrationSuite() {
         }
       });
       router.navigateByUrl('/throwing').catch(() => null);
-      advance(fixture);
+      await advance(fixture);
 
       expect(routerUrlBeforeEmittingError).toEqual('/simple');
       expect(locationUrlBeforeEmittingError).toEqual('/simple');
-    }));
+    });
 
-    it('can renavigate to throwing component', fakeAsync(() => {
+    it('can renavigate to throwing component', async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
       });
@@ -260,32 +261,29 @@ export function navigationErrorsIntegrationSuite() {
         {path: '', component: BlankCmp},
         {path: 'throwing', component: ConditionalThrowingCmp},
       ]);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       // Try navigating to a component which throws an error during activation.
       ConditionalThrowingCmp.throwError = true;
-      expect(() => {
-        router.navigateByUrl('/throwing');
-        advance(fixture);
-      }).toThrow();
+      await expectAsync(router.navigateByUrl('/throwing')).toBeRejected();
       expect(location.path()).toEqual('');
       expect(fixture.nativeElement.innerHTML).not.toContain('throwing');
 
       // Ensure we can re-navigate to that same URL and succeed.
       ConditionalThrowingCmp.throwError = false;
       router.navigateByUrl('/throwing');
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/throwing');
       expect(fixture.nativeElement.innerHTML).toContain('throwing');
-    }));
+    });
 
-    it('should reset the url with the right state when navigation errors', fakeAsync(() => {
+    it('should reset the url with the right state when navigation errors', async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
       });
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {path: 'simple1', component: SimpleCmp},
@@ -301,29 +299,29 @@ export function navigationErrorsIntegrationSuite() {
       });
 
       router.navigateByUrl('/simple1');
-      advance(fixture);
+      await advance(fixture);
       const simple1NavStart = event!;
 
       router.navigateByUrl('/throwing').catch(() => null);
-      advance(fixture);
+      await advance(fixture);
 
       router.navigateByUrl('/simple2');
-      advance(fixture);
+      await advance(fixture);
 
       location.back();
-      tick();
+      await timeout();
 
       expect(event!.restoredState!.navigationId).toEqual(simple1NavStart.id);
-    }));
+    });
 
-    it('should not trigger another navigation when resetting the url back due to a NavigationError', fakeAsync(() => {
+    it('should not trigger another navigation when resetting the url back due to a NavigationError', async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
       });
       const router = TestBed.inject(Router);
       router.onSameUrlNavigation = 'reload';
 
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {path: 'simple', component: SimpleCmp},
@@ -338,21 +336,21 @@ export function navigationErrorsIntegrationSuite() {
       });
 
       router.navigateByUrl('/simple');
-      advance(fixture);
+      await advance(fixture);
 
       router.navigateByUrl('/throwing').catch(() => null);
-      advance(fixture);
+      await advance(fixture);
 
       // we do not trigger another navigation to /simple
       expect(events).toEqual(['/simple', '/throwing']);
-    }));
+    });
   });
 
-  it('should dispatch NavigationCancel after the url has been reset back', fakeAsync(() => {
+  it('should dispatch NavigationCancel after the url has been reset back', async () => {
     const router = TestBed.inject(Router);
     const location = TestBed.inject(Location);
 
-    const fixture = createRoot(router, RootCmp);
+    const fixture = await createRoot(router, RootCmp);
 
     router.resetConfig([
       {path: 'simple', component: SimpleCmp},
@@ -364,7 +362,7 @@ export function navigationErrorsIntegrationSuite() {
     ]);
 
     router.navigateByUrl('/simple');
-    advance(fixture);
+    await advance(fixture);
 
     let routerUrlBeforeEmittingError = '';
     let locationUrlBeforeEmittingError = '';
@@ -378,34 +376,32 @@ export function navigationErrorsIntegrationSuite() {
 
     location.go('/throwing');
     location.historyGo(0);
-    advance(fixture);
+    await advance(fixture);
 
     expect(routerUrlBeforeEmittingError).toEqual('/simple');
     expect(locationUrlBeforeEmittingError).toEqual('/simple');
-  }));
+  });
 
-  it('should recover from malformed uri errors', fakeAsync(() => {
+  it('should recover from malformed uri errors', async () => {
     const router = TestBed.inject(Router);
     const location = TestBed.inject(Location);
     router.resetConfig([{path: 'simple', component: SimpleCmp}]);
-    const fixture = createRoot(router, RootCmp);
+    const fixture = await createRoot(router, RootCmp);
     router.navigateByUrl('/invalid/url%with%percent');
-    advance(fixture);
+    await advance(fixture);
     expect(location.path()).toEqual('');
-  }));
+  });
 
-  it('should not swallow errors', fakeAsync(() => {
+  it('should not swallow errors', async () => {
     const router = TestBed.inject(Router);
-    const fixture = createRoot(router, RootCmp);
+    const fixture = await createRoot(router, RootCmp);
 
     router.resetConfig([{path: 'simple', component: SimpleCmp}]);
 
-    router.navigateByUrl('/invalid');
-    expect(() => advance(fixture)).toThrow();
+    await expectAsync(router.navigateByUrl('/invalid')).toBeRejected();
 
-    router.navigateByUrl('/invalid2');
-    expect(() => advance(fixture)).toThrow();
-  }));
+    await expectAsync(router.navigateByUrl('/invalid2')).toBeRejected();
+  });
 
   it('should not swallow errors from browser state update', async () => {
     const routerEvents: Event[] = [];
@@ -427,14 +423,14 @@ export function navigationErrorsIntegrationSuite() {
     expect(routerEvents[routerEvents.length - 1]).toBeInstanceOf(NavigationError);
   });
 
-  it('should throw an error when one of the commands is null/undefined', fakeAsync(() => {
+  it('should throw an error when one of the commands is null/undefined', async () => {
     const router = TestBed.inject(Router);
-    createRoot(router, RootCmp);
+    await createRoot(router, RootCmp);
 
     router.resetConfig([{path: 'query', component: EmptyQueryParamsCmp}]);
 
     expect(() => router.navigate([undefined, 'query'])).toThrowError(
       /The requested path contains undefined segment at index 0/,
     );
-  }));
+  });
 }

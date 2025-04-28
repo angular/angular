@@ -19,6 +19,7 @@ import {
   inject,
   Injectable,
   NgModule,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -99,6 +100,7 @@ describe('bootstrap', () => {
     navigationEndPromise = promise;
     log = [];
     testProviders = [
+      provideZonelessChangeDetection(),
       {provide: DOCUMENT, useValue: doc},
       {provide: ViewportScroller, useClass: isNode ? NullViewportScroller : ViewportScroller},
       {provide: PlatformLocation, useClass: MockPlatformLocation},

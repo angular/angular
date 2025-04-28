@@ -19,7 +19,7 @@ import {
   Type,
   EnvironmentInjector,
 } from '@angular/core';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {
   PreloadAllModules,
   PreloadingStrategy,
@@ -33,7 +33,7 @@ import {
   RouterModule,
 } from '../index';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
-import {catchError, delay, filter, switchMap, take} from 'rxjs/operators';
+import {catchError, filter, switchMap, take} from 'rxjs/operators';
 
 import {provideRouter} from '../src/provide_router';
 import {
@@ -42,6 +42,7 @@ import {
   getLoadedRoutes,
   getProvidersInjector,
 } from '../src/utils/config';
+import {timeout} from './helpers';
 
 describe('RouterPreloader', () => {
   @Component({
@@ -96,26 +97,26 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should not load children', fakeAsync(() => {
+    it('should not load children', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
 
       const c = router.config;
       expect((c[0] as any)._loadedRoutes).not.toBeDefined();
-    }));
+    });
 
-    it('should not call the preloading method because children will not be loaded anyways', fakeAsync(() => {
+    it('should not call the preloading method because children will not be loaded anyways', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const preloadingStrategy = TestBed.inject(PreloadingStrategy);
       spyOn(preloadingStrategy, 'preload').and.callThrough();
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
       expect(preloadingStrategy.preload).not.toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('should preload configurations', () => {
@@ -130,7 +131,7 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(() => {
+    it('should work', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       const testModule = TestBed.inject(NgModuleRef) as any;
@@ -157,7 +158,7 @@ describe('RouterPreloader', () => {
       lazySpy.and.returnValue(LoadedModule1);
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
 
       const c = router.config;
       const injector: any = getLoadedInjector(c[0]);
@@ -176,10 +177,10 @@ describe('RouterPreloader', () => {
         'RouteConfigLoadStart(path: LoadedModule1)',
         'RouteConfigLoadEnd(path: LoadedModule1)',
       ]);
-    }));
+    });
   });
 
-  it('should handle providers on a route', fakeAsync(() => {
+  it('should handle providers on a route', async () => {
     const TOKEN = new InjectionToken<string>('test token');
     const CHILD_TOKEN = new InjectionToken<string>('test token for child');
 
@@ -209,7 +210,7 @@ describe('RouterPreloader', () => {
       .preload()
       .subscribe(() => {});
 
-    tick();
+    await timeout();
 
     const parentConfig = TestBed.inject(Router).config[0];
     // preloading needs to create the injector
@@ -222,7 +223,7 @@ describe('RouterPreloader', () => {
     // // The loaded injector should be a child of the one created from providers
     expect(loadedInjector.get(TOKEN)).toEqual('parent');
     expect(loadedInjector.get(CHILD_TOKEN)).toEqual('child');
-  }));
+  });
 
   describe('should support modules that have already been loaded', () => {
     let lazySpy: jasmine.Spy;
@@ -236,7 +237,7 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(() => {
+    it('should work', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       const testModule = TestBed.inject(NgModuleRef) as any;
@@ -266,7 +267,7 @@ describe('RouterPreloader', () => {
       lazySpy.and.returnValue(LoadedModule1);
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
 
       const c = router.config;
 
@@ -280,7 +281,7 @@ describe('RouterPreloader', () => {
         parent: EnvironmentInjector;
       };
       expect(injector3.parent).toBe(module2.injector);
-    }));
+    });
   });
 
   describe('should support preloading strategies', () => {
@@ -348,7 +349,7 @@ describe('RouterPreloader', () => {
       events = [];
     });
 
-    it('without reloading loaded modules', fakeAsync(() => {
+    it('without reloading loaded modules', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       router.events.subscribe((e) => {
@@ -360,27 +361,27 @@ describe('RouterPreloader', () => {
 
       // App start activation of preloader
       preloader.preload().subscribe((x) => {});
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(0);
 
       // Initial navigation cause route load
       router.navigateByUrl('/lazy/LoadedModule1');
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
 
       // Secondary load or navigation should use same loaded object (
       //   ie this is a noop as the module should already be loaded)
       delayLoadUnPaused.next(['lazymodule']);
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
       expect(subLoadChildrenSpy).toHaveBeenCalledTimes(0);
       expect(events.map((e) => e.toString())).toEqual([
         'RouteConfigLoadStart(path: lazy)',
         'RouteConfigLoadEnd(path: lazy)',
       ]);
-    }));
+    });
 
-    it('and cope with the loader throwing exceptions during module load but allow retry', fakeAsync(() => {
+    it('and cope with the loader throwing exceptions during module load but allow retry', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       router.events.subscribe((e) => {
@@ -393,18 +394,18 @@ describe('RouterPreloader', () => {
         throwError('Error: Fake module load error (expectedreload)'),
       );
       preloader.preload().subscribe((x) => {});
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(0);
 
       delayLoadUnPaused.next(['lazymodule']);
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
 
       lazyLoadChildrenSpy.and.returnValue(of(LoadedModule1));
       router.navigateByUrl('/lazy/LoadedModule1').catch(() => {
         fail('navigation should not throw');
       });
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(2);
       expect(subLoadChildrenSpy).toHaveBeenCalledTimes(0);
 
@@ -413,9 +414,9 @@ describe('RouterPreloader', () => {
         'RouteConfigLoadStart(path: lazy)',
         'RouteConfigLoadEnd(path: lazy)',
       ]);
-    }));
+    });
 
-    it('and cope with the loader throwing exceptions but allow retry', fakeAsync(() => {
+    it('and cope with the loader throwing exceptions but allow retry', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       router.events.subscribe((e) => {
@@ -428,20 +429,20 @@ describe('RouterPreloader', () => {
         throwError('Error: Fake module load error (expectedreload)'),
       );
       preloader.preload().subscribe((x) => {});
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(0);
 
       router.navigateByUrl('/lazy/LoadedModule1').catch((reason) => {
         expect(reason).toEqual('Error: Fake module load error (expectedreload)');
       });
-      tick();
+      await timeout();
 
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
       lazyLoadChildrenSpy.and.returnValue(of(LoadedModule1));
       router.navigateByUrl('/lazy/LoadedModule1').catch(() => {
         fail('navigation should not throw');
       });
-      tick();
+      await timeout();
 
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(2);
       expect(subLoadChildrenSpy).toHaveBeenCalledTimes(0);
@@ -450,9 +451,9 @@ describe('RouterPreloader', () => {
         'RouteConfigLoadStart(path: lazy)',
         'RouteConfigLoadEnd(path: lazy)',
       ]);
-    }));
+    });
 
-    it('without autoloading loading submodules', fakeAsync(() => {
+    it('without autoloading loading submodules', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       router.events.subscribe((e) => {
@@ -465,9 +466,9 @@ describe('RouterPreloader', () => {
       subLoadChildrenSpy.and.returnValue(of(LoadedModule2));
 
       preloader.preload().subscribe((x) => {});
-      tick();
+      await timeout();
       router.navigateByUrl('/lazy/LoadedModule1');
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
       expect(subLoadChildrenSpy).toHaveBeenCalledTimes(0);
       expect(events.map((e) => e.toString())).toEqual([
@@ -477,7 +478,7 @@ describe('RouterPreloader', () => {
 
       // Release submodule to check it does in fact load
       delayLoadUnPaused.next(['lazymodule', 'submodule']);
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
       expect(subLoadChildrenSpy).toHaveBeenCalledTimes(1);
       expect(events.map((e) => e.toString())).toEqual([
@@ -486,9 +487,9 @@ describe('RouterPreloader', () => {
         'RouteConfigLoadStart(path: sub)',
         'RouteConfigLoadEnd(path: sub)',
       ]);
-    }));
+    });
 
-    it('and close the preload obsservable ', fakeAsync(() => {
+    it('and close the preload obsservable ', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       router.events.subscribe((e) => {
@@ -502,16 +503,16 @@ describe('RouterPreloader', () => {
       const preloadSubscription = preloader.preload().subscribe((x) => {});
 
       router.navigateByUrl('/lazy/LoadedModule1');
-      tick();
+      await timeout();
       delayLoadUnPaused.next(['lazymodule', 'submodule']);
-      tick();
+      await timeout();
 
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
       expect(subLoadChildrenSpy).toHaveBeenCalledTimes(1);
       expect(preloadSubscription.closed).toBeTruthy();
-    }));
+    });
 
-    it('with overlapping loads from navigation and the preloader', fakeAsync(() => {
+    it('with overlapping loads from navigation and the preloader', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       router.events.subscribe((e) => {
@@ -521,14 +522,18 @@ describe('RouterPreloader', () => {
       });
 
       lazyLoadChildrenSpy.and.returnValue(of(LoadedModule1));
-      subLoadChildrenSpy.and.returnValue(of(LoadedModule2).pipe(delay(5)));
+      subLoadChildrenSpy.and.returnValue(
+        of(LoadedModule2).pipe(
+          switchMap((v) => new Promise((r) => setTimeout(r, 5)).then(() => v)),
+        ),
+      );
       preloader.preload().subscribe((x) => {});
-      tick();
+      await timeout();
 
       // Load the out modules at start of test and ensure it and only
       // it is loaded
       delayLoadUnPaused.next(['lazymodule']);
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
       expect(events.map((e) => e.toString())).toEqual([
         'RouteConfigLoadStart(path: lazy)',
@@ -537,14 +542,14 @@ describe('RouterPreloader', () => {
 
       // Cause the load from router to start (has 5 tick delay)
       router.navigateByUrl('/lazy/sub/LoadedModule2');
-      tick(); // T1
+      await timeout(); // T1
       // Cause the load from preloader to start
       delayLoadUnPaused.next(['lazymodule', 'submodule']);
-      tick(); // T2
+      await timeout(); // T2
 
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
       expect(subLoadChildrenSpy).toHaveBeenCalledTimes(1);
-      tick(5); // T2 to T7 enough time for mutiple loads to finish
+      await timeout(5); // T2 to T7 enough time for mutiple loads to finish
 
       expect(subLoadChildrenSpy).toHaveBeenCalledTimes(1);
       expect(events.map((e) => e.toString())).toEqual([
@@ -553,9 +558,9 @@ describe('RouterPreloader', () => {
         'RouteConfigLoadStart(path: sub)',
         'RouteConfigLoadEnd(path: sub)',
       ]);
-    }));
+    });
 
-    it('cope with factory fail from broken modules', fakeAsync(() => {
+    it('cope with factory fail from broken modules', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       router.events.subscribe((e) => {
@@ -576,20 +581,20 @@ describe('RouterPreloader', () => {
 
       lazyLoadChildrenSpy.and.returnValue(of(new BrokenModuleFactory()));
       preloader.preload().subscribe((x) => {});
-      tick();
+      await timeout();
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(0);
 
       router.navigateByUrl('/lazy/LoadedModule1').catch((reason) => {
         expect(reason).toEqual('Error: Broken module');
       });
-      tick();
+      await timeout();
 
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(1);
       lazyLoadChildrenSpy.and.returnValue(of(LoadedModule1));
       router.navigateByUrl('/lazy/LoadedModule1').catch(() => {
         fail('navigation should not throw');
       });
-      tick();
+      await timeout();
 
       expect(lazyLoadChildrenSpy).toHaveBeenCalledTimes(2);
       expect(subLoadChildrenSpy).toHaveBeenCalledTimes(0);
@@ -599,7 +604,7 @@ describe('RouterPreloader', () => {
         'RouteConfigLoadStart(path: lazy)',
         'RouteConfigLoadEnd(path: lazy)',
       ]);
-    }));
+    });
   });
 
   describe('should ignore errors', () => {
@@ -625,17 +630,17 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(() => {
+    it('should work', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
 
       const c = router.config;
       expect(getLoadedRoutes(c[0])).not.toBeDefined();
       expect(getLoadedRoutes(c[1])).toBeDefined();
-    }));
+    });
   });
 
   describe('should copy loaded configs', () => {
@@ -658,19 +663,19 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(() => {
+    it('should work', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       const router = TestBed.inject(Router);
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
 
       const c = router.config;
       expect(getLoadedRoutes(c[0])).toBeDefined();
       expect(getLoadedRoutes(c[0])).not.toBe(configs);
       expect(getLoadedRoutes(c[0])![0]).not.toBe(configs[0]);
       expect(getLoadedRoutes(c[0])![0].component).toBe(configs[0].component);
-    }));
+    });
   });
 
   describe("should work with lazy loaded modules that don't provide RouterModule.forChild()", () => {
@@ -701,10 +706,10 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(() => {
+    it('should work', async () => {
       const preloader = TestBed.inject(RouterPreloader);
       preloader.preload().subscribe();
-    }));
+    });
   });
 
   describe('should preload loadComponent configs', () => {
@@ -722,7 +727,7 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('base case', fakeAsync(() => {
+    it('base case', async () => {
       @Component({template: ''})
       class LoadedComponent {}
 
@@ -730,13 +735,13 @@ describe('RouterPreloader', () => {
       lazyComponentSpy.and.returnValue(LoadedComponent);
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
 
       const component = getLoadedComponent(TestBed.inject(Router).config[0]);
       expect(component).toEqual(LoadedComponent);
-    }));
+    });
 
-    it('throws error when loadComponent is not standalone', fakeAsync(() => {
+    it('throws error when loadComponent is not standalone', async () => {
       @Component({template: '', standalone: false})
       class LoadedComponent {}
       @Injectable({providedIn: 'root'})
@@ -759,12 +764,12 @@ describe('RouterPreloader', () => {
       lazyComponentSpy.and.returnValue(LoadedComponent);
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
       const strategy = TestBed.inject(PreloadingStrategy) as ErrorTrackingPreloadAllModules;
       expect(strategy.errors[0]?.message).toMatch(/.*lazy.*must be standalone/);
-    }));
+    });
 
-    it('should recover from errors', fakeAsync(() => {
+    it('should recover from errors', async () => {
       @Component({template: ''})
       class LoadedComponent {}
 
@@ -772,7 +777,7 @@ describe('RouterPreloader', () => {
       lazyComponentSpy.and.returnValue(throwError('error loading chunk'));
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
 
       const router = TestBed.inject(Router);
       const c = router.config;
@@ -781,12 +786,12 @@ describe('RouterPreloader', () => {
 
       lazyComponentSpy.and.returnValue(LoadedComponent);
       router.navigateByUrl('/lazy');
-      tick();
+      await timeout();
       expect(lazyComponentSpy.calls.count()).toBe(2);
       expect(getLoadedComponent(c[0])).toBeDefined();
-    }));
+    });
 
-    it('works when there is both loadComponent and loadChildren', fakeAsync(() => {
+    it('works when there is both loadComponent and loadChildren', async () => {
       @Component({template: ''})
       class LoadedComponent {}
 
@@ -805,7 +810,7 @@ describe('RouterPreloader', () => {
       lazyComponentSpy.and.returnValue(LoadedComponent);
       preloader.preload().subscribe(() => {});
 
-      tick();
+      await timeout();
 
       const component = getLoadedComponent(router.config[0]);
       expect(component).toEqual(LoadedComponent);
@@ -813,13 +818,17 @@ describe('RouterPreloader', () => {
       const childRoutes = getLoadedRoutes(router.config[0]);
       expect(childRoutes).toBeDefined();
       expect(childRoutes![0].path).toEqual('child');
-    }));
+    });
 
-    it('loadComponent does not block loadChildren', fakeAsync(() => {
+    it('loadComponent does not block loadChildren', async () => {
       @Component({template: ''})
       class LoadedComponent {}
 
-      lazyComponentSpy.and.returnValue(of(LoadedComponent).pipe(delay(5)));
+      lazyComponentSpy.and.returnValue(
+        of(LoadedComponent).pipe(
+          switchMap((v) => new Promise((r) => setTimeout(r, 10)).then(() => v)),
+        ),
+      );
 
       @NgModule({
         providers: [
@@ -827,7 +836,10 @@ describe('RouterPreloader', () => {
           provideRouter([
             {
               path: 'child',
-              loadChildren: () => of([{path: 'grandchild', children: []}]).pipe(delay(1)),
+              loadChildren: () =>
+                of([{path: 'grandchild', children: []}]).pipe(
+                  switchMap((v) => new Promise((r) => setTimeout(r, 1)).then(() => v)),
+                ),
             },
           ]),
         ],
@@ -836,12 +848,13 @@ describe('RouterPreloader', () => {
 
       const router = TestBed.inject(Router);
       const baseRoute = router.config[0];
-      baseRoute.loadChildren = () => of(LoadedModule).pipe(delay(1));
+      baseRoute.loadChildren = () =>
+        of(LoadedModule).pipe(switchMap((v) => new Promise((r) => setTimeout(r, 1)).then(() => v)));
 
       const preloader = TestBed.inject(RouterPreloader);
       preloader.preload().subscribe(() => {});
 
-      tick(1);
+      await timeout(1);
       // Loading should have started but not completed yet
       expect(getLoadedComponent(baseRoute)).not.toBeDefined();
       const childRoutes = getLoadedRoutes(baseRoute);
@@ -849,14 +862,14 @@ describe('RouterPreloader', () => {
       // Loading should have started but not completed yet
       expect(getLoadedRoutes(childRoutes![0])).not.toBeDefined();
 
-      tick(1);
+      await timeout(1);
       // Loading should have started but not completed yet
       expect(getLoadedComponent(baseRoute)).not.toBeDefined();
       expect(getLoadedRoutes(childRoutes![0])).toBeDefined();
 
-      tick(3);
+      await timeout(10);
       expect(getLoadedComponent(baseRoute)).toBeDefined();
-    }));
+    });
 
     it('loads nested components', () => {
       @Component({template: ''})

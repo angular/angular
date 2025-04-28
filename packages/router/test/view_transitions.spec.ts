@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, destroyPlatform} from '@angular/core';
+import {Component, destroyPlatform, provideZonelessChangeDetection} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 import {
@@ -18,7 +18,6 @@ import {
   withDisabledInitialNavigation,
   withViewTransitions,
 } from '../index';
-import {TestBed} from '@angular/core/testing';
 
 describe('view transitions', () => {
   if (isNode) {
@@ -38,6 +37,7 @@ describe('view transitions', () => {
   it('should skip initial transition', async () => {
     const appRef = await bootstrapApplication(App, {
       providers: [
+        provideZonelessChangeDetection(),
         provideRouter(
           [{path: '**', component: App}],
           withDisabledInitialNavigation(),
@@ -66,7 +66,10 @@ describe('view transitions', () => {
     class ComponentB {}
 
     const res = await bootstrapApplication(App, {
-      providers: [provideRouter([{path: 'b', component: ComponentB}], withViewTransitions())],
+      providers: [
+        provideZonelessChangeDetection(),
+        provideRouter([{path: 'b', component: ComponentB}], withViewTransitions()),
+      ],
     });
     const router = res.injector.get(Router);
     const eventLog = [] as Event[];
@@ -94,6 +97,7 @@ describe('view transitions', () => {
       const transitionSpy = jasmine.createSpy();
       const appRef = await bootstrapApplication(App, {
         providers: [
+          provideZonelessChangeDetection(),
           provideRouter(
             [{path: '**', component: App}],
             withDisabledInitialNavigation(),

@@ -26,9 +26,9 @@ const FAKE_NAVIGATION = new InjectionToken<FakeNavigation>('fakeNavigation', {
     const config = inject(MOCK_PLATFORM_LOCATION_CONFIG, {optional: true});
     const baseFallback = 'http://_empty_/';
     const startUrl = new URL(config?.startUrl || baseFallback, baseFallback);
-    // TODO(atscott): If we want to replace MockPlatformLocation with FakeNavigationPlatformLocation
-    // as the default in TestBed, we will likely need to use setSynchronousTraversalsForTesting(true);
-    return new FakeNavigation(inject(DOCUMENT), startUrl.href as `http${string}`);
+    const fakeNavigation = new FakeNavigation(inject(DOCUMENT), startUrl.href as `http${string}`);
+    fakeNavigation.setSynchronousTraversalsForTesting(true);
+    return fakeNavigation;
   },
 });
 

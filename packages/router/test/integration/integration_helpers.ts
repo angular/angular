@@ -7,7 +7,7 @@
  */
 import {CommonModule} from '@angular/common';
 import {Component, NgModule, Type, signal} from '@angular/core';
-import {ComponentFixture, tick, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   ActivatedRoute,
   Event,
@@ -24,6 +24,7 @@ import {
 } from '../../index';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {timeout} from '../helpers';
 
 export const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
 
@@ -361,16 +362,19 @@ export class ConditionalThrowingCmp {
   }
 }
 
-export function advance(fixture: ComponentFixture<unknown>, millis?: number): void {
-  tick(millis);
+export async function advance(
+  fixture: ComponentFixture<unknown>,
+  millis: number = 1,
+): Promise<void> {
+  await timeout(millis);
   fixture.detectChanges();
 }
 
-export function createRoot<T>(router: Router, type: Type<T>): ComponentFixture<T> {
+export async function createRoot<T>(router: Router, type: Type<T>): Promise<ComponentFixture<T>> {
   const f = TestBed.createComponent<T>(type);
-  advance(f);
+  await advance(f);
   router.initialNavigation();
-  advance(f);
+  await advance(f);
   return f;
 }
 

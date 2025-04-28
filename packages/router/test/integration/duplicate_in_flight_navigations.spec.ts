@@ -8,7 +8,7 @@
 
 import {Injectable, inject} from '@angular/core';
 import {Location} from '@angular/common';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {
   Router,
   provideRouter,
@@ -17,6 +17,7 @@ import {
   GuardsCheckEnd,
 } from '../../index';
 import {createRoot, SimpleCmp, advance, RootCmp, BlankCmp} from './integration_helpers';
+import {timeout} from '../helpers';
 
 export function duplicateInFlightNavigationsIntegrationSuite() {
   describe('duplicate in-flight navigations', () => {
@@ -36,16 +37,16 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
       });
     });
 
-    it('should reset location if a navigation by location is successful', fakeAsync(() => {
+    it('should reset location if a navigation by location is successful', async () => {
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
           path: 'simple',
           component: SimpleCmp,
-          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
+          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 10))],
         },
       ]);
 
@@ -60,16 +61,16 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
       location.historyGo(0);
       location.historyGo(0);
 
-      tick(2000);
-      advance(fixture);
+      await timeout(20);
+      await advance(fixture);
 
       expect(location.path()).toEqual('/simple');
-    }));
+    });
 
-    it('should skip duplicate location events', fakeAsync(() => {
+    it('should skip duplicate location events', async () => {
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {
@@ -80,14 +81,14 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
         {path: 'simple', component: SimpleCmp},
       ]);
       router.navigateByUrl('/simple');
-      advance(fixture);
+      await advance(fixture);
 
       location.go('/blocked');
       location.historyGo(0);
 
-      advance(fixture);
+      await advance(fixture);
       expect(fixture.nativeElement.innerHTML).toContain('simple');
-    }));
+    });
 
     it('should not cause URL thrashing', async () => {
       TestBed.configureTestingModule({
@@ -123,14 +124,14 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
       expect(urlChanges).toEqual(['/blocked', '/simple']);
     });
 
-    it('can render a 404 page without changing the URL', fakeAsync(() => {
+    it('can render a 404 page without changing the URL', async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
       });
       const router = TestBed.inject(Router);
       TestBed.inject(RedirectingGuard).skipLocationChange = true;
       const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+      const fixture = await createRoot(router, RootCmp);
 
       router.resetConfig([
         {path: 'home', component: SimpleCmp},
@@ -143,27 +144,27 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
         {path: '404', component: SimpleCmp},
       ]);
       router.navigateByUrl('/home');
-      advance(fixture);
+      await advance(fixture);
 
       location.go('/blocked');
       location.historyGo(0);
-      advance(fixture);
+      await advance(fixture);
       expect(location.path()).toEqual('/blocked');
       expect(fixture.nativeElement.innerHTML).toContain('simple');
-    }));
+    });
 
-    it('should accurately track currentNavigation', fakeAsync(() => {
+    it('should accurately track currentNavigation', async () => {
       const router = TestBed.inject(Router);
       router.resetConfig([
         {
           path: 'one',
           component: SimpleCmp,
-          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
+          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 10))],
         },
         {
           path: 'two',
           component: BlankCmp,
-          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
+          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 10))],
         },
       ]);
 
@@ -182,7 +183,7 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
       });
 
       router.navigateByUrl('one');
-      tick(1000);
-    }));
+      await timeout(10);
+    });
   });
 }
