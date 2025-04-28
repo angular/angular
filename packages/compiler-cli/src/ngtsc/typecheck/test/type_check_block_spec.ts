@@ -1050,7 +1050,6 @@ describe('type check blocks', () => {
       unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
       checkTwoWayBoundEvents: true,
-      selectorlessEnabled: false,
     };
 
     describe('config.applyTemplateContextGuards', () => {

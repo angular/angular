@@ -1086,7 +1086,6 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         checkTwoWayBoundEvents,
-        selectorlessEnabled: this.enableSelectorless,
       };
     } else {
       typeCheckingConfig = {
@@ -1122,7 +1121,6 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         checkTwoWayBoundEvents,
-        selectorlessEnabled: this.enableSelectorless,
       };
     }
 

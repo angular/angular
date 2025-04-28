@@ -288,7 +288,6 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   unusedStandaloneImports: 'warning',
   allowSignalsInTwoWayBindings: true,
   checkTwoWayBoundEvents: true,
-  selectorlessEnabled: false,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -431,7 +430,6 @@ export function tcb(
     suggestionsForSuboptimalTypeInference: false,
     allowSignalsInTwoWayBindings: true,
     checkTwoWayBoundEvents: true,
-    selectorlessEnabled,
     ...config,
   };
   options = options || {emitSpans: false};
