@@ -27,7 +27,7 @@ globalThis.beforeEach?.(getCleanupHook(false));
 // afterEach is only defined when executing the tests
 globalThis.afterEach?.(getCleanupHook(true));
 
-export function getCleanupHook(expectedTeardownValue: boolean) {
+export function getCleanupHook(expectedTeardownValue: boolean): VoidFunction {
   return () => {
     const testBed = TestBedImpl.INSTANCE;
     if (testBed.shouldTearDownTestingModule() === expectedTeardownValue) {
