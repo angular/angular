@@ -8,13 +8,13 @@
 
 import * as fs from 'fs';
 import {readFile, writeFile} from 'fs/promises';
-import {join, relative} from 'path';
+import {basename, join, relative} from 'path';
 import {glob} from 'tinyglobby';
 import ts from 'typescript';
 
 const [examplesDir, templateFilePath, outputFilePath] = process.argv.slice(2);
 
-const EXAMPLES_PATH = `../../content/examples`;
+const EXAMPLES_PATH = `../examples`;
 
 interface File {
   path: string;
@@ -47,6 +47,7 @@ main();
  * ...
  */
 async function main() {
+  const exampleName = basename(examplesDir);
   const files = await glob(join(examplesDir, '**/*.ts'), {
     ignore: ['**/*.e2e-spec.ts', '**/*.spec.ts', '**/*.po.ts'],
   }).then((paths) =>
@@ -69,7 +70,7 @@ async function main() {
     }))
     .filter((result) => result.componentNames.length > 0);
 
-  const previewsComponentMap = generatePreviewsComponentMap(filesWithComponent);
+  const previewsComponentMap = generatePreviewsComponentMap(exampleName, filesWithComponent);
 
   await writeFile(outputFilePath, previewsComponentMap);
 }
@@ -123,14 +124,14 @@ function analyzeFile(file: File): string[] {
   return componentClassNames;
 }
 
-function generatePreviewsComponentMap(data: AnalyzedFiles[]): string {
+function generatePreviewsComponentMap(exampleName: string, data: AnalyzedFiles[]): string {
   let result = '';
   for (const fileData of data) {
     for (const componentName of fileData.componentNames) {
-      const key = `adev/src/content/examples/${fileData.path}${
+      const key = `${exampleName}/${fileData.path}${
         fileData.componentNames.length > 1 ? '_' + componentName : ''
       }`.replace(/\\/g, '/');
-      result += `['${key}']: () => import('${EXAMPLES_PATH}/${fileData.path
+      result += `['${key}']: () => import('${EXAMPLES_PATH}/${exampleName}/${fileData.path
         .replace(/\\/g, '/')
         .replace('.ts', '')}').then(c => c.${componentName}),\n`;
     }

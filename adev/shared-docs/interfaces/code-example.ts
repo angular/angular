@@ -39,4 +39,6 @@ export interface ExampleMetadata {
   files: Snippet[];
   /** True when ExampleViewer should have preview */
   preview: boolean;
+  /** The name of the example that is the source of the snippet.  */
+  example?: string;
 }

@@ -92,11 +92,16 @@ export class ExampleViewer {
   );
 
   async renderExample(): Promise<void> {
-    // Lazy load live example component
-    if (this.exampleMetadata()?.path && this.exampleMetadata()?.preview) {
-      this.exampleComponent = await this.exampleViewerContentLoader.loadPreview(
-        this.exampleMetadata()?.path!,
-      );
+    if (this.exampleMetadata()?.preview) {
+      if (this.exampleMetadata()?.example) {
+        this.exampleComponent = await this.exampleViewerContentLoader.loadPreview(
+          `${this.exampleMetadata()?.example}/${this.exampleMetadata()?.path}`,
+        );
+      } else {
+        this.exampleComponent = await this.exampleViewerContentLoader.loadPreview(
+          this.exampleMetadata()?.path!,
+        );
+      }
     }
 
     this.snippetCode.set(this.exampleMetadata()?.files[0]);
