@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Signal, WritableSignal} from '@angular/core';
+import {Resource, Signal, WritableSignal} from '@angular/core';
 import {MetadataKey} from './metadata';
+import {type ResourcePointer} from '../field_node';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -137,6 +138,13 @@ export type Schema<T> = (p: FieldPath<T>) => void;
  */
 export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
 
+export type ResourceContructor<T> = (f: FieldContext<T>) => Resource<any>;
+export interface ProtoResource<T> {
+  construct: ResourceContructor<T>;
+  path: FieldPath<T>;
+  key: Symbol;
+}
+
 /**
  * A Validator is a function that
  *  takes a `logic argument` and returns a validation result.
@@ -157,4 +165,6 @@ export interface FieldContext<T> {
    * This can be used by the `LogicFunction` to implement cross-field logic.
    */
   resolve: <U>(path: FieldPath<U>) => Field<U>;
+
+  resolveData: <T>(res: ResourcePointer<T>) => Resource<T>;
 }

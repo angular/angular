@@ -1,4 +1,5 @@
-import {FieldPath} from './api/types';
+import {Resource} from '@angular/core';
+import {FieldContext, FieldPath, ProtoResource} from './api/types';
 import {DYNAMIC, FieldLogicNode, Predicate} from './logic_node';
 
 /**
@@ -6,9 +7,14 @@ import {DYNAMIC, FieldLogicNode, Predicate} from './logic_node';
  */
 const PATH = Symbol('PATH');
 
+const RESOURCES = Symbol('RESOURCES');
+
 export class FieldPathNode {
   readonly root: FieldRootPathNode;
   private readonly children = new Map<PropertyKey, FieldPathNode>();
+
+  private protoResources = new Map<Symbol, ProtoResource<unknown>>();
+  private resources = new Map<Symbol, Resource<unknown>>();
 
   readonly fieldPathProxy: FieldPath<any> = new Proxy(
     this,
@@ -21,6 +27,23 @@ export class FieldPathNode {
     root: FieldRootPathNode | undefined,
   ) {
     this.root = root ?? (this as unknown as FieldRootPathNode);
+  }
+
+  addResource(resource: ProtoResource<any>) {
+    this.protoResources.set(resource.key, resource);
+  }
+
+  initResources(ctx: FieldContext<any>) {
+    for (const resource of this.protoResources.values()) {
+      this.resources.set(resource.key, resource.construct(ctx));
+    }
+  }
+
+  getResource<T>(key: Symbol): Resource<T> {
+    if (!this.resources.has(key)) {
+      throw new Error(`Resource ${String(key)} not found`);
+    }
+    return this.resources.get(key) as Resource<T>;
   }
 
   get element(): FieldPathNode {
