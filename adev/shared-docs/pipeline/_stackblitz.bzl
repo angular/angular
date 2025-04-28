@@ -17,7 +17,7 @@ def _generate_stackblitz(ctx):
             template_srcs = file_path
 
     # File declaration of the generated html file
-    html_output = ctx.actions.declare_file("%s.html" % ctx.attr.name)
+    html_output = ctx.actions.declare_file("stackblitz.html")
 
     # Temporary directory for the generation to utilize
     tmp_directory = ctx.actions.declare_directory("TMP_" + ctx.label.name)

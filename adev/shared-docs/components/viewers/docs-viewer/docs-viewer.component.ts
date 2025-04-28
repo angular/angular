@@ -42,7 +42,7 @@ import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-co
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
 
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
-export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
+export const ASSETS_EXAMPLES_PATH = 'assets/examples';
 export const DOCS_VIEWER_SELECTOR = 'docs-viewer';
 export const DOCS_CODE_SELECTOR = '.docs-code';
 export const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
@@ -191,6 +191,7 @@ export class DocViewer implements OnChanges {
     const firstCodeSnippetTitle =
       snippets.length > 0 ? (snippets[0].title ?? snippets[0].name) : undefined;
     const exampleRef = this.viewContainer.createComponent(ExampleViewer);
+    const exampleName = snippets[0].example;
 
     this.countOfExamples++;
     exampleRef.setInput('metadata', {
@@ -202,7 +203,7 @@ export class DocViewer implements OnChanges {
     });
 
     exampleRef.instance.githubUrl = `${GITHUB_CONTENT_URL}/${snippets[0].name}`;
-    exampleRef.instance.stackblitzUrl = `${ASSETS_EXAMPLES_PATH}/${snippets[0].name}.html`;
+    exampleRef.instance.stackblitzUrl = `${ASSETS_EXAMPLES_PATH}/${exampleName}/stackblitz.html`;
 
     placeholder.parentElement!.replaceChild(exampleRef.location.nativeElement, placeholder);
 
@@ -214,6 +215,7 @@ export class DocViewer implements OnChanges {
 
     return tabs.map((tab) => ({
       name: tab.getAttribute('path') ?? tab.getAttribute('header') ?? '',
+      example: tab.getAttribute('example') ?? undefined,
       content: tab.innerHTML,
       visibleLinesRange: tab.getAttribute('visibleLines') ?? undefined,
     }));
@@ -230,9 +232,11 @@ export class DocViewer implements OnChanges {
     const content = element.querySelector('pre')!;
     const path = element.getAttribute('path')!;
     const title = element.getAttribute('header') ?? undefined;
+    const example = element.getAttribute('example') ?? undefined;
 
     return {
       title,
+      example,
       name: path,
       content: content?.outerHTML,
       visibleLinesRange: visibleLines,
