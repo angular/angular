@@ -176,9 +176,12 @@ class EventEmitter_ extends Subject<any> implements OutputRef<any> {
     return (value: unknown) => {
       const taskId = this.pendingTasks?.add();
       setTimeout(() => {
-        fn(value);
-        if (taskId !== undefined) {
-          this.pendingTasks?.remove(taskId);
+        try {
+          fn(value);
+        } finally {
+          if (taskId !== undefined) {
+            this.pendingTasks?.remove(taskId);
+          }
         }
       });
     };
