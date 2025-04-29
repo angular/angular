@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, destroyPlatform, inject} from '@angular/core';
+import {Component, destroyPlatform} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 import {
@@ -18,6 +18,7 @@ import {
   withDisabledInitialNavigation,
   withViewTransitions,
 } from '../index';
+import {TestBed} from '@angular/core/testing';
 
 describe('view transitions', () => {
   if (isNode) {

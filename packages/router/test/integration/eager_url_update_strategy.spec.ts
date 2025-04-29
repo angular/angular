@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, inject as coreInject} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Location} from '@angular/common';
-import {TestBed, fakeAsync, tick, inject} from '@angular/core/testing';
+import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {
   DefaultUrlSerializer,
   provideRouter,
@@ -60,129 +60,129 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
       });
     });
 
-    it('should eagerly update the URL', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = TestBed.createComponent(RootCmp);
-        advance(fixture);
+    it('should eagerly update the URL', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      const fixture = TestBed.createComponent(RootCmp);
+      advance(fixture);
 
-        router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+      router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
 
-        router.navigateByUrl('/team/22');
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22');
+      router.navigateByUrl('/team/22');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22');
 
+      expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+
+      router.events.subscribe((e) => {
+        if (!(e instanceof GuardsCheckStart)) {
+          return;
+        }
+        expect(location.path()).toEqual('/team/33');
         expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+        return of(null);
+      });
+      router.navigateByUrl('/team/33');
 
-        router.events.subscribe((e) => {
-          if (!(e instanceof GuardsCheckStart)) {
-            return;
-          }
-          expect(location.path()).toEqual('/team/33');
-          expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
-          return of(null);
-        });
-        router.navigateByUrl('/team/33');
+      advance(fixture);
+      expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
+    }));
 
-        advance(fixture);
-        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
-      }),
-    ));
+    it('should eagerly update the URL', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      const fixture = TestBed.createComponent(RootCmp);
+      advance(fixture);
 
-    it('should eagerly update the URL', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = TestBed.createComponent(RootCmp);
-        advance(fixture);
+      router.resetConfig([
+        {
+          path: 'team/:id',
+          component: SimpleCmp,
+          canActivate: [
+            () =>
+              new Promise((res) => {
+                setTimeout(() => res(new DefaultUrlSerializer().parse('/login')), 1);
+              }),
+          ],
+        },
+        {path: 'login', component: AbsoluteSimpleLinkCmp},
+      ]);
 
-        router.resetConfig([
-          {
-            path: 'team/:id',
-            component: SimpleCmp,
-            canActivate: [
-              () =>
-                new Promise((res) => {
-                  setTimeout(() => res(new DefaultUrlSerializer().parse('/login')), 1);
-                }),
-            ],
-          },
-          {path: 'login', component: AbsoluteSimpleLinkCmp},
-        ]);
+      router.navigateByUrl('/team/22');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22');
 
-        router.navigateByUrl('/team/22');
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22');
+      // Redirects to /login
+      advance(fixture, 1);
+      expect(location.path()).toEqual('/login');
 
-        // Redirects to /login
-        advance(fixture, 1);
-        expect(location.path()).toEqual('/login');
+      // Perform the same logic again, and it should produce the same result
+      router.navigateByUrl('/team/22');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22');
 
-        // Perform the same logic again, and it should produce the same result
-        router.navigateByUrl('/team/22');
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22');
+      // Redirects to /login
+      advance(fixture, 1);
+      expect(location.path()).toEqual('/login');
+    }));
 
-        // Redirects to /login
-        advance(fixture, 1);
-        expect(location.path()).toEqual('/login');
-      }),
-    ));
+    it('should eagerly update URL after redirects are applied', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      const fixture = TestBed.createComponent(RootCmp);
+      advance(fixture);
 
-    it('should eagerly update URL after redirects are applied', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = TestBed.createComponent(RootCmp);
-        advance(fixture);
+      router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
 
-        router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+      router.navigateByUrl('/team/22');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22');
 
-        router.navigateByUrl('/team/22');
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22');
+      expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
 
-        expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+      let urlAtNavStart = '';
+      let urlAtRoutesRecognized = '';
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationStart) {
+          urlAtNavStart = location.path();
+        }
+        if (e instanceof RoutesRecognized) {
+          urlAtRoutesRecognized = location.path();
+        }
+      });
 
-        let urlAtNavStart = '';
-        let urlAtRoutesRecognized = '';
-        router.events.subscribe((e) => {
-          if (e instanceof NavigationStart) {
-            urlAtNavStart = location.path();
-          }
-          if (e instanceof RoutesRecognized) {
-            urlAtRoutesRecognized = location.path();
-          }
-        });
+      router.navigateByUrl('/team/33');
 
-        router.navigateByUrl('/team/33');
+      advance(fixture);
+      expect(urlAtNavStart).toBe('/team/22');
+      expect(urlAtRoutesRecognized).toBe('/team/33');
+      expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
+    }));
 
-        advance(fixture);
-        expect(urlAtNavStart).toBe('/team/22');
-        expect(urlAtRoutesRecognized).toBe('/team/33');
-        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
-      }),
-    ));
+    it('should set `state`', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'simple', component: SimpleCmp},
+      ]);
 
-    it('should set `state`', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        router.resetConfig([
-          {path: '', component: SimpleCmp},
-          {path: 'simple', component: SimpleCmp},
-        ]);
+      const fixture = createRoot(router, RootCmp);
+      let navigation: Navigation = null!;
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationStart) {
+          navigation = router.getCurrentNavigation()!;
+        }
+      });
 
-        const fixture = createRoot(router, RootCmp);
-        let navigation: Navigation = null!;
-        router.events.subscribe((e) => {
-          if (e instanceof NavigationStart) {
-            navigation = router.getCurrentNavigation()!;
-          }
-        });
+      router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+      tick();
 
-        router.navigateByUrl('/simple', {state: {foo: 'bar'}});
-        tick();
-
-        const state = location.getState() as any;
-        expect(state).toEqual({foo: 'bar', navigationId: 2});
-        expect(navigation.extras.state).toBeDefined();
-        expect(navigation.extras.state).toEqual({foo: 'bar'});
-      }),
-    ));
+      const state = location.getState() as any;
+      expect(state).toEqual({foo: 'bar', navigationId: 2});
+      expect(navigation.extras.state).toBeDefined();
+      expect(navigation.extras.state).toEqual({foo: 'bar'});
+    }));
 
     it('can renavigate to rejected URL', fakeAsync(() => {
       const router = TestBed.inject(Router);
@@ -193,7 +193,7 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
         {
           path: 'simple',
           component: SimpleCmp,
-          canActivate: [() => coreInject(AuthGuard).canActivate()],
+          canActivate: [() => inject(AuthGuard).canActivate()],
         },
       ]);
       const fixture = createRoot(router, RootCmp);
@@ -221,7 +221,7 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
         {
           path: 'simple',
           component: SimpleCmp,
-          canActivate: [() => coreInject(DelayedGuard).canActivate()],
+          canActivate: [() => inject(DelayedGuard).canActivate()],
         },
       ]);
       const fixture = createRoot(router, RootCmp);

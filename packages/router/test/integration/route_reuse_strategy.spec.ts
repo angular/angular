@@ -8,7 +8,7 @@
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {CommonModule, Location} from '@angular/common';
 import {Component, OnDestroy, NgModule, InjectionToken, Inject} from '@angular/core';
-import {TestBed, fakeAsync, inject} from '@angular/core/testing';
+import {TestBed, fakeAsync} from '@angular/core/testing';
 import {
   RouteReuseStrategy,
   DetachedRouteHandle,
@@ -155,76 +155,76 @@ export function routeReuseIntegrationSuite() {
       expect(cmp.detachedComponents[0] instanceof BlankCmp).toBe(true);
     }));
 
-    it('should support attaching & detaching fragments', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = createRoot(router, RootCmp);
+    it('should support attaching & detaching fragments', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      const fixture = createRoot(router, RootCmp);
 
-        router.routeReuseStrategy = new AttachDetachReuseStrategy();
-        (router.routeReuseStrategy as AttachDetachReuseStrategy).pathsToDetach = ['a', 'b'];
-        spyOn(router.routeReuseStrategy, 'retrieve').and.callThrough();
+      router.routeReuseStrategy = new AttachDetachReuseStrategy();
+      (router.routeReuseStrategy as AttachDetachReuseStrategy).pathsToDetach = ['a', 'b'];
+      spyOn(router.routeReuseStrategy, 'retrieve').and.callThrough();
 
-        router.resetConfig([
-          {
-            path: 'a',
-            component: TeamCmp,
-            children: [{path: 'b', component: SimpleCmp}],
-          },
-          {path: 'c', component: UserCmp},
-        ]);
+      router.resetConfig([
+        {
+          path: 'a',
+          component: TeamCmp,
+          children: [{path: 'b', component: SimpleCmp}],
+        },
+        {path: 'c', component: UserCmp},
+      ]);
 
-        router.navigateByUrl('/a/b');
-        advance(fixture);
-        const teamCmp = fixture.debugElement.children[1].componentInstance;
-        const simpleCmp = fixture.debugElement.children[1].children[1].componentInstance;
-        expect(location.path()).toEqual('/a/b');
-        expect(teamCmp).toBeDefined();
-        expect(simpleCmp).toBeDefined();
-        expect(router.routeReuseStrategy.retrieve).not.toHaveBeenCalled();
+      router.navigateByUrl('/a/b');
+      advance(fixture);
+      const teamCmp = fixture.debugElement.children[1].componentInstance;
+      const simpleCmp = fixture.debugElement.children[1].children[1].componentInstance;
+      expect(location.path()).toEqual('/a/b');
+      expect(teamCmp).toBeDefined();
+      expect(simpleCmp).toBeDefined();
+      expect(router.routeReuseStrategy.retrieve).not.toHaveBeenCalled();
 
-        router.navigateByUrl('/c');
-        advance(fixture);
-        expect(location.path()).toEqual('/c');
-        expect(fixture.debugElement.children[1].componentInstance).toBeInstanceOf(UserCmp);
-        // We have still not encountered a route that should be reattached
-        expect(router.routeReuseStrategy.retrieve).not.toHaveBeenCalled();
+      router.navigateByUrl('/c');
+      advance(fixture);
+      expect(location.path()).toEqual('/c');
+      expect(fixture.debugElement.children[1].componentInstance).toBeInstanceOf(UserCmp);
+      // We have still not encountered a route that should be reattached
+      expect(router.routeReuseStrategy.retrieve).not.toHaveBeenCalled();
 
-        router.navigateByUrl('/a;p=1/b;p=2');
-        advance(fixture);
-        // We retrieve both the stored route snapshots
-        expect(router.routeReuseStrategy.retrieve).toHaveBeenCalledTimes(4);
-        const teamCmp2 = fixture.debugElement.children[1].componentInstance;
-        const simpleCmp2 = fixture.debugElement.children[1].children[1].componentInstance;
-        expect(location.path()).toEqual('/a;p=1/b;p=2');
-        expect(teamCmp2).toBe(teamCmp);
-        expect(simpleCmp2).toBe(simpleCmp);
+      router.navigateByUrl('/a;p=1/b;p=2');
+      advance(fixture);
+      // We retrieve both the stored route snapshots
+      expect(router.routeReuseStrategy.retrieve).toHaveBeenCalledTimes(4);
+      const teamCmp2 = fixture.debugElement.children[1].componentInstance;
+      const simpleCmp2 = fixture.debugElement.children[1].children[1].componentInstance;
+      expect(location.path()).toEqual('/a;p=1/b;p=2');
+      expect(teamCmp2).toBe(teamCmp);
+      expect(simpleCmp2).toBe(simpleCmp);
 
-        expect(teamCmp.route).toBe(router.routerState.root.firstChild);
-        expect(teamCmp.route.snapshot).toBe(router.routerState.snapshot.root.firstChild);
-        expect(teamCmp.route.snapshot.params).toEqual({p: '1'});
-        expect(teamCmp.route.firstChild.snapshot.params).toEqual({p: '2'});
-        expect(teamCmp.recordedParams).toEqual([{}, {p: '1'}]);
-      }),
-    ));
+      expect(teamCmp.route).toBe(router.routerState.root.firstChild);
+      expect(teamCmp.route.snapshot).toBe(router.routerState.snapshot.root.firstChild);
+      expect(teamCmp.route.snapshot.params).toEqual({p: '1'});
+      expect(teamCmp.route.firstChild.snapshot.params).toEqual({p: '2'});
+      expect(teamCmp.recordedParams).toEqual([{}, {p: '1'}]);
+    }));
 
-    it('should support shorter lifecycles', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = createRoot(router, RootCmp);
-        router.routeReuseStrategy = new ShortLifecycle();
+    it('should support shorter lifecycles', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      const fixture = createRoot(router, RootCmp);
+      router.routeReuseStrategy = new ShortLifecycle();
 
-        router.resetConfig([{path: 'a', component: SimpleCmp}]);
+      router.resetConfig([{path: 'a', component: SimpleCmp}]);
 
-        router.navigateByUrl('/a');
-        advance(fixture);
-        const simpleCmp1 = fixture.debugElement.children[1].componentInstance;
-        expect(location.path()).toEqual('/a');
+      router.navigateByUrl('/a');
+      advance(fixture);
+      const simpleCmp1 = fixture.debugElement.children[1].componentInstance;
+      expect(location.path()).toEqual('/a');
 
-        router.navigateByUrl('/a;p=1');
-        advance(fixture);
-        expect(location.path()).toEqual('/a;p=1');
-        const simpleCmp2 = fixture.debugElement.children[1].componentInstance;
-        expect(simpleCmp1).not.toBe(simpleCmp2);
-      }),
-    ));
+      router.navigateByUrl('/a;p=1');
+      advance(fixture);
+      expect(location.path()).toEqual('/a;p=1');
+      const simpleCmp2 = fixture.debugElement.children[1].componentInstance;
+      expect(simpleCmp1).not.toBe(simpleCmp2);
+    }));
 
     it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation', fakeAsync(() => {
       @Component({

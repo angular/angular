@@ -7,7 +7,7 @@
  */
 import {Component, NgZone} from '@angular/core';
 import {Location} from '@angular/common';
-import {fakeAsync, TestBed, inject} from '@angular/core/testing';
+import {fakeAsync, TestBed} from '@angular/core/testing';
 import {Router, provideRouter} from '../../src';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {
@@ -24,44 +24,44 @@ import {
 
 export function routerLinkActiveIntegrationSuite() {
   describe('routerLinkActive', () => {
-    it('should set the class when the link is active (a tag)', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = createRoot(router, RootCmp);
+    it('should set the class when the link is active (a tag)', fakeAsync(() => {
+      const router: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
+      const fixture = createRoot(router, RootCmp);
 
-        router.resetConfig([
-          {
-            path: 'team/:id',
-            component: TeamCmp,
-            children: [
-              {
-                path: 'link',
-                component: DummyLinkCmp,
-                children: [
-                  {path: 'simple', component: SimpleCmp},
-                  {path: '', component: BlankCmp},
-                ],
-              },
-            ],
-          },
-        ]);
+      router.resetConfig([
+        {
+          path: 'team/:id',
+          component: TeamCmp,
+          children: [
+            {
+              path: 'link',
+              component: DummyLinkCmp,
+              children: [
+                {path: 'simple', component: SimpleCmp},
+                {path: '', component: BlankCmp},
+              ],
+            },
+          ],
+        },
+      ]);
 
-        router.navigateByUrl('/team/22/link;exact=true');
-        advance(fixture);
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link;exact=true');
+      router.navigateByUrl('/team/22/link;exact=true');
+      advance(fixture);
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link;exact=true');
 
-        const nativeLink = fixture.nativeElement.querySelector('a');
-        const nativeButton = fixture.nativeElement.querySelector('button');
-        expect(nativeLink.className).toEqual('active');
-        expect(nativeButton.className).toEqual('active');
+      const nativeLink = fixture.nativeElement.querySelector('a');
+      const nativeButton = fixture.nativeElement.querySelector('button');
+      expect(nativeLink.className).toEqual('active');
+      expect(nativeButton.className).toEqual('active');
 
-        router.navigateByUrl('/team/22/link/simple');
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link/simple');
-        expect(nativeLink.className).toEqual('');
-        expect(nativeButton.className).toEqual('');
-      }),
-    ));
+      router.navigateByUrl('/team/22/link/simple');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link/simple');
+      expect(nativeLink.className).toEqual('');
+      expect(nativeButton.className).toEqual('');
+    }));
 
     it('should not set the class until the first navigation succeeds', fakeAsync(() => {
       @Component({
@@ -86,77 +86,77 @@ export function routerLinkActiveIntegrationSuite() {
       expect(link.className).toEqual('active');
     }));
 
-    it('should set the class on a parent element when the link is active', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = createRoot(router, RootCmp);
+    it('should set the class on a parent element when the link is active', fakeAsync(() => {
+      const router: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
+      const fixture = createRoot(router, RootCmp);
 
-        router.resetConfig([
-          {
-            path: 'team/:id',
-            component: TeamCmp,
-            children: [
-              {
-                path: 'link',
-                component: DummyLinkWithParentCmp,
-                children: [
-                  {path: 'simple', component: SimpleCmp},
-                  {path: '', component: BlankCmp},
-                ],
-              },
-            ],
-          },
-        ]);
+      router.resetConfig([
+        {
+          path: 'team/:id',
+          component: TeamCmp,
+          children: [
+            {
+              path: 'link',
+              component: DummyLinkWithParentCmp,
+              children: [
+                {path: 'simple', component: SimpleCmp},
+                {path: '', component: BlankCmp},
+              ],
+            },
+          ],
+        },
+      ]);
 
-        router.navigateByUrl('/team/22/link;exact=true');
-        advance(fixture);
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link;exact=true');
+      router.navigateByUrl('/team/22/link;exact=true');
+      advance(fixture);
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link;exact=true');
 
-        const native = fixture.nativeElement.querySelector('#link-parent');
-        expect(native.className).toEqual('active');
+      const native = fixture.nativeElement.querySelector('#link-parent');
+      expect(native.className).toEqual('active');
 
-        router.navigateByUrl('/team/22/link/simple');
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link/simple');
-        expect(native.className).toEqual('');
-      }),
-    ));
+      router.navigateByUrl('/team/22/link/simple');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link/simple');
+      expect(native.className).toEqual('');
+    }));
 
-    it('should set the class when the link is active', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = createRoot(router, RootCmp);
+    it('should set the class when the link is active', fakeAsync(() => {
+      const router: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
+      const fixture = createRoot(router, RootCmp);
 
-        router.resetConfig([
-          {
-            path: 'team/:id',
-            component: TeamCmp,
-            children: [
-              {
-                path: 'link',
-                component: DummyLinkCmp,
-                children: [
-                  {path: 'simple', component: SimpleCmp},
-                  {path: '', component: BlankCmp},
-                ],
-              },
-            ],
-          },
-        ]);
+      router.resetConfig([
+        {
+          path: 'team/:id',
+          component: TeamCmp,
+          children: [
+            {
+              path: 'link',
+              component: DummyLinkCmp,
+              children: [
+                {path: 'simple', component: SimpleCmp},
+                {path: '', component: BlankCmp},
+              ],
+            },
+          ],
+        },
+      ]);
 
-        router.navigateByUrl('/team/22/link');
-        advance(fixture);
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link');
+      router.navigateByUrl('/team/22/link');
+      advance(fixture);
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link');
 
-        const native = fixture.nativeElement.querySelector('a');
-        expect(native.className).toEqual('active');
+      const native = fixture.nativeElement.querySelector('a');
+      expect(native.className).toEqual('active');
 
-        router.navigateByUrl('/team/22/link/simple');
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link/simple');
-        expect(native.className).toEqual('active');
-      }),
-    ));
+      router.navigateByUrl('/team/22/link/simple');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link/simple');
+      expect(native.className).toEqual('active');
+    }));
 
     it('should expose an isActive property', fakeAsync(() => {
       @Component({
@@ -224,87 +224,87 @@ export function routerLinkActiveIntegrationSuite() {
       expect(TestBed.inject(NgZone).hasPendingMicrotasks).toBe(false);
     }));
 
-    it('should emit on isActiveChange output when link is activated or inactivated', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = createRoot(router, RootCmp);
+    it('should emit on isActiveChange output when link is activated or inactivated', fakeAsync(() => {
+      const router: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
+      const fixture = createRoot(router, RootCmp);
 
-        router.resetConfig([
-          {
-            path: 'team/:id',
-            component: TeamCmp,
-            children: [
-              {
-                path: 'link',
-                component: DummyLinkCmp,
-                children: [
-                  {path: 'simple', component: SimpleCmp},
-                  {path: '', component: BlankCmp},
-                ],
-              },
-            ],
-          },
-        ]);
+      router.resetConfig([
+        {
+          path: 'team/:id',
+          component: TeamCmp,
+          children: [
+            {
+              path: 'link',
+              component: DummyLinkCmp,
+              children: [
+                {path: 'simple', component: SimpleCmp},
+                {path: '', component: BlankCmp},
+              ],
+            },
+          ],
+        },
+      ]);
 
-        router.navigateByUrl('/team/22/link;exact=true');
-        advance(fixture);
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link;exact=true');
+      router.navigateByUrl('/team/22/link;exact=true');
+      advance(fixture);
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link;exact=true');
 
-        const linkComponent = fixture.debugElement.query(By.directive(DummyLinkCmp))
-          .componentInstance as DummyLinkCmp;
+      const linkComponent = fixture.debugElement.query(By.directive(DummyLinkCmp))
+        .componentInstance as DummyLinkCmp;
 
-        expect(linkComponent.isLinkActivated).toEqual(true);
-        const nativeLink = fixture.nativeElement.querySelector('a');
-        const nativeButton = fixture.nativeElement.querySelector('button');
-        expect(nativeLink.className).toEqual('active');
-        expect(nativeButton.className).toEqual('active');
+      expect(linkComponent.isLinkActivated).toEqual(true);
+      const nativeLink = fixture.nativeElement.querySelector('a');
+      const nativeButton = fixture.nativeElement.querySelector('button');
+      expect(nativeLink.className).toEqual('active');
+      expect(nativeButton.className).toEqual('active');
 
-        router.navigateByUrl('/team/22/link/simple');
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link/simple');
-        expect(linkComponent.isLinkActivated).toEqual(false);
-        expect(nativeLink.className).toEqual('');
-        expect(nativeButton.className).toEqual('');
-      }),
-    ));
+      router.navigateByUrl('/team/22/link/simple');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link/simple');
+      expect(linkComponent.isLinkActivated).toEqual(false);
+      expect(nativeLink.className).toEqual('');
+      expect(nativeButton.className).toEqual('');
+    }));
 
-    it('should set a provided aria-current attribute when the link is active (a tag)', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        const fixture = createRoot(router, RootCmp);
+    it('should set a provided aria-current attribute when the link is active (a tag)', fakeAsync(() => {
+      const router: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
+      const fixture = createRoot(router, RootCmp);
 
-        router.resetConfig([
-          {
-            path: 'team/:id',
-            component: TeamCmp,
-            children: [
-              {
-                path: 'link',
-                component: DummyLinkCmp,
-                children: [
-                  {path: 'simple', component: SimpleCmp},
-                  {path: '', component: BlankCmp},
-                ],
-              },
-            ],
-          },
-        ]);
+      router.resetConfig([
+        {
+          path: 'team/:id',
+          component: TeamCmp,
+          children: [
+            {
+              path: 'link',
+              component: DummyLinkCmp,
+              children: [
+                {path: 'simple', component: SimpleCmp},
+                {path: '', component: BlankCmp},
+              ],
+            },
+          ],
+        },
+      ]);
 
-        router.navigateByUrl('/team/22/link;exact=true');
-        advance(fixture);
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link;exact=true');
+      router.navigateByUrl('/team/22/link;exact=true');
+      advance(fixture);
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link;exact=true');
 
-        const nativeLink = fixture.nativeElement.querySelector('a');
-        const nativeButton = fixture.nativeElement.querySelector('button');
-        expect(nativeLink.getAttribute('aria-current')).toEqual('page');
-        expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
+      const nativeLink = fixture.nativeElement.querySelector('a');
+      const nativeButton = fixture.nativeElement.querySelector('button');
+      expect(nativeLink.getAttribute('aria-current')).toEqual('page');
+      expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
 
-        router.navigateByUrl('/team/22/link/simple');
-        advance(fixture);
-        expect(location.path()).toEqual('/team/22/link/simple');
-        expect(nativeLink.hasAttribute('aria-current')).toEqual(false);
-        expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
-      }),
-    ));
+      router.navigateByUrl('/team/22/link/simple');
+      advance(fixture);
+      expect(location.path()).toEqual('/team/22/link/simple');
+      expect(nativeLink.hasAttribute('aria-current')).toEqual(false);
+      expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
+    }));
   });
 }
