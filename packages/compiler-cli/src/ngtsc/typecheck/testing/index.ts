@@ -97,6 +97,7 @@ import {TypeCheckShimGenerator} from '../src/shim';
 import {TcbGenericContextBehavior} from '../src/type_check_block';
 import {TypeCheckFile} from '../src/type_check_file';
 import {sfExtensionData} from '../../shims';
+import {PackageMetadataCollector} from '../../metadata/src/package_metadata_collector';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -694,6 +695,13 @@ export function setup(
     new CompoundMetadataReader([fakeMetadataReader]),
     new HostDirectivesResolver(fakeMetadataReader),
   );
+  const packageMetadataCollector = new PackageMetadataCollector(
+    fakeMetadataReader,
+    reflectionHost,
+    moduleResolver,
+    program,
+    host,
+  );
 
   const templateTypeChecker = new TemplateTypeCheckerImpl(
     program,
@@ -710,6 +718,7 @@ export function setup(
     fakeScopeReader,
     typeCheckScopeRegistry,
     NOOP_PERF_RECORDER,
+    packageMetadataCollector,
   );
   return {templateTypeChecker, program, programStrategy};
 }
