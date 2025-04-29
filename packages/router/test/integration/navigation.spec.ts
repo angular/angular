@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject as coreInject, NgModule} from '@angular/core';
+import {Component, inject, NgModule} from '@angular/core';
 import {Location} from '@angular/common';
-import {fakeAsync, TestBed, tick, inject} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
   Event,
   provideRouter,
@@ -135,7 +135,7 @@ export function navigationIntegrationTestSuite() {
           component: SimpleCmp,
           canActivate: [
             () => {
-              observedInfo = coreInject(Router).getCurrentNavigation()?.extras?.info;
+              observedInfo = inject(Router).getCurrentNavigation()?.extras?.info;
               return true;
             },
           ],
@@ -155,7 +155,7 @@ export function navigationIntegrationTestSuite() {
           component: SimpleCmp,
           canActivate: [
             () => {
-              observedInfo = coreInject(Router).getCurrentNavigation()?.extras?.info;
+              observedInfo = inject(Router).getCurrentNavigation()?.extras?.info;
               return true;
             },
           ],
@@ -185,14 +185,14 @@ export function navigationIntegrationTestSuite() {
         {
           path: 'redirect',
           component: SimpleCmp,
-          canActivate: [() => coreInject(Router).parseUrl('/simple')],
+          canActivate: [() => inject(Router).parseUrl('/simple')],
         },
         {
           path: 'simple',
           component: SimpleCmp,
           canActivate: [
             () => {
-              observedInfo = coreInject(Router).getCurrentNavigation()?.extras?.info;
+              observedInfo = inject(Router).getCurrentNavigation()?.extras?.info;
               return true;
             },
           ],
@@ -204,249 +204,247 @@ export function navigationIntegrationTestSuite() {
       expect(router.url).toEqual('/simple');
     });
 
-    it('should ignore empty paths in relative links', fakeAsync(
-      inject([Router], (router: Router) => {
-        router.resetConfig([
-          {
-            path: 'foo',
-            children: [{path: 'bar', children: [{path: '', component: RelativeLinkCmp}]}],
-          },
-        ]);
+    it('should ignore empty paths in relative links', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      router.resetConfig([
+        {
+          path: 'foo',
+          children: [{path: 'bar', children: [{path: '', component: RelativeLinkCmp}]}],
+        },
+      ]);
 
-        const fixture = createRoot(router, RootCmp);
+      const fixture = createRoot(router, RootCmp);
 
-        router.navigateByUrl('/foo/bar');
-        advance(fixture);
+      router.navigateByUrl('/foo/bar');
+      advance(fixture);
 
-        const link = fixture.nativeElement.querySelector('a');
-        expect(link.getAttribute('href')).toEqual('/foo/simple');
-      }),
-    ));
+      const link = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('href')).toEqual('/foo/simple');
+    }));
 
-    it('should set the restoredState to null when executing imperative navigations', fakeAsync(
-      inject([Router], (router: Router) => {
-        router.resetConfig([
-          {path: '', component: SimpleCmp},
-          {path: 'simple', component: SimpleCmp},
-        ]);
+    it('should set the restoredState to null when executing imperative navigations', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'simple', component: SimpleCmp},
+      ]);
 
-        const fixture = createRoot(router, RootCmp);
-        let event: NavigationStart;
-        router.events.subscribe((e) => {
-          if (e instanceof NavigationStart) {
-            event = e;
-          }
-        });
+      const fixture = createRoot(router, RootCmp);
+      let event: NavigationStart;
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationStart) {
+          event = e;
+        }
+      });
 
-        router.navigateByUrl('/simple');
-        tick();
+      router.navigateByUrl('/simple');
+      tick();
 
-        expect(event!.navigationTrigger).toEqual('imperative');
-        expect(event!.restoredState).toEqual(null);
-      }),
-    ));
+      expect(event!.navigationTrigger).toEqual('imperative');
+      expect(event!.restoredState).toEqual(null);
+    }));
 
-    it('should set history.state if passed using imperative navigation', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        router.resetConfig([
-          {path: '', component: SimpleCmp},
-          {path: 'simple', component: SimpleCmp},
-        ]);
+    it('should set history.state if passed using imperative navigation', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'simple', component: SimpleCmp},
+      ]);
 
-        const fixture = createRoot(router, RootCmp);
-        let navigation: Navigation = null!;
-        router.events.subscribe((e) => {
-          if (e instanceof NavigationStart) {
-            navigation = router.getCurrentNavigation()!;
-          }
-        });
+      const fixture = createRoot(router, RootCmp);
+      let navigation: Navigation = null!;
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationStart) {
+          navigation = router.getCurrentNavigation()!;
+        }
+      });
 
-        router.navigateByUrl('/simple', {state: {foo: 'bar'}});
-        tick();
+      router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+      tick();
 
-        const state = location.getState() as any;
-        expect(state.foo).toBe('bar');
-        expect(state).toEqual({foo: 'bar', navigationId: 2});
-        expect(navigation.extras.state).toBeDefined();
-        expect(navigation.extras.state).toEqual({foo: 'bar'});
-      }),
-    ));
+      const state = location.getState() as any;
+      expect(state.foo).toBe('bar');
+      expect(state).toEqual({foo: 'bar', navigationId: 2});
+      expect(navigation.extras.state).toBeDefined();
+      expect(navigation.extras.state).toEqual({foo: 'bar'});
+    }));
 
-    it('should set history.state when navigation with browser back and forward', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        router.resetConfig([
-          {path: '', component: SimpleCmp},
-          {path: 'simple', component: SimpleCmp},
-        ]);
+    it('should set history.state when navigation with browser back and forward', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'simple', component: SimpleCmp},
+      ]);
 
-        const fixture = createRoot(router, RootCmp);
-        let navigation: Navigation = null!;
-        router.events.subscribe((e) => {
-          if (e instanceof NavigationStart) {
-            navigation = <Navigation>router.getCurrentNavigation()!;
-          }
-        });
+      const fixture = createRoot(router, RootCmp);
+      let navigation: Navigation = null!;
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationStart) {
+          navigation = <Navigation>router.getCurrentNavigation()!;
+        }
+      });
 
-        let state: Record<string, string> = {foo: 'bar'};
-        router.navigateByUrl('/simple', {state});
-        tick();
-        location.back();
-        tick();
-        location.forward();
-        tick();
+      let state: Record<string, string> = {foo: 'bar'};
+      router.navigateByUrl('/simple', {state});
+      tick();
+      location.back();
+      tick();
+      location.forward();
+      tick();
 
-        expect(navigation.extras.state).toBeDefined();
-        expect(navigation.extras.state).toEqual(state);
+      expect(navigation.extras.state).toBeDefined();
+      expect(navigation.extras.state).toEqual(state);
 
-        // Manually set state rather than using navigate()
-        state = {bar: 'foo'};
-        location.replaceState(location.path(), '', state);
-        location.back();
-        tick();
-        location.forward();
-        tick();
+      // Manually set state rather than using navigate()
+      state = {bar: 'foo'};
+      location.replaceState(location.path(), '', state);
+      location.back();
+      tick();
+      location.forward();
+      tick();
 
-        expect(navigation.extras.state).toBeDefined();
-        expect(navigation.extras.state).toEqual(state);
-      }),
-    ));
+      expect(navigation.extras.state).toBeDefined();
+      expect(navigation.extras.state).toEqual(state);
+    }));
 
-    it('should navigate correctly when using `Location#historyGo', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        router.resetConfig([
-          {path: 'first', component: SimpleCmp},
-          {path: 'second', component: SimpleCmp},
-        ]);
+    it('should navigate correctly when using `Location#historyGo', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      router.resetConfig([
+        {path: 'first', component: SimpleCmp},
+        {path: 'second', component: SimpleCmp},
+      ]);
 
-        createRoot(router, RootCmp);
+      createRoot(router, RootCmp);
 
-        router.navigateByUrl('/first');
-        tick();
-        router.navigateByUrl('/second');
-        tick();
-        expect(router.url).toEqual('/second');
+      router.navigateByUrl('/first');
+      tick();
+      router.navigateByUrl('/second');
+      tick();
+      expect(router.url).toEqual('/second');
 
-        location.historyGo(-1);
-        tick();
-        expect(router.url).toEqual('/first');
+      location.historyGo(-1);
+      tick();
+      expect(router.url).toEqual('/first');
 
-        location.historyGo(1);
-        tick();
-        expect(router.url).toEqual('/second');
+      location.historyGo(1);
+      tick();
+      expect(router.url).toEqual('/second');
 
-        location.historyGo(-100);
-        tick();
-        expect(router.url).toEqual('/second');
+      location.historyGo(-100);
+      tick();
+      expect(router.url).toEqual('/second');
 
-        location.historyGo(100);
-        tick();
-        expect(router.url).toEqual('/second');
+      location.historyGo(100);
+      tick();
+      expect(router.url).toEqual('/second');
 
-        location.historyGo(0);
-        tick();
-        expect(router.url).toEqual('/second');
+      location.historyGo(0);
+      tick();
+      expect(router.url).toEqual('/second');
 
-        location.historyGo();
-        tick();
-        expect(router.url).toEqual('/second');
-      }),
-    ));
+      location.historyGo();
+      tick();
+      expect(router.url).toEqual('/second');
+    }));
 
-    it('should not error if state is not {[key: string]: any}', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        router.resetConfig([
-          {path: '', component: SimpleCmp},
-          {path: 'simple', component: SimpleCmp},
-        ]);
+    it('should not error if state is not {[key: string]: any}', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'simple', component: SimpleCmp},
+      ]);
 
-        const fixture = createRoot(router, RootCmp);
-        let navigation: Navigation = null!;
-        router.events.subscribe((e) => {
-          if (e instanceof NavigationStart) {
-            navigation = <Navigation>router.getCurrentNavigation()!;
-          }
-        });
+      const fixture = createRoot(router, RootCmp);
+      let navigation: Navigation = null!;
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationStart) {
+          navigation = <Navigation>router.getCurrentNavigation()!;
+        }
+      });
 
-        location.replaceState('', '', 42);
-        router.navigateByUrl('/simple');
-        tick();
-        location.back();
-        advance(fixture);
+      location.replaceState('', '', 42);
+      router.navigateByUrl('/simple');
+      tick();
+      location.back();
+      advance(fixture);
 
-        // Angular does not support restoring state to the primitive.
-        expect(navigation.extras.state).toEqual(undefined);
-        expect(location.getState()).toEqual({navigationId: 3});
-      }),
-    ));
+      // Angular does not support restoring state to the primitive.
+      expect(navigation.extras.state).toEqual(undefined);
+      expect(location.getState()).toEqual({navigationId: 3});
+    }));
 
-    it('should not pollute browser history when replaceUrl is set to true', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        router.resetConfig([
-          {path: '', component: SimpleCmp},
-          {path: 'a', component: SimpleCmp},
-          {path: 'b', component: SimpleCmp},
-        ]);
+    it('should not pollute browser history when replaceUrl is set to true', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'a', component: SimpleCmp},
+        {path: 'b', component: SimpleCmp},
+      ]);
 
-        createRoot(router, RootCmp);
+      createRoot(router, RootCmp);
 
-        const replaceSpy = spyOn(location, 'replaceState');
-        router.navigateByUrl('/a', {replaceUrl: true});
-        router.navigateByUrl('/b', {replaceUrl: true});
-        tick();
+      const replaceSpy = spyOn(location, 'replaceState');
+      router.navigateByUrl('/a', {replaceUrl: true});
+      router.navigateByUrl('/b', {replaceUrl: true});
+      tick();
 
-        expect(replaceSpy.calls.count()).toEqual(1);
-      }),
-    ));
+      expect(replaceSpy.calls.count()).toEqual(1);
+    }));
 
-    it('should skip navigation if another navigation is already scheduled', fakeAsync(
-      inject([Router, Location], (router: Router, location: Location) => {
-        router.resetConfig([
-          {path: '', component: SimpleCmp},
-          {path: 'a', component: SimpleCmp},
-          {path: 'b', component: SimpleCmp},
-        ]);
+    it('should skip navigation if another navigation is already scheduled', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      router.resetConfig([
+        {path: '', component: SimpleCmp},
+        {path: 'a', component: SimpleCmp},
+        {path: 'b', component: SimpleCmp},
+      ]);
 
-        const fixture = createRoot(router, RootCmp);
+      const fixture = createRoot(router, RootCmp);
 
-        router.navigate(['/a'], {
-          queryParams: {a: true},
-          queryParamsHandling: 'merge',
-          replaceUrl: true,
-        });
-        router.navigate(['/b'], {
-          queryParams: {b: true},
-          queryParamsHandling: 'merge',
-          replaceUrl: true,
-        });
-        tick();
+      router.navigate(['/a'], {
+        queryParams: {a: true},
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+      router.navigate(['/b'], {
+        queryParams: {b: true},
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+      tick();
 
-        /**
-         * Why do we have '/b?b=true' and not '/b?a=true&b=true'?
-         *
-         * This is because the router has the right to stop a navigation mid-flight if another
-         * navigation has been already scheduled. This is why we can use a top-level guard
-         * to perform redirects. Calling `navigate` in such a guard will stop the navigation, and
-         * the components won't be instantiated.
-         *
-         * This is a fundamental property of the router: it only cares about its latest state.
-         *
-         * This means that components should only map params to something else, not reduce them.
-         * In other words, the following component is asking for trouble:
-         *
-         * ```
-         * class MyComponent {
-         *  constructor(a: ActivatedRoute) {
-         *    a.params.scan(...)
-         *  }
-         * }
-         * ```
-         *
-         * This also means "queryParamsHandling: 'merge'" should only be used to merge with
-         * long-living query parameters (e.g., debug).
-         */
-        expect(router.url).toEqual('/b?b=true');
-      }),
-    ));
+      /**
+       * Why do we have '/b?b=true' and not '/b?a=true&b=true'?
+       *
+       * This is because the router has the right to stop a navigation mid-flight if another
+       * navigation has been already scheduled. This is why we can use a top-level guard
+       * to perform redirects. Calling `navigate` in such a guard will stop the navigation, and
+       * the components won't be instantiated.
+       *
+       * This is a fundamental property of the router: it only cares about its latest state.
+       *
+       * This means that components should only map params to something else, not reduce them.
+       * In other words, the following component is asking for trouble:
+       *
+       * ```
+       * class MyComponent {
+       *  constructor(a: ActivatedRoute) {
+       *    a.params.scan(...)
+       *  }
+       * }
+       * ```
+       *
+       * This also means "queryParamsHandling: 'merge'" should only be used to merge with
+       * long-living query parameters (e.g., debug).
+       */
+      expect(router.url).toEqual('/b?b=true');
+    }));
   });
 
   describe('should execute navigations serially', () => {
@@ -661,55 +659,55 @@ export function navigationIntegrationTestSuite() {
       }));
     });
 
-    it('should not wait for prior navigations to start a new navigation', fakeAsync(
-      inject([Router, Location], (router: Router) => {
-        const fixture = createRoot(router, RootCmp);
-        const trueRightAway = () => {
-          log.push('trueRightAway');
-          return true;
-        };
-        const trueIn2Seconds = () => {
-          log.push('trueIn2Seconds-start');
-          return new Promise<boolean>((res) => {
-            setTimeout(() => {
-              log.push('trueIn2Seconds-end');
-              res(true);
-            }, 2000);
-          });
-        };
-        router.resetConfig([
-          {path: 'a', component: SimpleCmp, canActivate: [trueRightAway, trueIn2Seconds]},
-          {path: 'b', component: SimpleCmp, canActivate: [trueRightAway, trueIn2Seconds]},
-        ]);
+    it('should not wait for prior navigations to start a new navigation', fakeAsync(() => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      const fixture = createRoot(router, RootCmp);
+      const trueRightAway = () => {
+        log.push('trueRightAway');
+        return true;
+      };
+      const trueIn2Seconds = () => {
+        log.push('trueIn2Seconds-start');
+        return new Promise<boolean>((res) => {
+          setTimeout(() => {
+            log.push('trueIn2Seconds-end');
+            res(true);
+          }, 2000);
+        });
+      };
+      router.resetConfig([
+        {path: 'a', component: SimpleCmp, canActivate: [trueRightAway, trueIn2Seconds]},
+        {path: 'b', component: SimpleCmp, canActivate: [trueRightAway, trueIn2Seconds]},
+      ]);
 
-        router.navigateByUrl('/a');
-        tick(100);
-        fixture.detectChanges();
+      router.navigateByUrl('/a');
+      tick(100);
+      fixture.detectChanges();
 
-        router.navigateByUrl('/b');
-        tick(100); // 200
-        fixture.detectChanges();
+      router.navigateByUrl('/b');
+      tick(100); // 200
+      fixture.detectChanges();
 
-        expect(log).toEqual([
-          'trueRightAway',
-          'trueIn2Seconds-start',
-          'trueRightAway',
-          'trueIn2Seconds-start',
-        ]);
+      expect(log).toEqual([
+        'trueRightAway',
+        'trueIn2Seconds-start',
+        'trueRightAway',
+        'trueIn2Seconds-start',
+      ]);
 
-        tick(2000); // 2200
-        fixture.detectChanges();
+      tick(2000); // 2200
+      fixture.detectChanges();
 
-        expect(log).toEqual([
-          'trueRightAway',
-          'trueIn2Seconds-start',
-          'trueRightAway',
-          'trueIn2Seconds-start',
-          'trueIn2Seconds-end',
-          'trueIn2Seconds-end',
-        ]);
-      }),
-    ));
+      expect(log).toEqual([
+        'trueRightAway',
+        'trueIn2Seconds-start',
+        'trueRightAway',
+        'trueIn2Seconds-start',
+        'trueIn2Seconds-end',
+        'trueIn2Seconds-end',
+      ]);
+    }));
   });
 
   describe('abort an ongoing navigation', () => {
@@ -747,7 +745,7 @@ export function navigationIntegrationTestSuite() {
       @Component({template: ''})
       class Aborting {
         constructor() {
-          coreInject(Router).getCurrentNavigation()!.abort();
+          inject(Router).getCurrentNavigation()!.abort();
         }
       }
       setup([{path: '**', component: Aborting}]);
@@ -799,7 +797,7 @@ export function navigationIntegrationTestSuite() {
           component: class {},
           canActivate: [
             () => {
-              coreInject(Router).getCurrentNavigation()!.abort();
+              inject(Router).getCurrentNavigation()!.abort();
               return false;
             },
           ],
@@ -821,7 +819,7 @@ export function navigationIntegrationTestSuite() {
           component: class {},
           canMatch: [
             () => {
-              coreInject(Router).getCurrentNavigation()!.abort();
+              inject(Router).getCurrentNavigation()!.abort();
               return false;
             },
           ],

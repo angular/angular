@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, inject as coreInject} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Location} from '@angular/common';
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {
   Router,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot,
   provideRouter,
   withRouterConfig,
   NavigationStart,
@@ -77,7 +75,7 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
         {
           path: 'blocked',
           component: BlankCmp,
-          canActivate: [() => coreInject(RedirectingGuard).canActivate()],
+          canActivate: [() => inject(RedirectingGuard).canActivate()],
         },
         {path: 'simple', component: SimpleCmp},
       ]);
@@ -106,7 +104,7 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
         {
           path: 'blocked',
           component: BlankCmp,
-          canActivate: [() => coreInject(RedirectingGuard).canActivate()],
+          canActivate: [() => inject(RedirectingGuard).canActivate()],
         },
         {path: 'simple', component: SimpleCmp},
       ]);
@@ -139,7 +137,7 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
         {
           path: 'blocked',
           component: BlankCmp,
-          canActivate: [() => coreInject(RedirectingGuard).canActivate()],
+          canActivate: [() => inject(RedirectingGuard).canActivate()],
         },
         {path: 'simple', redirectTo: '404'},
         {path: '404', component: SimpleCmp},

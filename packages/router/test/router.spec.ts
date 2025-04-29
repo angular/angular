@@ -7,8 +7,8 @@
  */
 
 import {Location} from '@angular/common';
-import {EnvironmentInjector, inject as coreInject} from '@angular/core';
-import {inject, TestBed} from '@angular/core/testing';
+import {EnvironmentInjector, inject} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {RouterModule} from '../index';
 import {of} from 'rxjs';
 
@@ -90,7 +90,9 @@ describe('Router', () => {
       TestBed.configureTestingModule({imports: [RouterModule.forRoot([])]});
     });
 
-    it('should be idempotent', inject([Router, Location], (r: Router, location: Location) => {
+    it('should be idempotent', () => {
+      const r: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
       r.setUpLocationChangeListener();
       const a = (<any>r).nonRouterCurrentEntryChangeSubscription;
       r.setUpLocationChangeListener();
@@ -103,7 +105,7 @@ describe('Router', () => {
       const c = (<any>r).nonRouterCurrentEntryChangeSubscription;
 
       expect(c).not.toBe(b);
-    }));
+    });
   });
 
   describe('PreActivation', () => {
@@ -113,7 +115,7 @@ describe('Router', () => {
 
     function createLoggerGuard(token: string, returnValue = true as boolean | UrlTree) {
       return () => {
-        coreInject(Logger).add(token);
+        inject(Logger).add(token);
         return returnValue;
       };
     }
@@ -151,11 +153,12 @@ describe('Router', () => {
       });
     });
 
-    beforeEach(inject([Logger], (_logger: Logger) => {
+    beforeEach(() => {
+      const _logger: Logger = TestBed.inject(Logger);
       empty = createEmptyStateSnapshot(null);
       logger = _logger;
       events = [];
-    }));
+    });
 
     describe('ChildActivation', () => {
       it('should run', () => {

@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {inject as coreInject, Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Location} from '@angular/common';
-import {fakeAsync, TestBed, tick, inject} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
   Router,
   NavigationStart,
@@ -47,43 +47,42 @@ import {
 } from './integration_helpers';
 
 export function navigationErrorsIntegrationSuite() {
-  it('should handle failed navigations gracefully', fakeAsync(
-    inject([Router], (router: Router) => {
-      const fixture = createRoot(router, RootCmp);
+  it('should handle failed navigations gracefully', fakeAsync(() => {
+    const router = TestBed.inject(Router);
+    const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+    router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
-      const recordedEvents: Event[] = [];
-      router.events.forEach((e) => recordedEvents.push(e));
+    const recordedEvents: Event[] = [];
+    router.events.forEach((e) => recordedEvents.push(e));
 
-      let e: any;
-      router.navigateByUrl('/invalid').catch((_) => (e = _));
-      advance(fixture);
-      expect(e.message).toContain('Cannot match any routes');
+    let e: any;
+    router.navigateByUrl('/invalid').catch((_) => (e = _));
+    advance(fixture);
+    expect(e.message).toContain('Cannot match any routes');
 
-      router.navigateByUrl('/user/fedor');
-      advance(fixture);
+    router.navigateByUrl('/user/fedor');
+    advance(fixture);
 
-      expect(fixture.nativeElement).toHaveText('user fedor');
+    expect(fixture.nativeElement).toHaveText('user fedor');
 
-      expectEvents(recordedEvents, [
-        [NavigationStart, '/invalid'],
-        [NavigationError, '/invalid'],
+    expectEvents(recordedEvents, [
+      [NavigationStart, '/invalid'],
+      [NavigationError, '/invalid'],
 
-        [NavigationStart, '/user/fedor'],
-        [RoutesRecognized, '/user/fedor'],
-        [GuardsCheckStart, '/user/fedor'],
-        [ChildActivationStart],
-        [ActivationStart],
-        [GuardsCheckEnd, '/user/fedor'],
-        [ResolveStart, '/user/fedor'],
-        [ResolveEnd, '/user/fedor'],
-        [ActivationEnd],
-        [ChildActivationEnd],
-        [NavigationEnd, '/user/fedor'],
-      ]);
-    }),
-  ));
+      [NavigationStart, '/user/fedor'],
+      [RoutesRecognized, '/user/fedor'],
+      [GuardsCheckStart, '/user/fedor'],
+      [ChildActivationStart],
+      [ActivationStart],
+      [GuardsCheckEnd, '/user/fedor'],
+      [ResolveStart, '/user/fedor'],
+      [ResolveEnd, '/user/fedor'],
+      [ActivationEnd],
+      [ChildActivationEnd],
+      [NavigationEnd, '/user/fedor'],
+    ]);
+  }));
 
   it('should be able to provide an error handler with DI dependencies', async () => {
     @Injectable({providedIn: 'root'})
@@ -105,7 +104,7 @@ export function navigationErrorsIntegrationSuite() {
             },
           ],
           withRouterConfig({resolveNavigationPromiseOnError: true}),
-          withNavigationErrorHandler(() => (coreInject(Handler).handlerCalled = true)),
+          withNavigationErrorHandler(() => (inject(Handler).handlerCalled = true)),
         ),
       ],
     });
@@ -132,7 +131,7 @@ export function navigationErrorsIntegrationSuite() {
           ],
           {
             resolveNavigationPromiseOnError: true,
-            errorHandler: () => new RedirectCommand(coreInject(Router).parseUrl('/error')),
+            errorHandler: () => new RedirectCommand(inject(Router).parseUrl('/error')),
           },
         ),
       ],
@@ -171,9 +170,7 @@ export function navigationErrorsIntegrationSuite() {
             {path: 'error', component: BlankCmp},
           ],
           withRouterConfig({resolveNavigationPromiseOnError: true}),
-          withNavigationErrorHandler(
-            () => new RedirectCommand(coreInject(Router).parseUrl('/error')),
-          ),
+          withNavigationErrorHandler(() => new RedirectCommand(inject(Router).parseUrl('/error'))),
         ),
       ],
     });
@@ -226,7 +223,7 @@ export function navigationErrorsIntegrationSuite() {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
       });
-      const router: Router = TestBed.inject(Router);
+      const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
       const fixture = createRoot(router, RootCmp);
 
@@ -286,7 +283,7 @@ export function navigationErrorsIntegrationSuite() {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
       });
-      const router: Router = TestBed.inject(Router);
+      const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
       const fixture = createRoot(router, RootCmp);
 
@@ -352,7 +349,7 @@ export function navigationErrorsIntegrationSuite() {
   });
 
   it('should dispatch NavigationCancel after the url has been reset back', fakeAsync(() => {
-    const router: Router = TestBed.inject(Router);
+    const router = TestBed.inject(Router);
     const location = TestBed.inject(Location);
 
     const fixture = createRoot(router, RootCmp);
@@ -387,29 +384,28 @@ export function navigationErrorsIntegrationSuite() {
     expect(locationUrlBeforeEmittingError).toEqual('/simple');
   }));
 
-  it('should recover from malformed uri errors', fakeAsync(
-    inject([Router, Location], (router: Router, location: Location) => {
-      router.resetConfig([{path: 'simple', component: SimpleCmp}]);
-      const fixture = createRoot(router, RootCmp);
-      router.navigateByUrl('/invalid/url%with%percent');
-      advance(fixture);
-      expect(location.path()).toEqual('');
-    }),
-  ));
+  it('should recover from malformed uri errors', fakeAsync(() => {
+    const router = TestBed.inject(Router);
+    const location = TestBed.inject(Location);
+    router.resetConfig([{path: 'simple', component: SimpleCmp}]);
+    const fixture = createRoot(router, RootCmp);
+    router.navigateByUrl('/invalid/url%with%percent');
+    advance(fixture);
+    expect(location.path()).toEqual('');
+  }));
 
-  it('should not swallow errors', fakeAsync(
-    inject([Router], (router: Router) => {
-      const fixture = createRoot(router, RootCmp);
+  it('should not swallow errors', fakeAsync(() => {
+    const router = TestBed.inject(Router);
+    const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([{path: 'simple', component: SimpleCmp}]);
+    router.resetConfig([{path: 'simple', component: SimpleCmp}]);
 
-      router.navigateByUrl('/invalid');
-      expect(() => advance(fixture)).toThrow();
+    router.navigateByUrl('/invalid');
+    expect(() => advance(fixture)).toThrow();
 
-      router.navigateByUrl('/invalid2');
-      expect(() => advance(fixture)).toThrow();
-    }),
-  ));
+    router.navigateByUrl('/invalid2');
+    expect(() => advance(fixture)).toThrow();
+  }));
 
   it('should not swallow errors from browser state update', async () => {
     const routerEvents: Event[] = [];
@@ -431,15 +427,14 @@ export function navigationErrorsIntegrationSuite() {
     expect(routerEvents[routerEvents.length - 1]).toBeInstanceOf(NavigationError);
   });
 
-  it('should throw an error when one of the commands is null/undefined', fakeAsync(
-    inject([Router], (router: Router) => {
-      createRoot(router, RootCmp);
+  it('should throw an error when one of the commands is null/undefined', fakeAsync(() => {
+    const router = TestBed.inject(Router);
+    createRoot(router, RootCmp);
 
-      router.resetConfig([{path: 'query', component: EmptyQueryParamsCmp}]);
+    router.resetConfig([{path: 'query', component: EmptyQueryParamsCmp}]);
 
-      expect(() => router.navigate([undefined, 'query'])).toThrowError(
-        /The requested path contains undefined segment at index 0/,
-      );
-    }),
-  ));
+    expect(() => router.navigate([undefined, 'query'])).toThrowError(
+      /The requested path contains undefined segment at index 0/,
+    );
+  }));
 }
