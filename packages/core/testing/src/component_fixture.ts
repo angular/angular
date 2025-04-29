@@ -23,9 +23,9 @@ import {
   ɵgetDeferBlocks as getDeferBlocks,
   ɵNoopNgZone as NoopNgZone,
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
-  ɵPendingTasksInternal as PendingTasks,
   ɵEffectScheduler as EffectScheduler,
 } from '../../src/core';
+import {PendingTasksInternal} from '../../src/pending_tasks';
 import {Subscription} from 'rxjs';
 
 import {DeferBlockFixture} from './defer';
@@ -83,7 +83,7 @@ export class ComponentFixture<T> {
   /** @internal */
   protected readonly _appRef = inject(ApplicationRef);
   private readonly _testAppRef = this._appRef as unknown as TestAppRef;
-  private readonly pendingTasks = inject(PendingTasks);
+  private readonly pendingTasks = inject(PendingTasksInternal);
   private readonly appErrorHandler = inject(TestBedApplicationErrorHandler);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly scheduler = inject(ɵChangeDetectionScheduler);
