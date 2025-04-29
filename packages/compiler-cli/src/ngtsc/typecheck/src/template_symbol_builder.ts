@@ -902,48 +902,16 @@ function findMatchingDirective(
   originalSourceFile: ts.SourceFile,
   directiveDeclarationInTypeCheckSourceFile: ts.ClassDeclaration,
 ): ts.ClassDeclaration | null {
-  let sameDeclarationInOriginalFile: ts.ClassDeclaration | null = null;
-
-  const typecheckDirectiveDeclarationDepth = getDeclarationDepth(
-    directiveDeclarationInTypeCheckSourceFile,
-  );
-
   const className = directiveDeclarationInTypeCheckSourceFile.name?.text ?? '';
   // We build an index of the class declarations with the same name
   // To then compare the indexes to confirm we found the right class declaration
   const ogClasses = collectClassesWithName(originalSourceFile, className);
-  const typcheckClasses = collectClassesWithName(
+  const typecheckClasses = collectClassesWithName(
     directiveDeclarationInTypeCheckSourceFile.getSourceFile(),
     className,
   );
 
-  function visit(node: ts.Node): void {
-    if (
-      ts.isClassDeclaration(node) &&
-      node.name?.text === directiveDeclarationInTypeCheckSourceFile.name?.text &&
-      getDeclarationDepth(node) === typecheckDirectiveDeclarationDepth &&
-      ogClasses.indexOf(node) === typcheckClasses.indexOf(directiveDeclarationInTypeCheckSourceFile)
-    ) {
-      sameDeclarationInOriginalFile = node;
-      return;
-    }
-    ts.forEachChild(node, visit);
-  }
-  ts.forEachChild(originalSourceFile, visit);
-
-  return sameDeclarationInOriginalFile;
-}
-
-function getDeclarationDepth(decl: ts.Declaration): number {
-  let depth = 0;
-  let node: ts.Node | undefined = decl.parent;
-
-  while (node) {
-    depth++;
-    node = node.parent;
-  }
-
-  return depth;
+  return ogClasses[typecheckClasses.indexOf(directiveDeclarationInTypeCheckSourceFile)] ?? null;
 }
 
 /**
