@@ -94,11 +94,11 @@ In your IDE:
 1. Next, open  `first-app/src/app/app.ts`.
 1. In `app.ts`, in the `@Component` definition, replace the `template` line with this code to change the text in the app component.
 
-    <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[7,9]"/>
+    <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[6,8]"/>
 
 1. In `app.ts`, in the `App` class definition, replace the `title` line with this code to change the component title.
 
-    <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[12,14]"/>
+    <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[11,13]"/>
 
     Then, save the changes you made to `app.ts`.
 
