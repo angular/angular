@@ -45,7 +45,7 @@ export function routerLinkIntegrationSpec() {
 
       const teamCmp = fixture.debugElement.childNodes[1].componentInstance;
 
-      teamCmp.routerLink = ['/team/0'];
+      teamCmp.routerLink.set(['/team/0']);
       advance(fixture);
       const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
       anchor.click();
@@ -53,7 +53,7 @@ export function routerLinkIntegrationSpec() {
       expect(fixture.nativeElement).toHaveText('team 0 [ , right:  ]');
       expect(location.path()).toEqual('/team/22');
 
-      teamCmp.routerLink = ['/team/1'];
+      teamCmp.routerLink.set(['/team/1']);
       advance(fixture);
       const button = fixture.debugElement.query(By.css('button')).nativeElement;
       button.click();
@@ -330,7 +330,7 @@ export function routerLinkIntegrationSpec() {
       expect(fixture.nativeElement).toHaveText('');
       const cmp = fixture.componentInstance;
 
-      cmp.show = true;
+      cmp.show.set(true);
       advance(fixture);
 
       expect(fixture.nativeElement).toHaveText('link');

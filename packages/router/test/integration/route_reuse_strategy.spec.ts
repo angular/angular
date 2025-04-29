@@ -7,7 +7,7 @@
  */
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {CommonModule, Location} from '@angular/common';
-import {Component, OnDestroy, NgModule, InjectionToken, Inject} from '@angular/core';
+import {Component, OnDestroy, NgModule, InjectionToken, Inject, signal} from '@angular/core';
 import {TestBed, fakeAsync} from '@angular/core/testing';
 import {
   RouteReuseStrategy,
@@ -230,21 +230,18 @@ export function routeReuseIntegrationSuite() {
       @Component({
         selector: 'root-cmp',
         template:
-          '<div *ngIf="isToolpanelShowing"><router-outlet name="toolpanel"></router-outlet></div>',
+          '<div *ngIf="isToolpanelShowing()"><router-outlet name="toolpanel"></router-outlet></div>',
         standalone: false,
       })
       class RootCmpWithCondOutlet implements OnDestroy {
         private subscription: Subscription;
-        public isToolpanelShowing: boolean = false;
+        public isToolpanelShowing = signal(false);
 
         constructor(router: Router) {
           this.subscription = router.events
             .pipe(filter((event) => event instanceof NavigationEnd))
-            .subscribe(
-              () =>
-                (this.isToolpanelShowing = !!router.parseUrl(router.url).root.children[
-                  'toolpanel'
-                ]),
+            .subscribe(() =>
+              this.isToolpanelShowing.set(!!router.parseUrl(router.url).root.children['toolpanel']),
             );
         }
 
@@ -315,11 +312,11 @@ export function routeReuseIntegrationSuite() {
     it('should not remount a destroyed component', fakeAsync(() => {
       @Component({
         selector: 'root-cmp',
-        template: '<div *ngIf="showRouterOutlet"><router-outlet></router-outlet></div>',
+        template: '<div *ngIf="showRouterOutlet()"><router-outlet></router-outlet></div>',
         standalone: false,
       })
       class RootCmpWithCondOutlet {
-        public showRouterOutlet: boolean = true;
+        public showRouterOutlet = signal(true);
       }
 
       @NgModule({
@@ -355,12 +352,12 @@ export function routeReuseIntegrationSuite() {
       expect(fixture.debugElement.query(By.directive(SimpleCmp))).toBeTruthy();
 
       // Hide the router-outlet, SimpleCmp should be destroyed
-      fixture.componentInstance.showRouterOutlet = false;
+      fixture.componentInstance.showRouterOutlet.set(false);
       advance(fixture);
       expect(fixture.debugElement.query(By.directive(SimpleCmp))).toBeNull();
 
       // Show the router-outlet, SimpleCmp should be re-created
-      fixture.componentInstance.showRouterOutlet = true;
+      fixture.componentInstance.showRouterOutlet.set(true);
       advance(fixture);
       expect(fixture.debugElement.query(By.directive(SimpleCmp))).toBeTruthy();
     }));
