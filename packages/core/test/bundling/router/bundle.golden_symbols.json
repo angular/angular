@@ -361,6 +361,7 @@
   "createStyleElement",
   "createTView",
   "createTemplateRef",
+  "createTokenWithInjectionMarker",
   "createUrlTreeFromSegmentGroup",
   "deactivateRouteAndItsChildren",
   "decode",

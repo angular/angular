@@ -259,6 +259,7 @@
   "createStyleElement",
   "createTView",
   "createTimelineInstruction",
+  "createTokenWithInjectionMarker",
   "createTransitionInstruction",
   "dashCaseToCamelCase",
   "deepForEach",
