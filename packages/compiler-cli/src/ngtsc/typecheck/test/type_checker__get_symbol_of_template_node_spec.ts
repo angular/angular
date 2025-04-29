@@ -2268,6 +2268,51 @@ runInEachFileSystem(() => {
       expect(symbol.directives.length).toBe(1);
       expect(symbol.directives[0].selector).toBe('[foo]');
     });
+
+    it('find the directive when the class is nested in a function and has other pention candidates', () => {
+      // This test is more complex as we're testing the diagnostic against a component
+      // that can't be referenced because it's nested in a function.
+
+      const {compiler, sourceFile} = createNgCompilerForFile(`
+        import {Component, Directive} from '@angular/core';
+
+        if(true) {
+          @Directive({ selector: '[foo]' })
+          export class FooDir {}
+
+          export function foo() {
+            @Component({
+              imports: [FooDir],
+              template: '<div *foo></div>',
+            })
+            class MyCmp {}
+          } 
+        }
+
+        if(true) {
+          @Directive({ selector: '[foo]' })
+          export class FooDir {
+            /* we should not match this directive */
+          }
+        }
+      `);
+
+      const templateTypeChecker = compiler.getTemplateTypeChecker();
+
+      const myCmpClass = findNodeInFile(
+        sourceFile,
+        (node): node is ts.ClassDeclaration =>
+          ts.isClassDeclaration(node) && node.name?.text === 'MyCmp',
+      )!;
+
+      const nodes = templateTypeChecker.getTemplate(myCmpClass)!;
+      const symbol = templateTypeChecker.getSymbolOfNode(nodes[0], myCmpClass)!;
+      debugger;
+      assertTemplateSymbol(symbol);
+      expect(symbol.kind).toBe(SymbolKind.Template);
+      expect(symbol.directives.length).toBe(1);
+      expect(symbol.directives[0].selector).toBe('[foo]');
+    });
   });
 });
 
