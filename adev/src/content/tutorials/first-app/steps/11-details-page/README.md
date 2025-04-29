@@ -72,7 +72,7 @@ In this step, you will get the route parameter in the `DetailsComponent`. Curren
 1. In the browser, click on one of the housing location's "Learn More" links and confirm that the numeric value displayed on the page matches the `id` property for that location in the data.
 </docs-step>
 
-<docs-step title="Customize the `DetailComponent`">
+<docs-step title="Customize the `DetailsComponent`">
 Now that routing is working properly in the application this is a great time to update the template of the `DetailsComponent` to display the specific data represented by the housing location for the route parameter.
 
 To access the data you will add a call to the `HousingService`.

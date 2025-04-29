@@ -51,11 +51,11 @@ In the **Edit** pane of your IDE:
 
 1. Next update the `imports` property of the `@Component` metadata by adding `HousingLocationComponent` to the array.
 
-    <docs-code header="Add HousingLocationComponent to imports array in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.component.ts" visibleLines="[7]"/>
+    <docs-code header="Add HousingLocationComponent to imports array in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.component.ts" visibleLines="[6]"/>
 
 1. Now the component is ready for use in the template for the `HomeComponent`. Update the `template` property of the `@Component` metadata to include a reference to the `<app-housing-location>` tag.
 
-    <docs-code header="Add housing location to the component template in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.component.ts" visibleLines="[8,18]"/>
+    <docs-code header="Add housing location to the component template in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.component.ts" visibleLines="[7,17]"/>
 
 </docs-step>
 

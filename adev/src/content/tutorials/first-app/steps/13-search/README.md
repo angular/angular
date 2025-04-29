@@ -20,13 +20,13 @@ In this step, you'll update the `HomeComponent` class to store data in a new arr
 
 1. In `src/app/home/home.component.ts`, add new property to the class called `filteredLocationList`.
 
-   <docs-code header="Add the filtered results property" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[30]"/>
+   <docs-code header="Add the filtered results property" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[29]"/>
 
    The `filteredLocationList` hold the values that match the search criteria entered by the user.
 
 1. The `filteredLocationList` should contain the total set of housing locations values by default when the page loads. Update the `constructor` for the `HomeComponent` to set the value.
 
-<docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[31,34]"/>
+<docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[30,33]"/>
 
 </docs-step>
 
@@ -62,7 +62,7 @@ The template has been updated to bind the `filterResults` function to the `click
 
 1. Update the `HomeComponent` class to include the implementation of the `filterResults` function.
 
-   <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[35,44]"/>
+   <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[34,43]"/>
 
    This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
 
