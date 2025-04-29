@@ -213,7 +213,7 @@ In the example above, clicking the "Show" button results in the following output
 
 ## Passing parameters when rendering a template fragment
 
-When declaring a template fragment with `<ng-template>`, you can additionally declare parameters accepted by the fragment. When you render a fragment, you can optimally pass a `context` object corresponding to these parameters. You can use data from this context object in binding expressions and statements, in addition to referencing data from the component in which the fragment is declared.
+When declaring a template fragment with `<ng-template>`, you can additionally declare parameters accepted by the fragment. When you render a fragment, you can optionally pass a `context` object corresponding to these parameters. You can use data from this context object in binding expressions and statements, in addition to referencing data from the component in which the fragment is declared.
 
 Each parameter is written as an attribute prefixed with `let-` with a value matching a property name in the context object:
 
