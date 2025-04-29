@@ -67,12 +67,6 @@
       "shortDescription": "Generates a new Angular application within your workspace. This schematic sets up the foundational structure of your project, including the root component, module, and configuration files. You can customize various aspects of the application, such as routing, styling, and testing.",
       "options": [
         {
-          "name": "experimental-zoneless",
-          "type": "boolean",
-          "default": false,
-          "description": "Generate an application that does not use `zone.js`."
-        },
-        {
           "name": "inline-style",
           "type": "boolean",
           "aliases": [
@@ -180,6 +174,12 @@
             "ShadowDom"
           ],
           "description": "Sets the view encapsulation mode for the application's components. This determines how component styles are scoped and applied."
+        },
+        {
+          "name": "zoneless",
+          "type": "boolean",
+          "default": false,
+          "description": "Generate an application that does not use `zone.js`."
         }
       ],
       "aliases": [
