@@ -4108,10 +4108,10 @@
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.5.tgz#db9468cb1b1b5a925b8f34822f1669df0c5472f5"
   integrity sha512-hWtVTC2q7hc7xZ/RLbxapMvDMgUnDvKvMOpKal4DrMyfGBUfB1oKaZlIRr6mJL+If3bAP6sV/QneGzF6tJjZDg==
 
-"@types/chrome@^0.0.316":
-  version "0.0.316"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.316.tgz#121ca078f71a054f4380b7c6c8f389d97f13cfe4"
-  integrity sha512-zoXIly8A41t8U5oC/14hgwjJ3k6kOE6ODJcCSGYda9AFOSloySO6OSO+RHayndb4BaJWg9s5FrXhYkemgsSEkA==
+"@types/chrome@^0.0.317":
+  version "0.0.317"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.317.tgz#105f222075c1dabd9c914dd6190d27d32487f7a0"
+  integrity sha512-ibKycbXX8ZZToFshjgWg98BTvFUSvQht8m53Xc+87ye3Z6ZoHJubLjoiDsil8rtW+noWE+Z0+7y0nwLxArU+CQ==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -11376,7 +11376,7 @@ jasmine-core@^4.1.0:
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-4.6.1.tgz#5ebb8afa07282078f8d7b15871737a83b74e58f2"
   integrity sha512-VYz/BjjmC3klLJlLwA4Kw8ytk0zDSmbbDLNs794VnWmkcCB7I9aAL/D48VNQtmITyPvea2C3jdUMfc3kAoy0PQ==
 
-jasmine-core@^5.0.0:
+jasmine-core@^5.0.0, jasmine-core@~5.7.0:
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-5.7.0.tgz#23476f408056a33674469005d87d57d873b4c525"
   integrity sha512-EnUzZBHxS1Ofq+FPWs16rs2YC9o6Hb3buKJQDlkhJBDx+Bm5wNF+J1gUS06dWuW2ozaQ3oNIA1SESX9M5LopOQ==
@@ -11385,11 +11385,6 @@ jasmine-core@~2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.8.0.tgz#bcc979ae1f9fd05701e45e52e65d3a5d63f1a24e"
   integrity sha512-SNkOkS+/jMZvLhuSx1fjhcNWUC/KG6oVyFUGkSBEr9n1axSNduWU8GlI7suaHXr4yxjet6KjrUZxUTE5WzzWwQ==
-
-jasmine-core@~5.6.0:
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-5.6.0.tgz#4b979c254e7d9b1fe8e767ab00c5d2901c00bd4f"
-  integrity sha512-niVlkeYVRwKFpmfWg6suo6H9CrNnydfBLEqefM5UjibYS+UoTjZdmvPJSiuyrRLGnFj1eYRhFd/ch+5hSlsFVA==
 
 jasmine-reporters@~2.5.0:
   version "2.5.2"
@@ -11408,13 +11403,13 @@ jasmine@2.8.0:
     glob "^7.0.6"
     jasmine-core "~2.8.0"
 
-jasmine@~5.6.0:
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-5.6.0.tgz#83be3acf8dd44ad365d15f01c13c019a5e9c01cc"
-  integrity sha512-6frlW22jhgRjtlp68QY/DDVCUfrYqmSxDBWM13mrBzYQGx1XITfVcJltnY15bk8B5cRfN5IpKvemkDiDTSRCsA==
+jasmine@~5.7.0:
+  version "5.7.0"
+  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-5.7.0.tgz#94b947cdf6bda6da549846ab672aea3c601857d1"
+  integrity sha512-pifsdoSBgOlAbw1Tg1Vm4LxXEzDv6a+dTzHUaI9aYYqdP+PiMFgz2Mce/7TBfvuP9kshl0yZn7+G0/G1n+yExw==
   dependencies:
     glob "^10.2.2"
-    jasmine-core "~5.6.0"
+    jasmine-core "~5.7.0"
 
 jasminewd2@^2.1.0:
   version "2.2.0"
