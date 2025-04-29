@@ -9,7 +9,7 @@ import * as i1 from '@angular/platform-browser/testing';
 import { PlatformRef } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 
-// @public
+// @public @deprecated
 export class BrowserDynamicTestingModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<BrowserDynamicTestingModule, never>;
@@ -19,7 +19,7 @@ export class BrowserDynamicTestingModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserDynamicTestingModule, never, never, [typeof i1.BrowserTestingModule]>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const platformBrowserDynamicTesting: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 // (No @packageDocumentation comment for this package)
