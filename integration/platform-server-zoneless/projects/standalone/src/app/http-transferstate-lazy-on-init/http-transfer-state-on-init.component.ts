@@ -7,23 +7,25 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
 
 @Component({
   selector: 'transfer-state-http',
   standalone: true,
   template: ` <div class="one">{{ responseOne }}</div> `,
   providers: [HttpClient],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferStateOnInitComponent implements OnInit {
   responseOne: string = '';
-
-  constructor(private readonly httpClient: HttpClient) {}
+  private readonly httpClient: HttpClient = inject(HttpClient);
+  private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     // Test that HTTP cache works when HTTP call is made in a lifecycle hook.
     this.httpClient.get<any>('http://localhost:4206/api').subscribe((response) => {
       this.responseOne = response.data;
+      this.cdr.markForCheck();
     });
   }
 }

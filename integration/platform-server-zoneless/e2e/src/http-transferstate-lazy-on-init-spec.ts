@@ -10,7 +10,7 @@ import {browser, by, element} from 'protractor';
 import {bootstrapClientApp, navigateTo, verifyNoBrowserErrors} from './util';
 
 // TODO: this does not work with zoneless
-xdescribe('Http TransferState Lazy On Init', () => {
+describe('Http TransferState Lazy On Init', () => {
   beforeEach(async () => {
     // Don't wait for Angular since it is not bootstrapped automatically.
     await browser.waitForAngularEnabled(false);
