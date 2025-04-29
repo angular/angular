@@ -17,7 +17,7 @@ export class JitCompilerFactory implements CompilerFactory {
     createCompiler(options?: CompilerOptions[]): Compiler;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const platformBrowserDynamic: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 // @public (undocumented)
