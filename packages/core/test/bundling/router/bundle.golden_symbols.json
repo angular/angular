@@ -163,6 +163,7 @@
   "PRIMARY_OUTLET",
   "ParamsAsMap",
   "PathLocationStrategy",
+  "PendingTasks",
   "PendingTasksInternal",
   "PlatformLocation",
   "Position",

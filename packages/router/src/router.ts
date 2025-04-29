@@ -12,7 +12,7 @@ import {
   Injectable,
   Type,
   ɵConsole as Console,
-  ɵPendingTasksInternal as PendingTasks,
+  PendingTasks,
   ɵRuntimeError as RuntimeError,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
   EnvironmentInjector,
@@ -644,12 +644,8 @@ export class Router {
     }
 
     // Indicate that the navigation is happening.
-    const taskId = this.pendingTasks.add();
-    afterNextNavigation(this, () => {
-      // Remove pending task in a microtask to allow for cancelled
-      // initial navigations and redirects within the same task.
-      queueMicrotask(() => this.pendingTasks.remove(taskId));
-    });
+    const removeTask = this.pendingTasks.add();
+    afterNextNavigation(this, removeTask);
 
     this.navigationTransitions.handleNavigationRequest({
       source,
