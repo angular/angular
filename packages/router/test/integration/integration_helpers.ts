@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {CommonModule} from '@angular/common';
-import {Component, NgModule, Type} from '@angular/core';
+import {Component, NgModule, Type, signal} from '@angular/core';
 import {ComponentFixture, tick, TestBed} from '@angular/core/testing';
 import {
   ActivatedRoute,
@@ -156,15 +156,15 @@ export class ModuleWithBlankCmpAsRoute {}
   template:
     'team {{id | async}} ' +
     '[ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]' +
-    '<a [routerLink]="routerLink" skipLocationChange></a>' +
-    '<button [routerLink]="routerLink" skipLocationChange></button>',
+    '<a [routerLink]="routerLink()" skipLocationChange></a>' +
+    '<button [routerLink]="routerLink()" skipLocationChange></button>',
   standalone: false,
 })
 export class TeamCmp {
   id: Observable<string>;
   recordedParams: Params[] = [];
   snapshotParams: Params[] = [];
-  routerLink = ['.'];
+  readonly routerLink = signal(['.']);
 
   constructor(public route: ActivatedRoute) {
     this.id = route.params.pipe(map((p: Params) => p['id']));
@@ -257,11 +257,11 @@ export class RouteCmp {
 
 @Component({
   selector: 'link-cmp',
-  template: `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`,
+  template: `<div *ngIf="show()"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`,
   standalone: false,
 })
 export class RelativeLinkInIfCmp {
-  show: boolean = false;
+  show = signal(false);
 }
 
 @Component({

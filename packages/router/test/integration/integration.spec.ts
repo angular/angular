@@ -8,7 +8,14 @@
 
 import {Location} from '@angular/common';
 import {ɵprovideFakePlatformNavigation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, Component, NgModule, ɵConsole as Console} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  NgModule,
+  ɵConsole as Console,
+  provideZonelessChangeDetection,
+  signal,
+} from '@angular/core';
 import {fakeAsync, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {
@@ -76,6 +83,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         providers: [
           {provide: Console, useValue: noopConsole},
           provideRouter([{path: 'simple', component: SimpleCmp}]),
+          provideZonelessChangeDetection(),
           browserAPI === 'navigation' ? ɵprovideFakePlatformNavigation() : [],
         ],
       });
@@ -202,11 +210,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should work when an outlet is added/removed', fakeAsync(() => {
       @Component({
         selector: 'someRoot',
-        template: `[<div *ngIf="cond"><router-outlet></router-outlet></div>]`,
+        template: `[<div *ngIf="cond()"><router-outlet></router-outlet></div>]`,
         standalone: false,
       })
       class RootCmpWithLink {
-        cond: boolean = true;
+        cond = signal(true);
       }
       TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
 
@@ -223,11 +231,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       advance(fixture);
       expect(fixture.nativeElement).toHaveText('[simple]');
 
-      fixture.componentInstance.cond = false;
+      fixture.componentInstance.cond.set(false);
       advance(fixture);
       expect(fixture.nativeElement).toHaveText('[]');
 
-      fixture.componentInstance.cond = true;
+      fixture.componentInstance.cond.set(true);
       advance(fixture);
       expect(fixture.nativeElement).toHaveText('[simple]');
     }));
