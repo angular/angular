@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, destroyPlatform, inject} from '@angular/core';
+import {Component, destroyPlatform} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 import {

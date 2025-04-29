@@ -19,7 +19,7 @@ import {
   Type,
   EnvironmentInjector,
 } from '@angular/core';
-import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
   PreloadAllModules,
   PreloadingStrategy,
@@ -96,16 +96,16 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should not load children', fakeAsync(
-      inject([RouterPreloader, Router], (preloader: RouterPreloader, router: Router) => {
-        preloader.preload().subscribe(() => {});
+    it('should not load children', fakeAsync(() => {
+      const preloader = TestBed.inject(RouterPreloader);
+      const router = TestBed.inject(Router);
+      preloader.preload().subscribe(() => {});
 
-        tick();
+      tick();
 
-        const c = router.config;
-        expect((c[0] as any)._loadedRoutes).not.toBeDefined();
-      }),
-    ));
+      const c = router.config;
+      expect((c[0] as any)._loadedRoutes).not.toBeDefined();
+    }));
 
     it('should not call the preloading method because children will not be loaded anyways', fakeAsync(() => {
       const preloader = TestBed.inject(RouterPreloader);
@@ -130,59 +130,53 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(
-      inject(
-        [RouterPreloader, Router, NgModuleRef],
-        (
-          preloader: RouterPreloader,
-          router: Router,
-          testModule: {_r3Injector: EnvironmentInjector},
-        ) => {
-          const events: Array<RouteConfigLoadStart | RouteConfigLoadEnd> = [];
-          @NgModule({
-            declarations: [LazyLoadedCmp],
-            imports: [RouterModule.forChild([{path: 'LoadedModule2', component: LazyLoadedCmp}])],
-          })
-          class LoadedModule2 {}
+    it('should work', fakeAsync(() => {
+      const preloader = TestBed.inject(RouterPreloader);
+      const router = TestBed.inject(Router);
+      const testModule = TestBed.inject(NgModuleRef) as any;
+      const events: Array<RouteConfigLoadStart | RouteConfigLoadEnd> = [];
+      @NgModule({
+        declarations: [LazyLoadedCmp],
+        imports: [RouterModule.forChild([{path: 'LoadedModule2', component: LazyLoadedCmp}])],
+      })
+      class LoadedModule2 {}
 
-          @NgModule({
-            imports: [
-              RouterModule.forChild([{path: 'LoadedModule1', loadChildren: () => LoadedModule2}]),
-            ],
-          })
-          class LoadedModule1 {}
+      @NgModule({
+        imports: [
+          RouterModule.forChild([{path: 'LoadedModule1', loadChildren: () => LoadedModule2}]),
+        ],
+      })
+      class LoadedModule1 {}
 
-          router.events.subscribe((e) => {
-            if (e instanceof RouteConfigLoadEnd || e instanceof RouteConfigLoadStart) {
-              events.push(e);
-            }
-          });
+      router.events.subscribe((e) => {
+        if (e instanceof RouteConfigLoadEnd || e instanceof RouteConfigLoadStart) {
+          events.push(e);
+        }
+      });
 
-          lazySpy.and.returnValue(LoadedModule1);
-          preloader.preload().subscribe(() => {});
+      lazySpy.and.returnValue(LoadedModule1);
+      preloader.preload().subscribe(() => {});
 
-          tick();
+      tick();
 
-          const c = router.config;
-          const injector: any = getLoadedInjector(c[0]);
-          const loadedRoutes: Route[] = getLoadedRoutes(c[0])!;
-          expect(loadedRoutes[0].path).toEqual('LoadedModule1');
-          expect(injector.parent).toBe(testModule._r3Injector);
+      const c = router.config;
+      const injector: any = getLoadedInjector(c[0]);
+      const loadedRoutes: Route[] = getLoadedRoutes(c[0])!;
+      expect(loadedRoutes[0].path).toEqual('LoadedModule1');
+      expect(injector.parent).toBe(testModule._r3Injector);
 
-          const injector2: any = getLoadedInjector(loadedRoutes[0]);
-          const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
-          expect(loadedRoutes2[0].path).toEqual('LoadedModule2');
-          expect(injector2.parent).toBe(injector);
+      const injector2: any = getLoadedInjector(loadedRoutes[0]);
+      const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
+      expect(loadedRoutes2[0].path).toEqual('LoadedModule2');
+      expect(injector2.parent).toBe(injector);
 
-          expect(events.map((e) => e.toString())).toEqual([
-            'RouteConfigLoadStart(path: lazy)',
-            'RouteConfigLoadEnd(path: lazy)',
-            'RouteConfigLoadStart(path: LoadedModule1)',
-            'RouteConfigLoadEnd(path: LoadedModule1)',
-          ]);
-        },
-      ),
-    ));
+      expect(events.map((e) => e.toString())).toEqual([
+        'RouteConfigLoadStart(path: lazy)',
+        'RouteConfigLoadEnd(path: lazy)',
+        'RouteConfigLoadStart(path: LoadedModule1)',
+        'RouteConfigLoadEnd(path: LoadedModule1)',
+      ]);
+    }));
   });
 
   it('should handle providers on a route', fakeAsync(() => {
@@ -242,57 +236,51 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(
-      inject(
-        [RouterPreloader, Router, NgModuleRef, Compiler],
-        (
-          preloader: RouterPreloader,
-          router: Router,
-          testModule: {_r3Injector: EnvironmentInjector},
-          compiler: Compiler,
-        ) => {
-          @NgModule()
-          class LoadedModule2 {}
+    it('should work', fakeAsync(() => {
+      const preloader = TestBed.inject(RouterPreloader);
+      const router = TestBed.inject(Router);
+      const testModule = TestBed.inject(NgModuleRef) as any;
+      const compiler = TestBed.inject(Compiler);
+      @NgModule()
+      class LoadedModule2 {}
 
-          const module2 = compiler.compileModuleSync(LoadedModule2).create(null);
+      const module2 = compiler.compileModuleSync(LoadedModule2).create(null);
 
-          @NgModule({
-            imports: [
-              RouterModule.forChild([
-                <Route>{
-                  path: 'LoadedModule2',
-                  loadChildren: jasmine.createSpy('no'),
-                  _loadedRoutes: [{path: 'LoadedModule3', loadChildren: () => LoadedModule3}],
-                  _loadedInjector: module2.injector,
-                },
-              ]),
-            ],
-          })
-          class LoadedModule1 {}
+      @NgModule({
+        imports: [
+          RouterModule.forChild([
+            <Route>{
+              path: 'LoadedModule2',
+              loadChildren: jasmine.createSpy('no'),
+              _loadedRoutes: [{path: 'LoadedModule3', loadChildren: () => LoadedModule3}],
+              _loadedInjector: module2.injector,
+            },
+          ]),
+        ],
+      })
+      class LoadedModule1 {}
 
-          @NgModule({imports: [RouterModule.forChild([])]})
-          class LoadedModule3 {}
+      @NgModule({imports: [RouterModule.forChild([])]})
+      class LoadedModule3 {}
 
-          lazySpy.and.returnValue(LoadedModule1);
-          preloader.preload().subscribe(() => {});
+      lazySpy.and.returnValue(LoadedModule1);
+      preloader.preload().subscribe(() => {});
 
-          tick();
+      tick();
 
-          const c = router.config;
+      const c = router.config;
 
-          const injector = getLoadedInjector(c[0]) as unknown as {parent: EnvironmentInjector};
+      const injector = getLoadedInjector(c[0]) as unknown as {parent: EnvironmentInjector};
 
-          const loadedRoutes = getLoadedRoutes(c[0])!;
-          expect(injector.parent).toBe(testModule._r3Injector);
+      const loadedRoutes = getLoadedRoutes(c[0])!;
+      expect(injector.parent).toBe(testModule._r3Injector);
 
-          const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
-          const injector3 = getLoadedInjector(loadedRoutes2[0]) as unknown as {
-            parent: EnvironmentInjector;
-          };
-          expect(injector3.parent).toBe(module2.injector);
-        },
-      ),
-    ));
+      const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
+      const injector3 = getLoadedInjector(loadedRoutes2[0]) as unknown as {
+        parent: EnvironmentInjector;
+      };
+      expect(injector3.parent).toBe(module2.injector);
+    }));
   });
 
   describe('should support preloading strategies', () => {
@@ -637,17 +625,17 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(
-      inject([RouterPreloader, Router], (preloader: RouterPreloader, router: Router) => {
-        preloader.preload().subscribe(() => {});
+    it('should work', fakeAsync(() => {
+      const preloader = TestBed.inject(RouterPreloader);
+      const router = TestBed.inject(Router);
+      preloader.preload().subscribe(() => {});
 
-        tick();
+      tick();
 
-        const c = router.config;
-        expect(getLoadedRoutes(c[0])).not.toBeDefined();
-        expect(getLoadedRoutes(c[1])).toBeDefined();
-      }),
-    ));
+      const c = router.config;
+      expect(getLoadedRoutes(c[0])).not.toBeDefined();
+      expect(getLoadedRoutes(c[1])).toBeDefined();
+    }));
   });
 
   describe('should copy loaded configs', () => {
@@ -670,19 +658,19 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(
-      inject([RouterPreloader, Router], (preloader: RouterPreloader, router: Router) => {
-        preloader.preload().subscribe(() => {});
+    it('should work', fakeAsync(() => {
+      const preloader = TestBed.inject(RouterPreloader);
+      const router = TestBed.inject(Router);
+      preloader.preload().subscribe(() => {});
 
-        tick();
+      tick();
 
-        const c = router.config;
-        expect(getLoadedRoutes(c[0])).toBeDefined();
-        expect(getLoadedRoutes(c[0])).not.toBe(configs);
-        expect(getLoadedRoutes(c[0])![0]).not.toBe(configs[0]);
-        expect(getLoadedRoutes(c[0])![0].component).toBe(configs[0].component);
-      }),
-    ));
+      const c = router.config;
+      expect(getLoadedRoutes(c[0])).toBeDefined();
+      expect(getLoadedRoutes(c[0])).not.toBe(configs);
+      expect(getLoadedRoutes(c[0])![0]).not.toBe(configs[0]);
+      expect(getLoadedRoutes(c[0])![0].component).toBe(configs[0].component);
+    }));
   });
 
   describe("should work with lazy loaded modules that don't provide RouterModule.forChild()", () => {
@@ -713,11 +701,10 @@ describe('RouterPreloader', () => {
       });
     });
 
-    it('should work', fakeAsync(
-      inject([RouterPreloader], (preloader: RouterPreloader) => {
-        preloader.preload().subscribe();
-      }),
-    ));
+    it('should work', fakeAsync(() => {
+      const preloader = TestBed.inject(RouterPreloader);
+      preloader.preload().subscribe();
+    }));
   });
 
   describe('should preload loadComponent configs', () => {
