@@ -40,7 +40,7 @@ import {
   TransferState,
   Type,
   ViewEncapsulation,
-  ɵPendingTasksInternal as PendingTasks,
+  PendingTasks,
   APP_INITIALIZER,
   inject,
   getPlatform,
@@ -115,9 +115,9 @@ function createAppWithPendingTask(standalone: boolean) {
 
     constructor() {
       const pendingTasks = coreInject(PendingTasks);
-      const taskId = pendingTasks.add();
+      const removeTask = pendingTasks.add();
       setTimeout(() => {
-        pendingTasks.remove(taskId);
+        removeTask();
         this.completed = 'Yes';
       });
     }

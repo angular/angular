@@ -25,7 +25,7 @@ import {
   Type,
   ViewContainerRef,
   ViewEncapsulation,
-  ɵPendingTasksInternal as PendingTasks,
+  PendingTasks,
   output,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -84,11 +84,11 @@ export class DocViewer implements OnChanges {
   private countOfExamples = 0;
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    const taskId = this.pendingTasks.add();
+    const removeTask = this.pendingTasks.add();
     if ('docContent' in changes) {
       await this.renderContentsAndRunClientSetup(this.docContent!);
     }
-    this.pendingTasks.remove(taskId);
+    removeTask();
   }
 
   async renderContentsAndRunClientSetup(content?: string): Promise<void> {

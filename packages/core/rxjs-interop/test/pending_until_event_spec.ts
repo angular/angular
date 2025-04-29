@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  EnvironmentInjector,
-  ɵPendingTasksInternal as PendingTasks,
-  ApplicationRef,
-} from '../../src/core';
+import {EnvironmentInjector, ApplicationRef} from '../../src/core';
+import {PendingTasksInternal} from '../../src/pending_tasks';
 import {
   BehaviorSubject,
   EMPTY,
@@ -28,11 +25,11 @@ import {pendingUntilEvent} from '../src';
 import {TestBed} from '../../testing';
 
 describe('pendingUntilEvent', () => {
-  let taskService: PendingTasks;
+  let taskService: PendingTasksInternal;
   let injector: EnvironmentInjector;
   let appRef: ApplicationRef;
   beforeEach(() => {
-    taskService = TestBed.inject(PendingTasks);
+    taskService = TestBed.inject(PendingTasksInternal);
     injector = TestBed.inject(EnvironmentInjector);
     appRef = TestBed.inject(ApplicationRef);
   });
