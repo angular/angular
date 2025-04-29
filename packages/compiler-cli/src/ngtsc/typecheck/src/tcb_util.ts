@@ -288,14 +288,11 @@ export function findNodeInFile(
   file: ts.SourceFile,
   predicate: (node: ts.Node) => boolean,
 ): ts.Node | null {
-  let found: ts.Node | null = null;
-  const visit = (node: ts.Node) => {
+  const visit = (node: ts.Node): ts.Node | null => {
     if (predicate(node)) {
-      found = node;
-      return;
+      return node;
     }
-    ts.forEachChild(node, visit);
+    return ts.forEachChild(node, visit) ?? null;
   };
-  ts.forEachChild(file, visit);
-  return found;
+  return ts.forEachChild(file, visit) ?? null;
 }

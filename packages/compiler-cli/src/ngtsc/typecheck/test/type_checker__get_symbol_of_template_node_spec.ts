@@ -2307,7 +2307,44 @@ runInEachFileSystem(() => {
 
       const nodes = templateTypeChecker.getTemplate(myCmpClass)!;
       const symbol = templateTypeChecker.getSymbolOfNode(nodes[0], myCmpClass)!;
-      debugger;
+      assertTemplateSymbol(symbol);
+      expect(symbol.kind).toBe(SymbolKind.Template);
+      expect(symbol.directives.length).toBe(1);
+      expect(symbol.directives[0].selector).toBe('[foo]');
+    });
+
+    it('find the directive when it is nested inside a class of the same name', () => {
+      // This test is more complex as we're testing the diagnostic against a component
+      // that can't be referenced because it's nested in a function.
+
+      const {compiler, sourceFile} = createNgCompilerForFile(`
+        import {Component, Directive} from '@angular/core';
+
+        /* We name this class with the same name as the directive */
+        class FooDir {
+          foo() {
+            @Directive({ selector: '[foo]' })
+            export class FooDir {}
+
+            @Component({
+              imports: [FooDir],
+              template: '<div *foo></div>',
+            })
+            class MyCmp {}
+          } 
+        }
+      `);
+
+      const templateTypeChecker = compiler.getTemplateTypeChecker();
+
+      const myCmpClass = findNodeInFile(
+        sourceFile,
+        (node): node is ts.ClassDeclaration =>
+          ts.isClassDeclaration(node) && node.name?.text === 'MyCmp',
+      )!;
+
+      const nodes = templateTypeChecker.getTemplate(myCmpClass)!;
+      const symbol = templateTypeChecker.getSymbolOfNode(nodes[0], myCmpClass)!;
       assertTemplateSymbol(symbol);
       expect(symbol.kind).toBe(SymbolKind.Template);
       expect(symbol.directives.length).toBe(1);

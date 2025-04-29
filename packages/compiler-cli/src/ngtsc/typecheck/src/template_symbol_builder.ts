@@ -927,9 +927,8 @@ function collectClassesWithName(
   function visit(node: ts.Node) {
     if (ts.isClassDeclaration(node) && node.name?.text === className) {
       classes.push(node);
-    } else {
-      ts.forEachChild(node, visit);
     }
+    ts.forEachChild(node, visit);
   }
   sourceFile.forEachChild(visit);
 
