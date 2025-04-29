@@ -28,7 +28,8 @@ export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: StaticProvider[] = [
 ];
 
 /**
- * @publicApi
+ * @deprecated Use the `platformBrowser` function instead from `@angular/platform-browser`.
+ * In case you are not in a CLI app and rely on JIT compilation, you will also need to import `@angular/compiler`
  */
 export const platformBrowserDynamic: (extraProviders?: StaticProvider[]) => PlatformRef =
   createPlatformFactory(
