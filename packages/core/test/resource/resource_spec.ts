@@ -835,6 +835,48 @@ describe('resource', () => {
     expect(echoResource.error()).toBe(undefined);
     expect(aborted).toEqual([{counter: 0}, {counter: 0}]);
   });
+
+  it('should return default value when getting a value after reloading in the error state', async () => {
+    const backend = new MockEchoBackend();
+    const requestParam = {};
+    const echoResource = resource({
+      params: () => requestParam,
+      loader: (params) => backend.fetch(params.params),
+      injector: TestBed.inject(Injector),
+      defaultValue: 'my-default-value',
+    });
+
+    TestBed.tick();
+    await backend.reject(requestParam, new Error('Something went wrong....'));
+
+    expect(echoResource.status()).toBe('error');
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeFalse();
+
+    const errFromValue = extractError(() => echoResource.value())!;
+    expect(errFromValue.message).toContain('Resource');
+    expect(errFromValue.message).toContain('Something went wrong....');
+    expect(errFromValue.cause).toEqual(new Error('Something went wrong....'));
+    expect(echoResource.error()!).toEqual(new Error('Something went wrong....'));
+
+    echoResource.reload();
+    TestBed.tick();
+
+    expect(echoResource.status()).toBe('reloading');
+    expect(echoResource.isLoading()).toBeTrue();
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual('my-default-value');
+    expect(echoResource.error()).toEqual(new Error('Something went wrong....'));
+
+    await backend.flush();
+    TestBed.tick();
+
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.isLoading()).toBeFalse();
+    expect(echoResource.hasValue()).toBeTrue();
+    expect(echoResource.value()).toEqual({});
+    expect(echoResource.error()).toEqual(undefined);
+  });
 });
 
 function flushMicrotasks(): Promise<void> {
