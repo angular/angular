@@ -29,11 +29,6 @@ export const routes: Routes = [
   {
     path: 'error',
     component: HelloWorldComponent,
-    resolve: {
-      'id': () => {
-        throw new Error('Error in resolver.');
-      },
-    },
   },
   {
     path: 'defer',
