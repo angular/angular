@@ -1,5 +1,5 @@
 import {provideHttpClient} from '@angular/common/http';
-import {ApplicationConfig, provideZonelessChangeDetection} from '@angular/core';
+import {ApplicationConfig, provideExperimentalZonelessChangeDetection} from '@angular/core';
 import {provideClientHydration, withIncrementalHydration} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
 
@@ -7,7 +7,7 @@ import {routes} from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZonelessChangeDetection(),
+    provideExperimentalZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(withIncrementalHydration()),
     provideHttpClient(),
