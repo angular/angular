@@ -1,3 +1,44 @@
+<a name="20.0.0-next.9"></a>
+# 20.0.0-next.9 (2025-04-30)
+## Breaking Changes
+### core
+- the `TestBed.flushEffects()` was removed - use
+  the `TestBed.tick()` instead.
+- `provideExperimentalCheckNoChangesForDebug` has several
+  breaking changes:
+  * It is renamed to `provideCheckNoChangesConfig`
+  * The behavior applies to _all_ checkNoChanges runs
+  * The `useNgZoneOnStable` option is removed. This wasn't found to be generally
+    more useful than `interval`
+- afterRender was renamed to afterEveryRender.
+- This commit deprecates `ng-reflect-*` attributes and updates the runtime to stop producing them by default. Please refactor application and test code to avoid relying on `ng-reflect-*` attributes.
+  
+  To enable a more seamless upgrade to v20, we've added the `provideNgReflectAttributes()` function (can be imported from the `@angular/core` package), which enables the mode in which Angular would be producing those attribites (in dev mode only). You can add the `provideNgReflectAttributes()` function to the list of providers within the bootstrap call.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b7d3f3dbfc](https://github.com/angular/angular/commit/b7d3f3dbfcfc40000ca34087d3b8b42319468177) | feat | Allow passing ScrollOptions to ViewportScroller ([#61002](https://github.com/angular/angular/pull/61002)) |
+| [fc4a56d5c5](https://github.com/angular/angular/commit/fc4a56d5c5fa270dbb1402c7cafe6d4f2af571eb) | fix | rename httpResource function in factory ([#60022](https://github.com/angular/angular/pull/60022)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c889382a20](https://github.com/angular/angular/commit/c889382a2044f9a024f475680c8573d0f7112562) | feat | detect missing structural directive imports ([#59443](https://github.com/angular/angular/pull/59443)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d5fd7349fb](https://github.com/angular/angular/commit/d5fd7349fb8b3942f0727cd7ee62e7a7b231e9e4) | feat | introduce TestBed.tick() ([#60993](https://github.com/angular/angular/pull/60993)) |
+| [e711f99d81](https://github.com/angular/angular/commit/e711f99d81ea7dbd4526f859c363244fccdf0626) | feat | move `provideExperimentalCheckNoChangesForDebug` to `provideCheckNoChangesConfig` ([#60906](https://github.com/angular/angular/pull/60906)) |
+| [d8fbb909ce](https://github.com/angular/angular/commit/d8fbb909ce4380c0ea48512cf5d364a2785fd428) | feat | rename afterRender to afterEveryRender and stabilize ([#60999](https://github.com/angular/angular/pull/60999)) |
+| [8d82a39a60](https://github.com/angular/angular/commit/8d82a39a601fbedee58f140a7432c4adf0b054ff) | fix | async EventEmitter error should not prevent stability ([#61028](https://github.com/angular/angular/pull/61028)) |
+| [624be2ef0c](https://github.com/angular/angular/commit/624be2ef0c7255e62082751cc339d2cd618bd633) | fix | prevent stash listener conflicts ([#59635](https://github.com/angular/angular/pull/59635)) |
+| [c2987d8402](https://github.com/angular/angular/commit/c2987d8402b7b03333b0081a7f97750cdf612e99) | refactor | stop producing `ng-reflect` attributes by default ([#60973](https://github.com/angular/angular/pull/60973)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ccc5cc068f](https://github.com/angular/angular/commit/ccc5cc068f788013c19498c44d13530c1bc98912) | feat | add keepalive support for fetch requests ([#60621](https://github.com/angular/angular/pull/60621)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.9"></a>
 # 19.2.9 (2025-04-30)
 ### core
