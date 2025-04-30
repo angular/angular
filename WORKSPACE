@@ -119,6 +119,19 @@ load("@npm2//:repositories.bzl", "npm_repositories")
 
 npm_repositories()
 
+http_archive(
+    name = "aspect_rules_ts",
+    sha256 = "9acd128abe77397505148eaa6895faed57839560dbf2177dd6285e51235e2724",
+    strip_prefix = "rules_ts-3.3.1",
+    url = "https://github.com/aspect-build/rules_ts/releases/download/v3.3.1/rules_ts-v3.3.1.tar.gz",
+)
+
+load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
+
+rules_ts_dependencies(
+    ts_version_from = "//:package.json",
+)
+
 load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
