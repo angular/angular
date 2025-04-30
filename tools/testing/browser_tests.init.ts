@@ -11,16 +11,10 @@ import './zone_base_setup';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
 
 import {TestBed} from '@angular/core/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
+import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
-TestBed.initTestEnvironment(
-  [BrowserDynamicTestingModule, NoopAnimationsModule],
-  platformBrowserDynamicTesting(),
-);
+TestBed.initTestEnvironment([BrowserTestingModule, NoopAnimationsModule], platformBrowserTesting());
 
 (window as any).isNode = false;
 (window as any).isBrowser = true;
