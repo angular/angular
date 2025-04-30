@@ -29,7 +29,7 @@ import {Sanitizer} from '../sanitization/sanitizer';
 
 import {assertComponentType} from './assert';
 import {attachPatchData} from './context_discovery';
-import {getComponentDef, getDirectiveDef} from './def_getters';
+import {getComponentDef, getDirectiveDef, getDirectiveDefOrThrow} from './def_getters';
 import {depsTracker} from './deps_tracker/deps_tracker';
 import {NodeInjector} from './di';
 import {reportUnknownPropertyError} from './instructions/element_validation';
@@ -387,8 +387,6 @@ function createRootTView(
     for (let i = 0; i < directives.length; i++) {
       const directive = directives[i];
       if (typeof directive !== 'function') {
-        const def: DirectiveDef<unknown> = getDirectiveDef(directive.type, true);
-
         for (const binding of directive.bindings) {
           varsToAllocate += binding[BINDING].requiredVars;
           const targetDirectiveIdx = i + 1;
@@ -410,7 +408,9 @@ function createRootTView(
   if (directives) {
     for (const directive of directives) {
       const directiveType = typeof directive === 'function' ? directive : directive.type;
-      const directiveDef = getDirectiveDef(directiveType, true);
+      const directiveDef = ngDevMode
+        ? getDirectiveDefOrThrow(directiveType)
+        : getDirectiveDef(directiveType)!;
 
       if (ngDevMode && !directiveDef.standalone) {
         throw new RuntimeError(
