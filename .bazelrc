@@ -102,8 +102,6 @@ build:remote --cpu=k8
 build:remote --host_cpu=k8
 
 # Toolchain and platform related flags
-build:remote --crosstool_top=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain_suite
-build:remote --extra_toolchains=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain
 build:remote --extra_execution_platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
 build:remote --host_platform=@npm//@angular/build-tooling/bazel/remote-execution:platform
 build:remote --platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
