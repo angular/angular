@@ -20,8 +20,8 @@ ts_library(
         ":zone_base_setup_lib",
         "//packages/compiler",
         "//packages/core/testing",
-        "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
         "//packages/zone.js/lib",
     ],
 )

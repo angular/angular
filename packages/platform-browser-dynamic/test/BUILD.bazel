@@ -18,6 +18,7 @@ ts_library(
         "//packages/core/testing",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
     ],
