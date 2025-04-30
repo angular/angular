@@ -9,9 +9,9 @@
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
-import {TNode} from '../interfaces/node';
+import type {TNode} from '../interfaces/node';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, INJECTOR, LView, TView} from '../interfaces/view';
+import {CLEANUP, CONTEXT, type LView, type TView} from '../interfaces/view';
 import {
   getComponentLViewByIndex,
   getNativeByTNode,
@@ -22,35 +22,15 @@ import {
 import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
 import {markViewDirty} from '../instructions/mark_view_dirty';
-import {RElement, RNode} from '../interfaces/renderer_dom';
-import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
+import type {RElement} from '../interfaces/renderer_dom';
+import type {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {assertNotSame} from '../../util/assert';
 import {handleUncaughtError} from '../instructions/shared';
-import {APP_ID} from '../../application/application_tokens';
-
-/** Shorthand for an event listener callback function to reduce duplication. */
-export type EventCallback = (event?: any) => any;
-
-/** Utility type used to make it harder to swap a wrapped and unwrapped callback. */
-export type WrappedEventCallback = EventCallback & {__wrapped: boolean};
-
-/**
- * Represents a signature of a function that disables event replay feature
- * for server-side rendered applications. This function is overridden with
- * an actual implementation when the event replay feature is enabled via
- * `withEventReplay()` call.
- */
-type StashEventListener = (el: RNode, eventName: string, listenerFn: EventCallback) => void;
-
-const stashEventListeners = new Map<string, StashEventListener>();
-
-export function setStashFn(appId: string, fn: StashEventListener) {
-  stashEventListeners.set(appId, fn);
-}
-
-export function clearStashFn(appId: string) {
-  stashEventListeners.delete(appId);
-}
+import {
+  type EventCallback,
+  stashEventListenerImpl,
+  type WrappedEventCallback,
+} from '../../event_delegation_utils';
 
 /**
  * Wraps an event listener with a function that marks ancestors dirty and prevents default behavior,
@@ -179,9 +159,8 @@ export function listenToDomEvent(
   } else {
     const native = getNativeByTNode(tNode, lView) as RElement;
     const target = eventTargetResolver ? eventTargetResolver(native) : native;
-    const appId = lView[INJECTOR].get(APP_ID);
-    const stashEventListener = stashEventListeners.get(appId);
-    stashEventListener?.(target as RElement, eventName, wrappedListener);
+
+    stashEventListenerImpl(lView, target, eventName, wrappedListener);
 
     const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
     const idxOrTargetGetter = eventTargetResolver
