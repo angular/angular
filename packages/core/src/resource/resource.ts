@@ -170,6 +170,11 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
             return defaultValue;
           }
 
+          // Prevents `hasValue()` from throwing an error when a reload happened in the error state
+          if (this.state().status === 'loading' && this.error()) {
+            return defaultValue;
+          }
+
           if (!isResolved(streamValue)) {
             throw new Error('Resource is currently in the error state', {cause: this.error()});
           }
