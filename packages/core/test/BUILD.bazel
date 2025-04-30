@@ -75,7 +75,7 @@ ts_library(
         "//packages/core/testing",
         "//packages/localize/init",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/platform-server",

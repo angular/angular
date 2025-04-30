@@ -36,7 +36,8 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {fakeAsync, inject, TestBed, tick} from '../../testing';
-import {BrowserModule, By, platformBrowser} from '@angular/platform-browser';
+import {BrowserModule, By} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('regressions', () => {
@@ -484,7 +485,7 @@ describe('regressions using bootstrap', () => {
       })
       class TestModule {}
 
-      platformBrowser()
+      platformBrowserDynamic()
         .bootstrapModule(TestModule)
         .then((ref) => {
           NgZone.assertNotInAngularZone();

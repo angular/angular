@@ -17,9 +17,12 @@ import {DOCUMENT} from '@angular/common';
 import {Component, NgZone, RendererFactory2, ViewChild} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ɵAsyncAnimationRendererFactory as AsyncAnimationRendererFactory} from '@angular/platform-browser/animations/async';
-import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 
 describe('BrowserAnimationBuilder', () => {
   if (isNode) {
@@ -233,7 +236,7 @@ describe('BrowserAnimationBuilder', () => {
       // We need to reset the test environment because
       // browser_tests.init.ts inits the environment with the NoopAnimationsModule
       TestBed.resetTestEnvironment();
-      TestBed.initTestEnvironment([BrowserTestingModule], platformBrowserTesting());
+      TestBed.initTestEnvironment([BrowserDynamicTestingModule], platformBrowserDynamicTesting());
     });
 
     it('should throw an error when injecting AnimationBuilder without animation providers set', () => {
@@ -246,8 +249,8 @@ describe('BrowserAnimationBuilder', () => {
       // We're reset the test environment to their default values, cf browser_tests.init.ts
       TestBed.resetTestEnvironment();
       TestBed.initTestEnvironment(
-        [BrowserTestingModule, NoopAnimationsModule],
-        platformBrowserTesting(),
+        [BrowserDynamicTestingModule, NoopAnimationsModule],
+        platformBrowserDynamicTesting(),
       );
     });
   });
