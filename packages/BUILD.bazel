@@ -1,3 +1,4 @@
+load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
 load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
 load("//tools:defaults.bzl", "ts_config", "ts_library")
@@ -31,6 +32,12 @@ ts_config(
         ":tsconfig-build.json",
         ":tsec-exemption.json",
     ],
+)
+
+rules_js_tsconfig(
+    name = "build-tsconfig",
+    src = "tsconfig-build.json",
+    deps = [],
 )
 
 exports_files([
