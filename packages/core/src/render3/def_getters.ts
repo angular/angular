@@ -39,11 +39,9 @@ export function getComponentDef<T>(type: any): ComponentDef<T> | null {
   return type[NG_COMP_DEF] || null;
 }
 
-export function getDirectiveDef<T>(type: any, throwIfNotFound: true): DirectiveDef<T>;
-export function getDirectiveDef<T>(type: any): DirectiveDef<T> | null;
-export function getDirectiveDef<T>(type: any, throwIfNotFound?: boolean): DirectiveDef<T> | null {
-  const def = type[NG_DIR_DEF] || null;
-  if (!def && throwIfNotFound) {
+export function getDirectiveDefOrThrow<T>(type: any): DirectiveDef<T> | never {
+  const def = getDirectiveDef<T>(type);
+  if (!def) {
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_DIRECTIVE_DEFINITION,
       (typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -51,6 +49,10 @@ export function getDirectiveDef<T>(type: any, throwIfNotFound?: boolean): Direct
     );
   }
   return def;
+}
+
+export function getDirectiveDef<T>(type: any): DirectiveDef<T> | null {
+  return type[NG_DIR_DEF] || null;
 }
 
 export function getPipeDef<T>(type: any): PipeDef<T> | null {
