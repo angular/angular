@@ -13,18 +13,18 @@ import {GithubClient} from '../shared/github-client.mjs';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 
-const CLI_BUILDS_REPO = 'angular/cli-builds';
-const CLI_HELP_CONTENT_PATH = resolvePath(scriptDir, '../../src/content/cli/help');
+const CDK_BUILDS_REPO = 'angular/cdk-builds';
+const CDK_APIS_CONTENT_PATH = resolvePath(scriptDir, '../../src/content/cdk');
 
 async function main() {
   await copyJsonAssets({
-    repo: CLI_BUILDS_REPO,
-    assetsPath: 'help',
-    destPath: CLI_HELP_CONTENT_PATH,
+    repo: CDK_BUILDS_REPO,
+    assetsPath: '_adev_assets',
+    destPath: CDK_APIS_CONTENT_PATH,
     githubApi: new GithubClient(
-      CLI_BUILDS_REPO,
-      process.env.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN,
-      'ADEV_Angular_CLI_Sources_Update',
+      CDK_BUILDS_REPO,
+      process.env.ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN,
+      'ADEV_Angular_CDK_Sources_Update',
     ),
   });
 }
