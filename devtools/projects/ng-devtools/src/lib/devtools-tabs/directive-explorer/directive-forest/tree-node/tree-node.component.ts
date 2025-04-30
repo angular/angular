@@ -61,7 +61,7 @@ export class TreeNodeComponent {
   protected readonly selectedNode = input.required<FlatNode | null>();
   protected readonly highlightedId = input.required<number | null>();
   protected readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
-  protected readonly textMatch = input<NodeTextMatch | undefined>();
+  protected readonly textMatches = input<NodeTextMatch[]>([]);
 
   protected readonly selectNode = output<FlatNode>();
   protected readonly selectDomElement = output<FlatNode>();
@@ -101,40 +101,65 @@ export class TreeNodeComponent {
       this.matchedText = null;
     }
 
-    const textMatch = this.textMatch();
-    if (textMatch) {
-      this.buildMatchedTextElement(textMatch.startIdx, textMatch.endIdx);
+    const textMatches = this.textMatches();
+
+    if (textMatches.length) {
+      // Flatten all matches to an array where the even indices
+      // represent the match start whereas odd indices represent
+      // the match end.
+      const flattenedMatchesIndices = [];
+      for (const match of textMatches) {
+        flattenedMatchesIndices.push(match.startIdx, match.endIdx);
+      }
+
+      this.buildMatchedTextElement(flattenedMatchesIndices);
     }
   }
 
-  private buildMatchedTextElement(startIdx: number, endIdx: number) {
-    const name = this.nodeNameString();
-    let textBuffer = '';
-
+  private buildMatchedTextElement(flattenedMatchesIndices: number[]) {
     const matchedText = this.renderer.createElement('span');
     this.renderer.addClass(matchedText, 'matched-text');
 
-    for (let i = 0; i < name.length; i++) {
-      textBuffer += name[i];
+    const name = this.nodeNameString();
+    let textBuffer = '';
+    let matchIdx = 0;
 
-      if (i === startIdx - 1 && textBuffer.length) {
-        // Add any text that precedes the matched text.
-        this.appendText(matchedText, textBuffer);
-        textBuffer = '';
-      } else if (i === endIdx - 1) {
-        // Add the matched text. We don't really need to add the remaining text, if any.
-        const match = this.renderer.createElement('mark');
-        this.appendText(match, textBuffer);
-        this.renderer.appendChild(matchedText, match);
+    for (let i = 0; i < name.length; i++) {
+      if (i === flattenedMatchesIndices[matchIdx]) {
+        const isEvenMatchIdx = matchIdx % 2 === 0; // i.e. match start
+
+        if (isEvenMatchIdx && textBuffer) {
+          // Add any text that wraps the matched text.
+          this.appendText(matchedText, textBuffer);
+          textBuffer = '';
+        } else if (!isEvenMatchIdx) {
+          // Add the matched text.
+          this.appendText(matchedText, textBuffer, true);
+          textBuffer = '';
+        }
+
+        matchIdx++;
       }
+
+      textBuffer += name[i];
+    }
+
+    if (textBuffer && matchIdx === flattenedMatchesIndices.length - 1) {
+      this.appendText(matchedText, textBuffer, true);
     }
 
     this.matchedText = matchedText;
     this.renderer.appendChild(this.nodeName().nativeElement, this.matchedText);
   }
 
-  private appendText(parent: HTMLElement, text: string) {
-    const textNode = this.doc.createTextNode(text);
+  private appendText(parent: HTMLElement, text: string, markedText = false) {
+    let textNode: Element | Text;
+    if (!markedText) {
+      textNode = this.doc.createTextNode(text);
+    } else {
+      textNode = this.renderer.createElement('mark');
+      textNode.textContent = text;
+    }
     this.renderer.appendChild(parent, textNode);
   }
 }
