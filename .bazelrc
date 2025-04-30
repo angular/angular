@@ -5,6 +5,10 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # On CI we might set this to `3` to run with deflaking.
 test --flaky_test_attempts=1
 
+# Required by `rules_ts`.
+common --@aspect_rules_ts//ts:skipLibCheck=always
+common --@aspect_rules_ts//ts:default_to_tsc_transpiler
+
 ###############################
 # Filesystem interactions     #
 ###############################
