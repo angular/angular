@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {APP_ID} from '../../application/application_tokens';
 import {TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement, RNode} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
+import {CLEANUP, CONTEXT, INJECTOR, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 import {
@@ -25,15 +26,21 @@ import {wrapListener} from '../view/listeners';
 import {loadComponentRenderer} from './shared';
 
 /**
- * Contains a reference to a function that disables event replay feature
+ * Represents a signature of a function that disables event replay feature
  * for server-side rendered applications. This function is overridden with
  * an actual implementation when the event replay feature is enabled via
  * `withEventReplay()` call.
  */
-let stashEventListener = (el: RNode, eventName: string, listenerFn: (e?: any) => any) => {};
+type StashEventListener = (el: RNode, eventName: string, listenerFn: (e?: any) => any) => void;
 
-export function setStashFn(fn: typeof stashEventListener) {
-  stashEventListener = fn;
+const stashEventListeners = new Map<string, StashEventListener>();
+
+export function setStashFn(appId: string, fn: StashEventListener) {
+  stashEventListeners.set(appId, fn);
+}
+
+export function clearStashFn(appId: string) {
+  stashEventListeners.delete(appId);
 }
 
 /**
@@ -211,7 +218,9 @@ export function listenerInternal(
       processOutputs = false;
     } else {
       listenerFn = wrapListener(tNode, lView, listenerFn);
-      stashEventListener(target as RElement, eventName, listenerFn);
+      const appId = lView[INJECTOR].get(APP_ID);
+      const stashEventListener = stashEventListeners.get(appId);
+      stashEventListener?.(target as RElement, eventName, listenerFn);
       const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
       ngDevMode && ngDevMode.rendererAddEventListener++;
 
