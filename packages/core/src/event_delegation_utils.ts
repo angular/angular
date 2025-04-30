@@ -7,10 +7,12 @@
  */
 
 // tslint:disable:no-duplicate-imports
-import {EventContract} from '../primitives/event-dispatch';
+import type {EventContract} from '../primitives/event-dispatch';
 import {Attribute} from '../primitives/event-dispatch';
+import {APP_ID} from './application/application_tokens';
 import {InjectionToken} from './di';
-import {RElement} from './render3/interfaces/renderer_dom';
+import type {RElement, RNode} from './render3/interfaces/renderer_dom';
+import {INJECTOR, type LView} from './render3/interfaces/view';
 
 export const DEFER_BLOCK_SSR_ID_ATTRIBUTE = 'ngb';
 
@@ -107,5 +109,91 @@ export function invokeListeners(event: Event, currentTarget: Element | null) {
   }
   for (const handler of handlerFns) {
     handler(event);
+  }
+}
+
+/** Shorthand for an event listener callback function to reduce duplication. */
+export type EventCallback = (event?: any) => any;
+
+/** Utility type used to make it harder to swap a wrapped and unwrapped callback. */
+export type WrappedEventCallback = EventCallback & {__wrapped: boolean};
+
+/**
+ * Represents a signature of a function that disables event replay feature
+ * for server-side rendered applications. This function is overridden with
+ * an actual implementation when the event replay feature is enabled via
+ * `withEventReplay()` call.
+ */
+type StashEventListener = (el: RNode, eventName: string, listenerFn: EventCallback) => void;
+
+const stashEventListeners = new Map<string, StashEventListener>();
+
+/**
+ * Registers a stashing function for a specific application ID.
+ *
+ * @param appId The unique identifier for the application instance.
+ * @param fn The stashing function to associate with this app ID.
+ * @returns A cleanup function that removes the stashing function when called.
+ */
+export function setStashFn(appId: string, fn: StashEventListener) {
+  stashEventListeners.set(appId, fn);
+  return () => stashEventListeners.delete(appId);
+}
+
+/**
+ * Indicates whether the stashing code was added, prevents adding it multiple times.
+ */
+let isStashEventListenerImplEnabled = false;
+
+let _stashEventListenerImpl = (
+  lView: LView,
+  target: RElement | EventTarget,
+  eventName: string,
+  wrappedListener: WrappedEventCallback,
+) => {};
+
+/**
+ * Optionally stashes an event listener for later replay during hydration.
+ *
+ * This function delegates to an internal `_stashEventListenerImpl`, which may
+ * be a no-op unless the event replay feature is enabled. When active, this
+ * allows capturing event listener metadata before hydration completes, so that
+ * user interactions during SSR can be replayed.
+ *
+ * @param lView The logical view (LView) where the listener is being registered.
+ * @param target The DOM element or event target the listener is attached to.
+ * @param eventName The name of the event being listened for (e.g., 'click').
+ * @param wrappedListener The event handler that was registered.
+ */
+export function stashEventListenerImpl(
+  lView: LView,
+  target: RElement | EventTarget,
+  eventName: string,
+  wrappedListener: WrappedEventCallback,
+): void {
+  _stashEventListenerImpl(lView, target, eventName, wrappedListener);
+}
+
+/**
+ * Enables the event listener stashing logic in a tree-shakable way.
+ *
+ * This function lazily sets the implementation of `_stashEventListenerImpl`
+ * so that it becomes active only when `withEventReplay` is invoked. This ensures
+ * that the stashing logic is excluded from production builds unless needed.
+ */
+export function enableStashEventListenerImpl(): void {
+  if (!isStashEventListenerImplEnabled) {
+    _stashEventListenerImpl = (
+      lView: LView,
+      target: RElement | EventTarget,
+      eventName: string,
+      wrappedListener: EventCallback,
+    ) => {
+      const appId = lView[INJECTOR].get(APP_ID);
+      const stashEventListener = stashEventListeners.get(appId);
+      stashEventListener?.(target as RElement, eventName, wrappedListener);
+    };
+
+    isStashEventListenerImplEnabled = true;
   }
 }
