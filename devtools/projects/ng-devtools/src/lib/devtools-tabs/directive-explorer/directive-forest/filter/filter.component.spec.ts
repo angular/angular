@@ -59,47 +59,53 @@ describe('FilterComponent', () => {
     expect(getMatchesCountEl().nativeElement.innerText).toEqual('2 of 5');
   });
 
-  it('should emit a filter function that returns null, if no match', () => {
+  it('should emit a default filter function that returns an empty matches array, if no match', () => {
     component.filter.subscribe((filterFn) => {
       const match = filterFn('Foo Bar');
 
-      expect(match).toBeFalsy();
+      expect(match.length).toEqual(0);
     });
 
     emitFilterEvent('Baz');
   });
 
-  it('should emit a filter function that returns match indices, if there is a match', () => {
+  it('should emit a default filter function that returns match indices, if there is a match', () => {
     component.filter.subscribe((filterFn) => {
-      const match = filterFn('Foo Bar');
+      const matches = filterFn('Foo Bar');
 
-      expect(match).toBeTruthy();
-      expect(match?.startIdx).toEqual(4);
-      expect(match?.endIdx).toEqual(7);
+      expect(matches.length).toEqual(1);
+
+      const [match] = matches;
+      expect(match.startIdx).toEqual(4);
+      expect(match.endIdx).toEqual(7);
     });
 
     emitFilterEvent('Bar');
   });
 
-  it('should emit a filter function that returns match indices, if there is a full match', () => {
+  it('should emit a default filter function that returns match indices, if there is a full match', () => {
     component.filter.subscribe((filterFn) => {
-      const match = filterFn('Foo Bar');
+      const matches = filterFn('Foo Bar');
 
-      expect(match).toBeTruthy();
-      expect(match?.startIdx).toEqual(0);
-      expect(match?.endIdx).toEqual(7);
+      expect(matches.length).toEqual(1);
+
+      const [match] = matches;
+      expect(match.startIdx).toEqual(0);
+      expect(match.endIdx).toEqual(7);
     });
 
     emitFilterEvent('Foo Bar');
   });
 
-  it('should emit a filter function that returns match indices, if there is a match (case insensitive)', () => {
+  it('should emit a default filter function that returns match indices, if there is a match (case insensitive)', () => {
     component.filter.subscribe((filterFn) => {
-      const match = filterFn('Foo Bar Baz');
+      const matches = filterFn('Foo Bar Baz');
 
-      expect(match).toBeTruthy();
-      expect(match?.startIdx).toEqual(4);
-      expect(match?.endIdx).toEqual(7);
+      expect(matches.length).toEqual(1);
+
+      const [match] = matches;
+      expect(match.startIdx).toEqual(4);
+      expect(match.endIdx).toEqual(7);
     });
 
     emitFilterEvent('bar');
