@@ -129,7 +129,8 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
     element: node.element,
     component: node.component,
     directives: node.directives.map((d) => ({position, ...d})),
-    children: node.children.map((n, i) => indexTree(n, i, position)),
+    // Not every node represents a DOM element (ex @defer blocks), we shouldn't account for them
+    children: node.children.filter((n) => n.nativeElement).map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
     hydration: node.hydration,
     defer: node.defer,
@@ -138,4 +139,5 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
 
 export const indexForest = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(
   forest: T[],
-): IndexedNode[] => forest.map((n, i) => indexTree(n, i));
+  // Not every node represents a DOM element (ex @defer blocks), we shouldn't account for them
+): IndexedNode[] => forest.filter((n) => n.nativeElement).map((n, i) => indexTree(n, i));
