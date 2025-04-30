@@ -1,3 +1,14 @@
+<a name="19.2.9"></a>
+# 19.2.9 (2025-04-30)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [946b844e0d](https://github.com/angular/angular/commit/946b844e0db7e8f2cabcaf4cb63abced62c01fc7) | fix | async EventEmitter error should not prevent stability ([#61028](https://github.com/angular/angular/pull/61028)) |
+| [dbb87026ca](https://github.com/angular/angular/commit/dbb87026ca10c5fb04fc1a350da27ea42cea7dc5) | fix | call DestroyRef on destroy callback if view is destroyed [patch] ([#61061](https://github.com/angular/angular/pull/61061)) |
+| [2e140a136a](https://github.com/angular/angular/commit/2e140a136a044a965da7f55e0d83731860671a05) | fix | prevent stash listener conflicts [patch] ([#61063](https://github.com/angular/angular/pull/61063)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.8"></a>
 # 19.2.8 (2025-04-23)
 ### forms
