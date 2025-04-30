@@ -697,7 +697,6 @@
   "split",
   "squashSegmentGroup",
   "standardizeConfig",
-  "stashEventListeners",
   "storeLViewOnDestroy",
   "storeListenerCleanup",
   "stringify",
