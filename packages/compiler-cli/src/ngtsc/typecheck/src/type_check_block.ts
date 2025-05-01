@@ -2819,7 +2819,7 @@ class Scope {
       if (
         directives === null ||
         directives.length === 0 ||
-        directives.some((dir) => dir.isComponent)
+        directives.some((dir) => dir.isComponent || !dir.isStandalone)
       ) {
         this.tcb.oobRecorder.incorrectTemplateDependencyType(this.tcb.id, directive);
         continue;
@@ -2909,7 +2909,7 @@ class Scope {
     if (
       directives === null ||
       directives.length === 0 ||
-      directives.every((dir) => !dir.isComponent)
+      directives.every((dir) => !dir.isComponent || !dir.isStandalone)
     ) {
       this.tcb.oobRecorder.incorrectTemplateDependencyType(this.tcb.id, node);
       return;
