@@ -76,7 +76,6 @@ export function createViewTransition(
 ): Promise<void> {
   const transitionOptions = injector.get(VIEW_TRANSITION_OPTIONS);
   const document = injector.get(DOCUMENT);
-  // Create promises outside the Angular zone to avoid causing extra change detections
   if (!document.startViewTransition || transitionOptions.skipNextTransition) {
     transitionOptions.skipNextTransition = false;
     // The timing of `startViewTransition` is closer to a macrotask. It won't be called
