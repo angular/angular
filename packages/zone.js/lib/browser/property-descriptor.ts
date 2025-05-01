@@ -10,14 +10,7 @@
  * @suppress {globalThis}
  */
 
-import {
-  isBrowser,
-  isIE,
-  isMix,
-  isNode,
-  ObjectGetPrototypeOf,
-  patchOnProperties,
-} from '../common/utils';
+import {isBrowser, isMix, isNode, ObjectGetPrototypeOf, patchOnProperties} from '../common/utils';
 
 export interface IgnoreProperty {
   target: any;
@@ -34,7 +27,7 @@ export function filterProperties(
   }
 
   const tip: IgnoreProperty[] = ignoreProperties.filter((ip) => ip.target === target);
-  if (!tip || tip.length === 0) {
+  if (tip.length === 0) {
     return onProperties;
   }
 
@@ -93,11 +86,11 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
       'HTMLMarqueeElement',
       'Worker',
     ]);
-    const ignoreErrorProperties = isIE()
-      ? [{target: internalWindow, ignoreProperties: ['error']}]
-      : [];
-    // in IE/Edge, onProp not exist in window object, but in WindowPrototype
-    // so we need to pass WindowPrototype to check onProp exist or not
+    const ignoreErrorProperties: IgnoreProperty[] = [];
+    // In older browsers like IE or Edge, event handler properties (e.g., `onclick`)
+    // may not be defined directly on the `window` object but on its prototype (`WindowPrototype`).
+    // To ensure complete coverage, we use the prototype when checking
+    // for and patching these properties.
     patchFilteredProperties(
       internalWindow,
       getOnEventNames(internalWindow),
@@ -118,8 +111,7 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
   ]);
   for (let i = 0; i < patchTargets.length; i++) {
     const target = _global[patchTargets[i]];
-    target &&
-      target.prototype &&
+    target?.prototype &&
       patchFilteredProperties(
         target.prototype,
         getOnEventNames(target.prototype),
