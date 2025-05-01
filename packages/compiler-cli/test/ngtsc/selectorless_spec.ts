@@ -96,7 +96,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe('Incorrect reference type. Type must be an @Component.');
+      expect(diags[0].messageText).toBe(
+        'Incorrect reference type. Type must be a standalone @Component.',
+      );
     });
 
     it('should check that selectorless directive reference is a directive class', () => {
@@ -123,7 +125,67 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe('Incorrect reference type. Type must be an @Directive.');
+      expect(diags[0].messageText).toBe(
+        'Incorrect reference type. Type must be a standalone @Directive.',
+      );
+    });
+
+    it('should check that selectorless component references are standalone', () => {
+      env.write(
+        'dep.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: '', standalone: false})
+          export class Dep {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {Dep} from './dep';
+
+          @Component({template: '<Dep/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        'Incorrect reference type. Type must be a standalone @Component.',
+      );
+    });
+
+    it('should check that selectorless directive references are standalone', () => {
+      env.write(
+        'dep.ts',
+        `
+          import {Directive} from '@angular/core';
+
+          @Directive({standalone: false})
+          export class Dep {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {Dep} from './dep';
+
+          @Component({template: '<div @Dep></div>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        'Incorrect reference type. Type must be a standalone @Directive.',
+      );
     });
 
     it('should check that the component using selectorless syntax is standalone', () => {

@@ -713,7 +713,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         node.startSourceSpan,
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE),
-        `Incorrect reference type. Type must be an ${node instanceof TmplAstComponent ? '@Component' : '@Directive'}.`,
+        `Incorrect reference type. Type must be a standalone ${node instanceof TmplAstComponent ? '@Component' : '@Directive'}.`,
       ),
     );
   }
