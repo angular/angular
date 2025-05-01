@@ -32,7 +32,7 @@ jobs:
         env:
           ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN }}
       - name: Create a PR (if necessary)
-        uses: angular/dev-infra/github-actions/create-pr-for-changes@14c3d6bd2fa5c3231be7bd4b3c0bba68c9d79e94
+        uses: angular/dev-infra/github-actions/create-pr-for-changes@a4538b2474d3c551f0217c3d1f5f3a99cf4f8eb7
         with:
           branch-prefix: update-cdk-apis
           pr-title: 'docs: update Angular CDK apis [${{github.ref_name}}]'
