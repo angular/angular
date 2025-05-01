@@ -96,6 +96,10 @@ export class TypeCheckScopeRegistry {
       };
     }
 
+    if (scope.kind === ComponentScopeKind.Selectorless) {
+      throw new Error('TODO');
+    }
+
     const isNgModuleScope = scope.kind === ComponentScopeKind.NgModule;
     const cacheKey = isNgModuleScope ? scope.ngModule : scope.component;
     const dependencies = isNgModuleScope ? scope.compilation.dependencies : scope.dependencies;

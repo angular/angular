@@ -1072,6 +1072,10 @@ export class ComponentDecoratorHandler
     const selector = analysis.meta.selector;
     const matcher = new SelectorMatcher<DirectiveMeta[]>();
     if (scope !== null) {
+      if (scope.kind === ComponentScopeKind.Selectorless) {
+        throw new Error('TODO');
+      }
+
       let {dependencies, isPoisoned} =
         scope.kind === ComponentScopeKind.NgModule ? scope.compilation : scope;
       if (
@@ -1647,6 +1651,9 @@ export class ComponentDecoratorHandler
     // Instead, directives/pipes are matched independently here, using the R3TargetBinder. This
     // is an alternative implementation of template matching which is used for template
     // type-checking and will eventually replace matching in the TemplateDefinitionBuilder.
+    if (scope.kind === ComponentScopeKind.Selectorless) {
+      throw new Error('TODO');
+    }
 
     const isModuleScope = scope.kind === ComponentScopeKind.NgModule;
     // Dependencies coming from the regular `imports` field.

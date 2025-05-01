@@ -938,6 +938,10 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return null;
     }
 
+    if (scope.kind === ComponentScopeKind.Selectorless) {
+      throw new Error('TODO');
+    }
+
     const dependencies =
       scope.kind === ComponentScopeKind.NgModule
         ? scope.compilation.dependencies
