@@ -305,6 +305,8 @@ export class DirectiveDecoratorHandler
       // Instead, we statically analyze their imports to make a direct determination.
       assumedToExportProviders: false,
       isExplicitlyDeferred: false,
+      selectorlessEnabled: false,
+      localReferencedSymbols: null,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);

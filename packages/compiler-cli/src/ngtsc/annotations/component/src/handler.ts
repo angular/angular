@@ -194,6 +194,7 @@ import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry'
 import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
 import {getProjectRelativePath} from '../../../util/src/path';
 import {ComponentScope} from '../../../scope/src/api';
+import {analyzeTemplateForSelectorless} from './selectorless';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -767,6 +768,39 @@ export class ComponentDecoratorHandler
       this.compilerHost,
     );
 
+    let selectorlessEnabled = false;
+    let localReferencedSymbols: Set<string> | null = null;
+
+    if (this.enableSelectorless) {
+      const templateAnalysis = analyzeTemplateForSelectorless(template.nodes);
+      selectorlessEnabled = templateAnalysis.isSelectorless;
+      localReferencedSymbols = templateAnalysis.localReferencedSymbols;
+    }
+
+    if (selectorlessEnabled) {
+      if (!metadata.isStandalone) {
+        isPoisoned = true;
+        diagnostics ??= [];
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.COMPONENT_NOT_STANDALONE,
+            component.get('standalone') || node.name,
+            `Cannot use selectorless with a component that is not standalone`,
+          ),
+        );
+      } else if (rawImports || rawDeferredImports) {
+        isPoisoned = true;
+        diagnostics ??= [];
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.UNSUPPORTED_SELECTORLESS_COMPONENT_FIELD,
+            (rawImports || rawDeferredImports)!,
+            `Cannot use the "${rawImports === null ? 'deferredImports' : 'imports'}" field in a selectorless components`,
+          ),
+        );
+      }
+    }
+
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
     // component.
@@ -906,6 +940,8 @@ export class ComponentDecoratorHandler
         outputs,
         hostDirectives,
         rawHostDirectives,
+        selectorlessEnabled,
+        localReferencedSymbols,
         meta: {
           ...metadata,
           template,
@@ -1014,6 +1050,8 @@ export class ComponentDecoratorHandler
       ngContentSelectors: analysis.template.ngContentSelectors,
       preserveWhitespaces: analysis.template.preserveWhitespaces ?? false,
       isExplicitlyDeferred: false,
+      selectorlessEnabled: analysis.selectorlessEnabled,
+      localReferencedSymbols: analysis.localReferencedSymbols,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);

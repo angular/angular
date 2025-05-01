@@ -173,6 +173,11 @@ export enum ErrorCode {
    */
   INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE = 2025,
 
+  /**
+   * Raised for `@Component` fields that aren't supported in a selectorless context.
+   */
+  UNSUPPORTED_SELECTORLESS_COMPONENT_FIELD = 2026,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
