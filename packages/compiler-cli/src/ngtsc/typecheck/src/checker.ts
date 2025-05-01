@@ -46,7 +46,14 @@ import {
   isNamedClassDeclaration,
   ReflectionHost,
 } from '../../reflection';
-import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
+import {
+  ComponentScopeKind,
+  ComponentScopeReader,
+  StandaloneScope,
+  TypeCheckScopeRegistry,
+  LocalModuleScope,
+  ComponentScope,
+} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
 import {
@@ -694,12 +701,21 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getPotentialTemplateDirectives(component: ts.ClassDeclaration): PotentialDirective[] {
+    const scope = this.getComponentScope(component);
+
+    // Don't resolve directives for selectorless components since they're already in the file.
+    if (scope?.kind === ComponentScopeKind.Selectorless) {
+      return [];
+    }
+
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
-    const inScopeDirectives = this.getScopeData(component)?.directives ?? [];
     const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
-    // First, all in scope directives can be used.
-    for (const d of inScopeDirectives) {
-      resultingDirectives.set(d.ref.node, d);
+    if (scope !== null) {
+      const inScopeDirectives = this.getScopeData(component, scope)?.directives ?? [];
+      // First, all in scope directives can be used.
+      for (const d of inScopeDirectives) {
+        resultingDirectives.set(d.ref.node, d);
+      }
     }
     // Any additional directives found from the global registry can be used, but are not in scope.
     // In the future, we can also walk other registries for .d.ts files, or traverse the
@@ -716,12 +732,21 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getPotentialPipes(component: ts.ClassDeclaration): PotentialPipe[] {
+    const scope = this.getComponentScope(component);
+
+    // Don't resolve pipes for selectorless components since they're already in the file.
+    if (scope?.kind === ComponentScopeKind.Selectorless) {
+      return [];
+    }
+
     // Very similar to the above `getPotentialTemplateDirectives`, but on pipes.
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
-    const inScopePipes = this.getScopeData(component)?.pipes ?? [];
     const resultingPipes = new Map<ClassDeclaration<DeclarationNode>, PotentialPipe>();
-    for (const p of inScopePipes) {
-      resultingPipes.set(p.ref.node, p);
+    if (scope !== null) {
+      const inScopePipes = this.getScopeData(component, scope)?.pipes ?? [];
+      for (const p of inScopePipes) {
+        resultingPipes.set(p.ref.node, p);
+      }
     }
     for (const pipeClass of this.localMetaReader.getKnown(MetaKind.Pipe)) {
       const pipeMeta = this.metaReader.getPipeMetadata(new Reference(pipeClass));
@@ -924,22 +949,19 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return imports;
   }
 
-  private getScopeData(component: ts.ClassDeclaration): ScopeData | null {
-    if (this.scopeCache.has(component)) {
-      return this.scopeCache.get(component)!;
-    }
-
+  private getComponentScope(component: ts.ClassDeclaration): ComponentScope | null {
     if (!isNamedClassDeclaration(component)) {
       throw new Error(`AssertionError: components must have names`);
     }
+    return this.componentScopeReader.getScopeForComponent(component);
+  }
 
-    const scope = this.componentScopeReader.getScopeForComponent(component);
-    if (scope === null) {
-      return null;
-    }
-
-    if (scope.kind === ComponentScopeKind.Selectorless) {
-      throw new Error('TODO');
+  private getScopeData(
+    component: ts.ClassDeclaration,
+    scope: LocalModuleScope | StandaloneScope,
+  ): ScopeData | null {
+    if (this.scopeCache.has(component)) {
+      return this.scopeCache.get(component)!;
     }
 
     const dependencies =
