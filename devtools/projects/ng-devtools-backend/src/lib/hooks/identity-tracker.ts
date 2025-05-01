@@ -124,13 +124,21 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
   parentPosition: number[] = [],
 ): IndexedNode => {
   const position = parentPosition.concat([idx]);
+
+  // Not every node represents a DOM element (ex @defer blocks), we shouldn't account for them
+  const children: IndexedNode[] = [];
+  node.children.forEach((n, i) => {
+    if (n.nativeElement) {
+      children.push(indexTree(n, i, position));
+    }
+  });
+
   return {
     position,
     element: node.element,
     component: node.component,
     directives: node.directives.map((d) => ({position, ...d})),
-    // Not every node represents a DOM element (ex @defer blocks), we shouldn't account for them
-    children: node.children.filter((n) => n.nativeElement).map((n, i) => indexTree(n, i, position)),
+    children,
     nativeElement: node.nativeElement,
     hydration: node.hydration,
     defer: node.defer,
