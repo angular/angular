@@ -232,8 +232,10 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
   }
 
   desc.set = function (this: EventSource, newValue) {
-    // in some of windows's onproperty callback, this is undefined
-    // so we need to check it
+    // In some versions of Windows, the `this` context may be undefined
+    // in on-property callbacks.
+    // To handle this edge case, we check if `this` is falsy and
+    // fallback to `_global` if needed.
     let target = this;
     if (!target && obj === _global) {
       target = _global;
@@ -247,9 +249,10 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
       target.removeEventListener(eventName, wrapFn);
     }
 
-    // issue #978, when onload handler was added before loading zone.js
-    // we should remove it with originalDescSet
-    originalDescSet && originalDescSet.call(target, null);
+    // https://github.com/angular/zone.js/issues/978
+    // If an inline handler (like `onload`) was defined before zone.js was loaded,
+    // call the original descriptor's setter to clean it up.
+    originalDescSet?.call(target, null);
     (target as any)[eventNameSymbol] = newValue;
     if (typeof newValue === 'function') {
       target.addEventListener(eventName, wrapFn, false);
@@ -541,16 +544,6 @@ export function attachOriginToPatched(patched: Function, original: any) {
 
 let isDetectedIEOrEdge = false;
 let ieOrEdge = false;
-
-export function isIE() {
-  try {
-    const ua = internalWindow.navigator.userAgent;
-    if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1) {
-      return true;
-    }
-  } catch (error) {}
-  return false;
-}
 
 export function isIEOrEdge() {
   if (isDetectedIEOrEdge) {
