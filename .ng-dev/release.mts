@@ -2,6 +2,7 @@ import {ReleaseConfig} from '@angular/ng-dev';
 
 /** Configuration for the `ng-dev release` command. */
 export const release: ReleaseConfig = {
+  rulesJsInteropMode: true,
   publishRegistry: 'https://wombat-dressing-room.appspot.com',
   representativeNpmPackage: '@angular/core',
   npmPackages: [
