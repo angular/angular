@@ -520,7 +520,9 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
 class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
     ngDoCheck(): void;
+    // @deprecated
     set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null);
+    // @deprecated
     set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>);
     set ngForTrackBy(fn: TrackByFunction<T>);
     // (undocumented)
@@ -558,8 +560,11 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
 // @public @deprecated
 export class NgIf<T = unknown> {
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
+    // @deprecated
     set ngIf(condition: T);
+    // @deprecated
     set ngIfElse(templateRef: TemplateRef<NgIfContext<T>> | null);
+    // @deprecated
     set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null);
     static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false | 0 | '' | null | undefined>>;
     static ngTemplateGuard_ngIf: 'binding';
@@ -684,7 +689,7 @@ export class NgStyle implements DoCheck {
 
 // @public @deprecated
 export class NgSwitch {
-    // (undocumented)
+    // @deprecated (undocumented)
     set ngSwitch(newValue: any);
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitch, "[ngSwitch]", never, { "ngSwitch": { "alias": "ngSwitch"; "required": false; }; }, {}, never, never, true, never>;
@@ -696,6 +701,7 @@ export class NgSwitch {
 export class NgSwitchCase implements DoCheck {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
     ngDoCheck(): void;
+    // @deprecated
     ngSwitchCase: any;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitchCase, "[ngSwitchCase]", never, { "ngSwitchCase": { "alias": "ngSwitchCase"; "required": false; }; }, {}, never, never, true, never>;

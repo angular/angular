@@ -124,6 +124,7 @@ export class NgSwitch {
   private _lastCasesMatched = false;
   private _ngSwitch: any;
 
+  /** @deprecated Use the @switch block instead. Intent to remove in v22 */
   @Input()
   set ngSwitch(newValue: any) {
     this._ngSwitch = newValue;
@@ -206,6 +207,7 @@ export class NgSwitchCase implements DoCheck {
   private _view: SwitchView;
   /**
    * Stores the HTML template to be selected on match.
+   * @deprecated Use the @case block within a @switch block instead. Intent to remove in v22
    */
   @Input() ngSwitchCase: any;
 
