@@ -95,6 +95,7 @@ import {
   CompoundComponentScopeReader,
   LocalModuleScopeRegistry,
   MetadataDtsModuleScopeResolver,
+  SelectorlessComponentScopeReader,
   TypeCheckScopeRegistry,
 } from '../../scope';
 import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
@@ -1380,8 +1381,10 @@ export class NgCompiler {
       ngModuleScopeRegistry,
       depScopeReader,
     );
+    const selectorlessScopeReader = new SelectorlessComponentScopeReader(metaReader, reflector);
     const scopeReader: ComponentScopeReader = new CompoundComponentScopeReader([
       ngModuleScopeRegistry,
+      selectorlessScopeReader,
       standaloneScopeReader,
     ]);
     const semanticDepGraphUpdater = this.incrementalCompilation.semanticDepGraphUpdater;

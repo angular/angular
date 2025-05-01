@@ -55,6 +55,7 @@ export interface RemoteScope {
 export enum ComponentScopeKind {
   NgModule,
   Standalone,
+  Selectorless,
 }
 
 export interface LocalModuleScope extends ExportScope {
@@ -74,7 +75,15 @@ export interface StandaloneScope {
   isPoisoned: boolean;
 }
 
-export type ComponentScope = LocalModuleScope | StandaloneScope;
+export interface SelectorlessScope {
+  kind: ComponentScopeKind.Selectorless;
+  dependencies: Map<string, DirectiveMeta | PipeMeta>;
+  component: ClassDeclaration;
+  schemas: SchemaMetadata[];
+  isPoisoned: boolean;
+}
+
+export type ComponentScope = LocalModuleScope | StandaloneScope | SelectorlessScope;
 
 /**
  * Read information about the compilation scope of components.
