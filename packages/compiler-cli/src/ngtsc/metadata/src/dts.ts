@@ -219,6 +219,10 @@ export class DtsMetadataReader implements MetadataReader {
       // used to increase the accuracy of a diagnostic.
       preserveWhitespaces: false,
       isExplicitlyDeferred: false,
+      // We don't need to know if imported components from .d.ts
+      // files are selectorless for type-checking purposes.
+      selectorlessEnabled: false,
+      localReferencedSymbols: null,
     };
   }
 

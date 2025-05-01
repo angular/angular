@@ -941,6 +941,8 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         preserveWhitespaces: decl.preserveWhitespaces ?? false,
         isExplicitlyDeferred: false,
         inputFieldNamesFromMetadataArray: null,
+        selectorlessEnabled: false,
+        localReferencedSymbols: null,
         hostDirectives:
           decl.hostDirectives === undefined
             ? null
