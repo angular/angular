@@ -41,6 +41,8 @@ import {
   SelectorMatcher,
   TmplAstDeferredBlock,
   ViewEncapsulation,
+  DirectiveMatcher,
+  SelectorlessMatcher,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -1070,14 +1072,13 @@ export class ComponentDecoratorHandler
     }
     const scope = this.scopeReader.getScopeForComponent(node);
     const selector = analysis.meta.selector;
-    const matcher = new SelectorMatcher<DirectiveMeta[]>();
+    let matcher: DirectiveMatcher<DirectiveMeta> | null = null;
     if (scope !== null) {
-      if (scope.kind === ComponentScopeKind.Selectorless) {
-        throw new Error('TODO');
-      }
+      const isPoisoned =
+        scope.kind === ComponentScopeKind.NgModule
+          ? scope.compilation.isPoisoned
+          : scope.isPoisoned;
 
-      let {dependencies, isPoisoned} =
-        scope.kind === ComponentScopeKind.NgModule ? scope.compilation : scope;
       if (
         (isPoisoned || (scope.kind === ComponentScopeKind.NgModule && scope.exported.isPoisoned)) &&
         !this.usePoisonedData
@@ -1087,18 +1088,10 @@ export class ComponentDecoratorHandler
         return null;
       }
 
-      for (const dep of dependencies) {
-        if (dep.kind === MetaKind.Directive && dep.selector !== null) {
-          matcher.addSelectables(CssSelector.parse(dep.selector), [
-            ...this.hostDirectivesResolver.resolve(dep),
-            dep,
-          ]);
-        }
-      }
+      matcher = createMatcherFromScope(scope, this.hostDirectivesResolver);
     }
 
-    // TODO(crisbeto): implement for selectorless.
-    const binder = new R3TargetBinder(matcher);
+    const binder = new R3TargetBinder<DirectiveMeta>(matcher);
     const boundTemplate = binder.bind({template: analysis.template.diagNodes});
 
     context.addComponent({
@@ -1127,7 +1120,6 @@ export class ComponentDecoratorHandler
       return;
     }
 
-    // TODO(crisbeto): implement for selectorless.
     const binder = new R3TargetBinder<TypeCheckableDirectiveMeta>(scope.matcher);
     const templateContext: TemplateContext = {
       nodes: meta.template.diagNodes,
@@ -1651,15 +1643,23 @@ export class ComponentDecoratorHandler
     // Instead, directives/pipes are matched independently here, using the R3TargetBinder. This
     // is an alternative implementation of template matching which is used for template
     // type-checking and will eventually replace matching in the TemplateDefinitionBuilder.
-    if (scope.kind === ComponentScopeKind.Selectorless) {
-      throw new Error('TODO');
-    }
 
     const isModuleScope = scope.kind === ComponentScopeKind.NgModule;
-    // Dependencies coming from the regular `imports` field.
-    const dependencies = isModuleScope ? scope.compilation.dependencies : scope.dependencies;
+    const isSelectorlessScope = scope.kind === ComponentScopeKind.Selectorless;
+    let dependencies: (DirectiveMeta | PipeMeta | NgModuleMeta)[];
+
+    if (isModuleScope) {
+      dependencies = scope.compilation.dependencies;
+    } else if (isSelectorlessScope) {
+      dependencies = Array.from(scope.dependencies.values());
+    } else {
+      dependencies = scope.dependencies;
+    }
+
     // Dependencies from the `@Component.deferredImports` field.
-    const explicitlyDeferredDependencies = getExplicitlyDeferredDeps(scope);
+    const explicitlyDeferredDependencies = isSelectorlessScope
+      ? []
+      : getExplicitlyDeferredDeps(scope);
 
     // Mark the component is an NgModule-based component with its NgModule in a different file
     // then mark this file for extra import generation
@@ -1670,6 +1670,7 @@ export class ComponentDecoratorHandler
     // Make sure that `@Component.imports` and `@Component.deferredImports` do not have
     // the same dependencies.
     if (
+      !isSelectorlessScope &&
       metadata.isStandalone &&
       analysis.rawDeferredImports !== null &&
       explicitlyDeferredDependencies.length > 0
@@ -1685,8 +1686,7 @@ export class ComponentDecoratorHandler
     }
 
     // Set up the R3TargetBinder.
-    const binder = createTargetBinder(dependencies);
-
+    const binder = new R3TargetBinder(createMatcherFromScope(scope, this.hostDirectivesResolver));
     let allDependencies = dependencies;
     let deferBlockBinder = binder;
 
@@ -1696,9 +1696,16 @@ export class ComponentDecoratorHandler
     // and need to be referenced later when determining what dependencies need to be in a
     // defer function / instruction call. Otherwise they end up treated as a standard
     // import, which is wrong.
-    if (explicitlyDeferredDependencies.length > 0) {
+    if (!isSelectorlessScope && explicitlyDeferredDependencies.length > 0) {
       allDependencies = [...explicitlyDeferredDependencies, ...dependencies];
-      deferBlockBinder = createTargetBinder(allDependencies);
+
+      const deferBlockMatcher = new SelectorMatcher<DirectiveMeta[]>();
+      for (const dep of allDependencies) {
+        if (dep.kind === MetaKind.Directive && dep.selector !== null) {
+          deferBlockMatcher.addSelectables(CssSelector.parse(dep.selector), [dep]);
+        }
+      }
+      deferBlockBinder = new R3TargetBinder(deferBlockMatcher);
     }
 
     // Set up the pipes map that is later used to determine which dependencies are used in
@@ -2397,19 +2404,35 @@ export class ComponentDecoratorHandler
   }
 }
 
-/**
- * Creates an instance of a target binder based on provided dependencies.
- */
-function createTargetBinder(dependencies: Array<PipeMeta | DirectiveMeta | NgModuleMeta>) {
-  const matcher = new SelectorMatcher<DirectiveMeta[]>();
+function createMatcherFromScope(
+  scope: ComponentScope,
+  hostDirectivesResolver: HostDirectivesResolver,
+): DirectiveMatcher<DirectiveMeta> {
+  if (scope.kind === ComponentScopeKind.Selectorless) {
+    const registry = new Map<string, DirectiveMeta[]>();
+
+    for (const [name, dep] of scope.dependencies) {
+      if (dep.kind === MetaKind.Directive) {
+        registry.set(name, [dep, ...hostDirectivesResolver.resolve(dep)]);
+      }
+    }
+
+    return new SelectorlessMatcher(registry);
+  }
+
+  const matcher = new SelectorMatcher();
+  const dependencies =
+    scope.kind === ComponentScopeKind.NgModule
+      ? scope.compilation.dependencies
+      : scope.dependencies;
+
   for (const dep of dependencies) {
     if (dep.kind === MetaKind.Directive && dep.selector !== null) {
       matcher.addSelectables(CssSelector.parse(dep.selector), [dep]);
     }
   }
 
-  // TODO(crisbeto): implement for selectorless.
-  return new R3TargetBinder(matcher);
+  return matcher;
 }
 
 /**
