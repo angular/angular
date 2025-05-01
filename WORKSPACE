@@ -2,6 +2,7 @@ workspace(
     name = "angular",
 )
 
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("//:yarn.bzl", "YARN_LABEL")
 
@@ -129,7 +130,16 @@ http_archive(
 load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
 
 rules_ts_dependencies(
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.8.2 | jq -r '.dist.integrity'
+    ts_integrity = "sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==",
     ts_version_from = "//:package.json",
+)
+
+http_archive(
+    name = "aspect_rules_rollup",
+    sha256 = "c4062681968f5dcd3ce01e09e4ba73670c064744a7046211763e17c98ab8396e",
+    strip_prefix = "rules_rollup-2.0.0",
+    url = "https://github.com/aspect-build/rules_rollup/releases/download/v2.0.0/rules_rollup-v2.0.0.tar.gz",
 )
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
@@ -230,4 +240,39 @@ yarn_install(
     package_json = "//packages/core/schematics/migrations/signal-migration/test/ts-versions:package.json",
     yarn = YARN_LABEL,
     yarn_lock = "//packages/core/schematics/migrations/signal-migration/test/ts-versions:yarn.lock",
+)
+
+git_repository(
+    name = "devinfra",
+    commit = "c4f7d3cdec164044284139182b709dfd4be339ed",
+    remote = "https://github.com/angular/dev-infra.git",
+)
+
+load("@devinfra//bazel:setup_dependencies_1.bzl", "setup_dependencies_1")
+
+setup_dependencies_1()
+
+load("@devinfra//bazel:setup_dependencies_2.bzl", "setup_dependencies_2")
+
+setup_dependencies_2()
+
+git_repository(
+    name = "rules_angular",
+    commit = "0a54fca16350cab2b823908f1725aec175fcfeb2",
+    remote = "https://github.com/devversion/rules_angular.git",
+)
+
+load("@rules_angular//setup:step_1.bzl", "rules_angular_step1")
+
+rules_angular_step1()
+
+load("@rules_angular//setup:step_2.bzl", "rules_angular_step2")
+
+rules_angular_step2()
+
+load("@rules_angular//setup:step_3.bzl", "rules_angular_step3")
+
+rules_angular_step3(
+    angular_compiler_cli = "//:node_modules/@angular/compiler-cli",
+    typescript = "//:node_modules/typescript",
 )

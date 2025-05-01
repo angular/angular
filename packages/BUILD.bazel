@@ -37,7 +37,18 @@ ts_config(
 rules_js_tsconfig(
     name = "build-tsconfig",
     src = "tsconfig-build.json",
-    deps = [],
+    deps = [
+        "//:node_modules/tslib",
+    ],
+)
+
+rules_js_tsconfig(
+    name = "test-tsconfig",
+    src = "tsconfig-test.json",
+    deps = [
+        ":build-tsconfig",
+        "//:node_modules/@types/jasmine",
+    ],
 )
 
 exports_files([

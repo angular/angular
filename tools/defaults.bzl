@@ -20,6 +20,7 @@ load("@npm//typescript:index.bzl", "tsc")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
+load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
@@ -65,37 +66,6 @@ PKG_GROUP_REPLACEMENTS = {
     ]""" % ",\n      ".join(["\"%s\"" % s for s in ANGULAR_SCOPED_PACKAGES]),
 }
 
-def _default_module_name(testonly):
-    """ Provide better defaults for package names.
-
-    e.g. rather than angular/packages/core/testing we want @angular/core/testing
-
-    TODO(alexeagle): we ought to supply a default module name for every library in the repo.
-    But we short-circuit below in cases that are currently not working.
-    """
-    pkg = native.package_name()
-
-    if testonly:
-        # Some tests currently rely on the long-form package names
-        return None
-
-    if pkg.startswith("packages/bazel"):
-        # Avoid infinite recursion in the ViewEngine compiler. Error looks like:
-        #  Compiling Angular templates (ngc) //packages/bazel/test/ngc-wrapped/empty:empty failed (Exit 1)
-        # : RangeError: Maximum call stack size exceeded
-        #    at normalizeString (path.js:57:25)
-        #    at Object.normalize (path.js:1132:12)
-        #    at Object.join (path.js:1167:18)
-        #    at resolveModule (execroot/angular/bazel-out/host/bin/packages/bazel/src/ngc-wrapped/ngc-wrapped.runfiles/angular/packages/compiler-cli/src/metadata/bundler.js:582:50)
-        #    at MetadataBundler.exportAll (execroot/angular/bazel-out/host/bin/packages/bazel/src/ngc-wrapped/ngc-wrapped.runfiles/angular/packages/compiler-cli/src/metadata/bundler.js:119:42)
-        #    at MetadataBundler.exportAll (execroot/angular/bazel-out/host/bin/packages/bazel/src/ngc-wrapped/ngc-wrapped.runfiles/angular/packages/compiler-cli/src/metadata/bundler.js:121:52)
-        return None
-
-    if pkg.startswith("packages/"):
-        return "@angular/" + pkg[len("packages/"):]
-
-    return None
-
 ts_config = _ts_config
 
 def ts_library(
@@ -118,13 +88,13 @@ def ts_library(
         tsconfig = _DEFAULT_TSCONFIG_TEST
 
     if not module_name:
-        module_name = _default_module_name(testonly)
+        module_name = compute_module_name(testonly)
 
     # If no `package_name` is explicitly set, we use the default module name as package
     # name, so that the target can be resolved within NodeJS executions, by activating
     # the Bazel NodeJS linker. See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
     if not package_name:
-        package_name = _default_module_name(testonly)
+        package_name = compute_module_name(testonly)
 
     default_module = "esnext"
 
@@ -160,13 +130,13 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         tsconfig = _DEFAULT_TSCONFIG_TEST
 
     if not module_name:
-        module_name = _default_module_name(testonly)
+        module_name = compute_module_name(testonly)
 
     # If no `package_name` is explicitly set, we use the default module name as package
     # name, so that the target can be resolved within NodeJS executions, by activating
     # the Bazel NodeJS linker. See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
     if not package_name:
-        package_name = _default_module_name(testonly)
+        package_name = compute_module_name(testonly)
 
     if not entry_point:
         entry_point = "public_api.ts"
