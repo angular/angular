@@ -92,7 +92,14 @@ export function ngswAppInitializer(): void {
 
     // Don't return anything to avoid blocking the application until the SW is registered.
     // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
-    readyToRegister.then(() =>
+    readyToRegister.then(() => {
+      // If the registration strategy has resolved after the application has
+      // been explicitly destroyed by the user (e.g., by navigating away to
+      // another application), we simply should not register the worker.
+      if (appRef.destroyed) {
+        return;
+      }
+
       navigator.serviceWorker
         .register(script, {scope: options.scope})
         .catch((err) =>
@@ -103,8 +110,8 @@ export function ngswAppInitializer(): void {
                 'Service worker registration failed with: ' + err,
             ),
           ),
-        ),
-    );
+        );
+    });
   });
 }
 
