@@ -10,7 +10,7 @@ import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'fs';
 import path from 'path';
 import {CliCommand} from './cli-entities';
 import {DocEntry} from './entities';
-import {isCliEntry} from './entities/categorization';
+import {isCliEntry, isHiddenEntry} from './entities/categorization';
 import {configureMarkedGlobally} from './marked/configuration';
 import {getRenderable} from './processing';
 import {renderEntry} from './rendering';
@@ -22,7 +22,7 @@ interface EntryCollection {
   moduleName: string;
   moduleLabel?: string;
   normalizedModuleName: string;
-  entries: DocEntry[];
+  entries: DocEntry[] | CliCommand[];
   symbols: Map<string, string>;
 }
 
@@ -113,7 +113,9 @@ async function main() {
   const entryCollections: EntryCollection[] = parseEntryData(srcs.split(','));
 
   for (const collection of entryCollections) {
-    const extractedEntries = collection.entries;
+    const extractedEntries = collection.entries.filter(
+      (entry) => isCliEntry(entry) || !isHiddenEntry(entry),
+    );
 
     // Setting the symbols are a global context for the rendering templates of this entry
     setSymbols(collection.symbols);
@@ -126,10 +128,7 @@ async function main() {
     const htmlOutputs = renderableEntries.map(renderEntry);
 
     for (let i = 0; i < htmlOutputs.length; i++) {
-      const filename = getNormalizedFilename(
-        collection.normalizedModuleName,
-        collection.entries[i],
-      );
+      const filename = getNormalizedFilename(collection.normalizedModuleName, extractedEntries[i]);
       const outputPath = path.join(outputFilenameExecRootRelativePath, filename);
 
       // in case the output path is nested, ensure the directory exists

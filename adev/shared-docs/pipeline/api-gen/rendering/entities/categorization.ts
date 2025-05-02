@@ -132,6 +132,11 @@ export function isSetterEntry(entry: MemberEntry): entry is PropertyEntry {
   return entry.memberType === MemberType.Setter;
 }
 
+/** Gets whether the given entry is hidden. */
+export function isHiddenEntry<T extends HasJsDocTags>(entry: T): boolean {
+  return getTag(entry, 'docs-private', /* every */ true) ? true : false;
+}
+
 /** Gets whether the given entry is deprecated. */
 export function isDeprecatedEntry<T extends HasJsDocTags>(entry: T): boolean {
   return getTag(entry, 'deprecated', /* every */ true) ? true : false;
@@ -176,7 +181,6 @@ export function getTagSinceVersion<T extends HasJsDocTags>(
 }
 
 /** Gets whether the given entry is a cli entry. */
-export function isCliEntry(entry: unknown): entry is CliCommandRenderable;
 export function isCliEntry(entry: unknown): entry is CliCommand {
   return (entry as CliCommand).command !== undefined;
 }
