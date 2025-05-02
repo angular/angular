@@ -1,5 +1,5 @@
 import {fileSync} from 'tmp';
-import {writeSync} from 'fs';
+import {writeSync} from 'node:fs';
 import {getInput, setSecret} from '@actions/core';
 
 let credentialFilePath: undefined | string;
