@@ -15,7 +15,7 @@ esbuild_checked_in(
         "undici",
     ],
     platform = "node",
-    target = "node14",
+    target = "node20",
     deps = [
         ":lib",
     ],
