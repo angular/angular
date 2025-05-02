@@ -28,7 +28,6 @@ import {CliCommand} from '../cli-entities';
 
 import {
   ClassEntryRenderable,
-  CliCommandRenderable,
   ConstantEntryRenderable,
   DecoratorEntryRenderable,
   DocEntryRenderable,
@@ -132,6 +131,11 @@ export function isSetterEntry(entry: MemberEntry): entry is PropertyEntry {
   return entry.memberType === MemberType.Setter;
 }
 
+/** Gets whether the given entry is hidden. */
+export function isHiddenEntry<T extends HasJsDocTags>(entry: T): boolean {
+  return hasTag(entry, 'docs-private', /* every */ true);
+}
+
 /** Gets whether the given entry is deprecated. */
 export function isDeprecatedEntry<T extends HasJsDocTags>(entry: T) {
   return hasTag(entry, 'deprecated', /* every */ true);
@@ -169,7 +173,6 @@ function hasTag<T extends HasJsDocTags | FunctionEntry>(entry: T, tag: string, e
 }
 
 /** Gets whether the given entry is a cli entry. */
-export function isCliEntry(entry: unknown): entry is CliCommandRenderable;
 export function isCliEntry(entry: unknown): entry is CliCommand {
   return (entry as CliCommand).command !== undefined;
 }
