@@ -123,9 +123,6 @@ def ts_project(
             if d.endswith("_rjs"):
                 rjs_modules_to_rnjs.append(d.replace("_rjs", ""))
 
-    if tsconfig == None:
-        tsconfig = "//packages:test-tsconfig" if testonly else "//packages:build-tsconfig"
-
     ts_deps_interop(
         name = "%s_interop_deps" % name,
         deps = [] + interop_deps + rjs_modules_to_rnjs,
