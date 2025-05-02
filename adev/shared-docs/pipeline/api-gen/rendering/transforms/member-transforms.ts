@@ -7,6 +7,7 @@
  */
 
 import {MemberEntry, MemberTags, MemberType} from '../entities';
+import {isHiddenEntry} from '../entities/categorization';
 
 import {HasMembers, HasModuleName, HasRenderableMembers} from '../entities/traits';
 
@@ -65,13 +66,15 @@ export function mergeGettersAndSetters(members: MemberEntry[]): MemberEntry[] {
 export function addRenderableMembers<T extends HasMembers & HasModuleName>(
   entry: T,
 ): T & HasRenderableMembers {
-  const members = entry.members.map((member) =>
-    setEntryFlags(
-      addHtmlDescription(
-        addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(member, entry.moduleName))),
+  const members = entry.members
+    .filter((member) => !isHiddenEntry(member))
+    .map((member) =>
+      setEntryFlags(
+        addHtmlDescription(
+          addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(member, entry.moduleName))),
+        ),
       ),
-    ),
-  );
+    );
 
   return {
     ...entry,
