@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "module": "Node16",
-    "target": "es2020",
-    "lib": ["es2021", "dom"],
+    "module": "NodeNext",
+    "target": "ES2021",
+    "lib": ["es2021"],
     "experimentalDecorators": true,
     "strict": true,
     "skipLibCheck": true,

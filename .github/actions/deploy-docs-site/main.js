@@ -3357,7 +3357,6 @@ var require_dist_node3 = __commonJS({
       return obj;
     }
     function merge2(defaults, route, options) {
-      var _a;
       if (typeof route === "string") {
         let [method, url] = route.split(" ");
         options = Object.assign(url ? { method, url } : { url: method }, options);
@@ -3369,7 +3368,7 @@ var require_dist_node3 = __commonJS({
       removeUndefinedProperties2(options.headers);
       const mergedOptions = mergeDeep2(defaults || {}, options);
       if (options.url === "/graphql") {
-        if (defaults && ((_a = defaults.mediaType.previews) == null ? void 0 : _a.length)) {
+        if (defaults && defaults.mediaType.previews?.length) {
           mergedOptions.mediaType.previews = defaults.mediaType.previews.filter(
             (preview) => !mergedOptions.mediaType.previews.includes(preview)
           ).concat(mergedOptions.mediaType.previews);
@@ -3542,7 +3541,6 @@ var require_dist_node3 = __commonJS({
       }
     }
     function parse2(options) {
-      var _a;
       let method = options.method.toUpperCase();
       let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
       let headers = Object.assign({}, options.headers);
@@ -3573,7 +3571,7 @@ var require_dist_node3 = __commonJS({
           ).join(",");
         }
         if (url.endsWith("/graphql")) {
-          if ((_a = options.mediaType.previews) == null ? void 0 : _a.length) {
+          if (options.mediaType.previews?.length) {
             const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
             headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
               const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
@@ -4276,8 +4274,10 @@ var require_dist_node10 = __commonJS({
     var consoleWarn2 = console.warn.bind(console);
     var consoleError2 = console.error.bind(console);
     var userAgentTrail2 = `octokit-core.js/${VERSION9} ${(0, import_universal_user_agent5.getUserAgent)()}`;
-    var _a;
-    var Octokit3 = (_a = class {
+    var Octokit3 = class {
+      static {
+        this.VERSION = VERSION9;
+      }
       static defaults(defaults) {
         const OctokitWithDefaults = class extends this {
           constructor(...args) {
@@ -4300,15 +4300,18 @@ var require_dist_node10 = __commonJS({
         };
         return OctokitWithDefaults;
       }
+      static {
+        this.plugins = [];
+      }
       static plugin(...newPlugins) {
-        var _a2;
         const currentPlugins = this.plugins;
-        const NewOctokit = (_a2 = class extends this {
-        }, (() => {
-          _a2.plugins = currentPlugins.concat(
-            newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
-          );
-        })(), _a2);
+        const NewOctokit = class extends this {
+          static {
+            this.plugins = currentPlugins.concat(
+              newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
+            );
+          }
+        };
         return NewOctokit;
       }
       constructor(options = {}) {
@@ -4377,11 +4380,7 @@ var require_dist_node10 = __commonJS({
           Object.assign(this, classConstructor.plugins[i](this, options));
         }
       }
-    }, (() => {
-      _a.VERSION = VERSION9;
-    })(), (() => {
-      _a.plugins = [];
-    })(), _a);
+    };
   }
 });
 
@@ -9633,10 +9632,9 @@ var require_posix = __commonJS({
     exports.sync = sync;
     var checkStat = (stat, options) => stat.isFile() && checkMode(stat, options);
     var checkMode = (stat, options) => {
-      var _a, _b, _c;
-      const myUid = options.uid ?? ((_a = process.getuid) == null ? void 0 : _a.call(process));
-      const myGroups = options.groups ?? ((_b = process.getgroups) == null ? void 0 : _b.call(process)) ?? [];
-      const myGid = options.gid ?? ((_c = process.getgid) == null ? void 0 : _c.call(process)) ?? myGroups[0];
+      const myUid = options.uid ?? process.getuid?.();
+      const myGroups = options.groups ?? process.getgroups?.() ?? [];
+      const myGid = options.gid ?? process.getgid?.() ?? myGroups[0];
       if (myUid === void 0 || myGid === void 0) {
         throw new Error("cannot get uid or gid");
       }
@@ -17674,19 +17672,18 @@ var require_visit = __commonJS({
       return visitor;
     }
     function callVisitor(key, node, visitor, path) {
-      var _a, _b, _c, _d, _e;
       if (typeof visitor === "function")
         return visitor(key, node, path);
       if (identity.isMap(node))
-        return (_a = visitor.Map) == null ? void 0 : _a.call(visitor, key, node, path);
+        return visitor.Map?.(key, node, path);
       if (identity.isSeq(node))
-        return (_b = visitor.Seq) == null ? void 0 : _b.call(visitor, key, node, path);
+        return visitor.Seq?.(key, node, path);
       if (identity.isPair(node))
-        return (_c = visitor.Pair) == null ? void 0 : _c.call(visitor, key, node, path);
+        return visitor.Pair?.(key, node, path);
       if (identity.isScalar(node))
-        return (_d = visitor.Scalar) == null ? void 0 : _d.call(visitor, key, node, path);
+        return visitor.Scalar?.(key, node, path);
       if (identity.isAlias(node))
-        return (_e = visitor.Alias) == null ? void 0 : _e.call(visitor, key, node, path);
+        return visitor.Alias?.(key, node, path);
       return void 0;
     }
     function replaceNode(key, path, node) {
@@ -18001,7 +17998,7 @@ var require_toJS = __commonJS({
           ctx.onCreate(res);
         return res;
       }
-      if (typeof value === "bigint" && !(ctx == null ? void 0 : ctx.keep))
+      if (typeof value === "bigint" && !ctx?.keep)
         return Number(value);
       return value;
     }
@@ -18160,7 +18157,7 @@ var require_Scalar = __commonJS({
         this.value = value;
       }
       toJSON(arg, ctx) {
-        return (ctx == null ? void 0 : ctx.keep) ? this.value : toJS.toJS(this.value, arg, ctx);
+        return ctx?.keep ? this.value : toJS.toJS(this.value, arg, ctx);
       }
       toString() {
         return String(this.value);
@@ -18192,19 +18189,15 @@ var require_createNode = __commonJS({
           throw new Error(`Tag ${tagName} not found`);
         return tagObj;
       }
-      return tags.find((t) => {
-        var _a;
-        return ((_a = t.identify) == null ? void 0 : _a.call(t, value)) && !t.format;
-      });
+      return tags.find((t) => t.identify?.(value) && !t.format);
     }
     function createNode(value, tagName, ctx) {
-      var _a, _b, _c;
       if (identity.isDocument(value))
         value = value.contents;
       if (identity.isNode(value))
         return value;
       if (identity.isPair(value)) {
-        const map = (_b = (_a = ctx.schema[identity.MAP]).createNode) == null ? void 0 : _b.call(_a, ctx.schema, null, ctx);
+        const map = ctx.schema[identity.MAP].createNode?.(ctx.schema, null, ctx);
         map.items.push(value);
         return map;
       }
@@ -18224,7 +18217,7 @@ var require_createNode = __commonJS({
           sourceObjects.set(value, ref);
         }
       }
-      if (tagName == null ? void 0 : tagName.startsWith("!!"))
+      if (tagName?.startsWith("!!"))
         tagName = defaultTagPrefix + tagName.slice(2);
       let tagObj = findTagObject(value, tagName, schema.tags);
       if (!tagObj) {
@@ -18243,7 +18236,7 @@ var require_createNode = __commonJS({
         onTagObj(tagObj);
         delete ctx.onTagObj;
       }
-      const node = (tagObj == null ? void 0 : tagObj.createNode) ? tagObj.createNode(ctx.schema, value, ctx) : typeof ((_c = tagObj == null ? void 0 : tagObj.nodeClass) == null ? void 0 : _c.from) === "function" ? tagObj.nodeClass.from(ctx.schema, value, ctx) : new Scalar.Scalar(value);
+      const node = tagObj?.createNode ? tagObj.createNode(ctx.schema, value, ctx) : typeof tagObj?.nodeClass?.from === "function" ? tagObj.nodeClass.from(ctx.schema, value, ctx) : new Scalar.Scalar(value);
       if (tagName)
         node.tag = tagName;
       else if (!tagObj.default)
@@ -18765,12 +18758,9 @@ ${indent}${start}${value}${end}`;
       const str = value.replace(/\n+/g, `$&
 ${indent}`);
       if (actualString) {
-        const test = (tag) => {
-          var _a;
-          return tag.default && tag.tag !== "tag:yaml.org,2002:str" && ((_a = tag.test) == null ? void 0 : _a.test(str));
-        };
+        const test = (tag) => tag.default && tag.tag !== "tag:yaml.org,2002:str" && tag.test?.test(str);
         const { compat, tags } = ctx.doc.schema;
-        if (tags.some(test) || (compat == null ? void 0 : compat.some(test)))
+        if (tags.some(test) || compat?.some(test))
           return quotedString(value, ctx);
       }
       return implicitKey ? str : foldFlowLines.foldFlowLines(str, indent, foldFlowLines.FOLD_FLOW, getFoldOptions(ctx, false));
@@ -18862,7 +18852,6 @@ var require_stringify = __commonJS({
       };
     }
     function getTagObject(tags, item) {
-      var _a;
       if (item.tag) {
         const match = tags.filter((t) => t.tag === item.tag);
         if (match.length > 0)
@@ -18872,10 +18861,7 @@ var require_stringify = __commonJS({
       let obj;
       if (identity.isScalar(item)) {
         obj = item.value;
-        let match = tags.filter((t) => {
-          var _a2;
-          return (_a2 = t.identify) == null ? void 0 : _a2.call(t, obj);
-        });
+        let match = tags.filter((t) => t.identify?.(obj));
         if (match.length > 1) {
           const testMatch = match.filter((t) => t.test);
           if (testMatch.length > 0)
@@ -18887,7 +18873,7 @@ var require_stringify = __commonJS({
         tagObj = tags.find((t) => t.nodeClass && obj instanceof t.nodeClass);
       }
       if (!tagObj) {
-        const name = ((_a = obj == null ? void 0 : obj.constructor) == null ? void 0 : _a.name) ?? typeof obj;
+        const name = obj?.constructor?.name ?? typeof obj;
         throw new Error(`Tag not resolved for ${name} value`);
       }
       return tagObj;
@@ -18907,13 +18893,12 @@ var require_stringify = __commonJS({
       return props.join(" ");
     }
     function stringify(item, ctx, onComment, onChompKeep) {
-      var _a;
       if (identity.isPair(item))
         return item.toString(ctx, onComment, onChompKeep);
       if (identity.isAlias(item)) {
         if (ctx.doc.directives)
           return item.toString(ctx);
-        if ((_a = ctx.resolvedAliases) == null ? void 0 : _a.has(item)) {
+        if (ctx.resolvedAliases?.has(item)) {
           throw new TypeError(`Cannot stringify circular structure without alias nodes`);
         } else {
           if (ctx.resolvedAliases)
@@ -19078,7 +19063,7 @@ ${ctx.indent}`;
 var require_log = __commonJS({
   ""(exports) {
     "use strict";
-    var node_process = __require("process");
+    var node_process = __require("node:process");
     function debug(logLevel, ...messages) {
       if (logLevel === "debug")
         console.log(...messages);
@@ -19113,7 +19098,7 @@ var require_merge = __commonJS({
       }),
       stringify: () => MERGE_KEY
     };
-    var isMergeKey = (ctx, key) => (merge2.identify(key) || identity.isScalar(key) && (!key.type || key.type === Scalar.Scalar.PLAIN) && merge2.identify(key.value)) && (ctx == null ? void 0 : ctx.doc.schema.tags.some((tag) => tag.tag === merge2.tag && tag.default));
+    var isMergeKey = (ctx, key) => (merge2.identify(key) || identity.isScalar(key) && (!key.type || key.type === Scalar.Scalar.PLAIN) && merge2.identify(key.value)) && ctx?.doc.schema.tags.some((tag) => tag.tag === merge2.tag && tag.default);
     function addMergeToJSMap(ctx, map, value) {
       value = ctx && identity.isAlias(value) ? value.resolve(ctx.doc) : value;
       if (identity.isSeq(value))
@@ -19194,7 +19179,7 @@ var require_addPairToJSMap = __commonJS({
         return "";
       if (typeof jsKey !== "object")
         return String(jsKey);
-      if (identity.isNode(key) && (ctx == null ? void 0 : ctx.doc)) {
+      if (identity.isNode(key) && ctx?.doc) {
         const strCtx = stringify.createStringifyContext(ctx.doc, {});
         strCtx.anchors = /* @__PURE__ */ new Set();
         for (const node of ctx.anchors.keys())
@@ -19245,11 +19230,11 @@ var require_Pair = __commonJS({
         return new Pair(key, value);
       }
       toJSON(_, ctx) {
-        const pair = (ctx == null ? void 0 : ctx.mapAsMap) ? /* @__PURE__ */ new Map() : {};
+        const pair = ctx?.mapAsMap ? /* @__PURE__ */ new Map() : {};
         return addPairToJSMap.addPairToJSMap(ctx, pair, this);
       }
       toString(ctx, onComment, onChompKeep) {
-        return (ctx == null ? void 0 : ctx.doc) ? stringifyPair.stringifyPair(this, ctx, onComment, onChompKeep) : JSON.stringify(this);
+        return ctx?.doc ? stringifyPair.stringifyPair(this, ctx, onComment, onChompKeep) : JSON.stringify(this);
       }
     };
     exports.Pair = Pair;
@@ -19353,7 +19338,7 @@ ${indent}${line}` : "\n";
               comment = iv.comment;
             if (iv.commentBefore)
               reqNewline = true;
-          } else if (item.value == null && (ik == null ? void 0 : ik.comment)) {
+          } else if (item.value == null && ik?.comment) {
             comment = ik.comment;
           }
         }
@@ -19455,16 +19440,15 @@ var require_YAMLMap = __commonJS({
         return map;
       }
       add(pair, overwrite) {
-        var _a;
         let _pair;
         if (identity.isPair(pair))
           _pair = pair;
         else if (!pair || typeof pair !== "object" || !("key" in pair)) {
-          _pair = new Pair.Pair(pair, pair == null ? void 0 : pair.value);
+          _pair = new Pair.Pair(pair, pair?.value);
         } else
           _pair = new Pair.Pair(pair.key, pair.value);
         const prev = findPair(this.items, _pair.key);
-        const sortEntries = (_a = this.schema) == null ? void 0 : _a.sortMapEntries;
+        const sortEntries = this.schema?.sortMapEntries;
         if (prev) {
           if (!overwrite)
             throw new Error(`Key ${_pair.key} already set`);
@@ -19491,7 +19475,7 @@ var require_YAMLMap = __commonJS({
       }
       get(key, keepScalar) {
         const it = findPair(this.items, key);
-        const node = it == null ? void 0 : it.value;
+        const node = it?.value;
         return (!keepScalar && identity.isScalar(node) ? node.value : node) ?? void 0;
       }
       has(key) {
@@ -19501,8 +19485,8 @@ var require_YAMLMap = __commonJS({
         this.add(new Pair.Pair(key, value), true);
       }
       toJSON(_, ctx, Type) {
-        const map = Type ? new Type() : (ctx == null ? void 0 : ctx.mapAsMap) ? /* @__PURE__ */ new Map() : {};
-        if (ctx == null ? void 0 : ctx.onCreate)
+        const map = Type ? new Type() : ctx?.mapAsMap ? /* @__PURE__ */ new Map() : {};
+        if (ctx?.onCreate)
           ctx.onCreate(map);
         for (const item of this.items)
           addPairToJSMap.addPairToJSMap(ctx, map, item);
@@ -19604,7 +19588,7 @@ var require_YAMLSeq = __commonJS({
       }
       toJSON(_, ctx) {
         const seq = [];
-        if (ctx == null ? void 0 : ctx.onCreate)
+        if (ctx?.onCreate)
           ctx.onCreate(seq);
         let i = 0;
         for (const item of this.items)
@@ -19948,7 +19932,7 @@ var require_schema2 = __commonJS({
 var require_binary = __commonJS({
   ""(exports) {
     "use strict";
-    var node_buffer = __require("buffer");
+    var node_buffer = __require("node:buffer");
     var Scalar = require_Scalar();
     var stringifyString = require_stringifyString();
     var binary = {
@@ -20103,7 +20087,7 @@ var require_omap = __commonJS({
         if (!ctx)
           return super.toJSON(_);
         const map = /* @__PURE__ */ new Map();
-        if (ctx == null ? void 0 : ctx.onCreate)
+        if (ctx?.onCreate)
           ctx.onCreate(map);
         for (const pair of this.items) {
           let key, value;
@@ -20476,7 +20460,7 @@ var require_timestamp = __commonJS({
         }
         return new Date(date);
       },
-      stringify: ({ value }) => (value == null ? void 0 : value.toISOString().replace(/(T00:00:00)?\.000Z$/, "")) ?? ""
+      stringify: ({ value }) => value?.toISOString().replace(/(T00:00:00)?\.000Z$/, "") ?? ""
     };
     exports.floatTime = floatTime;
     exports.intTime = intTime;
@@ -20662,7 +20646,6 @@ var require_stringifyDocument = __commonJS({
     var stringify = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyDocument(doc, options) {
-      var _a;
       const lines = [];
       let hasDirectives = options.directives === true;
       if (options.directives !== false && doc.directives) {
@@ -20707,7 +20690,7 @@ var require_stringifyDocument = __commonJS({
       } else {
         lines.push(stringify.stringify(doc.contents, ctx));
       }
-      if ((_a = doc.directives) == null ? void 0 : _a.docEnd) {
+      if (doc.directives?.docEnd) {
         if (doc.comment) {
           const cs = commentString(doc.comment);
           if (cs.includes("\n")) {
@@ -20776,7 +20759,7 @@ var require_Document = __commonJS({
         }, options);
         this.options = opt;
         let { version } = opt;
-        if (options == null ? void 0 : options._directives) {
+        if (options?._directives) {
           this.directives = options._directives.atDocument();
           if (this.directives.yaml.explicit)
             version = this.directives.yaml.version;
@@ -21073,7 +21056,7 @@ var require_resolve_props = __commonJS({
         }
         switch (token.type) {
           case "space":
-            if (!flow && (indicator !== "doc-start" || (next == null ? void 0 : next.type) !== "flow-collection") && token.source.includes("	")) {
+            if (!flow && (indicator !== "doc-start" || next?.type !== "flow-collection") && token.source.includes("	")) {
               tab = token;
             }
             hasSpace = true;
@@ -21156,7 +21139,7 @@ var require_resolve_props = __commonJS({
       if (reqSpace && next && next.type !== "space" && next.type !== "newline" && next.type !== "comma" && (next.type !== "scalar" || next.source !== "")) {
         onError(next.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
       }
-      if (tab && (atNewline && tab.indent <= parentIndent || (next == null ? void 0 : next.type) === "block-map" || (next == null ? void 0 : next.type) === "block-seq"))
+      if (tab && (atNewline && tab.indent <= parentIndent || next?.type === "block-map" || next?.type === "block-seq"))
         onError(tab, "TAB_AS_INDENT", "Tabs are not allowed as indentation");
       return {
         comma,
@@ -21223,7 +21206,7 @@ var require_util_flow_indent_check = __commonJS({
     "use strict";
     var utilContainsNewline = require_util_contains_newline();
     function flowIndentCheck(indent, fc, onError) {
-      if ((fc == null ? void 0 : fc.type) === "flow-collection") {
+      if (fc?.type === "flow-collection") {
         const end = fc.end[0];
         if (end.indent === indent && (end.source === "]" || end.source === "}") && utilContainsNewline.containsNewline(fc)) {
           const msg = "Flow end indicator should be more indented than parent";
@@ -21263,8 +21246,7 @@ var require_resolve_block_map = __commonJS({
     var utilMapIncludes = require_util_map_includes();
     var startColMsg = "All mapping items must start at the same column";
     function resolveBlockMap({ composeNode, composeEmptyNode }, ctx, bm, onError, tag) {
-      var _a;
-      const NodeClass = (tag == null ? void 0 : tag.nodeClass) ?? YAMLMap.YAMLMap;
+      const NodeClass = tag?.nodeClass ?? YAMLMap.YAMLMap;
       const map = new NodeClass(ctx.schema);
       if (ctx.atRoot)
         ctx.atRoot = false;
@@ -21274,7 +21256,7 @@ var require_resolve_block_map = __commonJS({
         const { start, key, sep: sep2, value } = collItem;
         const keyProps = resolveProps.resolveProps(start, {
           indicator: "explicit-key-ind",
-          next: key ?? (sep2 == null ? void 0 : sep2[0]),
+          next: key ?? sep2?.[0],
           offset,
           onError,
           parentIndent: bm.indent,
@@ -21301,7 +21283,7 @@ var require_resolve_block_map = __commonJS({
           if (keyProps.newlineAfterProp || utilContainsNewline.containsNewline(key)) {
             onError(key ?? start[start.length - 1], "MULTILINE_IMPLICIT_KEY", "Implicit keys need to be on a single line");
           }
-        } else if (((_a = keyProps.found) == null ? void 0 : _a.indent) !== bm.indent) {
+        } else if (keyProps.found?.indent !== bm.indent) {
           onError(offset, "BAD_INDENT", startColMsg);
         }
         ctx.atKey = true;
@@ -21323,7 +21305,7 @@ var require_resolve_block_map = __commonJS({
         offset = valueProps.end;
         if (valueProps.found) {
           if (implicitKey) {
-            if ((value == null ? void 0 : value.type) === "block-map" && !valueProps.hasNewline)
+            if (value?.type === "block-map" && !valueProps.hasNewline)
               onError(offset, "BLOCK_AS_IMPLICIT_KEY", "Nested mappings are not allowed in compact mappings");
             if (ctx.options.strict && keyProps.start < valueProps.found.offset - 1024)
               onError(keyNode.range, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit block mapping key");
@@ -21368,7 +21350,7 @@ var require_resolve_block_seq = __commonJS({
     var resolveProps = require_resolve_props();
     var utilFlowIndentCheck = require_util_flow_indent_check();
     function resolveBlockSeq({ composeNode, composeEmptyNode }, ctx, bs, onError, tag) {
-      const NodeClass = (tag == null ? void 0 : tag.nodeClass) ?? YAMLSeq.YAMLSeq;
+      const NodeClass = tag?.nodeClass ?? YAMLSeq.YAMLSeq;
       const seq = new NodeClass(ctx.schema);
       if (ctx.atRoot)
         ctx.atRoot = false;
@@ -21471,7 +21453,7 @@ var require_resolve_flow_collection = __commonJS({
     function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onError, tag) {
       const isMap = fc.start.source === "{";
       const fcName = isMap ? "flow map" : "flow sequence";
-      const NodeClass = (tag == null ? void 0 : tag.nodeClass) ?? (isMap ? YAMLMap.YAMLMap : YAMLSeq.YAMLSeq);
+      const NodeClass = tag?.nodeClass ?? (isMap ? YAMLMap.YAMLMap : YAMLSeq.YAMLSeq);
       const coll = new NodeClass(ctx.schema);
       coll.flow = true;
       const atRoot = ctx.atRoot;
@@ -21486,7 +21468,7 @@ var require_resolve_flow_collection = __commonJS({
         const props = resolveProps.resolveProps(start, {
           flow: fcName,
           indicator: "explicit-key-ind",
-          next: key ?? (sep2 == null ? void 0 : sep2[0]),
+          next: key ?? sep2?.[0],
           offset,
           onError,
           parentIndent: fc.indent,
@@ -21671,7 +21653,6 @@ var require_compose_collection = __commonJS({
       return coll;
     }
     function composeCollection(CN, ctx, token, props, onError) {
-      var _a;
       const tagToken = props.tag;
       const tagName = !tagToken ? null : ctx.directives.tagName(tagToken.source, (msg) => onError(tagToken, "TAG_RESOLVE_FAILED", msg));
       if (token.type === "block-seq") {
@@ -21702,11 +21683,11 @@ var require_compose_collection = __commonJS({
         }
       }
       const coll = resolveCollection(CN, ctx, token, onError, tagName, tag);
-      const res = ((_a = tag.resolve) == null ? void 0 : _a.call(tag, coll, (msg) => onError(tagToken, "TAG_RESOLVE_FAILED", msg), ctx.options)) ?? coll;
+      const res = tag.resolve?.(coll, (msg) => onError(tagToken, "TAG_RESOLVE_FAILED", msg), ctx.options) ?? coll;
       const node = identity.isNode(res) ? res : new Scalar.Scalar(res);
       node.range = coll.range;
       node.tag = tagName;
-      if (tag == null ? void 0 : tag.format)
+      if (tag?.format)
         node.format = tag.format;
       return node;
     }
@@ -21885,7 +21866,7 @@ var require_resolve_block_scalar = __commonJS({
       const split = source.split(/\n( *)/);
       const first = split[0];
       const m = first.match(/^( *)/);
-      const line0 = (m == null ? void 0 : m[1]) ? [m[1], first.slice(m[1].length)] : ["", first];
+      const line0 = m?.[1] ? [m[1], first.slice(m[1].length)] : ["", first];
       const lines = [line0];
       for (let i = 1; i < split.length; i += 2)
         lines.push([split[i], split[i + 1]]);
@@ -22000,7 +21981,7 @@ var require_resolve_flow_scalar = __commonJS({
       const last = /[ \t]*(.*)/sy;
       last.lastIndex = pos;
       match = last.exec(source);
-      return res + sep2 + ((match == null ? void 0 : match[1]) ?? "");
+      return res + sep2 + (match?.[1] ?? "");
     }
     function doubleQuotedValue(source, onError) {
       let res = "";
@@ -22141,7 +22122,6 @@ var require_compose_scalar = __commonJS({
       return scalar;
     }
     function findScalarTagByName(schema, value, tagName, tagToken, onError) {
-      var _a;
       if (tagName === "!")
         return schema[identity.SCALAR];
       const matchWithTest = [];
@@ -22154,7 +22134,7 @@ var require_compose_scalar = __commonJS({
         }
       }
       for (const tag of matchWithTest)
-        if ((_a = tag.test) == null ? void 0 : _a.test(value))
+        if (tag.test?.test(value))
           return tag;
       const kt = schema.knownTags[tagName];
       if (kt && !kt.collection) {
@@ -22165,15 +22145,9 @@ var require_compose_scalar = __commonJS({
       return schema[identity.SCALAR];
     }
     function findScalarTagByTest({ atKey, directives, schema }, value, token, onError) {
-      const tag = schema.tags.find((tag2) => {
-        var _a;
-        return (tag2.default === true || atKey && tag2.default === "key") && ((_a = tag2.test) == null ? void 0 : _a.test(value));
-      }) || schema[identity.SCALAR];
+      const tag = schema.tags.find((tag2) => (tag2.default === true || atKey && tag2.default === "key") && tag2.test?.test(value)) || schema[identity.SCALAR];
       if (schema.compat) {
-        const compat = schema.compat.find((tag2) => {
-          var _a;
-          return tag2.default && ((_a = tag2.test) == null ? void 0 : _a.test(value));
-        }) ?? schema[identity.SCALAR];
+        const compat = schema.compat.find((tag2) => tag2.default && tag2.test?.test(value)) ?? schema[identity.SCALAR];
         if (tag.tag !== compat.tag) {
           const ts = directives.tagString(tag.tag);
           const cs = directives.tagString(compat.tag);
@@ -22205,7 +22179,7 @@ var require_util_empty_scalar_position = __commonJS({
               continue;
           }
           st = before[++i];
-          while ((st == null ? void 0 : st.type) === "space") {
+          while (st?.type === "space") {
             offset += st.source.length;
             st = before[++i];
           }
@@ -22339,7 +22313,7 @@ var require_compose_doc = __commonJS({
       };
       const props = resolveProps.resolveProps(start, {
         indicator: "doc-start",
-        next: value ?? (end == null ? void 0 : end[0]),
+        next: value ?? end?.[0],
         offset,
         onError,
         parentIndent: 0,
@@ -22366,7 +22340,7 @@ var require_compose_doc = __commonJS({
 var require_composer = __commonJS({
   ""(exports) {
     "use strict";
-    var node_process = __require("process");
+    var node_process = __require("node:process");
     var directives = require_directives();
     var Document = require_Document();
     var errors = require_errors();
@@ -22382,7 +22356,6 @@ var require_composer = __commonJS({
       return [offset, offset + (typeof source === "string" ? source.length : 1)];
     }
     function parsePrelude(prelude) {
-      var _a;
       let comment = "";
       let atComment = false;
       let afterEmptyLine = false;
@@ -22395,7 +22368,7 @@ var require_composer = __commonJS({
             afterEmptyLine = false;
             break;
           case "%":
-            if (((_a = prelude[i + 1]) == null ? void 0 : _a[0]) !== "#")
+            if (prelude[i + 1]?.[0] !== "#")
               i += 1;
             atComment = false;
             break;
@@ -22815,7 +22788,7 @@ var require_cst_visit = __commonJS({
     visit.itemAtPath = (cst, path) => {
       let item = cst;
       for (const [field, index] of path) {
-        const tok = item == null ? void 0 : item[field];
+        const tok = item?.[field];
         if (tok && "items" in tok) {
           item = tok.items[index];
         } else
@@ -22826,7 +22799,7 @@ var require_cst_visit = __commonJS({
     visit.parentCollection = (cst, path) => {
       const parent = visit.itemAtPath(cst, path.slice(0, -1));
       const field = path[path.length - 1][0];
-      const coll = parent == null ? void 0 : parent[field];
+      const coll = parent?.[field];
       if (coll && "items" in coll)
         return coll;
       throw new Error("Parent collection not found");
@@ -23565,7 +23538,7 @@ var require_line_counter = __commonJS({
 var require_parser = __commonJS({
   ""(exports) {
     "use strict";
-    var node_process = __require("process");
+    var node_process = __require("node:process");
     var cst = require_cst();
     var lexer = require_lexer();
     function includesToken(list, type) {
@@ -23588,7 +23561,7 @@ var require_parser = __commonJS({
       return -1;
     }
     function isFlowToken(token) {
-      switch (token == null ? void 0 : token.type) {
+      switch (token?.type) {
         case "alias":
         case "scalar":
         case "single-quoted-scalar":
@@ -23614,7 +23587,6 @@ var require_parser = __commonJS({
       }
     }
     function getFirstKeyStartProps(prev) {
-      var _a;
       if (prev.length === 0)
         return [];
       let i = prev.length;
@@ -23629,7 +23601,7 @@ var require_parser = __commonJS({
               break loop;
           }
         }
-      while (((_a = prev[++i]) == null ? void 0 : _a.type) === "space") {
+      while (prev[++i]?.type === "space") {
       }
       return prev.splice(i, prev.length);
     }
@@ -23955,7 +23927,6 @@ var require_parser = __commonJS({
         }
       }
       *blockMap(map) {
-        var _a;
         const it = map.items[map.items.length - 1];
         switch (this.type) {
           case "newline":
@@ -23963,8 +23934,8 @@ var require_parser = __commonJS({
             if (it.value) {
               const end = "end" in it.value ? it.value.end : void 0;
               const last = Array.isArray(end) ? end[end.length - 1] : void 0;
-              if ((last == null ? void 0 : last.type) === "comment")
-                end == null ? void 0 : end.push(this.sourceToken);
+              if (last?.type === "comment")
+                end?.push(this.sourceToken);
               else
                 map.items.push({ start: [this.sourceToken] });
             } else if (it.sep) {
@@ -23982,7 +23953,7 @@ var require_parser = __commonJS({
             } else {
               if (this.atIndentedComment(it.start, map.indent)) {
                 const prev = map.items[map.items.length - 2];
-                const end = (_a = prev == null ? void 0 : prev.value) == null ? void 0 : _a.end;
+                const end = prev?.value?.end;
                 if (Array.isArray(end)) {
                   Array.prototype.push.apply(end, it.start);
                   end.push(this.sourceToken);
@@ -24150,15 +24121,14 @@ var require_parser = __commonJS({
         yield* this.step();
       }
       *blockSequence(seq) {
-        var _a;
         const it = seq.items[seq.items.length - 1];
         switch (this.type) {
           case "newline":
             if (it.value) {
               const end = "end" in it.value ? it.value.end : void 0;
               const last = Array.isArray(end) ? end[end.length - 1] : void 0;
-              if ((last == null ? void 0 : last.type) === "comment")
-                end == null ? void 0 : end.push(this.sourceToken);
+              if (last?.type === "comment")
+                end?.push(this.sourceToken);
               else
                 seq.items.push({ start: [this.sourceToken] });
             } else
@@ -24171,7 +24141,7 @@ var require_parser = __commonJS({
             else {
               if (this.atIndentedComment(it.start, seq.indent)) {
                 const prev = seq.items[seq.items.length - 2];
-                const end = (_a = prev == null ? void 0 : prev.value) == null ? void 0 : _a.end;
+                const end = prev?.value?.end;
                 if (Array.isArray(end)) {
                   Array.prototype.push.apply(end, it.start);
                   end.push(this.sourceToken);
@@ -24430,7 +24400,7 @@ var require_public_api = __commonJS({
     }
     function parseAllDocuments(source, options = {}) {
       const { lineCounter: lineCounter2, prettyErrors } = parseOptions(options);
-      const parser$1 = new parser.Parser(lineCounter2 == null ? void 0 : lineCounter2.addNewLine);
+      const parser$1 = new parser.Parser(lineCounter2?.addNewLine);
       const composer$1 = new composer.Composer(options);
       const docs = Array.from(composer$1.compose(parser$1.parse(source)));
       if (prettyErrors && lineCounter2)
@@ -24444,7 +24414,7 @@ var require_public_api = __commonJS({
     }
     function parseDocument(source, options = {}) {
       const { lineCounter: lineCounter2, prettyErrors } = parseOptions(options);
-      const parser$1 = new parser.Parser(lineCounter2 == null ? void 0 : lineCounter2.addNewLine);
+      const parser$1 = new parser.Parser(lineCounter2?.addNewLine);
       const composer$1 = new composer.Composer(options);
       let doc = null;
       for (const _doc of composer$1.compose(parser$1.parse(source), true, source.length)) {
@@ -24566,15 +24536,15 @@ var import_core3 = __toESM(require_core(), 1);
 var import_github3 = __toESM(require_github(), 1);
 
 // 
-import { cp, mkdtemp, readFile, rm, writeFile } from "fs/promises";
-import { join } from "path";
-import { tmpdir } from "os";
-import { spawnSync } from "child_process";
+import { cp, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { spawnSync } from "node:child_process";
 
 // 
 var import_tmp = __toESM(require_tmp(), 1);
 var import_core = __toESM(require_core(), 1);
-import { writeSync } from "fs";
+import { writeSync } from "node:fs";
 var credentialFilePath;
 function getCredentialFilePath() {
   if (credentialFilePath === void 0) {
@@ -24832,9 +24802,9 @@ var ansiStyles = assembleStyles();
 var ansi_styles_default = ansiStyles;
 
 // 
-import process2 from "process";
-import os from "os";
-import tty from "tty";
+import process2 from "node:process";
+import os from "node:os";
+import tty from "node:tty";
 function hasFlag(flag, argv = globalThis.Deno ? globalThis.Deno.args : process2.argv) {
   const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
   const position = argv.indexOf(prefix + flag);
@@ -25135,9 +25105,9 @@ var chalkStderr = createChalk({ level: stderrColor ? stderrColor.level : 0 });
 var source_default = chalk;
 
 // 
-import process3 from "process";
-import os2 from "os";
-import tty2 from "tty";
+import process3 from "node:process";
+import os2 from "node:os";
+import tty2 from "node:tty";
 function hasFlag2(flag, argv = globalThis.Deno ? globalThis.Deno.args : process3.argv) {
   const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
   const position = argv.indexOf(prefix + flag);
@@ -25310,7 +25280,6 @@ function getEnvironmentForNonInteractiveCommand(userProvidedEnv) {
 }
 function processAsyncCmd(command, options, childProcess) {
   return new Promise((resolve, reject) => {
-    var _a, _b;
     let logOutput = "";
     let stdout = "";
     let stderr = "";
@@ -25320,14 +25289,14 @@ function processAsyncCmd(command, options, childProcess) {
       childProcess.stdin.write(options.input);
       childProcess.stdin.end();
     }
-    (_a = childProcess.stderr) == null ? void 0 : _a.on("data", (message) => {
+    childProcess.stderr?.on("data", (message) => {
       stderr += message;
       logOutput += message;
       if (options.mode === void 0 || options.mode === "enabled") {
         process.stderr.write(message);
       }
     });
-    (_b = childProcess.stdout) == null ? void 0 : _b.on("data", (message) => {
+    childProcess.stdout?.on("data", (message) => {
       stdout += message;
       logOutput += message;
       if (options.mode === void 0 || options.mode === "enabled") {
@@ -26251,7 +26220,6 @@ function removeUndefinedProperties(obj) {
   return obj;
 }
 function merge(defaults, route, options) {
-  var _a;
   if (typeof route === "string") {
     let [method, url] = route.split(" ");
     options = Object.assign(url ? { method, url } : { url: method }, options);
@@ -26263,7 +26231,7 @@ function merge(defaults, route, options) {
   removeUndefinedProperties(options.headers);
   const mergedOptions = mergeDeep(defaults || {}, options);
   if (options.url === "/graphql") {
-    if (defaults && ((_a = defaults.mediaType.previews) == null ? void 0 : _a.length)) {
+    if (defaults && defaults.mediaType.previews?.length) {
       mergedOptions.mediaType.previews = defaults.mediaType.previews.filter(
         (preview) => !mergedOptions.mediaType.previews.includes(preview)
       ).concat(mergedOptions.mediaType.previews);
@@ -26436,7 +26404,6 @@ function expand(template, context2) {
   }
 }
 function parse(options) {
-  var _a;
   let method = options.method.toUpperCase();
   let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{$1}");
   let headers = Object.assign({}, options.headers);
@@ -26467,7 +26434,7 @@ function parse(options) {
       ).join(",");
     }
     if (url.endsWith("/graphql")) {
-      if ((_a = options.mediaType.previews) == null ? void 0 : _a.length) {
+      if (options.mediaType.previews?.length) {
         const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
         headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
           const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
@@ -26566,15 +26533,14 @@ function isPlainObject2(value) {
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
 async function fetchWrapper(requestOptions) {
-  var _a, _b, _c, _d, _e;
-  const fetch2 = ((_a = requestOptions.request) == null ? void 0 : _a.fetch) || globalThis.fetch;
+  const fetch2 = requestOptions.request?.fetch || globalThis.fetch;
   if (!fetch2) {
     throw new Error(
       "fetch is not set. Please pass a fetch implementation as new Octokit({ request: { fetch }}). Learn more at https://github.com/octokit/octokit.js/#fetch-missing"
     );
   }
-  const log = ((_b = requestOptions.request) == null ? void 0 : _b.log) || console;
-  const parseSuccessResponseBody = ((_c = requestOptions.request) == null ? void 0 : _c.parseSuccessResponseBody) !== false;
+  const log = requestOptions.request?.log || console;
+  const parseSuccessResponseBody = requestOptions.request?.parseSuccessResponseBody !== false;
   const body = isPlainObject2(requestOptions.body) || Array.isArray(requestOptions.body) ? JSON.stringify(requestOptions.body) : requestOptions.body;
   const requestHeaders = Object.fromEntries(
     Object.entries(requestOptions.headers).map(([name, value]) => [
@@ -26587,9 +26553,9 @@ async function fetchWrapper(requestOptions) {
     fetchResponse = await fetch2(requestOptions.url, {
       method: requestOptions.method,
       body,
-      redirect: (_d = requestOptions.request) == null ? void 0 : _d.redirect,
+      redirect: requestOptions.request?.redirect,
       headers: requestHeaders,
-      signal: (_e = requestOptions.request) == null ? void 0 : _e.signal,
+      signal: requestOptions.request?.signal,
       ...requestOptions.body && { duplex: "half" }
     });
   } catch (error) {
@@ -26663,7 +26629,6 @@ async function fetchWrapper(requestOptions) {
   return octokitResponse;
 }
 async function getResponseData(response) {
-  var _a;
   const contentType = response.headers.get("content-type");
   if (!contentType) {
     return response.text().catch(() => "");
@@ -26677,7 +26642,7 @@ async function getResponseData(response) {
     } catch (err) {
       return text;
     }
-  } else if (mimetype.type.startsWith("text/") || ((_a = mimetype.parameters.charset) == null ? void 0 : _a.toLowerCase()) === "utf-8") {
+  } else if (mimetype.type.startsWith("text/") || mimetype.parameters.charset?.toLowerCase() === "utf-8") {
     return response.text().catch(() => "");
   } else {
     return response.arrayBuffer().catch(() => new ArrayBuffer(0));
@@ -27010,8 +26975,7 @@ function requestLog(octokit) {
       );
       return response;
     }).catch((error) => {
-      var _a;
-      const requestId = ((_a = error.response) == null ? void 0 : _a.headers["x-github-request-id"]) || "UNKNOWN";
+      const requestId = error.response?.headers["x-github-request-id"] || "UNKNOWN";
       octokit.log.error(
         `${requestOptions.method} ${path} - ${error.status} with id ${requestId} in ${Date.now() - start}ms`
       );
