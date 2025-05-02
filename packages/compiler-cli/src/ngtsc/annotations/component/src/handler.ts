@@ -1646,20 +1646,31 @@ export class ComponentDecoratorHandler
 
     const isModuleScope = scope.kind === ComponentScopeKind.NgModule;
     const isSelectorlessScope = scope.kind === ComponentScopeKind.Selectorless;
-    let dependencies: (DirectiveMeta | PipeMeta | NgModuleMeta)[];
-
-    if (isModuleScope) {
-      dependencies = scope.compilation.dependencies;
-    } else if (isSelectorlessScope) {
-      dependencies = Array.from(scope.dependencies.values());
-    } else {
-      dependencies = scope.dependencies;
-    }
+    const pipes = new Map<string, PipeMeta>();
 
     // Dependencies from the `@Component.deferredImports` field.
-    const explicitlyDeferredDependencies = isSelectorlessScope
-      ? []
-      : getExplicitlyDeferredDeps(scope);
+    const explicitlyDeferredDependencies =
+      scope.kind === ComponentScopeKind.Standalone ? scope.deferredDependencies : null;
+    const dependencies: (DirectiveMeta | PipeMeta | NgModuleMeta)[] = [];
+
+    if (isSelectorlessScope) {
+      for (const [localName, dep] of scope.dependencies) {
+        // In selectorless the pipes are referred to by their local name.
+        if (dep.kind === MetaKind.Pipe) {
+          pipes.set(localName, dep);
+        }
+        dependencies.push(dep);
+      }
+    } else {
+      const scopeDeps = isModuleScope ? scope.compilation.dependencies : scope.dependencies;
+      for (const dep of scopeDeps) {
+        // Outside of selectorless the pipes are referred to by their defined name.
+        if (dep.kind === MetaKind.Pipe) {
+          pipes.set(dep.name, dep);
+        }
+        dependencies.push(dep);
+      }
+    }
 
     // Mark the component is an NgModule-based component with its NgModule in a different file
     // then mark this file for extra import generation
@@ -1673,6 +1684,7 @@ export class ComponentDecoratorHandler
       !isSelectorlessScope &&
       metadata.isStandalone &&
       analysis.rawDeferredImports !== null &&
+      explicitlyDeferredDependencies !== null &&
       explicitlyDeferredDependencies.length > 0
     ) {
       const diagnostic = validateNoImportOverlap(
@@ -1696,21 +1708,19 @@ export class ComponentDecoratorHandler
     // and need to be referenced later when determining what dependencies need to be in a
     // defer function / instruction call. Otherwise they end up treated as a standard
     // import, which is wrong.
-    if (!isSelectorlessScope && explicitlyDeferredDependencies.length > 0) {
+    if (explicitlyDeferredDependencies !== null && explicitlyDeferredDependencies.length > 0) {
       allDependencies = [...explicitlyDeferredDependencies, ...dependencies];
 
       const deferBlockMatcher = new SelectorMatcher<DirectiveMeta[]>();
       for (const dep of allDependencies) {
-        if (dep.kind === MetaKind.Directive && dep.selector !== null) {
+        if (dep.kind === MetaKind.Pipe) {
+          pipes.set(dep.name, dep);
+        } else if (dep.kind === MetaKind.Directive && dep.selector !== null) {
           deferBlockMatcher.addSelectables(CssSelector.parse(dep.selector), [dep]);
         }
       }
       deferBlockBinder = new R3TargetBinder(deferBlockMatcher);
     }
-
-    // Set up the pipes map that is later used to determine which dependencies are used in
-    // the template.
-    const pipes = extractPipes(allDependencies);
 
     // Next, the component template AST is bound using the R3TargetBinder. This produces a
     // BoundTarget, which is similar to a ts.TypeChecker.
@@ -2433,27 +2443,6 @@ function createMatcherFromScope(
   }
 
   return matcher;
-}
-
-/**
- * Returns the list of dependencies from `@Component.deferredImports` if provided.
- */
-function getExplicitlyDeferredDeps(scope: LocalModuleScope | StandaloneScope) {
-  return scope.kind === ComponentScopeKind.NgModule
-    ? []
-    : (scope as StandaloneScope).deferredDependencies;
-}
-
-function extractPipes(
-  dependencies: Array<PipeMeta | DirectiveMeta | NgModuleMeta>,
-): Map<string, PipeMeta> {
-  const pipes = new Map<string, PipeMeta>();
-  for (const dep of dependencies) {
-    if (dep.kind === MetaKind.Pipe) {
-      pipes.set(dep.name, dep);
-    }
-  }
-  return pipes;
 }
 
 /**
