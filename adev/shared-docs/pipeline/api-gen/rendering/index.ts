@@ -10,7 +10,7 @@ import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'fs';
 import path from 'path';
 import {CliCommand} from './cli-entities';
 import {DocEntry} from './entities';
-import {isCliEntry} from './entities/categorization';
+import {isCliEntry, isHiddenEntry} from './entities/categorization';
 import {configureMarkedGlobally} from './marked/configuration';
 import {getRenderable} from './processing';
 import {renderEntry} from './rendering';
@@ -118,10 +118,12 @@ async function main() {
     // Setting the symbols are a global context for the rendering templates of this entry
     setSymbols(collection.symbols);
 
-    const renderableEntries = extractedEntries.map((entry) => {
-      setCurrentSymbol(entry.name);
-      return getRenderable(entry, collection.moduleName);
-    });
+    const renderableEntries = extractedEntries
+      .filter((entry) => !isHiddenEntry(entry))
+      .map((entry) => {
+        setCurrentSymbol(entry.name);
+        return getRenderable(entry, collection.moduleName);
+      });
 
     const htmlOutputs = renderableEntries.map(renderEntry);
 

@@ -132,6 +132,11 @@ export function isSetterEntry(entry: MemberEntry): entry is PropertyEntry {
   return entry.memberType === MemberType.Setter;
 }
 
+/** Gets whether the given entry is hidden. */
+export function isHiddenEntry<T extends HasJsDocTags>(entry: T): boolean {
+  return getTag(entry, 'docs-private', /* every */ true) ? true : false;
+}
+
 /** Gets whether the given entry is deprecated. */
 export function isDeprecatedEntry<T extends HasJsDocTags>(entry: T): boolean {
   return getTag(entry, 'deprecated', /* every */ true) ? true : false;
@@ -153,7 +158,8 @@ function getTag<T extends HasJsDocTags | FunctionEntry>(entry: T, tag: string, e
   }
 
   const jsdocTags = [
-    ...entry.jsdocTags,
+    // TODO: `?? []` not needed according to the type, but its missing in some entries.
+    ...(entry.jsdocTags ?? []),
     ...((entry as FunctionEntry).signatures?.flatMap((s) => s.jsdocTags) ?? []),
     ...((entry as FunctionEntry).implementation?.jsdocTags ?? []),
   ];
