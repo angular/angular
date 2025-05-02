@@ -210,7 +210,7 @@ export abstract class ViewContainerRef {
   ): EmbeddedViewRef<C>;
 
   /**
-   * Instantiates a given component, inserts its host view into this view container and updates the DOM.
+   * Instantiates a component and inserts its host view into this view container.
    *
    * @param componentType Component Type to use.
    * @param options An object that contains extra parameters:
