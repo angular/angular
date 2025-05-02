@@ -203,17 +203,15 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
       //   - bindings: Map of inputs, outputs, and attributes to the directive/element that claims
       //     them. TODO(alxhub): handle multiple directives claiming an input/output/etc.
       //   - references: Map of #references to their targets.
-      if (this.directiveMatcher !== null) {
-        DirectiveBinder.apply(
-          target.template,
-          this.directiveMatcher,
-          directives,
-          eagerDirectives,
-          missingDirectives,
-          bindings,
-          references,
-        );
-      }
+      DirectiveBinder.apply(
+        target.template,
+        this.directiveMatcher,
+        directives,
+        eagerDirectives,
+        missingDirectives,
+        bindings,
+        references,
+      );
 
       // Finally, run the TemplateBinder to bind references, variables, and other entities within the
       // template. This extracts all the metadata that doesn't depend on directive matching.
@@ -502,7 +500,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   private isInDeferBlock = false;
 
   private constructor(
-    private directiveMatcher: DirectiveMatcher<DirectiveT>,
+    private directiveMatcher: DirectiveMatcher<DirectiveT> | null,
     private directives: MatchedDirectives<DirectiveT>,
     private eagerDirectives: DirectiveT[],
     private missingDirectives: Set<string>,
@@ -524,7 +522,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
    */
   static apply<DirectiveT extends DirectiveMeta>(
     template: Node[],
-    directiveMatcher: DirectiveMatcher<DirectiveT>,
+    directiveMatcher: DirectiveMatcher<DirectiveT> | null,
     directives: MatchedDirectives<DirectiveT>,
     eagerDirectives: DirectiveT[],
     missingDirectives: Set<string>,
@@ -642,6 +640,12 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
       const cssSelector = createCssSelectorFromNode(node);
       this.directiveMatcher.match(cssSelector, (_, results) => directives.push(...results));
       this.trackSelectorBasedBindingsAndDirectives(node, directives);
+    } else {
+      node.references.forEach((ref) => {
+        if (ref.value.trim() === '') {
+          this.references.set(ref, node);
+        }
+      });
     }
 
     node.directives.forEach((directive) => directive.visit(this));
