@@ -158,8 +158,7 @@ function getTag<T extends HasJsDocTags | FunctionEntry>(entry: T, tag: string, e
   }
 
   const jsdocTags = [
-    // TODO: `?? []` not needed according to the type, but its missing in some entries.
-    ...(entry.jsdocTags ?? []),
+    ...entry.jsdocTags,
     ...((entry as FunctionEntry).signatures?.flatMap((s) => s.jsdocTags) ?? []),
     ...((entry as FunctionEntry).implementation?.jsdocTags ?? []),
   ];
@@ -182,7 +181,6 @@ export function getTagSinceVersion<T extends HasJsDocTags>(
 }
 
 /** Gets whether the given entry is a cli entry. */
-export function isCliEntry(entry: unknown): entry is CliCommandRenderable;
 export function isCliEntry(entry: unknown): entry is CliCommand {
   return (entry as CliCommand).command !== undefined;
 }

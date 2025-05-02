@@ -37,11 +37,16 @@ import {
 } from './transforms/jsdoc-transforms';
 import {addModuleName} from './transforms/module-name';
 import {getTypeAliasRenderable} from './transforms/type-alias-transforms';
+import {CliCommand} from './cli-entities';
 
 export function getRenderable(
-  entry: DocEntry,
+  entry: DocEntry | CliCommand,
   moduleName: string,
 ): DocEntryRenderable | CliCommandRenderable {
+  if (isCliEntry(entry)) {
+    return getCliRenderable(entry);
+  }
+
   if (isClassEntry(entry)) {
     return getClassRenderable(entry, moduleName);
   }
@@ -65,9 +70,6 @@ export function getRenderable(
   }
   if (isInitializerApiFunctionEntry(entry)) {
     return getInitializerApiFunctionRenderable(entry, moduleName);
-  }
-  if (isCliEntry(entry)) {
-    return getCliRenderable(entry);
   }
 
   // Fallback to an uncategorized renderable.
