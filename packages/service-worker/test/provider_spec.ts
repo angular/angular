@@ -364,6 +364,17 @@ async function waitForReadyToRegister() {
           );
           expect(swRegisterSpy).not.toHaveBeenCalled();
         });
+
+        it('should not register service worker if app was destroyed before it was ready to register', async () => {
+          const registerSub = new Subject<void>();
+          configTestBedWithMockedStability(() => registerSub);
+          expect(swRegisterSpy).not.toHaveBeenCalled();
+          // Given that the app is destroyed (e.g., by calling `ApplicationRef.destroy()`)
+          // before the `readyToRegister` promise resolves and `serviceWorker.register(...)` is called.
+          TestBed.resetTestingModule();
+          await waitForReadyToRegister();
+          expect(swRegisterSpy).not.toHaveBeenCalled();
+        });
       });
     });
   });
