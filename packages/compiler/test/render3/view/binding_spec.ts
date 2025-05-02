@@ -443,6 +443,17 @@ describe('t2 binding', () => {
     expect(res.getDefinitionNodeOfSymbol(secondLet)).toBe(secondBranch);
   });
 
+  it('should resolve an element reference without a directive matcher', () => {
+    const template = parseTemplate('<div #foo></div>', '');
+    const binder = new R3TargetBinder(null);
+    const res = binder.bind({template: template.nodes});
+    const node = template.nodes[0] as a.Component;
+    const reference = node.references[0];
+    const result = res.getReferenceTarget(reference) as a.Element;
+    expect(result instanceof a.Element).toBe(true);
+    expect(result.name).toBe('div');
+  });
+
   describe('matching inputs to consuming directives', () => {
     it('should work for bound attributes', () => {
       const template = parseTemplate('<div hasInput [inputBinding]="myValue"></div>', '', {});
@@ -1168,6 +1179,17 @@ describe('t2 binding', () => {
       const result = res.getReferenceTarget(reference) as {node: a.Node; directive: DirectiveMeta};
       expect(result.node).toBe(directive);
       expect(result.directive.name).toBe('Dir');
+    });
+
+    it('should resolve a reference on an element when using a selectorless matcher', () => {
+      const template = parseTemplate('<div #foo></div>', '', options);
+      const binder = new R3TargetBinder(makeSelectorlessMatcher([]));
+      const res = binder.bind({template: template.nodes});
+      const node = template.nodes[0] as a.Component;
+      const reference = node.references[0];
+      const result = res.getReferenceTarget(reference) as a.Element;
+      expect(result instanceof a.Element).toBe(true);
+      expect(result.name).toBe('div');
     });
 
     it('should get consumer of component bindings', () => {
