@@ -113,25 +113,22 @@ async function main() {
   const entryCollections: EntryCollection[] = parseEntryData(srcs.split(','));
 
   for (const collection of entryCollections) {
-    const extractedEntries = collection.entries;
+    const extractedEntries = collection.entries.filter(
+      (entry) => isCliEntry(entry) || !isHiddenEntry(entry),
+    );
 
     // Setting the symbols are a global context for the rendering templates of this entry
     setSymbols(collection.symbols);
 
-    const renderableEntries = extractedEntries
-      .filter((entry) => isCliEntry(entry) || !isHiddenEntry(entry))
-      .map((entry) => {
-        setCurrentSymbol(entry.name);
-        return getRenderable(entry, collection.moduleName);
-      });
+    const renderableEntries = extractedEntries.map((entry) => {
+      setCurrentSymbol(entry.name);
+      return getRenderable(entry, collection.moduleName);
+    });
 
     const htmlOutputs = renderableEntries.map(renderEntry);
 
     for (let i = 0; i < htmlOutputs.length; i++) {
-      const filename = getNormalizedFilename(
-        collection.normalizedModuleName,
-        collection.entries[i],
-      );
+      const filename = getNormalizedFilename(collection.normalizedModuleName, extractedEntries[i]);
       const outputPath = path.join(outputFilenameExecRootRelativePath, filename);
 
       // in case the output path is nested, ensure the directory exists
