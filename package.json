@@ -190,6 +190,7 @@
     "@types/d3": "^7.4.3",
     "@types/jsdom": "^21.1.5",
     "@types/live-server": "^1.2.3",
+    "@types/tmp": "^0.2.6",
     "@typescript/vfs": "^1.5.0",
     "@webcontainer/api": "^1.3.0-internal.2",
     "@yarnpkg/lockfile": "^1.1.0",
