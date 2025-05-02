@@ -1,7 +1,6 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
-load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
 load("//tools:defaults.bzl", "ts_config", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
@@ -92,8 +91,8 @@ filegroup(
     ],
 )
 
-generate_api_manifest(
-    name = "docs_api_manifest",
+filegroup(
+    name = "docs_extracted_apis",
     srcs = [
         "//packages/animations:animations_docs_extraction",
         "//packages/animations/browser:animations_browser_docs_extraction",
@@ -131,4 +130,5 @@ generate_api_manifest(
         "//tools/manual_api_docs/blocks",
         "//tools/manual_api_docs/elements",
     ],
+    visibility = ["//visibility:public"],
 )
