@@ -258,7 +258,7 @@ setup_dependencies_2()
 
 git_repository(
     name = "rules_angular",
-    commit = "42d4791c1c2cd8b21deaf960443dd883033fdedf",
+    commit = "f47fe935fecac02f02fe1337274207f00146a765",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
@@ -273,6 +273,6 @@ rules_angular_step2()
 load("@rules_angular//setup:step_3.bzl", "rules_angular_step3")
 
 rules_angular_step3(
-    angular_compiler_cli = "//:node_modules/@angular/compiler-cli",
+    angular_compiler_cli = "@angular//packages/compiler-cli",
     typescript = "//:node_modules/typescript",
 )

@@ -1,10 +1,10 @@
-import {cp, mkdtemp, readFile, rm, writeFile} from 'fs/promises';
-import {Deployment} from './deployments';
-import {join} from 'path';
+import {cp, mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
+import {Deployment} from './deployments.mjs';
+import {join} from 'node:path';
 
-import {tmpdir} from 'os';
-import {spawnSync} from 'child_process';
-import {getCredentialFilePath} from './credential';
+import {tmpdir} from 'node:os';
+import {spawnSync} from 'node:child_process';
+import {getCredentialFilePath} from './credential.mjs';
 
 export async function deployToFirebase(
   deployment: Deployment,
