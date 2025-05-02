@@ -11,6 +11,7 @@ import {SchemaMetadata} from '@angular/compiler';
 import {Reexport, Reference} from '../../imports';
 import {DirectiveMeta, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
+import ts from 'typescript';
 
 /**
  * Data for one of a given NgModule's scopes (either compilation scope or export scopes).
@@ -78,6 +79,7 @@ export interface StandaloneScope {
 export interface SelectorlessScope {
   kind: ComponentScopeKind.Selectorless;
   dependencies: Map<string, DirectiveMeta | PipeMeta>;
+  dependencyIdentifiers: ts.Identifier[];
   component: ClassDeclaration;
   schemas: SchemaMetadata[];
   isPoisoned: boolean;

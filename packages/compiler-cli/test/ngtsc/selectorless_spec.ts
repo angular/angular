@@ -998,5 +998,67 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
     });
+
+    it('should defer selectorless symbols', () => {
+      env.write(
+        'dep-comp.ts',
+        `
+          import { Component } from '@angular/core';
+
+          @Component({template: ''})
+          export class DepComp {}
+        `,
+      );
+
+      env.write(
+        'dep-dir.ts',
+        `
+          import { Directive } from '@angular/core';
+
+          @Directive()
+          export class DepDir {}
+        `,
+      );
+
+      env.write(
+        'dep-pipe.ts',
+        `
+          import { Pipe } from '@angular/core';
+
+          @Pipe({name: 'dep'})
+          export class DepPipe {
+            transform(value: number) {
+              return value;
+            }
+          }
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import { Component } from '@angular/core';
+          import { DepComp } from './dep-comp';
+          import { DepDir } from './dep-dir';
+          import { DepPipe } from './dep-pipe';
+
+          @Component({template: '@defer {<DepComp @DepDir>{{123 | DepPipe}}</DepComp>}'})
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).not.toContain('import { DepComp');
+      expect(jsContents).not.toContain('import { DepDir');
+      expect(jsContents).not.toContain('import { DepPipe');
+      expect(jsContents).toContain(
+        'const Comp_Defer_1_DepsFn = () => [import("./dep-comp").then(m => m.DepComp), ' +
+          'import("./dep-dir").then(m => m.DepDir), ' +
+          'import("./dep-pipe").then(m => m.DepPipe)];',
+      );
+      expect(jsContents).toContain('ɵɵdefer(1, 0, Comp_Defer_1_DepsFn);');
+    });
   });
 });
