@@ -1,19 +1,19 @@
 import {getInput, setFailed} from '@actions/core';
 import {context} from '@actions/github';
-import {deployToFirebase, setupRedirect} from './deploy';
-import {getDeployments} from './deployments';
+import {deployToFirebase, setupRedirect} from './deploy.mjs';
+import {getDeployments} from './deployments.mjs';
 import {AuthenticatedGitClient, GithubConfig, setConfig} from '@angular/ng-dev';
-import {githubReleaseTrainReadToken} from './credential';
+import {githubReleaseTrainReadToken} from './credential.mjs';
 
 const refMatcher = /refs\/heads\/(.*)/;
 
 async function deployDocs() {
   setConfig({
-    github: <GithubConfig>{
+    github: {
       mainBranchName: 'main',
       name: 'angular',
       owner: 'angular',
-    },
+    } as GithubConfig,
   });
 
   AuthenticatedGitClient.configure(githubReleaseTrainReadToken);
