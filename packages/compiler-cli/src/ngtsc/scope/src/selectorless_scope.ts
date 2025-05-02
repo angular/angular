@@ -39,6 +39,7 @@ export class SelectorlessComponentScopeReader implements ComponentScopeReader {
 
     const eligibleIdentifiers = this.getAvailableIdentifiers(node);
     const dependencies = new Map<string, DirectiveMeta | PipeMeta>();
+    const dependencyIdentifiers: ts.Identifier[] = [];
     let isPoisoned = meta.isPoisoned;
 
     for (const [name, identifier] of eligibleIdentifiers) {
@@ -50,6 +51,7 @@ export class SelectorlessComponentScopeReader implements ComponentScopeReader {
 
       if (dep !== null) {
         dependencies.set(name, dep);
+        dependencyIdentifiers.push(identifier);
 
         if (dep.kind === MetaKind.Directive && dep.isPoisoned) {
           isPoisoned = true;
@@ -61,6 +63,7 @@ export class SelectorlessComponentScopeReader implements ComponentScopeReader {
       kind: ComponentScopeKind.Selectorless,
       component: node,
       dependencies,
+      dependencyIdentifiers,
       isPoisoned,
       schemas: meta.schemas ?? [],
     };
