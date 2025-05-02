@@ -7,7 +7,7 @@
  */
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
-import type {DocEntry, EntryCollection, JsDocTagEntry, FunctionEntry} from '@angular/compiler-cli';
+import type {DocEntry, EntryCollection, FunctionEntry, JsDocTagEntry} from '@angular/compiler-cli';
 
 export interface ManifestEntry {
   name: string;
@@ -43,6 +43,11 @@ function hasTag(entry: DocEntry | FunctionEntry, tag: string, every = false) {
   return jsdocTags.some(hasTagName);
 }
 
+/** Gets whether the given entry is hidden. */
+export function isHiddenEntry<T extends DocEntry | FunctionEntry>(entry: T): boolean {
+  return hasTag(entry, 'docs-private', /* every */ true);
+}
+
 /** Gets whether the given entry is deprecated in the manifest. */
 function isDeprecated(entry: DocEntry): boolean {
   return hasTag(entry, 'deprecated', /* every */ true);
@@ -65,13 +70,15 @@ function isExperimental(entry: DocEntry): boolean {
 export function generateManifest(apiCollections: EntryCollection[]): Manifest {
   const manifest: Manifest = [];
   for (const collection of apiCollections) {
-    const entries = collection.entries.map((entry: DocEntry) => ({
-      name: entry.name,
-      type: entry.entryType,
-      isDeprecated: isDeprecated(entry),
-      isDeveloperPreview: isDeveloperPreview(entry),
-      isExperimental: isExperimental(entry),
-    }));
+    const entries = collection.entries
+      .filter((entry) => !isHiddenEntry(entry))
+      .map((entry: DocEntry) => ({
+        name: entry.name,
+        type: entry.entryType,
+        isDeprecated: isDeprecated(entry),
+        isDeveloperPreview: isDeveloperPreview(entry),
+        isExperimental: isExperimental(entry),
+      }));
 
     const existingEntry = manifest.find((entry) => entry.moduleName === collection.moduleName);
     if (existingEntry) {
