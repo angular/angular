@@ -22,7 +22,7 @@ interface EntryCollection {
   moduleName: string;
   moduleLabel?: string;
   normalizedModuleName: string;
-  entries: DocEntry[];
+  entries: DocEntry[] | CliCommand[];
   symbols: Map<string, string>;
 }
 
@@ -119,7 +119,7 @@ async function main() {
     setSymbols(collection.symbols);
 
     const renderableEntries = extractedEntries
-      .filter((entry) => !isHiddenEntry(entry))
+      .filter((entry) => isCliEntry(entry) || !isHiddenEntry(entry))
       .map((entry) => {
         setCurrentSymbol(entry.name);
         return getRenderable(entry, collection.moduleName);
