@@ -894,5 +894,109 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(`Object is possibly 'null'.`);
     });
+
+    it('should emit references to selectorless symbols', () => {
+      env.write(
+        'dep.ts',
+        `
+          import {Directive, Component, Pipe} from '@angular/core';
+
+          @Component({template: ''})
+          export class DepComp {}
+
+          @Directive()
+          export class DepDir {}
+
+          @Pipe({name: 'dep'})
+          export class DepPipe {
+            transform(value: number) {
+              return value;
+            }
+          }
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {DepComp, DepDir, DepPipe} from './dep';
+
+          @Component({template: '<DepComp @DepDir>{{123 | DepPipe}}</DepComp>'})
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('import * as i1 from "./dep";');
+      expect(jsContents).toContain('dependencies: [i1.DepComp, i1.DepDir, i1.DepPipe]');
+    });
+
+    it('should emit references to selectorless dependencies defined in the same function', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive} from '@angular/core';
+
+          // Imagine that this is Jasmine...
+          function it(name: string, callback: () => void) {
+            callback();
+          }
+
+          it('should work', () => {
+            @Directive()
+            class Dep {}
+
+            @Component({template: '<div @Dep></div>'})
+            class Comp {}
+          });
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('dependencies: [Dep]');
+    });
+
+    it('should pick the dependency closest to the class', () => {
+      env.write(
+        'dep.ts',
+        `
+        import {Directive, Input} from '@angular/core';
+
+        @Directive()
+        export class Dep {
+          @Input() value: string;
+        }
+      `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, Input} from '@angular/core';
+          import {Dep} from './dep';
+
+          export function foo() {
+            @Directive()
+            class Dep {
+              @Input() value: number;
+            }
+
+            @Component({template: '<div @Dep(value="hello")></div>'})
+            class Comp {}
+
+            return Comp;
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
+    });
   });
 });
