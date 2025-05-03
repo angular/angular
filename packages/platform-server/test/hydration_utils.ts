@@ -253,19 +253,27 @@ export async function ssr(
     enableHydration?: boolean;
   } = {},
 ): Promise<string> {
-  const defaultHtml = DEFAULT_DOCUMENT;
-  const {enableHydration = true, envProviders = [], hydrationFeatures = () => []} = options;
-  const providers = [
-    ...envProviders,
-    provideServerRendering(),
-    enableHydration ? provideClientHydration(...hydrationFeatures()) : [],
-  ];
+  try {
+    // Enter server mode for the duration of this function.
+    globalThis['ngServerMode'] = true;
 
-  const bootstrap = () => bootstrapApplication(component, {providers});
+    const defaultHtml = DEFAULT_DOCUMENT;
+    const {enableHydration = true, envProviders = [], hydrationFeatures = () => []} = options;
+    const providers = [
+      ...envProviders,
+      provideServerRendering(),
+      enableHydration ? provideClientHydration(...hydrationFeatures()) : [],
+    ];
 
-  return renderApplication(bootstrap, {
-    document: options?.doc ?? defaultHtml,
-  });
+    const bootstrap = () => bootstrapApplication(component, {providers});
+
+    return await renderApplication(bootstrap, {
+      document: options?.doc ?? defaultHtml,
+    });
+  } finally {
+    // Leave server mode so the remaining test is back in "client mode".
+    globalThis['ngServerMode'] = undefined;
+  }
 }
 
 /**
