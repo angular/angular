@@ -7,6 +7,9 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
+    interop_deps = [
+        "//packages/private/testing",
+    ],
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
