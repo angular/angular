@@ -116,7 +116,8 @@ function _document(injector: Injector) {
  * @publicApi
  */
 export function platformServer(extraProviders?: StaticProvider[] | undefined): PlatformRef {
-  if (typeof ngServerMode === 'undefined') {
+  const noServerModeSet = typeof ngServerMode === 'undefined';
+  if (noServerModeSet) {
     globalThis['ngServerMode'] = true;
   }
 
@@ -126,9 +127,11 @@ export function platformServer(extraProviders?: StaticProvider[] | undefined): P
     INTERNAL_SERVER_PLATFORM_PROVIDERS,
   )(extraProviders);
 
-  platform.onDestroy(() => {
-    globalThis['ngServerMode'] = undefined;
-  });
+  if (noServerModeSet) {
+    platform.onDestroy(() => {
+      globalThis['ngServerMode'] = undefined;
+    });
+  }
 
   return platform;
 }
