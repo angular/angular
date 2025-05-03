@@ -41,7 +41,7 @@ using an example application. To enable service worker support during local deve
 
 <docs-code language="shell">
 
-ng serve --prod
+ng serve --configuration=production
 
 </docs-code>
 
