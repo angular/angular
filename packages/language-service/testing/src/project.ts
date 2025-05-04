@@ -183,7 +183,16 @@ export class Project {
     errorCodes: readonly number[],
   ): readonly ts.CodeFixAction[] {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
-    return this.ngLS.getCodeFixesAtPosition(fileName, start, end, errorCodes, {}, {});
+    return this.ngLS.getCodeFixesAtPosition(
+      fileName,
+      start,
+      end,
+      errorCodes,
+      {},
+      {
+        includeCompletionsForModuleExports: true,
+      },
+    );
   }
 
   getRefactoringsAtPosition(

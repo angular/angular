@@ -291,6 +291,7 @@ describe('code fixes', () => {
          @Component({
            selector: 'bar',
            template: '<div>bar</div>',
+           standalone: false,
          })
          export class BarComponent {}
          @NgModule({
@@ -568,6 +569,175 @@ describe('code fixes', () => {
       actionChangesMatch(actionChanges, `Import NewBarComponent from './bar' on FooComponent`, [
         [``, `, imports: [NewBarComponent]`],
       ]);
+    });
+
+    it('for forward references in the same file', () => {
+      const standaloneFiles = {
+        'foo.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            standalone: true,
+            selector: 'one-cmp',
+            template: '<two-cmp></two-cmp>',
+          })
+          export class OneCmp {}
+
+          @Component({
+            standalone: true,
+            selector: 'two-cmp',
+            template: '<div></div>',
+          })
+          export class TwoCmp {}
+         `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('foo.ts');
+      const fixFile = project.openFile('foo.ts');
+      fixFile.moveCursorToText('<¦two-cmp>');
+
+      const codeActions = project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import TwoCmp`, [
+        [``, `import { forwardRef } from "@angular/core";`],
+        [``, `, imports: [forwardRef(() => TwoCmp)]`],
+      ]);
+    });
+
+    it('for an exported component from the node_modules', () => {
+      const standaloneFiles = {
+        'foo.ts': `
+         import {Component} from '@angular/core';
+         @Component({
+           selector: 'foo',
+           template: '<mat-card></mat-card>',
+           standalone: true
+         })
+         export class FooComponent {}
+         `,
+        'bar.ts': `
+         // make sure the @angular/common is found by the project
+         import {} from '@angular/common';
+         `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('foo.ts');
+      const fixFile = project.openFile('foo.ts');
+      fixFile.moveCursorToText('<¦mat-card>');
+
+      const codeActions = project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import MatCard from '@angular/common' on FooComponent`, [
+        [``, `import { MatCard } from "@angular/common";`],
+        [``, `, imports: [MatCard]`],
+      ]);
+    });
+
+    it('for a path from the tsconfig', () => {
+      const standaloneFiles = {
+        'src/foo.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+        'component/share/bar.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: true
+           })
+           export class BarComponent {}
+           `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles, {
+        paths: {'@app/*': ['./component/share/*.ts']},
+      });
+      const diags = project.getDiagnosticsForFile('src/foo.ts');
+      const fixFile = project.openFile('src/foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions = project.getCodeFixesAtPosition(
+        'src/foo.ts',
+        fixFile.cursor,
+        fixFile.cursor,
+        [diags[0].code],
+      );
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import BarComponent from '@app/bar' on FooComponent`, [
+        [``, `import { BarComponent } from "@app/bar";`],
+        [``, `, imports: [BarComponent]`],
+      ]);
+    });
+
+    it('for module specifier existing in the file', () => {
+      const standaloneFiles = {
+        'src/foo.ts': `
+           import {Component} from '@angular/core';
+           import { } from "../component/share/bar";
+
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+        'component/share/bar.ts': `
+           import {Component} from '@angular/core';
+
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: false
+           })
+           export class BarComponent {}
+           `,
+        'component/share/bar.module.ts': `
+            import {NgModule} from '@angular/core';
+            import {BarComponent} from './bar';
+
+            @NgModule({
+              declarations: [BarComponent],
+              exports: [BarComponent],
+              imports: []
+            })
+            export class BarModule {}
+            `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('src/foo.ts');
+      const fixFile = project.openFile('src/foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions = project.getCodeFixesAtPosition(
+        'src/foo.ts',
+        fixFile.cursor,
+        fixFile.cursor,
+        [diags[0].code],
+      );
+
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(
+        actionChanges,
+        `Import BarModule from '../component/share/bar.module' on FooComponent`,
+        [
+          [``, `import { BarModule } from "../component/share/bar.module";`],
+          [``, `, imports: [BarModule]`],
+        ],
+      );
     });
   });
 

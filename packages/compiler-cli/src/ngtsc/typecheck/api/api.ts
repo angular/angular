@@ -424,3 +424,7 @@ export interface FullSourceMapping {
   sourceMapping: SourceMapping;
   span: ParseSourceSpan;
 }
+
+export interface GetPotentialAngularMetaOptions {
+  includeExternalModule: boolean;
+}

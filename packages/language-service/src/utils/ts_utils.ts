@@ -677,6 +677,11 @@ export function printNode(node: ts.Node, sourceFile: ts.SourceFile): string {
   return getOrCreatePrinter().printNode(ts.EmitHint.Unspecified, node, sourceFile);
 }
 
+interface DirectiveModuleSpecifier {
+  moduleSpecifier: string;
+  symbolFileName: string;
+}
+
 /**
  * Get the code actions to tell the vscode how to import the directive into the standalone component or ng module.
  */
@@ -684,9 +689,18 @@ export function getCodeActionToImportTheDirectiveDeclaration(
   compiler: NgCompiler,
   importOn: ts.ClassDeclaration,
   directive: PotentialDirective | PotentialPipe,
+  directiveModuleSpecifier: DirectiveModuleSpecifier | null,
 ): ts.CodeAction[] | undefined {
   const codeActions: ts.CodeAction[] = [];
   const currMatchSymbol = directive.tsSymbol.valueDeclaration!;
+  const moduleSpecifierSourceFile = directiveModuleSpecifier
+    ? compiler.getCurrentProgram().getSourceFile(directiveModuleSpecifier.symbolFileName)
+    : currMatchSymbol.getSourceFile();
+
+  if (moduleSpecifierSourceFile === undefined) {
+    return;
+  }
+
   const potentialImports = compiler
     .getTemplateTypeChecker()
     .getPotentialImportsFor(directive.ref, importOn, PotentialImportMode.Normal);
@@ -703,8 +717,8 @@ export function getCodeActionToImportTheDirectiveDeclaration(
         importOn.getSourceFile(),
         potentialImport.symbolName,
         declarationName,
-        potentialImport.moduleSpecifier,
-        currMatchSymbol.getSourceFile(),
+        directiveModuleSpecifier?.moduleSpecifier ?? potentialImport.moduleSpecifier,
+        moduleSpecifierSourceFile,
       );
       importName = generatedImportName;
       fileImportChanges.push(...importChanges);
@@ -736,8 +750,11 @@ export function getCodeActionToImportTheDirectiveDeclaration(
     if (traitImportChanges.length === 0) continue;
 
     let description = `Import ${importName}`;
-    if (potentialImport.moduleSpecifier !== undefined) {
-      description += ` from '${potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;
+    if (
+      potentialImport.moduleSpecifier !== undefined ||
+      directiveModuleSpecifier?.moduleSpecifier !== undefined
+    ) {
+      description += ` from '${directiveModuleSpecifier?.moduleSpecifier ?? potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;
     }
     codeActions.push({
       description,
@@ -751,4 +768,64 @@ export function getCodeActionToImportTheDirectiveDeclaration(
   }
 
   return codeActions;
+}
+
+const importRegex = /\bimport\b[\s\S]*?\bfrom\b\s*(['"`])(.*?)\1/;
+/**
+ * Get the module specifier from the code actions returned by the `ls.getCompletionEntryDetails`.
+ *
+ * If the directive needs to update the import statement, the code action will include the text
+ * like `i0.FooComponent`.
+ *
+ * If the directive needs to import a new external module, the code action will include the text
+ * like `import { FooComponent } from '@foo'`. The `@foo` will be returned by the function.
+ */
+export function getModuleSpecifierFromImportStatement(
+  directive: PotentialDirective | PotentialPipe,
+  templateTypeChecker: TemplateTypeChecker,
+  component: ts.ClassDeclaration,
+  tsLS: ts.LanguageService,
+  data: ts.CompletionEntryData | undefined,
+  includeCompletionsForModuleExports: boolean | undefined,
+): string | undefined {
+  if (
+    directive.tsSymbol.declarations?.[0]?.getSourceFile().fileName ===
+    component.getSourceFile().fileName
+  ) {
+    return undefined;
+  }
+  const tsEntryName = directive.tsSymbol.name;
+
+  const globalContext = templateTypeChecker.getGlobalTsContext(component);
+  if (globalContext === null) {
+    return undefined;
+  }
+
+  const completionListDetail = tsLS.getCompletionEntryDetails(
+    globalContext.tcbPath,
+    globalContext.positionInFile,
+    tsEntryName,
+    {},
+    undefined,
+    {
+      includeCompletionsForModuleExports,
+    },
+    data,
+  );
+
+  const actions = completionListDetail?.codeActions;
+  if (actions === undefined) {
+    return undefined;
+  }
+  for (const action of actions) {
+    for (const changes of action.changes) {
+      for (const textChange of changes.textChanges) {
+        const match = importRegex.exec(textChange.newText);
+        if (match !== null) {
+          return match[2];
+        }
+      }
+    }
+  }
+  return undefined;
 }
