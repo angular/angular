@@ -42,6 +42,10 @@ import {TypeCheckData} from './context';
  */
 export class CompletionEngine {
   private componentContext: TcbLocation | null;
+  /**
+   * Get the `TcbLocation` for the global context, which is the location of the `this` variable.
+   */
+  private globalTsContext: TcbLocation | null;
 
   /**
    * Cache of completions for various levels of the template, including the root template (`null`).
@@ -78,9 +82,19 @@ export class CompletionEngine {
         // for the component context.
         positionInFile: globalRead.name.getStart(),
       };
+      this.globalTsContext = {
+        tcbPath: this.tcbPath,
+        isShimFile: this.tcbIsShim,
+        positionInFile: globalRead.name.getStart() - 1,
+      };
     } else {
       this.componentContext = null;
+      this.globalTsContext = null;
     }
+  }
+
+  getGlobalTsContext(): TcbLocation | null {
+    return this.globalTsContext;
   }
 
   /**

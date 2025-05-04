@@ -61,6 +61,7 @@ import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/
 import {
   ElementSymbol,
   FullSourceMapping,
+  GetPotentialAngularMetaOptions,
   GlobalCompletion,
   NgTemplateDiagnostic,
   OptimizeFor,
@@ -77,6 +78,7 @@ import {
   TemplateDiagnostic,
   TemplateSymbol,
   TemplateTypeChecker,
+  TsCompletionEntryInfo,
   TypeCheckableDirectiveMeta,
   TypeCheckingConfig,
 } from '../api';
@@ -723,7 +725,19 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return builder;
   }
 
-  getPotentialTemplateDirectives(component: ts.ClassDeclaration): PotentialDirective[] {
+  getGlobalTsContext(component: ts.ClassDeclaration): TcbLocation | null {
+    const engine = this.getOrCreateCompletionEngine(component);
+    if (engine === null) {
+      return null;
+    }
+    return engine.getGlobalTsContext();
+  }
+
+  getPotentialTemplateDirectives(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
+  ): PotentialDirective[] {
     const scope = this.getComponentScope(component);
 
     // Don't resolve directives for selectorless components since they're already in the file.
@@ -731,25 +745,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return [];
     }
 
-    const typeChecker = this.programDriver.getProgram().getTypeChecker();
     const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
-    if (scope !== null) {
-      const inScopeDirectives = this.getScopeData(component, scope)?.directives ?? [];
-      // First, all in scope directives can be used.
-      for (const d of inScopeDirectives) {
-        resultingDirectives.set(d.ref.node, d);
+    const directivesInScope = this.getTemplateDirectiveInScope(component);
+    const directiveInGlobal = this.getElementsInGlobal(component, tsLs, options);
+    for (const directive of [...directivesInScope, ...directiveInGlobal]) {
+      if (resultingDirectives.has(directive.ref.node)) {
+        continue;
       }
-    }
-    // Any additional directives found from the global registry can be used, but are not in scope.
-    // In the future, we can also walk other registries for .d.ts files, or traverse the
-    // import/export graph.
-    for (const directiveClass of this.localMetaReader.getKnown(MetaKind.Directive)) {
-      const directiveMeta = this.metaReader.getDirectiveMetadata(new Reference(directiveClass));
-      if (directiveMeta === null) continue;
-      if (resultingDirectives.has(directiveClass)) continue;
-      const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveMeta);
-      if (withScope === null) continue;
-      resultingDirectives.set(directiveClass, {...withScope, isInScope: false});
+      resultingDirectives.set(directive.ref.node, directive);
     }
     return Array.from(resultingDirectives.values());
   }
@@ -803,7 +806,197 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return this.metaReader.getPipeMetadata(new Reference(pipe));
   }
 
-  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, PotentialDirective | null> {
+  getTemplateDirectiveInScope(component: ts.ClassDeclaration): PotentialDirective[] {
+    const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
+
+    const scope = this.getComponentScope(component);
+
+    // Don't resolve directives for selectorless components since they're already in the file.
+    if (scope?.kind === ComponentScopeKind.Selectorless) {
+      return [];
+    }
+
+    if (scope !== null) {
+      const inScopeDirectives = this.getScopeData(component, scope)?.directives ?? [];
+      // First, all in scope directives can be used.
+      for (const d of inScopeDirectives) {
+        resultingDirectives.set(d.ref.node, d);
+      }
+    }
+
+    const typeChecker = this.programDriver.getProgram().getTypeChecker();
+    const currentComponentFileName = component.getSourceFile().fileName;
+
+    // Any additional directives found from the global registry can be used, only includes the directives includes in the current
+    // component file.
+    //
+    // This means only the inputs in the decorator are needed to be updated, no need to update the import statement.
+    for (const directiveClass of this.localMetaReader.getKnown(MetaKind.Directive)) {
+      if (directiveClass.getSourceFile().fileName !== currentComponentFileName) {
+        continue;
+      }
+      const directiveMeta = this.metaReader.getDirectiveMetadata(new Reference(directiveClass));
+      if (directiveMeta === null) continue;
+      if (resultingDirectives.has(directiveClass)) continue;
+      const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveMeta);
+      if (withScope === null) continue;
+      resultingDirectives.set(directiveClass, {...withScope, isInScope: false});
+    }
+
+    return Array.from(resultingDirectives.values());
+  }
+
+  getDirectiveScopeData(
+    component: ts.ClassDeclaration,
+    isInScope: boolean,
+    tsCompletionEntryInfo: TsCompletionEntryInfo | null,
+  ): PotentialDirective | null {
+    const typeChecker = this.programDriver.getProgram().getTypeChecker();
+    if (!isNamedClassDeclaration(component)) {
+      return null;
+    }
+
+    const directiveMeta = this.metaReader.getDirectiveMetadata(new Reference(component));
+    if (directiveMeta === null) {
+      return null;
+    }
+
+    const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveMeta);
+    if (withScope === null) {
+      return null;
+    }
+
+    return {
+      ...withScope,
+      isInScope,
+      tsCompletionEntryInfo,
+    };
+  }
+
+  getElementsInFileScope(component: ts.ClassDeclaration): Map<string, PotentialDirective | null> {
+    const tagMap = new Map<string, PotentialDirective | null>();
+
+    const potentialDirectives = this.getTemplateDirectiveInScope(component);
+
+    for (const directive of potentialDirectives) {
+      if (directive.selector === null) {
+        continue;
+      }
+
+      for (const selector of CssSelector.parse(directive.selector)) {
+        if (selector.element === null || tagMap.has(selector.element)) {
+          // Skip this directive if it doesn't match an element tag, or if another directive has
+          // already been included with the same element name.
+          continue;
+        }
+
+        tagMap.set(selector.element, directive);
+      }
+    }
+
+    return tagMap;
+  }
+
+  getElementsInGlobal(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
+  ): PotentialDirective[] {
+    // Add the additional directives from the global registry, which are not in scope and in different file with the current
+    // component file.
+    //
+    // This means the inputs and the import statement in the decorator are needed to be updated.
+    const tsContext = this.getGlobalTsContext(component);
+
+    if (tsContext === null) {
+      return [];
+    }
+
+    if (!options.includeExternalModule) {
+      return [];
+    }
+
+    const entries = tsLs.getCompletionsAtPosition(tsContext.tcbPath, tsContext.positionInFile, {
+      includeSymbol: true,
+      includeCompletionsForModuleExports: true,
+    })?.entries;
+
+    const typeChecker = this.programDriver.getProgram().getTypeChecker();
+    const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
+    const currentComponentFileName = component.getSourceFile().fileName;
+    for (const {symbol, data} of entries ?? []) {
+      const symbolFileName = symbol?.declarations?.[0]?.getSourceFile().fileName;
+      if (symbolFileName === undefined) {
+        continue;
+      }
+
+      if (symbolFileName === currentComponentFileName) {
+        continue;
+      }
+
+      const decl = getClassDeclFromSymbol(symbol, typeChecker);
+
+      if (decl === null) {
+        continue;
+      }
+
+      const directiveDecls: {
+        meta: DirectiveMeta;
+        ref: Reference<ClassDeclaration>;
+      }[] = [];
+
+      const ref = new Reference(decl);
+      const directiveMeta = this.metaReader.getDirectiveMetadata(ref);
+
+      if (directiveMeta?.isStandalone) {
+        directiveDecls.push({
+          meta: directiveMeta,
+          ref,
+        });
+      } else {
+        const ngModuleMeta = this.metaReader.getNgModuleMetadata(ref);
+        if (ngModuleMeta === null) {
+          continue;
+        }
+        for (const moduleExports of ngModuleMeta.exports) {
+          const directiveMeta = this.metaReader.getDirectiveMetadata(moduleExports);
+          if (directiveMeta === null) {
+            continue;
+          }
+          directiveDecls.push({
+            meta: directiveMeta,
+            ref: moduleExports,
+          });
+        }
+      }
+
+      for (const directiveDecl of directiveDecls) {
+        if (resultingDirectives.has(directiveDecl.ref.node)) {
+          continue;
+        }
+
+        const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveDecl.meta);
+        if (withScope === null) {
+          continue;
+        }
+        resultingDirectives.set(directiveDecl.ref.node, {
+          ...withScope,
+          isInScope: false,
+          tsCompletionEntryInfo: {
+            tsCompletionEntryData: data,
+            tsCompletionEntrySymbolFileName: symbolFileName,
+          },
+        });
+      }
+    }
+    return Array.from(resultingDirectives.values());
+  }
+
+  getPotentialElementTags(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
+  ): Map<string, PotentialDirective | null> {
     if (this.elementTagCache.has(component)) {
       return this.elementTagCache.get(component)!;
     }
@@ -814,7 +1007,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       tagMap.set(tag, null);
     }
 
-    const potentialDirectives = this.getPotentialTemplateDirectives(component);
+    const potentialDirectives = this.getPotentialTemplateDirectives(component, tsLs, options);
 
     for (const directive of potentialDirectives) {
       if (directive.selector === null) {
@@ -1044,6 +1237,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       selector: dep.selector,
       tsSymbol,
       ngModule,
+      tsCompletionEntryInfo: null,
     };
   }
 
@@ -1059,6 +1253,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       ref: dep.ref,
       name: dep.name,
       tsSymbol,
+      tsCompletionEntryInfo: null,
     };
   }
 }
@@ -1233,4 +1428,33 @@ interface ScopeData {
   directives: PotentialDirective[];
   pipes: PotentialPipe[];
   isPoisoned: boolean;
+}
+
+function getClassDeclFromSymbol(
+  symbol: ts.Symbol | undefined,
+  checker: ts.TypeChecker,
+): ClassDeclaration | null {
+  const tsDecl = symbol?.getDeclarations();
+  if (tsDecl === undefined) {
+    return null;
+  }
+  let decl = tsDecl.length > 0 ? tsDecl[0] : undefined;
+  if (decl === undefined) {
+    return null;
+  }
+
+  if (ts.isExportAssignment(decl)) {
+    const symbol = checker.getTypeAtLocation(decl.expression).symbol;
+    return getClassDeclFromSymbol(symbol, checker);
+  }
+
+  if (ts.isExportSpecifier(decl)) {
+    const symbol = checker.getTypeAtLocation(decl).symbol;
+    return getClassDeclFromSymbol(symbol, checker);
+  }
+
+  if (isNamedClassDeclaration(decl)) {
+    return decl;
+  }
+  return null;
 }
