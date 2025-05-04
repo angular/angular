@@ -20,9 +20,60 @@ import {
 
 import {LanguageService} from './language_service';
 import {isTypeScriptFile} from './utils';
+import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
+import {AbsoluteFsPath} from '@angular/compiler-cli';
+
+interface ExportInfoMap {
+  isUsableByFile(importingFile: string): boolean;
+  clear(): void;
+  /** @returns Whether the change resulted in the cache being cleared */
+  onFileChanged(
+    oldSourceFile: ts.SourceFile,
+    newSourceFile: ts.SourceFile,
+    typeAcquisitionEnabled: boolean,
+  ): boolean;
+}
+
+/**
+ * Patch the `onFileChanged` method of the `ExportInfoMap` to ignore changes to `ngtypecheck` files.
+ * The cache is needed when getting the global Angular metadata completion item list.
+ *
+ * https://github.com/microsoft/TypeScript/blob/d88d3a46810bfae0b072beb023a2b09b8026b82c/src/services/exportInfoMap.ts#L253
+ */
+function patchProjectExportInfoMap(project: ts.server.Project) {
+  const exportInfoMap: ExportInfoMap = (project as any).getCachedExportInfoMap();
+  const originalOnFileChanged = exportInfoMap.onFileChanged.bind(exportInfoMap);
+  Object.assign(exportInfoMap, {
+    onFileChanged: (
+      oldSourceFile: ts.SourceFile,
+      newSourceFile: ts.SourceFile,
+      typeAcquisitionEnabled: boolean,
+    ) => {
+      const fileName = (newSourceFile as any).path;
+      if (fileName.endsWith('.ngtypecheck.ts') && exportInfoMap.isUsableByFile(fileName)) {
+        return false;
+      }
+
+      if (fileName.endsWith('.html')) {
+        return false;
+      }
+
+      const checkFile = TypeCheckShimGenerator.shimFor(fileName as AbsoluteFsPath);
+      if (exportInfoMap.isUsableByFile(checkFile as string)) {
+        return false;
+      }
+
+      const result = originalOnFileChanged(oldSourceFile, newSourceFile, typeAcquisitionEnabled);
+      return result;
+    },
+  });
+}
 
 export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const {project, languageService, config} = info;
+
+  patchProjectExportInfoMap(project);
+
   const tsLS = isNgLanguageService(languageService)
     ? languageService.getTypescriptLanguageService()
     : languageService;

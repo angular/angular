@@ -154,6 +154,11 @@ export interface TemplateTypeChecker {
   ): GlobalCompletion | null;
 
   /**
+   * Get the `TcbLocation` for the global context, which is the location of the `this` variable.
+   */
+  getGlobalTsContext(component: ts.ClassDeclaration): TcbLocation | null;
+
+  /**
    * For the given expression node, retrieve a `TcbLocation` that can be used to perform
    * autocompletion at that point in the expression, if such a location exists.
    */
@@ -176,7 +181,11 @@ export interface TemplateTypeChecker {
    * Get basic metadata on the directives which are in scope or can be imported for the given
    * component.
    */
-  getPotentialTemplateDirectives(component: ts.ClassDeclaration): PotentialDirective[];
+  getPotentialTemplateDirectives(
+    component: ts.ClassDeclaration,
+    ls: ts.LanguageService,
+    includeExternalModule: boolean | undefined,
+  ): PotentialDirective[];
 
   /**
    * Get basic metadata on the pipes which are in scope or can be imported for the given component.
@@ -188,7 +197,30 @@ export interface TemplateTypeChecker {
    * declares them (if the tag is from a directive/component), or `null` if the tag originates from
    * the DOM schema.
    */
-  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, PotentialDirective | null>;
+  getPotentialElementTags(
+    component: ts.ClassDeclaration,
+    ls: ts.LanguageService,
+    includeExternalModule: boolean | undefined,
+  ): Map<string, PotentialDirective | null>;
+
+  /**
+   * Retrieve a `Map` of potential template element tags that includes in the current component's file
+   * scope, or in the component's NgModule scope.
+   *
+   * The different with the `getPotentialElementTags` is that the directives in the map do not need
+   * to update the import statement.
+   */
+  getElementInFileScope(component: ts.ClassDeclaration): Map<string, PotentialDirective | null>;
+
+  /**
+   * Get the scope data for a directive.
+   */
+  getDirectiveScopeData(
+    component: ts.ClassDeclaration,
+    isInScope: boolean,
+    data: ts.CompletionEntryData | undefined,
+    fromTsCompletionEntry: boolean | undefined,
+  ): PotentialDirective | null;
 
   /**
    * In the context of an Angular trait, generate potential imports for a directive.
