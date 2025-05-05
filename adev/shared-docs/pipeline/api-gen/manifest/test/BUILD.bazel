@@ -1,5 +1,5 @@
-load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
 load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
+load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 generate_api_manifest(
@@ -17,6 +17,7 @@ extract_api_to_json(
     module_name = "@angular/router",
     output_name = "api.json",
     private_modules = [""],
+    repo = "angular/angular",
 )
 
 ts_library(

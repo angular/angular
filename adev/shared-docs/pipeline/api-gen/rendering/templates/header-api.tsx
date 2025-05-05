@@ -18,7 +18,10 @@ import {
 import {DocsPillRow} from './docs-pill-row';
 
 /** Component to render a header of the API page. */
-export function HeaderApi(props: {entry: DocEntryRenderable | PipeEntryRenderable; showFullDescription?: boolean}) {
+export function HeaderApi(props: {
+  entry: DocEntryRenderable | PipeEntryRenderable;
+  showFullDescription?: boolean;
+}) {
   const entry = props.entry;
 
   // TODO: This link point to the main branch.
@@ -52,9 +55,7 @@ export function HeaderApi(props: {entry: DocEntryRenderable | PipeEntryRenderabl
           )}
 
           {entry.entryType === EntryType.Pipe && !(entry as PipeEntry).isPure && (
-            <div className={`${HEADER_ENTRY_LABEL} type-impure-pipe full`}>
-              Impure
-            </div>
+            <div className={`${HEADER_ENTRY_LABEL} type-impure-pipe full`}>Impure</div>
           )}
         </div>
         {sourceUrl && (
@@ -107,6 +108,7 @@ function sourceUrlForEntry(entry: DocEntryRenderable): string | null {
     // We don't know the source path in external repos link the CLI
     return null;
   } else {
-    return `https://github.com/angular/angular/blob/main${entry.source.filePath}#L${entry.source.startLine}-L${entry.source.endLine}`;
+    const filePath = entry.source.filePath.replace(/^\//, '');
+    return `https://github.com/${entry.repo}/blob/main/${filePath}#L${entry.source.startLine}-L${entry.source.endLine}`;
   }
 }

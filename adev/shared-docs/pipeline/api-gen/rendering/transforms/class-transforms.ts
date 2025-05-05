@@ -18,18 +18,22 @@ import {
 } from './jsdoc-transforms';
 import {addRenderableMembers} from './member-transforms';
 import {addModuleName} from './module-name';
+import {addRepo} from './repo';
 
 /** Given an unprocessed class entry, get the fully renderable class entry. */
 export function getClassRenderable(
   classEntry: ClassEntry,
   moduleName: string,
+  repo: string,
 ): ClassEntryRenderable {
   return setEntryFlags(
     addRenderableCodeToc(
       addRenderableMembers(
         addHtmlAdditionalLinks(
           addHtmlUsageNotes(
-            addHtmlJsDocTagComments(addHtmlDescription(addModuleName(classEntry, moduleName))),
+            addHtmlJsDocTagComments(
+              addHtmlDescription(addRepo(addModuleName(classEntry, moduleName), repo)),
+            ),
           ),
         ),
       ),

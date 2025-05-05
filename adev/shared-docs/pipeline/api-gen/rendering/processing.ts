@@ -8,6 +8,7 @@
 
 import {DocEntry} from './entities';
 
+import {CliCommand} from './cli-entities';
 import {
   isClassEntry,
   isCliEntry,
@@ -21,9 +22,9 @@ import {
 } from './entities/categorization';
 import {CliCommandRenderable, DocEntryRenderable} from './entities/renderables';
 import {getClassRenderable} from './transforms/class-transforms';
-import {getDecoratorRenderable} from './transforms/decorator-transforms';
 import {getCliRenderable} from './transforms/cli-transforms';
 import {getConstantRenderable} from './transforms/constant-transforms';
+import {getDecoratorRenderable} from './transforms/decorator-transforms';
 import {getEnumRenderable} from './transforms/enum-transforms';
 import {getFunctionRenderable} from './transforms/function-transforms';
 import {getInitializerApiFunctionRenderable} from './transforms/initializer-api-functions-transform';
@@ -36,47 +37,48 @@ import {
   setEntryFlags,
 } from './transforms/jsdoc-transforms';
 import {addModuleName} from './transforms/module-name';
+import {addRepo} from './transforms/repo';
 import {getTypeAliasRenderable} from './transforms/type-alias-transforms';
-import {CliCommand} from './cli-entities';
 
 export function getRenderable(
   entry: DocEntry | CliCommand,
   moduleName: string,
+  repo: string,
 ): DocEntryRenderable | CliCommandRenderable {
   if (isCliEntry(entry)) {
     return getCliRenderable(entry);
   }
 
   if (isClassEntry(entry)) {
-    return getClassRenderable(entry, moduleName);
+    return getClassRenderable(entry, moduleName, repo);
   }
   if (isDecoratorEntry(entry)) {
-    return getDecoratorRenderable(entry, moduleName);
+    return getDecoratorRenderable(entry, moduleName, repo);
   }
   if (isConstantEntry(entry)) {
-    return getConstantRenderable(entry, moduleName);
+    return getConstantRenderable(entry, moduleName, repo);
   }
   if (isEnumEntry(entry)) {
-    return getEnumRenderable(entry, moduleName);
+    return getEnumRenderable(entry, moduleName, repo);
   }
   if (isInterfaceEntry(entry)) {
-    return getInterfaceRenderable(entry, moduleName);
+    return getInterfaceRenderable(entry, moduleName, repo);
   }
   if (isFunctionEntry(entry)) {
-    return getFunctionRenderable(entry, moduleName);
+    return getFunctionRenderable(entry, moduleName, repo);
   }
   if (isTypeAliasEntry(entry)) {
-    return getTypeAliasRenderable(entry, moduleName);
+    return getTypeAliasRenderable(entry, moduleName, repo);
   }
   if (isInitializerApiFunctionEntry(entry)) {
-    return getInitializerApiFunctionRenderable(entry, moduleName);
+    return getInitializerApiFunctionRenderable(entry, moduleName, repo);
   }
 
   // Fallback to an uncategorized renderable.
   return setEntryFlags(
     addHtmlAdditionalLinks(
       addHtmlDescription(
-        addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(entry, moduleName))),
+        addHtmlUsageNotes(addHtmlJsDocTagComments(addRepo(addModuleName(entry, moduleName), repo))),
       ),
     ),
   );
