@@ -174,11 +174,13 @@ When using [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'
 
 For each route with [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'), you can specify a [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') function. This function lets you control which specific parameters produce separate prerendered documents.
 
-The [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') function returns a `Promise` that resolves to an array of objects. Each object is a key-value map of route parameter name to value. For example, if you define a route like `posts/:id`, `getPrerenderParams ` could return the array `[{id: 123}, {id: 456}]`, and thus render separate documents for `posts/123` and `posts/456`.
+The [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') function returns a `Promise` that resolves to an array of objects. Each object is a key-value map of route parameter name to value. For example, if you define a route like `post/:id`, `getPrerenderParams ` could return the array `[{id: 123}, {id: 456}]`, and thus render separate documents for `post/123` and `post/456`.
 
 The body of [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') can use Angular's [`inject`](api/core/inject 'API reference') function to inject dependencies and perform any work to determine which routes to prerender. This typically includes making requests to fetch data to construct the array of parameter values.
 
-```typescript
+You can also use this function with catch-all routes (e.g., `/**`), where the parameter name will be `"**"` and the return value will be the segments of the path, such as `foo/bar`. These can be combined with other parameters (e.g., `/post/:id/**`) to handle more complex route configuration.
+
+```ts
 // app.routes.server.ts
 import { RenderMode, ServerRoute } from '@angular/ssr';
 
@@ -190,9 +192,17 @@ export const serverRoutes: ServerRoute[] = [
       const dataService = inject(PostService);
       const ids = await dataService.getIds(); // Assuming this returns ['1', '2', '3']
 
-      return ids.map(id => ({ id })); // Transforms IDs into an array of objects for prerendering
-
-      // This will prerender the paths: `/post/1`, `/post/2` and `/post/3`
+      return ids.map(id => ({ id })); // Generates paths like: /post/1, /post/2, /post/3
+    },
+  },
+  {
+    path: 'post/:id/**',
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return [
+        { id: '1', '**': 'foo/3' },
+        { id: '2', '**': 'bar/4' },
+      ]; // Generates paths like: /post/1/foo/3, /post/2/bar/4
     },
   },
 ];
@@ -326,7 +336,7 @@ To configure this, update your `angular.json` file as follows:
   "projects": {
     "your-app": {
       "architect": {
-        "prerender": {
+        "build": {
           "options": {
             "outputMode": "static"
           }
