@@ -22,15 +22,12 @@ export default class MainComponent {
   search = model<string | undefined>('');
 
   constructor() {
-    effect(
-      () => {
-        const search = this.search();
-        if (search !== undefined) {
-          this.displaySearchDialog.set(true);
-          this.searchService.searchQuery.set(search);
-        }
-      },
-      {allowSignalWrites: true},
-    );
+    effect(() => {
+      const search = this.search();
+      if (search !== undefined) {
+        this.displaySearchDialog.set(true);
+        this.searchService.searchQuery.set(search);
+      }
+    });
   }
 }
