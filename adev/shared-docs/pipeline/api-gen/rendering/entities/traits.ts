@@ -71,6 +71,11 @@ export interface HasModuleName {
   moduleName: string;
 }
 
+/** A doc entry that has an associated github repo. */
+export interface HasRepo {
+  repo: string;
+}
+
 /** A doc entry that has ToC transformed for rendering. */
 export interface HasRenderableToc {
   beforeCodeGroups: string;

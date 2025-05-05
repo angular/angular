@@ -20,11 +20,11 @@ import {
   REFERENCE_MEMBER_CARD_HEADER,
   REFERENCE_MEMBER_CARD_ITEM,
 } from '../styling/css-classes';
+import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
 import {ClassMethodInfo} from './class-method-info';
+import {CodeSymbol} from './code-symbols';
 import {DeprecatedLabel} from './deprecated-label';
 import {RawHtml} from './raw-html';
-import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
-import {CodeSymbol} from './code-symbols';
 
 export function ClassMember(props: {member: MemberEntryRenderable}) {
   const member = props.member;
@@ -32,7 +32,7 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
   const renderMethod = (method: MethodEntryRenderable) => {
     const signature = method.signatures.length ? method.signatures : [method.implementation];
     return signature.map((sig) => {
-      const renderableMember = getFunctionMetadataRenderable(sig);
+      const renderableMember = getFunctionMetadataRenderable(sig, method.moduleName, method.repo);
       return <ClassMethodInfo entry={renderableMember} options={{showUsageNotes: true}} />;
     });
   };
