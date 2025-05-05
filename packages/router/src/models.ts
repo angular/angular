@@ -102,7 +102,7 @@ export type GuardResult = boolean | UrlTree | RedirectCommand;
  *       if (!authService.isLoggedIn()) {
  *         const loginPath = router.parseUrl("/login");
  *         return new RedirectCommand(loginPath, {
- *           skipLocationChange: "true",
+ *           skipLocationChange: true,
  *         });
  *       }
  *
