@@ -32,10 +32,23 @@ export enum PotentialImportKind {
   Standalone,
 }
 
+interface TsCompletionEntryInfo {
+  /**
+   * This data is from the tsLs completion entry, and
+   * will be used in the `ls.getCompletionEntryDetails`.
+   */
+  tsCompletionEntryData?: ts.CompletionEntryData;
+  /**
+   * If the value is `true,` it means the directive is retrieved from the completion list
+   * returned by `ls.getCompletionsAtPosition`.
+   */
+  fromTsCompletionEntry?: boolean;
+}
+
 /**
  * Metadata on a directive which is available in a template.
  */
-export interface PotentialDirective {
+export interface PotentialDirective extends TsCompletionEntryInfo {
   ref: Reference<ClassDeclaration>;
 
   /**
@@ -72,7 +85,7 @@ export interface PotentialDirective {
 /**
  * Metadata for a pipe which is available in a template.
  */
-export interface PotentialPipe {
+export interface PotentialPipe extends TsCompletionEntryInfo {
   ref: Reference<ClassDeclaration>;
 
   /**
