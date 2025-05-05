@@ -9,7 +9,7 @@
 import {MemberEntry, MemberTags, MemberType} from '../entities';
 import {isHiddenEntry} from '../entities/categorization';
 
-import {HasMembers, HasModuleName, HasRenderableMembers} from '../entities/traits';
+import {HasMembers, HasModuleName, HasRenderableMembers, HasRepo} from '../entities/traits';
 
 import {
   addHtmlDescription,
@@ -18,6 +18,7 @@ import {
   setEntryFlags,
 } from './jsdoc-transforms';
 import {addModuleName} from './module-name';
+import {addRepo} from './repo';
 
 const lifecycleMethods = [
   'ngAfterContentChecked',
@@ -63,7 +64,7 @@ export function mergeGettersAndSetters(members: MemberEntry[]): MemberEntry[] {
   );
 }
 
-export function addRenderableMembers<T extends HasMembers & HasModuleName>(
+export function addRenderableMembers<T extends HasMembers & HasModuleName & HasRepo>(
   entry: T,
 ): T & HasRenderableMembers {
   const members = entry.members
@@ -71,7 +72,9 @@ export function addRenderableMembers<T extends HasMembers & HasModuleName>(
     .map((member) =>
       setEntryFlags(
         addHtmlDescription(
-          addHtmlUsageNotes(addHtmlJsDocTagComments(addModuleName(member, entry.moduleName))),
+          addHtmlUsageNotes(
+            addHtmlJsDocTagComments(addRepo(addModuleName(member, entry.moduleName), entry.repo)),
+          ),
         ),
       ),
     );

@@ -19,6 +19,7 @@ import {setCurrentSymbol, setSymbols} from './symbol-context';
 
 /** The JSON data file format for extracted API reference info. */
 interface EntryCollection {
+  repo: string;
   moduleName: string;
   moduleLabel?: string;
   normalizedModuleName: string;
@@ -44,6 +45,7 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
       const command = fileContentJson as CliCommand;
       return [
         {
+          repo: 'anglar/cli',
           moduleName: 'unknown',
           normalizedModuleName: 'unknown',
           entries: [fileContentJson as DocEntry],
@@ -51,6 +53,7 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
         },
         ...command.subcommands!.map((subCommand) => {
           return {
+            repo: 'angular/cli',
             moduleName: 'unknown',
             normalizedModuleName: 'unknown',
             entries: [{...subCommand, parentCommand: command} as any],
@@ -61,6 +64,7 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
     }
 
     return {
+      repo: 'unknown',
       moduleName: 'unknown',
       normalizedModuleName: 'unknown',
       entries: [fileContentJson as DocEntry], // TODO: fix the typing cli entries aren't DocEntry
@@ -122,7 +126,7 @@ async function main() {
 
     const renderableEntries = extractedEntries.map((entry) => {
       setCurrentSymbol(entry.name);
-      return getRenderable(entry, collection.moduleName);
+      return getRenderable(entry, collection.moduleName, collection.repo);
     });
 
     const htmlOutputs = renderableEntries.map(renderEntry);

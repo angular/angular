@@ -21,18 +21,22 @@ import {
 } from './jsdoc-transforms';
 import {addModuleName} from './module-name';
 import {addRenderableFunctionParams} from './params-transforms';
+import {addRepo} from './repo';
 
 /** Given an unprocessed function entry, get the fully renderable function entry. */
 export function getFunctionRenderable(
   entry: FunctionEntry,
   moduleName: string,
+  repo: string,
 ): FunctionEntryRenderable {
   return setEntryFlags(
     addRenderableCodeToc(
       addHtmlAdditionalLinks(
         addHtmlUsageNotes(
           setEntryFlags(
-            addHtmlJsDocTagComments(addHtmlDescription(addModuleName(entry, moduleName))),
+            addHtmlJsDocTagComments(
+              addHtmlDescription(addRepo(addModuleName(entry, moduleName), repo)),
+            ),
           ),
         ),
       ),
@@ -42,13 +46,16 @@ export function getFunctionRenderable(
 
 export function getFunctionMetadataRenderable(
   entry: FunctionSignatureMetadata,
-  moduleName: string = '',
+  moduleName: string,
+  repo: string,
 ): FunctionSignatureMetadataRenderable {
   return addHtmlAdditionalLinks(
     addRenderableFunctionParams(
       addHtmlUsageNotes(
         setEntryFlags(
-          addHtmlJsDocTagComments(addHtmlDescription(addModuleName(entry, moduleName))),
+          addHtmlJsDocTagComments(
+            addHtmlDescription(addRepo(addModuleName(entry, moduleName), repo)),
+          ),
         ),
       ),
     ),

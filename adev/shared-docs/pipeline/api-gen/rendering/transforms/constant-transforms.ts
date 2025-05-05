@@ -17,17 +17,21 @@ import {
   setEntryFlags,
 } from './jsdoc-transforms';
 import {addModuleName} from './module-name';
+import {addRepo} from './repo';
 
 /** Given an unprocessed constant entry, get the fully renderable constant entry. */
 export function getConstantRenderable(
   classEntry: ConstantEntry,
   moduleName: string,
+  repo: string,
 ): ConstantEntryRenderable {
   return setEntryFlags(
     addRenderableCodeToc(
       addHtmlAdditionalLinks(
         addHtmlUsageNotes(
-          addHtmlJsDocTagComments(addHtmlDescription(addModuleName(classEntry, moduleName))),
+          addHtmlJsDocTagComments(
+            addHtmlDescription(addRepo(addModuleName(classEntry, moduleName), repo)),
+          ),
         ),
       ),
     ),
