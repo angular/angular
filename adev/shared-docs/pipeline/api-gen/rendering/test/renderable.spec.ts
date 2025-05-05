@@ -8,10 +8,10 @@
 
 import {runfiles} from '@bazel/runfiles';
 import {readFile} from 'fs/promises';
-import {getRenderable} from '../processing';
 import {DocEntryRenderable} from '../entities/renderables';
-import {initHighlighter} from '../shiki/shiki';
 import {configureMarkedGlobally} from '../marked/configuration';
+import {getRenderable} from '../processing';
+import {initHighlighter} from '../shiki/shiki';
 import {setSymbols} from '../symbol-context';
 
 // Note: The tests will probably break if the schema of the api extraction changes.
@@ -43,7 +43,11 @@ describe('renderable', () => {
     setSymbols(symbols);
 
     for (const entry of entryJson.entries) {
-      const renderableJson = getRenderable(entry, '@angular/fakeentry') as DocEntryRenderable;
+      const renderableJson = getRenderable(
+        entry,
+        '@angular/fakeentry',
+        'angular/angular',
+      ) as DocEntryRenderable;
       entries.set(entry['name'], renderableJson);
     }
   });
