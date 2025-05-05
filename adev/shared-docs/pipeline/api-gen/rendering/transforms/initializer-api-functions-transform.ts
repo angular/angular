@@ -19,16 +19,20 @@ import {
   setEntryFlags,
 } from './jsdoc-transforms';
 import {addModuleName} from './module-name';
+import {addRepo} from './repo';
 
 export function getInitializerApiFunctionRenderable(
   entry: InitializerApiFunctionEntry,
   moduleName: string,
+  repo: string,
 ): InitializerApiFunctionRenderable {
   return setEntryFlags(
     addRenderableCodeToc(
       addHtmlJsDocTagComments(
         addHtmlUsageNotes(
-          addHtmlDescription(addHtmlAdditionalLinks(addModuleName(entry, moduleName))),
+          addHtmlDescription(
+            addHtmlAdditionalLinks(addRepo(addModuleName(entry, moduleName), repo)),
+          ),
         ),
       ),
     ),
