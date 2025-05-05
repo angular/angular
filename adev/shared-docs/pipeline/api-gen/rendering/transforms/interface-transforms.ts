@@ -18,18 +18,22 @@ import {
 } from './jsdoc-transforms';
 import {addRenderableMembers} from './member-transforms';
 import {addModuleName} from './module-name';
+import {addRepo} from './repo';
 
 /** Given an unprocessed interface entry, get the fully renderable interface entry. */
 export function getInterfaceRenderable(
   entry: InterfaceEntry,
   moduleName: string,
+  repo: string,
 ): InterfaceEntryRenderable {
   return setEntryFlags(
     addRenderableCodeToc(
       addRenderableMembers(
         addHtmlAdditionalLinks(
           addHtmlUsageNotes(
-            addHtmlJsDocTagComments(addHtmlDescription(addModuleName(entry, moduleName))),
+            addHtmlJsDocTagComments(
+              addHtmlDescription(addRepo(addModuleName(entry, moduleName), repo)),
+            ),
           ),
         ),
       ),

@@ -16,6 +16,7 @@ extract_api_to_json(
     module_name = "@angular/core",
     output_name = "api.json",
     private_modules = [""],
+    repo = "angular/angular",
 )
 
 extract_api_to_json(
@@ -34,6 +35,7 @@ extract_api_to_json(
     module_name = "@angular/core",
     output_name = "extra_api.json",
     private_modules = [""],
+    repo = "angular/angular",
 )
 
 filegroup(

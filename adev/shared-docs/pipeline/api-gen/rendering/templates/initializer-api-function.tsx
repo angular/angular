@@ -8,12 +8,12 @@
 
 import {h, JSX} from 'preact';
 import {InitializerApiFunctionRenderable} from '../entities/renderables';
-import {HeaderApi} from './header-api';
-import {SectionApi} from './section-api';
-import {SectionUsageNotes} from './section-usage-notes';
 import {API_REFERENCE_CONTAINER, REFERENCE_MEMBERS} from '../styling/css-classes';
 import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
 import {signatureCard} from './function-reference';
+import {HeaderApi} from './header-api';
+import {SectionApi} from './section-api';
+import {SectionUsageNotes} from './section-usage-notes';
 
 /** Component to render a constant API reference document. */
 export function InitializerApiFunction(entry: InitializerApiFunctionRenderable) {
@@ -42,7 +42,7 @@ export function InitializerApiFunction(entry: InitializerApiFunctionRenderable) 
         {entry.callFunction.signatures.map((s, i) =>
           signatureCard(
             s.name,
-            getFunctionMetadataRenderable(s, entry.moduleName),
+            getFunctionMetadataRenderable(s, entry.moduleName, entry.repo),
             {
               id: `${s.name}_${i}`,
             },
@@ -56,7 +56,7 @@ export function InitializerApiFunction(entry: InitializerApiFunctionRenderable) 
             ...subFunction.signatures.map((s, i) =>
               signatureCard(
                 `${entry.name}.${s.name}`,
-                getFunctionMetadataRenderable(s, entry.moduleName),
+                getFunctionMetadataRenderable(s, entry.moduleName, entry.repo),
                 {
                   id: `${entry.name}_${s.name}_${i}`,
                 },

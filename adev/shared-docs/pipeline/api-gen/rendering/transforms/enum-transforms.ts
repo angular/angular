@@ -18,15 +18,22 @@ import {
 } from './jsdoc-transforms';
 import {addRenderableMembers} from './member-transforms';
 import {addModuleName} from './module-name';
+import {addRepo} from './repo';
 
 /** Given an unprocessed enum entry, get the fully renderable enum entry. */
-export function getEnumRenderable(classEntry: EnumEntry, moduleName: string): EnumEntryRenderable {
+export function getEnumRenderable(
+  classEntry: EnumEntry,
+  moduleName: string,
+  repo: string,
+): EnumEntryRenderable {
   return setEntryFlags(
     addRenderableCodeToc(
       addRenderableMembers(
         addHtmlAdditionalLinks(
           addHtmlUsageNotes(
-            addHtmlJsDocTagComments(addHtmlDescription(addModuleName(classEntry, moduleName))),
+            addHtmlJsDocTagComments(
+              addHtmlDescription(addRepo(addModuleName(classEntry, moduleName), repo)),
+            ),
           ),
         ),
       ),

@@ -9,10 +9,10 @@
 import {runfiles} from '@bazel/runfiles';
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
-import {renderEntry} from '../rendering';
-import {getRenderable} from '../processing';
-import {initHighlighter} from '../shiki/shiki';
 import {configureMarkedGlobally} from '../marked/configuration';
+import {getRenderable} from '../processing';
+import {renderEntry} from '../rendering';
+import {initHighlighter} from '../shiki/shiki';
 import {setSymbols} from '../symbol-context';
 
 // Note: The tests will probably break if the schema of the api extraction changes.
@@ -44,7 +44,7 @@ describe('markdown to html', () => {
     ]);
     setSymbols(symbols);
     for (const entry of entryJson.entries) {
-      const renderableJson = getRenderable(entry, '@angular/fakeentry');
+      const renderableJson = getRenderable(entry, '@angular/fakeentry', 'angular/angular');
       const fragment = JSDOM.fragment(await renderEntry(renderableJson));
       entries.set(entry['name'], fragment);
       entries2.set(entry['name'], await renderEntry(renderableJson));

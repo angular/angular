@@ -9,10 +9,10 @@
 import {runfiles} from '@bazel/runfiles';
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
-import {renderEntry} from '../rendering';
-import {getRenderable} from '../processing';
-import {initHighlighter} from '../shiki/shiki';
 import {configureMarkedGlobally} from '../marked/configuration';
+import {getRenderable} from '../processing';
+import {renderEntry} from '../rendering';
+import {initHighlighter} from '../shiki/shiki';
 
 describe('CLI docs to html', () => {
   let fragment: DocumentFragment;
@@ -27,7 +27,7 @@ describe('CLI docs to html', () => {
     });
 
     entryJson = JSON.parse(entryContent) as any;
-    const renderableJson = getRenderable(entryJson, '');
+    const renderableJson = getRenderable(entryJson, '', 'angular/cli');
     fragment = JSDOM.fragment(await renderEntry(renderableJson));
   });
 
@@ -35,7 +35,7 @@ describe('CLI docs to html', () => {
     const generateComponentSubcommand = entryJson.subcommands.find(
       (subcommand: any) => subcommand.name === 'component',
     );
-    const renderableJson = getRenderable(generateComponentSubcommand, '');
+    const renderableJson = getRenderable(generateComponentSubcommand, '', 'angular/cli');
     fragment = JSDOM.fragment(await renderEntry(renderableJson));
 
     const cliTocs = fragment.querySelectorAll('.docs-reference-cli-toc')!;
