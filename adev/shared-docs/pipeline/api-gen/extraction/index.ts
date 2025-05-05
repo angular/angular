@@ -10,13 +10,13 @@ import {readFileSync, writeFileSync} from 'fs';
 import path from 'path';
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 import {
-  NgtscProgram,
+  ClassEntry,
   CompilerOptions,
   createCompilerHost,
   DocEntry,
   EntryCollection,
   InterfaceEntry,
-  ClassEntry,
+  NgtscProgram,
 } from '@angular/compiler-cli';
 import ts from 'typescript';
 import {EXAMPLES_PATH, interpolateCodeExamples} from './interpolate_code_examples';
@@ -26,6 +26,7 @@ function main() {
   const rawParamLines = readFileSync(paramFilePath, {encoding: 'utf8'}).split('\n');
 
   const [
+    repo,
     moduleName,
     moduleLabel,
     serializedPrivateModules,
@@ -92,6 +93,7 @@ function main() {
   const normalized = moduleName.replace('@', '').replace(/[\/]/g, '_');
 
   const output = JSON.stringify({
+    repo,
     moduleLabel: moduleLabel || moduleName,
     moduleName: moduleName,
     normalizedModuleName: normalized,
