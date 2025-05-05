@@ -10,6 +10,9 @@ def _extract_api_to_json(ctx):
     args.set_param_file_format("multiline")
     args.use_param_file("%s", use_always = True)
 
+    # Pass the repo name for the extracted APIs. This will be something like "angular/angular".
+    args.add(ctx.attr.repo)
+
     # Pass the module_name for the extracted APIs. This will be something like "@angular/core".
     args.add(ctx.attr.module_name)
 
@@ -93,6 +96,10 @@ extract_api_to_json = rule(
         ),
         "module_label": attr.string(
             doc = """Module label to be used for the extracted symbols. To be used as display name, for example in API docs""",
+        ),
+        "repo": attr.string(
+            doc = """The name of the github repository the api belongs to""",
+            mandatory = True,
         ),
         "extra_entries": attr.label_list(
             doc = """JSON files that contain extra entries to append to the final collection.""",
