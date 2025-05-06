@@ -18,7 +18,7 @@ import {
   PropertyRead,
   TemplateBinding,
   VariableBinding,
-  TemplateLiteral,
+  BindingPipeType,
 } from '../../src/expression_parser/ast';
 import {Lexer} from '../../src/expression_parser/lexer';
 import {Parser, SplitInterpolation} from '../../src/expression_parser/parser';
@@ -723,6 +723,24 @@ describe('parser', () => {
           // The nameSpan should be positioned at the end of the input.
           expect(rawSpan(binding.nameSpan)).toEqual([bindingText.length, bindingText.length]);
         });
+
+        it('should parse pipes with the correct type when supportsDirectPipeReferences is enabled', () => {
+          expect(
+            (parseBinding('0 | Foo', undefined, undefined, true).ast as BindingPipe).type,
+          ).toBe(BindingPipeType.ReferencedDirectly);
+          expect(
+            (parseBinding('0 | foo', undefined, undefined, true).ast as BindingPipe).type,
+          ).toBe(BindingPipeType.ReferencedByName);
+        });
+
+        it('should parse pipes with the correct type when supportsDirectPipeReferences is disabled', () => {
+          expect(
+            (parseBinding('0 | Foo', undefined, undefined, false).ast as BindingPipe).type,
+          ).toBe(BindingPipeType.ReferencedByName);
+          expect(
+            (parseBinding('0 | foo', undefined, undefined, false).ast as BindingPipe).type,
+          ).toBe(BindingPipeType.ReferencedByName);
+        });
       });
 
       it('should only allow identifier or keyword as formatter names', () => {
@@ -1364,16 +1382,21 @@ describe('parser', () => {
   });
 });
 
-function createParser() {
-  return new Parser(new Lexer());
+function createParser(supportsDirectPipeReferences = false) {
+  return new Parser(new Lexer(), supportsDirectPipeReferences);
 }
 
 function parseAction(text: string, location: any = null, offset: number = 0): ASTWithSource {
   return createParser().parseAction(text, location, offset);
 }
 
-function parseBinding(text: string, location: any = null, offset: number = 0): ASTWithSource {
-  return createParser().parseBinding(text, location, offset);
+function parseBinding(
+  text: string,
+  location: any = null,
+  offset: number = 0,
+  supportsDirectPipeReferences?: boolean,
+): ASTWithSource {
+  return createParser(supportsDirectPipeReferences).parseBinding(text, location, offset);
 }
 
 function parseTemplateBindings(attribute: string, templateUrl = 'foo.html'): TemplateBinding[] {
@@ -1390,7 +1413,7 @@ function expectParseTemplateBindingsError(attribute: string, error: string) {
 
 function _parseTemplateBindings(attribute: string, templateUrl: string) {
   const match = attribute.match(/^\*(.+)="(.*)"$/);
-  expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
+  expect(match).withContext(`failed to extract key and value from ${attribute}`).toBeTruthy();
   const [_, key, value] = match!;
   const absKeyOffset = 1; // skip the * prefix
   const absValueOffset = attribute.indexOf('=') + '="'.length;

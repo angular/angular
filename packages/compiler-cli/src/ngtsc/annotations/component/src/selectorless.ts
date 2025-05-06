@@ -14,6 +14,7 @@ import {
   BindingPipe,
   CombinedRecursiveAstVisitor,
   tmplAstVisitAll,
+  BindingPipeType,
 } from '@angular/compiler';
 
 /**
@@ -42,9 +43,7 @@ class SelectorlessDirectivesAnalyzer extends CombinedRecursiveAstVisitor {
   symbols: Set<string> | null = null;
 
   override visit(node: AST | TmplAstNode) {
-    // TODO(crisbeto): consider capitalized pipes as "selectorless" for now.
-    // We should introduce a different AST node for them in the parser.
-    if (node instanceof BindingPipe && node.name[0].toUpperCase() === node.name[0]) {
+    if (node instanceof BindingPipe && node.type === BindingPipeType.ReferencedDirectly) {
       this.trackSymbol(node.name);
     }
 
