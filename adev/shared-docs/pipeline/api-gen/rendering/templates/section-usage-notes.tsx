@@ -7,9 +7,9 @@
  */
 
 import {Fragment, h} from 'preact';
-import {DocEntryRenderable} from '../entities/renderables';
+import {DocEntryRenderable} from '../entities/renderables.mjs';
 import {RawHtml} from './raw-html';
-import {SECTION_CONTAINER} from '../styling/css-classes';
+import {SECTION_CONTAINER} from '../styling/css-classes.mjs';
 import {SectionHeading} from './section-heading';
 
 const USAGE_NOTES_SECTION_NAME = 'Usage Notes';
