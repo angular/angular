@@ -10,16 +10,16 @@ import {Fragment, h} from 'preact';
 import {
   FunctionEntryRenderable,
   FunctionSignatureMetadataRenderable,
-} from '../entities/renderables';
+} from '../entities/renderables.mjs';
 import {
   API_REFERENCE_CONTAINER,
   REFERENCE_MEMBERS,
   REFERENCE_MEMBER_CARD,
   REFERENCE_MEMBER_CARD_BODY,
   REFERENCE_MEMBER_CARD_HEADER,
-} from '../styling/css-classes';
-import {printInitializerFunctionSignatureLine} from '../transforms/code-transforms';
-import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
+} from '../styling/css-classes.mjs';
+import {printInitializerFunctionSignatureLine} from '../transforms/code-transforms.mjs';
+import {getFunctionMetadataRenderable} from '../transforms/function-transforms.mjs';
 import {ClassMethodInfo} from './class-method-info';
 import {CodeSymbol} from './code-symbols';
 import {HeaderApi} from './header-api';

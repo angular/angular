@@ -7,7 +7,7 @@
  */
 
 import {h} from 'preact';
-import {CodeLineRenderable} from '../entities/renderables';
+import {CodeLineRenderable} from '../entities/renderables.mjs';
 import {CodeLine} from './code-line';
 
 export function CodeLineGroup(props: {lines: CodeLineRenderable[]}) {

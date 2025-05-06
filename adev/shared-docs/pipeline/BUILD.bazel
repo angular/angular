@@ -12,7 +12,7 @@ esbuild_esm_bundle(
     define = {
         "HANDLE_MERMAID": "true",
     },
-    entry_point = "//adev/shared-docs/pipeline/guides:index.ts",
+    entry_point = "//adev/shared-docs/pipeline/guides:index.mts",
     # JSDOM should not be bundled because it has workers and dynamic imports.
     # playwright-core cannot be bundled because of its cjs usage.
     external = [
@@ -33,7 +33,7 @@ esbuild_esm_bundle(
     define = {
         "HANDLE_MERMAID": "false",
     },
-    entry_point = "//adev/shared-docs/pipeline/guides:index.ts",
+    entry_point = "//adev/shared-docs/pipeline/guides:index.mts",
     # JSDOM should not be bundled because it has workers and dynamic imports.
     external = [
         "jsdom",
@@ -49,7 +49,7 @@ esbuild_esm_bundle(
 
 esbuild_esm_bundle(
     name = "stackblitz-bundle",
-    entry_point = "//adev/shared-docs/pipeline/examples/stackblitz:index.ts",
+    entry_point = "//adev/shared-docs/pipeline/examples/stackblitz:index.mts",
     # JSDOM should not be bundled because it has workers and dynamic imports.
     external = ["jsdom"],
     output = "stackblitz.mjs",
@@ -63,7 +63,7 @@ esbuild_esm_bundle(
 
 esbuild_esm_bundle(
     name = "previews-bundle",
-    entry_point = "//adev/shared-docs/pipeline/examples/previews:index.ts",
+    entry_point = "//adev/shared-docs/pipeline/examples/previews:index.mts",
     external = [
         "typescript",
     ],
@@ -79,7 +79,7 @@ esbuild_esm_bundle(
 
 esbuild_esm_bundle(
     name = "zip-bundle",
-    entry_point = "//adev/shared-docs/pipeline/examples/zip:index.ts",
+    entry_point = "//adev/shared-docs/pipeline/examples/zip:index.mts",
     output = "zip.mjs",
     platform = "node",
     target = "es2022",
@@ -91,7 +91,7 @@ esbuild_esm_bundle(
 
 esbuild_esm_bundle(
     name = "playground-bundle",
-    entry_point = "//adev/shared-docs/pipeline/tutorials:playground.ts",
+    entry_point = "//adev/shared-docs/pipeline/tutorials:playground.mts",
     output = "playground.mjs",
     platform = "node",
     target = "es2022",
@@ -103,7 +103,7 @@ esbuild_esm_bundle(
 
 esbuild_esm_bundle(
     name = "tutorial-bundle",
-    entry_point = "//adev/shared-docs/pipeline/tutorials:tutorial.ts",
+    entry_point = "//adev/shared-docs/pipeline/tutorials:tutorial.mts",
     output = "tutorial.mjs",
     platform = "node",
     target = "es2022",
@@ -115,7 +115,7 @@ esbuild_esm_bundle(
 
 esbuild_esm_bundle(
     name = "navigation-bundle",
-    entry_point = "//adev/shared-docs/pipeline/navigation:index.ts",
+    entry_point = "//adev/shared-docs/pipeline/navigation:index.mts",
     output = "navigation.mjs",
     platform = "node",
     target = "es2022",

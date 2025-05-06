@@ -7,8 +7,8 @@ export const format: FormatConfig = {
   'prettier': {
     'matchers': [
       '**/*.{yaml,yml}',
-      '**/*.{js,ts}',
-      'devtools/**/*.{js,ts,html,scss}',
+      '**/*.{js,ts,mjs,mts,cjs,cts}',
+      'devtools/**/*.{js,ts,mjs,mts,cjs,cts,html,scss}',
 
       // Do not format d.ts files as they are generated
       '!**/*.d.ts',
@@ -22,7 +22,7 @@ export const format: FormatConfig = {
       '!packages/common/locales/closure-locale.ts',
       '!packages/common/src/i18n/currencies.ts',
       // Test cases contain non valid code.
-      '!packages/compiler-cli/test/compliance/test_cases/**/*.{js,ts}',
+      '!packages/compiler-cli/test/compliance/test_cases/**/*.{js,ts,mjs,mts,cjs,cts}',
 
       // Ignore generated javascript file(s)
       '!.github/actions/deploy-docs-site/main.js',

@@ -7,14 +7,14 @@
  */
 
 import {Fragment, h} from 'preact';
-import {EntryType, isDocEntryWithSourceInfo, PipeEntry} from '../entities';
-import {DocEntryRenderable, PipeEntryRenderable} from '../entities/renderables';
+import {EntryType, isDocEntryWithSourceInfo, PipeEntry} from '../entities.mjs';
+import {DocEntryRenderable, PipeEntryRenderable} from '../entities/renderables.mjs';
 import {
   HEADER_CLASS_NAME,
   HEADER_ENTRY_CATEGORY,
   HEADER_ENTRY_LABEL,
   HEADER_ENTRY_TITLE,
-} from '../styling/css-classes';
+} from '../styling/css-classes.mjs';
 import {DocsPillRow} from './docs-pill-row';
 
 /** Component to render a header of the API page. */

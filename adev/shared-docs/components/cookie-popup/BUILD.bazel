@@ -1,5 +1,6 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -28,19 +29,20 @@ sass_binary(
     src = "cookie-popup.component.scss",
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["*.spec.ts"],
     ),
-    deps = [
+    interop_deps = [
         ":cookie-popup",
         "//adev/shared-docs/providers",
         "//adev/shared-docs/testing",
         "//packages/core",
         "//packages/core/testing",
     ],
+    tsconfig = "//adev/shared-docs:tsconfig_test",
 )
 
 karma_web_test_suite(

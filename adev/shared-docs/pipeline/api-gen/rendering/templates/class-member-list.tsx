@@ -7,7 +7,7 @@
  */
 
 import {h} from 'preact';
-import {MemberEntryRenderable} from '../entities/renderables';
+import {MemberEntryRenderable} from '../entities/renderables.mjs';
 import {ClassMember} from './class-member';
 
 export function ClassMemberList(props: {members: MemberEntryRenderable[]}) {

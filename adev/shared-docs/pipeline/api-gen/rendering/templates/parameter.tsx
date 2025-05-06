@@ -7,9 +7,9 @@
  */
 
 import {h} from 'preact';
-import {ParameterEntryRenderable} from '../entities/renderables';
+import {ParameterEntryRenderable} from '../entities/renderables.mjs';
 import {RawHtml} from './raw-html';
-import {PARAM_GROUP_CLASS_NAME} from '../styling/css-classes';
+import {PARAM_GROUP_CLASS_NAME} from '../styling/css-classes.mjs';
 import {CodeSymbol} from './code-symbols';
 
 /** Component to render a function or method parameter reference doc fragment. */
