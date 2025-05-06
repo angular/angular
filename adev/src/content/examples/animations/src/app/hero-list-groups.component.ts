@@ -2,7 +2,6 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {trigger, state, style, animate, transition, group} from '@angular/animations';
 
 import {Hero} from './hero';
-import {NgFor} from '@angular/common';
 
 @Component({
   selector: 'app-hero-list-groups',
@@ -19,7 +18,6 @@ import {NgFor} from '@angular/common';
     </ul>
   `,
   styleUrls: ['./hero-list-page.component.css'],
-  imports: [NgFor],
   // #docregion animationdef
   animations: [
     trigger('flyInOut', [

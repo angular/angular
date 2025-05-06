@@ -11,19 +11,18 @@ The main advantages to removing ZoneJS as a dependency are:
 
 ## Enabling Zoneless in an application
 
-The API for enabling Zoneless is currently experimental. Neither the shape, nor the underlying behavior is stable and can change
-in patch versions. There are known feature gaps, including the lack of an ergonomic API which prevents the application from serializing too early with Server Side Rendering.
+The API for enabling Zoneless is currently in developer preview. The shape of the API and underlying behavior can change in patch versions.
 
 ```typescript
 // standalone bootstrap
 bootstrapApplication(MyApp, {providers: [
-  provideExperimentalZonelessChangeDetection(),
+  provideZonelessChangeDetection(),
 ]});
 
 // NgModule bootstrap
 platformBrowser().bootstrapModule(AppModule);
 @NgModule({
-  providers: [provideExperimentalZonelessChangeDetection()]
+  providers: [provideZonelessChangeDetection()]
 })
 export class AppModule {}
 ```
@@ -134,7 +133,7 @@ Angular application.
 
 ```typescript
 TestBed.configureTestingModule({
-  providers: [provideExperimentalZonelessChangeDetection()]
+  providers: [provideZonelessChangeDetection()]
 });
 
 const fixture = TestBed.createComponent(MyComponent);
@@ -162,7 +161,7 @@ it is acceptable to use `fixture.changeDetectorRef.markForCheck()`.
 ### Debug-mode check to ensure updates are detected
 
 Angular also provides an additional tool to help verify that an application is making
-updates to state in a zoneless-compatible way. `provideExperimentalCheckNoChangesForDebug`
+updates to state in a zoneless-compatible way. `provideCheckNoChangesConfig({exhaustive: true, interval: <milliseconds>})`
 can be used to periodically check to ensure that no bindings have been updated
 without a notification. Angular throws `ExpressionChangedAfterItHasBeenCheckedError`
 if there is an updated binding that would not have refreshed by the zoneless change

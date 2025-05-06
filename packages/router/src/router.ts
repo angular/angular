@@ -321,6 +321,9 @@ export class Router {
 
     const urlTree = this.parseUrl(url);
     this.scheduleNavigation(urlTree, source, restoredState, extras).catch((e) => {
+      if (this.disposed) {
+        return;
+      }
       this.injector.get(ɵINTERNAL_APPLICATION_ERROR_HANDLER)(e);
     });
   }
@@ -438,7 +441,7 @@ export class Router {
    * tree should be created relative to the root.
    * ```
    */
-  createUrlTree(commands: any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
+  createUrlTree(commands: readonly any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
     const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
       navigationExtras;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
@@ -549,7 +552,7 @@ export class Router {
    *
    */
   navigate(
-    commands: any[],
+    commands: readonly any[],
     extras: NavigationExtras = {skipLocationChange: false},
   ): Promise<boolean> {
     validateCommands(commands);
@@ -673,7 +676,7 @@ export class Router {
   }
 }
 
-function validateCommands(commands: string[]): void {
+function validateCommands(commands: readonly string[]): void {
   for (let i = 0; i < commands.length; i++) {
     const cmd = commands[i];
     if (cmd == null) {

@@ -361,7 +361,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * @usageNotes
  * ```ts
  * bootstrapApplication(MyApp, {providers: [
- *   provideExperimentalZonelessChangeDetection(),
+ *   provideZonelessChangeDetection(),
  * ]});
  * ```
  *
@@ -369,11 +369,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * in patch versions. There are known feature gaps and API ergonomic considerations. We will iterate
  * on the exact API based on the feedback and our understanding of the problem and solution space.
  *
- * @publicApi
- * @experimental
+ * @developerPreview 20.0
  * @see {@link /api/platform-browser/bootstrapApplication bootstrapApplication}
  */
-export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders {
+export function provideZonelessChangeDetection(): EnvironmentProviders {
   performanceMarkFeature('NgZoneless');
 
   if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof Zone !== 'undefined' && Zone) {

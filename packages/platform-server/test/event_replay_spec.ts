@@ -18,7 +18,11 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
-import {withEventReplay} from '@angular/platform-browser';
+import {
+  bootstrapApplication,
+  provideClientHydration,
+  withEventReplay,
+} from '@angular/platform-browser';
 
 import {EventPhase} from '@angular/core/primitives/event-dispatch';
 
@@ -108,6 +112,71 @@ describe('event replay', () => {
     btn.click();
     const appRef = await hydrate(doc, AppComponent, {hydrationFeatures});
     appRef.tick();
+    expect(onClickSpy).toHaveBeenCalled();
+  });
+
+  it('stash event listeners should not conflict when multiple apps are bootstrapped', async () => {
+    const onClickSpy = jasmine.createSpy();
+
+    @Component({
+      selector: 'app',
+      standalone: true,
+      template: `
+        <button id="btn-1" (click)="onClick()"></button>
+      `,
+    })
+    class AppComponent_1 {
+      onClick = onClickSpy;
+    }
+
+    @Component({
+      selector: 'app-2',
+      standalone: true,
+      template: `
+        <button id="btn-2" (click)="onClick()"></button>
+      `,
+    })
+    class AppComponent_2 {
+      onClick() {}
+    }
+
+    const hydrationFeatures = () => [withEventReplay()];
+    const docHtml = `
+      <html>
+      <head></head>
+      <body>
+        ${EVENT_DISPATCH_SCRIPT}
+        <app></app>
+        <app-2></app-2>
+      </body>
+      </html>
+    `;
+    const html = await ssr(AppComponent_1, {hydrationFeatures, doc: docHtml});
+    const ssrContents = getAppContents(html);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
+    resetTViewsFor(AppComponent_1);
+
+    const btn = doc.getElementById('btn-1')!;
+    btn.click();
+
+    // It's hard to server-side render multiple applications in this
+    // particular unit test and hydrate them on the client, so instead,
+    // let's render the application with `provideClientHydration` to enable
+    // event replay features and ensure the stash event listener is set.
+    await bootstrapApplication(AppComponent_2, {
+      providers: [
+        provideClientHydration(withEventReplay()),
+        {provide: APP_ID, useValue: 'random_name'},
+      ],
+    });
+
+    // Now let's hydrate the second application and ensure that the
+    // button click event has been replayed.
+    const appRef = await hydrate(doc, AppComponent_1, {hydrationFeatures});
+    appRef.tick();
+
     expect(onClickSpy).toHaveBeenCalled();
   });
 

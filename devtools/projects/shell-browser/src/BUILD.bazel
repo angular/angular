@@ -29,6 +29,17 @@ copy_to_directory(
     },
 )
 
+copy_to_directory(
+    name = "assets",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/assets",
+    ],
+    out = "assets",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/assets": "",
+    },
+)
+
 ts_library(
     name = "devtools_ts",
     srcs = [
@@ -56,7 +67,6 @@ ng_module(
         "//packages/common",
         "//packages/common/http",
         "//packages/core",
-        "//packages/platform-browser-dynamic",
     ],
 )
 
@@ -98,6 +108,7 @@ exports_files(["index.html"])
 filegroup(
     name = "prod_app_static_files",
     srcs = [
+        ":assets",
         ":browser_specific_styles",
         ":index.html",
         ":shell_common_styles",

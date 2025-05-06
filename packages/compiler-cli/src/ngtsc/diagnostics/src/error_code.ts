@@ -162,6 +162,22 @@ export enum ErrorCode {
    */
   NON_STANDALONE_NOT_ALLOWED = 2023,
 
+  /**
+   * Raised when a named template dependency isn't defined in the component's source file.
+   */
+  MISSING_NAMED_TEMPLATE_DEPENDENCY = 2024,
+
+  /**
+   * Raised if an incorrect type is used for a named template dependency (e.g. directive
+   * class used as a component).
+   */
+  INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE = 2025,
+
+  /**
+   * Raised for `@Component` fields that aren't supported in a selectorless context.
+   */
+  UNSUPPORTED_SELECTORLESS_COMPONENT_FIELD = 2026,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
@@ -375,6 +391,12 @@ export enum ErrorCode {
   CONFLICTING_LET_DECLARATION = 8017,
 
   /**
+   * A binding inside selectorless directive syntax did
+   * not match any inputs/outputs of the directive.
+   */
+  UNCLAIMED_DIRECTIVE_BINDING = 8018,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
@@ -541,6 +563,11 @@ export enum ErrorCode {
    * ```
    */
   UNINVOKED_TRACK_FUNCTION = 8115,
+
+  /**
+   * A structural directive is used in a template, but the directive is not imported.
+   */
+  MISSING_STRUCTURAL_DIRECTIVE = 8116,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

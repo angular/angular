@@ -27,7 +27,8 @@ import {RuntimeErrorCode} from '../errors';
 /**
  * @publicApi
  *
- * @deprecated The `ngFor` directive is deprecated. Use the `@for` block instead.
+ * @deprecated 20.0
+ * The `ngFor` directive is deprecated. Use the `@for` block instead.
  */
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
   constructor(
@@ -167,7 +168,8 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * @ngModule CommonModule
  * @publicApi
  *
- * @deprecated Use the @for block instead. Intent to remove in v22
+ * @deprecated 20.0
+ * Use the `@for` block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngFor][ngForOf]',
@@ -176,6 +178,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   /**
    * The value of the iterable expression, which can be used as a
    * [template input variable](guide/directives/structural-directives#shorthand).
+   * @deprecated The `ngFor` directive is deprecated. Use the `@for` block instead.
    */
   @Input()
   set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null) {
@@ -199,6 +202,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * and the iterable is recreated and re-rendered, but most of the data is still the same).
    *
    * @see {@link TrackByFunction}
+   * @deprecated The `ngFor` directive is deprecated. Use the `@for` block instead.
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
@@ -231,6 +235,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   /**
    * A reference to the template that is stamped out for each item in the iterable.
    * @see [template reference variable](guide/templates/variables#template-reference-variables)
+   * @deprecated The `ngFor` directive is deprecated. Use the `@for` block instead.
    */
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>) {

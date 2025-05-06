@@ -36,10 +36,15 @@ describe('BrowserViewportScroller', () => {
       expect(() => scroller.setHistoryScrollRestoration('manual')).not.toThrow();
     });
 
+    it('should not allow overwriting position with options', () => {
+      scroller.scrollToPosition([10, 10], {top: 0, left: 0} as any);
+      expect(windowSpy.scrollTo).toHaveBeenCalledWith({top: 10, left: 10});
+    });
+
     it('should still allow scrolling if scrollRestoration is not writable', () => {
       createNonWritableScrollRestoration();
       scroller.scrollToPosition([10, 10]);
-      expect(windowSpy.scrollTo as jasmine.Spy).toHaveBeenCalledWith(10, 10);
+      expect(windowSpy.scrollTo).toHaveBeenCalledWith({top: 10, left: 10});
     });
   });
 
@@ -94,6 +99,14 @@ describe('BrowserViewportScroller', () => {
       const {anchorNode, cleanup} = createTallElementWithShadowRoot();
       anchorNode.name = anchor;
       scroller.scrollToAnchor(anchor);
+      expect(scroller.getScrollPosition()[1]).not.toEqual(0);
+      cleanup();
+    });
+
+    it('should not allow overwriting position with options', () => {
+      const {anchorNode, cleanup} = createTallElementWithShadowRoot();
+      anchorNode.name = anchor;
+      scroller.scrollToAnchor(anchor, {top: 0, left: 0} as any);
       expect(scroller.getScrollPosition()[1]).not.toEqual(0);
       cleanup();
     });

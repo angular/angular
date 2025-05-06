@@ -168,12 +168,21 @@ export function findTypeCheckBlock(
   id: TypeCheckId,
   isDiagnosticRequest: boolean,
 ): ts.Node | null {
+  // This prioritised-level statements using a breadth-first search
+  // This is usually sufficient to find the TCB we're looking for
   for (const stmt of file.statements) {
     if (ts.isFunctionDeclaration(stmt) && getTypeCheckId(stmt, file, isDiagnosticRequest) === id) {
       return stmt;
     }
   }
-  return null;
+
+  // In case the TCB we're looking for is nested (which is not common)
+  // eg: when a directive is declared inside a function, as it can happen in test files
+  return findNodeInFile(
+    file,
+    (node) =>
+      ts.isFunctionDeclaration(node) && getTypeCheckId(node, file, isDiagnosticRequest) === id,
+  );
 }
 
 /**
@@ -265,4 +274,25 @@ export function checkIfGenericTypeBoundsCanBeEmitted(
   // Generic type parameters are considered context free if they can be emitted into any context.
   const emitter = new TypeParameterEmitter(node.typeParameters, reflector);
   return emitter.canEmit((ref) => env.canReferenceType(ref));
+}
+
+export function findNodeInFile<T extends ts.Node>(
+  file: ts.SourceFile,
+  predicate: (node: ts.Node) => node is T,
+): T | null;
+export function findNodeInFile(
+  file: ts.SourceFile,
+  predicate: (node: ts.Node) => boolean,
+): ts.Node | null;
+export function findNodeInFile(
+  file: ts.SourceFile,
+  predicate: (node: ts.Node) => boolean,
+): ts.Node | null {
+  const visit = (node: ts.Node): ts.Node | null => {
+    if (predicate(node)) {
+      return node;
+    }
+    return ts.forEachChild(node, visit) ?? null;
+  };
+  return ts.forEachChild(file, visit) ?? null;
 }

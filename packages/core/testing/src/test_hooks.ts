@@ -27,7 +27,7 @@ globalThis.beforeEach?.(getCleanupHook(false));
 // afterEach is only defined when executing the tests
 globalThis.afterEach?.(getCleanupHook(true));
 
-function getCleanupHook(expectedTeardownValue: boolean) {
+export function getCleanupHook(expectedTeardownValue: boolean): VoidFunction {
   return () => {
     const testBed = TestBedImpl.INSTANCE;
     if (testBed.shouldTearDownTestingModule() === expectedTeardownValue) {
@@ -36,14 +36,3 @@ function getCleanupHook(expectedTeardownValue: boolean) {
     }
   };
 }
-
-/**
- * This API should be removed. But doing so seems to break `google3` and so it requires a bit of
- * investigation.
- *
- * A work around is to mark it as `@codeGenApi` for now and investigate later.
- *
- * @codeGenApi
- */
-// TODO(iminar): Remove this code in a safe way.
-export const __core_private_testing_placeholder__ = '';

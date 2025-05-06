@@ -24,7 +24,7 @@ import {
 import {MockPlatformLocation} from '@angular/common/testing';
 import {computeMsgId} from '@angular/compiler';
 import {
-  afterRender,
+  afterEveryRender,
   ApplicationRef,
   ChangeDetectorRef,
   Component,
@@ -42,7 +42,7 @@ import {
   Pipe,
   PipeTransform,
   PLATFORM_ID,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   Provider,
   QueryList,
   TemplateRef,
@@ -2598,9 +2598,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const clientContents = stripExcessiveSpaces(clientRootNode.innerHTML);
-          expect(clientContents).toBe(
-            '<ol><li>1</li><li>2</li><li>3</li><!--bindings={ "ng-reflect-ng-for-of": "1,2,3" }--></ol>',
-          );
+          expect(clientContents).toBe('<ol><li>1</li><li>2</li><li>3</li><!--container--></ol>');
         });
 
         it('should hydrate when using @for control flow', async () => {
@@ -4754,16 +4752,14 @@ describe('platform-server full application hydration integration', () => {
         // Post-cleanup should *not* contain dehydrated views.
         const postCleanupContents = stripExcessiveSpaces(clientRootNode.outerHTML);
         expect(postCleanupContents).not.toContain(
-          '<span> 5 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "false" }--></span>',
+          '<span> 5 <b>is bigger than 15!</b><!--container--></span>',
         );
         expect(postCleanupContents).toContain(
-          '<span> 30 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "true" }--></span>',
+          '<span> 30 <b>is bigger than 15!</b><!--container--></span>',
         );
+        expect(postCleanupContents).toContain('<span> 5 <!--container--></span>');
         expect(postCleanupContents).toContain(
-          '<span> 5 <!--bindings={ "ng-reflect-ng-if": "false" }--></span>',
-        );
-        expect(postCleanupContents).toContain(
-          '<span> 50 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "true" }--></span>',
+          '<span> 50 <b>is bigger than 15!</b><!--container--></span>',
         );
       });
 
@@ -4851,7 +4847,7 @@ describe('platform-server full application hydration integration', () => {
           elementRef = inject(ElementRef);
 
           constructor() {
-            afterRender(() => {
+            afterEveryRender(() => {
               observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
             });
           }
@@ -4894,7 +4890,7 @@ describe('platform-server full application hydration integration', () => {
           elementRef = inject(ElementRef);
 
           constructor() {
-            afterRender(() => {
+            afterEveryRender(() => {
               observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
             });
 
@@ -8036,7 +8032,7 @@ describe('platform-server full application hydration integration', () => {
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
           envProviders: [
             withDebugConsole(),
-            provideExperimentalZonelessChangeDetection() as unknown as Provider[],
+            provideZonelessChangeDetection() as unknown as Provider[],
           ],
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
@@ -8154,7 +8150,7 @@ describe('platform-server full application hydration integration', () => {
         class SimpleComponent {}
 
         const envProviders = [
-          provideExperimentalZonelessChangeDetection(),
+          provideZonelessChangeDetection(),
           {provide: PlatformLocation, useClass: MockPlatformLocation},
           provideRouter(routes),
         ] as unknown as Provider[];

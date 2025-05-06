@@ -26,6 +26,7 @@ import {RElement, RNode} from '../interfaces/renderer_dom';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {assertNotSame} from '../../util/assert';
 import {handleUncaughtError} from '../instructions/shared';
+import {APP_ID} from '../../application/application_tokens';
 
 /** Shorthand for an event listener callback function to reduce duplication. */
 export type EventCallback = (event?: any) => any;
@@ -34,15 +35,21 @@ export type EventCallback = (event?: any) => any;
 export type WrappedEventCallback = EventCallback & {__wrapped: boolean};
 
 /**
- * Contains a reference to a function that disables event replay feature
+ * Represents a signature of a function that disables event replay feature
  * for server-side rendered applications. This function is overridden with
  * an actual implementation when the event replay feature is enabled via
  * `withEventReplay()` call.
  */
-let stashEventListener = (el: RNode, eventName: string, listenerFn: EventCallback) => {};
+type StashEventListener = (el: RNode, eventName: string, listenerFn: EventCallback) => void;
 
-export function setStashFn(fn: typeof stashEventListener) {
-  stashEventListener = fn;
+const stashEventListeners = new Map<string, StashEventListener>();
+
+export function setStashFn(appId: string, fn: StashEventListener) {
+  stashEventListeners.set(appId, fn);
+}
+
+export function clearStashFn(appId: string) {
+  stashEventListeners.delete(appId);
 }
 
 /**
@@ -172,7 +179,9 @@ export function listenToDomEvent(
   } else {
     const native = getNativeByTNode(tNode, lView) as RElement;
     const target = eventTargetResolver ? eventTargetResolver(native) : native;
-    stashEventListener(target as RElement, eventName, wrappedListener);
+    const appId = lView[INJECTOR].get(APP_ID);
+    const stashEventListener = stashEventListeners.get(appId);
+    stashEventListener?.(target as RElement, eventName, wrappedListener);
 
     const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
     const idxOrTargetGetter = eventTargetResolver

@@ -1,6 +1,7 @@
-load("//tools:defaults.bzl", "nodejs_binary")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@npm2//:defs.bzl", "npm_link_all_packages")
 load("//:yarn.bzl", "YARN_PATH")
+load("//tools:defaults.bzl", "nodejs_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,6 +16,10 @@ exports_files([
     "package.json",
     "angular.json",
 ])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
 
 filegroup(
     # filegroup is needed so that this package.json file can be a dep

@@ -21,6 +21,11 @@
   flex: 1;
   overflow: auto;
   width: 100%;
+
+  .no-selected-element {
+    text-align: center;
+    padding: 1rem;
+  }
 }
 
 .hydration {

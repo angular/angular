@@ -60,6 +60,7 @@ const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = {
   '||': ts.SyntaxKind.BarBarToken,
   '+': ts.SyntaxKind.PlusToken,
   '??': ts.SyntaxKind.QuestionQuestionToken,
+  'in': ts.SyntaxKind.InKeyword,
 };
 
 const VAR_TYPES: Record<VariableDeclarationType, ts.NodeFlags> = {

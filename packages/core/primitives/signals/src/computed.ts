@@ -133,7 +133,9 @@ const COMPUTED_NODE = /* @__PURE__ */ (() => {
     producerRecomputeValue(node: ComputedNode<unknown>): void {
       if (node.value === COMPUTING) {
         // Our computation somehow led to a cyclic read of itself.
-        throw new Error('Detected cycle in computations.');
+        throw new Error(
+          typeof ngDevMode !== 'undefined' && ngDevMode ? 'Detected cycle in computations.' : '',
+        );
       }
 
       const oldValue = node.value;

@@ -40,11 +40,13 @@ import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
+import {provideNgReflectAttributes} from '../../src/ng_reflect';
 
 describe('runtime i18n', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [AppComp, DirectiveWithTplRef, UppercasePipe],
+      providers: [provideNgReflectAttributes()],
       // In some of the tests we use made-up tag names for better readability, however
       // they'll cause validation errors. Add the `NO_ERRORS_SCHEMA` so that we don't have
       // to declare dummy components for each one of them.

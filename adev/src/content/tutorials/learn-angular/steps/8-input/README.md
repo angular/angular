@@ -4,6 +4,8 @@ Sometimes app development requires you to send data into a component. This data 
 
 Angular uses a concept called `Input`. This is similar to `props` in other frameworks. To create an `Input` property, use the `@Input` decorator.
 
+Note: Learn more about [accepting data with input properties in the inputs guide](/guide/components/inputs).
+
 In this activity, you'll learn how to use the `@Input` decorator to send information to components.
 
 <hr>

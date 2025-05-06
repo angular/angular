@@ -62,6 +62,7 @@ import {
 } from './comments';
 import {TypeCheckData} from './context';
 import {isAccessExpression} from './ts_util';
+import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
 
 /**
  * Generates and caches `Symbol`s for various template structures for a given component.
@@ -255,7 +256,7 @@ export class SymbolBuilder {
 
   private getDirectiveMeta(
     host: TmplAstTemplate | TmplAstElement,
-    directiveDeclaration: ts.Declaration,
+    directiveDeclaration: ts.ClassDeclaration,
   ): TypeCheckableDirectiveMeta | null {
     let directives = this.typeCheckData.boundTarget.getDirectivesOfNode(host);
 
@@ -279,7 +280,34 @@ export class SymbolBuilder {
       return null;
     }
 
-    return directives.find((m) => m.ref.node === directiveDeclaration) ?? null;
+    const directive = directives.find((m) => m.ref.node === directiveDeclaration);
+    if (directive) {
+      return directive;
+    }
+
+    const originalFile = (directiveDeclaration.getSourceFile() as MaybeSourceFileWithOriginalFile)[
+      NgOriginalFile
+    ];
+
+    if (originalFile !== undefined) {
+      // This is a preliminary check ahead of a more expensive search
+      const hasPotentialCandidate = directives.find(
+        (m) => m.ref.node.name.text === directiveDeclaration.name?.text,
+      );
+
+      if (hasPotentialCandidate) {
+        // In case the TCB has been inlined,
+        // We will look for a matching class
+        // If we find one, we look for it in the directives array
+        const classWithSameName = findMatchingDirective(originalFile, directiveDeclaration);
+        if (classWithSameName !== null) {
+          return directives.find((m) => m.ref.node === classWithSameName) ?? null;
+        }
+      }
+    }
+
+    // Really nothing was found
+    return null;
   }
 
   private getDirectiveModule(declaration: ts.ClassDeclaration): ClassDeclaration | null {
@@ -861,4 +889,48 @@ function unwrapSignalInputWriteTAccessor(expr: ts.LeftHandSideExpression): null 
     fieldExpr: expr.expression,
     typeExpr: expr,
   };
+}
+
+/**
+ * Looks for a class declaration in the original source file that matches a given directive
+ * from the type check source file.
+ *
+ * @param originalSourceFile The original source where the runtime code resides
+ * @param directiveDeclarationInTypeCheckSourceFile The directive from the type check source file
+ */
+function findMatchingDirective(
+  originalSourceFile: ts.SourceFile,
+  directiveDeclarationInTypeCheckSourceFile: ts.ClassDeclaration,
+): ts.ClassDeclaration | null {
+  const className = directiveDeclarationInTypeCheckSourceFile.name?.text ?? '';
+  // We build an index of the class declarations with the same name
+  // To then compare the indexes to confirm we found the right class declaration
+  const ogClasses = collectClassesWithName(originalSourceFile, className);
+  const typecheckClasses = collectClassesWithName(
+    directiveDeclarationInTypeCheckSourceFile.getSourceFile(),
+    className,
+  );
+
+  return ogClasses[typecheckClasses.indexOf(directiveDeclarationInTypeCheckSourceFile)] ?? null;
+}
+
+/**
+ * Builds a list of class declarations of a given name
+ * Is used as a index based reference to compare class declarations
+ * between the typecheck source file and the original source file
+ */
+function collectClassesWithName(
+  sourceFile: ts.SourceFile,
+  className: string,
+): ts.ClassDeclaration[] {
+  const classes: ts.ClassDeclaration[] = [];
+  function visit(node: ts.Node) {
+    if (ts.isClassDeclaration(node) && node.name?.text === className) {
+      classes.push(node);
+    }
+    ts.forEachChild(node, visit);
+  }
+  sourceFile.forEachChild(visit);
+
+  return classes;
 }

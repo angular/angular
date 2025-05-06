@@ -409,7 +409,7 @@ function createInjectReplacementCall(
   const moduleName = '@angular/core';
   const sourceFile = param.getSourceFile();
   const decorators = getAngularDecorators(localTypeChecker, ts.getDecorators(param) || []);
-  const literalProps: ts.ObjectLiteralElementLike[] = [];
+  const literalProps = new Set<string>();
   const type = param.type;
   let injectedType = '';
   let typeArguments = type && hasGenerics(type) ? [type] : undefined;
@@ -451,24 +451,27 @@ function createInjectReplacementCall(
           const expression = ts.factory.createNewExpression(constructorRef, undefined, [firstArg]);
           injectedType = printer.printNode(ts.EmitHint.Unspecified, expression, sourceFile);
           typeArguments = undefined;
+          // @Attribute is implicitly optional.
+          hasOptionalDecorator = true;
+          literalProps.add('optional');
         }
         break;
 
       case 'Optional':
         hasOptionalDecorator = true;
-        literalProps.push(ts.factory.createPropertyAssignment('optional', ts.factory.createTrue()));
+        literalProps.add('optional');
         break;
 
       case 'SkipSelf':
-        literalProps.push(ts.factory.createPropertyAssignment('skipSelf', ts.factory.createTrue()));
+        literalProps.add('skipSelf');
         break;
 
       case 'Self':
-        literalProps.push(ts.factory.createPropertyAssignment('self', ts.factory.createTrue()));
+        literalProps.add('self');
         break;
 
       case 'Host':
-        literalProps.push(ts.factory.createPropertyAssignment('host', ts.factory.createTrue()));
+        literalProps.add('host');
         break;
     }
   }
@@ -479,8 +482,14 @@ function createInjectReplacementCall(
   const injectRef = tracker.addImport(param.getSourceFile(), 'inject', moduleName);
   const args: ts.Expression[] = [ts.factory.createIdentifier(PLACEHOLDER)];
 
-  if (literalProps.length > 0) {
-    args.push(ts.factory.createObjectLiteralExpression(literalProps));
+  if (literalProps.size > 0) {
+    args.push(
+      ts.factory.createObjectLiteralExpression(
+        Array.from(literalProps, (prop) =>
+          ts.factory.createPropertyAssignment(prop, ts.factory.createTrue()),
+        ),
+      ),
+    );
   }
 
   let expression: ts.Expression = ts.factory.createCallExpression(injectRef, typeArguments, args);

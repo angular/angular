@@ -288,9 +288,10 @@ const prepareInitialFrame = (source: string, duration: number) => {
     let position: ElementPosition | undefined;
     if (node.component) {
       position = directiveForestHooks.getDirectivePosition(node.component.instance);
-    } else {
+    } else if (node.directives[0]) {
       position = directiveForestHooks.getDirectivePosition(node.directives[0].instance);
     }
+
     if (position === undefined) {
       return;
     }

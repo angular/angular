@@ -138,23 +138,16 @@
           border-radius: 0.25rem;
         }
 
-        code {
-          font-size: 0.875rem;
+        .docs-code {
+          flex: 1;
 
-          &:has(pre) {
-            padding: 0;
-          }
-
-          &:not(pre *) {
-            padding: 0 0.3rem;
+          button[docs-copy-source-code] {
+            display: none;
           }
         }
 
-        pre {
-          margin: 0;
-
-          /* Do we have a better alternative ? */
-          overflow: auto;
+        code {
+          font-size: 0.875rem;
         }
 
         h3 {
@@ -257,6 +250,10 @@
       overflow-x: auto;
       margin: 0;
     }
+  }
+
+  .pipe-usage {
+    padding: 1rem;
   }
 
   // "API member card"-specific styles

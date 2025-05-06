@@ -15,7 +15,7 @@ Before starting anything, make sure your workspace is up to date with latest cha
 git checkout main
 git pull upstream main
 nvm install
-yarn --frozen-lockfile
+yarn --immutable
 ```
 
 ## 2. Update extension version numbers
@@ -24,7 +24,33 @@ Bump the version numbers listed in
 [`manifest.chrome.json`](/devtools/projects/shell-browser/src/manifest/manifest.chrome.json)
 and [`manifest.firefox.json`](/devtools/projects/shell-browser/src/manifest/manifest.firefox.json).
 
-## 3. Publish to Chrome Chrome
+### 3. Commit and merge
+
+Commit the version bump:
+
+```shell
+git checkout -b devtools-release
+git add . && git commit -m "release: bump Angular DevTools version to ${VERSION}"
+git push -u origin devtools-release
+```
+
+Then create and merge a PR targeting `patch` with this change. Merging this PR does not
+have any automation associated with it and can be merged at any time.
+
+Once the PR is merged, pull and check out that specific commit hash on `main`.
+
+```shell
+git checkout main
+git pull upstream main
+git checkout "${MERGED_RELEASE_COMMIT}"
+```
+
+Note that while the steps below can technically be done without merging the release PR
+or checking out the merged commit, doing so is useful for release stability (actually
+releasing what the commit history says we are) and is _necessary_ for accurate changelog
+generation.
+
+## 4. Publish to Chrome Chrome
 
 To publish Angular DevTools to the Chrome Web Store, first build and package the extension.
 
@@ -49,7 +75,7 @@ Note that even publishing immediately still requires approval from Chrome Web St
 available to users. Historically this has been pretty quick (< 30 minutes), but there is no hard upper
 limit on how long a review might take: https://developer.chrome.com/docs/webstore/review-process#review-time.
 
-## 4. Publish to Firefox
+## 5. Publish to Firefox
 
 To publish Angular DevTools as a Firefox Add-on, first build and package the extension.
 
@@ -70,10 +96,28 @@ Then upload it:
 
 The Firefox publishing process is slightly more involved than Chrome.
 
-Mozilla asks for a changelog, which needs to be authored manually. You can search for recent
-`devtools` commits to see what has landed since the last release.
+### Changelog
 
-https://github.com/search?q=repo%3Aangular%2Fangular+devtools&type=commits&s=committer-date&o=desc
+Mozilla asks for a changelog, which needs to be authored manually. You can generate a list of
+`(devtools)`-scoped commits since the last release with the following command:
+
+```shell
+git log "HEAD...$(git log HEAD~1 --grep="release:.*Angular DevTools" --format=format:%H | head -n 1)~1" --oneline |
+    grep "(devtools):\|release:.*Angular DevTools" --color=never
+```
+
+Internal refactors and non-Firefox changes don't need to be mentioned (note that
+`refactor(devtools)` is frequently used for feature work, so don't entirely ignore a commit for
+that reason).
+
+Mozilla's changelog rendering does support basic markdown, so you can write these in a list format:
+
+```md
+* Fixes stuff.
+* Breaks some other stuff.
+```
+
+### Source Code
 
 Mozilla also requires extension source code with instructions to build and run it. Since DevTools
 exists in a monorepo with critical build tooling existing outside the `devtools/` directory, we
@@ -87,24 +131,14 @@ rm -rf dist/ && zip -r ~/angular-source.zip * -x ".git/*" -x "node_modules/*" -x
 Suggested note to reviewer:
 
 > This is a monorepo and includes much more code than just the DevTools extension. The relevant
-> code is under `devtools/...` and `devtools/README.md` contains instructions for compiling release
-> builds locally.
+> code is under \`devtools/...\` and \`devtools/README.md\` contains instructions for compiling
+> release builds locally.
 >
 > The uploaded source is equivalent to
 > https://github.com/angular/angular/tree/${permalink to current main}/ with the single change
-> of a bumped version number in the `manifest.json` file.
+> of a bumped version number in the \`manifest.json\` file.
 
-### 5. Commit and merge
+Similar to Chrome, we need to wait for approval from Mozilla before the extension is released.
+There's no hard upper-bound on this, but historically it typically takes at least a week.
 
-Commit the version bump:
-
-```shell
-git checkout -b devtools-release
-git add . && git commit -m "release: bump Angular DevTools version to 1.0.10"
-git push -u origin devtools-release
-```
-
-Then create and merge a PR targeting `patch` with this change.
-
-Once the PR merges and both Chrome and Firefox are showing the new version to end users, then
-the release is complete!
+Once the release is in-review for both Chrome and Firefox, the process is complete.

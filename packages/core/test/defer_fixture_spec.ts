@@ -7,7 +7,8 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {Component, PLATFORM_ID, ɵPendingTasksInternal as PendingTasks} from '../src/core';
+import {Component, PLATFORM_ID} from '../src/core';
+import {PendingTasksInternal} from '../src/pending_tasks';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '../testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -177,7 +178,7 @@ describe('DeferFixture', () => {
       `,
     })
     class DeferComp {
-      constructor(taskService: PendingTasks) {
+      constructor(taskService: PendingTasksInternal) {
         // Add a task and never remove it. Keeps application unstable forever
         taskService.add();
       }

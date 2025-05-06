@@ -7,3 +7,4 @@
  */
 
 export {FakeNavigation as ɵFakeNavigation} from '../../primitives/dom-navigation/testing';
+export {getCleanupHook as ɵgetCleanupHook} from './test_hooks';

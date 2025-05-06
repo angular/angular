@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
-  BoundTarget,
   ChangeDetectionStrategy,
   compileComponentFromMetadata,
   ConstantPool,
@@ -17,6 +16,7 @@ import {
   InterpolationConfig,
   makeBindingParser,
   outputAst as o,
+  ParsedTemplate,
   parseTemplate,
   R3ComponentDeferMetadata,
   R3ComponentMetadata,
@@ -28,7 +28,6 @@ import {
   R3TargetBinder,
   R3TemplateDependencyKind,
   R3TemplateDependencyMetadata,
-  SelectorMatcher,
   TmplAstDeferredBlock,
   ViewEncapsulation,
 } from '@angular/compiler';
@@ -120,6 +119,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       i18nNormalizeLineEndingsInICUs: isInline,
       enableBlockSyntax,
       enableLetSyntax,
+      // TODO(crisbeto): figure out how this is enabled.
+      enableSelectorless: false,
     });
     if (template.errors !== null) {
       const errors = template.errors.map((err) => err.toString()).join('\n');
@@ -129,8 +130,6 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       );
     }
 
-    const binder = new R3TargetBinder(new SelectorMatcher());
-    const boundTarget = binder.bind({template: template.nodes});
     let declarationListEmitMode = DeclarationListEmitMode.Direct;
 
     const extractDeclarationTypeExpr = (
@@ -227,7 +226,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       styles: metaObj.has('styles')
         ? metaObj.getArray('styles').map((entry) => entry.getString())
         : [],
-      defer: this.createR3ComponentDeferMetadata(metaObj, boundTarget),
+      defer: this.createR3ComponentDeferMetadata(metaObj, template),
       encapsulation: metaObj.has('encapsulation')
         ? parseEncapsulation(metaObj.getValue('encapsulation'))
         : ViewEncapsulation.Emulated,
@@ -322,10 +321,22 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
 
   private createR3ComponentDeferMetadata(
     metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
-    boundTarget: BoundTarget<any>,
+    template: ParsedTemplate,
   ): R3ComponentDeferMetadata {
+    const result: R3ComponentDeferMetadata = {
+      mode: DeferBlockDepsEmitMode.PerBlock,
+      blocks: new Map<TmplAstDeferredBlock, o.Expression | null>(),
+    };
+
+    // Exit early if the template is empty.
+    if (template.nodes.length === 0) {
+      return result;
+    }
+
+    // We're only using the bound target to find defer blocks
+    // so don't set up infrastructure for directive matching.
+    const boundTarget = new R3TargetBinder(null).bind({template: template.nodes});
     const deferredBlocks = boundTarget.getDeferBlocks();
-    const blocks = new Map<TmplAstDeferredBlock, o.Expression | null>();
     const dependencies = metaObj.has('deferBlockDependencies')
       ? metaObj.getArray('deferBlockDependencies')
       : null;
@@ -334,16 +345,16 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       const matchingDependencyFn = dependencies?.[i];
 
       if (matchingDependencyFn == null) {
-        blocks.set(deferredBlocks[i], null);
+        result.blocks.set(deferredBlocks[i], null);
       } else {
-        blocks.set(
+        result.blocks.set(
           deferredBlocks[i],
           matchingDependencyFn.isNull() ? null : matchingDependencyFn.getOpaque(),
         );
       }
     }
 
-    return {mode: DeferBlockDepsEmitMode.PerBlock, blocks};
+    return result;
   }
 }
 

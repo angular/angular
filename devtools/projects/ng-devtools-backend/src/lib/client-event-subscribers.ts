@@ -45,7 +45,7 @@ import {
   serializeProviderRecord,
   serializeResolutionPath,
   updateState,
-} from './component-tree';
+} from './component-tree/component-tree';
 import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
@@ -56,6 +56,9 @@ import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
+import {getSupportedApis} from './ng-debug-api/supported-apis';
+
+type InspectorRef = {ref: ComponentInspector | null};
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
@@ -63,6 +66,8 @@ export const subscribeToClientEvents = (
     directiveForestHooks?: typeof DirectiveForestHooks;
   },
 ): void => {
+  const inspector: InspectorRef = {ref: null};
+
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
   messageBus.on(
@@ -75,7 +80,7 @@ export const subscribeToClientEvents = (
   messageBus.on('startProfiling', startProfilingCallback(messageBus));
   messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
 
-  messageBus.on('setSelectedComponent', selectedComponentCallback);
+  messageBus.on('setSelectedComponent', selectedComponentCallback(inspector));
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
@@ -94,7 +99,8 @@ export const subscribeToClientEvents = (
   });
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
-    setupInspector(messageBus);
+    inspector.ref = setupInspector(messageBus);
+
     // Often websites have `scroll` event listener which triggers
     // Angular's change detection. We don't want to constantly send
     // update requests, instead we want to request an update at most
@@ -175,12 +181,13 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
 };
 
-const selectedComponentCallback = (position: ElementPosition) => {
+const selectedComponentCallback = (inspector: InspectorRef) => (position: ElementPosition) => {
   const node = queryDirectiveForest(
     position,
     initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
   );
   setConsoleReference({node, position});
+  inspector.ref?.highlightByPosition(position);
 };
 
 const getNestedPropertiesCallback =
@@ -331,11 +338,12 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
       devMode: appIsAngularInDevMode(),
       ivy: appIsIvy,
       hydration: isHydrationEnabled(),
+      supportedApis: getSupportedApis(),
     },
   ]);
 };
 
-const setupInspector = (messageBus: MessageBus<Events>) => {
+const setupInspector = (messageBus: MessageBus<Events>): ComponentInspector => {
   const inspector = new ComponentInspector({
     onComponentEnter: (id: number) => {
       messageBus.emit('highlightComponent', [id]);
@@ -358,6 +366,8 @@ const setupInspector = (messageBus: MessageBus<Events>) => {
 
   messageBus.on('createHydrationOverlay', inspector.highlightHydrationNodes);
   messageBus.on('removeHydrationOverlay', inspector.removeHydrationHighlights);
+
+  return inspector;
 };
 
 export interface SerializableDirectiveInstanceType extends DirectiveType {
@@ -371,6 +381,9 @@ export interface SerializableComponentInstanceType extends ComponentType {
 export interface SerializableComponentTreeNode
   extends DevToolsNode<SerializableDirectiveInstanceType, SerializableComponentInstanceType> {
   children: SerializableComponentTreeNode[];
+  nativeElement?: never;
+  // Since the nativeElement is not serializable, we will use this boolean as backup
+  hasNativeElement: boolean;
 }
 
 // Here we drop properties to prepare the tree for serialization.
@@ -397,7 +410,11 @@ const prepareForestForSerialization = (
       })),
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
+      defer: node.defer,
       onPush: node.component ? isOnPushDirective(node.component) : false,
+
+      // native elements are not serializable
+      hasNativeElement: !!node.nativeElement,
     };
     serializedNodes.push(serializedNode);
 
@@ -410,7 +427,12 @@ const prepareForestForSerialization = (
 };
 
 function getNodeDIResolutionPath(node: ComponentTreeNode): SerializedInjector[] | undefined {
-  const nodeInjector = getInjectorFromElementNode(node.nativeElement!);
+  // Some nodes are not linked to HTMLElements, for example @defer blocks
+  if (!node.nativeElement) {
+    return undefined;
+  }
+
+  const nodeInjector = getInjectorFromElementNode(node.nativeElement);
   if (!nodeInjector) {
     return [];
   }

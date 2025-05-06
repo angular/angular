@@ -141,6 +141,7 @@ export enum BinaryOperator {
   BiggerEquals,
   NullishCoalesce,
   Exponentiation,
+  In,
 }
 
 export function nullSafeIsEquivalent<T extends {isEquivalent(other: T): boolean}>(

@@ -7,14 +7,15 @@
  */
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
-import type {DocEntry, EntryCollection, JsDocTagEntry, FunctionEntry} from '@angular/compiler-cli';
+import type {DocEntry, EntryCollection, FunctionEntry, JsDocTagEntry} from '@angular/compiler-cli';
 
 export interface ManifestEntry {
   name: string;
   type: string;
-  isDeprecated: boolean;
-  isDeveloperPreview: boolean;
-  isExperimental: boolean;
+  deprecated: {version: string | undefined} | undefined;
+  developerPreview: {version: string | undefined} | undefined;
+  experimental: {version: string | undefined} | undefined;
+  stable: {version: string | undefined} | undefined;
 }
 
 /** Manifest that maps each module name to a list of API symbols. */
@@ -25,13 +26,17 @@ export type Manifest = {
   entries: ManifestEntry[];
 }[];
 
-/** Gets whether the given entry has a given JsDoc tag. */
-function hasTag(entry: DocEntry | FunctionEntry, tag: string, every = false) {
+/**
+ * @returns the JsDocTagEntry for the given tag name
+ */
+function getTag(entry: DocEntry | FunctionEntry, tag: string, every = false) {
   const hasTagName = (t: JsDocTagEntry) => t.name === tag;
 
   if (every && 'signatures' in entry && entry.signatures.length > 1) {
     // For overloads we need to check all signatures.
-    return entry.signatures.every((s) => s.jsdocTags.some(hasTagName));
+    return entry.signatures.every((s) => s.jsdocTags.some(hasTagName))
+      ? entry.signatures[0].jsdocTags.find(hasTagName)
+      : undefined;
   }
 
   const jsdocTags = [
@@ -40,22 +45,28 @@ function hasTag(entry: DocEntry | FunctionEntry, tag: string, every = false) {
     ...((entry as FunctionEntry).implementation?.jsdocTags ?? []),
   ];
 
-  return jsdocTags.some(hasTagName);
+  return jsdocTags.find(hasTagName);
 }
 
-/** Gets whether the given entry is deprecated in the manifest. */
-function isDeprecated(entry: DocEntry): boolean {
-  return hasTag(entry, 'deprecated', /* every */ true);
+/** Gets whether the given entry is hidden. */
+export function isHiddenEntry<T extends DocEntry | FunctionEntry>(entry: T): boolean {
+  return getTag(entry, 'docs-private', /* every */ true) ? true : false;
 }
 
-/** Gets whether the given entry is hasDeveloperPreviewTag in the manifest. */
-function isDeveloperPreview(entry: DocEntry): boolean {
-  return hasTag(entry, 'developerPreview');
-}
+function getTagSinceVersion(
+  entry: DocEntry,
+  tagName: string,
+  every = false,
+): {version: string | undefined} | undefined {
+  const tag = getTag(entry, tagName, every);
+  if (!tag) {
+    return undefined;
+  }
 
-/** Gets whether the given entry is hasExperimentalTag in the manifest. */
-function isExperimental(entry: DocEntry): boolean {
-  return hasTag(entry, 'experimental');
+  // In case of deprecated tag we need to separate the version from the deprecation message.
+  const version = tag.comment.match(/\d+(\.\d+)?/)?.[0];
+
+  return {version};
 }
 
 /**
@@ -65,13 +76,16 @@ function isExperimental(entry: DocEntry): boolean {
 export function generateManifest(apiCollections: EntryCollection[]): Manifest {
   const manifest: Manifest = [];
   for (const collection of apiCollections) {
-    const entries = collection.entries.map((entry: DocEntry) => ({
-      name: entry.name,
-      type: entry.entryType,
-      isDeprecated: isDeprecated(entry),
-      isDeveloperPreview: isDeveloperPreview(entry),
-      isExperimental: isExperimental(entry),
-    }));
+    const entries = collection.entries
+      .filter((entry) => !isHiddenEntry(entry))
+      .map((entry: DocEntry) => ({
+        name: entry.name,
+        type: entry.entryType,
+        deprecated: getTagSinceVersion(entry, 'deprecated', true),
+        developerPreview: getTagSinceVersion(entry, 'developerPreview'),
+        experimental: getTagSinceVersion(entry, 'experimental'),
+        stable: getTagSinceVersion(entry, 'publicApi'),
+      }));
 
     const existingEntry = manifest.find((entry) => entry.moduleName === collection.moduleName);
     if (existingEntry) {

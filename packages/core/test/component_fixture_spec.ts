@@ -15,7 +15,7 @@ import {
   Input,
   NgZone,
   createComponent,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   signal,
 } from '../src/core';
 import {
@@ -563,7 +563,7 @@ describe('ComponentFixture with zoneless', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         {provide: ErrorHandler, useValue: {handleError: () => {}}},
       ],
     });

@@ -1,15 +1,13 @@
 .meta-data-container {
   display: flex;
   flex-direction: column;
+  padding: 0.25rem 0.75rem;
 }
 
 .meta-data-container a {
-  width: 100%;
-  font-size: 11px;
-  height: 22px;
-  line-height: 22px;
-}
+  display: block;
 
-.meta-data {
-  font-weight: 400;
+  &:not(:last-child) {
+    margin-bottom: 0.25rem;
+  }
 }

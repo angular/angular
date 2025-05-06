@@ -73,7 +73,7 @@ Then add it to the `providers` array of the testing module configuration:
 
 HELPFUL: You can also use the `fixture.autoDetectChanges()` function instead if you only want to enable automatic change detection
 after making updates to the state of the fixture's component. In addition, automatic change detection is on by default
-when using `provideExperimentalZonelessChangeDetection` and turning it off is not recommended.
+when using `provideZonelessChangeDetection` and turning it off is not recommended.
 
 Here are three tests that illustrate how automatic change detection works.
 

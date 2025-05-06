@@ -7,9 +7,9 @@
  */
 
 import {EnvironmentInjector, inject, Injectable} from '@angular/core';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Observable, of} from 'rxjs';
-import {delay, tap} from 'rxjs/operators';
+import {TestBed} from '@angular/core/testing';
+import {firstValueFrom, Observable, of} from 'rxjs';
+import {switchMap, tap, timeout as rxjsTimeout} from 'rxjs/operators';
 
 import {Route, Routes} from '../src/models';
 import {recognize} from '../src/recognize';
@@ -24,6 +24,7 @@ import {
   UrlTree,
 } from '../src/url_tree';
 import {getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
+import {timeout} from './helpers';
 
 describe('redirects', () => {
   const serializer = new DefaultUrlSerializer();
@@ -723,7 +724,9 @@ describe('redirects', () => {
         'loader',
         ['loadChildren'],
       );
-      loader.loadChildren.and.returnValue(of(loadedConfig).pipe(delay(0)));
+      loader.loadChildren.and.returnValue(
+        of(loadedConfig).pipe(switchMap((v) => new Promise((r) => setTimeout(r, 0)).then(() => v))),
+      );
 
       const config: Routes = [
         {path: '', loadChildren: jasmine.createSpy('matchChildren')},
@@ -804,7 +807,7 @@ describe('redirects', () => {
       });
     });
 
-    it('should load all matching configurations of empty path, including an auxiliary outlets', fakeAsync(() => {
+    it('should load all matching configurations of empty path, including an auxiliary outlets', async () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentA}],
         injector: TestBed.inject(EnvironmentInjector),
@@ -815,7 +818,7 @@ describe('redirects', () => {
         loadChildren: (injector: any, p: Route) => {
           loadCalls++;
           return of(loadedConfig).pipe(
-            delay(100 * loadCalls),
+            switchMap((v) => new Promise((r) => setTimeout(r, 10 * loadCalls)).then(() => v)),
             tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
           );
         },
@@ -835,14 +838,14 @@ describe('redirects', () => {
         serializer,
       ).subscribe();
       expect(loadCalls).toBe(1);
-      tick(100);
+      await timeout(10);
       expect(loaded).toEqual(['root']);
       expect(loadCalls).toBe(2);
-      tick(200);
+      await timeout(20);
       expect(loaded).toEqual(['root', 'aux']);
-    }));
+    });
 
-    it('should not try to load any matching configuration if previous load completed', fakeAsync(() => {
+    it('should not try to load any matching configuration if previous load completed', async () => {
       const loadedConfig = {
         routes: [{path: 'a', component: ComponentA}],
         injector: TestBed.inject(EnvironmentInjector),
@@ -853,7 +856,7 @@ describe('redirects', () => {
         loadChildren: (injector: any, p: Route) => {
           loadCalls++;
           return of(loadedConfig).pipe(
-            delay(100 * loadCalls),
+            switchMap((v) => new Promise((r) => setTimeout(r, 10 * loadCalls)).then(() => v)),
             tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
           );
         },
@@ -870,7 +873,7 @@ describe('redirects', () => {
         serializer,
       ).subscribe();
       expect(loadCalls).toBe(1);
-      tick(50);
+      await timeout(5);
       expect(loaded).toEqual([]);
       recognize(
         TestBed.inject(EnvironmentInjector),
@@ -880,10 +883,10 @@ describe('redirects', () => {
         tree('xyz/b'),
         serializer,
       ).subscribe();
-      tick(50);
+      await timeout(5);
       expect(loaded).toEqual(['children']);
       expect(loadCalls).toBe(2);
-      tick(200);
+      await timeout(20);
       recognize(
         TestBed.inject(EnvironmentInjector),
         <any>loader,
@@ -892,10 +895,10 @@ describe('redirects', () => {
         tree('xyz/c'),
         serializer,
       ).subscribe();
-      tick(50);
+      await timeout(5);
       expect(loadCalls).toBe(2);
-      tick(300);
-    }));
+      await timeout(30);
+    });
 
     it('loads only the first match when two Routes with the same outlet have the same path', () => {
       const loadedConfig = {
@@ -930,20 +933,20 @@ describe('redirects', () => {
       expect(loaded).toEqual(['first']);
     });
 
-    it('should load the configuration of empty root path if the entry is an aux outlet', fakeAsync(() => {
+    it('should load the configuration of empty root path if the entry is an aux outlet', async () => {
       const loadedConfig = {
         routes: [{path: '', component: ComponentA}],
         injector: TestBed.inject(EnvironmentInjector),
       };
       let loaded: string[] = [];
-      const rootDelay = 100;
+      const rootDelay = 10;
       const auxDelay = 1;
       const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
         loadChildren: (injector: any, p: Route) => {
           const delayMs =
             (p.loadChildren! as jasmine.Spy).and.identity === 'aux' ? auxDelay : rootDelay;
           return of(loadedConfig).pipe(
-            delay(delayMs),
+            switchMap((v) => new Promise((r) => setTimeout(r, delayMs)).then(() => v)),
             tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
           );
         },
@@ -955,18 +958,18 @@ describe('redirects', () => {
         {path: '', loadChildren: jasmine.createSpy('root')},
       ];
 
-      recognize(
-        TestBed.inject(EnvironmentInjector),
-        <any>loader,
-        null,
-        config,
-        tree('(popup:modal)'),
-        serializer,
-      ).subscribe();
-      tick(auxDelay);
-      tick(rootDelay);
+      await firstValueFrom(
+        recognize(
+          TestBed.inject(EnvironmentInjector),
+          <any>loader,
+          null,
+          config,
+          tree('(popup:modal)'),
+          serializer,
+        ),
+      );
       expect(loaded.sort()).toEqual(['aux', 'root'].sort());
-    }));
+    });
   });
 
   describe('empty paths', () => {
@@ -1577,6 +1580,41 @@ describe('redirects', () => {
       );
     });
 
+    it('would cause an infinite loop if redirect route is sub route of the path containing the redirectTo', () => {
+      let redirects = 0;
+      checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: () => {
+              redirects++;
+              if (redirects < 10) {
+                throw new Error('infinite');
+              }
+
+              return new UrlTree(
+                new UrlSegmentGroup([], {
+                  'primary': new UrlSegmentGroup(
+                    [new UrlSegment('a', {}), new UrlSegment('b', {}), new UrlSegment('d', {})],
+                    {},
+                  ),
+                }),
+              );
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b',
+        (t: UrlTree) => {
+          throw 'Should not reach';
+        },
+        undefined,
+        (e) => {
+          expect(e).toBeDefined();
+        },
+      );
+    });
+
     it('with a simple function returning a UrlTree', () => {
       checkRedirect(
         [
@@ -1586,7 +1624,7 @@ describe('redirects', () => {
               new UrlTree(
                 new UrlSegmentGroup([], {
                   'primary': new UrlSegmentGroup(
-                    [new UrlSegment('a', {}), new UrlSegment('b', {}), new UrlSegment('c', {})],
+                    [new UrlSegment('c', {}), new UrlSegment('d', {}), new UrlSegment('e', {})],
                     {},
                   ),
                 }),
@@ -1596,7 +1634,7 @@ describe('redirects', () => {
         ],
         '/a/b',
         (t: UrlTree) => {
-          expectTreeToBe(t, '/a/b/c');
+          expectTreeToBe(t, '/c/d/e');
         },
       );
     });
@@ -1604,12 +1642,12 @@ describe('redirects', () => {
     it('with a function using inject and returning a UrlTree', () => {
       checkRedirect(
         [
-          {path: 'a/b', redirectTo: () => inject(Router).parseUrl('/a/b/c')},
+          {path: 'a/b', redirectTo: () => of(inject(Router).parseUrl('/c/d/e'))},
           {path: '**', component: ComponentC},
         ],
         '/a/b',
         (t: UrlTree) => {
-          expectTreeToBe(t, '/a/b/c');
+          expectTreeToBe(t, '/c/d/e');
         },
       );
     });
@@ -1622,7 +1660,7 @@ describe('redirects', () => {
             redirectTo: ({queryParams}) => {
               const tree = inject(Router).parseUrl('other');
               tree.queryParams = queryParams;
-              return tree;
+              return Promise.resolve(tree);
             },
           },
           {path: '**', component: ComponentC},
@@ -1637,12 +1675,12 @@ describe('redirects', () => {
     it('with a function using inject and returning a UrlTree with params', () => {
       checkRedirect(
         [
-          {path: 'a/b', redirectTo: () => inject(Router).parseUrl('/a;a1=1,a2=2/b/c?qp=123')},
+          {path: 'a/b', redirectTo: () => inject(Router).parseUrl('/c;a1=1,a2=2/d/e?qp=123')},
           {path: '**', component: ComponentC},
         ],
         '/a/b',
         (t: UrlTree) => {
-          expectTreeToBe(t, '/a;a1=1,a2=2/b/c?qp=123');
+          expectTreeToBe(t, '/c;a1=1,a2=2/d/e?qp=123');
         },
       );
     });
@@ -1818,7 +1856,9 @@ function checkRedirect(
   url: string,
   callback: (t: UrlTree, state: RouterStateSnapshot) => void,
   paramsInheritanceStrategy?: ParamsInheritanceStrategy,
+  errorCallback?: (e: unknown) => void,
 ): void {
+  const redirectionTimeout = 10;
   recognize(
     TestBed.inject(EnvironmentInjector),
     TestBed.inject(RouterConfigLoader),
@@ -1827,12 +1867,17 @@ function checkRedirect(
     tree(url),
     new DefaultUrlSerializer(),
     paramsInheritanceStrategy,
-  ).subscribe({
-    next: (v) => callback(v.tree, v.state),
-    error: (e) => {
-      throw e;
-    },
-  });
+  )
+    .pipe(rxjsTimeout(redirectionTimeout))
+    .subscribe({
+      next: (v) => callback(v.tree, v.state),
+      error: (e) => {
+        if (!errorCallback) {
+          throw e;
+        }
+        errorCallback(e);
+      },
+    });
 }
 
 function tree(url: string): UrlTree {

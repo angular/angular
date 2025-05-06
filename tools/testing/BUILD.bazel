@@ -20,9 +20,38 @@ ts_library(
         ":zone_base_setup_lib",
         "//packages/compiler",
         "//packages/core/testing",
-        "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
         "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
+    name = "browser_zoneless",
+    testonly = 1,
+    srcs = ["browser_zoneless_tests.init.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "@npm//reflect-metadata",
+    ],
+)
+
+ts_library(
+    name = "node_zoneless",
+    testonly = 1,
+    srcs = ["node_zoneless_tests.init.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-server",
+        "//packages/platform-server:bundled_domino_lib",
+        "//packages/platform-server/testing",
+        "@npm//reflect-metadata",
     ],
 )
 
@@ -38,6 +67,7 @@ ts_library(
         "//packages/platform-server:bundled_domino_lib",
         "//packages/platform-server/testing",
         "//packages/zone.js/lib",
+        "@npm//reflect-metadata",
     ],
 )
 

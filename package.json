@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "20.0.0-next.6",
+  "version": "20.1.0-next.0",
   "private": true,
   "description": "Angular - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
@@ -48,14 +48,14 @@
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
-    "@angular-devkit/build-angular": "20.0.0-next.5",
-    "@angular-devkit/core": "20.0.0-next.5",
-    "@angular-devkit/schematics": "20.0.0-next.5",
-    "@angular/build": "20.0.0-next.5",
-    "@angular/cdk": "20.0.0-next.6",
-    "@angular/cli": "20.0.0-next.5",
-    "@angular/material": "20.0.0-next.6",
-    "@angular/ssr": "20.0.0-next.5",
+    "@angular-devkit/build-angular": "20.0.0-next.9",
+    "@angular-devkit/core": "20.0.0-next.9",
+    "@angular-devkit/schematics": "20.0.0-next.9",
+    "@angular/build": "20.0.0-next.9",
+    "@angular/cdk": "20.0.0-next.10",
+    "@angular/cli": "20.0.0-next.9",
+    "@angular/material": "20.0.0-next.10",
+    "@angular/ssr": "20.0.0-next.9",
     "@babel/cli": "7.27.0",
     "@babel/core": "7.26.10",
     "@babel/generator": "7.27.0",
@@ -72,13 +72,13 @@
     "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-commonjs": "^28.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
-    "@schematics/angular": "20.0.0-next.5",
+    "@schematics/angular": "20.0.0-next.9",
     "@stackblitz/sdk": "^1.11.0",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.20.5",
     "@types/babel__generator": "7.27.0",
     "@types/bluebird": "^3.5.27",
-    "@types/chrome": "^0.0.313",
+    "@types/chrome": "^0.0.317",
     "@types/convert-source-map": "^2.0.0",
     "@types/diff": "^7.0.0",
     "@types/dom-navigation": "^1.0.5",
@@ -114,7 +114,7 @@
     "domino": "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af",
     "hammerjs": "~2.0.8",
     "http-server": "^14.0.0",
-    "jasmine": "~5.6.0",
+    "jasmine": "~5.7.0",
     "jasmine-ajax": "^4.0.0",
     "jasmine-core": "^5.0.0",
     "karma": "~6.4.0",
@@ -160,9 +160,9 @@
   "devDependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^6.0.0",
-    "@angular-devkit/architect-cli": "0.2000.0-next.5",
+    "@angular-devkit/architect-cli": "0.2000.0-next.9",
     "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#ae9fb7555f2c12b329a2dd1212518134d6a13edf",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#1a12d97905f4af88ccc0b582864907729d23e23e",
     "@babel/plugin-proposal-async-generator-functions": "7.20.7",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^8.0.0",
@@ -230,10 +230,11 @@
     "undici": "^6.15.0",
     "vrsource-tslint-rules": "6.0.0"
   },
-  "// 3": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",
-  "// 4": "Ensure that a single instance of the `saucelabs` package is used. Protractor and the Karma sauce launcher pull this package as dependency. A single instance allows for e.g. easier patching in the Karma config.",
   "resolutions": {
-    "**/https-proxy-agent": "7.0.6",
-    "**/saucelabs": "9.0.2"
+    "https-proxy-agent": "7.0.6",
+    "saucelabs": "9.0.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": []
   }
 }

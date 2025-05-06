@@ -8,11 +8,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import ApiReferenceList, {
-  ALL_TYPES_KEY,
-  DEFAULT_STATUS,
-  STATUSES,
-} from './api-reference-list.component';
+import ApiReferenceList, {ALL_TYPES_KEY, STATUSES} from './api-reference-list.component';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import {signal} from '@angular/core';
 import {ApiItemType} from '../interfaces/api-item-type';
@@ -29,41 +25,46 @@ describe('ApiReferenceList', () => {
     'title': 'fakeItem1',
     'url': 'api/animations/fakeItem1',
     'itemType': ApiItemType.FUNCTION,
-    'isDeprecated': false,
-    'isDeveloperPreview': false,
-    'isExperimental': false,
+    'deprecated': undefined,
+    'developerPreview': undefined,
+    'experimental': undefined,
+    'stable': {version: undefined},
   };
   let fakeItem2 = {
     'title': 'fakeItem2',
     'url': 'api/animations/fakeItem2',
     'itemType': ApiItemType.CLASS,
-    'isDeprecated': false,
-    'isDeveloperPreview': false,
-    'isExperimental': false,
+    'deprecated': undefined,
+    'developerPreview': undefined,
+    'experimental': undefined,
+    'stable': {version: undefined},
   };
   let fakeDeprecatedFeaturedItem = {
     'title': 'fakeItemDeprecated',
     'url': 'api/animations/fakeItemDeprecated',
     'itemType': ApiItemType.INTERFACE,
-    'isDeprecated': true,
-    'isDeveloperPreview': false,
-    'isExperimental': false,
+    'deprecated': {version: undefined},
+    'developerPreview': undefined,
+    'experimental': undefined,
+    'stable': undefined,
   };
   let fakeDeveloperPreviewItem = {
     'title': 'fakeItemDeveloperPreview',
     'url': 'api/animations/fakeItemDeveloperPreview',
     'itemType': ApiItemType.INTERFACE,
-    'isDeprecated': false,
-    'isDeveloperPreview': true,
-    'isExperimental': false,
+    'deprecated': undefined,
+    'developerPreview': {version: undefined},
+    'experimental': undefined,
+    'stable': undefined,
   };
   let fakeExperimentalItem = {
     'title': 'fakeItemExperimental',
     'url': 'api/animations/fakeItemExperimental',
     'itemType': ApiItemType.INTERFACE,
-    'isDeprecated': false,
-    'isDeveloperPreview': false,
-    'isExperimental': true,
+    'deprecated': undefined,
+    'developerPreview': undefined,
+    'experimental': {version: undefined},
+    'stable': undefined,
   };
   const fakeApiReferenceManager = {
     apiGroups: signal([

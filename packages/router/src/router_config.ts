@@ -223,7 +223,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    *
    * @see https://developer.chrome.com/docs/web-platform/view-transitions/
    * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
-   * @experimental
+   * @experimental 17.0
    */
   enableViewTransitions?: boolean;
 

@@ -11,9 +11,10 @@ import {ApiItemType} from './api-item-type';
 export interface ApiManifestEntry {
   name: string;
   type: ApiItemType;
-  isDeprecated: boolean;
-  isDeveloperPreview: boolean;
-  isExperimental: boolean;
+  deprecated: {version: string | undefined} | undefined;
+  developerPreview: {version: string | undefined} | undefined;
+  experimental: {version: string | undefined} | undefined;
+  stable: {version: string | undefined} | undefined;
 }
 
 export interface ApiManifestPackage {

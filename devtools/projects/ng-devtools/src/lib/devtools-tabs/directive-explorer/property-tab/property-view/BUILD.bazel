@@ -11,6 +11,7 @@ _STYLE_SRCS = [
     "property-view-body.component.scss",
     "property-view-header.component.scss",
     "property-view-tree.component.scss",
+    "dependency-viewer.component.scss",
 ]
 
 _STYLE_LABELS = [
@@ -22,6 +23,9 @@ _STYLE_LABELS = [
     sass_binary(
         name = label,
         src = src,
+        deps = [
+            "//devtools/projects/ng-devtools/src/styles:typography",
+        ],
     )
     for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
 ]
@@ -29,6 +33,7 @@ _STYLE_LABELS = [
 ng_module(
     name = "property-view",
     srcs = [
+        "dependency-viewer.component.ts",
         "property-editor.component.ts",
         "property-preview.component.ts",
         "property-tab-body.component.ts",
@@ -45,6 +50,7 @@ ng_module(
         "property-preview.component.html",
         "property-editor.component.html",
         "property-tab-body.component.html",
+        "dependency-viewer.component.html",
     ] + _STYLE_LABELS,
     deps = [
         "//devtools/projects/ng-devtools/src/lib/application-environment",

@@ -18,6 +18,7 @@ import {
   JsDocTagEntry,
   MemberEntry,
   ParameterEntry,
+  PipeEntry,
   TypeAliasEntry,
 } from '../entities';
 
@@ -38,9 +39,11 @@ export interface DocEntryRenderable extends DocEntry {
   jsdocTags: JsDocTagRenderable[];
   additionalLinks: LinkEntryRenderable[];
   htmlUsageNotes: string;
-  isDeprecated: boolean;
-  isDeveloperPreview: boolean;
-  isExperimental: boolean;
+
+  stable: {version: string | undefined} | undefined;
+  deprecated: {version: string | undefined} | undefined;
+  developerPreview: {version: string | undefined} | undefined;
+  experimental: {version: string | undefined} | undefined;
 }
 
 /** Documentation entity for a constant augmented transformed content for rendering. */
@@ -55,6 +58,12 @@ export type TypeAliasEntryRenderable = TypeAliasEntry & DocEntryRenderable & Has
 
 /** Documentation entity for a TypeScript class augmented transformed content for rendering. */
 export type ClassEntryRenderable = ClassEntry &
+  DocEntryRenderable &
+  HasRenderableToc & {
+    members: MemberEntryRenderable[];
+  };
+
+export type PipeEntryRenderable = PipeEntry &
   DocEntryRenderable &
   HasRenderableToc & {
     members: MemberEntryRenderable[];
@@ -119,7 +128,7 @@ export interface LinkEntryRenderable {
 }
 
 export type CliOptionRenderable = CliOption & {
-  isDeprecated: boolean;
+  deprecated: {version: string | undefined} | undefined;
 };
 
 export type CliCardItemRenderable = CliOptionRenderable;

@@ -132,21 +132,9 @@ If the best option is to use a CommonJS dependency, you can disable these warnin
 The Angular CLI uses [Browserslist](https://github.com/browserslist/browserslist) to ensure compatibility with different browser versions.
 Depending on supported browsers, Angular will automatically transform certain JavaScript and CSS features to ensure the built application does not use a feature which has not been implemented by a supported browser. However, the Angular CLI will not automatically add polyfills to supplement missing Web APIs. Use the `polyfills` option in `angular.json` to add polyfills.
 
-Internally, the Angular CLI uses the below default `browserslist` configuration which matches the [browsers that are supported](reference/versions#browser-support) by Angular.
+By default, the Angular CLI uses a `browserslist` configuration which [matches browsers supported by Angular](reference/versions#browser-support) for the current major version.
 
-<docs-code language="text">
-
-last 2 Chrome versions
-last 1 Firefox version
-last 2 Edge major versions
-last 2 Safari major versions
-last 2 iOS major versions
-last 2 Android major versions
-Firefox ESR
-
-</docs-code>
-
-To override the internal configuration, run [`ng generate config browserslist`](cli/generate/config), which generates a `.browserslistrc` configuration file in the project directory.
+To override the internal configuration, run [`ng generate config browserslist`](cli/generate/config), which generates a `.browserslistrc` configuration file in the project directory matching Angular's supported browsers.
 
 See the [browserslist repository](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
 Avoid expanding this list to more browsers. Even if your application code more broadly compatible, Angular itself might not be.

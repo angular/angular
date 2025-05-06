@@ -37,6 +37,7 @@ import {
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
+  ApplicationRef,
 } from '../../src/core';
 
 import {ComponentFixture} from './component_fixture';
@@ -152,11 +153,11 @@ export interface TestBed {
   createComponent<T>(component: Type<T>): ComponentFixture<T>;
 
   /**
-   * Execute any pending effects.
+   * Execute any pending work required to synchronize model to the UI.
    *
-   * @developerPreview
+   * @publicApi 20.0
    */
-  flushEffects(): void;
+  tick(): void;
 }
 
 let _nextRootElementId = 0;
@@ -390,8 +391,8 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.ngModule;
   }
 
-  static flushEffects(): void {
-    return TestBedImpl.INSTANCE.flushEffects();
+  static tick(): void {
+    return TestBedImpl.INSTANCE.tick();
   }
 
   // Properties
@@ -801,12 +802,12 @@ export class TestBedImpl implements TestBed {
   }
 
   /**
-   * Execute any pending effects.
+   * Execute any pending work required to synchronize model to the UI.
    *
-   * @developerPreview
+   * @publicApi
    */
-  flushEffects(): void {
-    this.inject(EffectScheduler).flush();
+  tick(): void {
+    this.inject(ApplicationRef).tick();
   }
 }
 

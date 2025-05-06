@@ -17,6 +17,9 @@ _STYLE_LABELS = [
     sass_binary(
         name = label,
         src = src,
+        deps = [
+            "//devtools/projects/ng-devtools/src/styles:typography",
+        ],
     )
     for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
 ]

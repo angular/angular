@@ -32,7 +32,6 @@ ts_test_library(
     deps = [
         ":highlighter",
         "//packages/core",
-        "//packages/platform-browser-dynamic",
         "@npm//@types",
     ],
 )
@@ -94,7 +93,6 @@ ts_test_library(
         ":router_tree",
         "//devtools/projects/protocol",
         "//packages/core",
-        "//packages/platform-browser-dynamic",
         "//packages/router",
         "@npm//@types",
     ],
@@ -158,13 +156,13 @@ ts_library(
     name = "client_event_subscribers",
     srcs = ["client-event-subscribers.ts"],
     deps = [
-        ":component_tree",
         ":highlighter",
         ":interfaces",
         ":router_tree",
         ":set_console_reference",
         ":utils",
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
         "//devtools/projects/ng-devtools-backend/src/lib/hooks",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
@@ -172,34 +170,4 @@ ts_library(
         "//devtools/projects/shared-utils",
         "@npm//rxjs",
     ],
-)
-
-ts_library(
-    name = "component_tree",
-    srcs = ["component-tree.ts"],
-    deps = [
-        ":interfaces",
-        ":property_mutation",
-        ":utils",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
-        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
-        "//devtools/projects/protocol",
-        "//packages/core",
-    ],
-)
-
-ts_test_library(
-    name = "component_tree_test_lib",
-    srcs = ["component-tree.spec.ts"],
-    deps = [
-        ":component_tree",
-        "//packages/core",
-        "@npm//jasmine",
-    ],
-)
-
-karma_web_test_suite(
-    name = "component_tree_test",
-    deps = [":component_tree_test_lib"],
 )

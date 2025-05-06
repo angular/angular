@@ -82,7 +82,6 @@ import {
   R3ComponentMetadata,
   R3DirectiveDependencyMetadata,
   R3DirectiveMetadata,
-  R3HostDirectiveMetadata,
   R3HostMetadata,
   R3InputMetadata,
   R3PipeDependencyMetadata,
@@ -104,7 +103,6 @@ import {R3TargetBinder} from './render3/view/t2_binder';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
-import {SelectorMatcher} from './selector';
 import {getJitStandaloneDefaultForVersion} from './util';
 
 export class CompilerFacadeImpl implements CompilerFacade {
@@ -748,7 +746,7 @@ function parseJitTemplate(
     const errors = parsed.errors.map((err) => err.toString()).join(', ');
     throw new Error(`Errors during JIT compilation of template for ${typeName}: ${errors}`);
   }
-  const binder = new R3TargetBinder(new SelectorMatcher());
+  const binder = new R3TargetBinder(null);
   const boundTarget = binder.bind({template: parsed.nodes});
 
   return {

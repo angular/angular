@@ -7,13 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {
-  afterNextRender,
-  InjectionToken,
-  Injector,
-  NgZone,
-  runInInjectionContext,
-} from '@angular/core';
+import {afterNextRender, InjectionToken, Injector, runInInjectionContext} from '@angular/core';
 
 import {ActivatedRouteSnapshot} from '../router_state';
 
@@ -27,8 +21,7 @@ export const VIEW_TRANSITION_OPTIONS = new InjectionToken<
 /**
  * Options to configure the View Transitions integration in the Router.
  *
- * @experimental
- * @publicApi
+ * @experimental 17.0
  * @see withViewTransitions
  */
 export interface ViewTransitionsFeatureOptions {
@@ -50,8 +43,7 @@ export interface ViewTransitionsFeatureOptions {
  * The information passed to the `onViewTransitionCreated` function provided in the
  * `withViewTransitions` feature options.
  *
- * @publicApi
- * @experimental
+ * @experimental 17.0
  */
 export interface ViewTransitionInfo {
   /**
@@ -82,34 +74,31 @@ export function createViewTransition(
 ): Promise<void> {
   const transitionOptions = injector.get(VIEW_TRANSITION_OPTIONS);
   const document = injector.get(DOCUMENT);
-  // Create promises outside the Angular zone to avoid causing extra change detections
-  return injector.get(NgZone).runOutsideAngular(() => {
-    if (!document.startViewTransition || transitionOptions.skipNextTransition) {
-      transitionOptions.skipNextTransition = false;
-      // The timing of `startViewTransition` is closer to a macrotask. It won't be called
-      // until the current event loop exits so we use a promise resolved in a timeout instead
-      // of Promise.resolve().
-      return new Promise((resolve) => setTimeout(resolve));
-    }
+  if (!document.startViewTransition || transitionOptions.skipNextTransition) {
+    transitionOptions.skipNextTransition = false;
+    // The timing of `startViewTransition` is closer to a macrotask. It won't be called
+    // until the current event loop exits so we use a promise resolved in a timeout instead
+    // of Promise.resolve().
+    return new Promise((resolve) => setTimeout(resolve));
+  }
 
-    let resolveViewTransitionStarted: () => void;
-    const viewTransitionStarted = new Promise<void>((resolve) => {
-      resolveViewTransitionStarted = resolve;
-    });
-    const transition = document.startViewTransition(() => {
-      resolveViewTransitionStarted();
-      // We don't actually update dom within the transition callback. The resolving of the above
-      // promise unblocks the Router navigation, which synchronously activates and deactivates
-      // routes (the DOM update). This view transition waits for the next change detection to
-      // complete (below), which includes the update phase of the routed components.
-      return createRenderPromise(injector);
-    });
-    const {onViewTransitionCreated} = transitionOptions;
-    if (onViewTransitionCreated) {
-      runInInjectionContext(injector, () => onViewTransitionCreated({transition, from, to}));
-    }
-    return viewTransitionStarted;
+  let resolveViewTransitionStarted: () => void;
+  const viewTransitionStarted = new Promise<void>((resolve) => {
+    resolveViewTransitionStarted = resolve;
   });
+  const transition = document.startViewTransition(() => {
+    resolveViewTransitionStarted();
+    // We don't actually update dom within the transition callback. The resolving of the above
+    // promise unblocks the Router navigation, which synchronously activates and deactivates
+    // routes (the DOM update). This view transition waits for the next change detection to
+    // complete (below), which includes the update phase of the routed components.
+    return createRenderPromise(injector);
+  });
+  const {onViewTransitionCreated} = transitionOptions;
+  if (onViewTransitionCreated) {
+    runInInjectionContext(injector, () => onViewTransitionCreated({transition, from, to}));
+  }
+  return viewTransitionStarted;
 }
 
 /**

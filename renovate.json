@@ -18,11 +18,17 @@
   "labels": ["target: patch", "area: build & ci", "action: merge"],
   "postUpgradeTasks": {
     "commands": [
-      "git restore .yarn/releases/yarn-1.22.22.cjs",
+      "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml",
       "yarn install --frozen-lockfile --non-interactive",
+      "yarn bazel sync --only=repo || true",
       "yarn ng-dev misc update-generated-files"
     ],
-    "fileFilters": [".github/actions/deploy-docs-site/**/*", "packages/**/*"],
+    "fileFilters": [
+      ".github/actions/deploy-docs-site/**/*",
+      "packages/**/*",
+      ".aspect/rules/external_repository_action_cache/**/*",
+      "pnpm-lock.yaml"
+    ],
     "executionMode": "branch"
   },
   "ignoreDeps": [

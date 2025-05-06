@@ -135,6 +135,7 @@ export interface ExtractTemplateOptions {
   i18nNormalizeLineEndingsInICUs: boolean;
   enableBlockSyntax: boolean;
   enableLetSyntax: boolean;
+  enableSelectorless: boolean;
   preserveSignificantWhitespace?: boolean;
 }
 
@@ -319,6 +320,7 @@ function parseExtractedTemplate(
     escapedString,
     enableBlockSyntax: options.enableBlockSyntax,
     enableLetSyntax: options.enableLetSyntax,
+    enableSelectorless: options.enableSelectorless,
   };
 
   const parsedTemplate = parseTemplate(sourceStr, sourceMapUrl ?? '', {

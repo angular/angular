@@ -17,7 +17,7 @@ import type {
   RawScopeInfoFromDecorator,
 } from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
-import {getComponentDef, getNgModuleDef, isStandalone} from '../def_getters';
+import {getComponentDef, getNgModuleDef, getNgModuleDefOrThrow, isStandalone} from '../def_getters';
 import {maybeUnwrapFn} from '../util/misc_utils';
 
 import {
@@ -150,7 +150,7 @@ class DepsTracker implements DepsTrackerApi {
 
   /** Compute NgModule scope afresh. */
   private computeNgModuleScope(type: NgModuleType<any>): NgModuleScope {
-    const def = getNgModuleDef(type, true);
+    const def = getNgModuleDefOrThrow(type);
     const scope: NgModuleScope = {
       exported: {directives: new Set(), pipes: new Set()},
       compilation: {directives: new Set(), pipes: new Set()},

@@ -23,12 +23,11 @@ import {
   DirectiveTreeData,
 } from '../../property-resolver/directive-property-resolver';
 import {FlatNode} from '../../property-resolver/element-property-resolver';
-import {ResolutionPathComponent} from '../../../dependency-injection/resolution-path/resolution-path.component';
-import {MatChipsModule} from '@angular/material/chips';
 import {PropertyViewTreeComponent} from './property-view-tree.component';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {DependencyViewerComponent} from './dependency-viewer.component';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -107,71 +106,31 @@ export class PropertyViewBodyComponent {
 }
 
 @Component({
-  selector: 'ng-dependency-viewer',
+  selector: 'ng-injected-services',
   template: `
-    <mat-accordion class="example-headers-align" multi>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header collapsedHeight="35px" expandedHeight="35px">
-          <mat-panel-title>
-            <mat-chip-listbox>
-              <mat-chip
-                matTooltipPosition="left"
-                matTooltip="Dependency injection token"
-                (click)="$event.stopPropagation()"
-                >{{ dependency().token }}</mat-chip
-              >
-            </mat-chip-listbox>
-          </mat-panel-title>
-          <mat-panel-description>
-            <mat-chip-listbox>
-              <div class="di-flags">
-                @if (dependency().flags?.optional) {
-                <mat-chip [highlighted]="true" color="primary">Optional</mat-chip>
-                } @if (dependency().flags?.host) {
-                <mat-chip [highlighted]="true" color="primary">Host</mat-chip>
-                } @if (dependency().flags?.self) {
-                <mat-chip [highlighted]="true" color="primary">Self</mat-chip>
-                } @if (dependency().flags?.skipSelf) {
-                <mat-chip [highlighted]="true" color="primary">SkipSelf</mat-chip>
-                }
-              </div>
-            </mat-chip-listbox>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-        <ng-resolution-path [path]="dependency().resolutionPath!"></ng-resolution-path>
-      </mat-expansion-panel>
-    </mat-accordion>
+    <div class="services">
+      @for (dependency of dependencies(); track dependency.position[0]) {
+        <ng-dependency-viewer [dependency]="dependency" />
+      }
+    </div>
   `,
   styles: [
     `
-      .di-flags {
-        display: flex;
-        flex-wrap: nowrap;
-      }
-
       :host {
-        mat-chip {
-          --mdc-chip-container-height: 18px;
-        }
-      }
-    `,
-  ],
-  imports: [MatExpansionModule, MatChipsModule, MatTooltip, ResolutionPathComponent],
-})
-export class DependencyViewerComponent {
-  readonly dependency = input.required<SerializedInjectedService>();
-}
-
-@Component({
-  selector: 'ng-injected-services',
-  template: ` @for (dependency of dependencies(); track dependency.position[0]) {
-    <ng-dependency-viewer [dependency]="dependency" />
-    }`,
-  styles: [
-    `
-      ng-dependency-viewer {
         display: block;
-      }
+        padding: 0.5rem;
+
+        .services {
+          border-radius: 0.375rem;
+          background: color-mix(in srgb, var(--senary-contrast) 50%, var(--color-background) 50%);
+          overflow: hidden;
+
+          .wrapper {
+            ng-dependency-viewer {
+              display: block;
+            }
+          }
+        }
     `,
   ],
   imports: [DependencyViewerComponent],

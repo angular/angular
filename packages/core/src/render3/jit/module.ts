@@ -31,6 +31,7 @@ import {
   getComponentDef,
   getDirectiveDef,
   getNgModuleDef,
+  getNgModuleDefOrThrow,
   getPipeDef,
   isStandalone,
 } from '../def_getters';
@@ -253,7 +254,7 @@ function verifySemanticsOfNgModuleDef(
       );
     }
   } else {
-    ngModuleDef = getNgModuleDef(moduleType, true);
+    ngModuleDef = getNgModuleDefOrThrow(moduleType);
   }
   const errors: string[] = [];
   const declarations = maybeUnwrapFn(ngModuleDef.declarations);
@@ -553,7 +554,7 @@ export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes 
   if (isNgModule(type)) {
     if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
       const scope = depsTracker.getNgModuleScope(type);
-      const def = getNgModuleDef(type, true);
+      const def = getNgModuleDefOrThrow(type);
       return {
         schemas: def.schemas || null,
         ...scope,
@@ -607,7 +608,7 @@ export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes 
  * @param moduleType module that transitive scope should be calculated for.
  */
 export function transitiveScopesForNgModule<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
-  const def = getNgModuleDef(moduleType, true);
+  const def = getNgModuleDefOrThrow(moduleType);
 
   if (def.transitiveCompileScopes !== null) {
     return def.transitiveCompileScopes;

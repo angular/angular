@@ -95,6 +95,7 @@ import {
   CompoundComponentScopeReader,
   LocalModuleScopeRegistry,
   MetadataDtsModuleScopeResolver,
+  SelectorlessComponentScopeReader,
   TypeCheckScopeRegistry,
 } from '../../scope';
 import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
@@ -391,6 +392,7 @@ export class NgCompiler {
   private readonly angularCoreVersion: string | null;
   private readonly enableHmr: boolean;
   private readonly implicitStandaloneValue: boolean;
+  private readonly enableSelectorless: boolean;
 
   /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
@@ -463,6 +465,7 @@ export class NgCompiler {
     // TODO(crisbeto): remove this flag and base `enableBlockSyntax` on the `angularCoreVersion`.
     this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
     this.enableLetSyntax = options['_enableLetSyntax'] ?? true;
+    this.enableSelectorless = options['_enableSelectorless'] ?? false;
     // Standalone by default is enabled since v19. We need to toggle it here,
     // because the language service extension may be running with the latest
     // version of the compiler against an older version of Angular.
@@ -1378,8 +1381,10 @@ export class NgCompiler {
       ngModuleScopeRegistry,
       depScopeReader,
     );
+    const selectorlessScopeReader = new SelectorlessComponentScopeReader(metaReader, reflector);
     const scopeReader: ComponentScopeReader = new CompoundComponentScopeReader([
       ngModuleScopeRegistry,
+      selectorlessScopeReader,
       standaloneScopeReader,
     ]);
     const semanticDepGraphUpdater = this.incrementalCompilation.semanticDepGraphUpdater;
@@ -1507,6 +1512,7 @@ export class NgCompiler {
         this.enableHmr,
         this.implicitStandaloneValue,
         typeCheckHostBindings,
+        this.enableSelectorless,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`

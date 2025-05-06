@@ -9,9 +9,6 @@ import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
 
 // @public
-export const __core_private_testing_placeholder__ = "";
-
-// @public
 export class ComponentFixture<T> {
     constructor(componentRef: ComponentRef<T>);
     autoDetectChanges(autoDetect?: boolean): void;
@@ -118,7 +115,6 @@ export interface TestBed {
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     // (undocumented)
     execute(tokens: any[], fn: Function, context?: any): any;
-    flushEffects(): void;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {
@@ -165,6 +161,7 @@ export interface TestBed {
     // (undocumented)
     resetTestingModule(): TestBed;
     runInInjectionContext<T>(fn: () => T): T;
+    tick(): void;
 }
 
 // @public

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isBrowser, isIE, zoneSymbol} from '../../lib/common/utils';
+import {isBrowser, zoneSymbol} from '../../lib/common/utils';
 import {ifEnvSupports, isSafari, isSupportSetErrorStack} from '../test-util';
 
 const defineProperty = (Object as any)[zoneSymbol('defineProperty')] || Object.defineProperty;
@@ -119,7 +119,7 @@ describe(
             div.dispatchEvent(enterEvent);
 
             expect(log.length).toBe(2);
-            if (!isSafari() && !isIE()) {
+            if (!isSafari()) {
               expect(log[0].stack === log[1].stack).toBe(false);
             }
 

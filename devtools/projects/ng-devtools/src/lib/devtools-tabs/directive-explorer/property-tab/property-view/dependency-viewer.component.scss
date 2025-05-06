@@ -1,0 +1,57 @@
+@use '../../../../../styles/typography';
+
+:host {
+  .dep-data {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    width: 100%;
+    padding-right: 0.5rem;
+    box-sizing: border-box;
+
+    .dep-pill {
+      background: color-mix(in srgb, var(--quinary-contrast), var(--senary-contrast));
+      padding: 0.125rem 0.5rem;
+      border-radius: 1rem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      @extend %body-01;
+
+      &.flagged {
+        background: var(--quinary-contrast);
+      }
+    }
+  }
+
+  .mat-expansion-panel {
+    position: relative;
+    border-bottom: none;
+    background: none;
+
+    mat-expansion-panel-header {
+      padding-right: 1.2rem;
+    }
+  }
+
+  &:not(:last-of-type) {
+    .mat-expansion-panel {
+      &::after {
+        content: '';
+        position: absolute;
+        width: calc(100% - 1rem);
+        height: 1px;
+        background: color-mix(in srgb, var(--quinary-contrast), var(--senary-contrast));
+        bottom: 0;
+        left: 0.5rem;
+      }
+
+      &.mat-expanded {
+        &::after {
+          width: 100%;
+          left: 0;
+        }
+      }
+    }
+  }
+}

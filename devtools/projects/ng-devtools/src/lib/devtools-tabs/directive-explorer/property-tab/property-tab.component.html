@@ -1,8 +1,19 @@
-<ng-property-tab-header [currentSelectedElement]="currentSelectedElement()">
-</ng-property-tab-header>
-<ng-property-tab-body
-  (inspect)="inspect.emit($event)"
-  (viewSource)="viewSource.emit($event)"
-  [currentSelectedElement]="currentSelectedElement()"
->
-</ng-property-tab-body>
+@let currentSelectedElement = this.currentSelectedElement();
+
+@if (currentSelectedElement) {
+  <ng-property-tab-header [currentSelectedElement]="currentSelectedElement" />
+  <ng-property-tab-body
+    (inspect)="inspect.emit($event)"
+    (viewSource)="viewSource.emit($event)"
+    [currentSelectedElement]="currentSelectedElement"
+  />
+
+  @let hydration = currentSelectedElement.hydration;
+  @if (hydration && hydration.status === 'dehydrated') {
+    <div class="dehydrated-component">This component is dehydrated</div>
+  }
+
+  @if (currentSelectedElement.defer) {
+    <ng-defer-view [defer]="currentSelectedElement.defer" />
+  }
+}

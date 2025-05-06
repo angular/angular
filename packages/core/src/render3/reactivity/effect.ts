@@ -19,7 +19,6 @@ import {
 } from '../../../primitives/signals';
 import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
 import {markAncestorsForTraversal} from '../util/view_utils';
-import {InjectionToken} from '../../di/injection_token';
 import {inject} from '../../di/injector_compatibility';
 import {Injector} from '../../di/injector';
 import {assertNotInReactiveContext} from './asserts';
@@ -38,6 +37,8 @@ import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injec
 
 /**
  * A global reactive effect, which can be manually destroyed.
+ *
+ * @publicApi 20.0
  */
 export interface EffectRef {
   /**
@@ -60,6 +61,8 @@ export class EffectRefImpl implements EffectRef {
 
 /**
  * Options passed to the `effect` function.
+ *
+ * @publicApi 20.0
  */
 export interface CreateEffectOptions {
   /**
@@ -96,11 +99,15 @@ export interface CreateEffectOptions {
  * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
  * before the next effect run. The cleanup function makes it possible to "cancel" any work that the
  * previous effect run might have started.
+ *
+ * @publicApi 20.0
  */
 export type EffectCleanupFn = () => void;
 
 /**
  * A callback passed to the effect function that makes it possible to register cleanup logic.
+ *
+ * @publicApi 20.0
  */
 export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 
@@ -119,6 +126,8 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
  * and have no connection to the component tree or change detection.
  *
  * `effect()` must be run in injection context, unless the `injector` option is manually specified.
+ *
+ * @publicApi 20.0
  */
 export function effect(
   effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
@@ -200,15 +209,6 @@ export interface ViewEffectNode extends EffectNode {
 export interface RootEffectNode extends EffectNode {
   scheduler: EffectScheduler;
 }
-
-/**
- * Not public API, which guarantees `EffectScheduler` only ever comes from the application root
- * injector.
- */
-export const APP_EFFECT_SCHEDULER = /* @__PURE__ */ new InjectionToken('', {
-  providedIn: 'root',
-  factory: () => inject(EffectScheduler),
-});
 
 export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 'notifier'> =
   /* @__PURE__ */ (() => ({

@@ -11,49 +11,29 @@ import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {WritableSignal} from '../render3/reactivity/signal';
 
 /**
- * Status of a `Resource`.
+ * String value capturing the status of a `Resource`.
+ *
+ * Possible statuses are:
+ *
+ * `idle` - The resource has no valid request and will not perform any loading. `value()` will be
+ * `undefined`.
+ *
+ * `loading` - The resource is currently loading a new value as a result of a change in its reactive
+ * dependencies. `value()` will be `undefined`.
+ *
+ * `reloading` - The resource is currently reloading a fresh value for the same reactive
+ * dependencies. `value()` will continue to return the previously fetched value during the reloading
+ * operation.
+ *
+ * `error` - Loading failed with an error. `value()` will be `undefined`.
+ *
+ * `resolved` - Loading has completed and the resource has the value returned from the loader.
+ *
+ * `local` - The resource's value was set locally via `.set()` or `.update()`.
  *
  * @experimental
  */
-export enum ResourceStatus {
-  /**
-   * The resource has no valid request and will not perform any loading.
-   *
-   * `value()` will be `undefined`.
-   */
-  Idle,
-
-  /**
-   * Loading failed with an error.
-   *
-   * `value()` will be `undefined`.
-   */
-  Error,
-
-  /**
-   * The resource is currently loading a new value as a result of a change in its `request`.
-   *
-   * `value()` will be `undefined`.
-   */
-  Loading,
-
-  /**
-   * The resource is currently reloading a fresh value for the same request.
-   *
-   * `value()` will continue to return the previously fetched value during the reloading operation.
-   */
-  Reloading,
-
-  /**
-   * Loading has completed and the resource has the value returned from the loader.
-   */
-  Resolved,
-
-  /**
-   * The resource's value was set locally via `.set()` or `.update()`.
-   */
-  Local,
-}
+export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resolved' | 'local';
 
 /**
  * A Resource is an asynchronous dependency (for example, the results of an API call) that is
@@ -148,7 +128,7 @@ export interface ResourceRef<T> extends WritableResource<T> {
  * @experimental
  */
 export interface ResourceLoaderParams<R> {
-  request: Exclude<NoInfer<R>, undefined>;
+  params: NoInfer<Exclude<R, undefined>>;
   abortSignal: AbortSignal;
   previous: {
     status: ResourceStatus;
@@ -183,7 +163,7 @@ export interface BaseResourceOptions<T, R> {
    *
    * If a request function isn't provided, the loader won't rerun unless the resource is reloaded.
    */
-  request?: () => R;
+  params?: () => R;
 
   /**
    * The value which will be returned from the resource when a server value is unavailable, such as

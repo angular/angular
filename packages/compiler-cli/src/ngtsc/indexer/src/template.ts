@@ -377,8 +377,12 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
 
   /** Creates an identifier for a template element or template node. */
   private elementOrTemplateToIdentifier(
-    node: TmplAstElement | TmplAstTemplate,
+    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
   ): ElementIdentifier | TemplateNodeIdentifier | null {
+    if (node instanceof TmplAstComponent || node instanceof TmplAstDirective) {
+      throw new Error('TODO');
+    }
+
     // If this node has already been seen, return the cached result.
     if (this.elementAndTemplateIdentifierCache.has(node)) {
       return this.elementAndTemplateIdentifierCache.get(node)!;
@@ -465,7 +469,12 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       if (refTarget) {
         let node: ElementIdentifier | TemplateNodeIdentifier | null = null;
         let directive: ClassDeclaration<DeclarationNode> | null = null;
-        if (refTarget instanceof TmplAstElement || refTarget instanceof TmplAstTemplate) {
+        if (
+          refTarget instanceof TmplAstElement ||
+          refTarget instanceof TmplAstTemplate ||
+          refTarget instanceof TmplAstComponent ||
+          refTarget instanceof TmplAstDirective
+        ) {
           node = this.elementOrTemplateToIdentifier(refTarget);
         } else {
           node = this.elementOrTemplateToIdentifier(refTarget.node);

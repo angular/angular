@@ -35,7 +35,7 @@ import {HttpResourceRef, HttpResourceOptions, HttpResourceRequest} from './resou
  * based `httpRequest` as well as sub-functions for `ArrayBuffer`, `Blob`, and `string` type
  * requests.
  *
- * @experimental
+ * @experimental 19.2
  */
 export interface HttpResourceFn {
   /**
@@ -47,7 +47,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental
+   * @experimental 19.2
    */
   <TResult = unknown>(
     url: () => string | undefined,
@@ -63,7 +63,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental
+   * @experimental 19.2
    */
   <TResult = unknown>(
     url: () => string | undefined,
@@ -79,7 +79,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental
+   * @experimental 19.2
    */
   <TResult = unknown>(
     request: () => HttpResourceRequest | undefined,
@@ -95,7 +95,7 @@ export interface HttpResourceFn {
    * of the `HttpClient` API. Data is parsed as JSON by default - use a sub-function of
    * `httpResource`, such as `httpResource.text()`, to parse the response differently.
    *
-   * @experimental
+   * @experimental 19.2
    */
   <TResult = unknown>(
     request: () => HttpResourceRequest | undefined,
@@ -110,7 +110,7 @@ export interface HttpResourceFn {
    * Uses `HttpClient` to make requests and supports interceptors, testing, and the other features
    * of the `HttpClient` API. Data is parsed into an `ArrayBuffer`.
    *
-   * @experimental
+   * @experimental 19.2
    */
   arrayBuffer: {
     <TResult = ArrayBuffer>(
@@ -142,7 +142,7 @@ export interface HttpResourceFn {
    * Uses `HttpClient` to make requests and supports interceptors, testing, and the other features
    * of the `HttpClient` API. Data is parsed into a `Blob`.
    *
-   * @experimental
+   * @experimental 19.2
    */
   blob: {
     <TResult = Blob>(
@@ -174,7 +174,7 @@ export interface HttpResourceFn {
    * Uses `HttpClient` to make requests and supports interceptors, testing, and the other features
    * of the `HttpClient` API. Data is parsed as a `string`.
    *
-   * @experimental
+   * @experimental 19.2
    */
   text: {
     <TResult = string>(
@@ -205,7 +205,7 @@ export interface HttpResourceFn {
  * request that expects a different kind of data, you can use a sub-constructor of `httpResource`,
  * such as `httpResource.text`.
  *
- * @experimental
+ * @experimental 19.2
  * @initializerApiFunction
  */
 export const httpResource: HttpResourceFn = (() => {
@@ -226,7 +226,7 @@ type ResponseType = 'arraybuffer' | 'blob' | 'json' | 'text';
 type RawRequestType = (() => string | undefined) | (() => HttpResourceRequest | undefined);
 
 function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
-  return function httpResourceRef<TResult = TRaw>(
+  return function httpResource<TResult = TRaw>(
     request: RawRequestType,
     options?: HttpResourceOptions<TResult, TRaw>,
   ): HttpResourceRef<TResult> {
@@ -301,9 +301,7 @@ class HttpResourceImpl<T>
   });
 
   readonly headers = computed(() =>
-    this.status() === ResourceStatus.Resolved || this.status() === ResourceStatus.Error
-      ? this._headers()
-      : undefined,
+    this.status() === 'resolved' || this.status() === 'error' ? this._headers() : undefined,
   );
   readonly progress = this._progress.asReadonly();
   readonly statusCode = this._statusCode.asReadonly();
@@ -317,7 +315,7 @@ class HttpResourceImpl<T>
   ) {
     super(
       request,
-      ({request, abortSignal}) => {
+      ({params: request, abortSignal}) => {
         let sub: Subscription;
 
         // Track the abort listener so it can be removed if the Observable completes (as a memory
@@ -380,49 +378,4 @@ class HttpResourceImpl<T>
 
   // This is a type only override of the method
   declare hasValue: () => this is HttpResourceRef<Exclude<T, undefined>>;
-}
-
-/**
- * A `Resource` of the `HttpResponse` meant for use in `HttpResource` if we decide to go this route.
- *
- * TODO(alxhub): delete this if we decide we don't want it.
- */
-class HttpResponseResource implements Resource<HttpResponseBase | undefined> {
-  readonly status: Signal<ResourceStatus>;
-  readonly value: WritableSignal<HttpResponseBase | undefined>;
-  readonly error: Signal<unknown>;
-  readonly isLoading: Signal<boolean>;
-
-  constructor(
-    private parent: Resource<unknown>,
-    request: Signal<unknown>,
-  ) {
-    this.status = computed(() => {
-      // There are two kinds of errors which can occur in an HTTP request: HTTP errors or normal JS
-      // errors. Since we have a response for HTTP errors, we report `Resolved` status even if the
-      // overall request is considered to be in an Error state.
-      if (parent.status() === ResourceStatus.Error) {
-        return this.value() !== undefined ? ResourceStatus.Resolved : ResourceStatus.Error;
-      }
-      return parent.status();
-    });
-    this.error = computed(() => {
-      // Filter out HTTP errors.
-      return this.value() === undefined ? parent.error() : undefined;
-    });
-    this.value = linkedSignal({
-      source: request,
-      computation: () => undefined as HttpResponseBase | undefined,
-    });
-    this.isLoading = parent.isLoading;
-  }
-
-  hasValue(): this is Resource<HttpResponseBase> {
-    return this.value() !== undefined;
-  }
-
-  reload(): boolean {
-    // TODO: should you be able to reload this way?
-    return this.parent.reload();
-  }
 }

@@ -44,7 +44,7 @@ import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
 import {triggerHydrationFromBlockName} from '../defer/triggering';
 import {isIncrementalHydrationEnabled} from './utils';
-import {setStashFn} from '../render3/view/listeners';
+import {clearStashFn, setStashFn} from '../render3/view/listeners';
 
 /** Apps in which we've enabled event replay.
  *  This is to prevent initializing event replay more than once per app.
@@ -106,7 +106,8 @@ export function withEventReplay(): Provider[] {
           if (!appsWithEventReplay.has(appRef)) {
             const jsActionMap = inject(JSACTION_BLOCK_ELEMENT_MAP);
             if (shouldEnableEventReplay(injector)) {
-              setStashFn((rEl: RNode, eventName: string, listenerFn: VoidFunction) => {
+              const appId = injector.get(APP_ID);
+              setStashFn(appId, (rEl: RNode, eventName: string, listenerFn: VoidFunction) => {
                 // If a user binds to a ng-container and uses a directive that binds using a host listener,
                 // this element could be a comment node. So we need to ensure we have an actual element
                 // node before stashing anything.
@@ -122,7 +123,6 @@ export function withEventReplay(): Provider[] {
       {
         provide: APP_BOOTSTRAP_LISTENER,
         useFactory: () => {
-          const appId = inject(APP_ID);
           const appRef = inject(ApplicationRef);
           const {injector} = appRef;
 
@@ -140,6 +140,7 @@ export function withEventReplay(): Provider[] {
               appsWithEventReplay.delete(appRef);
               // Ensure that we're always safe calling this in the browser.
               if (typeof ngServerMode !== 'undefined' && !ngServerMode) {
+                const appId = injector.get(APP_ID);
                 // `_ejsa` should be deleted when the app is destroyed, ensuring that
                 // no elements are still captured in the global list and are not prevented
                 // from being garbage collected.
@@ -147,7 +148,7 @@ export function withEventReplay(): Provider[] {
                 // Clean up the reference to the function set by the environment initializer,
                 // as the function closure may capture injected elements and prevent them
                 // from being properly garbage collected.
-                setStashFn(() => {});
+                clearStashFn(appId);
               }
             });
 

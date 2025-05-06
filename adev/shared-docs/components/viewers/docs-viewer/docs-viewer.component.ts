@@ -25,7 +25,7 @@ import {
   Type,
   ViewContainerRef,
   ViewEncapsulation,
-  ɵPendingTasksInternal as PendingTasks,
+  PendingTasks,
   output,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -47,8 +47,7 @@ export const DOCS_VIEWER_SELECTOR = 'docs-viewer';
 export const DOCS_CODE_SELECTOR = '.docs-code';
 export const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
 // TODO: Update the branch/sha
-export const GITHUB_CONTENT_URL =
-  'https://github.com/angular/angular/blob/main/adev/src/content/examples/';
+export const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/main/';
 
 @Component({
   selector: DOCS_VIEWER_SELECTOR,
@@ -85,11 +84,11 @@ export class DocViewer implements OnChanges {
   private countOfExamples = 0;
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    const taskId = this.pendingTasks.add();
+    const removeTask = this.pendingTasks.add();
     if ('docContent' in changes) {
       await this.renderContentsAndRunClientSetup(this.docContent!);
     }
-    this.pendingTasks.remove(taskId);
+    removeTask();
   }
 
   async renderContentsAndRunClientSetup(content?: string): Promise<void> {

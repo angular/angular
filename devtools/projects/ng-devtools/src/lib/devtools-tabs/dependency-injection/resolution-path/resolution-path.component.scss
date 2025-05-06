@@ -1,20 +1,24 @@
+@use '../../../../styles/typography';
+
 :host {
   display: flex;
   flex-wrap: wrap;
   background: var(--octonary-contrast);
-  padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+  padding: 0.5rem 1rem 0.25rem 0.5rem;
   border-top: 1px solid var(--senary-contrast);
 
   .node {
+    @extend %body-01;
     position: relative;
     border-radius: 5px;
     background: var(--octonary-contrast);
     color: black;
     padding: 4px 25px 4px 15px;
     margin-bottom: 0.25rem;
-    font-size: 0.75rem;
     height: 28px;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
 
     &.type-env {
       background: var(--red-06);

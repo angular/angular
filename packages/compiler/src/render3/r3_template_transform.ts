@@ -378,6 +378,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       i18nAttrsMeta,
     } = this.prepareAttributes(component.attrs, false);
 
+    this.validateSelectorlessReferences(references);
+
     const directives = this.extractDirectives(component);
     let children: t.Node[];
 
@@ -914,6 +916,8 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       const {attributes, parsedProperties, boundEvents, references, i18nAttrsMeta} =
         this.prepareAttributes(directive.attrs, false);
+      this.validateSelectorlessReferences(references);
+
       const {bound: inputs} = this.categorizePropertyAttributes(
         elementName,
         parsedProperties,
@@ -1083,6 +1087,27 @@ class HtmlAstToIvyAst implements html.Visitor {
       keySpan,
     );
     addEvents(events, boundEvents);
+  }
+
+  private validateSelectorlessReferences(references: t.Reference[]): void {
+    if (references.length === 0) {
+      return;
+    }
+
+    const seenNames = new Set<string>();
+
+    for (const ref of references) {
+      if (ref.value.length > 0) {
+        this.reportError(
+          'Cannot specify a value for a local reference in this context',
+          ref.valueSpan || ref.sourceSpan,
+        );
+      } else if (seenNames.has(ref.name)) {
+        this.reportError('Duplicate reference names are not allowed', ref.sourceSpan);
+      } else {
+        seenNames.add(ref.name);
+      }
+    }
   }
 
   private reportError(

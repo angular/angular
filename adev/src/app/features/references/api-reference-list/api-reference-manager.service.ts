@@ -33,9 +33,10 @@ export class ApiReferenceManager {
           const apiItem = {
             itemType: api.type,
             title: api.name,
-            isDeprecated: !!api.isDeprecated,
-            isDeveloperPreview: !!api.isDeveloperPreview,
-            isExperimental: !!api.isExperimental,
+            deprecated: api.deprecated,
+            developerPreview: api.developerPreview,
+            experimental: api.experimental,
+            stable: api.stable,
             url,
           };
 

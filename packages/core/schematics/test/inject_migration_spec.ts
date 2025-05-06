@@ -194,7 +194,7 @@ describe('inject migration', () => {
       ``,
       `@Directive()`,
       `class MyDir {`,
-      `  private foo = inject(new HostAttributeToken('foo'));`,
+      `  private foo = inject(new HostAttributeToken('foo'), { optional: true });`,
       `}`,
     ]);
   });
@@ -1252,6 +1252,31 @@ describe('inject migration', () => {
       `  readonly f = inject(F, { optional: true });`,
       `  protected g = inject(G, { optional: true });`,
       `  h = inject(H, { optional: true });`,
+      `}`,
+    ]);
+  });
+
+  it('should add non-null assertion for @Attribute injections when enabled', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Attribute, Directive } from '@angular/core';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Attribute('tabindex') private foo: string) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration({nonNullableOptional: true});
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, HostAttributeToken, inject } from '@angular/core';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo = inject(new HostAttributeToken('tabindex'), { optional: true })!;`,
       `}`,
     ]);
   });

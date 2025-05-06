@@ -132,31 +132,29 @@ export function isSetterEntry(entry: MemberEntry): entry is PropertyEntry {
   return entry.memberType === MemberType.Setter;
 }
 
+/** Gets whether the given entry is hidden. */
+export function isHiddenEntry<T extends HasJsDocTags>(entry: T): boolean {
+  return getTag(entry, 'docs-private', /* every */ true) ? true : false;
+}
+
 /** Gets whether the given entry is deprecated. */
-export function isDeprecatedEntry<T extends HasJsDocTags>(entry: T) {
-  return hasTag(entry, 'deprecated', /* every */ true);
+export function isDeprecatedEntry<T extends HasJsDocTags>(entry: T): boolean {
+  return getTag(entry, 'deprecated', /* every */ true) ? true : false;
 }
 
 export function getDeprecatedEntry<T extends HasJsDocTags>(entry: T) {
   return entry.jsdocTags.find((tag) => tag.name === 'deprecated')?.comment ?? null;
 }
 
-/** Gets whether the given entry is developer preview. */
-export function isDeveloperPreview<T extends HasJsDocTags | FunctionEntry>(entry: T) {
-  return hasTag(entry, 'developerPreview', false);
-}
-
-/** Gets whether the given entry is is experimental. */
-export function isExperimental<T extends HasJsDocTags>(entry: T) {
-  return hasTag(entry, 'experimental');
-}
 /** Gets whether the given entry has a given JsDoc tag. */
-function hasTag<T extends HasJsDocTags | FunctionEntry>(entry: T, tag: string, every = false) {
+function getTag<T extends HasJsDocTags | FunctionEntry>(entry: T, tag: string, every = false) {
   const hasTagName = (t: JsDocTagEntry) => t.name === tag;
 
   if (every && 'signatures' in entry && entry.signatures.length > 1) {
     // For overloads we need to check all signatures.
-    return entry.signatures.every((s) => s.jsdocTags.some(hasTagName));
+    return entry.signatures.every((s) => s.jsdocTags.some(hasTagName))
+      ? entry.signatures[0].jsdocTags.find(hasTagName)
+      : undefined;
   }
 
   const jsdocTags = [
@@ -165,11 +163,24 @@ function hasTag<T extends HasJsDocTags | FunctionEntry>(entry: T, tag: string, e
     ...((entry as FunctionEntry).implementation?.jsdocTags ?? []),
   ];
 
-  return jsdocTags.some(hasTagName);
+  return jsdocTags.find(hasTagName);
+}
+
+export function getTagSinceVersion<T extends HasJsDocTags>(
+  entry: T,
+  tagName: string,
+): {version: string | undefined} | undefined {
+  const tag = getTag(entry, tagName);
+  if (!tag) {
+    return undefined;
+  }
+
+  // In case of deprecated tag we need to separate the version from the deprecation message.
+  const version = tag.comment.match(/\d+(\.\d+)?/)?.[0];
+  return {version};
 }
 
 /** Gets whether the given entry is a cli entry. */
-export function isCliEntry(entry: unknown): entry is CliCommandRenderable;
 export function isCliEntry(entry: unknown): entry is CliCommand {
   return (entry as CliCommand).command !== undefined;
 }

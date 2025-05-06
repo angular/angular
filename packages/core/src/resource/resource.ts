@@ -20,6 +20,7 @@ import {
   ResourceStreamingLoader,
   StreamingResourceOptions,
   ResourceStreamItem,
+  ResourceLoaderParams,
 } from './api';
 
 import {ValueEqualityFn} from '../../primitives/signals';
@@ -39,7 +40,7 @@ import {DestroyRef} from '../linker/destroy_ref';
  * `resource` will cancel in-progress loads via the `AbortSignal` when destroyed or when a new
  * request object becomes available, which could prematurely abort mutations.
  *
- * @experimental
+ * @experimental 19.0
  */
 export function resource<T, R>(
   options: ResourceOptions<T, R> & {defaultValue: NoInfer<T>},
@@ -53,14 +54,17 @@ export function resource<T, R>(
  * `resource` will cancel in-progress loads via the `AbortSignal` when destroyed or when a new
  * request object becomes available, which could prematurely abort mutations.
  *
- * @experimental
+ * @experimental 19.0
  */
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined> {
   options?.injector || assertInInjectionContext(resource);
-  const request = (options.request ?? (() => null)) as () => R;
+  const oldNameForParams = (
+    options as ResourceOptions<T, R> & {request: ResourceOptions<T, R>['params']}
+  ).request;
+  const params = (options.params ?? oldNameForParams ?? (() => null)) as () => R;
   return new ResourceImpl<T | undefined, R>(
-    request,
+    params,
     getLoader(options),
     options.defaultValue,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
@@ -68,11 +72,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
   );
 }
 
-type ResourceInternalStatus =
-  | ResourceStatus.Idle
-  | ResourceStatus.Loading
-  | ResourceStatus.Resolved
-  | ResourceStatus.Local;
+type ResourceInternalStatus = 'idle' | 'loading' | 'resolved' | 'local';
 
 /**
  * Internal state of a resource.
@@ -114,9 +114,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
     this.set(updateFn(untracked(this.value)));
   }
 
-  readonly isLoading = computed(
-    () => this.status() === ResourceStatus.Loading || this.status() === ResourceStatus.Reloading,
-  );
+  readonly isLoading = computed(() => this.status() === 'loading' || this.status() === 'reloading');
 
   hasValue(): this is ResourceRef<Exclude<T, undefined>> {
     return this.value() !== undefined;
@@ -181,13 +179,12 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       source: this.extRequest,
       // Compute the state of the resource given a change in status.
       computation: (extRequest, previous) => {
-        const status =
-          extRequest.request === undefined ? ResourceStatus.Idle : ResourceStatus.Loading;
+        const status = extRequest.request === undefined ? 'idle' : 'loading';
         if (!previous) {
           return {
             extRequest,
             status,
-            previousStatus: ResourceStatus.Idle,
+            previousStatus: 'idle',
             stream: undefined,
           };
         } else {
@@ -234,18 +231,15 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     const current = untracked(this.value);
     const state = untracked(this.state);
 
-    if (
-      state.status === ResourceStatus.Local &&
-      (this.equal ? this.equal(current, value) : current === value)
-    ) {
+    if (state.status === 'local' && (this.equal ? this.equal(current, value) : current === value)) {
       return;
     }
 
     // Enter Local state with the user-defined value.
     this.state.set({
       extRequest: state.extRequest,
-      status: ResourceStatus.Local,
-      previousStatus: ResourceStatus.Local,
+      status: 'local',
+      previousStatus: 'local',
       stream: signal({value}),
     });
 
@@ -257,7 +251,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   override reload(): boolean {
     // We don't want to restart in-progress loads.
     const {status} = untracked(this.state);
-    if (status === ResourceStatus.Idle || status === ResourceStatus.Loading) {
+    if (status === 'idle' || status === 'loading') {
       return false;
     }
 
@@ -274,8 +268,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     // Destroyed resources enter Idle state.
     this.state.set({
       extRequest: {request: undefined, reload: 0},
-      status: ResourceStatus.Idle,
-      previousStatus: ResourceStatus.Idle,
+      status: 'idle',
+      previousStatus: 'idle',
       stream: undefined,
     });
   }
@@ -290,7 +284,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     if (extRequest.request === undefined) {
       // Nothing to load (and we should already be in a non-loading state).
       return;
-    } else if (currentStatus !== ResourceStatus.Loading) {
+    } else if (currentStatus !== 'loading') {
       // We're not in a loading or reloading state, so this loading request is stale.
       return;
     }
@@ -318,12 +312,14 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       // which side of the `await` they are.
       const stream = await untracked(() => {
         return this.loaderFn({
+          params: extRequest.request as Exclude<R, undefined>,
+          // TODO(alxhub): cleanup after g3 removal of `request` alias.
           request: extRequest.request as Exclude<R, undefined>,
           abortSignal,
           previous: {
             status: previousStatus,
           },
-        });
+        } as ResourceLoaderParams<R>);
       });
 
       // If this request has been aborted, or the current request no longer
@@ -334,8 +330,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
       this.state.set({
         extRequest,
-        status: ResourceStatus.Resolved,
-        previousStatus: ResourceStatus.Resolved,
+        status: 'resolved',
+        previousStatus: 'resolved',
         stream,
       });
     } catch (err) {
@@ -345,8 +341,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
       this.state.set({
         extRequest,
-        status: ResourceStatus.Resolved,
-        previousStatus: ResourceStatus.Error,
+        status: 'resolved',
+        previousStatus: 'error',
         stream: signal({error: err}),
       });
     } finally {
@@ -398,10 +394,10 @@ function isStreamingResourceOptions<T, R>(
  */
 function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
   switch (state.status) {
-    case ResourceStatus.Loading:
-      return state.extRequest.reload === 0 ? ResourceStatus.Loading : ResourceStatus.Reloading;
-    case ResourceStatus.Resolved:
-      return isResolved(untracked(state.stream!)) ? ResourceStatus.Resolved : ResourceStatus.Error;
+    case 'loading':
+      return state.extRequest.reload === 0 ? 'loading' : 'reloading';
+    case 'resolved':
+      return isResolved(untracked(state.stream!)) ? 'resolved' : 'error';
     default:
       return state.status;
   }

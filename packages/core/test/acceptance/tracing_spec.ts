@@ -7,7 +7,7 @@
  */
 
 import {
-  afterRender,
+  afterEveryRender,
   Component,
   ɵTracingAction as TracingAction,
   ɵTracingService as TracingService,
@@ -81,7 +81,7 @@ describe('TracingService', () => {
     @Component({template: ''})
     class App {
       constructor() {
-        afterRender(() => {});
+        afterEveryRender(() => {});
       }
     }
 

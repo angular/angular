@@ -23,6 +23,7 @@ const INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS: StaticProvider[] = [
  * Platform for testing
  *
  * @publicApi
+ * @deprecated from v20.0.0, use e2e testing to verify SSR behavior.
  */
 export const platformServerTesting = createPlatformFactory(
   platformCore,
@@ -34,6 +35,7 @@ export const platformServerTesting = createPlatformFactory(
  * NgModule for testing.
  *
  * @publicApi
+ * @deprecated from v20.0.0, use e2e testing to verify SSR behavior.
  */
 @NgModule({
   exports: [BrowserDynamicTestingModule],

@@ -18,6 +18,9 @@ _STYLE_LABELS = [
     sass_binary(
         name = label,
         src = src,
+        deps = [
+            "//devtools/projects/ng-devtools/src/styles:typography",
+        ],
     )
     for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
 ]
@@ -37,6 +40,7 @@ ng_module(
     deps = [
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/defer-view",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view",
         "//devtools/projects/protocol",
         "//packages/common",

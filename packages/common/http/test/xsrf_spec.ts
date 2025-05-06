@@ -122,7 +122,7 @@ describe('HttpXsrfCookieExtractor', () => {
     document = {
       cookie: 'XSRF-TOKEN=test',
     };
-    extractor = new HttpXsrfCookieExtractor(document, 'browser', 'XSRF-TOKEN');
+    extractor = new HttpXsrfCookieExtractor(document, 'XSRF-TOKEN');
   });
   it('parses the cookie from document.cookie', () => {
     expect(extractor.getToken()).toEqual('test');

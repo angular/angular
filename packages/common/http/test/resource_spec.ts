@@ -19,13 +19,27 @@ import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
 describe('httpResource', () => {
   beforeEach(() => {
+    globalThis['ngServerMode'] = isNode;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
+  beforeEach(() => {
     TestBed.configureTestingModule({providers: [provideHttpClient(), provideHttpClientTesting()]});
+  });
+
+  it('should throw if used outside injection context', () => {
+    expect(() => httpResource(() => '/data')).toThrowMatching((thrown) =>
+      thrown.message.includes('httpResource() can only be used within an injection context'),
+    );
   });
 
   it('should send a basic request', async () => {
     const backend = TestBed.inject(HttpTestingController);
     const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
-    TestBed.flushEffects();
+    TestBed.tick();
     const req = backend.expectOne('/data');
     req.flush([]);
     await TestBed.inject(ApplicationRef).whenStable();
@@ -36,14 +50,14 @@ describe('httpResource', () => {
     const id = signal(0);
     const backend = TestBed.inject(HttpTestingController);
     const res = httpResource(() => `/data/${id()}`, {injector: TestBed.inject(Injector)});
-    TestBed.flushEffects();
+    TestBed.tick();
     const req1 = backend.expectOne('/data/0');
     req1.flush(0);
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.value()).toEqual(0);
 
     id.set(1);
-    TestBed.flushEffects();
+    TestBed.tick();
     const req2 = backend.expectOne('/data/1');
     req2.flush(1);
     await TestBed.inject(ApplicationRef).whenStable();
@@ -56,13 +70,13 @@ describe('httpResource', () => {
     const res = httpResource(() => (id() !== 1 ? `/data/${id()}` : undefined), {
       injector: TestBed.inject(Injector),
     });
-    TestBed.flushEffects();
+    TestBed.tick();
     backend.expectOne('/data/0').flush(0);
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.value()).toEqual(0);
 
     id.set(1);
-    TestBed.flushEffects();
+    TestBed.tick();
 
     // Verify no requests have been made.
     backend.verify({ignoreCancelled: false});
@@ -70,7 +84,7 @@ describe('httpResource', () => {
     backend.verify({ignoreCancelled: false});
 
     id.set(2);
-    TestBed.flushEffects();
+    TestBed.tick();
     backend.expectOne('/data/2').flush(2);
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.value()).toBe(2);
@@ -93,7 +107,7 @@ describe('httpResource', () => {
       }),
       {injector: TestBed.inject(Injector)},
     );
-    TestBed.flushEffects();
+    TestBed.tick();
     const req = backend.expectOne('/data?fast=yes');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({message: 'Hello, backend!'});
@@ -109,7 +123,7 @@ describe('httpResource', () => {
   it('should return response headers & status when resolved', async () => {
     const backend = TestBed.inject(HttpTestingController);
     const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
-    TestBed.flushEffects();
+    TestBed.tick();
     const req = backend.expectOne('/data');
     req.flush([], {
       headers: {
@@ -125,7 +139,7 @@ describe('httpResource', () => {
   it('should return response headers & status when request errored', async () => {
     const backend = TestBed.inject(HttpTestingController);
     const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
-    TestBed.flushEffects();
+    TestBed.tick();
     const req = backend.expectOne('/data');
     req.flush([], {
       headers: {
@@ -149,7 +163,7 @@ describe('httpResource', () => {
       }),
       {injector: TestBed.inject(Injector)},
     );
-    TestBed.flushEffects();
+    TestBed.tick();
     const req = backend.expectOne('/data');
     req.event({
       type: HttpEventType.DownloadProgress,
@@ -192,7 +206,7 @@ describe('httpResource', () => {
         injector: TestBed.inject(Injector),
       },
     );
-    TestBed.flushEffects();
+    TestBed.tick();
 
     const req = TestBed.inject(HttpTestingController).expectOne('/data?fast=yes');
     expect(req.request.headers.get('X-Tag')).toEqual('alpha,beta');
@@ -215,7 +229,7 @@ describe('httpResource', () => {
         parse: (value) => JSON.stringify(value),
       },
     );
-    TestBed.flushEffects();
+    TestBed.tick();
     const req = backend.expectOne('/data');
     req.flush([1, 2, 3]);
 
@@ -229,7 +243,7 @@ describe('httpResource', () => {
       injector: TestBed.inject(Injector),
       equal: (_a, _b) => true,
     });
-    TestBed.flushEffects();
+    TestBed.tick();
     const req = backend.expectOne('/data');
     req.flush(1);
 
@@ -249,7 +263,7 @@ describe('httpResource', () => {
       }),
       {injector: TestBed.inject(Injector)},
     );
-    TestBed.flushEffects();
+    TestBed.tick();
     const req = backend.expectOne('/data');
     req.flush('[1,2,3]');
 
@@ -266,7 +280,7 @@ describe('httpResource', () => {
       }),
       {injector: TestBed.inject(Injector)},
     );
-    TestBed.flushEffects();
+    TestBed.tick();
     const req = backend.expectOne('/data');
     const buffer = new ArrayBuffer();
     req.flush(buffer);

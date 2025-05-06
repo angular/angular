@@ -15,9 +15,15 @@ import {
   PropertyRead,
   PropertyWrite,
   R3TargetBinder,
+  SelectorlessMatcher,
   SelectorMatcher,
+  TmplAstBoundAttribute,
+  TmplAstBoundEvent,
+  TmplAstComponent,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstLetDeclaration,
+  TmplAstTextAttribute,
 } from '@angular/compiler';
 import {readFileSync} from 'fs';
 import path from 'path';
@@ -27,8 +33,10 @@ import {globSync} from 'tinyglobby';
 import {
   absoluteFrom,
   AbsoluteFsPath,
+  getFileSystem,
   getSourceFileOrError,
   LogicalFileSystem,
+  NgtscCompilerHost,
 } from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {
@@ -40,7 +48,7 @@ import {
   ReferenceEmitter,
   RelativePathStrategy,
 } from '../../imports';
-import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
+import {NOOP_INCREMENTAL_BUILD, NoopIncrementalBuildStrategy} from '../../incremental';
 import {
   ClassPropertyMapping,
   CompoundMetadataReader,
@@ -91,6 +99,7 @@ import {TypeCheckShimGenerator} from '../src/shim';
 import {TcbGenericContextBehavior} from '../src/type_check_block';
 import {TypeCheckFile} from '../src/type_check_file';
 import {sfExtensionData} from '../../shims';
+import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -299,7 +308,7 @@ export interface TestDirective
       >
     >
   > {
-  selector: string;
+  selector: string | null;
   name: string;
   file?: AbsoluteFsPath;
   type: 'directive';
@@ -369,6 +378,7 @@ export function tcb(
   const clazz = getClass(sf, 'Test');
   const templateUrl = 'synthetic.html';
   const {nodes, errors} = parseTemplate(template, templateUrl, templateParserOptions);
+  const selectorlessEnabled = templateParserOptions?.enableSelectorless ?? false;
 
   if (errors !== null) {
     throw new Error('Template parse errors: \n' + errors.join('\n'));
@@ -378,6 +388,7 @@ export function tcb(
     declarations,
     (decl) => getClass(sf, decl.name),
     new Map(),
+    selectorlessEnabled,
   );
   const binder = new R3TargetBinder<DirectiveMeta>(matcher);
   const boundTarget = binder.bind({template: nodes});
@@ -608,6 +619,7 @@ export function setup(
             return getClass(declFile, decl.name);
           },
           fakeMetadataRegistry,
+          overrides.parseOptions?.enableSelectorless ?? false,
         );
         const binder = new R3TargetBinder<DirectiveMeta>(matcher);
         const classRef = new Reference(classDecl);
@@ -776,8 +788,8 @@ function prepareDeclarations(
   declarations: TestDeclaration[],
   resolveDeclaration: DeclarationResolver,
   metadataRegistry: Map<string, TypeCheckableDirectiveMeta>,
+  selectorlessEnabled: boolean,
 ) {
-  const matcher = new SelectorMatcher<DirectiveMeta[]>();
   const pipes = new Map<string, PipeMeta>();
   const hostDirectiveResolder = new HostDirectivesResolver(
     getFakeMetadataReader(metadataRegistry as Map<string, DirectiveMeta>),
@@ -802,19 +814,30 @@ function prepareDeclarations(
         isStandalone: false,
         decorator: null,
         isExplicitlyDeferred: false,
+        isPure: true,
       });
     }
   }
 
   // We need to make two passes over the directives so that all declarations
   // have been registered by the time we resolve the host directives.
-  for (const meta of directives) {
-    const selector = CssSelector.parse(meta.selector || '');
-    const matches = [...hostDirectiveResolder.resolve(meta), meta] as DirectiveMeta[];
-    matcher.addSelectables(selector, matches);
-  }
 
-  return {matcher, pipes};
+  if (selectorlessEnabled) {
+    const registry = new Map<string, DirectiveMeta[]>();
+    for (const meta of directives) {
+      registry.set(meta.name, [meta, ...hostDirectiveResolder.resolve(meta)]);
+    }
+    return {matcher: new SelectorlessMatcher<DirectiveMeta>(registry), pipes};
+  } else {
+    const matcher = new SelectorMatcher<DirectiveMeta[]>();
+    for (const meta of directives) {
+      const selector = CssSelector.parse(meta.selector || '');
+      const matches = [...hostDirectiveResolder.resolve(meta), meta] as DirectiveMeta[];
+      matcher.addSelectables(selector, matches);
+    }
+
+    return {matcher, pipes};
+  }
 }
 
 export function getClass(sf: ts.SourceFile, name: string): ClassDeclaration<ts.ClassDeclaration> {
@@ -918,6 +941,8 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         preserveWhitespaces: decl.preserveWhitespaces ?? false,
         isExplicitlyDeferred: false,
         inputFieldNamesFromMetadataArray: null,
+        selectorlessEnabled: false,
+        localReferencedSymbols: null,
         hostDirectives:
           decl.hostDirectives === undefined
             ? null
@@ -947,6 +972,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         decorator: null,
         isExplicitlyDeferred: false,
+        isPure: true,
       });
     }
   }
@@ -1005,4 +1031,45 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
     target: TmplAstLetDeclaration,
   ): void {}
   conflictingDeclaration(id: TypeCheckId, current: TmplAstLetDeclaration): void {}
+  missingNamedTemplateDependency(
+    id: TypeCheckId,
+    node: TmplAstComponent | TmplAstDirective,
+  ): void {}
+  unclaimedDirectiveBinding(
+    id: TypeCheckId,
+    directive: TmplAstDirective,
+    node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
+  ): void {}
+  incorrectTemplateDependencyType(
+    id: TypeCheckId,
+    node: TmplAstComponent | TmplAstDirective,
+  ): void {}
+}
+
+export function createNgCompilerForFile(fileContent: string) {
+  const fs = getFileSystem();
+  fs.ensureDir(absoluteFrom('/node_modules/@angular/core'));
+  const FILE = absoluteFrom('/main.ts');
+
+  fs.writeFile(FILE, fileContent);
+
+  const options: ts.CompilerOptions = {
+    strictTemplates: true,
+    lib: ['dom', 'dom.iterable', 'esnext'],
+  };
+  const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+  const host = NgCompilerHost.wrap(baseHost, [FILE], options, /* oldProgram */ null);
+  const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+
+  const ticket = freshCompilationTicket(
+    program,
+    options,
+    new NoopIncrementalBuildStrategy(),
+    new TsCreateProgramDriver(program, host, options, []),
+    /* perfRecorder */ null,
+    /*enableTemplateTypeChecker*/ true,
+    /*usePoisonedData*/ false,
+  );
+  const compiler = NgCompiler.fromTicket(ticket, host);
+  return {compiler, sourceFile: program.getSourceFile(FILE)!};
 }

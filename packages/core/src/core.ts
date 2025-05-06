@@ -43,9 +43,9 @@ export {
   provideZoneChangeDetection,
   NgZoneOptions,
 } from './change_detection/scheduling/ng_zone_scheduling';
-export {provideExperimentalZonelessChangeDetection} from './change_detection/scheduling/zoneless_scheduling_impl';
+export {provideZonelessChangeDetection} from './change_detection/scheduling/zoneless_scheduling_impl';
 export {PendingTasks} from './pending_tasks';
-export {provideExperimentalCheckNoChangesForDebug} from './change_detection/scheduling/exhaustive_check_no_changes';
+export {provideCheckNoChangesConfig} from './change_detection/provide_check_no_changes_config';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export {
   APP_ID,
@@ -90,7 +90,7 @@ export {
 export {ApplicationModule} from './application/application_module';
 export {AbstractType, Type} from './interface/type';
 export {EventEmitter} from './event_emitter';
-export {ErrorHandler} from './error_handler';
+export {ErrorHandler, provideBrowserGlobalErrorListeners} from './error_handler';
 export * from './core_private_export';
 export * from './core_render3_private_export';
 export * from './core_reactivity_export';
@@ -108,7 +108,7 @@ export {AfterRenderRef} from './render3/after_render/api';
 export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
 export {
   AfterRenderOptions,
-  afterRender,
+  afterEveryRender,
   afterNextRender,
   ɵFirstAvailable,
 } from './render3/after_render/hooks';
@@ -118,6 +118,7 @@ export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
 export {REQUEST, REQUEST_CONTEXT, RESPONSE_INIT} from './application/platform_tokens';
 export {DOCUMENT} from './document';
+export {provideNgReflectAttributes} from './ng_reflect';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

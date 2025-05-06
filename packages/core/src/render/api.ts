@@ -46,6 +46,14 @@ export abstract class RendererFactory2 {
  * renders a template into DOM. You can use custom rendering to intercept
  * rendering calls, or to render to something other than DOM.
  *
+ * <div class="docs-alert docs-alert-important">
+ * <p>
+ * Please be aware that usage of `Renderer2`, in context of accessing DOM elements, provides no
+ * extra security which makes it equivalent to
+ * {@link /best-practices/security#direct-use-of-the-dom-apis-and-explicit-sanitization-calls Security vulnerabilities}.
+ * </p>
+ * </div>
+ *
  * Create your custom renderer using `RendererFactory2`.
  *
  * Use a custom renderer to bypass Angular's templating and

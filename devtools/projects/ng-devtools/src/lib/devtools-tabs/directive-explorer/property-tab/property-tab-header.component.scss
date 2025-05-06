@@ -1,20 +1,21 @@
+@use '../../../../styles/typography';
+
+:host {
+  border-bottom: 1px solid var(--color-separator);
+  display: block;
+}
+
 .element-header {
+  @extend %body-bold-01;
   display: flex;
   justify-content: space-between;
   width: 100%;
   align-items: center;
-  font-size: 11px;
+  height: 32px; /* Same as mat-expansion-panel-header height */
 
-  .component-name {
-    margin-left: 10px;
-    font-weight: 700;
-    line-height: 25px;
-  }
-
+  .component-name,
   .element-name {
-    margin-left: 10px;
-    line-height: 25px;
-    font-weight: 700;
+    margin-left: 0.625rem;
   }
 }
 
@@ -26,6 +27,9 @@
 
     &.mat-accordion {
       .mat-expansion-panel {
+        border: none;
+        box-shadow: none;
+
         .mat-expansion-panel-header {
           padding: 0;
 

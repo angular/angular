@@ -52,8 +52,9 @@ describe('renderable', () => {
     // linkedSignal has the developerPreview tag on the overloads not on the main entry.
     const linkedSignal = entries.get('linkedSignal');
     expect(linkedSignal).toBeDefined();
-    expect(linkedSignal!.isDeprecated).toBe(false);
-    expect(linkedSignal!.isDeveloperPreview).toBe(true);
-    expect(linkedSignal!.isExperimental).toBe(false);
+    expect(linkedSignal!.deprecated).toBe(undefined);
+    expect(linkedSignal!.developerPreview).toEqual({version: undefined});
+    expect(linkedSignal!.experimental).toBe(undefined);
+    expect(linkedSignal!.stable).toBe(undefined);
   });
 });

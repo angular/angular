@@ -301,7 +301,7 @@ const HYDRATION_INFO_KEY = '__ngDebugHydrationInfo__';
 
 export type HydratedNode = {
   [HYDRATION_INFO_KEY]?: HydrationInfo;
-};
+} & Element;
 
 function patchHydrationInfo(node: RNode, info: HydrationInfo) {
   (node as HydratedNode)[HYDRATION_INFO_KEY] = info;

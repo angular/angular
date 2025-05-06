@@ -381,6 +381,12 @@ export interface LViewEnvironment {
 
   /** Scheduler for change detection to notify when application state changes. */
   changeDetectionScheduler: ChangeDetectionScheduler | null;
+
+  /**
+   * Whether `ng-reflect-*` attributes should be produced in dev mode
+   * (always disabled in prod mode).
+   */
+  ngReflect: boolean;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

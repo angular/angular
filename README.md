@@ -127,7 +127,6 @@ Join the conversation and help the community.
 - [X (formerly Twitter)][X (formerly Twitter)]
 - [Bluesky][bluesky]
 - [Discord][discord]
-- [Gitter][gitter]
 - [YouTube][youtube]
 - [StackOverflow][stackoverflow]
 - Find a Local [Meetup][meetup]
@@ -157,7 +156,6 @@ Join the conversation and help the community.
 [X (formerly Twitter)]: https://www.twitter.com/angular
 [bluesky]: https://bsky.app/profile/angular.dev
 [discord]: https://discord.gg/angular
-[gitter]: https://gitter.im/angular/angular
 [stackoverflow]: https://stackoverflow.com/questions/tagged/angular
 [youtube]: https://youtube.com/angular
 [meetup]: https://www.meetup.com/find/?keywords=angular

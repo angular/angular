@@ -82,6 +82,11 @@ describe('type check blocks', () => {
     expect(tcb('{{a ** b ** c}}')).toContain('((((this).a)) ** ((((this).b)) ** (((this).c))))');
   });
 
+  it('should handle "in" expressions', () => {
+    expect(tcb(`{{'bar' in {bar: 'bar'} }}`)).toContain(`(("bar") in ({ "bar": "bar" }))`);
+    expect(tcb(`{{!('bar' in {bar: 'bar'}) }}`)).toContain(`!((("bar") in ({ "bar": "bar" })))`);
+  });
+
   it('should handle attribute values for directive inputs', () => {
     const TEMPLATE = `<div dir inputA="value"></div>`;
     const DIRECTIVES: TestDeclaration[] = [
@@ -2144,6 +2149,303 @@ describe('type check blocks', () => {
         `import { Component, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE } from '@angular/core'; // should be re-used`,
       );
       expect(testSf.text).toContain(`[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`);
+    });
+  });
+
+  describe('selectorless', () => {
+    function selectorlessTcb(template: string, declarations: TestDeclaration[]) {
+      return tcb(template, declarations, undefined, undefined, {enableSelectorless: true});
+    }
+
+    it('should generate component input bindings', () => {
+      const TEMPLATE = `<Comp [dynamic]="value" static="staticValue"/>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Comp',
+          isComponent: true,
+          selector: null,
+          isStandalone: true,
+          inputs: {dynamic: 'dynamic', static: 'static'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = null! as i0.Comp;');
+      expect(block).toContain('_t1.dynamic = (((this).value));');
+      expect(block).toContain('_t1.static = ("staticValue");');
+    });
+
+    it('should generate directive input bindings', () => {
+      const TEMPLATE = `<div @Dir([dynamic]="value" static="staticValue")></div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: null,
+          isStandalone: true,
+          inputs: {dynamic: 'dynamic', static: 'static'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = null! as i0.Dir;');
+      expect(block).toContain('_t1.dynamic = (((this).value));');
+      expect(block).toContain('_t1.static = ("staticValue");');
+    });
+
+    it('should generate directive input bindings on an ng-template', () => {
+      const TEMPLATE = `<ng-template @Dir([dynamic]="value" static="staticValue")></ng-template>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: null,
+          isStandalone: true,
+          inputs: {dynamic: 'dynamic', static: 'static'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = null! as i0.Dir;');
+      expect(block).toContain('_t1.dynamic = (((this).value));');
+      expect(block).toContain('_t1.static = ("staticValue");');
+    });
+
+    it('should generate type guards on a template with directives', () => {
+      const TEMPLATE = `<ng-template @Dir([someInput]="value")>{{value}}</ng-template>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: null,
+          isStandalone: true,
+          inputs: {someInput: 'someInput'},
+          ngTemplateGuards: [
+            {
+              inputName: 'someInput',
+              type: 'binding',
+            },
+          ],
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = null! as i0.Dir;');
+      expect(block).toContain('_t1.someInput = (((this).value));');
+      expect(block).toContain('if (((this).value)) { "" + (((this).value)); } }');
+    });
+
+    it('should generate bindings for unclaimed component inputs', () => {
+      const TEMPLATE = `<Comp [claimed]="value" [uncalimed]="unclaimedValue"/>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Comp',
+          isComponent: true,
+          selector: null,
+          isStandalone: true,
+          inputs: {claimed: 'claimed'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = null! as i0.Comp;');
+      expect(block).toContain('_t1.claimed = (((this).value));');
+      expect(block).toContain('((this).unclaimedValue);');
+    });
+
+    // This raises a diagnostic that will be tested separately.
+    it('should not generate bindings for unclaimed directive inputs', () => {
+      const TEMPLATE = `<div @Dir([claimed]="value" [uncalimed]="unclaimedValue")></div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: null,
+          isStandalone: true,
+          inputs: {claimed: 'claimed'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = null! as i0.Dir;');
+      expect(block).toContain('_t1.claimed = (((this).value));');
+      expect(block).not.toContain('unclaimedValue');
+    });
+
+    it('should generate component output bindings', () => {
+      const TEMPLATE = `<Comp (someEvent)="handleEvent($event)"/>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Comp',
+          isComponent: true,
+          selector: null,
+          isStandalone: true,
+          outputs: {someEvent: 'someEvent'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = null! as i0.Comp;');
+      expect(block).toContain(
+        '_t1["someEvent"].subscribe(($event): any => { (this).handleEvent($event); });',
+      );
+    });
+
+    it('should generate directive output bindings', () => {
+      const TEMPLATE = `<div @Dir((someEvent)="handleEvent($event)")></div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: null,
+          isStandalone: true,
+          outputs: {someEvent: 'someEvent'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = null! as i0.Dir;');
+      expect(block).toContain(
+        '_t1["someEvent"].subscribe(($event): any => { (this).handleEvent($event); });',
+      );
+    });
+
+    it('should generate unclaimed component output bindings for a node without a tag name', () => {
+      const TEMPLATE = `<Comp (click)="handleEvent($event)"/>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Comp',
+          isComponent: true,
+          selector: null,
+          isStandalone: true,
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = document.createElement("ng-component");');
+      expect(block).toContain(
+        '_t1.addEventListener("click", ($event): any => { (this).handleEvent($event); });',
+      );
+    });
+
+    it('should generate unclaimed component output bindings for a node with a tag name', () => {
+      const TEMPLATE = `<Comp:button (click)="handleEvent($event)"/>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Comp',
+          isComponent: true,
+          selector: null,
+          isStandalone: true,
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = document.createElement("button");');
+      expect(block).toContain(
+        '_t1.addEventListener("click", ($event): any => { (this).handleEvent($event); });',
+      );
+    });
+
+    // This raises a diagnostic that will be tested separately.
+    it('should not generate unclaimed directive output bindings', () => {
+      const TEMPLATE = `<div @Dir((click)="handleEvent($event)")></div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: null,
+          isStandalone: true,
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).not.toContain('Dir');
+      expect(block).not.toContain('addEventListener');
+    });
+
+    it('should not match directives by selector when selectorless is enabled', () => {
+      const TEMPLATE = `<div my-dir [dirInput]="value"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[my-dir]',
+          isStandalone: true,
+          inputs: {dirInput: 'dirInput'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).not.toContain('Dir');
+      expect(block).not.toContain('dirInput');
+      expect(block).toContain('((this).value);');
+    });
+
+    it('should generate local references to components', () => {
+      const TEMPLATE = `<Comp #foo>{{foo.bar}}</Comp>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Comp',
+          isComponent: true,
+          selector: null,
+          isStandalone: true,
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t2 = null! as i0.Comp;');
+      expect(block).toContain('var _t1 = _t2;');
+      expect(block).toContain('"" + (((_t1).bar));');
+    });
+
+    it('should generate local references to directives', () => {
+      const TEMPLATE = `<div @Dir(#foo)>{{foo.bar}}</div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: null,
+          isStandalone: true,
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t2 = null! as i0.Dir;');
+      expect(block).toContain('var _t1 = _t2;');
+      expect(block).toContain('"" + (((_t1).bar));');
+    });
+
+    it('should generate input binding for generic component', () => {
+      const TEMPLATE = `<Comp [input]="value"/>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Comp',
+          isComponent: true,
+          selector: null,
+          isGeneric: true,
+          isStandalone: true,
+          inputs: {input: 'input'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain(
+        'const _ctor1: <T extends string = any>(init: Pick<i0.Comp<T>, "input">) => i0.Comp<T> = null!;',
+      );
+      expect(block).toContain('var _t1 = _ctor1({ "input": (((this).value)) });');
+      expect(block).toContain('_t1.input = (((this).value));');
+    });
+
+    it('should generate input binding for generic directive', () => {
+      const TEMPLATE = `<div @Dir([input]="value")></div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: null,
+          isGeneric: true,
+          isStandalone: true,
+          inputs: {input: 'input'},
+        },
+      ];
+      const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain(
+        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "input">) => i0.Dir<T> = null!;',
+      );
+      expect(block).toContain('var _t1 = _ctor1({ "input": (((this).value)) });');
+      expect(block).toContain('_t1.input = (((this).value));');
     });
   });
 });

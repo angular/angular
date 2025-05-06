@@ -316,7 +316,8 @@ export type BinaryOperator =
   | '!=='
   | '||'
   | '+'
-  | '??';
+  | '??'
+  | 'in';
 
 /**
  * The original location of the start or end of a node created by the `AstFactory`.

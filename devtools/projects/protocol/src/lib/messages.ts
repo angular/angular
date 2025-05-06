@@ -28,14 +28,37 @@ export interface ComponentType {
 }
 
 export type HydrationStatus =
+  // null represent the absence of hydration status (a node created via CSR)
   | null
-  | {status: 'hydrated' | 'skipped'}
+  | {status: 'hydrated' | 'skipped' | 'dehydrated'}
   | {
       status: 'mismatched';
       expectedNodeDetails: string | null;
       actualNodeDetails: string | null;
     };
 
+export type CurrentDeferBlock = 'placeholder' | 'loading' | 'error';
+
+export interface DeferInfo {
+  id: string;
+  state: 'placeholder' | 'loading' | 'complete' | 'error' | 'initial';
+  currentBlock: CurrentDeferBlock | null;
+  triggers: {
+    defer: string[];
+    hydrate: string[];
+    prefetch: string[];
+  };
+  blocks: BlockDetails;
+}
+
+export interface BlockDetails {
+  hasErrorBlock: boolean;
+  placeholderBlock: null | {minimumTime: number | null};
+  loadingBlock: null | {minimumTime: number | null; afterTime: number | null};
+}
+
+// TODO: refactor to remove nativeElement as it is not serializable
+// and only really exists on the ng-devtools-backend
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
   element: string;
   directives: DirType[];
@@ -44,6 +67,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
+  defer: DeferInfo | null;
   onPush?: boolean;
 }
 
@@ -278,6 +302,12 @@ export interface InjectorGraphViewQuery {
   paramIndex: number;
 }
 
+export interface SupportedApis {
+  profiler: boolean;
+  dependencyInjection: boolean;
+  routes: boolean;
+}
+
 export interface Events {
   handshake: () => void;
   shutdown: () => void;
@@ -287,6 +317,7 @@ export interface Events {
     devMode: boolean;
     ivy: boolean;
     hydration: boolean;
+    supportedApis: SupportedApis;
   }) => void;
 
   inspectorStart: () => void;

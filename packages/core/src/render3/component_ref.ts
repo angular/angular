@@ -29,7 +29,7 @@ import {Sanitizer} from '../sanitization/sanitizer';
 
 import {assertComponentType} from './assert';
 import {attachPatchData} from './context_discovery';
-import {getComponentDef, getDirectiveDef} from './def_getters';
+import {getComponentDef, getDirectiveDef, getDirectiveDefOrThrow} from './def_getters';
 import {depsTracker} from './deps_tracker/deps_tracker';
 import {NodeInjector} from './di';
 import {reportUnknownPropertyError} from './instructions/element_validation';
@@ -75,6 +75,7 @@ import {elementEndFirstCreatePass, elementStartFirstCreatePass} from './view/ele
 import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {BINDING, Binding, DirectiveWithBindings} from './dynamic_bindings';
+import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -163,10 +164,16 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
   const sanitizer = rootLViewInjector.get(Sanitizer, null);
   const changeDetectionScheduler = rootLViewInjector.get(ChangeDetectionScheduler, null);
 
+  let ngReflect = false;
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    ngReflect = rootLViewInjector.get(NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT);
+  }
+
   return {
     rendererFactory,
     sanitizer,
     changeDetectionScheduler,
+    ngReflect,
   };
 }
 
@@ -380,8 +387,6 @@ function createRootTView(
     for (let i = 0; i < directives.length; i++) {
       const directive = directives[i];
       if (typeof directive !== 'function') {
-        const def: DirectiveDef<unknown> = getDirectiveDef(directive.type, true);
-
         for (const binding of directive.bindings) {
           varsToAllocate += binding[BINDING].requiredVars;
           const targetDirectiveIdx = i + 1;
@@ -403,7 +408,9 @@ function createRootTView(
   if (directives) {
     for (const directive of directives) {
       const directiveType = typeof directive === 'function' ? directive : directive.type;
-      const directiveDef = getDirectiveDef(directiveType, true);
+      const directiveDef = ngDevMode
+        ? getDirectiveDefOrThrow(directiveType)
+        : getDirectiveDef(directiveType)!;
 
       if (ngDevMode && !directiveDef.standalone) {
         throw new RuntimeError(

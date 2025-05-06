@@ -11,6 +11,9 @@ ng_module(
         exclude = ["*.spec.ts"],
     ),
     deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:core-enums",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:get-roots",
+        "//devtools/projects/protocol",
         "//packages/core",
     ],
 )
@@ -20,6 +23,7 @@ ts_test_library(
     srcs = ["ng-debug-api.spec.ts"],
     deps = [
         ":ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:core-enums",
         "//packages/core",
         "@npm//jasmine",
     ],
