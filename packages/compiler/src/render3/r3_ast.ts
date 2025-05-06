@@ -797,7 +797,7 @@ export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Resul
   const result: Result[] = [];
   if (visitor.visit) {
     for (const node of nodes) {
-      visitor.visit(node) || node.visit(visitor);
+      visitor.visit(node);
     }
   } else {
     for (const node of nodes) {
