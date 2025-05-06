@@ -7,7 +7,7 @@
  */
 
 import {Fragment, h} from 'preact';
-import {LinkEntryRenderable} from '../entities/renderables';
+import {LinkEntryRenderable} from '../entities/renderables.mjs';
 
 /** Component to render a function or method parameter reference doc fragment. */
 export function DocsPillRow(props: {links: LinkEntryRenderable[]}) {

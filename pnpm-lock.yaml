@@ -221,6 +221,9 @@ importers:
       jasmine-core:
         specifier: ^5.0.0
         version: 5.7.0
+      jasmine-reporters:
+        specifier: ^2.5.2
+        version: 2.5.2
       karma:
         specifier: ~6.4.0
         version: 6.4.4

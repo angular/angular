@@ -1,30 +1,32 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ts_library(
+ts_project(
     name = "testing",
     srcs = [
         "index.ts",
     ],
-    visibility = ["//adev/shared-docs:__subpackages__"],
-    deps = [
+    interop_deps = [
         ":lib",
     ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
+    visibility = ["//adev/shared-docs:__subpackages__"],
 )
 
-ts_library(
+ts_project(
     name = "lib",
     srcs = glob(
-        [
-            "*.ts",
-        ],
+        ["*.ts"],
         exclude = [
             "index.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages/core",
-        "@npm//@webcontainer/api",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
+    deps = [
+        "//:node_modules/@webcontainer/api",
     ],
 )

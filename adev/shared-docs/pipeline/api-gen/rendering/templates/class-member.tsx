@@ -12,15 +12,15 @@ import {
   isGetterEntry,
   isPropertyEntry,
   isSetterEntry,
-} from '../entities/categorization';
-import {MemberEntryRenderable, MethodEntryRenderable} from '../entities/renderables';
+} from '../entities/categorization.mjs';
+import {MemberEntryRenderable, MethodEntryRenderable} from '../entities/renderables.mjs';
 import {
   REFERENCE_MEMBER_CARD,
   REFERENCE_MEMBER_CARD_BODY,
   REFERENCE_MEMBER_CARD_HEADER,
   REFERENCE_MEMBER_CARD_ITEM,
-} from '../styling/css-classes';
-import {getFunctionMetadataRenderable} from '../transforms/function-transforms';
+} from '../styling/css-classes.mjs';
+import {getFunctionMetadataRenderable} from '../transforms/function-transforms.mjs';
 import {ClassMethodInfo} from './class-method-info';
 import {CodeSymbol} from './code-symbols';
 import {DeprecatedLabel} from './deprecated-label';
