@@ -50,7 +50,12 @@ import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
-import {parseRoutes} from './router-tree';
+import {
+  getElementRefByName,
+  getComponentRefByName,
+  parseRoutes,
+  RoutePropertyType,
+} from './router-tree';
 import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
@@ -84,6 +89,7 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
+  messageBus.on('navigateRoute', navigateRouteCallback(messageBus));
 
   messageBus.on('updateState', updateState);
 
@@ -172,6 +178,29 @@ const checkForAngularCallback = (messageBus: MessageBus<Events>) => () =>
   checkForAngular(messageBus);
 const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(messageBus);
 
+const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string) => {
+  const router: any = getRouterInstance();
+  router.navigateByUrl(path);
+};
+
+/**
+ * Opens the source code of a component or a directive in the editor.
+ * @param name - The name of the component, provider, or directive to view source for.
+ * @param type - The type of the element to view source for  component, provider, or directive.
+ * @returns - The element instance of the component, provider, or directive.
+ */
+export const viewSourceFromRouter = (name: string, type: RoutePropertyType) => {
+  const router: any = getRouterInstance();
+
+  let element;
+  if (type === 'component') {
+    element = getComponentRefByName(router.config, name);
+  } else {
+    element = getElementRefByName(type, router.config, name);
+  }
+  return element;
+};
+
 const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
   startProfiling((frame: ProfilerFrame) => {
     messageBus.emit('sendProfilerChunk', [frame]);
@@ -232,7 +261,7 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
   );
   if (forest.length === 0) return;
 
-  const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
+  const rootInjector = forest[0].resolutionPath?.find((i) => i.name === 'Root');
   if (!rootInjector) return;
 
   const route = getRouterConfigFromRoot(rootInjector);
@@ -384,6 +413,29 @@ export interface SerializableComponentTreeNode
   nativeElement?: never;
   // Since the nativeElement is not serializable, we will use this boolean as backup
   hasNativeElement: boolean;
+}
+
+function getRouterInstance() {
+  const forest = prepareForestForSerialization(
+    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    ngDebugDependencyInjectionApiIsSupported(),
+  );
+  const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
+  if (!rootInjector) {
+    return;
+  }
+
+  const serializedProviderRecords = getSerializedProviderRecords(rootInjector);
+  const routerInstance = serializedProviderRecords?.find(
+    (provider) => provider.token === 'Router', // get the instance of router using token
+  );
+
+  if (!routerInstance) {
+    return;
+  }
+
+  const router = getInjectorInstance(rootInjector, routerInstance);
+  return router;
 }
 
 // Here we drop properties to prepare the tree for serialization.
@@ -550,4 +602,25 @@ const logProvider = (
   }
 
   console.groupEnd();
+};
+
+const getInjectorInstance = (
+  serializedInjector: SerializedInjector,
+  serializedProvider: SerializedProviderRecord,
+) => {
+  if (!idToInjector.has(serializedInjector.id)) {
+    return;
+  }
+
+  const injector = idToInjector.get(serializedInjector.id)!;
+  const providerRecords = getInjectorProviders(injector);
+
+  if (typeof serializedProvider.index === 'number') {
+    const provider = providerRecords[serializedProvider.index];
+    return injector.get(provider.token, null, {optional: true});
+  } else if (Array.isArray(serializedProvider.index)) {
+    const providers = serializedProvider.index.map((index) => providerRecords[index]);
+    return injector.get(providers[0].token, null, {optional: true});
+  }
+  return null;
 };
