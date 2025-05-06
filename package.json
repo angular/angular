@@ -117,6 +117,7 @@
     "jasmine": "~5.6.0",
     "jasmine-ajax": "^4.0.0",
     "jasmine-core": "^5.0.0",
+    "jasmine-reporters": "^2.5.2",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^2.1.0",

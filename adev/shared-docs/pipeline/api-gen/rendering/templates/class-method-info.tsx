@@ -7,13 +7,8 @@
  */
 
 import {Fragment, h} from 'preact';
-import {
-  FunctionEntryRenderable,
-  FunctionSignatureMetadataRenderable,
-  MethodEntryRenderable,
-  ParameterEntryRenderable,
-} from '../entities/renderables';
-import {PARAM_KEYWORD_CLASS_NAME, REFERENCE_MEMBER_CARD_ITEM} from '../styling/css-classes';
+import {FunctionSignatureMetadataRenderable, ParameterEntryRenderable} from '../entities/renderables.mjs';
+import {PARAM_KEYWORD_CLASS_NAME, REFERENCE_MEMBER_CARD_ITEM} from '../styling/css-classes.mjs';
 import {DeprecatedLabel} from './deprecated-label';
 import {Parameter} from './parameter';
 import {RawHtml} from './raw-html';

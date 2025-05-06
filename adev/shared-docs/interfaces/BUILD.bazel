@@ -1,19 +1,20 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ts_library(
+ts_project(
     name = "interfaces",
     srcs = [
         "index.ts",
     ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//adev/shared-docs:__subpackages__"],
     deps = [
-        ":lib",
+        ":lib_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "lib",
     srcs = glob(
         [
@@ -24,9 +25,13 @@ ts_library(
             "**/*.spec.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages/core",
-        "@npm//@types/node",
-        "@npm//@webcontainer/api",
+        "//packages/router",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/@webcontainer/api",
     ],
 )
