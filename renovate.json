@@ -23,7 +23,12 @@
       "yarn bazel sync --only=repo || true",
       "yarn ng-dev misc update-generated-files"
     ],
-    "fileFilters": [".github/actions/deploy-docs-site/**/*", "packages/**/*"],
+    "fileFilters": [
+      ".github/actions/deploy-docs-site/**/*",
+      "packages/**/*",
+      ".aspect/rules/external_repository_action_cache/**/*",
+      "pnpm-lock.yaml"
+    ],
     "executionMode": "branch"
   },
   "ignoreDeps": [
