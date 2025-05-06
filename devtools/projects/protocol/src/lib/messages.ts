@@ -250,6 +250,7 @@ export interface DirectiveProfile {
 export interface ElementProfile {
   directives: DirectiveProfile[];
   children: ElementProfile[];
+  type: 'defer' | 'element';
 }
 
 export interface ProfilerFrame {
