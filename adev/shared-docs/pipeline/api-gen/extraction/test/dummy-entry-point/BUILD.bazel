@@ -2,5 +2,5 @@ package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages
 
 filegroup(
     name = "dummy_package",
-    srcs = ["index.ts"],
+    srcs = ["index.mts"],
 )

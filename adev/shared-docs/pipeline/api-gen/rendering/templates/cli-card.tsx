@@ -7,9 +7,9 @@
  */
 
 import {Fragment, h} from 'preact';
-import {CliCardRenderable} from '../entities/renderables';
+import {CliCardRenderable} from '../entities/renderables.mjs';
 import {DeprecatedLabel} from './deprecated-label';
-import {REFERENCE_MEMBER_CARD, REFERENCE_MEMBER_CARD_BODY} from '../styling/css-classes';
+import {REFERENCE_MEMBER_CARD, REFERENCE_MEMBER_CARD_BODY} from '../styling/css-classes.mjs';
 
 export function CliCard(props: {card: CliCardRenderable}) {
   return (

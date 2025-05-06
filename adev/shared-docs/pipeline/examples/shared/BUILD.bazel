@@ -1,15 +1,16 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "shared",
     srcs = glob(
         [
-            "*.ts",
+            "*.mts",
         ],
     ),
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     deps = [
-        "@npm//@types/node",
+        "//:node_modules/@types/node",
     ],
 )

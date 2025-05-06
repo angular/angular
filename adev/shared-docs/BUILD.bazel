@@ -1,6 +1,27 @@
+load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:private"])
+
+rules_js_tsconfig(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+)
+
+rules_js_tsconfig(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+    ],
+)
 
 ng_module(
     name = "docs",

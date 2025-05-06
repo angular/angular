@@ -7,12 +7,12 @@
  */
 
 import {h} from 'preact';
-import {ConstantEntryRenderable} from '../entities/renderables';
+import {ConstantEntryRenderable} from '../entities/renderables.mjs';
 import {HeaderApi} from './header-api';
 import {SectionDescription} from './section-description';
 import {SectionUsageNotes} from './section-usage-notes';
 import {SectionApi} from './section-api';
-import {API_REFERENCE_CONTAINER} from '../styling/css-classes';
+import {API_REFERENCE_CONTAINER} from '../styling/css-classes.mjs';
 
 /** Component to render a constant API reference document. */
 export function ConstantReference(entry: ConstantEntryRenderable) {

@@ -1,25 +1,28 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "unit_test_lib",
     testonly = True,
     srcs = glob([
-        "**/*.spec.ts",
+        "**/*.spec.mts",
     ]),
+    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [
-        "//adev/shared-docs/pipeline/guides",
-        "@npm//@bazel/runfiles",
-        "@npm//@types/jsdom",
-        "@npm//jsdom",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/jsdom",
+        "//:node_modules/jsdom",
+        "//adev/shared-docs/pipeline/guides:guides_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "bootstrap",
     testonly = True,
     srcs = [
-        "bootstrap.init.ts",
+        "bootstrap.init.mts",
     ],
+    tsconfig = "//adev/shared-docs:tsconfig_test",
 )
 
 jasmine_node_test(
