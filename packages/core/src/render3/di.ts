@@ -659,7 +659,7 @@ function searchTokensOnInjector<T>(
     isHostSpecialCase,
   );
   if (injectableIdx !== null) {
-    return getNodeInjectable(lView, currentTView, injectableIdx, tNode as TElementNode);
+    return getNodeInjectable(lView, currentTView, injectableIdx, tNode as TElementNode, flags);
   } else {
     return NOT_FOUND;
   }
@@ -725,6 +725,7 @@ export function getNodeInjectable(
   tView: TView,
   index: number,
   tNode: TDirectiveHostNode,
+  flags?: InjectFlags,
 ): any {
   let value = lView[index];
   const tData = tView.data;
@@ -759,7 +760,7 @@ export function getNodeInjectable(
         "Because flags do not contain `SkipSelf' we expect this to always succeed.",
       );
     try {
-      value = lView[index] = factory.factory(undefined, tData, lView, tNode);
+      value = lView[index] = factory.factory(undefined, flags, tData, lView, tNode);
 
       ngDevMode && emitInstanceCreatedByInjectorEvent(value);
 

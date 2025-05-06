@@ -261,6 +261,10 @@ export class NodeInjectorFactory {
       this: NodeInjectorFactory,
       _: undefined,
       /**
+       * Flags that control the injection behavior.
+       */
+      flags: InjectFlags | undefined,
+      /**
        * array where injectables tokens are stored. This is used in
        * case of an error reporting to produce friendlier errors.
        */

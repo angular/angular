@@ -111,7 +111,7 @@ export function getNullInjector(): Injector {
  * current value.
  */
 interface Record<T> {
-  factory: (() => T) | undefined;
+  factory: ((_: undefined, flags?: InjectFlags) => T) | undefined;
   value: T | {};
   multi: any[] | undefined;
 }
@@ -349,7 +349,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
         }
         // If a record was found, get the instance for it and return it.
         if (record != null /* NOT null || undefined */) {
-          return this.hydrate(token, record);
+          return this.hydrate(token, record, flags);
         }
       }
 
@@ -477,7 +477,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
     this.records.set(token, record);
   }
 
-  private hydrate<T>(token: ProviderToken<T>, record: Record<T>): T {
+  private hydrate<T>(token: ProviderToken<T>, record: Record<T>, flags: InjectFlags): T {
     const prevConsumer = setActiveConsumer(null);
     try {
       if (record.value === CIRCULAR) {
@@ -487,11 +487,11 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
 
         if (ngDevMode) {
           runInInjectorProfilerContext(this, token as Type<T>, () => {
-            record.value = record.factory!();
+            record.value = record.factory!(undefined, flags);
             emitInstanceCreatedByInjectorEvent(record.value);
           });
         } else {
-          record.value = record.factory!();
+          record.value = record.factory!(undefined, flags);
         }
       }
       if (typeof record.value === 'object' && record.value && hasOnDestroy(record.value)) {
@@ -580,7 +580,8 @@ function providerToRecord(provider: SingleProvider): Record<any> {
   if (isValueProvider(provider)) {
     return makeRecord(undefined, provider.useValue);
   } else {
-    const factory: (() => any) | undefined = providerToFactory(provider);
+    const factory: ((type?: Type<unknown>, flags?: InjectFlags) => any) | undefined =
+      providerToFactory(provider);
     return makeRecord(factory, NOT_YET);
   }
 }
@@ -594,8 +595,8 @@ export function providerToFactory(
   provider: SingleProvider,
   ngModuleType?: InjectorType<any>,
   providers?: any[],
-): () => any {
-  let factory: (() => any) | undefined = undefined;
+): (type?: Type<unknown>, flags?: number) => any {
+  let factory: ((type?: Type<unknown>, flags?: InjectFlags) => any) | undefined = undefined;
   if (ngDevMode && isEnvironmentProviders(provider)) {
     throwInvalidProviderError(undefined, providers, provider);
   }
@@ -609,7 +610,11 @@ export function providerToFactory(
     } else if (isFactoryProvider(provider)) {
       factory = () => provider.useFactory(...injectArgs(provider.deps || []));
     } else if (isExistingProvider(provider)) {
-      factory = () => ɵɵinject(resolveForwardRef(provider.useExisting));
+      factory = (_, flags) =>
+        ɵɵinject(
+          resolveForwardRef(provider.useExisting),
+          flags !== undefined && flags & InjectFlags.Optional ? InjectFlags.Optional : undefined,
+        );
     } else {
       const classRef = resolveForwardRef(
         provider &&
