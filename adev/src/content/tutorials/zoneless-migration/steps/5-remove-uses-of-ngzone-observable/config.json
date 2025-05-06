@@ -1,0 +1,5 @@
+{
+  "openFiles": ["src/app/app.ts"],
+  "title": "Remove unsupported NgZone APIs",
+  "type": "editor"
+}

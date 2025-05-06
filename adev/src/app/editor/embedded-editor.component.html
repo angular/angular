@@ -6,7 +6,12 @@
         [type]="TerminalType.INTERACTIVE"
       />
     } @else {
-      <as-split class="docs-editor" [direction]="splitDirection()" restrictMove="true" gutterSize="5">
+      <as-split
+        class="docs-editor"
+        [direction]="splitDirection()"
+        restrictMove="true"
+        gutterSize="5"
+      >
         <as-split-area class="adev-left-side" size="50">
           <docs-tutorial-code-editor class="adev-tutorial-code-editor" />
         </as-split-area>
@@ -15,7 +20,7 @@
           <!-- Preview, Terminal & Console -->
           <as-split class="docs-right-side" direction="vertical" restrictMove="true" gutterSize="5">
             <!-- Preview Section: for larger screens -->
-            @if (!displayPreviewInMatTabGroup()) {
+            @if (!displayPreviewInMatTabGroup() && this.editorUiState.tutorialType() !== 'test') {
               <as-split-area size="50">
                 <!-- Preview Section: for larger screens -->
                 <div class="adev-preview-section">
@@ -38,26 +43,28 @@
                 [selectedIndex]="selectedTabIndex()"
                 (selectedIndexChange)="selectedTabIndex.set($event)"
               >
-                @if (displayPreviewInMatTabGroup()) {
-                  <mat-tab label="Preview">
-                    <docs-tutorial-preview />
+                @if (this.editorUiState.tutorialType() !== 'test') {
+                  @if (displayPreviewInMatTabGroup()) {
+                    <mat-tab label="Preview">
+                      <docs-tutorial-preview />
+                    </mat-tab>
+                  }
+                  <mat-tab label="Console">
+                    <ng-template mat-tab-label>
+                      Console
+                      @if (errorsCount()) {
+                        <docs-icon class="docs-icon_high-contrast">error</docs-icon>
+                        <span>
+                          {{ errorsCount() }}
+                        </span>
+                      }
+                    </ng-template>
+                    <docs-tutorial-terminal
+                      [type]="TerminalType.READONLY"
+                      class="docs-tutorial-terminal"
+                    />
                   </mat-tab>
                 }
-                <mat-tab label="Console">
-                  <ng-template mat-tab-label>
-                    Console
-                    @if (errorsCount()) {
-                      <docs-icon class="docs-icon_high-contrast">error</docs-icon>
-                      <span>
-                        {{ errorsCount() }}
-                      </span>
-                    }
-                  </ng-template>
-                  <docs-tutorial-terminal
-                    [type]="TerminalType.READONLY"
-                    class="docs-tutorial-terminal"
-                  />
-                </mat-tab>
                 <mat-tab label="Terminal">
                   <docs-tutorial-terminal
                     [type]="TerminalType.INTERACTIVE"

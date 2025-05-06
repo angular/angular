@@ -1,0 +1,5 @@
+{
+  "openFiles": ["src/app/example.spec.ts"],
+  "title": "Make tests zoneless compatible",
+  "type": "test"
+}

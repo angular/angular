@@ -26,6 +26,7 @@ Each tutorial is defined by a `config.json`, which can have the following option
 - `type`: the type denotes how the tutorial will be presented and which components are necessary for that tutorial
   - `cli`: a tutorial with a `cli` type will contain only the content and an interactive terminal with the Angular CLI
   - `editor`: used for the complete embedded editor, containing the code editor, the preview, an interactive terminal and the console with outputs from the dev server
+  - `test`: Includes the embedded editor, the code editor, and an interactive terminal. Does _not_ include the preview or console
   - `local`: disables the embedded editor and shows only the content
   - `editor-only`: a special config used for the tutorial playground and the homepage playground, which disables the content and shows only the embedded editor
 
@@ -98,11 +99,12 @@ See [`src/content/tutorials/homepage`](/src/content/tutorials/homepage)
 To update the dependencies  of all tutorials you can run the following script
 
 ```bash 
-rm ./adev/src/content/tutorials/homepage/package-lock.json  ./adev/src/content/tutorials/first-app/common/package-lock.json ./adev/src/content/tutorials/learn-angular/common/package-lock.json ./adev/src/content/tutorials/playground/common/package-lock.json ./adev/src/content/tutorials/deferrable-views/common/package-lock.json
+rm ./adev/src/content/tutorials/homepage/package-lock.json  ./adev/src/content/tutorials/first-app/common/package-lock.json ./adev/src/content/tutorials/learn-angular/common/package-lock.json ./adev/src/content/tutorials/playground/common/package-lock.json ./adev/src/content/tutorials/deferrable-views/common/package-lock.json ./adev/src/content/tutorials/zoneless-migration/common/package-lock.json
 
 npm i --package-lock-only --prefix ./adev/src/content/tutorials/homepage
 npm i --package-lock-only --prefix ./adev/src/content/tutorials/first-app/common
 npm i --package-lock-only --prefix ./adev/src/content/tutorials/learn-angular/common               
 npm i --package-lock-only --prefix ./adev/src/content/tutorials/playground/common
 npm i --package-lock-only --prefix ./adev/src/content/tutorials/deferrable-views/common
+npm i --package-lock-only --prefix ./adev/src/content/tutorials/zoneless-migration/common
 ```

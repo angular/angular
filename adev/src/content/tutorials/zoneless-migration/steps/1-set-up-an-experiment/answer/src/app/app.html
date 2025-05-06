@@ -1,0 +1,51 @@
+@if (zonelessError) {
+  <span style="color: red">Oops! If you're seeing this, zoneless was not enabled in the application providers.</span>
+}
+<div class="container">
+  <h1>My Todo App with Promise Service</h1>
+  <div class="todo-input-container">
+    <input
+      id="todoInput"
+      type="text"
+      class="todo-input"
+      placeholder="What needs to be done?"
+      #todoInput
+      (keyup.enter)="addTodo(todoInput.value)"
+      [disabled]="isLoading"
+    />
+    <button class="add-button app-button" (click)="addTodo(todoInput.value)" [disabled]="isLoading">
+      {{ isLoading ? 'Processing...' : 'Add Todo' }}
+    </button>
+  </div>
+
+  @if (isLoading && todos.length === 0) {
+  <div class="loading-message">Loading todos...</div>
+  } @if (todos.length > 0) {
+  <ul class="todo-list">
+    @for (todo of todos; track todo) {
+    <li [class.completed]="todo.completed" [class.loading]="isLoading && !todo.id">
+      <input
+        type="checkbox"
+        [checked]="todo.completed"
+        (change)="toggleComplete(todo)"
+        class="todo-checkbox"
+        [disabled]="isLoading"
+      />
+      <span class="todo-text">{{ todo.text }}</span>
+      <button class="remove-button" (click)="removeTodo(todo)" [disabled]="isLoading">&times;</button>
+    </li>
+    }
+  </ul>
+  } @else if (!isLoading) {
+  <p class="no-todos-message">No todos yet! Add some above.</p>
+  } @if (todos.length > 0) {
+  <div class="todo-footer">
+    <span>{{ remainingTodos }} remaining</span>
+  </div>
+  }
+</div>
+@if (zonelessInSearchParams && !zonelessError) {
+  <button class="app-button" (click)="this.isLoading = this.isLoading">Force UI Update</button>
+}
+<hr>
+<button (click)="toggleZoneless()">set zoneless={{!zonelessInSearchParams}}</button>

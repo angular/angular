@@ -72,7 +72,8 @@ export type TutorialConfig =
   | EditorTutorialConfig
   | LocalTutorialConfig
   | CliTutorialConfig
-  | EditorOnlyTutorialConfig;
+  | EditorOnlyTutorialConfig
+  | TestTutorialConfig;
 
 export interface TutorialConfigBase {
   type: TutorialType;
@@ -113,6 +114,9 @@ export type CliTutorialConfig = Omit<LocalTutorialConfig, 'type'> & {
   type: TutorialType.CLI;
 };
 
+export type TestTutorialConfig = Omit<EditorTutorialConfig, 'type'> & {
+  type: TutorialType.TEST;
+};
 export type EditorOnlyTutorialConfig = Omit<EditorTutorialConfig, 'type'> & {
   type: TutorialType.EDITOR_ONLY;
 };
@@ -161,4 +165,5 @@ export const enum TutorialType {
   LOCAL = 'local',
   EDITOR = 'editor',
   EDITOR_ONLY = 'editor-only',
+  TEST = 'test',
 }
