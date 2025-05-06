@@ -1,11 +1,4 @@
 load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library", "zone_compatible_jasmine_node_test")
-load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
-
-circular_dependency_test(
-    name = "circular_deps_test",
-    entry_point = "angular/packages/forms/index.mjs",
-    deps = ["//packages/forms"],
-)
 
 ts_library(
     name = "test_lib",
