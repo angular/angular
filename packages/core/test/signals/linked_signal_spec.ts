@@ -160,6 +160,27 @@ describe('linkedSignal', () => {
     expect(choice()).toBe(0);
   });
 
+  it('should throw error from update if current computation state is an error', () => {
+    const source = linkedSignal<number>(() => {
+      // Initial computation fails.
+      throw new Error('failure');
+    });
+
+    let updaterRan = false;
+    expect(() =>
+      source.update(() => {
+        // Note: we explicitly do _not_ interact with the previous value here. That's because in the
+        // failure mode, the previous value is an internal `Symbol` from `linkedSignal`, and we want
+        // to avoid throwing any errors related to this `Symbol` and causing the test to incorrectly
+        // pass.
+
+        updaterRan = true;
+        return 0;
+      }),
+    ).toThrowError(/failure/);
+    expect(updaterRan).toBeFalse();
+  });
+
   it('should not recompute downstream dependencies when computed value is equal to the currently set value', () => {
     const source = signal(0);
     const isEven = linkedSignal(() => source() % 2 === 0);
