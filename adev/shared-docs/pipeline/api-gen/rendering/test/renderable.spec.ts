@@ -43,11 +43,11 @@ describe('renderable', () => {
     setSymbols(symbols);
 
     for (const entry of entryJson.entries) {
-      const renderableJson = getRenderable(
+      const renderableJson = (await getRenderable(
         entry,
         '@angular/fakeentry',
         'angular/angular',
-      ) as DocEntryRenderable;
+      )) as DocEntryRenderable;
       entries.set(entry['name'], renderableJson);
     }
   });

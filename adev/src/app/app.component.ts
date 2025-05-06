@@ -14,6 +14,7 @@ import {
   OnInit,
   PLATFORM_ID,
   signal,
+  isDevMode,
 } from '@angular/core';
 import {NavigationEnd, NavigationSkipped, Router, RouterOutlet} from '@angular/router';
 import {filter, map} from 'rxjs/operators';
@@ -95,6 +96,13 @@ export class AppComponent implements OnInit {
     if (event.key === ESCAPE && this.displaySearchDialog()) {
       event.preventDefault();
       this.displaySearchDialog.set(false);
+    }
+
+    if (isDevMode() && event.key === 'o' && (event.metaKey || event.ctrlKey)) {
+      // In debug this shortcut allows us to open the same page on adev
+      // Helpful to compare differences
+      event.preventDefault();
+      window.open(`https://angular.dev/${location.pathname}`, '_blank');
     }
   }
 
