@@ -9,7 +9,7 @@ This table covers [Angular versions under active support](reference/releases#act
 
 | Angular            | Node.js                              | TypeScript     | RxJS               |
 | ------------------ | ------------------------------------ | -------------- | ------------------ |
-| 20.0.x             | ^20.11.1 \|\| ^22.11.0               | >=5.8.0 <5.9.0 | ^6.5.3 \|\| ^7.4.0 |
+| 20.0.x             | ^20.11.1 \|\| ^22.11.0 \|\| ^24.0.0  | >=5.8.0 <5.9.0 | ^6.5.3 \|\| ^7.4.0 |
 | 19.2.x             | ^18.19.1 \|\| ^20.11.1 \|\| ^22.0.0  | >=5.5.0 <5.9.0 | ^6.5.3 \|\| ^7.4.0 |
 | 19.1.x             | ^18.19.1 \|\| ^20.11.1 \|\| ^22.0.0  | >=5.5.0 <5.8.0 | ^6.5.3 \|\| ^7.4.0 |
 | 19.0.x             | ^18.19.1 \|\| ^20.11.1 \|\| ^22.0.0  | >=5.5.0 <5.7.0 | ^6.5.3 \|\| ^7.4.0 |
@@ -79,7 +79,7 @@ targets supporting approximately 95% of web users.
 
 | Angular | Baseline Date | Browser Set                 |
 | ------- | ------------- | --------------------------- |
-| v20     | 2025-03-31    | [Browser Set][browsers-v20] |
+| v20     | 2025-04-30    | [Browser Set][browsers-v20] |
 
 [browsers-v20]: https://browsersl.ist/#q=Chrome+%3E%3D+105%0AChromeAndroid+%3E%3D+105%0AEdge+%3E%3D+105%0AFirefox+%3E%3D+104%0AFirefoxAndroid+%3E%3D+104%0ASafari+%3E%3D+16%0AiOS+%3E%3D+16
 
