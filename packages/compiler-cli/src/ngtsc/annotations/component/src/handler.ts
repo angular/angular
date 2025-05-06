@@ -1399,7 +1399,7 @@ export class ComponentDecoratorHandler
       removeDeferrableTypesFromComponentDecorator(analysis, perComponentDeferredDeps);
     }
 
-    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata =
       analysis.classMetadata !== null
@@ -1529,7 +1529,7 @@ export class ComponentDecoratorHandler
     }
 
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
-    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata =
       analysis.classMetadata !== null
@@ -1587,7 +1587,7 @@ export class ComponentDecoratorHandler
       defer,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
-    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
     const classMetadata =
       analysis.classMetadata !== null
         ? compileComponentClassMetadata(analysis.classMetadata, null).toStmt()
@@ -2443,6 +2443,11 @@ export class ComponentDecoratorHandler
     }
 
     throw new Error(`Invalid deferBlockDepsEmitMode. Cannot compile deferred block metadata.`);
+  }
+
+  /** Creates a new binding parser. */
+  private getNewBindingParser() {
+    return makeBindingParser(undefined, this.enableSelectorless);
   }
 }
 
