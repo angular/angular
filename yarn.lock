@@ -463,11 +463,12 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#1a12d97905f4af88ccc0b582864907729d23e23e":
-  version "0.0.0-a4538b2474d3c551f0217c3d1f5f3a99cf4f8eb7"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#1a12d97905f4af88ccc0b582864907729d23e23e"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#873988f86d59c491504c0994687339362d4a88c8":
+  version "0.0.0-b3df5e35ff652de75d22d1f68f3887696f3b49a2"
+  uid "873988f86d59c491504c0994687339362d4a88c8"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#873988f86d59c491504c0994687339362d4a88c8"
   dependencies:
-    "@google-cloud/spanner" "7.19.1"
+    "@google-cloud/spanner" "7.21.0"
     "@octokit/rest" "21.1.1"
     "@types/semver" "^7.3.6"
     "@types/supports-color" "^10.0.0"
@@ -2046,10 +2047,10 @@
     lodash.snakecase "^4.1.1"
     p-defer "^3.0.0"
 
-"@google-cloud/spanner@7.19.1":
-  version "7.19.1"
-  resolved "https://registry.yarnpkg.com/@google-cloud/spanner/-/spanner-7.19.1.tgz#f4a81ebffe2cd6b07cae12c5ae1eccd9a8d1f031"
-  integrity sha512-a7WlM4T3g5hslSBxQpsCxlH2IGgeVVEnDP5/v51kNlKv/W5PhBMqaHanodkUjbjegsQNlWAkqLClzIwtldfSXg==
+"@google-cloud/spanner@7.21.0":
+  version "7.21.0"
+  resolved "https://registry.yarnpkg.com/@google-cloud/spanner/-/spanner-7.21.0.tgz#166307b46b00d4c9be9f762730cd1212a563a740"
+  integrity sha512-SrlHgXmSaEbGhdimxcB0FgNsW9J931JBBveoGW43clQHVNcDJuKRoG+240inbSRZoW8JIwwEHToXYU5YGO3VGg==
   dependencies:
     "@google-cloud/common" "^5.0.0"
     "@google-cloud/precise-date" "^4.0.0"
