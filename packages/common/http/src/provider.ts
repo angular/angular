@@ -14,15 +14,10 @@ import {
   Provider,
 } from '@angular/core';
 
-import {HttpBackend, HttpHandler} from './backend';
+import {HttpBackend, HttpHandler, HttpInterceptorHandler} from './backend';
 import {HttpClient} from './client';
 import {FETCH_BACKEND, FetchBackend} from './fetch';
-import {
-  HTTP_INTERCEPTOR_FNS,
-  HttpInterceptorFn,
-  HttpInterceptorHandler,
-  legacyInterceptorFnFactory,
-} from './interceptor';
+import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, legacyInterceptorFnFactory} from './interceptor';
 import {
   jsonpCallbackContext,
   JsonpCallbackContext,
@@ -30,14 +25,7 @@ import {
   jsonpInterceptorFn,
 } from './jsonp';
 import {HttpXhrBackend} from './xhr';
-import {
-  HttpXsrfCookieExtractor,
-  HttpXsrfTokenExtractor,
-  XSRF_COOKIE_NAME,
-  XSRF_ENABLED,
-  XSRF_HEADER_NAME,
-  xsrfInterceptorFn,
-} from './xsrf';
+import {XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME, xsrfInterceptorFn} from './xsrf';
 
 /**
  * Identifies a particular kind of `HttpFeature`.
@@ -122,7 +110,6 @@ export function provideHttpClient(
 
   const providers: Provider[] = [
     HttpClient,
-    HttpXhrBackend,
     HttpInterceptorHandler,
     {provide: HttpHandler, useExisting: HttpInterceptorHandler},
     {
@@ -136,8 +123,6 @@ export function provideHttpClient(
       useValue: xsrfInterceptorFn,
       multi: true,
     },
-    {provide: XSRF_ENABLED, useValue: true},
-    {provide: HttpXsrfTokenExtractor, useClass: HttpXsrfCookieExtractor},
   ];
 
   for (const feature of features) {
