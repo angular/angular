@@ -44,7 +44,7 @@ describe('markdown to html', () => {
     ]);
     setSymbols(symbols);
     for (const entry of entryJson.entries) {
-      const renderableJson = getRenderable(entry, '@angular/fakeentry', 'angular/angular');
+      const renderableJson = await getRenderable(entry, '@angular/fakeentry', 'angular/angular');
       const fragment = JSDOM.fragment(await renderEntry(renderableJson));
       entries.set(entry['name'], fragment);
       entries2.set(entry['name'], await renderEntry(renderableJson));

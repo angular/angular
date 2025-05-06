@@ -21,13 +21,13 @@ import {
 import {addModuleName} from './module-name.mjs';
 import {addRepo} from './repo.mjs';
 
-export function getInitializerApiFunctionRenderable(
+export async function getInitializerApiFunctionRenderable(
   entry: InitializerApiFunctionEntry,
   moduleName: string,
   repo: string,
-): InitializerApiFunctionRenderable {
+): Promise<InitializerApiFunctionRenderable> {
   return setEntryFlags(
-    addRenderableCodeToc(
+    await addRenderableCodeToc(
       addHtmlJsDocTagComments(
         addHtmlUsageNotes(
           addHtmlDescription(

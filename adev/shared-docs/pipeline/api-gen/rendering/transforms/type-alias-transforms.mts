@@ -20,13 +20,13 @@ import {addModuleName} from './module-name.mjs';
 import {addRepo} from './repo.mjs';
 
 /** Given an unprocessed type alias entry, get the fully renderable type alias entry. */
-export function getTypeAliasRenderable(
+export async function getTypeAliasRenderable(
   typeAliasEntry: TypeAliasEntry,
   moduleName: string,
   repo: string,
-): TypeAliasEntryRenderable {
+): Promise<TypeAliasEntryRenderable> {
   return setEntryFlags(
-    addRenderableCodeToc(
+    await addRenderableCodeToc(
       addHtmlAdditionalLinks(
         addHtmlUsageNotes(
           addHtmlJsDocTagComments(
