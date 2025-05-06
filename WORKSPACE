@@ -34,9 +34,9 @@ http_archive(
 
 http_archive(
     name = "aspect_rules_js",
-    sha256 = "75c25a0f15a9e4592bbda45b57aa089e4bf17f9176fd735351e8c6444df87b52",
-    strip_prefix = "rules_js-2.1.0",
-    url = "https://github.com/aspect-build/rules_js/releases/download/v2.1.0/rules_js-v2.1.0.tar.gz",
+    sha256 = "83e5af4d17385d1c3268c31ae217dbfc8525aa7bcf52508dc6864baffc8b9501",
+    strip_prefix = "rules_js-2.3.7",
+    url = "https://github.com/aspect-build/rules_js/releases/download/v2.3.7/rules_js-v2.3.7.tar.gz",
 )
 
 load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
@@ -122,9 +122,9 @@ npm_repositories()
 
 http_archive(
     name = "aspect_rules_ts",
-    sha256 = "9acd128abe77397505148eaa6895faed57839560dbf2177dd6285e51235e2724",
-    strip_prefix = "rules_ts-3.3.1",
-    url = "https://github.com/aspect-build/rules_ts/releases/download/v3.3.1/rules_ts-v3.3.1.tar.gz",
+    sha256 = "56858e1e4380948e2d5aca5ab2e96fc5ed788652a4a3b7036e8e4b6f019e63bd",
+    strip_prefix = "rules_ts-3.5.3",
+    url = "https://github.com/aspect-build/rules_ts/releases/download/v3.5.3/rules_ts-v3.5.3.tar.gz",
 )
 
 load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
@@ -137,9 +137,9 @@ rules_ts_dependencies(
 
 http_archive(
     name = "aspect_rules_rollup",
-    sha256 = "c4062681968f5dcd3ce01e09e4ba73670c064744a7046211763e17c98ab8396e",
-    strip_prefix = "rules_rollup-2.0.0",
-    url = "https://github.com/aspect-build/rules_rollup/releases/download/v2.0.0/rules_rollup-v2.0.0.tar.gz",
+    sha256 = "0b8ac7d97cd660eb9a275600227e9c4268f5904cba962939d1a6ce9a0a059d2e",
+    strip_prefix = "rules_rollup-2.0.1",
+    url = "https://github.com/aspect-build/rules_rollup/releases/download/v2.0.1/rules_rollup-v2.0.1.tar.gz",
 )
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")

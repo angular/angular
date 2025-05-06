@@ -3990,10 +3990,10 @@
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.5.tgz#db9468cb1b1b5a925b8f34822f1669df0c5472f5"
   integrity sha512-hWtVTC2q7hc7xZ/RLbxapMvDMgUnDvKvMOpKal4DrMyfGBUfB1oKaZlIRr6mJL+If3bAP6sV/QneGzF6tJjZDg==
 
-"@types/chrome@^0.0.317":
-  version "0.0.317"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.317.tgz#105f222075c1dabd9c914dd6190d27d32487f7a0"
-  integrity sha512-ibKycbXX8ZZToFshjgWg98BTvFUSvQht8m53Xc+87ye3Z6ZoHJubLjoiDsil8rtW+noWE+Z0+7y0nwLxArU+CQ==
+"@types/chrome@^0.0.320":
+  version "0.0.320"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.320.tgz#dc872550a5860d8ca1260bb5d209ebc4c2c4b9dc"
+  integrity sha512-LD0O6hqayM4/InMUB2fOGSh7lFkUlusa40mk6iUAxs0RHfvRYjjsDoRGsDh2DEJWP4Ckccf00FVhkhDHHIqy7g==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -15334,10 +15334,10 @@ select-hose@^2.0.0:
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
-"selenium-webdriver4@npm:selenium-webdriver@4.31.0":
-  version "4.31.0"
-  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.31.0.tgz#3908152b9fcccd41411a58e30a099fc05a04dd2f"
-  integrity sha512-0MWEwypM0+c1NnZ87UEMxZdwphKoaK2UJ2qXzKWrJiM0gazFjgNVimxlHTOO90G2cOhphZqwpqSCJy62NTEzyA==
+"selenium-webdriver4@npm:selenium-webdriver@4.32.0":
+  version "4.32.0"
+  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.32.0.tgz#9bfe160cdac14d2d2876bba6eb369a09e9bd13ed"
+  integrity sha512-dG48JJnB96Aea1iVaZOKGmd6yT6aemeI1heWI/i8DtfD3pDX7uIlwpDBoGauNhtXAaFaamP+U4hIab8zZkg3Ag==
   dependencies:
     "@bazel/runfiles" "^6.3.1"
     jszip "^3.10.1"
