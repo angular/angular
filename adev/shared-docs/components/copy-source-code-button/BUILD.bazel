@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
+load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -22,18 +23,21 @@ ng_module(
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["*.spec.ts"],
     ),
-    deps = [
+    interop_deps = [
         ":copy-source-code-button",
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
-        "@npm//@angular/cdk",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_test",
+    deps = [
+        "//:node_modules/@angular/cdk",
     ],
 )
 

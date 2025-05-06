@@ -7,8 +7,8 @@
  */
 
 import {h} from 'preact';
-import {getModuleName} from '../symbol-context';
-import {getLinkToModule} from '../transforms/url-transforms';
+import {getModuleName} from '../symbol-context.mjs';
+import {getLinkToModule} from '../transforms/url-transforms.mjs';
 
 const symbolRegex = /([a-zA-Z_$][a-zA-Z_$0-9\.]*)/;
 
