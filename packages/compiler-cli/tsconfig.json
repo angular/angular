@@ -4,7 +4,8 @@
     "target": "es2020",
     "module": "es2020",
     "lib": [
-      "es2020"
+      "es2020",
+      "es2021",
     ],
     "strict": true,
     "types": [

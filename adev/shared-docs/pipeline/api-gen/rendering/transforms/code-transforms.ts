@@ -132,7 +132,7 @@ function groupCodeLines(lines: string[], metadata: CodeTableOfContentsData, entr
   }, new Map<string, CodeLineRenderable[]>());
 }
 
-export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
+function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   const isDeprecated = isDeprecatedEntry(entry);
   const deprecatedLineNumbers = isDeprecated ? [0] : [];
 
@@ -142,8 +142,17 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   }
 
   if (isDecoratorEntry(entry)) {
-    const skipNewLine = entry.members[0] && (entry.members[0] as any).entryType === 'function';
-    return getCodeTocData(entry.members, isDeprecated, skipNewLine);
+    return {
+      contents: entry.signatures
+        .map((sig) =>
+          sig.parameters
+            .map((param) => `${param.name}${param.isOptional ? '?' : ''}: ${param.type}`)
+            .join(', '),
+        )
+        .join(LN_BREAK),
+      codeLineNumbersWithIdentifiers: new Map<number, string>(),
+      deprecatedLineNumbers: [],
+    };
   }
 
   if (isConstantEntry(entry)) {
@@ -280,11 +289,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
 // TODO(matthieu): This whole part should be refactored to rely on a formatter (like prettier)
 // to handle formatting (See also #59211)
 /** Generate code ToC data for list of members. */
-function getCodeTocData(
-  members: MemberEntry[],
-  isDeprecated: boolean,
-  skipNewLine: boolean = false,
-): CodeTableOfContentsData {
+function getCodeTocData(members: MemberEntry[], isDeprecated: boolean): CodeTableOfContentsData {
   const initialMetadata: CodeTableOfContentsData = {
     contents: '',
     codeLineNumbersWithIdentifiers: new Map<number, string>(),
@@ -294,7 +299,6 @@ function getCodeTocData(
 
   return members.reduce((acc: CodeTableOfContentsData, curr: MemberEntry, index: number) => {
     const setTocData = (entry: DocEntry | MemberEntry, content: string) => {
-      acc.contents += `${skipNewLine ? '' : INDENTED_NEW_LINE}${content}`;
       acc.codeLineNumbersWithIdentifiers.set(lineNumber, entry.name);
       if (isDeprecatedEntry(entry)) {
         acc.deprecatedLineNumbers.push(lineNumber);
@@ -485,22 +489,8 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
   }
 
   if (isDecoratorEntry(entry)) {
-    // Shiki requires valid TS to generate correct syntax highlighting
-    // For now we consider a decorator as an interface or a function depending
-
-    const decoratorArgumentIsObject = !codeTocData.contents.trim().startsWith('(');
-    if (decoratorArgumentIsObject) {
-      // ex: @Component({...}) => interface Component { selector: string, ... }
-      if (codeTocData.contents !== '') {
-        appendFirstAndLastLines(codeTocData, `interface ${entry.name}({`, '\n})');
-      } else {
-        // ex @Self() => function Self()
-        appendFirstAndLastLines(codeTocData, `function ${entry.name}(`, ')');
-      }
-    } else {
-      // ex @ViewChild('foo', {..}) => function('foo': string, opts: {...})
-      appendFirstAndLastLines(codeTocData, `function ${entry.name}`, '');
-    }
+    const lines = splitLines(codeTocData.contents);
+    codeTocData.contents = lines.map((line) => `function ${entry.name}(${line})`).join('\n');
   }
 }
 

@@ -8,8 +8,7 @@
 
 import ts from 'typescript';
 
-import {extractInterface} from './class_extractor';
-import {DecoratorEntry, DecoratorType, EntryType, PropertyEntry, FunctionEntry} from './entities';
+import {DecoratorEntry, DecoratorType, EntryType, JsDocTagEntry, ParameterEntry} from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 
 /** Extracts an API documentation entry for an Angular decorator. */
@@ -31,7 +30,7 @@ export function extractorDecorator(
     rawComment: extractRawJsDoc(documentedNode),
     description: extractJsDocDescription(documentedNode),
     jsdocTags: extractJsDocTags(documentedNode),
-    members: getDecoratorOptions(declaration, typeChecker),
+    signatures: getDecoratorSignatures(declaration, typeChecker),
   };
 }
 
@@ -66,66 +65,50 @@ function getDecoratorType(declaration: ts.VariableDeclaration): DecoratorType | 
 }
 
 /** Gets the doc entry for the options object for an Angular decorator */
-function getDecoratorOptions(
+function getDecoratorSignatures(
   declaration: ts.VariableDeclaration,
   typeChecker: ts.TypeChecker,
-): PropertyEntry[] {
-  const name = declaration.name.getText();
+): {
+  parameters: ParameterEntry[];
+  jsdocTags: JsDocTagEntry[];
+}[] {
+  // Decorators have a complex type definition.
+  // The information we're looking for is located in the interface referenced when creating the decorator.
 
-  // Every decorator has an interface with its options in the same SourceFile.
-  // Queries, however, are defined as a type alias pointing to an interface.
-  const optionsDeclaration = declaration.getSourceFile().statements.find((node) => {
-    return (
-      (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node)) &&
-      node.name.getText() === name
-    );
+  const decoratorName = declaration.name.getText();
+
+  const decoratorDeclaration = declaration;
+  const decoratorType = typeChecker.getTypeAtLocation(decoratorDeclaration!);
+  const aliasDeclaration = decoratorType.getSymbol()!.getDeclarations()![0];
+
+  const decoratorInterface = aliasDeclaration as ts.InterfaceDeclaration;
+  if (!decoratorInterface || !ts.isInterfaceDeclaration(decoratorInterface)) {
+    throw new Error(`No decorator interface found for "${decoratorName}".`);
+  }
+
+  // Pulling all the overloads for the decorator function.
+  const callSignatures = decoratorInterface.members.filter(ts.isCallSignatureDeclaration);
+
+  return callSignatures.map((signatureDecl) => {
+    // What really matters for us are the parameters and the JsDoc tags.
+    return {
+      parameters: params(signatureDecl.parameters, typeChecker),
+      jsdocTags: extractJsDocTags(signatureDecl),
+    };
   });
+}
 
-  if (!optionsDeclaration) {
-    throw new Error(`Decorator "${name}" has no corresponding options interface.`);
-  }
-
-  let optionsInterface: ts.InterfaceDeclaration;
-
-  let isAliasDeclaration = false;
-  if (ts.isTypeAliasDeclaration(optionsDeclaration)) {
-    isAliasDeclaration = true;
-    const decoratorImplStatement = declaration
-      .getSourceFile()
-      .statements.find((node): node is ts.VariableStatement => {
-        return (
-          ts.isVariableStatement(node) &&
-          node.declarationList.declarations.at(0)!.name.getText() === name
-        );
-      });
-    const decoratorImplDeclaration = decoratorImplStatement!.declarationList.declarations.at(0)!;
-
-    // We hard-code the assumption that if the decorator's option type is a type alias,
-    // it resolves to a single interface (this is true for all query decorators at time of
-    // this writing).
-    const aliasedType = typeChecker.getTypeAtLocation(decoratorImplDeclaration.type!);
-    optionsInterface = (aliasedType.getSymbol()?.getDeclarations() ?? []).find((d) =>
-      ts.isInterfaceDeclaration(d),
-    ) as ts.InterfaceDeclaration;
-  } else {
-    optionsInterface = optionsDeclaration as ts.InterfaceDeclaration;
-  }
-
-  if (!optionsInterface || !ts.isInterfaceDeclaration(optionsInterface)) {
-    throw new Error(`Options for decorator "${name}" is not an interface.`);
-  }
-
-  // Take advantage of the interface extractor to pull the appropriate member info.
-  // Hard code the knowledge that decorator options only have properties, never methods.
-  const interfaceEntries = extractInterface(optionsInterface, typeChecker)
-    .members as PropertyEntry[];
-
-  if (isAliasDeclaration) {
-    const decoratorArgs = interfaceEntries[0] as any as FunctionEntry;
-    decoratorArgs.implementation.jsdocTags = [];
-  }
-
-  return interfaceEntries;
+function params(
+  params: ts.NodeArray<ts.ParameterDeclaration>,
+  typeChecker: ts.TypeChecker,
+): ParameterEntry[] {
+  return params.map((param) => ({
+    name: param.name.getText(),
+    description: extractJsDocDescription(param),
+    type: getParamTypeString(param, typeChecker),
+    isOptional: !!(param.questionToken || param.initializer),
+    isRestParam: !!param.dotDotDotToken,
+  }));
 }
 
 /**
@@ -162,4 +145,69 @@ function getDecoratorJsDocNode(declaration: ts.VariableDeclaration): ts.HasJSDoc
   }
 
   return callSignature;
+}
+
+/**
+ * Advanced function to generate the type string for a parameter.
+ * Interfaces (like Component, Decorator, etc.) are expanded to their properties.
+ *
+ */
+export function getParamTypeString(
+  paramNode: ts.ParameterDeclaration,
+  typeChecker: ts.TypeChecker,
+): string {
+  const type = typeChecker.getTypeAtLocation(paramNode);
+  const printer = ts.createPrinter({removeComments: true});
+  const sourceFile = paramNode.getSourceFile();
+
+  const replace: {initial: string; replacedWith: string}[] = [];
+  if (type.isClassOrInterface()) {
+    // In the cases where the parameter is a sole interface, we expand it. e.g. Component.
+    const interfaceDecl = type.getSymbol()!.getDeclarations()![0] as ts.InterfaceDeclaration;
+
+    replace.push({
+      initial: type.symbol.name,
+      replacedWith: expandType(interfaceDecl, sourceFile, printer),
+    });
+  } else if (type.isUnion()) {
+    // The parameter can be a union, this includes optional parameters whiceh are a union of the type and undefined.
+    type.types.forEach((subType) => {
+      const decl = subType.getSymbol()?.getDeclarations()?.[0];
+
+      // We only care to expand interfaces
+      if (decl && ts.isInterfaceDeclaration(decl)) {
+        replace.push({
+          initial: subType.symbol.name,
+          replacedWith: expandType(decl, sourceFile, printer),
+        });
+      }
+    });
+  }
+
+  // Using a print here instead of typeToString as it doesn't return optional props as a union of undefined
+  let result = printer
+    .printNode(ts.EmitHint.Unspecified, paramNode, sourceFile)
+    // Removing the parameter name, the conditional question mark and the colon (e.g. opts?: {foo: string})
+    .replace(new RegExp(`${paramNode.name.getText()}\\??\: `), '')
+    .replaceAll(/\s+/g, ' '); // Remove extra spaces/line breaks
+
+  // Replace the
+  for (const {initial, replacedWith} of replace) {
+    result = result.replace(initial, replacedWith);
+  }
+
+  return result;
+}
+
+function expandType(
+  decl: ts.InterfaceDeclaration,
+  sourceFile: ts.SourceFile,
+  printer: ts.Printer,
+): string {
+  const props = decl.members
+    // printer will return each member with a semicolon at the end
+    .map((member) => printer.printNode(ts.EmitHint.Unspecified, member, sourceFile))
+    .join(' ')
+    .replaceAll(/\s+/g, ' '); // Remove extra spaces/line breaks
+  return `{${props}}`;
 }
