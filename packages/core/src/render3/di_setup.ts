@@ -7,6 +7,7 @@
  */
 
 import {resolveForwardRef} from '../di/forward_ref';
+import {InternalInjectFlags} from '../di/interface/injector';
 import {ClassProvider, Provider} from '../di/interface/provider';
 import {isClassProvider, isTypeProvider, SingleProvider} from '../di/provider_collection';
 import {providerToFactory} from '../di/r3_injector';
@@ -319,6 +320,7 @@ function indexOf(item: any, arr: any[], begin: number, end: number) {
 function multiProvidersFactoryResolver(
   this: NodeInjectorFactory,
   _: undefined,
+  flags: InternalInjectFlags | undefined,
   tData: TData,
   lData: LView,
   tNode: TDirectiveHostNode,
@@ -334,7 +336,8 @@ function multiProvidersFactoryResolver(
 function multiViewProvidersFactoryResolver(
   this: NodeInjectorFactory,
   _: undefined,
-  tData: TData,
+  _flags: InternalInjectFlags | undefined,
+  _tData: TData,
   lView: LView,
   tNode: TDirectiveHostNode,
 ): any[] {
@@ -382,6 +385,7 @@ function multiFactory(
   factoryFn: (
     this: NodeInjectorFactory,
     _: undefined,
+    flags: InternalInjectFlags | undefined,
     tData: TData,
     lData: LView,
     tNode: TDirectiveHostNode,
