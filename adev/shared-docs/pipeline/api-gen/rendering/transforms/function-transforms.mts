@@ -24,13 +24,13 @@ import {addRenderableFunctionParams} from './params-transforms.mjs';
 import {addRepo} from './repo.mjs';
 
 /** Given an unprocessed function entry, get the fully renderable function entry. */
-export function getFunctionRenderable(
+export async function getFunctionRenderable(
   entry: FunctionEntry,
   moduleName: string,
   repo: string,
-): FunctionEntryRenderable {
+): Promise<FunctionEntryRenderable> {
   return setEntryFlags(
-    addRenderableCodeToc(
+    await addRenderableCodeToc(
       addHtmlAdditionalLinks(
         addHtmlUsageNotes(
           setEntryFlags(

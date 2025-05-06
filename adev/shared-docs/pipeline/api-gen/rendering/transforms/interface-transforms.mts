@@ -21,13 +21,13 @@ import {addModuleName} from './module-name.mjs';
 import {addRepo} from './repo.mjs';
 
 /** Given an unprocessed interface entry, get the fully renderable interface entry. */
-export function getInterfaceRenderable(
+export async function getInterfaceRenderable(
   entry: InterfaceEntry,
   moduleName: string,
   repo: string,
-): InterfaceEntryRenderable {
+): Promise<InterfaceEntryRenderable> {
   return setEntryFlags(
-    addRenderableCodeToc(
+    await addRenderableCodeToc(
       addRenderableMembers(
         addHtmlAdditionalLinks(
           addHtmlUsageNotes(

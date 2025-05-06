@@ -8,6 +8,7 @@
 
 import {
   DocEntry,
+  EntryType,
   FunctionSignatureMetadata,
   GenericEntry,
   MemberEntry,
@@ -37,6 +38,7 @@ import {codeToHtml, replaceKeywordFromShikiHtml} from '../shiki/shiki.mjs';
 
 import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transforms.mjs';
 import {getLinkToModule} from './url-transforms.mjs';
+import {formatJs} from './format-code.mjs';
 
 // Allows to generate links for code lines.
 interface CodeTableOfContentsData {
@@ -61,13 +63,19 @@ export function splitLines(text: string): string[] {
  * 2. Run syntax highlighting
  * 3. Generate list of renderable code lines.
  */
-export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
+export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   entry: T,
-): T & HasRenderableToc {
+): Promise<T & HasRenderableToc> {
   const metadata = mapDocEntryToCode(entry);
   appendPrefixAndSuffix(entry, metadata);
 
-  let codeWithSyntaxHighlighting = codeToHtml(metadata.contents, 'typescript');
+  // For now we only format functions with prettier
+  let formattedCode: string | null = null;
+  if (entry.entryType === EntryType.Function) {
+    formattedCode = await formatJs(metadata.contents);
+  }
+
+  let codeWithSyntaxHighlighting = codeToHtml(formattedCode ?? metadata?.contents, 'typescript');
 
   if (isDecoratorEntry(entry)) {
     // Shiki requires a keyword for correct formating of Decorators
@@ -84,7 +92,13 @@ export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   const pattern = /(.*?)<code.*?>(.*?)<\/code>(.*)/s;
   const match = codeWithSyntaxHighlighting.match(pattern);
   if (!match) {
-    return {...entry, codeLinesGroups: new Map(), afterCodeGroups: '', beforeCodeGroups: ''};
+    return {
+      ...entry,
+      codeLinesGroups: new Map(),
+      afterCodeGroups: '',
+      beforeCodeGroups: '',
+      formattedCode,
+    };
   }
   const beforeCode = match[1];
   const insideCode = match[2];
@@ -103,6 +117,7 @@ export function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
     codeLinesGroups: groups,
     beforeCodeGroups: beforeCode,
     afterCodeGroups: afterCode,
+    formattedCode: formattedCode ? codeWithSyntaxHighlighting : null,
   };
 }
 

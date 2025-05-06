@@ -36,6 +36,7 @@ ts_project(
         "//:node_modules/marked",
         "//:node_modules/preact",
         "//:node_modules/preact-render-to-string",
+        "//:node_modules/prettier",
         "//:node_modules/shiki",
     ],
 )

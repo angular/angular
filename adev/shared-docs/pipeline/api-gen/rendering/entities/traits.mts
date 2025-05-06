@@ -78,6 +78,10 @@ export interface HasRepo {
 
 /** A doc entry that has ToC transformed for rendering. */
 export interface HasRenderableToc {
+  // Prefer formatted code if defined,
+  formattedCode: string | null;
+
+  // Else use this more messy but more flexible structure (which supports deprecation info)
   beforeCodeGroups: string;
   codeLinesGroups: Map<string, CodeLineRenderable[]>;
   afterCodeGroups: string;

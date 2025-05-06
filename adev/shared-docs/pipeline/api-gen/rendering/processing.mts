@@ -40,11 +40,11 @@ import {addModuleName} from './transforms/module-name.mjs';
 import {addRepo} from './transforms/repo.mjs';
 import {getTypeAliasRenderable} from './transforms/type-alias-transforms.mjs';
 
-export function getRenderable(
+export async function getRenderable(
   entry: DocEntry | CliCommand,
   moduleName: string,
   repo: string,
-): DocEntryRenderable | CliCommandRenderable {
+): Promise<DocEntryRenderable | CliCommandRenderable> {
   if (isCliEntry(entry)) {
     return getCliRenderable(entry);
   }

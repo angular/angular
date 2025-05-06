@@ -16,6 +16,7 @@ import {getRenderable} from './processing.mjs';
 import {renderEntry} from './rendering.mjs';
 import {initHighlighter} from './shiki/shiki.mjs';
 import {setCurrentSymbol, setSymbols} from './symbol-context.mjs';
+import {CliCommandRenderable, DocEntryRenderable} from './entities/renderables.mjs';
 
 /** The JSON data file format for extracted API reference info. */
 interface EntryCollection {
@@ -124,10 +125,11 @@ async function main() {
     // Setting the symbols are a global context for the rendering templates of this entry
     setSymbols(collection.symbols);
 
-    const renderableEntries = extractedEntries.map((entry) => {
+    const renderableEntries: (DocEntryRenderable | CliCommandRenderable)[] = [];
+    for (const entry of extractedEntries) {
       setCurrentSymbol(entry.name);
-      return getRenderable(entry, collection.moduleName, collection.repo);
-    });
+      renderableEntries.push(await getRenderable(entry, collection.moduleName, collection.repo));
+    }
 
     const htmlOutputs = renderableEntries.map(renderEntry);
 

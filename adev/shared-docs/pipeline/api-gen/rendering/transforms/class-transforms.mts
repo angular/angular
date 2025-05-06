@@ -21,13 +21,13 @@ import {addModuleName} from './module-name.mjs';
 import {addRepo} from './repo.mjs';
 
 /** Given an unprocessed class entry, get the fully renderable class entry. */
-export function getClassRenderable(
+export async function getClassRenderable(
   classEntry: ClassEntry,
   moduleName: string,
   repo: string,
-): ClassEntryRenderable {
+): Promise<ClassEntryRenderable> {
   return setEntryFlags(
-    addRenderableCodeToc(
+    await addRenderableCodeToc(
       addRenderableMembers(
         addHtmlAdditionalLinks(
           addHtmlUsageNotes(
