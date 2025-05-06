@@ -29,6 +29,7 @@ import {FunctionReference} from './templates/function-reference';
 import {InitializerApiFunction} from './templates/initializer-api-function';
 import {TypeAliasReference} from './templates/type-alias-reference';
 import {setCurrentSymbol} from './symbol-context';
+import {DecoratorReference} from './templates/decorator-reference';
 
 /** Given a doc entry, get the transformed version of the entry for rendering. */
 export function renderEntry(renderable: DocEntryRenderable | CliCommandRenderable): string {
@@ -37,8 +38,11 @@ export function renderEntry(renderable: DocEntryRenderable | CliCommandRenderabl
     return render(CliCommandReference(renderable));
   }
 
-  if (isClassEntry(renderable) || isInterfaceEntry(renderable) || isDecoratorEntry(renderable)) {
+  if (isClassEntry(renderable) || isInterfaceEntry(renderable)) {
     return render(ClassReference(renderable));
+  }
+  if (isDecoratorEntry(renderable)) {
+    return render(DecoratorReference(renderable));
   }
   if (isConstantEntry(renderable)) {
     return render(ConstantReference(renderable));

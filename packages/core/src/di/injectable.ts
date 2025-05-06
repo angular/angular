@@ -59,7 +59,6 @@ export interface InjectableDecorator {
    * {@example core/di/ts/metadata_spec.ts region='Injectable'}
    *
    */
-  (): TypeDecorator;
   (
     options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,
   ): TypeDecorator;
