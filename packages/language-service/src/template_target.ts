@@ -627,11 +627,11 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   }
 
   visitComponent(component: TmplAstComponent) {
-    throw new Error('TODO');
+    // TODO(crisbeto): integrate selectorless
   }
 
   visitDirective(directive: TmplAstDirective) {
-    throw new Error('TODO');
+    // TODO(crisbeto): integrate selectorless
   }
 
   visitAll(nodes: TmplAstNode[]) {

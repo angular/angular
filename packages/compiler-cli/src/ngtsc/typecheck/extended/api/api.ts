@@ -8,38 +8,10 @@
 
 import {
   AST,
-  ASTWithSource,
+  CombinedRecursiveAstVisitor,
   ParseSourceSpan,
-  RecursiveAstVisitor,
-  TmplAstBoundAttribute,
-  TmplAstBoundDeferredTrigger,
-  TmplAstBoundEvent,
-  TmplAstBoundText,
-  TmplAstComponent,
-  TmplAstContent,
-  TmplAstDeferredBlock,
-  TmplAstDeferredBlockError,
-  TmplAstDeferredBlockLoading,
-  TmplAstDeferredBlockPlaceholder,
-  TmplAstDeferredTrigger,
-  TmplAstDirective,
-  TmplAstElement,
-  TmplAstForLoopBlock,
-  TmplAstForLoopBlockEmpty,
-  TmplAstIcu,
-  TmplAstIfBlock,
-  TmplAstIfBlockBranch,
-  TmplAstLetDeclaration,
   TmplAstNode,
-  TmplAstRecursiveVisitor,
-  TmplAstReference,
-  TmplAstSwitchBlock,
-  TmplAstSwitchBlockCase,
   TmplAstTemplate,
-  TmplAstText,
-  TmplAstTextAttribute,
-  TmplAstUnknownBlock,
-  TmplAstVariable,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -151,10 +123,7 @@ export abstract class TemplateCheckWithVisitor<Code extends ErrorCode>
 /**
  * Visits all nodes in a template (TmplAstNode and AST) and calls `visitNode` for each one.
  */
-class TemplateVisitor<Code extends ErrorCode>
-  extends RecursiveAstVisitor
-  implements TmplAstRecursiveVisitor
-{
+class TemplateVisitor<Code extends ErrorCode> extends CombinedRecursiveAstVisitor {
   diagnostics: NgTemplateDiagnostic<Code>[] = [];
 
   constructor(
@@ -165,156 +134,39 @@ class TemplateVisitor<Code extends ErrorCode>
     super();
   }
 
-  override visit(node: AST | TmplAstNode, context?: any) {
+  override visit(node: AST | TmplAstNode) {
     this.diagnostics.push(...this.check.visitNode(this.ctx, this.component, node));
-    node.visit(this);
+    super.visit(node);
   }
 
-  visitAllNodes(nodes: TmplAstNode[]) {
-    for (const node of nodes) {
-      this.visit(node);
-    }
-  }
-
-  visitAst(ast: AST) {
-    if (ast instanceof ASTWithSource) {
-      ast = ast.ast;
-    }
-    this.visit(ast);
-  }
-
-  visitElement(element: TmplAstElement) {
-    this.visitAllNodes(element.attributes);
-    this.visitAllNodes(element.inputs);
-    this.visitAllNodes(element.outputs);
-    this.visitAllNodes(element.directives);
-    this.visitAllNodes(element.references);
-    this.visitAllNodes(element.children);
-  }
-
-  visitTemplate(template: TmplAstTemplate) {
+  override visitTemplate(template: TmplAstTemplate) {
     const isInlineTemplate = template.tagName === 'ng-template';
-    this.visitAllNodes(template.attributes);
+    this.visitAllTemplateNodes(template.attributes);
 
     if (isInlineTemplate) {
       // Only visit input/outputs if this isn't an inline template node generated for a structural
       // directive (like `<div *ngIf></div>`). These nodes would be visited when the underlying
       // element of an inline template node is processed.
-      this.visitAllNodes(template.inputs);
-      this.visitAllNodes(template.outputs);
+      this.visitAllTemplateNodes(template.inputs);
+      this.visitAllTemplateNodes(template.outputs);
     }
 
-    this.visitAllNodes(template.directives);
+    this.visitAllTemplateNodes(template.directives);
 
     // TODO(crisbeto): remove this condition when deleting `canVisitStructuralAttributes`.
     if (this.check.canVisitStructuralAttributes || isInlineTemplate) {
       // `templateAttrs` aren't transferred over to the inner element so we always have to visit them.
-      this.visitAllNodes(template.templateAttrs);
+      this.visitAllTemplateNodes(template.templateAttrs);
     }
 
-    this.visitAllNodes(template.variables);
-    this.visitAllNodes(template.references);
-    this.visitAllNodes(template.children);
-  }
-  visitContent(content: TmplAstContent): void {
-    this.visitAllNodes(content.children);
-  }
-  visitVariable(variable: TmplAstVariable): void {}
-  visitReference(reference: TmplAstReference): void {}
-  visitTextAttribute(attribute: TmplAstTextAttribute): void {}
-  visitUnknownBlock(block: TmplAstUnknownBlock): void {}
-  visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
-    this.visitAst(attribute.value);
-  }
-  visitBoundEvent(attribute: TmplAstBoundEvent): void {
-    this.visitAst(attribute.handler);
-  }
-  visitText(text: TmplAstText): void {}
-  visitBoundText(text: TmplAstBoundText): void {
-    this.visitAst(text.value);
-  }
-  visitIcu(icu: TmplAstIcu): void {
-    Object.keys(icu.vars).forEach((key) => this.visit(icu.vars[key]));
-    Object.keys(icu.placeholders).forEach((key) => this.visit(icu.placeholders[key]));
-  }
-
-  visitDeferredBlock(deferred: TmplAstDeferredBlock): void {
-    deferred.visitAll(this);
-  }
-
-  visitDeferredTrigger(trigger: TmplAstDeferredTrigger): void {
-    if (trigger instanceof TmplAstBoundDeferredTrigger) {
-      this.visitAst(trigger.value);
-    }
-  }
-
-  visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder): void {
-    this.visitAllNodes(block.children);
-  }
-
-  visitDeferredBlockError(block: TmplAstDeferredBlockError): void {
-    this.visitAllNodes(block.children);
-  }
-
-  visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading): void {
-    this.visitAllNodes(block.children);
-  }
-
-  visitSwitchBlock(block: TmplAstSwitchBlock): void {
-    this.visitAst(block.expression);
-    this.visitAllNodes(block.cases);
-  }
-
-  visitSwitchBlockCase(block: TmplAstSwitchBlockCase): void {
-    block.expression && this.visitAst(block.expression);
-    this.visitAllNodes(block.children);
-  }
-
-  visitForLoopBlock(block: TmplAstForLoopBlock): void {
-    block.item.visit(this);
-    this.visitAllNodes(block.contextVariables);
-    this.visitAst(block.expression);
-    this.visitAllNodes(block.children);
-    block.empty?.visit(this);
-  }
-
-  visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty): void {
-    this.visitAllNodes(block.children);
-  }
-
-  visitIfBlock(block: TmplAstIfBlock): void {
-    this.visitAllNodes(block.branches);
-  }
-
-  visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
-    block.expression && this.visitAst(block.expression);
-    block.expressionAlias?.visit(this);
-    this.visitAllNodes(block.children);
-  }
-
-  visitLetDeclaration(decl: TmplAstLetDeclaration): void {
-    this.visitAst(decl.value);
-  }
-
-  visitComponent(component: TmplAstComponent) {
-    this.visitAllNodes(component.attributes);
-    this.visitAllNodes(component.inputs);
-    this.visitAllNodes(component.outputs);
-    this.visitAllNodes(component.directives);
-    this.visitAllNodes(component.references);
-    this.visitAllNodes(component.children);
-  }
-
-  visitDirective(directive: TmplAstDirective) {
-    this.visitAllNodes(directive.attributes);
-    this.visitAllNodes(directive.inputs);
-    this.visitAllNodes(directive.outputs);
-    this.visitAllNodes(directive.references);
+    this.visitAllTemplateNodes(template.variables);
+    this.visitAllTemplateNodes(template.references);
+    this.visitAllTemplateNodes(template.children);
   }
 
   getDiagnostics(template: TmplAstNode[]): NgTemplateDiagnostic<Code>[] {
     this.diagnostics = [];
-    this.visitAllNodes(template);
+    this.visitAllTemplateNodes(template);
     return this.diagnostics;
   }
 }

@@ -93,5 +93,6 @@ class BlockVisitor extends TmplAstRecursiveVisitor {
     ) {
       this.blocks.push(node);
     }
+    node.visit(this);
   }
 }
