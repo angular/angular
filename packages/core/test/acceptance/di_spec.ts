@@ -4469,6 +4469,94 @@ describe('di', () => {
     });
   });
 
+  describe('useExisting and optional', () => {
+    const token = new InjectionToken('token');
+    const existing = new InjectionToken('existing');
+
+    it('should return null when injecting a missing useExisting provider with optional: true in a node injector', () => {
+      let value: unknown;
+
+      @Directive({selector: '[dir]'})
+      class Dir {
+        constructor() {
+          value = inject(token, {optional: true});
+        }
+      }
+
+      @Component({
+        template: '<div dir></div>',
+        imports: [Dir],
+        providers: [{provide: token, useExisting: existing}],
+      })
+      class App {}
+
+      TestBed.createComponent(App);
+      expect(value).toBe(null);
+    });
+
+    it('should throw when injecting a missing useExisting provider in a node injector', () => {
+      @Directive({selector: '[dir]'})
+      class Dir {
+        constructor() {
+          inject(token, {optional: false});
+        }
+      }
+
+      @Component({
+        template: '<div dir></div>',
+        imports: [Dir],
+        providers: [{provide: token, useExisting: existing}],
+      })
+      class App {}
+
+      expect(() => TestBed.createComponent(App)).toThrowError(
+        /No provider for InjectionToken existing/,
+      );
+    });
+
+    it('should return null when injecting a missing useExisting provider with optional: true in a module injector', () => {
+      let value: unknown;
+
+      @Directive({selector: '[dir]', standalone: false})
+      class Dir {
+        constructor() {
+          value = inject(token, {optional: true});
+        }
+      }
+
+      @Component({template: '<div dir></div>', standalone: false})
+      class App {}
+
+      TestBed.configureTestingModule({
+        declarations: [App, Dir],
+        providers: [{provide: token, useExisting: existing}],
+      });
+      TestBed.createComponent(App);
+      expect(value).toBe(null);
+    });
+
+    it('should throw when injecting a missing useExisting provider in a module injector', () => {
+      @Directive({selector: '[dir]', standalone: false})
+      class Dir {
+        constructor() {
+          inject(token);
+        }
+      }
+
+      @Component({template: '<div dir></div>', standalone: false})
+      class App {}
+
+      TestBed.configureTestingModule({
+        declarations: [App, Dir],
+        providers: [{provide: token, useExisting: existing}],
+      });
+
+      expect(() => TestBed.createComponent(App)).toThrowError(
+        /No provider for InjectionToken existing/,
+      );
+    });
+  });
+
   it('should be able to use Host in `useFactory` dependency config', () => {
     // Scenario:
     // ---------
