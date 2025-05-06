@@ -32,6 +32,7 @@ const mergeDirectives = (mergeIn: ElementProfile[], second: ElementProfile[]) =>
       mergeIn[i] = {
         children: [],
         directives: [],
+        type: 'element',
       };
     }
     second[i].directives.forEach((d, idx) => {

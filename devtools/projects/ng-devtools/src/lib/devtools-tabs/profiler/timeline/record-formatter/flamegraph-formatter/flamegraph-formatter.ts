@@ -38,6 +38,7 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
       original: {
         children: [],
         directives: [],
+        type: 'element',
       },
     };
 
