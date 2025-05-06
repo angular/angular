@@ -258,7 +258,7 @@ setup_dependencies_2()
 
 git_repository(
     name = "rules_angular",
-    commit = "f47fe935fecac02f02fe1337274207f00146a765",
+    commit = "e35da7371d02d0c8d165c518d532d66be7afb8a6",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
