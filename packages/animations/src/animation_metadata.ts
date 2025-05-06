@@ -54,7 +54,7 @@ export declare type AnimateTimings = {
  *
  * - `transition()`
  * - `sequence()`
- * - `{@link /api/animations/group group()}`
+ * - `group()`
  * - `query()`
  * - `animation()`
  * - `useAnimation()`
