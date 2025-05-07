@@ -29,7 +29,10 @@
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "inlineSources": true,
-    "importHelpers": true
+    "importHelpers": true,
+    "paths": {
+      "@angular/*": ["./*/index"]
+    }
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
