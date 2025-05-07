@@ -84,7 +84,7 @@ export class Location implements OnDestroy {
     });
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     this._urlChangeSubscription?.unsubscribe();
     this._urlChangeListeners = [];

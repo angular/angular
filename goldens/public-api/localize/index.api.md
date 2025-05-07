@@ -19,7 +19,7 @@ export type TargetMessage = string;
 // @public
 export const ɵ$localize: ɵLocalizeFn;
 
-// @public (undocumented)
+// @public
 export interface ɵLocalizeFn {
     // (undocumented)
     (messageParts: TemplateStringsArray, ...expressions: readonly any[]): string;
@@ -27,7 +27,7 @@ export interface ɵLocalizeFn {
     translate?: ɵTranslateFn;
 }
 
-// @public (undocumented)
+// @public
 export interface ɵTranslateFn {
     // (undocumented)
     (messageParts: TemplateStringsArray, expressions: readonly any[]): [TemplateStringsArray, readonly any[]];

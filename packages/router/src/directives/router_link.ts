@@ -12,30 +12,29 @@ import {
   booleanAttribute,
   Directive,
   ElementRef,
+  HostAttributeToken,
   HostBinding,
   HostListener,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
   Renderer2,
   ɵRuntimeError as RuntimeError,
-  SimpleChanges,
-  ɵINTERNAL_APPLICATION_ERROR_HANDLER,
-  inject,
   signal,
+  SimpleChanges,
   untracked,
-  HostAttributeToken,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
-
+import {RuntimeErrorCode} from '../errors';
 import {Event, NavigationEnd} from '../events';
 import {QueryParamsHandling} from '../models';
 import {Router} from '../router';
+import {ROUTER_CONFIGURATION} from '../router_config';
 import {ActivatedRoute} from '../router_state';
 import {Params} from '../shared';
 import {isUrlTree, UrlTree} from '../url_tree';
-import {RuntimeErrorCode} from '../errors';
-import {ROUTER_CONFIGURATION} from '../router_config';
 
 /**
  * @description
@@ -321,7 +320,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     this.applyAttributeValue('tabindex', newTabIndex);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   // TODO(atscott): Remove changes parameter in major version as a breaking change.
   ngOnChanges(changes?: SimpleChanges) {
     if (
@@ -375,7 +374,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   @HostListener('click', [
     '$event.button',
     '$event.ctrlKey',
@@ -423,7 +422,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     return !this.isAnchorElement;
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): any {
     this.subscription?.unsubscribe();
   }
@@ -470,7 +469,8 @@ export class RouterLink implements OnChanges, OnDestroy {
  * An alias for the `RouterLink` directive.
  * Deprecated since v15, use `RouterLink` directive instead.
  *
- * @deprecated use `RouterLink` directive instead.
+export { RouterLink as RouterLinkWithHref };
+nstead.
  * @publicApi
  */
 export {RouterLink as RouterLinkWithHref};

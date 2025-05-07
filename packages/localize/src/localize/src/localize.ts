@@ -8,7 +8,7 @@
 
 import {findEndOfBlock} from '../../utils';
 
-/** @nodoc */
+/** @docs-private */
 export interface LocalizeFn {
   (messageParts: TemplateStringsArray, ...expressions: readonly any[]): string;
 
@@ -41,7 +41,7 @@ export interface LocalizeFn {
   locale?: string;
 }
 
-/** @nodoc */
+/** @docs-private */
 export interface TranslateFn {
   (
     messageParts: TemplateStringsArray,
