@@ -550,7 +550,6 @@
   "isNodeMatchingSelector",
   "isNodeMatchingSelectorList",
   "isNotFound",
-  "isPlatformServer",
   "isPositive",
   "isPromise",
   "isPromise2",
