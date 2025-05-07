@@ -11,7 +11,7 @@ def ts_project(
     module_name = kwargs.pop("module_name", compute_module_name(testonly))
 
     if tsconfig == None and native.package_name().startswith("packages"):
-        tsconfig = "//packages:test-tsconfig" if testonly else "//packages:build-tsconfig"
+        tsconfig = "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
 
     _ts_project(
         name,
@@ -31,7 +31,7 @@ def ng_project(
     module_name = kwargs.pop("module_name", compute_module_name(testonly))
 
     if tsconfig == None and native.package_name().startswith("packages"):
-        tsconfig = "//packages:test-tsconfig" if testonly else "//packages:build-tsconfig"
+        tsconfig = "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
     _ts_project(
         name,
         source_map = source_map,
