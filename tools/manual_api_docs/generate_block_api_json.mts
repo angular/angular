@@ -6,13 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DocEntry, DocEntryWithSourceInfo, EntryType} from '@angular/compiler-cli';
+import type {
+  DocEntry,
+  DocEntryWithSourceInfo,
+  EntryType,
+} from '@angular/compiler-cli/src/ngtsc/docs';
 import {readFileSync, writeFileSync} from 'fs';
-import {basename} from 'path';
+import {basename, join} from 'path';
 
 function main() {
-  const [paramFilePath] = process.argv.slice(2);
-  const rawParamLines = readFileSync(paramFilePath, {encoding: 'utf8'}).split('\n');
+  const [paramFileExecPath] = process.argv.slice(2);
+  const paramFileAbsolutePath = join(process.env.JS_BINARY__EXECROOT!, paramFileExecPath);
+
+  const rawParamLines = readFileSync(paramFileAbsolutePath, {encoding: 'utf8'}).split('\n');
   const [srcs, outputFileExecRootRelativePath] = rawParamLines;
 
   const developerPreview = [{'name': 'developerPreview', 'comment': ''}];
@@ -25,7 +31,7 @@ function main() {
 
     return {
       name: `@${basename(sourceFilePath, '.md')}`,
-      entryType: EntryType.Block,
+      entryType: 'block' as EntryType.Block,
       description: filteredContent,
       rawComment: filteredContent,
       source: {

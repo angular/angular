@@ -25,6 +25,11 @@ def _generate_block_api_json(ctx):
         executable = "_generate_block_api_json",
         outputs = [manifest],
         arguments = [args],
+        env = {
+            # Note: This rule access source files directly, without copying them over.
+            # Hence we don't need to change the working directory to the bazel-bin.
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     # The return value describes what the rule is producing. In this case we need to specify
