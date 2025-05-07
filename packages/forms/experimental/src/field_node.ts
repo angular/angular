@@ -82,9 +82,14 @@ type DestroyableInjector = Injector & {destroy(): void};
  */
 export class FieldNode implements FieldState<unknown> {
   /**
-   * Whether this specific field has been touched.
+   * Field is considered touched when a user stops editing it for the first time (is our case on blur)
    */
   private _touched = signal(false);
+  /**
+   * Field is considered dirty if a user changed the value of the field at least once.
+   */
+  private _dirty = signal(false);
+
   private _submittedStatus = signal<SubmittedStatus>('unsubmitted');
 
   /**
@@ -229,6 +234,18 @@ export class FieldNode implements FieldState<unknown> {
       );
     }
   }
+
+  /**
+   * A field is dirty if the user changed the value of the field, or any of
+   * its children through UI.
+   */
+  readonly dirty: Signal<boolean> = computed(() => {
+    return this.reduceChildren(
+      this._dirty(),
+      (child, value) => value || child.dirty(),
+      shortCircuitTrue,
+    );
+  });
 
   /**
    * Whether this field is considered touched.
@@ -425,6 +442,13 @@ export class FieldNode implements FieldState<unknown> {
    */
   markAsTouched(): void {
     this._touched.set(true);
+  }
+
+  /**
+   * Marks this specific field as dirty.
+   */
+  markAsDirty(): void {
+    this._dirty.set(true);
   }
 
   /**
