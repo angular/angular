@@ -1,3 +1,20 @@
+<a name="20.0.0-rc.0"></a>
+# 20.0.0-rc.0 (2025-05-07)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [255c79e048](https://github.com/angular/angular/commit/255c79e0480b0adc876b526e2a96d5005692e42f) | fix | cleanup `updateLatestValue` if view is destroyed before promise resolves ([#58041](https://github.com/angular/angular/pull/58041)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [017cc0a37c](https://github.com/angular/angular/commit/017cc0a37cf5b2534a07ebd207061a05d6ab89ec) | fix | properly handle app stabilization with defer blocks ([#61040](https://github.com/angular/angular/pull/61040)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bc31ad91a0](https://github.com/angular/angular/commit/bc31ad91a074de9016059dcaf1fb37715c821b52) | fix | less aggressive ngServerMode cleanup ([#61106](https://github.com/angular/angular/pull/61106)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.10"></a>
 # 19.2.10 (2025-05-07)
 ### common
