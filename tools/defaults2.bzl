@@ -1,6 +1,9 @@
+load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
+
+ts_config = _ts_config
 
 def ts_project(
         name,
