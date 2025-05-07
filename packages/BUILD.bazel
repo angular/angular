@@ -35,7 +35,7 @@ ts_config(
 )
 
 rules_js_tsconfig(
-    name = "build-tsconfig",
+    name = "tsconfig_build",
     src = "tsconfig-build.json",
     deps = [
         "//:node_modules/tslib",
@@ -43,10 +43,10 @@ rules_js_tsconfig(
 )
 
 rules_js_tsconfig(
-    name = "test-tsconfig",
+    name = "tsconfig_test",
     src = "tsconfig-test.json",
     deps = [
-        ":build-tsconfig",
+        ":tsconfig_build",
         "//:node_modules/@types/jasmine",
     ],
 )
