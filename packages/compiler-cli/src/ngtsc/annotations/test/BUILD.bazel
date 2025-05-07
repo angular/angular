@@ -1,14 +1,15 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob([
         "**/*.ts",
     ]),
-    deps = [
+    interop_deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/annotations",
@@ -27,7 +28,9 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/translator",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )
 

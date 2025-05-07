@@ -486,7 +486,7 @@ def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kw
 
     extra_data = []
 
-    if native.package_name().startswith("packages/compiler-cli"):
+    if native.package_name().startswith("packages/"):
         extra_data.append("//packages:package_json")
 
     _jasmine_node_test(

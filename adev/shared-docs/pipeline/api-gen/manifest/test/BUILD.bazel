@@ -28,12 +28,15 @@ ts_library(
     ],
     deps = [
         "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib",
-        "@angular//packages/compiler-cli",
+        "//packages/compiler-cli",
     ],
 )
 
 jasmine_node_test(
     name = "unit_tests",
-    data = ["@angular//packages/compiler-cli"],
+    data = [
+        "//packages:package_json",
+        "//packages/compiler-cli",
+    ],
     deps = [":unit_test_lib"],
 )
