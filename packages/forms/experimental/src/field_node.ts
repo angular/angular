@@ -142,11 +142,8 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
-   * Whether this field is considered dirty.
-   *
-   * This field considers itself dirty if one of the following are true:
-   *  - it was directly dirty
-   *  - one of its children is considered dirty
+   * A field is dirty if the user changed the value of the field, or any of
+   * its children through UI.
    */
   readonly dirty: Signal<boolean> = computed(() => {
     return this.reduceChildren(
