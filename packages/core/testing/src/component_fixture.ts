@@ -6,31 +6,31 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Subscription} from 'rxjs';
 import {
   ApplicationRef,
   ChangeDetectorRef,
   ComponentRef,
-  ɵChangeDetectionScheduler,
-  ɵNotificationSource,
   DebugElement,
+  ɵDeferBlockDetails as DeferBlockDetails,
+  ɵEffectScheduler as EffectScheduler,
   ElementRef,
   getDebugNode,
+  ɵgetDeferBlocks as getDeferBlocks,
   inject,
   NgZone,
+  ɵNoopNgZone as NoopNgZone,
   RendererFactory2,
   ViewRef,
-  ɵDeferBlockDetails as DeferBlockDetails,
-  ɵgetDeferBlocks as getDeferBlocks,
-  ɵNoopNgZone as NoopNgZone,
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
-  ɵEffectScheduler as EffectScheduler,
+  ɵChangeDetectionScheduler,
+  ɵNotificationSource,
 } from '../../src/core';
 import {PendingTasksInternal} from '../../src/pending_tasks';
-import {Subscription} from 'rxjs';
 
+import {TestBedApplicationErrorHandler} from './application_error_handler';
 import {DeferBlockFixture} from './defer';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
-import {TestBedApplicationErrorHandler} from './application_error_handler';
 
 interface TestAppRef {
   externalTestViews: Set<ViewRef>;
@@ -97,7 +97,7 @@ export class ComponentFixture<T> {
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
 
-  /** @nodoc */
+  /** @docs-private */
   constructor(public componentRef: ComponentRef<T>) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;

@@ -143,9 +143,7 @@ export interface AbstractControlOptions {
 export class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
     get control(): FormGroup;
     get formDirective(): Form | null;
-    // (undocumented)
     ngOnDestroy(): void;
-    // (undocumented)
     ngOnInit(): void;
     get path(): string[];
     // (undocumented)
@@ -225,7 +223,6 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
 // @public
 export class EmailValidator extends AbstractValidatorDirective {
     email: boolean | string;
-    // (undocumented)
     enabled(input: boolean): boolean;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": { "alias": "email"; "required": false; }; }, {}, never, never, false, never>;
@@ -363,9 +360,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     set isDisabled(isDisabled: boolean);
     // @deprecated (undocumented)
     model: any;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     get path(): string[];
     // @deprecated (undocumented)
@@ -387,9 +382,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     // @deprecated (undocumented)
     model: any;
     name: string | number | null;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     get path(): string[];
     // @deprecated (undocumented)
@@ -494,9 +487,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     getControl(dir: FormControlName): FormControl;
     getFormArray(dir: FormArrayName): FormArray;
     getFormGroup(dir: FormGroupName): FormGroup;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     ngSubmit: EventEmitter<any>;
     onReset(): void;
@@ -691,7 +682,6 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     get formDirective(): Form;
     getControl(dir: NgModel): FormControl;
     getFormGroup(dir: NgModelGroup): FormGroup;
-    // (undocumented)
     ngAfterViewInit(): void;
     ngSubmit: EventEmitter<any>;
     onReset(): void;
@@ -723,11 +713,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     isDisabled: boolean;
     model: any;
     name: string;
-    // (undocumented)
     static ngAcceptInputType_isDisabled: boolean | string;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     options: {
         name?: string;
@@ -758,7 +745,6 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
 export class NgSelectOption implements OnDestroy {
     constructor(_element: ElementRef, _renderer: Renderer2, _select: SelectControlValueAccessor);
     id: string;
-    // (undocumented)
     ngOnDestroy(): void;
     set ngValue(value: any);
     set value(value: any);
@@ -816,13 +802,10 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
     fireUncheck(value: any): void;
     formControlName: string;
     name: string;
-    // (undocumented)
     ngOnDestroy(): void;
-    // (undocumented)
     ngOnInit(): void;
     onChange: () => void;
     registerOnChange(fn: (_: any) => {}): void;
-    // (undocumented)
     setDisabledState(isDisabled: boolean): void;
     value: any;
     writeValue(value: any): void;
@@ -858,7 +841,6 @@ export class ReactiveFormsModule {
 
 // @public
 export class RequiredValidator extends AbstractValidatorDirective {
-    // (undocumented)
     enabled(input: boolean): boolean;
     required: boolean | string;
     // (undocumented)
@@ -871,7 +853,6 @@ export class RequiredValidator extends AbstractValidatorDirective {
 export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
     registerOnChange(fn: (value: any) => any): void;
-    // (undocumented)
     value: any;
     writeValue(value: any): void;
     // (undocumented)

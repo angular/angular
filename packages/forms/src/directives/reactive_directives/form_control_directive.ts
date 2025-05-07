@@ -80,7 +80,7 @@ const formControlBinding: Provider = {
 export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
   /**
    * Internal reference to the view model value.
-   * @nodoc
+   * @docs-private
    */
   viewModel: any;
 
@@ -147,7 +147,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges): void {
     if (this._isControlChanged(changes)) {
       const previousForm = changes['form'].previousValue;
@@ -166,7 +166,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy() {
     if (this.form) {
       cleanUpControl(this.form, this, /* validateControlPresenceOnChange */ false);
