@@ -16,8 +16,6 @@ esbuild_esm_bundle(
     target = "es2022",
     deps = [
         ":extract_api_to_json_lib",
-        "@angular//packages/compiler-cli",
-        "@npm//typescript",
     ],
 )
 
@@ -44,17 +42,11 @@ ts_library(
 nodejs_binary(
     name = "extract_api_to_json",
     data = [
-        ":bin",
         "@angular//packages/compiler",
-        "@angular//packages/compiler-cli",
+        "@angular//packages/compiler-cli:npm_package",
         "@npm//typescript",
     ],
     entry_point = "bin.mjs",
-    # Note: Using the linker here as we need it for ESM. The linker is not
-    # super reliably when running concurrently on Windows- but we have existing
-    # actions using the linker. An alternative would be to:
-    #   - bundle the Angular compiler into a CommonJS bundle
-    #   - use the patched resolution- but also patch the ESM imports (similar to how FW does it).
     visibility = ["//visibility:public"],
 )
 
