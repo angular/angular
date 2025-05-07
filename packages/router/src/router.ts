@@ -8,15 +8,16 @@
 
 import {Location} from '@angular/common';
 import {
+  ɵConsole as Console,
   inject,
   Injectable,
-  Type,
-  ɵConsole as Console,
   ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
+  Type,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
+import {standardizeConfig} from './components/empty_outlet';
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
 import {INPUT_BINDER} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
@@ -56,7 +57,6 @@ import {
 } from './url_tree';
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
-import {standardizeConfig} from './components/empty_outlet';
 
 /**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
@@ -364,7 +364,7 @@ export class Router {
     this.navigated = false;
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     this.dispose();
   }
