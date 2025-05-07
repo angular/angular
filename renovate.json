@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "baseBranches": ["main", "20.0.x"],
+  "baseBranches": ["main"],
   "enabledManagers": ["npm", "bazel", "github-actions", "nvm"],
   "rangeStrategy": "replace",
   "pinDigests": true,
