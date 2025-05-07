@@ -15,7 +15,7 @@
   "lockFileMaintenance": {
     "enabled": true
   },
-  "labels": ["area: build & ci", "action: merge"],
+  "labels": ["target: minor", "area: build & ci", "action: merge"],
   "postUpgradeTasks": {
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml",
