@@ -1,6 +1,7 @@
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
 load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
-load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_config", "ts_library")
+load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_library")
+load("//tools:defaults2.bzl", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,6 +12,25 @@ PUBLIC_TARGETS = [
     "//packages/compiler-cli/linker",
     "//packages/compiler-cli/linker/babel",
 ]
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    testonly = True,
+    src = "tsconfig-test.json",
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+    ],
+)
 
 esbuild_config(
     name = "esbuild_config",
@@ -51,12 +71,6 @@ esbuild(
     deps = PUBLIC_TARGETS,
 )
 
-ts_config(
-    name = "tsconfig",
-    src = "tsconfig-build.json",
-    deps = ["//packages:tsconfig-build.json"],
-)
-
 ts_library(
     name = "compiler-cli",
     srcs = glob(
@@ -68,7 +82,6 @@ ts_library(
             "src/integrationtest/**/*.ts",
         ],
     ),
-    tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/private",
@@ -112,13 +125,17 @@ pkg_npm(
     tags = [
         "release-with-framework",
     ],
-    # Do not add more to this list.
-    # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//adev:__pkg__",
+        "//adev/shared-docs/pipeline/api-gen:__subpackages__",
         "//integration:__subpackages__",
+        "//modules/benchmarks:__subpackages__",
+        "//modules/playground:__subpackages__",
         "//modules/ssr-benchmarks:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/core/test/bundling:__subpackages__",
+        "//packages/core/test/playground/zone-signal-input:__pkg__",
+        "@npm//@angular/build-tooling/shared-scripts:__subpackages__",
     ],
     deps = [
         ":api_type_definitions",

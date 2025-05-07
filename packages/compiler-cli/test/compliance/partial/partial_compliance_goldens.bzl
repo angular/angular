@@ -11,6 +11,7 @@ def partial_compliance_golden(filePath):
     data = [
         "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
         "//packages/core:npm_package",
+        "//packages:package_json",
         filePath,
     ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path, "%s/**/*.css" % path])
 
