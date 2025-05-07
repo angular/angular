@@ -5,8 +5,8 @@
     "declaration": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "module": "CommonJS",
-    "moduleResolution": "node10",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "types": ["node"]
   }
 }
