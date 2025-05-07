@@ -1,3 +1,4 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("//tools:defaults.bzl", "pkg_npm")
 
@@ -6,6 +7,12 @@ exports_files([
     "migrations.json",
     "collection.json",
 ])
+
+copy_to_bin(
+    name = "package_json",
+    srcs = ["package.json"],
+    visibility = ["//packages/core/schematics/test:__subpackages__"],
+)
 
 pkg_npm(
     name = "npm_package",
