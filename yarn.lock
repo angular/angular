@@ -17274,10 +17274,10 @@ undici@^5.25.4:
   dependencies:
     "@fastify/busboy" "^2.0.0"
 
-undici@^6.15.0:
-  version "6.21.2"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-6.21.2.tgz#49c5884e8f9039c65a89ee9018ef3c8e2f1f4928"
-  integrity sha512-uROZWze0R0itiAKVPsYhFov9LxrPMHLMEQFszeI2gCN6bnIIZ8twzBCJcN2LJrBBLfrP0t1FW0g+JmKVl8Vk1g==
+undici@^7.0.0:
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-7.8.0.tgz#cf51854a6cb26808a9c6a3fb2c58c13c94d10081"
+  integrity sha512-vFv1GA99b7eKO1HG/4RPu2Is3FBTWBrmzqzO0mz+rLxN3yXkE4mqRcb8g8fHxzX4blEysrNZLqg5RbJLqX5buA==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.1"

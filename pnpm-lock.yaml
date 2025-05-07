@@ -547,8 +547,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.6
       undici:
-        specifier: ^6.15.0
-        version: 6.21.2
+        specifier: ^7.0.0
+        version: 7.8.0
       vrsource-tslint-rules:
         specifier: 6.0.0
         version: 6.0.0(tslint@6.1.3)(typescript@5.8.2)
@@ -2589,6 +2589,7 @@ packages:
 
   /@bazel/typescript@5.8.1(typescript@5.7.3):
     resolution: {integrity: sha512-NAJ8WQHZL1WE1YmRoCrq/1hhG15Mvy/viWh6TkvFnBeEhNUiQUsA5GYyhU1ztnBIYW03nATO3vwhAEfO7Q0U5g==, tarball: https://registry.npmjs.org/@bazel/typescript/-/typescript-5.8.1.tgz}
+    deprecated: No longer maintained, https://github.com/aspect-build/rules_ts is the recommended replacement
     hasBin: true
     peerDependencies:
       typescript: '>=3.0.0'
@@ -18258,9 +18259,9 @@ packages:
       '@fastify/busboy': 2.1.1
     dev: true
 
-  /undici@6.21.2:
-    resolution: {integrity: sha512-uROZWze0R0itiAKVPsYhFov9LxrPMHLMEQFszeI2gCN6bnIIZ8twzBCJcN2LJrBBLfrP0t1FW0g+JmKVl8Vk1g==, tarball: https://registry.npmjs.org/undici/-/undici-6.21.2.tgz}
-    engines: {node: '>=18.17'}
+  /undici@7.8.0:
+    resolution: {integrity: sha512-vFv1GA99b7eKO1HG/4RPu2Is3FBTWBrmzqzO0mz+rLxN3yXkE4mqRcb8g8fHxzX4blEysrNZLqg5RbJLqX5buA==, tarball: https://registry.npmjs.org/undici/-/undici-7.8.0.tgz}
+    engines: {node: '>=20.18.1'}
     dev: true
 
   /unicode-canonical-property-names-ecmascript@2.0.1:
