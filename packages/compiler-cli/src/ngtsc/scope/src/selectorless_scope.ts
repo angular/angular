@@ -90,38 +90,28 @@ export class SelectorlessComponentScopeReader implements ComponentScopeReader {
       }
 
       for (const stmt of current.statements) {
-        switch (true) {
-          case ts.isImportDeclaration(stmt):
-            if (stmt.importClause !== undefined && !stmt.importClause.isTypeOnly) {
-              const clause = stmt.importClause;
-              if (clause.namedBindings !== undefined && ts.isNamedImports(clause.namedBindings)) {
-                for (const element of clause.namedBindings.elements) {
-                  if (!element.isTypeOnly) {
-                    result.set(element.name.text, element.name);
-                  }
-                }
-              }
-              if (clause.name !== undefined) {
-                result.set(clause.name.text, clause.name);
+        if (this.reflector.isClass(stmt)) {
+          result.set(stmt.name.text, stmt.name);
+          continue;
+        }
+
+        if (
+          ts.isImportDeclaration(stmt) &&
+          stmt.importClause !== undefined &&
+          !stmt.importClause.isTypeOnly
+        ) {
+          const clause = stmt.importClause;
+          if (clause.namedBindings !== undefined && ts.isNamedImports(clause.namedBindings)) {
+            for (const element of clause.namedBindings.elements) {
+              if (!element.isTypeOnly) {
+                result.set(element.name.text, element.name);
               }
             }
-            break;
-
-          case ts.isVariableStatement(stmt):
-            for (const decl of stmt.declarationList.declarations) {
-              if (
-                ts.isIdentifier(decl.name) &&
-                decl.initializer !== undefined &&
-                ts.isIdentifier(decl.initializer)
-              ) {
-                result.set(decl.name.text, decl.initializer);
-              }
-            }
-            break;
-
-          case this.reflector.isClass(stmt):
-            result.set(stmt.name.text, stmt.name);
-            break;
+          }
+          if (clause.name !== undefined) {
+            result.set(clause.name.text, clause.name);
+          }
+          continue;
         }
       }
 
