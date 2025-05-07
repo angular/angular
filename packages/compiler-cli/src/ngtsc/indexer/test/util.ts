@@ -9,9 +9,11 @@
 import {
   BoundTarget,
   CssSelector,
+  DirectiveMatcher,
   parseTemplate,
   ParseTemplateOptions,
   R3TargetBinder,
+  SelectorlessMatcher,
   SelectorMatcher,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -53,26 +55,42 @@ export function getComponentDeclaration(componentStr: string, className: string)
 export function getBoundTemplate(
   template: string,
   options: ParseTemplateOptions = {},
-  components: Array<{selector: string; declaration: ClassDeclaration}> = [],
+  components: Array<{selector: string | null; declaration: ClassDeclaration}> = [],
 ): BoundTarget<ComponentMeta> {
-  const matcher = new SelectorMatcher<ComponentMeta[]>();
-  components.forEach(({selector, declaration}) => {
-    matcher.addSelectables(CssSelector.parse(selector), [
-      {
-        ref: new Reference(declaration),
-        selector,
-        name: declaration.name.getText(),
-        isComponent: true,
-        inputs: ClassPropertyMapping.fromMappedObject({}),
-        outputs: ClassPropertyMapping.fromMappedObject({}),
-        exportAs: null,
-        isStructural: false,
-        animationTriggerNames: null,
-        ngContentSelectors: null,
-        preserveWhitespaces: false,
-      },
-    ]);
-  });
+  const componentsMeta = components.map(({selector, declaration}) => ({
+    ref: new Reference(declaration),
+    selector,
+    name: declaration.name.getText(),
+    isComponent: true,
+    inputs: ClassPropertyMapping.fromMappedObject({}),
+    outputs: ClassPropertyMapping.fromMappedObject({}),
+    exportAs: null,
+    isStructural: false,
+    animationTriggerNames: null,
+    ngContentSelectors: null,
+    preserveWhitespaces: false,
+  }));
+
+  let matcher: DirectiveMatcher<ComponentMeta>;
+
+  if (options.enableSelectorless) {
+    const registry = new Map<string, ComponentMeta[]>();
+
+    for (const current of componentsMeta) {
+      registry.set(current.name, [current]);
+    }
+
+    matcher = new SelectorlessMatcher(registry);
+  } else {
+    matcher = new SelectorMatcher();
+
+    for (const current of componentsMeta) {
+      if (current.selector !== null) {
+        matcher.addSelectables(CssSelector.parse(current.selector), [current]);
+      }
+    }
+  }
+
   const binder = new R3TargetBinder(matcher);
 
   return binder.bind({template: parseTemplate(template, getTestFilePath(), options).nodes});
