@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  update_cli_help:
+  update_cdk_apis:
     name: Update Angular CDK apis (if necessary)
     if: github.repository == 'angular/angular'
     runs-on: ubuntu-latest
@@ -39,6 +39,6 @@ jobs:
           pr-description: |
             Updated Angular CDK api files.
           pr-labels: |
-            action: review
+            action: merge
             area: docs
           angular-robot-token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
