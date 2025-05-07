@@ -79,3 +79,9 @@
     margin-bottom: 1rem;
   }
 }
+
+::ng-deep {
+  .as-split-gutter-icon {
+    display: none;
+  }
+}
