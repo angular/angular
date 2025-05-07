@@ -1,15 +1,18 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {computed, signal} from '@angular/core';
 import {disabled, error, required, validate} from '../src/api/logic';
 import {apply, applyEach, form, submit} from '../src/api/structure';
 import {Schema} from '../src/api/types';
 import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
 
-describe('Node', () => {
-  it('is untouched initially', () => {
-    const f = form(signal({a: 1, b: 2}));
-    expect(f.$state.touched()).toBe(false);
-  });
-
+describe('FieldNode', () => {
   it('can get a child of a key that exists', () => {
     const f = form(signal({a: 1, b: 2}));
     expect(f.a).toBeDefined();
@@ -49,7 +52,59 @@ describe('Node', () => {
     expect(childA()).toBeDefined();
   });
 
+  describe('dirty', ()=>{
+    it('is not dirty initially', ()=>{
+      const f = form(signal({a: 1, b: 2}));
+      expect(f.$state.dirty()).toBe(false);
+      expect(f.a.$state.dirty()).toBe(false);
+    });
+
+
+    it('can be marked as dirty', () => {
+      const f = form(signal({a: 1, b: 2}));
+      expect(f.$state.dirty()).toBe(false);
+
+      f.$state.markAsDirty();
+      expect(f.$state.dirty()).toBe(true);
+    });
+
+    it('propagates from the children', () => {
+      const f = form(signal({a: 1, b: 2}));
+      expect(f.$state.dirty()).toBe(false);
+
+      f.a.$state.markAsDirty();
+      expect(f.$state.dirty()).toBe(true);
+    });
+
+    it('does not propagate down', () => {
+      const f = form(signal({a: 1, b: 2}));
+
+      expect(f.a.$state.dirty()).toBe(false);
+      f.$state.markAsDirty();
+      expect(f.a.$state.dirty()).toBe(false);
+    });
+
+    it('does not consider children that get removed', () => {
+      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
+      const f = form(value);
+      expect(f.$state.dirty()).toBe(false);
+
+      f.b!.$state.markAsDirty();
+      expect(f.$state.dirty()).toBe(true);
+
+      value.set({a: 2});
+      expect(f.$state.dirty()).toBe(false);
+      expect(f.b).toBeUndefined();
+    });
+  });
+
   describe('touched', () => {
+    it('is untouched initially', () => {
+      const f = form(signal({a: 1, b: 2}));
+      expect(f.$state.touched()).toBe(false);
+    });
+
+
     it('can be marked as touched', () => {
       const f = form(signal({a: 1, b: 2}));
       expect(f.$state.touched()).toBe(false);
