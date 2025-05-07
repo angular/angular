@@ -83,7 +83,7 @@ import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
 })
 export class SelectDirective {
   private templateRef = inject(TemplateRef);
-  private ViewContainerRef = inject(ViewContainerRef);
+  private viewContainerRef = inject(ViewContainerRef);
 }
 
 ```
