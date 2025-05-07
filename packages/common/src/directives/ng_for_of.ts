@@ -16,10 +16,10 @@ import {
   IterableDiffer,
   IterableDiffers,
   NgIterable,
+  ɵRuntimeError as RuntimeError,
   TemplateRef,
   TrackByFunction,
   ViewContainerRef,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -249,7 +249,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
 
   /**
    * Applies the changes when needed.
-   * @nodoc
+   * @docs-private
    */
   ngDoCheck(): void {
     if (this._ngForOfDirty) {

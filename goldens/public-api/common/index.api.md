@@ -270,7 +270,6 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     getState(): unknown;
     // (undocumented)
     historyGo(relativePosition?: number): void;
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     onPopState(fn: LocationChangeListener): void;
@@ -396,7 +395,6 @@ class Location_2 implements OnDestroy {
     historyGo(relativePosition?: number): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     static joinWithSlash: (start: string, end: string) => string;
-    // (undocumented)
     ngOnDestroy(): void;
     normalize(url: string): string;
     static normalizeQueryParams: (params: string) => string;
@@ -504,11 +502,8 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     ngComponentOutletNgModule?: Type<any>;
     // @deprecated (undocumented)
     ngComponentOutletNgModuleFactory?: NgModuleFactory<any>;
-    // (undocumented)
     ngDoCheck(): void;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet<any>, "[ngComponentOutlet]", ["ngComponentOutlet"], { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
@@ -630,9 +625,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     static ngAcceptInputType_priority: unknown;
     // (undocumented)
     static ngAcceptInputType_width: unknown;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnInit(): void;
     ngSrc: string;
     ngSrcset: string;
@@ -778,7 +771,6 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
     getState(): unknown;
     // (undocumented)
     historyGo(relativePosition?: number): void;
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     onPopState(fn: LocationChangeListener): void;

@@ -12,9 +12,9 @@ import {
   Host,
   Input,
   Optional,
+  ɵRuntimeError as RuntimeError,
   TemplateRef,
   ViewContainerRef,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -228,7 +228,7 @@ export class NgSwitchCase implements DoCheck {
 
   /**
    * Performs case matching. For internal use only.
-   * @nodoc
+   * @docs-private
    */
   ngDoCheck() {
     this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase));

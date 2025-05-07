@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Directive, ElementRef, forwardRef, Provider} from '@angular/core';
+import {Directive, forwardRef, Provider} from '@angular/core';
 
 import {
   BuiltInControlValueAccessor,
@@ -57,7 +57,7 @@ export class NumberValueAccessor
 {
   /**
    * Sets the "value" property on the input element.
-   * @nodoc
+   * @docs-private
    */
   writeValue(value: number): void {
     // The value needs to be normalized for IE9, otherwise it is set to 'null' when null
@@ -67,7 +67,7 @@ export class NumberValueAccessor
 
   /**
    * Registers a function called when the control value changes.
-   * @nodoc
+   * @docs-private
    */
   override registerOnChange(fn: (_: number | null) => void): void {
     this.onChange = (value) => {

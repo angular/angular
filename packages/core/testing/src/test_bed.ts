@@ -11,33 +11,32 @@
 // this statement only.
 
 import {
+  ApplicationRef,
   Component,
+  ɵRender3ComponentFactory as ComponentFactory,
   ComponentRef,
+  ɵDeferBlockBehavior as DeferBlockBehavior,
   Directive,
   EnvironmentInjector,
-  InjectOptions,
-  Injector,
-  NgModule,
-  NgZone,
-  Pipe,
-  PlatformRef,
-  ProviderToken,
-  runInInjectionContext,
-  Type,
-  ɵDeferBlockBehavior as DeferBlockBehavior,
-  ɵEffectScheduler as EffectScheduler,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
-  ɵRender3ComponentFactory as ComponentFactory,
+  InjectOptions,
+  Injector,
+  NgModule,
   ɵRender3NgModuleRef as NgModuleRef,
+  NgZone,
+  Pipe,
+  PlatformRef,
+  ProviderToken,
   ɵresetCompiledComponents as resetCompiledComponents,
+  runInInjectionContext,
   ɵsetAllowDuplicateNgModuleIdsForTest as setAllowDuplicateNgModuleIdsForTest,
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-  ApplicationRef,
+  Type,
 } from '../../src/core';
 
 import {ComponentFixture} from './component_fixture';
@@ -408,7 +407,7 @@ export class TestBedImpl implements TestBed {
   /**
    * Internal-only flag to indicate whether a module
    * scoping queue has been checked and flushed already.
-   * @nodoc
+   * @docs-private
    */
   globalCompilationChecked = false;
 

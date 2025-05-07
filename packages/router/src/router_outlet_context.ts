@@ -41,7 +41,7 @@ export class ChildrenOutletContexts {
   // contexts for child outlets, by name.
   private contexts = new Map<string, OutletContext>();
 
-  /** @nodoc */
+  /** @docs-private */
   constructor(private rootInjector: EnvironmentInjector) {}
 
   /** Called when a `RouterOutlet` directive is instantiated */
