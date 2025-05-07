@@ -1,10 +1,11 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = ["uninvoked_track_function.spec.ts"],
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
@@ -14,7 +15,9 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_track_function",
         "//packages/compiler-cli/src/ngtsc/typecheck/testing",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )
 
