@@ -10,28 +10,28 @@ import {
   ApplicationRef,
   ChangeDetectorRef,
   ComponentRef,
-  ɵChangeDetectionScheduler,
-  ɵNotificationSource,
   DebugElement,
+  ɵDeferBlockDetails as DeferBlockDetails,
+  ɵEffectScheduler as EffectScheduler,
   ElementRef,
   getDebugNode,
+  ɵgetDeferBlocks as getDeferBlocks,
   inject,
+  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
   NgZone,
+  ɵNoopNgZone as NoopNgZone,
+  ɵPendingTasksInternal as PendingTasks,
   RendererFactory2,
   ViewRef,
-  ɵDeferBlockDetails as DeferBlockDetails,
-  ɵgetDeferBlocks as getDeferBlocks,
-  ɵNoopNgZone as NoopNgZone,
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
-  ɵPendingTasksInternal as PendingTasks,
-  ɵEffectScheduler as EffectScheduler,
-  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
+  ɵChangeDetectionScheduler,
+  ɵNotificationSource,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
+import {TestBedApplicationErrorHandler} from './application_error_handler';
 import {DeferBlockFixture} from './defer';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
-import {TestBedApplicationErrorHandler} from './application_error_handler';
 
 interface TestAppRef {
   externalTestViews: Set<ViewRef>;
@@ -99,7 +99,7 @@ export class ComponentFixture<T> {
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
 
-  /** @nodoc */
+  /** @docs-private */
   constructor(public componentRef: ComponentRef<T>) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
