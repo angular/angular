@@ -50,7 +50,10 @@ function getTag(entry: DocEntry | FunctionEntry, tag: string, every = false) {
 
 /** Gets whether the given entry is hidden. */
 export function isHiddenEntry<T extends DocEntry | FunctionEntry>(entry: T): boolean {
-  return getTag(entry, 'docs-private', /* every */ true) ? true : false;
+  return (
+    getTag(entry, 'docs-private', /* every */ true) !== undefined ||
+    getTag(entry, 'nodoc', /* every */ true) !== undefined
+  );
 }
 
 function getTagSinceVersion(

@@ -28,7 +28,6 @@ import {CliCommand} from '../cli-entities';
 
 import {
   ClassEntryRenderable,
-  CliCommandRenderable,
   ConstantEntryRenderable,
   DecoratorEntryRenderable,
   DocEntryRenderable,
@@ -134,7 +133,10 @@ export function isSetterEntry(entry: MemberEntry): entry is PropertyEntry {
 
 /** Gets whether the given entry is hidden. */
 export function isHiddenEntry<T extends HasJsDocTags>(entry: T): boolean {
-  return getTag(entry, 'docs-private', /* every */ true) ? true : false;
+  return (
+    getTag(entry, 'docs-private', /* every */ true) !== undefined ||
+    getTag(entry, 'nodoc', /* every */ true) !== undefined
+  );
 }
 
 /** Gets whether the given entry is deprecated. */
