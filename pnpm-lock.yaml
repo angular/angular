@@ -2843,6 +2843,7 @@ packages:
 
   /@bazel/typescript@5.8.1(typescript@5.7.3):
     resolution: {integrity: sha512-NAJ8WQHZL1WE1YmRoCrq/1hhG15Mvy/viWh6TkvFnBeEhNUiQUsA5GYyhU1ztnBIYW03nATO3vwhAEfO7Q0U5g==, tarball: https://registry.npmjs.org/@bazel/typescript/-/typescript-5.8.1.tgz}
+    deprecated: No longer maintained, https://github.com/aspect-build/rules_ts is the recommended replacement
     hasBin: true
     peerDependencies:
       typescript: '>=3.0.0'
@@ -3782,7 +3783,7 @@ packages:
       lodash.snakecase: 4.1.1
       merge-stream: 2.0.0
       p-queue: 6.6.2
-      protobufjs: 7.5.0
+      protobufjs: 7.4.0
       retry-request: 7.0.2(supports-color@10.0.0)
       split-array-stream: 2.0.0
       stack-trace: 0.0.10
@@ -3819,7 +3820,7 @@ packages:
     dependencies:
       lodash.camelcase: 4.3.0
       long: 5.3.1
-      protobufjs: 7.5.0
+      protobufjs: 7.4.0
       yargs: 17.7.2
     dev: true
 
@@ -11670,7 +11671,7 @@ packages:
       node-fetch: 2.7.0
       object-hash: 3.0.0
       proto3-json-serializer: 2.0.2
-      protobufjs: 7.5.0
+      protobufjs: 7.4.0
       retry-request: 7.0.2(supports-color@10.0.0)
       uuid: 9.0.1
     transitivePeerDependencies:
@@ -15874,7 +15875,7 @@ packages:
     resolution: {integrity: sha512-SAzp/O4Yh02jGdRc+uIrGoe87dkN/XtwxfZ4ZyafJHymd79ozp5VG5nyZ7ygqPM5+cpLDjjGnYFUkngonyDPOQ==, tarball: https://registry.npmjs.org/proto3-json-serializer/-/proto3-json-serializer-2.0.2.tgz}
     engines: {node: '>=14.0.0'}
     dependencies:
-      protobufjs: 7.5.0
+      protobufjs: 7.4.0
     dev: true
 
   /protobufjs@6.8.8:
@@ -15895,8 +15896,8 @@ packages:
       '@types/node': 10.17.60
       long: 4.0.0
 
-  /protobufjs@7.5.0:
-    resolution: {integrity: sha512-Z2E/kOY1QjoMlCytmexzYfDm/w5fKAiRwpSzGtdnXW1zC88Z2yXazHHrOtwCzn+7wSxyE8PYM4rvVcMphF9sOA==, tarball: https://registry.npmjs.org/protobufjs/-/protobufjs-7.5.0.tgz}
+  /protobufjs@7.4.0:
+    resolution: {integrity: sha512-mRUWCc3KUU4w1jU8sGxICXH/gNS94DvI1gxqDvBzhj1JpcsimQkYiOJfwsPUykUI5ZaspFbSgmBLER8IrQ3tqw==, tarball: https://registry.npmjs.org/protobufjs/-/protobufjs-7.4.0.tgz}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@protobufjs/aspromise': 1.1.2
