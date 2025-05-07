@@ -42,6 +42,7 @@ integration_test(
     ],
     data = [
         ":golden_test_runner",
+        "//packages:package_json",
         "//packages/core/schematics/migrations/signal-migration/src:bin",
     ],
     environment = {
@@ -64,6 +65,7 @@ integration_test(
         ],
         data = [
             ":golden_test_runner",
+            "//packages:package_json",
             "//packages/core/schematics/migrations/signal-migration/src:bin",
             "@npm_ts_versions//%s" % version,
         ],
@@ -87,6 +89,7 @@ integration_test(
     ],
     data = [
         ":golden_test_runner",
+        "//packages:package_json",
         "//packages/core/schematics/migrations/signal-migration/src:bin",
     ],
     environment = {
@@ -111,6 +114,7 @@ integration_test(
     data = [
         ":batch_runner",
         ":golden_test_runner",
+        "//packages:package_json",
         "//packages/core/schematics/migrations/signal-migration/src:batch_test_bin",
         "//packages/core/schematics/migrations/signal-migration/src:bin",
     ],

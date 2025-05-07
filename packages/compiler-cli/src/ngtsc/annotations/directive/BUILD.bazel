@@ -1,13 +1,13 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "directive",
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/annotations/common",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
@@ -22,7 +22,9 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
-        "@npm//@types/node",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
     ],
 )
