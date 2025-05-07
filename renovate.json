@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "baseBranches": ["main"],
+  "baseBranches": ["main", "20.0.x"],
   "enabledManagers": ["npm", "bazel", "github-actions", "nvm"],
   "rangeStrategy": "replace",
   "pinDigests": true,
@@ -15,7 +15,7 @@
   "lockFileMaintenance": {
     "enabled": true
   },
-  "labels": ["target: patch", "area: build & ci", "action: merge"],
+  "labels": ["area: build & ci", "action: merge"],
   "postUpgradeTasks": {
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml",
