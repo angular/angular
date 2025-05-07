@@ -10,6 +10,7 @@ nodejs_binary(
     name = "linker_bin",
     data = [
         ":linker_srcs",
+        "//packages:package_json",
         "//packages/compiler-cli/linker/babel",
         "@npm//@babel/core",
         "@npm//@nginfra/angular-linking",
