@@ -1,3 +1,21 @@
+<a name="19.2.10"></a>
+# 19.2.10 (2025-05-07)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [89056a0356](https://github.com/angular/angular/commit/89056a035648906d82ed2bbf523b793bce732474) | fix | cleanup `updateLatestValue` if view is destroyed before promise resolves ([#61064](https://github.com/angular/angular/pull/61064)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4623b61448](https://github.com/angular/angular/commit/4623b6144897c6063139afa2d189be4e2e1d70ba) | fix | missing useExisting providers throwing for optional calls ([#61152](https://github.com/angular/angular/pull/61152)) |
+| [400dbc5b89](https://github.com/angular/angular/commit/400dbc5b89a2af0ae5fd7830f6ea47352c8556ef) | fix | properly handle app stabilization with defer blocks ([#61056](https://github.com/angular/angular/pull/61056)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a6f0d5bc20](https://github.com/angular/angular/commit/a6f0d5bc20382689b7336a7e1c79c0685252cc21) | fix | less aggressive ngServerMode cleanup ([#61106](https://github.com/angular/angular/pull/61106)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0-next.9"></a>
 # 20.0.0-next.9 (2025-04-30)
 ## Breaking Changes
