@@ -26,6 +26,7 @@ import {ZippyComponent} from './zippy.component';
 import {HeavyComponent} from './heavy.component';
 import {SamplePropertiesComponent} from './sample-properties.component';
 import {RouterOutlet} from '@angular/router';
+import {CookieRecipe} from './cookies.component';
 
 // structual directive example
 @Directive({
@@ -50,7 +51,13 @@ export class StructuralDirective {
   styleUrls: ['./demo-app.component.scss'],
   encapsulation: ViewEncapsulation.None,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [StructuralDirective, HeavyComponent, SamplePropertiesComponent, RouterOutlet],
+  imports: [
+    StructuralDirective,
+    HeavyComponent,
+    SamplePropertiesComponent,
+    RouterOutlet,
+    CookieRecipe,
+  ],
 })
 export class DemoAppComponent {
   readonly zippy = viewChild(ZippyComponent);
