@@ -5,6 +5,9 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*.ts"]),
+    data = [
+        "//packages:package_json",
+    ],
     deps = [
         "//packages/compiler-cli",
         "@npm//typescript",

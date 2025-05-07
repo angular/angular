@@ -29,6 +29,10 @@ nodejs_binary(
     data = [
         ":ngc_lib",
         "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
+        # Ensure compiler-cli `ts_project` `.js` files are picked up as ESM.
+        # Notably this is temporary and compiler raw sources are not valid ESM anyway.
+        # That is because there is no explicit import extensions.
+        "//packages:package_json",
     ],
     entry_point = ":ngc-wrapped-main.ts",
     # Disables the Bazel node modules linker. The node module linker is unreliable for the

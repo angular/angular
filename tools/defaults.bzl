@@ -484,12 +484,17 @@ def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kw
         bootstrap = bootstrap,
     )
 
+    extra_data = []
+
+    if native.package_name().startswith("packages/compiler-cli"):
+        extra_data.append("//packages:package_json")
+
     _jasmine_node_test(
         name = name,
         srcs = [":%s_spec_entrypoint.spec" % name],
         # Note: `deps`, `srcs` and `bootstrap` are explicitly added here as otherwise their linker
         # mappings may not be discovered, given the `bootstrap` attr not being covered by the aspect.
-        data = data + deps + srcs + bootstrap,
+        data = extra_data + data + deps + srcs + bootstrap,
         use_direct_specs = True,
         configuration_env_vars = configuration_env_vars,
         env = env,

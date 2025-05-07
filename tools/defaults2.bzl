@@ -10,8 +10,11 @@ def ts_project(
         **kwargs):
     module_name = kwargs.pop("module_name", compute_module_name(testonly))
 
-    if tsconfig == None and native.package_name().startswith("packages"):
-        tsconfig = "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
+    if tsconfig == None:
+        if native.package_name().startswith("packages/compiler-cli/src/ngtsc"):
+            tsconfig = "//packages/compiler-cli:tsconfig_test" if testonly else "//packages/compiler-cli:tsconfig_build"
+        elif native.package_name().startswith("packages"):
+            tsconfig = "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
 
     _ts_project(
         name,

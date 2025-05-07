@@ -7,6 +7,7 @@ js_library(
     name = "esbuild_base",
     srcs = ["esbuild-base.config.mjs"],
     deps = [
+        "//packages:package_json",
         "//packages/compiler-cli/private",
         "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
     ],
