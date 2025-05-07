@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {DocEntry} from './src/entities';
+export * from './src/entities';
 export {DocsExtractor} from './src/extractor';
