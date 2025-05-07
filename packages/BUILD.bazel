@@ -1,3 +1,4 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
 load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
@@ -9,6 +10,11 @@ exports_files([
     "tsconfig-build.json",
     "tsconfig.json",
 ])
+
+copy_to_bin(
+    name = "package_json",
+    srcs = ["package.json"],
+)
 
 ts_library(
     name = "types",

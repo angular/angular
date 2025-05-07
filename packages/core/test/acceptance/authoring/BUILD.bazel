@@ -33,7 +33,10 @@ ts_library(
 nodejs_binary(
     name = "test_compiler",
     testonly = True,
-    data = [":test_compiler_lib"],
+    data = [
+        ":test_compiler_lib",
+        "//packages:package_json",
+    ],
     entry_point = ":authoring_test_compiler.ts",
 )
 
