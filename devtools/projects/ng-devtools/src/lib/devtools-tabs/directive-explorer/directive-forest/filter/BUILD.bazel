@@ -43,7 +43,7 @@ ts_library(
     srcs = [
         "directive-forest-filter-fn-generator.ts",
     ],
-    deps = [
+    interop_deps = [
         ":filter",
     ],
 )
@@ -52,7 +52,7 @@ ts_test_library(
     name = "directive-forest-filter-fn-generator_test",
     srcs = ["directive-forest-filter-fn-generator.spec.ts"],
     deps = [
-        ":directive-forest-filter-fn-generator",
+        ":directive-forest-filter-fn-generator_rjs",
     ],
 )
 

@@ -13,7 +13,7 @@
     [selectedNode]="selectedNode()"
     [highlightedId]="highlightIdInTreeFromElement()"
     [treeControl]="treeControl"
-    [textMatches]="matchedNodes().get(idx) || []"
+    [textMatches]="matchedNodes().get(idx) ?? []"
     (selectNode)="selectAndEnsureVisible($event)"
     (selectDomElement)="handleSelectDomElement($event)"
     (highlightNode)="highlightNode($event)"
