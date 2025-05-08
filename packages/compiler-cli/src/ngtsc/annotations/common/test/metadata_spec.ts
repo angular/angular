@@ -111,9 +111,24 @@ runInEachFileSystem(() => {
         `{ 'has-dashes-in-name': [{ type: Input }], noDashesInName: [{ type: Input }] })`,
       );
     });
+
+    it('should not emit metadata for ECMAScript private fields', () => {
+      const res = compileAndPrint(
+        `
+        import {Component, Input} from '@angular/core';
+
+        @Component('metadata') class Target {
+          @Input() #privateName = 123;
+          @Input() publicName = 456;
+        }
+      `,
+        false,
+      );
+      expect(res).toContain(`{ publicName: [{ type: Input }] })`);
+    });
   });
 
-  function compileAndPrint(contents: string): string {
+  function compileAndPrint(contents: string, experimentalDecorators: boolean = true): string {
     const _ = absoluteFrom;
     const CORE: TestFile = {
       name: _('/node_modules/@angular/core/index.d.ts'),
@@ -133,7 +148,7 @@ runInEachFileSystem(() => {
           contents,
         },
       ],
-      {target: ts.ScriptTarget.ES2015},
+      {target: ts.ScriptTarget.ES2015, experimentalDecorators},
     );
     const host = new TypeScriptReflectionHost(program.getTypeChecker());
     const target = getDeclaration(program, _('/index.ts'), 'Target', ts.isClassDeclaration);
