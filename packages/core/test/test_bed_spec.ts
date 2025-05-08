@@ -1657,6 +1657,87 @@ describe('TestBed', () => {
       return ComponentClass;
     };
 
+    it('should not require compileComponent if the component is not overridden', async () => {
+      const RootAotComponent = getAOTCompiledComponent('root', [], []);
+
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      // If we had overriden the component, we would need to compile it
+      // but since we didn't, we can create the component synchronously
+      const fixture = TestBed.createComponent(RootAotComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('root cmp!');
+    });
+
+    it('should throw an error if a deferred component is not compiled', () => {
+      @Component({
+        selector: 'cmp-a',
+        template: 'CmpA!',
+      })
+      class CmpA {}
+
+      const NestedAotComponent = getAOTCompiledComponent('nested-cmp', [], [CmpA]);
+      const RootAotComponent = getAOTCompiledComponent('root', [], [NestedAotComponent]);
+
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      TestBed.overrideComponent(RootAotComponent, {
+        set: {template: `Override of a root template! <nested-cmp />`},
+      });
+      TestBed.overrideComponent(NestedAotComponent, {
+        set: {template: `Override of a nested template! <cmp-a />`},
+      });
+
+      // We did override but not compile, therefore we expect to throw on createComponent
+      expect(() => TestBed.createComponent(RootAotComponent)).toThrowError(
+        `Component 'ComponentClass' has unresolved metadata. Please call \`await TestBed.compileComponents()\` before running this test.`,
+      );
+    });
+
+    it('should not throw if component is created after override+reset', async () => {
+      @Component({
+        selector: 'cmp-a',
+        template: 'CmpA!',
+      })
+      class CmpA {}
+
+      const NestedAotComponent = getAOTCompiledComponent('nested-cmp', [], [CmpA]);
+      const RootAotComponent = getAOTCompiledComponent('root', [], [NestedAotComponent]);
+
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      TestBed.overrideComponent(RootAotComponent, {
+        set: {template: `Override of a root template! <nested-cmp />`},
+      });
+      TestBed.overrideComponent(NestedAotComponent, {
+        set: {template: `Override of a nested template! <cmp-a />`},
+      });
+
+      // Not compiled yet, so we expect to throw
+      expect(() => TestBed.createComponent(RootAotComponent)).toThrowError();
+
+      await TestBed.compileComponents();
+
+      // We're compiled now, so we can create the component
+      const fixture = TestBed.createComponent(RootAotComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe(
+        'Override of a root template! Override of a nested template! CmpA!',
+      );
+
+      // We reset the override
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      // We're back to the nominal behavior
+      const fixture2 = TestBed.createComponent(RootAotComponent);
+      fixture2.detectChanges();
+
+      expect(fixture2.nativeElement.textContent).toBe('root cmp!');
+    });
+
     it('should handle async metadata on root and nested components', async () => {
       @Component({
         selector: 'cmp-a',
