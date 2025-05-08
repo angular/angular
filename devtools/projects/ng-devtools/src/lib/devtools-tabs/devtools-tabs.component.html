@@ -71,19 +71,36 @@
 <mat-tab-nav-panel #tabPanel>
   @if (!applicationEnvironment.frameSelectorEnabled || frameManager.selectedFrame() !== null) {
     <div class="tab-content">
+      @let componentsVisible = activeTab() === 'Components';
       <ng-directive-explorer
+        [ngVisible]="componentsVisible"
         [showCommentNodes]="showCommentNodes()"
         [isHydrationEnabled]="isHydrationEnabled()"
-        [class.hidden]="activeTab() !== 'Components'"
         (toggleInspector)="toggleInspector()"
       />
-      <ng-profiler [class.hidden]="activeTab() !== 'Profiler'" />
-      <ng-router-tree
-        [snapToRoot]="snapToRoot()"
-        [routes]="routes()"
-        [class.hidden]="activeTab() !== 'Router Tree'"
-      />
-      <ng-injector-tree [class.hidden]="activeTab() !== 'Injector Tree'" />
+
+      @let profilerVisible = activeTab() === 'Profiler';
+      @defer (when profilerVisible; prefetch on idle) {
+        <ng-profiler [ngVisible]="profilerVisible" />
+      }
+
+      @let routerTreeVisible = activeTab() === 'Router Tree';
+      @defer (when routerTreeVisible; prefetch on idle) {
+        <ng-router-tree
+          [ngVisible]="routerTreeVisible"
+          [snapToRoot]="snapToRoot()"
+          [routes]="routes()"
+        />
+      }
+
+      @let injectorTreeVisible = activeTab() === 'Injector Tree';
+      @defer (when injectorTreeVisible; prefetch on idle) {
+        <ng-injector-tree
+          [ngVisible]="injectorTreeVisible"
+          [componentExplorerView]="componentExplorerView()"
+          [providers]="providers()"
+        />
+      }
     </div>
   }
 </mat-tab-nav-panel>
