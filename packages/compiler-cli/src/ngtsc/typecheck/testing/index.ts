@@ -477,7 +477,7 @@ export interface TypeCheckingTarget {
   /**
    * A map of component class names to string templates for that component.
    */
-  templates: {[className: string]: string};
+  templates?: {[className: string]: string};
 
   /**
    * Any declarations (e.g. directives) which should be considered as part of the scope for the
@@ -518,8 +518,10 @@ export function setup(
       contents = target.source;
     } else {
       contents = `// generated from templates\n\nexport const MODULE = true;\n\n`;
-      for (const className of Object.keys(target.templates)) {
-        contents += `export class ${className} {}\n`;
+      if (target.templates) {
+        for (const className of Object.keys(target.templates)) {
+          contents += `export class ${className} {}\n`;
+        }
       }
     }
 
@@ -582,15 +584,17 @@ export function setup(
       sfExtensionData(shimSf).fileShim = {extension: 'ngtypecheck', generatedFrom: target.fileName};
     }
 
-    for (const className of Object.keys(target.templates)) {
-      const classDecl = getClass(sf, className);
-      scopeMap.set(classDecl, scope);
+    if (target.templates) {
+      for (const className of Object.keys(target.templates)) {
+        const classDecl = getClass(sf, className);
+        scopeMap.set(classDecl, scope);
+      }
     }
   }
 
   const checkAdapter = createTypeCheckAdapter((sf, ctx) => {
     for (const target of targets) {
-      if (getSourceFileOrError(program, target.fileName) !== sf) {
+      if (getSourceFileOrError(program, target.fileName) !== sf || !target.templates) {
         continue;
       }
 
