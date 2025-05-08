@@ -89,12 +89,8 @@ export class InjectorTreeComponent {
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
-    rules: [
-      {
-        aboveRatio: 1.5,
-        direction: 'horizontal',
-      },
-    ],
+    aspectRatioBreakpoint: 1.5,
+    breakpointDirection: 'horizontal',
   };
 
   protected readonly envHierarchySize = signal<number>(0);
