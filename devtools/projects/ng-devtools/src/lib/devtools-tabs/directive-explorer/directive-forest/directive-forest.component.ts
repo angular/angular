@@ -26,7 +26,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {DevToolsNode, ElementPosition, Events, MessageBus} from 'protocol';
+import {DevToolsNode, ElementPosition, Events, MessageBus} from '../../../../../../protocol';
 
 import {TabUpdate} from '../../tab-update/index';
 

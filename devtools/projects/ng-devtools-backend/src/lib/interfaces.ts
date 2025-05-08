@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DevToolsNode} from 'protocol';
+import {DevToolsNode} from '../../../protocol';
 
 export interface DebuggingAPI {
   getComponent(node: Node): any;

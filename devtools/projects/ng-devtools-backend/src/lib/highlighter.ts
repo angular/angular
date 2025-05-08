@@ -7,7 +7,7 @@
  */
 
 import type {ɵGlobalDevModeUtils as GlobalDevModeUtils, Type} from '@angular/core';
-import {HydrationStatus} from 'protocol';
+import {HydrationStatus} from '../../../protocol';
 
 let hydrationOverlayItems: HTMLElement[] = [];
 let selectedElementOverlay: HTMLElement | null = null;

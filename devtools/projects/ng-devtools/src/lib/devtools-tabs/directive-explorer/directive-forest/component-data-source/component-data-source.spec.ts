@@ -7,7 +7,7 @@
  */
 
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {DevToolsNode} from 'protocol';
+import {DevToolsNode} from '../../../../../../../protocol';
 
 import {ComponentDataSource, FlatNode} from '.';
 

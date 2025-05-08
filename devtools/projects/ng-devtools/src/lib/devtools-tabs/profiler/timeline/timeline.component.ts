@@ -7,7 +7,7 @@
  */
 
 import {Component, computed, effect, input, output, signal} from '@angular/core';
-import {ProfilerFrame} from 'protocol';
+import {ProfilerFrame} from '../../../../../../protocol';
 import {Observable} from 'rxjs';
 
 import {createFilter, Filter, noopFilter} from './filter';

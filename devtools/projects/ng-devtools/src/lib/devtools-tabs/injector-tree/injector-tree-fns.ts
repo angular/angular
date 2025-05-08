@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DevToolsNode, SerializedInjector} from 'protocol';
+import {DevToolsNode, SerializedInjector} from '../../../../../protocol';
 
 import {
   InjectorTreeD3Node,

@@ -16,7 +16,7 @@ import {
   OnDestroy,
   viewChild,
 } from '@angular/core';
-import {SerializedInjector} from 'protocol';
+import {SerializedInjector} from '../../../../../protocol';
 
 import {InjectorTreeNode, InjectorTreeVisualizer} from './injector-tree-visualizer';
 

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/// <reference types="chrome"/>
+
 import {Injectable, inject, signal, computed} from '@angular/core';
-import {Events, MessageBus} from 'protocol';
+import {Events, MessageBus} from '../../../../protocol';
 
 import {Frame, TOP_LEVEL_FRAME_ID} from '../application-environment';
 

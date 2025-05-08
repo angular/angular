@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PropType} from 'protocol';
+import {PropType} from '../../../../protocol';
 
 import {getPropType} from './prop-type';
 

@@ -28,11 +28,13 @@ ts_test_library(
     srcs = [
         "flamegraph-formatter.spec.ts",
     ],
-    deps = [
+    interop_deps = [
         ":flamegraph-formatter",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants",
-        "//devtools/projects/protocol",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

@@ -7,7 +7,7 @@
  */
 
 import {ɵHydratedNode as HydrationNode} from '@angular/core';
-import {HydrationStatus} from 'protocol';
+import {HydrationStatus} from '../../../../protocol';
 
 import {ComponentTreeNode} from '../interfaces';
 import {ngDebugClient} from '../ng-debug-api/ng-debug-api';

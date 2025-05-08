@@ -9,7 +9,7 @@
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Platform} from '@angular/cdk/platform';
 import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
-import {Events, MessageBus} from 'protocol';
+import {Events, MessageBus} from '../../../protocol';
 import {interval} from 'rxjs';
 
 import {FrameManager} from './application-services/frame_manager';

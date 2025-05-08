@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/// <reference types="chrome"/>
+
 import {NgZone} from '@angular/core';
-import {Events, MessageBus, Parameters} from 'protocol';
+import {Events, MessageBus, Parameters} from '../../../protocol';
 
 import {ChromeMessageBus} from './chrome-message-bus';
 

@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, computed, inject, input} from '@angular/core';
-import {ComponentType} from 'protocol';
+import {ComponentType} from '../../../../../../protocol';
 
 import {ElementPropertyResolver} from '../property-resolver/element-property-resolver';
 

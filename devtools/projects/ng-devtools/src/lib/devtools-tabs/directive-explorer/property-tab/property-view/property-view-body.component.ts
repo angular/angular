@@ -8,7 +8,7 @@
 
 import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag} from '@angular/cdk/drag-drop';
 import {Component, computed, forwardRef, input, output, signal} from '@angular/core';
-import {DirectivePosition, SerializedInjectedService} from 'protocol';
+import {DirectivePosition, SerializedInjectedService} from '../../../../../../../protocol';
 
 import {
   DirectivePropertyResolver,

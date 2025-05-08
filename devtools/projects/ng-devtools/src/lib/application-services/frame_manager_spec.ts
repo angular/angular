@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Events, MessageBus} from 'protocol';
+import {Events, MessageBus} from '../../../../protocol';
 import {FrameManager} from './frame_manager';
 import {TestBed} from '@angular/core/testing';
 import {Frame} from '../application-environment';

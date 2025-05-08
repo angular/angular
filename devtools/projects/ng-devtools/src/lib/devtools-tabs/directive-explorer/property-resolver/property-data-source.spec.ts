@@ -7,7 +7,7 @@
  */
 
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {PropType} from 'protocol';
+import {PropType} from '../../../../../../protocol';
 
 import {FlatNode} from './element-property-resolver';
 import {getTreeFlattener} from './flatten';

@@ -7,7 +7,7 @@
  */
 
 import {Frame} from '../application-environment';
-import {DirectivePosition, ElementPosition} from 'protocol';
+import {DirectivePosition, ElementPosition} from '../../../../protocol';
 
 export abstract class ApplicationOperations {
   abstract viewSource(position: ElementPosition, target: Frame, directiveIndex?: number): void;

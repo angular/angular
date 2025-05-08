@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ContainerType, Descriptor, NestedProp, PropType} from 'protocol';
-import type {Signal} from '@angular/core';
+import {ContainerType, Descriptor, NestedProp, PropType} from '../../../../protocol';
 
 import {isSignal, unwrapSignal} from '../utils';
 
