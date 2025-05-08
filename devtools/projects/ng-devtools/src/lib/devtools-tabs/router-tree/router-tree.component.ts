@@ -56,13 +56,17 @@ export class RouterTreeComponent {
   routes = input<Route[]>([]);
   snapToRoot = input(false);
 
+  private readonly visualizerReady = signal<boolean>(false);
+
   constructor() {
-    effect(() => {
-      this.renderGraph(this.routes());
+    effect(async () => {
+      if (this.visualizerReady()) {
+        this.renderGraph(this.routes());
+      }
     });
 
-    effect(() => {
-      if (this.snapToRoot()) {
+    effect(async () => {
+      if (this.visualizerReady() && this.snapToRoot()) {
         this.routerTreeVisualizer.snapToRoot(0.6);
       }
     });
@@ -87,6 +91,8 @@ export class RouterTreeComponent {
     this.routerTreeVisualizer = new RouterTreeVisualizer(container, group, {
       nodeSeparation: () => 1,
     });
+
+    this.visualizerReady.set(true);
   }
 
   searchRoutes(event: Event) {
