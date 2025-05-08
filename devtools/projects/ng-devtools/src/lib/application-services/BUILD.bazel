@@ -39,16 +39,18 @@ ng_module(
 ts_test_library(
     name = "test_application_services_lib",
     srcs = glob(["*_spec.ts"]),
-    deps = [
+    interop_deps = [
+        "//packages/common",
+        "//packages/core/testing",
         ":browser_styles",
         ":frame_manager",
         ":theme",
-        "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/application-providers:window",
-        "//devtools/projects/protocol",
-        "//packages/common",
-        "//packages/core/testing",
-        "@npm//@angular/cdk",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

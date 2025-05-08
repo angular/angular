@@ -9,7 +9,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ApplicationOperations} from '../../application-operations';
-import {DirectivePosition, MessageBus, PropType, PropertyQueryTypes} from 'protocol';
+import {DirectivePosition, MessageBus, PropType, PropertyQueryTypes} from '../../../../../protocol';
 
 import {DirectiveExplorerComponent} from './directive-explorer.component';
 import {DirectiveForestComponent} from './directive-forest/directive-forest.component';

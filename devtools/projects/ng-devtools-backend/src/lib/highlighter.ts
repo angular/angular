@@ -7,7 +7,7 @@
  */
 
 import type {Type} from '@angular/core';
-import {HydrationStatus} from 'protocol';
+import {HydrationStatus} from '../../../protocol';
 import {ngDebugClient} from './ng-debug-api/ng-debug-api';
 
 let hydrationOverlayItems: HTMLElement[] = [];

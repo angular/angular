@@ -9,7 +9,7 @@
 import {inject, Injector, provideEnvironmentInitializer} from '@angular/core';
 import {createCustomElement} from '@angular/elements';
 import {Routes} from '@angular/router';
-import {initializeMessageBus} from 'ng-devtools-backend';
+import {initializeMessageBus} from '../../../projects/ng-devtools-backend';
 
 import {ZoneUnawareIFrameMessageBus} from '../../zone-unaware-iframe-message-bus';
 

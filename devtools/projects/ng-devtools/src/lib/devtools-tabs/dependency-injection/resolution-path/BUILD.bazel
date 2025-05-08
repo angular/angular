@@ -32,15 +32,17 @@ ng_module(
 ts_test_library(
     name = "resolution_path_test",
     srcs = ["resolution-path.component.spec.ts"],
+    interop_deps = [
+        "//packages/core",
+        ":resolution-path",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+    ],
     visibility = [
         "//visibility:private",
     ],
     deps = [
-        ":resolution-path",
-        "//devtools/projects/protocol",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

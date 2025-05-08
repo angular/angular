@@ -7,7 +7,7 @@
  */
 
 import {ɵFramework as Framework} from '@angular/core';
-import {Properties, PropType} from 'protocol';
+import {Properties, PropType} from '../../../../../../protocol';
 
 import {DirectivePropertyResolver} from './directive-property-resolver';
 

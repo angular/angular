@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementProfile} from 'protocol';
+import {ElementProfile} from '../../../../../../../protocol';
 import {FlamegraphNode} from './flamegraph-formatter';
 
 export const SIMPLE_RECORD = [

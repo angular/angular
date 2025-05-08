@@ -6,7 +6,7 @@ ts_library(
     name = "src",
     srcs = ["public-api.ts"],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib:lib_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
     ],
 )

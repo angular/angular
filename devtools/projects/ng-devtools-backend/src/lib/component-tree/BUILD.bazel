@@ -16,28 +16,32 @@ ts_library(
 ts_library(
     name = "component-tree",
     srcs = ["component-tree.ts"],
-    deps = [
-        ":core-enums",
-        ":get-roots",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:property_mutation",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+    interop_deps = [
+        "//packages/core",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
-        "//devtools/projects/protocol",
-        "//packages/core",
+    ],
+    deps = [
+        ":core-enums_rjs",
+        ":get-roots_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:property_mutation_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:directive-forest_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
 ts_test_library(
     name = "test_lib",
     srcs = glob(["*.spec.ts"]),
-    deps = [
-        ":component-tree",
-        ":get-roots",
+    interop_deps = [
         "//packages/core",
-        "@npm//jasmine",
+    ],
+    deps = [
+        ":component-tree_rjs",
+        ":get-roots_rjs",
+        "//:node_modules/jasmine",
     ],
 )
 

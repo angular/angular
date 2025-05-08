@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementProfile, ProfilerFrame} from 'protocol';
+import {ElementProfile, ProfilerFrame} from '../../../../../../../protocol';
 
 import {mergeFrames} from './frame-merger';
 

@@ -74,7 +74,7 @@ ts_test_library(
         "filter.spec.ts",
         "timeline.component.spec.ts",
     ],
-    deps = [
+    interop_deps = [
         ":timeline",
     ],
 )

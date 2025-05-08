@@ -8,13 +8,15 @@ ts_library(
         include = ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks:identity_tracker",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//rxjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks:identity_tracker_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
