@@ -42,4 +42,4 @@ jobs:
           git remote -v
 
           echo "Pushing $CURRENT_BRANCH from origin to $UPSTREAM_OWNER upstream..."
-          git push upstream "$CURRENT_BRANCH"
+          git push upstream "$CURRENT_BRANCH" --force-with-lease
