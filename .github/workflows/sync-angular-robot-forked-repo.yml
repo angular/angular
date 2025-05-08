@@ -41,5 +41,5 @@ jobs:
           git remote add upstream "$UPSTREAM_URL"
           git remote -v
 
-          echo "Pushing ${{ CURRENT_BRANCH }} from origin to $UPSTREAM_OWNER upstream..."
+          echo "Pushing $CURRENT_BRANCH from origin to $UPSTREAM_OWNER upstream..."
           git push upstream "${CURRENT_BRANCH}"
