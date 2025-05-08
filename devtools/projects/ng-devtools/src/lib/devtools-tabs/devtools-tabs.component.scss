@@ -7,17 +7,6 @@
   display: block;
 }
 
-.hidden {
-  display: none;
-}
-
-ng-injector-tree.hidden {
-  display: block;
-  visibility: hidden;
-  position: absolute;
-  top: 0;
-}
-
 .tab-content {
   position: relative;
   height: calc(100% - 31px);
