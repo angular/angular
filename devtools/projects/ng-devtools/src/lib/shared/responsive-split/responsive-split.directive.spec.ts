@@ -33,16 +33,8 @@ class TestComponent {
 
   readonly config: ResponsiveSplitConfig = {
     defaultDirection: 'horizontal',
-    rules: [
-      {
-        aboveRatio: 2,
-        direction: 'horizontal',
-      },
-      {
-        aboveRatio: 1.5,
-        direction: 'vertical',
-      },
-    ],
+    aspectRatioBreakpoint: 1.5,
+    breakpointDirection: 'vertical',
   };
 }
 
@@ -88,15 +80,9 @@ describe('responsive-split', () => {
     expect(split.direction).toEqual('vertical');
   });
 
-  it('should use vertical direction (ratio == 1.99)', () => {
-    const {split} = initTestComponent(399, 200);
-
-    expect(split.direction).toEqual('vertical');
-  });
-
-  it('should use horizontal direction (ratio == 2)', () => {
+  it('should use vertical direction (ratio == 2)', () => {
     const {split} = initTestComponent(400, 200);
 
-    expect(split.direction).toEqual('horizontal');
+    expect(split.direction).toEqual('vertical');
   });
 });
