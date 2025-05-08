@@ -9,6 +9,11 @@
               <div class="component-name">{{ comp.name }}</div>
             </div>
           </mat-panel-title>
+          @if (toggleSignalGraph()) {
+            <button (click)="handleToggleSignalGraph($event)">
+              <mat-icon> schema </mat-icon>
+            </button>
+          }
         </mat-expansion-panel-header>
         <ng-component-metadata [currentSelectedComponent]="comp"></ng-component-metadata>
       </mat-expansion-panel>
