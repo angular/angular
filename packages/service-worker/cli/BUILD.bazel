@@ -1,18 +1,17 @@
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "cli",
     srcs = glob(
         ["**/*.ts"],
     ),
-    tsconfig = ":tsconfig.json",
-    deps = [
+    interop_deps = [
         "//packages/service-worker/config",
-        "@npm//@types/node",
     ],
+    tsconfig = "//packages/service-worker:tsconfig_build",
 )
 
 esbuild_config(
