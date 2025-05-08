@@ -21,13 +21,13 @@ import {addModuleName} from './module-name';
 import {addRepo} from './repo';
 
 /** Given an unprocessed enum entry, get the fully renderable enum entry. */
-export function getEnumRenderable(
+export async function getEnumRenderable(
   classEntry: EnumEntry,
   moduleName: string,
   repo: string,
-): EnumEntryRenderable {
+): Promise<EnumEntryRenderable> {
   return setEntryFlags(
-    addRenderableCodeToc(
+    await addRenderableCodeToc(
       addRenderableMembers(
         addHtmlAdditionalLinks(
           addHtmlUsageNotes(

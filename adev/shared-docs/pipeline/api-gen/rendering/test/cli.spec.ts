@@ -27,7 +27,7 @@ describe('CLI docs to html', () => {
     });
 
     entryJson = JSON.parse(entryContent) as any;
-    const renderableJson = getRenderable(entryJson, '', 'angular/cli');
+    const renderableJson = await getRenderable(entryJson, '', 'angular/cli');
     fragment = JSDOM.fragment(await renderEntry(renderableJson));
   });
 
@@ -35,7 +35,7 @@ describe('CLI docs to html', () => {
     const generateComponentSubcommand = entryJson.subcommands.find(
       (subcommand: any) => subcommand.name === 'component',
     );
-    const renderableJson = getRenderable(generateComponentSubcommand, '', 'angular/cli');
+    const renderableJson = await getRenderable(generateComponentSubcommand, '', 'angular/cli');
     fragment = JSDOM.fragment(await renderEntry(renderableJson));
 
     const cliTocs = fragment.querySelectorAll('.docs-reference-cli-toc')!;

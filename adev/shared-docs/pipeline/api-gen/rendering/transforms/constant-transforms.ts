@@ -20,13 +20,13 @@ import {addModuleName} from './module-name';
 import {addRepo} from './repo';
 
 /** Given an unprocessed constant entry, get the fully renderable constant entry. */
-export function getConstantRenderable(
+export async function getConstantRenderable(
   classEntry: ConstantEntry,
   moduleName: string,
   repo: string,
-): ConstantEntryRenderable {
+): Promise<ConstantEntryRenderable> {
   return setEntryFlags(
-    addRenderableCodeToc(
+    await addRenderableCodeToc(
       addHtmlAdditionalLinks(
         addHtmlUsageNotes(
           addHtmlJsDocTagComments(
