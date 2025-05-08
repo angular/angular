@@ -24,7 +24,7 @@ interface ParseResult {
   position: number;
 }
 
-function parse(template: string): ParseResult {
+function parse(template: string, enableSelectorless = false): ParseResult {
   const position = template.indexOf('¦');
   if (position < 0) {
     throw new Error(`Template "${template}" does not contain the cursor`);
@@ -41,6 +41,7 @@ function parse(template: string): ParseResult {
       leadingTriviaChars: [],
       preserveWhitespaces: true,
       alwaysAttemptHtmlToR3AstConversion: true,
+      enableSelectorless,
     }),
     position,
   };
@@ -895,6 +896,46 @@ describe('findNodeAtPosition for microsyntax expression', () => {
     const {context} = getTargetAtPosition(nodes, position)!;
     expect(context.kind).toBe(TargetNodeKind.ElementInBodyContext);
     expect((context as SingleNodeTarget).node).toBeInstanceOf(t.Element);
+  });
+
+  it('should locate a component in its tag context', () => {
+    const {errors, nodes, position} = parse(`<Comp¦ attr/>`, true);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    expect(context.kind).toBe(TargetNodeKind.ComponentInTagContext);
+    expect((context as SingleNodeTarget).node).toBeInstanceOf(t.Component);
+  });
+
+  it('should locate a component in its body context', () => {
+    const {errors, nodes, position} = parse(`<Comp ¦ attr/>`, true);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    expect(context.kind).toBe(TargetNodeKind.ComponentInBodyContext);
+    expect((context as SingleNodeTarget).node).toBeInstanceOf(t.Component);
+  });
+
+  it('should locate a directive in its name context', () => {
+    const {errors, nodes, position} = parse(`<div @Dir¦></div>`, true);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    expect(context.kind).toBe(TargetNodeKind.DirectiveInNameContext);
+    expect((context as SingleNodeTarget).node).toBeInstanceOf(t.Directive);
+  });
+
+  it('should locate a directive in its body context when there are bindings', () => {
+    const {errors, nodes, position} = parse(`<div @Dir([foo]="bar" ¦)></div>`, true);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    expect(context.kind).toBe(TargetNodeKind.DirectiveInBodyContext);
+    expect((context as SingleNodeTarget).node).toBeInstanceOf(t.Directive);
+  });
+
+  it('should locate a directive in its body context when there are no bindings', () => {
+    const {errors, nodes, position} = parse(`<div @Dir(¦)></div>`, true);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    expect(context.kind).toBe(TargetNodeKind.DirectiveInBodyContext);
+    expect((context as SingleNodeTarget).node).toBeInstanceOf(t.Directive);
   });
 });
 
