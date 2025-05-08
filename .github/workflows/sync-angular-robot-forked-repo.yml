@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.ref }} # Checks out the branch that triggered the push
+          fetch-depth: 100
           persist-credentials: false
 
       - name: Push to angular-robot upstream remote
@@ -42,4 +43,4 @@ jobs:
           git remote -v
 
           echo "Pushing $CURRENT_BRANCH from origin to $UPSTREAM_OWNER upstream..."
-          git push upstream "$CURRENT_BRANCH" --force-with-lease
+          git push upstream "$CURRENT_BRANCH"
