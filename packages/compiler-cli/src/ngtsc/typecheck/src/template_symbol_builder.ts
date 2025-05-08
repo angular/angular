@@ -172,6 +172,7 @@ export class SymbolBuilder {
       filter: isDirectiveDeclaration,
     });
     const symbols: DirectiveSymbol[] = [];
+    const seenDirectives = new Set<ts.ClassDeclaration>();
 
     for (const node of nodes) {
       const symbol = this.getSymbolOfTsNode(node.parent);
@@ -183,13 +184,16 @@ export class SymbolBuilder {
         continue;
       }
 
-      const meta = this.getDirectiveMeta(element, symbol.tsSymbol.valueDeclaration);
+      const declaration = symbol.tsSymbol.valueDeclaration;
+      const meta = this.getDirectiveMeta(element, declaration);
 
-      if (meta !== null && meta.selector !== null) {
-        const ref = new Reference<ClassDeclaration>(symbol.tsSymbol.valueDeclaration as any);
+      // Host directives will be added as identifiers with the same offset as the host
+      // which means that they'll get added twice. De-duplicate them to avoid confusion.
+      if (meta !== null && !seenDirectives.has(declaration)) {
+        const ref = new Reference<ClassDeclaration>(declaration as ClassDeclaration);
 
         if (meta.hostDirectives !== null) {
-          this.addHostDirectiveSymbols(element, meta.hostDirectives, symbols);
+          this.addHostDirectiveSymbols(element, meta.hostDirectives, symbols, seenDirectives);
         }
 
         const directiveSymbol: DirectiveSymbol = {
@@ -198,7 +202,7 @@ export class SymbolBuilder {
           tsSymbol: symbol.tsSymbol,
           selector: meta.selector,
           isComponent: meta.isComponent,
-          ngModule: this.getDirectiveModule(symbol.tsSymbol.valueDeclaration),
+          ngModule: this.getDirectiveModule(declaration),
           kind: SymbolKind.Directive,
           isStructural: meta.isStructural,
           isInScope: true,
@@ -206,6 +210,7 @@ export class SymbolBuilder {
         };
 
         symbols.push(directiveSymbol);
+        seenDirectives.add(declaration);
       }
     }
 
@@ -216,22 +221,25 @@ export class SymbolBuilder {
     host: TmplAstTemplate | TmplAstElement,
     hostDirectives: HostDirectiveMeta[],
     symbols: DirectiveSymbol[],
+    seenDirectives: Set<ts.ClassDeclaration>,
   ): void {
     for (const current of hostDirectives) {
       if (!isHostDirectiveMetaForGlobalMode(current)) {
         throw new Error('Impossible state: typecheck code path in local compilation mode.');
       }
 
-      if (!ts.isClassDeclaration(current.directive.node)) {
+      const node = current.directive.node;
+
+      if (!ts.isClassDeclaration(node) || seenDirectives.has(node)) {
         continue;
       }
 
-      const symbol = this.getSymbolOfTsNode(current.directive.node);
-      const meta = this.getDirectiveMeta(host, current.directive.node);
+      const symbol = this.getSymbolOfTsNode(node);
+      const meta = this.getDirectiveMeta(host, node);
 
       if (meta !== null && symbol !== null && isSymbolWithValueDeclaration(symbol.tsSymbol)) {
         if (meta.hostDirectives !== null) {
-          this.addHostDirectiveSymbols(host, meta.hostDirectives, symbols);
+          this.addHostDirectiveSymbols(host, meta.hostDirectives, symbols, seenDirectives);
         }
 
         const directiveSymbol: DirectiveSymbol = {
@@ -243,13 +251,14 @@ export class SymbolBuilder {
           exposedOutputs: current.outputs,
           selector: meta.selector,
           isComponent: meta.isComponent,
-          ngModule: this.getDirectiveModule(current.directive.node),
+          ngModule: this.getDirectiveModule(node),
           kind: SymbolKind.Directive,
           isStructural: meta.isStructural,
           isInScope: true,
         };
 
         symbols.push(directiveSymbol);
+        seenDirectives.add(node);
       }
     }
   }
