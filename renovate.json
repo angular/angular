@@ -92,7 +92,18 @@
       "matchDepNames": ["/^@bazel/.*/", "/^build_bazel.*/"]
     },
     {
+      "matchBaseBranches": ["main"],
       "followTag": "next",
+      "groupName": "cross-repo Angular dependencies (next)",
+      "schedule": ["at any time"],
+      "matchPackageNames": [
+        "@angular/{/,}**",
+        "angular/{/,}**",
+        "@angular-devkit{/,}**",
+        "@schematics/{/,}**"
+      ]
+    },
+    {
       "groupName": "cross-repo Angular dependencies",
       "schedule": ["at any time"],
       "matchPackageNames": [
