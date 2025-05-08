@@ -34,7 +34,7 @@ jobs:
           UPSTREAM_TOKEN="${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}"
           UPSTREAM_OWNER="angular-robot"
           UPSTREAM_REPO="angular"
-          UPSTREAM_URL="https://${UPSTREAM_TOKEN}@github.com/${UPSTREAM_OWNER}/${UPSTREAM_REPO}.git"
+          UPSTREAM_URL="https://x-access-token:${UPSTREAM_TOKEN}@github.com/${UPSTREAM_OWNER}/${UPSTREAM_REPO}.git"
 
           # The UPSTREAM_TOKEN is automatically masked by GitHub Actions for security.
           echo "Adding upstream remote: $UPSTREAM_URL"
