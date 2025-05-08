@@ -18,6 +18,8 @@ import {
   SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
+  TmplAstComponent,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
@@ -45,6 +47,8 @@ import {
   OutputBindingSymbol,
   PipeSymbol,
   ReferenceSymbol,
+  SelectorlessComponentSymbol,
+  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   TcbLocation,
@@ -88,6 +92,8 @@ export class SymbolBuilder {
   getSymbol(
     node: TmplAstReference | TmplAstVariable | TmplAstLetDeclaration,
   ): ReferenceSymbol | VariableSymbol | LetDeclarationSymbol | null;
+  getSymbol(node: TmplAstComponent): SelectorlessComponentSymbol | null;
+  getSymbol(node: TmplAstDirective): SelectorlessDirectiveSymbol | null;
   getSymbol(node: AST | TmplAstNode): Symbol | null;
   getSymbol(node: AST | TmplAstNode): Symbol | null {
     if (this.symbolCache.has(node)) {
@@ -103,6 +109,10 @@ export class SymbolBuilder {
       symbol = this.getSymbolOfBoundEvent(node);
     } else if (node instanceof TmplAstElement) {
       symbol = this.getSymbolOfElement(node);
+    } else if (node instanceof TmplAstComponent) {
+      symbol = this.getSymbolOfSelectorlessComponent(node);
+    } else if (node instanceof TmplAstDirective) {
+      symbol = this.getSymbolOfSelectorlessDirective(node);
     } else if (node instanceof TmplAstTemplate) {
       symbol = this.getSymbolOfAstTemplate(node);
     } else if (node instanceof TmplAstVariable) {
@@ -156,8 +166,52 @@ export class SymbolBuilder {
     };
   }
 
-  private getDirectivesOfNode(element: TmplAstElement | TmplAstTemplate): DirectiveSymbol[] {
-    const elementSourceSpan = element.startSourceSpan ?? element.sourceSpan;
+  private getSymbolOfSelectorlessComponent(
+    node: TmplAstComponent,
+  ): SelectorlessComponentSymbol | null {
+    const directives = this.getDirectivesOfNode(node);
+    const primaryDirective =
+      directives.find((dir) => !dir.isHostDirective && dir.isComponent) ?? null;
+
+    if (primaryDirective === null) {
+      return null;
+    }
+
+    return {
+      tsType: primaryDirective.tsType,
+      tsSymbol: primaryDirective.tsSymbol,
+      tcbLocation: primaryDirective.tcbLocation,
+      kind: SymbolKind.SelectorlessComponent,
+      directives,
+      templateNode: node,
+    };
+  }
+
+  private getSymbolOfSelectorlessDirective(
+    node: TmplAstDirective,
+  ): SelectorlessDirectiveSymbol | null {
+    const directives = this.getDirectivesOfNode(node);
+    const primaryDirective =
+      directives.find((dir) => !dir.isHostDirective && !dir.isComponent) ?? null;
+
+    if (primaryDirective === null) {
+      return null;
+    }
+
+    return {
+      tsType: primaryDirective.tsType,
+      tsSymbol: primaryDirective.tsSymbol,
+      tcbLocation: primaryDirective.tcbLocation,
+      kind: SymbolKind.SelectorlessDirective,
+      directives,
+      templateNode: node,
+    };
+  }
+
+  private getDirectivesOfNode(
+    templateNode: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+  ): DirectiveSymbol[] {
+    const elementSourceSpan = templateNode.startSourceSpan ?? templateNode.sourceSpan;
     const tcbSourceFile = this.typeCheckBlock.getSourceFile();
     // directives could be either:
     // - var _t1: TestDir /*T:D*/ = null! as TestDir;
@@ -185,7 +239,7 @@ export class SymbolBuilder {
       }
 
       const declaration = symbol.tsSymbol.valueDeclaration;
-      const meta = this.getDirectiveMeta(element, declaration);
+      const meta = this.getDirectiveMeta(templateNode, declaration);
 
       // Host directives will be added as identifiers with the same offset as the host
       // which means that they'll get added twice. De-duplicate them to avoid confusion.
@@ -193,7 +247,7 @@ export class SymbolBuilder {
         const ref = new Reference<ClassDeclaration>(declaration as ClassDeclaration);
 
         if (meta.hostDirectives !== null) {
-          this.addHostDirectiveSymbols(element, meta.hostDirectives, symbols, seenDirectives);
+          this.addHostDirectiveSymbols(templateNode, meta.hostDirectives, symbols, seenDirectives);
         }
 
         const directiveSymbol: DirectiveSymbol = {
@@ -218,7 +272,7 @@ export class SymbolBuilder {
   }
 
   private addHostDirectiveSymbols(
-    host: TmplAstTemplate | TmplAstElement,
+    host: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
     hostDirectives: HostDirectiveMeta[],
     symbols: DirectiveSymbol[],
     seenDirectives: Set<ts.ClassDeclaration>,
@@ -264,7 +318,7 @@ export class SymbolBuilder {
   }
 
   private getDirectiveMeta(
-    host: TmplAstTemplate | TmplAstElement,
+    host: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
     directiveDeclaration: ts.ClassDeclaration,
   ): TypeCheckableDirectiveMeta | null {
     let directives = this.typeCheckData.boundTarget.getDirectivesOfNode(host);
@@ -272,16 +326,20 @@ export class SymbolBuilder {
     // `getDirectivesOfNode` will not return the directives intended for an element
     // on a microsyntax template, for example `<div *ngFor="let user of users;" dir>`,
     // the `dir` will be skipped, but it's needed in language service.
-    const firstChild = host.children[0];
-    if (firstChild instanceof TmplAstElement) {
-      const isMicrosyntaxTemplate =
-        host instanceof TmplAstTemplate && sourceSpanEqual(firstChild.sourceSpan, host.sourceSpan);
-      if (isMicrosyntaxTemplate) {
-        const firstChildDirectives = this.typeCheckData.boundTarget.getDirectivesOfNode(firstChild);
-        if (firstChildDirectives !== null && directives !== null) {
-          directives = directives.concat(firstChildDirectives);
-        } else {
-          directives = directives ?? firstChildDirectives;
+    if (!(host instanceof TmplAstDirective)) {
+      const firstChild = host.children[0];
+      if (firstChild instanceof TmplAstElement) {
+        const isMicrosyntaxTemplate =
+          host instanceof TmplAstTemplate &&
+          sourceSpanEqual(firstChild.sourceSpan, host.sourceSpan);
+        if (isMicrosyntaxTemplate) {
+          const firstChildDirectives =
+            this.typeCheckData.boundTarget.getDirectivesOfNode(firstChild);
+          if (firstChildDirectives !== null && directives !== null) {
+            directives = directives.concat(firstChildDirectives);
+          } else {
+            directives = directives ?? firstChildDirectives;
+          }
         }
       }
     }
@@ -522,11 +580,7 @@ export class SymbolBuilder {
   ): DirectiveSymbol | null {
     // In all cases, `_t1["index"]` or `_t1.index`, `node.expression` is _t1.
     const tsSymbol = this.getTypeChecker().getSymbolAtLocation(fieldAccessExpr.expression);
-    if (
-      tsSymbol?.declarations === undefined ||
-      tsSymbol.declarations.length === 0 ||
-      selector === null
-    ) {
+    if (tsSymbol?.declarations === undefined || tsSymbol.declarations.length === 0) {
       return null;
     }
 
