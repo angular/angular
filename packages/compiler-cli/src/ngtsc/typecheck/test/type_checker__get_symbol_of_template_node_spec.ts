@@ -56,6 +56,7 @@ import {
   setup as baseTestSetup,
   TypeCheckingTarget,
   createNgCompilerForFile,
+  TestDirective,
 } from '../testing';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {findNodeInFile} from '../src/tcb_util';
@@ -2286,7 +2287,7 @@ runInEachFileSystem(() => {
               template: '<div *foo></div>',
             })
             class MyCmp {}
-          } 
+          }
         }
 
         if(true) {
@@ -2331,7 +2332,7 @@ runInEachFileSystem(() => {
               template: '<div *foo></div>',
             })
             class MyCmp {}
-          } 
+          }
         }
       `);
 
@@ -2349,6 +2350,66 @@ runInEachFileSystem(() => {
       expect(symbol.kind).toBe(SymbolKind.Template);
       expect(symbol.directives.length).toBe(1);
       expect(symbol.directives[0].selector).toBe('[foo]');
+    });
+
+    it('should return the correct amount of directives when a host directive with a selector is applied', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const depFile = absoluteFrom('/dep.ts');
+      const depHostFile = absoluteFrom('/dep-host.ts');
+      const depInnerHostFile = absoluteFrom('/dep-inner-host.ts');
+      const dep: TestDirective = {
+        name: 'Dep',
+        file: depFile,
+        selector: 'dep',
+        type: 'directive',
+        isStandalone: true,
+        isComponent: true,
+        hostDirectives: [
+          {
+            directive: {
+              name: 'DepHost',
+              file: depHostFile,
+              selector: 'dep-host', // <-- Note: this is necessary to hit the specific code path
+              type: 'directive',
+              isStandalone: true,
+              hostDirectives: [
+                {
+                  directive: {
+                    name: 'DepInnerHost',
+                    file: depInnerHostFile,
+                    selector: 'dep-inner-host', // <-- Note: this is necessary to hit the specific code path
+                    type: 'directive',
+                    isStandalone: true,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      };
+
+      const {program, templateTypeChecker} = setup([
+        {fileName, templates: {'Cmp': '<dep/>'}, declarations: [dep]},
+        {fileName: depFile, source: 'export class Dep {}', templates: {}},
+        {fileName: depHostFile, source: 'export class DepHost {}', templates: {}},
+        {fileName: depInnerHostFile, source: 'export class DepInnerHost {}', templates: {}},
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const cmp = getClass(sf, 'Cmp');
+      const nodes = templateTypeChecker.getTemplate(cmp)!;
+      const element = nodes[0] as TmplAstElement;
+      const symbol = templateTypeChecker.getSymbolOfNode(element, cmp)!;
+      assertElementSymbol(symbol);
+      expect(
+        symbol.directives.map((d) => ({
+          name: d.ref.node.name.text,
+          isHostDirective: d.isHostDirective,
+        })),
+      ).toEqual([
+        {name: 'DepInnerHost', isHostDirective: true},
+        {name: 'DepHost', isHostDirective: true},
+        {name: 'Dep', isHostDirective: false},
+      ]);
     });
   });
 });
