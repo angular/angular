@@ -31,6 +31,7 @@ ng_module(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
+        "//devtools/projects/ng-devtools/src/lib/shared/visible",
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",

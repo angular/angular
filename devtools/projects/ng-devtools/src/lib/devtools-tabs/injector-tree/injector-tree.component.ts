@@ -9,8 +9,11 @@
 import {
   afterNextRender,
   Component,
+  computed,
   ElementRef,
   inject,
+  input,
+  Input,
   NgZone,
   signal,
   viewChild,
@@ -43,6 +46,7 @@ import {
   splitInjectorPathsIntoElementAndEnvironmentPaths,
   transformInjectorResolutionPathsIntoTree,
 } from './injector-tree-fns';
+import {VisibleDirective} from '../../shared/visible/visible.directive';
 
 @Component({
   selector: 'ng-injector-tree',
@@ -54,6 +58,7 @@ import {
     MatIcon,
     MatTooltip,
     MatCheckbox,
+    VisibleDirective,
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
@@ -65,50 +70,53 @@ export class InjectorTreeComponent {
   private _messageBus = inject(MessageBus) as MessageBus<Events>;
   zone = inject(NgZone);
 
-  firstRender = true;
   readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
+  readonly diDebugAPIsAvailable = signal(false);
+
+  readonly providers = input.required<SerializedProviderRecord[]>();
+  readonly sortedProviders = computed(() =>
+    Array.from(this.providers()).sort((a, b) => {
+      return a.token.localeCompare(b.token);
+    }),
+  );
+
+  firstRender = true;
   rawDirectiveForest: DevToolsNode[] = [];
   injectorTreeGraph!: InjectorTreeVisualizer;
   elementInjectorTreeGraph!: InjectorTreeVisualizer;
-  readonly diDebugAPIsAvailable = signal(false);
-  readonly providers = signal<SerializedProviderRecord[]>([]);
   elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();
 
   hideInjectorsWithNoProviders = false;
   hideFrameworkInjectors = false;
 
+  private markRendered!: () => void;
+  private readonly rendered = new Promise<void>((r) => {
+    this.markRendered = r;
+  });
+
   constructor() {
     afterNextRender({
       write: () => {
         this.init();
-        this.setUpEnvironmentInjectorVisualizer();
-        this.setUpElementInjectorVisualizer();
+        this.markRendered();
       },
     });
   }
 
-  private init() {
-    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
-      if (view.forest.length === 0) return;
-
-      if (!view.forest[0].resolutionPath) return;
+  @Input({required: true})
+  set componentExplorerView(view: ComponentExplorerView | null) {
+    this.rendered.then(() => {
+      if (!view || view.forest.length === 0 || !view.forest[0].resolutionPath) {
+        return;
+      }
 
       this.diDebugAPIsAvailable.set(true);
       this.rawDirectiveForest = view.forest;
       this.updateInjectorTreeVisualization(view.forest);
     });
+  }
 
-    this._messageBus.on(
-      'latestInjectorProviders',
-      (_: SerializedInjector, providers: SerializedProviderRecord[]) => {
-        this.providers.set(
-          Array.from(providers).sort((a, b) => {
-            return a.token.localeCompare(b.token);
-          }),
-        );
-      },
-    );
-
+  private init() {
     this._messageBus.on('highlightComponent', (id: number) => {
       const injectorNode = this.getNodeByComponentId(this.elementInjectorTreeGraph, id);
       if (injectorNode === null) {
@@ -117,6 +125,9 @@ export class InjectorTreeComponent {
 
       this.selectInjectorByNode(injectorNode);
     });
+
+    this.setUpEnvironmentInjectorVisualizer();
+    this.setUpElementInjectorVisualizer();
   }
 
   toggleHideInjectorsWithNoProviders(): void {
