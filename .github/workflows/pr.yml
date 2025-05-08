@@ -76,6 +76,10 @@ jobs:
         run: yarn install --frozen-lockfile --network-timeout 100000
       - name: Run CI tests for framework
         run: yarn test:ci
+        env:
+          # Ensures Aspect lock files are up-to-date.
+          # TODO(devversion): Remove when removing yarn.
+          ASPECT_RULES_JS_FROZEN_PNPM_LOCK: '1'
       - name: Upload GRPC logs (for debugging of RBE issues)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
