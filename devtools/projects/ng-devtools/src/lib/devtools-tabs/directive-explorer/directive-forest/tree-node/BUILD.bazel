@@ -35,12 +35,14 @@ ng_module(
 ts_test_library(
     name = "tree_node_test",
     srcs = ["tree-node.component.spec.ts"],
-    deps = [
+    interop_deps = [
         ":tree-node",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
         "//packages/core/testing",
         "//packages/platform-browser",
-        "@npm//@angular/cdk",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
     ],
 )
 

@@ -44,20 +44,23 @@ ng_module(
 ts_test_library(
     name = "devtools_tabs_test",
     srcs = ["devtools-tabs.spec.ts"],
-    deps = [
+    interop_deps = [
+        "//packages/core",
         ":devtools-tabs",
-        "//devtools/projects/ng-devtools/src/lib/application-environment",
-        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
-        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
-        "//devtools/projects/protocol",
-        "//packages/common",
-        "//packages/core",
         "//packages/core/src/util",
         "//packages/core/testing",
-        "@npm//@angular/material",
-        "@npm//rxjs",
+        "//packages/common",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
+    ],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

@@ -7,11 +7,11 @@ ts_library(
     name = "component-inspector",
     srcs = ["component-inspector.ts"],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
-        "//devtools/projects/protocol",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks:hooks_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
@@ -25,15 +25,16 @@ ts_test_library(
     srcs = [
         "component-inspector.spec.ts",
     ],
-    deps = [
-        ":component-inspector",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
+    ],
+    deps = [
+        ":component-inspector_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks:hooks_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )

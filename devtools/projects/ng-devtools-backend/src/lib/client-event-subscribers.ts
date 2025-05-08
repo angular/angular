@@ -19,7 +19,7 @@ import {
   Route,
   SerializedInjector,
   SerializedProviderRecord,
-} from 'protocol';
+} from '../../../protocol';
 import {debounceTime} from 'rxjs/operators';
 import {
   appIsAngularInDevMode,
@@ -27,7 +27,7 @@ import {
   appIsSupportedAngularVersion,
   getAngularVersion,
   isHydrationEnabled,
-} from 'shared-utils';
+} from '../../../shared-utils';
 
 import {ComponentInspector} from './component-inspector/component-inspector';
 import {

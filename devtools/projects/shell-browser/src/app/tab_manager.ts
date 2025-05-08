@@ -8,7 +8,7 @@
 
 /// <reference types="chrome"/>
 
-import {Events, Topic} from 'protocol';
+import {Events, Topic} from '../../../protocol';
 
 export interface ContentScriptConnection {
   port: chrome.runtime.Port | null;

@@ -1,4 +1,3 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//devtools/tools:ng_module.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
@@ -6,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 exports_files(["tsconfig.lib.json"])
 
 ng_module(
-    name = "ng_devtools_ts",
+    name = "ng-devtools",
     srcs = ["index.ts"],
     deps = [
         "//devtools/projects/ng-devtools/src",
@@ -24,10 +23,4 @@ ng_module(
         "@npm//rxjs",
         "@npm//webtreemap",
     ],
-)
-
-js_library(
-    name = "ng-devtools",
-    package_name = "ng-devtools",
-    deps = [":ng_devtools_ts"],
 )

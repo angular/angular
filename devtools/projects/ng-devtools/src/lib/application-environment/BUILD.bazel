@@ -6,7 +6,6 @@ ts_library(
     name = "application-environment",
     srcs = ["index.ts"],
     deps = [
-        "//devtools/projects/protocol",
-        "@npm//@types",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )

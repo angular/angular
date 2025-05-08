@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {afterNextRender, Component, effect, input, viewChild} from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
-import {Route} from 'protocol';
+import {Route} from '../../../../../protocol';
 import {RouterTreeVisualizer} from './router-tree-visualizer';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {TreeVisualizerHostComponent} from '../tree-visualizer-host/tree-visualizer-host.component';
