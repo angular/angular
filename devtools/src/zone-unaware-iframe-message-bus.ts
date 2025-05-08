@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Events, MessageBus, Parameters} from 'protocol';
+import {Events, MessageBus, Parameters} from '../projects/protocol';
 
 import {IFrameMessageBus} from './iframe-message-bus';
 

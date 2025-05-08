@@ -52,9 +52,9 @@ ts_test_library(
         "injector-tree-fns.spec.ts",
     ],
     deps = [
-        ":injector_tree_fns",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
-        "//devtools/projects/protocol",
+        ":injector_tree_fns_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
@@ -62,7 +62,7 @@ ts_library(
     name = "injector_tree_fns",
     srcs = ["injector-tree-fns.ts"],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
-        "//devtools/projects/protocol",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )

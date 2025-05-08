@@ -9,7 +9,7 @@
 import {Component, ElementRef, viewChild} from '@angular/core';
 
 import {IFrameMessageBus} from '../../iframe-message-bus';
-import {DevToolsComponent} from 'ng-devtools';
+import {DevToolsComponent} from '../../../projects/ng-devtools';
 import {SplitAreaDirective} from '../../../projects/ng-devtools/src/lib/vendor/angular-split/lib/component/splitArea.directive';
 import {SplitComponent} from '../../../projects/ng-devtools/src/lib/vendor/angular-split/lib/component/split.component';
 

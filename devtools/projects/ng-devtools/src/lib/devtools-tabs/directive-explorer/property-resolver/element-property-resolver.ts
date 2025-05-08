@@ -14,7 +14,7 @@ import {
   DirectivesProperties,
   Events,
   MessageBus,
-} from 'protocol';
+} from '../../../../../../protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
 

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Events, MessageBus} from 'protocol';
+import {Events, MessageBus} from '../../../protocol';
 import {subscribeToClientEvents} from './client-event-subscribers';
-import {appIsAngular, appIsAngularIvy, appIsSupportedAngularVersion} from 'shared-utils';
+import {appIsAngular, appIsAngularIvy, appIsSupportedAngularVersion} from '../../../shared-utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 import {of} from 'rxjs';
 

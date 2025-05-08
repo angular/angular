@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Descriptor, NestedProp, PropType} from 'protocol';
+import {Descriptor, NestedProp, PropType} from '../../../../../../protocol';
 
 import {FlatNode} from './element-property-resolver';
 

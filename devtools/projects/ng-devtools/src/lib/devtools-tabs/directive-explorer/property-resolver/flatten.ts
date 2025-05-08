@@ -7,7 +7,7 @@
  */
 
 import {MatTreeFlattener} from '@angular/material/tree';
-import {Descriptor, PropType} from 'protocol';
+import {Descriptor, PropType} from '../../../../../../protocol';
 import {Observable} from 'rxjs';
 
 import {arrayifyProps} from './arrayify-props';

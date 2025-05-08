@@ -16,7 +16,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import {DirectivePosition, SerializedInjectedService} from 'protocol';
+import {DirectivePosition, SerializedInjectedService} from '../../../../../../../protocol';
 
 import {
   DirectivePropertyResolver,

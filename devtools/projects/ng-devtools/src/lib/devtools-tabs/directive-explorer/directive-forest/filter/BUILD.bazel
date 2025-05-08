@@ -31,10 +31,10 @@ ng_module(
 ts_test_library(
     name = "filter_test",
     srcs = ["filter.component.spec.ts"],
-    deps = [
-        ":filter",
+    interop_deps = [
         "//packages/core/testing",
         "//packages/platform-browser",
+        ":filter",
     ],
 )
 

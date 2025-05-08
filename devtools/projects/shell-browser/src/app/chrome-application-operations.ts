@@ -10,8 +10,8 @@
 
 import {Platform} from '@angular/cdk/platform';
 import {inject} from '@angular/core';
-import {ApplicationOperations, Frame, TOP_LEVEL_FRAME_ID} from 'ng-devtools';
-import {DirectivePosition, ElementPosition} from 'protocol';
+import {ApplicationOperations, Frame, TOP_LEVEL_FRAME_ID} from '../../../ng-devtools';
+import {DirectivePosition, ElementPosition} from '../../../protocol';
 
 export class ChromeApplicationOperations extends ApplicationOperations {
   platform = inject(Platform);

@@ -7,10 +7,10 @@
  */
 
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
+import {Events, MessageBus, PriorityAwareMessageBus} from '../../../../protocol';
 
 import {IFrameMessageBus} from '../../../../../src/iframe-message-bus';
-import {DevToolsComponent} from 'ng-devtools';
+import {DevToolsComponent} from '../../../../ng-devtools';
 import {FrameManager} from '../../../../../projects/ng-devtools/src/lib/application-services/frame_manager';
 
 @Component({

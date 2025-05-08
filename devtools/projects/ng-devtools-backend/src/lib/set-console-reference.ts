@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementPosition} from 'protocol';
-import {arrayEquals} from 'shared-utils';
+import {ElementPosition} from '../../../protocol';
+import {arrayEquals} from '../../../shared-utils';
 
 import {ComponentTreeNode} from './interfaces';
 

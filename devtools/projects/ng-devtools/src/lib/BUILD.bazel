@@ -45,13 +45,16 @@ ng_module(
 ts_test_library(
     name = "devtools_test",
     srcs = ["devtools_spec.ts"],
-    deps = [
-        ":lib",
-        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
         "//packages/core/testing",
+        ":lib",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs:devtools-tabs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+    ],
+    deps = [
+        "//:node_modules/tslib",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

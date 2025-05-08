@@ -29,7 +29,7 @@ import {
   SerializedInjector,
   SerializedProviderRecord,
   UpdatedStateData,
-} from 'protocol';
+} from '../../../../protocol';
 import {
   buildDirectiveTree,
   getLViewFromDirectiveOrElementInstance,

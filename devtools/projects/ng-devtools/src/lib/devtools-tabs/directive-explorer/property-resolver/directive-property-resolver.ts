@@ -15,7 +15,7 @@ import {
   MessageBus,
   NestedProp,
   Properties,
-} from 'protocol';
+} from '../../../../../../protocol';
 
 import {FlatNode, Property} from './element-property-resolver';
 import {getTreeFlattener} from './flatten';

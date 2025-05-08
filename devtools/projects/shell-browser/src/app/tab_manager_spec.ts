@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/// <reference types="chrome"/>
+
 import {DevToolsConnection, TabManager, Tabs} from './tab_manager';
 
 interface MockSender {
