@@ -195,7 +195,10 @@ export default class Tutorial {
 
     if (routeData.type === TutorialType.LOCAL) {
       this.setLocalTutorialData(routeData);
-    } else if (routeData.type === TutorialType.EDITOR && this.isBrowser) {
+    } else if (
+      (routeData.type === TutorialType.EDITOR || routeData.type === TutorialType.CLI) &&
+      this.isBrowser
+    ) {
       await this.setEditorTutorialData(
         tutorialNavigationItem.path.replace(`${PagePrefix.TUTORIALS}/`, ''),
       );

@@ -40,7 +40,7 @@ describe('Terminal', () => {
 
     fixture = TestBed.createComponent(Terminal);
     component = fixture.componentInstance;
-    component.type = TerminalType.READONLY;
+    fixture.componentRef.setInput('type', TerminalType.READONLY);
     fixture.detectChanges();
   });
 
