@@ -3,7 +3,7 @@
     This feature is only available on version 17.0.0 or higher of Angular.
   </p>
 }
-<div class="wrapper" [class.hidden]="!diDebugAPIsAvailable()">
+<div class="wrapper" [ngVisible]="diDebugAPIsAvailable()">
   <div class="options">
     <mat-checkbox (change)="toggleHideInjectorsWithNoProviders()">
       Hide injectors with no providers
