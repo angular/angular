@@ -12,7 +12,7 @@ import {
   ElementProfile,
   LifecycleProfile,
   ProfilerFrame,
-} from 'protocol';
+} from '../../../../protocol';
 
 import {getDirectiveName} from '../highlighter';
 import {ComponentTreeNode} from '../interfaces';

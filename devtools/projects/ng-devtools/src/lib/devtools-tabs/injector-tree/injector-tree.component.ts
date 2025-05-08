@@ -25,7 +25,7 @@ import {
   MessageBus,
   SerializedInjector,
   SerializedProviderRecord,
-} from 'protocol';
+} from '../../../../../protocol';
 
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {

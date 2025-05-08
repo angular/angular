@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Descriptor} from 'protocol';
+import {Descriptor} from '../../../../../../protocol';
 
 import {Property} from './element-property-resolver';
 

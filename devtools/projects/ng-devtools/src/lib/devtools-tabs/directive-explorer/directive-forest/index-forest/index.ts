@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DevToolsNode, ElementPosition} from 'protocol';
+import {DevToolsNode, ElementPosition} from '../../../../../../../protocol';
 
 export interface IndexedNode extends DevToolsNode {
   position: ElementPosition;

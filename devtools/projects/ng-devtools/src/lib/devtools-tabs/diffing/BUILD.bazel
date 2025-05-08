@@ -4,14 +4,13 @@ package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "diffing",
-    srcs = glob(
-        include = [
-            "index.ts",
-        ],
-    ),
-    deps = [
+    srcs = [
+        "index.ts",
+    ],
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
     ],
 )

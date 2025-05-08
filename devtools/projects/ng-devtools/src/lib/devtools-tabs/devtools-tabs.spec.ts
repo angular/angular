@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatTooltip} from '@angular/material/tooltip';
-import {Events, MessageBus} from 'protocol';
+import {Events, MessageBus} from '../../../../protocol';
 import {Subject} from 'rxjs';
 
 import {ApplicationEnvironment} from '../application-environment';

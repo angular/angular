@@ -8,7 +8,7 @@
 
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
-import {Events, MessageBus, SupportedApis} from 'protocol';
+import {Events, MessageBus, SupportedApis} from '../../../protocol';
 import {interval} from 'rxjs';
 
 import {FrameManager} from './application-services/frame_manager';

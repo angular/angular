@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementPosition, LifecycleProfile} from 'protocol';
+import {ElementPosition, LifecycleProfile} from '../../../../../protocol';
 import {Subject} from 'rxjs';
 
 import {NodeArray} from '../identity-tracker';

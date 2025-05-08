@@ -14,7 +14,11 @@ import {
   inject,
   input,
 } from '@angular/core';
-import {AngularDirectiveMetadata, AcxDirectiveMetadata, ComponentType} from 'protocol';
+import {
+  AngularDirectiveMetadata,
+  AcxDirectiveMetadata,
+  ComponentType,
+} from '../../../../../../protocol';
 
 import {ElementPropertyResolver} from '../property-resolver/element-property-resolver';
 

@@ -7,8 +7,8 @@ ts_library(
     name = "index-forest",
     srcs = ["index.ts"],
     deps = [
-        "//devtools/projects/protocol",
-        "@npm//@angular/material",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
@@ -16,8 +16,8 @@ ts_test_library(
     name = "index_forest_test",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
-        ":index-forest",
-        "//devtools/projects/protocol",
+        ":index-forest_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

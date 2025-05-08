@@ -7,7 +7,7 @@
  */
 
 import {Component, input, model, output} from '@angular/core';
-import {ProfilerFrame} from 'protocol';
+import {ProfilerFrame} from '../../../../../../protocol';
 
 import {VisualizationMode} from './visualization-mode';
 import {MatButton} from '@angular/material/button';

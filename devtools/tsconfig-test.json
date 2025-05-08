@@ -9,7 +9,6 @@
         ]
       }
     ],
-    "sourceMap": false,
     "types": ["jasmine", "node"],
   }
 }
