@@ -466,10 +466,26 @@ export class NgModuleDecoratorHandler
       }
     }
 
-    const schemas =
-      this.compilationMode !== CompilationMode.LOCAL && ngModule.has('schemas')
-        ? extractSchemas(ngModule.get('schemas')!, this.evaluator, 'NgModule')
-        : [];
+    let schemas: SchemaMetadata[] | undefined;
+    try {
+      schemas =
+        this.compilationMode !== CompilationMode.LOCAL && ngModule.has('schemas')
+          ? extractSchemas(ngModule.get('schemas')!, this.evaluator, 'NgModule')
+          : [];
+    } catch (e) {
+      if (e instanceof FatalDiagnosticError) {
+        diagnostics.push(e.toDiagnostic());
+
+        // Use an empty schema array if schema extract fails.
+        // A build will still fail in this case. However, for the language service,
+        // this allows the module to exist in the compiler registry and prevents
+        // cascading diagnostics within an IDE due to "missing" components. The
+        // originating schema related errors will still be reported in the IDE.
+        schemas = [];
+      } else {
+        throw e;
+      }
+    }
 
     let id: Expression | null = null;
     if (ngModule.has('id')) {
