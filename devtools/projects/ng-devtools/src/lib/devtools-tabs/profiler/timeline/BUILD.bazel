@@ -1,7 +1,7 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -71,7 +71,7 @@ ts_test_library(
         "filter.spec.ts",
         "timeline.component.spec.ts",
     ],
-    deps = [
+    interop_deps = [
         ":timeline",
     ],
 )

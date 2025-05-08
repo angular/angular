@@ -7,7 +7,7 @@
  */
 
 import {Component, computed, input, output} from '@angular/core';
-import {PropType} from 'protocol';
+import {PropType} from '../../../../../../../protocol';
 
 import {FlatNode} from '../../property-resolver/element-property-resolver';
 

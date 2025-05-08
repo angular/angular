@@ -35,7 +35,7 @@ ts_library(
         "devtools.ts",
     ],
     deps = [
-        "@npm//@types/chrome",
+        "//:node_modules/@types/chrome",
     ],
 )
 

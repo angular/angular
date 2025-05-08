@@ -23,7 +23,7 @@ import {
 } from '@angular/core';
 import {createCustomElement} from '@angular/elements';
 import {RouterOutlet} from '@angular/router';
-import {initializeMessageBus} from 'ng-devtools-backend';
+import {initializeMessageBus} from '../../../../ng-devtools-backend';
 
 import {ZoneUnawareIFrameMessageBus} from '../../../../../src/zone-unaware-iframe-message-bus';
 

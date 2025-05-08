@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initializeMessageBus} from 'ng-devtools-backend';
+import {initializeMessageBus} from '../../../ng-devtools-backend';
 
 import {unHighlight} from '../../../ng-devtools-backend/src/lib/highlighter';
 

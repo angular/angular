@@ -7,7 +7,7 @@
  */
 
 import * as d3 from 'd3';
-import {Route} from 'protocol';
+import {Route} from '../../../../../protocol';
 
 let arrowDefId = 0;
 
