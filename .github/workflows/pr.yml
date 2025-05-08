@@ -114,7 +114,7 @@ jobs:
         uses: angular/dev-infra/github-actions/bazel/configure-remote@14c3d6bd2fa5c3231be7bd4b3c0bba68c9d79e94
       - name: Install node modules
         run: yarn install --frozen-lockfile --network-timeout 100000
-      - name: Run CI tests for framework
+      - name: Build artifacts
         run: yarn tsx ./scripts/build/build-packages-dist.mts
       - name: Archive build artifacts
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
