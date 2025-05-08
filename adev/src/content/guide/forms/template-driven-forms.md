@@ -98,7 +98,7 @@ In the course of this tutorial, you bind a sample form to data and handle user i
 <docs-code header="src/styles.css" path="adev/src/content/examples/forms/src/styles.1.css"/>
 
 1. The form requires that an actor's skill is chosen from a predefined list of `skills` maintained internally in `ActorFormComponent`.
-   The Angular [NgForOf directive](api/common/NgForOf 'API reference') iterates over the data values to populate the `<select>` element.
+   The Angular `@for` loop iterates over the data values to populate the `<select>` element.
 
 <docs-code header="src/app/actor-form/actor-form.component.html (skills)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="skills"/>
 
