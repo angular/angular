@@ -6,7 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Directive, ElementRef, inject, input, OnInit, output} from '@angular/core';
+import {
+  afterNextRender,
+  computed,
+  Directive,
+  ElementRef,
+  inject,
+  input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  output,
+  Renderer2,
+} from '@angular/core';
 import {SplitComponent} from '../../vendor/angular-split/public_api';
 
 const RESIZE_DEBOUNCE = 50; // in milliseconds
@@ -14,39 +26,46 @@ const RESIZE_DEBOUNCE = 50; // in milliseconds
 export type Direction = 'vertical' | 'horizontal';
 
 export type ResponsiveSplitConfig = {
-  /** Default direction of the as-split */
+  /** Default direction of the as-split (when < `aspectRatioBreakpoint`) */
   defaultDirection: Direction;
-  /** Rules that describe the responsive behavior of the as-split. If the ratio is equal or grater than `aboveRatio`, the provided `direction` will be applied. */
-  rules: {
-    aboveRatio: number;
-    direction: Direction;
-  }[];
+  /** Width to height ratio. If greater than or equal, `breakpointDirection` is applied. */
+  aspectRatioBreakpoint: number;
+  /** Default direction of the as-split (when >= `aspectRatioBreakpoint`) */
+  breakpointDirection: Direction;
 };
 
 /** Make as-split direction responsive. */
 @Directive({
   selector: 'as-split[ngResponsiveSplit]',
-  host: {
-    '(window:resize)': 'onWindowResize()',
-  },
 })
-export class ResponsiveSplitDirective implements OnInit {
+export class ResponsiveSplitDirective implements OnInit, OnDestroy {
   private readonly host = inject(SplitComponent);
   private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly zone = inject(NgZone);
   private resizeTimeout?: ReturnType<typeof setTimeout>;
+  private resizeUnlisten?: () => void;
 
   protected readonly config = input.required<ResponsiveSplitConfig>({
     alias: 'ngResponsiveSplit',
   });
 
-  private readonly rules = computed(() =>
-    this.config().rules.sort((a, b) => b.aboveRatio - a.aboveRatio),
-  );
-
   protected readonly directionChange = output<Direction>();
 
+  constructor() {
+    afterNextRender({
+      write: () => this.applyDirection(),
+    });
+  }
+
   ngOnInit() {
-    this.applyDirection();
+    this.zone.runOutsideAngular(() => {
+      this.resizeUnlisten = this.renderer.listen('window', 'resize', () => this.onWindowResize());
+    });
+  }
+
+  ngOnDestroy() {
+    this.resizeUnlisten?.();
   }
 
   protected onWindowResize() {
@@ -59,13 +78,11 @@ export class ResponsiveSplitDirective implements OnInit {
   private applyDirection() {
     const {clientWidth, clientHeight} = this.elementRef.nativeElement;
     const ratio = clientWidth / clientHeight;
-    let newDir: Direction = this.config().defaultDirection;
+    const {defaultDirection, breakpointDirection, aspectRatioBreakpoint} = this.config();
+    let newDir: Direction = defaultDirection;
 
-    for (const rule of this.rules()) {
-      if (ratio >= rule.aboveRatio) {
-        newDir = rule.direction;
-        break;
-      }
+    if (ratio >= aspectRatioBreakpoint) {
+      newDir = breakpointDirection;
     }
 
     if (this.host.direction !== newDir) {

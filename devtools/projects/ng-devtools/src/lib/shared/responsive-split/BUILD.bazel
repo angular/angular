@@ -18,12 +18,14 @@ ng_project(
 ts_test_library(
     name = "responsive-split_test",
     srcs = ["responsive-split.directive.spec.ts"],
-    deps = [
-        ":responsive-split",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
+    interop_deps = [
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
+    ],
+    deps = [
+        ":responsive-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
     ],
 )
 
