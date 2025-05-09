@@ -21,7 +21,7 @@ class PetCareDashboardComponent {
 
 <docs-step title="Inject the `CarService`">
 
-In `app.component.ts`, using the `inject()` function inject the `CarService` and assign it to a property called `carService`
+In `app.ts`, using the `inject()` function inject the `CarService` and assign it to a property called `carService`
 
 NOTE: Notice the difference between the property `carService` and the class `CarService`.
 
@@ -31,7 +31,7 @@ NOTE: Notice the difference between the property `carService` and the class `Car
 
 Calling `inject(CarService)` gave you an instance of the `CarService` that you can use in your application, stored in the `carService` property.
 
-In the `constructor` function of the `AppComponent`, add the following implementation:
+In the `constructor` function of the `App`, add the following implementation:
 
 ```ts
 constructor() {
@@ -41,9 +41,9 @@ constructor() {
 
 </docs-step>
 
-<docs-step title="Update the `AppComponent` template">
+<docs-step title="Update the `App` template">
 
-Update the component template in `app.component.ts` with the following code:
+Update the component template in `app.ts` with the following code:
 
 ```ts
 template: `<p>Car Listing: {{ display }}</p>`,

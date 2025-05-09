@@ -59,24 +59,24 @@ In the **Terminal** pane of your IDE:
 </docs-step>
 
 <docs-step title="Add the new component to your app's layout">
-In this step, you add the new component, `HomeComponent` to your app's root component, `AppComponent`, so that it displays in your app's layout.
+In this step, you add the new component, `HomeComponent` to your app's root component, `App`, so that it displays in your app's layout.
 
 In the **Edit** pane of your IDE:
 
-1. Open `app.component.ts` in the editor.
-1. In `app.component.ts`, import `HomeComponent` by adding this line to the file level imports.
+1. Open `app.ts` in the editor.
+1. In `app.ts`, import `HomeComponent` by adding this line to the file level imports.
 
-    <docs-code header="Import HomeComponent in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[2]"/>
+    <docs-code header="Import HomeComponent in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[2]"/>
 
-1. In `app.component.ts`, in `@Component`, update the `imports` array property and add `HomeComponent`.
+1. In `app.ts`, in `@Component`, update the `imports` array property and add `HomeComponent`.
 
-    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[7]"/>
+    <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[7]"/>
 
-1. In `app.component.ts`, in `@Component`, update the `template` property to include the following HTML code.
+1. In `app.ts`, in `@Component`, update the `template` property to include the following HTML code.
 
-    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[8,17]"/>
+    <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[8,17]"/>
 
-1. Save your changes to  `app.component.ts`.
+1. Save your changes to  `app.ts`.
 1. If `ng serve` is running, the app should update.
     If `ng serve` is not running, start it again.
     *Hello world* in your app should change to *home works!* from the `HomeComponent`.

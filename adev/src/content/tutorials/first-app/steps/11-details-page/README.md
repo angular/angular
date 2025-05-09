@@ -102,11 +102,11 @@ To access the data you will add a call to the `HousingService`.
 </docs-step>
 
 <docs-step title="Add navigation to the `HomeComponent`">
-In a previous lesson you updated the `AppComponent` template to include a `routerLink`. Adding that code updated your app to enable navigation back to the `HomeComponent` whenever the logo is clicked.
+In a previous lesson you updated the `App` template to include a `routerLink`. Adding that code updated your app to enable navigation back to the `HomeComponent` whenever the logo is clicked.
 
 1. Confirm that your code matches the following:
 
-    <docs-code header="Add routerLink to AppComponent" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.component.ts" visibleLines="[8,20]"/>
+    <docs-code header="Add routerLink to App" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[8,20]"/>
 
     Your code may already be up-to-date but confirm to be sure.
 </docs-step>
