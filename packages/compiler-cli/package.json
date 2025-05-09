@@ -56,6 +56,9 @@
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "typescript": ">=5.5 <5.9"
   },
+  "devDependencies": {
+    "@angular/compiler": "workspace:*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git",

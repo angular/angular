@@ -1,7 +1,8 @@
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("@npm2//:defs.bzl", "npm_link_all_packages")
 load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
 load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_library")
-load("//tools:defaults2.bzl", "ts_config")
+load("//tools:defaults2.bzl", "npm_package", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -12,6 +13,8 @@ PUBLIC_TARGETS = [
     "//packages/compiler-cli/linker",
     "//packages/compiler-cli/linker/babel",
 ]
+
+npm_link_all_packages()
 
 ts_config(
     name = "tsconfig_build",
@@ -141,6 +144,21 @@ pkg_npm(
         ":api_type_definitions",
         ":bundles",
     ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making compiler-cli usable in `rules_angular`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    data = [
+        # Needed because compiler is a dev dependency (to satisfy the peer dependency)
+        # and `rules_js` only makes transitive production dependencies available.
+        ":node_modules/@angular/compiler",
+    ],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )
 
 api_golden_test(
