@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DataKey} from './api/data';
 import {MetadataKey} from './api/metadata';
 import {type FieldContext, type FieldPath, type FormError, type LogicFn} from './api/types';
 import {FieldNode} from './field_node';
@@ -20,6 +21,11 @@ export interface Predicate {
   readonly path: FieldPath<any>;
 }
 
+export interface DataDefinition {
+  readonly factory: LogicFn<unknown, unknown>;
+  readonly initializer?: (value: unknown) => void;
+}
+
 /**
  * Logic associated with a particular location (path) in a form.
  *
@@ -32,6 +38,8 @@ export class FieldLogicNode {
   readonly errors: ArrayMergeLogic<FormError>;
 
   private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
+
+  readonly dataFactories = new Map<DataKey<unknown>, (ctx: FieldContext<unknown>) => unknown>();
   private readonly children = new Map<PropertyKey, FieldLogicNode>();
 
   private constructor(private predicate: Predicate | undefined) {
@@ -51,14 +59,6 @@ export class FieldLogicNode {
     return this.metadata.get(key as MetadataKey<unknown>)! as AbstractLogic<T>;
   }
 
-  readMetadata<T>(key: MetadataKey<T>, arg: FieldContext<any>): T {
-    if (this.metadata.has(key as MetadataKey<unknown>)) {
-      return this.metadata.get(key as MetadataKey<unknown>)!.compute(arg) as T;
-    } else {
-      return key.defaultValue;
-    }
-  }
-
   /**
    * Get or create a child `LogicNode` for the given property.
    */
@@ -74,6 +74,15 @@ export class FieldLogicNode {
     this.hidden.mergeIn(other.hidden);
     this.disabled.mergeIn(other.disabled);
     this.errors.mergeIn(other.errors);
+
+    // Merge data
+    for (const [key, def] of other.dataFactories) {
+      if (this.dataFactories.has(key)) {
+        // TODO: name the key in the error message?
+        throw new Error(`Duplicate definition`);
+      }
+      this.dataFactories.set(key, def);
+    }
 
     // Merge metadata.
     for (const key of other.metadata.keys()) {
@@ -148,7 +157,7 @@ class ArrayMergeLogic<TElement> extends AbstractLogic<
 
 class MetadataMergeLogic<T> extends AbstractLogic<T> {
   override get defaultValue() {
-    return this.key.defaultValue;
+    return this.key.defaultValue();
   }
 
   constructor(
@@ -158,8 +167,15 @@ class MetadataMergeLogic<T> extends AbstractLogic<T> {
     super(predicate);
   }
 
-  override compute(arg: FieldContext<any>): T {
-    return this.fns.reduce((prev, fn) => this.key.merge(prev, fn(arg)), this.key.defaultValue);
+  override compute(ctx: FieldContext<any>): T {
+    if (this.fns.length === 0) {
+      return this.key.defaultValue();
+    }
+    let value = this.fns[0](ctx);
+    for (let i = 1; i < this.fns.length; i++) {
+      value = this.key.merge(value, this.fns[i](ctx));
+    }
+    return value;
   }
 }
 

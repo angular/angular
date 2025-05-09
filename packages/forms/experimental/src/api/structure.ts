@@ -6,12 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WritableSignal} from '@angular/core';
+import {inject, Injector, WritableSignal} from '@angular/core';
 
-import {FieldNode} from '../field_node';
+import {FieldNode, FormFieldManager} from '../field_node';
 import {FieldPathNode, FieldRootPathNode} from '../path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema';
 import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
+
+export interface FormOptions {
+  injector?: Injector;
+}
 
 /**
  * Creates a form wrapped around the given model data. A form is represented as simply a `Field` of
@@ -51,12 +55,20 @@ import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
  * @return A `Field` representing a form around the data model.
  * @template The type of the data model.
  */
-export function form<T>(model: WritableSignal<T>, schema?: NoInfer<Schema<T>>): Field<T> {
+export function form<T>(
+  model: WritableSignal<T>,
+  schema?: NoInfer<Schema<T>>,
+  options?: FormOptions,
+): Field<T> {
+  const injector = options?.injector ?? inject(Injector);
   const pathNode = new FieldRootPathNode(undefined);
   if (schema !== undefined) {
     new SchemaImpl(schema).apply(pathNode);
   }
-  const fieldRoot = FieldNode.newRoot(model, pathNode);
+  const fieldManager = new FormFieldManager(injector);
+  const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
+  fieldManager.createFieldManagementEffect(fieldRoot);
+
   return fieldRoot.fieldProxy as Field<T>;
 }
 

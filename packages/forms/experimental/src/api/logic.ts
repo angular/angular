@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DISABLED_REASON, MetadataKey, REQUIRED} from '../api/metadata';
+import {MetadataKey, DISABLED_REASON, REQUIRED} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import type {FieldPath, FormError, LogicFn, Validator} from './types';
@@ -21,15 +21,22 @@ import type {FieldPath, FormError, LogicFn, Validator} from './types';
  */
 export function disabled<T>(
   path: FieldPath<T>,
-  logic: NoInfer<LogicFn<T, boolean>>,
-  reason?: string,
+  logic: NoInfer<LogicFn<T, boolean | string>>,
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const reasonFn: LogicFn<T, string> = (ctx) => (logic(ctx) ? (reason ?? '') : '');
-  pathNode.logic.disabled.push(logic);
-  pathNode.logic.getMetadata(DISABLED_REASON).push(reasonFn);
+  const reasonFn: LogicFn<T, readonly string[]> = (ctx) => {
+    const result = logic(ctx);
+    if (typeof result === 'string') {
+      return [result];
+    } else {
+      return [];
+    }
+  };
+
+  pathNode.logic.disabled.push((ctx) => Boolean(logic(ctx)));
+  metadata(path, DISABLED_REASON, reasonFn);
 }
 
 /**
