@@ -35,6 +35,8 @@ For collections that remain static , `track $index` provides a straightforward t
 collections experiencing additions, deletions, or reordering, opt for a
 unique property of each item as the tracking key.
 
+Track expressions can only reference `$index`, the item, and fields from the component class. If the `let` segment of the `@for` block introduced an alias for `$index`, that alias may also be referenced.
+
 ### `$index` and other contextual variables
 
 Inside `@for` contents, several implicit variables are always available:
