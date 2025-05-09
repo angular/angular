@@ -624,7 +624,7 @@ export class TestBedImpl implements TestBed {
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
 
-    if (getAsyncClassMetadataFn(type)) {
+    if (getAsyncClassMetadataFn(type) && this.compiler.hasPendingOverrides()) {
       throw new Error(
         `Component '${type.name}' has unresolved metadata. ` +
           `Please call \`await TestBed.compileComponents()\` before running this test.`,

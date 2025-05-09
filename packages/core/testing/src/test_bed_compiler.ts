@@ -493,6 +493,14 @@ export class TestBedCompiler {
     }, [] as ComponentFactory<any>[]);
   }
 
+  hasPendingOverrides(): boolean {
+    return (
+      this.pendingComponents.size !== 0 ||
+      this.pendingDirectives.size !== 0 ||
+      this.pendingPipes.size !== 0
+    );
+  }
+
   private compileTypesSync(): boolean {
     // Compile all queued components, directives, pipes.
     let needsAsyncResources = false;
