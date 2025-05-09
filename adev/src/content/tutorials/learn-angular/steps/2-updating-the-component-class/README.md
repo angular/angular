@@ -11,15 +11,15 @@ In this activity, you'll learn how to update the component class and how to use 
 <docs-workflow>
 
 <docs-step title="Add a property called `city`">
-Update the component class by adding a property called `city` to the `AppComponent` class.
+Update the component class by adding a property called `city` to the `App` class.
 
 ```ts
-export class AppComponent {
+export class App {
   city = 'San Francisco';
 }
 ```
 
-The `city` property is of type `string` but you can omit the type because of [type inference in TypeScript](https://www.typescriptlang.org/docs/handbook/type-inference.html). The `city` property can be used in the `AppComponent` class and can be referenced in the component template.
+The `city` property is of type `string` but you can omit the type because of [type inference in TypeScript](https://www.typescriptlang.org/docs/handbook/type-inference.html). The `city` property can be used in the `App` class and can be referenced in the component template.
 
 <br>
 
