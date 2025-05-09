@@ -20,12 +20,16 @@ import {
   TmplAstReference,
   TmplAstTextAttribute,
   TmplAstVariable,
+  TmplAstComponent,
+  TmplAstDirective,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {DirectiveMeta, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {
   DirectiveSymbol,
+  SelectorlessComponentSymbol,
+  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   TcbLocation,
@@ -216,6 +220,17 @@ export function getTargetDetailsAtTemplatePosition(
         });
         break;
       }
+      case SymbolKind.SelectorlessDirective:
+      case SymbolKind.SelectorlessComponent:
+        const dirPosition = getPositionForDirective(symbol);
+        if (dirPosition !== null) {
+          details.push({
+            typescriptLocations: [dirPosition],
+            templateTarget,
+            symbol,
+          });
+        }
+        break;
     }
   }
 
@@ -228,17 +243,31 @@ export function getTargetDetailsAtTemplatePosition(
 function getPositionsForDirectives(directives: Set<DirectiveSymbol>): FilePosition[] {
   const allDirectives: FilePosition[] = [];
   for (const dir of directives.values()) {
-    const dirClass = dir.tsSymbol.valueDeclaration;
-    if (dirClass === undefined || !ts.isClassDeclaration(dirClass) || dirClass.name === undefined) {
-      continue;
+    const position = getPositionForDirective(dir);
+    if (position !== null) {
+      allDirectives.push(position);
     }
+  }
+  return allDirectives;
+}
 
-    const {fileName} = dirClass.getSourceFile();
-    const position = dirClass.name.getStart();
-    allDirectives.push({fileName, position});
+/** Gets the `FilePosition` for a single directive symbol. */
+function getPositionForDirective(
+  directive: DirectiveSymbol | SelectorlessComponentSymbol | SelectorlessDirectiveSymbol,
+): FilePosition | null {
+  const declaration = directive.tsSymbol?.valueDeclaration;
+
+  if (
+    declaration !== undefined &&
+    ts.isClassDeclaration(declaration) &&
+    declaration.name !== undefined
+  ) {
+    const {fileName} = declaration.getSourceFile();
+    const position = declaration.name.getStart();
+    return {fileName, position};
   }
 
-  return allDirectives;
+  return null;
 }
 
 /**
@@ -358,8 +387,10 @@ export function getRenameTextAndSpanAtPosition(
       span.length -= 2;
     }
     return {text, span};
-  } else if (node instanceof TmplAstElement) {
+  } else if (node instanceof TmplAstElement || node instanceof TmplAstDirective) {
     return {text: node.name, span: toTextSpan(node.startSourceSpan)};
+  } else if (node instanceof TmplAstComponent) {
+    return {text: node.componentName, span: toTextSpan(node.startSourceSpan)};
   }
 
   return null;
@@ -379,4 +410,73 @@ export function getParentClassMeta(
     return null;
   }
   return compiler.getMeta(parentClass);
+}
+
+/**
+ * Converts a given `ts.DocumentSpan` in a shim file into one or more spans in the template,
+ * representing a selectorless component or directive. There can be more than one return value
+ * when a component has a closing tag.
+ */
+export function getSelectorlessTemplateSpanFromTcbLocations(
+  shimDocumentSpan: ts.DocumentSpan,
+  templateTypeChecker: TemplateTypeChecker,
+  program: ts.Program,
+  node: TmplAstComponent | TmplAstDirective,
+): ts.DocumentSpan[] | null {
+  const sf = program.getSourceFile(shimDocumentSpan.fileName);
+  if (sf === undefined) {
+    return null;
+  }
+
+  let tcbNode = findTightestNode(sf, shimDocumentSpan.textSpan.start);
+  if (tcbNode === undefined) {
+    return null;
+  }
+
+  // Variables in the typecheck block are generated with the type on the right hand
+  // side: `var _t1 = null! as i1.DirA`. Finding references of DirA will return the type
+  // assertion and we need to map it back to the variable identifier _t1.
+  if (hasExpressionIdentifier(sf, tcbNode, ExpressionIdentifier.VARIABLE_AS_EXPRESSION)) {
+    while (tcbNode && !ts.isVariableDeclaration(tcbNode)) {
+      tcbNode = tcbNode.parent;
+    }
+  }
+
+  const mapping = getTemplateLocationFromTcbLocation(
+    templateTypeChecker,
+    absoluteFrom(shimDocumentSpan.fileName),
+    /* tcbIsShim */ true,
+    tcbNode.getStart(),
+  );
+
+  if (mapping === null) {
+    return null;
+  }
+
+  const fileName = mapping.templateUrl;
+  const {length} = node instanceof TmplAstComponent ? node.componentName : node.name;
+  const spans: ts.DocumentSpan[] = [
+    {
+      fileName,
+      textSpan: {
+        // +1 because of the opening `<` or `@`.
+        start: node.startSourceSpan.start.offset + 1,
+        length,
+      },
+    },
+  ];
+
+  // If it's not a self-closing template tag, we need to rename the end tag too.
+  if (node instanceof TmplAstComponent && node.endSourceSpan?.toString().startsWith('</')) {
+    spans.push({
+      fileName,
+      textSpan: {
+        // +2 because of the `</`.
+        start: node.endSourceSpan.start.offset + 2,
+        length,
+      },
+    });
+  }
+
+  return spans;
 }
