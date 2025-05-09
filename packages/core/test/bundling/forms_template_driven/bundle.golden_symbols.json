@@ -89,6 +89,7 @@
   "InjectionToken",
   "Injector",
   "InputFlags",
+  "ISOLATED_SHADOW_DOM",
   "IterableChangeRecord_",
   "IterableDiffers",
   "KeyEventsPlugin",
