@@ -3,7 +3,7 @@
     <docs-text-field
       [autofocus]="true"
       [hideIcon]="true"
-      [(ngModel)]="searchQuery"
+      [formControl]="searchControl"
       [resetLabel]="'Clear the search'"
       class="docs-search-input"
       placeholder="Search docs"

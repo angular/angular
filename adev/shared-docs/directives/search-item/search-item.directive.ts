@@ -17,6 +17,8 @@ import {SearchResultItem} from '../../interfaces';
   },
 })
 export class SearchItem implements Highlightable {
+  // Those inputs are required by the Highlightable interface
+  // We can't migrate them to signals yet
   @Input() item?: SearchResultItem;
   @Input() disabled = false;
 
