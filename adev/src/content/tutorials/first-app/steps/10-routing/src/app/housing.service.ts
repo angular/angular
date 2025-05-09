@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
-import {HousingLocation} from './housinglocation';
+import {HousingLocationInfo} from './housinglocation';
 @Injectable({
   providedIn: 'root',
 })
 export class HousingService {
   readonly baseUrl = 'https://angular.dev/assets/images/tutorials/common';
 
-  protected housingLocationList: HousingLocation[] = [
+  protected housingLocationList: HousingLocationInfo[] = [
     {
       id: 0,
       name: 'Acme Fresh Start Housing',
@@ -109,11 +109,11 @@ export class HousingService {
     },
   ];
 
-  getAllHousingLocations(): HousingLocation[] {
+  getAllHousingLocations(): HousingLocationInfo[] {
     return this.housingLocationList;
   }
 
-  getHousingLocationById(id: number): HousingLocation | undefined {
+  getHousingLocationById(id: number): HousingLocationInfo | undefined {
     return this.housingLocationList.find((housingLocation) => housingLocation.id === id);
   }
 }

@@ -2,5 +2,5 @@
   "title": "Create an interface",
   "type": "editor",
   "answerSrc": "../05-inputs/src",
-  "openFiles": ["src/app/home/home.component.ts"]
+  "openFiles": ["src/app/home/home.ts"]
 }

@@ -1,4 +1,4 @@
-export interface HousingLocation {
+export interface HousingLocationInfo {
   id: number;
   name: string;
   city: string;
