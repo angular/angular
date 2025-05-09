@@ -3,7 +3,6 @@
   "baseBranches": ["main", "20.0.x"],
   "enabledManagers": ["npm", "bazel", "github-actions", "nvm"],
   "rangeStrategy": "replace",
-  "pinDigests": true,
   "semanticCommits": "enabled",
   "semanticCommitScope": "",
   "semanticCommitType": "build",
