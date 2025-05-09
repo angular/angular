@@ -6,7 +6,7 @@ import {Component} from '@angular/core';
     Username: {{ username }}
   `,
 })
-export class UserComponent {
+export class User {
   username = 'youngTech';
 }
 
@@ -17,6 +17,6 @@ export class UserComponent {
       <app-user />
     </section>
   `,
-  imports: [UserComponent],
+  imports: [User],
 })
 export class App {}

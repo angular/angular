@@ -14,7 +14,7 @@ To inject a service or some other injectable resource into your component use th
 
 <docs-code language="ts" highlight="[3]">
 @Component({...})
-class PetCarDashboardComponent {
+class PetCarDashboard {
     constructor(private petCareService: PetCareService) {
         ...
     }

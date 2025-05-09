@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ChildComponent} from './child.component';
+import {Child} from './child';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +7,7 @@ import {ChildComponent} from './child.component';
     <app-child />
     <p>🐢 all the way down {{ items.length }}</p>
   `,
-  imports: [ChildComponent],
+  imports: [Child],
 })
 export class App {
   items = new Array();

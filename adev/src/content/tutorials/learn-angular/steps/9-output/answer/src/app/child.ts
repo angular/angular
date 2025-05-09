@@ -7,7 +7,7 @@ import {Component, Output, EventEmitter} from '@angular/core';
     <button class="btn" (click)="addItem()">Add Item</button>
   `,
 })
-export class ChildComponent {
+export class Child {
   @Output() addItemEvent = new EventEmitter<string>();
 
   addItem() {

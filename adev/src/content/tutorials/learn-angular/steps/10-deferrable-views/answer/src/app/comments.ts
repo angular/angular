@@ -10,4 +10,4 @@ import {Component} from '@angular/core';
     </ul>
   `,
 })
-export class CommentsComponent {}
+export class Comments {}

@@ -10,16 +10,16 @@ In this activity, you'll learn how to compose components.
 
 <hr/>
 
-In this example, there are two components `UserComponent` and `App`.
+In this example, there are two components `User` and `App`.
 
 <docs-workflow>
 
-<docs-step title="Add a reference to `UserComponent`">
-Update the `App` template to include a reference to the `UserComponent` which uses the selector `app-user`. Be sure to add `UserComponent` to the imports array of `App`, this makes it available for use in the `App` template.
+<docs-step title="Add a reference to `User`">
+Update the `App` template to include a reference to the `User` which uses the selector `app-user`. Be sure to add `User` to the imports array of `App`, this makes it available for use in the `App` template.
 
 ```ts
 template: `<app-user />`,
-imports: [UserComponent]
+imports: [User]
 ```
 
 The component now displays the message `Username: youngTech`. You can update the template code to include more markup.

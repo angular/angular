@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {CommentsComponent} from './comments.component';
+import {Comments} from './comments';
 
 @Component({
   selector: 'app-root',
@@ -62,6 +62,6 @@ import {CommentsComponent} from './comments.component';
       }
     </div>
   `,
-  imports: [CommentsComponent],
+  imports: [Comments],
 })
 export class App {}
