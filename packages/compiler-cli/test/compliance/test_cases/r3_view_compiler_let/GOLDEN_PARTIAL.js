@@ -792,3 +792,159 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: let_in_i18n.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.value = 1;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div i18n>
+      @let result = value * 2;
+      The result is {{result}}
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div i18n>
+      @let result = value * 2;
+      The result is {{result}}
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: let_in_i18n.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    value: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: let_in_child_view_inside_i18n.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.value = 1;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div i18n>
+      @let result = value * 2;
+      <ng-template>The result is {{result}}</ng-template>
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div i18n>
+      @let result = value * 2;
+      <ng-template>The result is {{result}}</ng-template>
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: let_in_child_view_inside_i18n.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    value: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: let_in_i18n_and_child_view.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.value = 1;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div i18n>
+      @let result = value * 2;
+      The result is {{result}}
+      <ng-template>To repeat, the result is {{result}}</ng-template>
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div i18n>
+      @let result = value * 2;
+      The result is {{result}}
+      <ng-template>To repeat, the result is {{result}}</ng-template>
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: let_in_i18n_and_child_view.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    value: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: let_preceded_by_i18n.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.value = 1;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div i18n>Hello {{value}}</div>
+    @let result = value * 2;
+    <ng-template>The result is {{result}}</ng-template>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div i18n>Hello {{value}}</div>
+    @let result = value * 2;
+    <ng-template>The result is {{result}}</ng-template>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: let_preceded_by_i18n.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    value: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
