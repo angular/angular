@@ -24,13 +24,13 @@ import {
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
+import {RuntimeErrorCode} from '../errors';
 import {Event, NavigationEnd} from '../events';
 import {QueryParamsHandling} from '../models';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {Params} from '../shared';
 import {isUrlTree, UrlTree} from '../url_tree';
-import {RuntimeErrorCode} from '../errors';
 
 /**
  * @description
@@ -259,7 +259,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     this.applyAttributeValue('tabindex', newTabIndex);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   // TODO(atscott): Remove changes parameter in major version as a breaking change.
   ngOnChanges(changes?: SimpleChanges) {
     if (
@@ -312,7 +312,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   @HostListener('click', [
     '$event.button',
     '$event.ctrlKey',
@@ -357,7 +357,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     return !this.isAnchorElement;
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): any {
     this.subscription?.unsubscribe();
   }

@@ -144,7 +144,7 @@ export class RadioControlValueAccessor
    * Note: we declare `onChange` here (also used as host listener) as a function with no arguments
    * to override the `onChange` function (which expects 1 argument) in the parent
    * `BaseControlValueAccessor` class.
-   * @nodoc
+   * @docs-private
    */
   override onChange = () => {};
 
@@ -179,21 +179,21 @@ export class RadioControlValueAccessor
     super(renderer, elementRef);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnInit(): void {
     this._control = this._injector.get(NgControl);
     this._checkName();
     this._registry.add(this._control, this);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     this._registry.remove(this);
   }
 
   /**
    * Sets the "checked" property value on the radio input element.
-   * @nodoc
+   * @docs-private
    */
   writeValue(value: any): void {
     this._state = value === this.value;
@@ -202,7 +202,7 @@ export class RadioControlValueAccessor
 
   /**
    * Registers a function called when the control value changes.
-   * @nodoc
+   * @docs-private
    */
   override registerOnChange(fn: (_: any) => {}): void {
     this._fn = fn;
@@ -212,7 +212,7 @@ export class RadioControlValueAccessor
     };
   }
 
-  /** @nodoc */
+  /** @docs-private */
   override setDisabledState(isDisabled: boolean): void {
     /**
      * `setDisabledState` is supposed to be called whenever the disabled state of a control changes,

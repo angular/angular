@@ -8,7 +8,7 @@
 const $localize_2: LocalizeFn;
 export { $localize_2 as $localize }
 
-// @public (undocumented)
+// @public
 export interface LocalizeFn {
     // (undocumented)
     (messageParts: TemplateStringsArray, ...expressions: readonly any[]): string;
@@ -16,7 +16,7 @@ export interface LocalizeFn {
     translate?: TranslateFn;
 }
 
-// @public (undocumented)
+// @public
 export interface TranslateFn {
     // (undocumented)
     (messageParts: TemplateStringsArray, expressions: readonly any[]): [TemplateStringsArray, readonly any[]];

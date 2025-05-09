@@ -154,7 +154,7 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
    */
   abstract normalizeInput(input: unknown): unknown;
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges): void {
     if (this.inputName in changes) {
       const input = this.normalizeInput(changes[this.inputName].currentValue);
@@ -166,12 +166,12 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   validate(control: AbstractControl): ValidationErrors | null {
     return this._validator(control);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   registerOnValidatorChange(fn: () => void): void {
     this._onChange = fn;
   }
@@ -397,7 +397,7 @@ export class RequiredValidator extends AbstractValidatorDirective {
   /** @internal */
   override createValidator = (input: boolean): ValidatorFn => requiredValidator;
 
-  /** @nodoc */
+  /** @docs-private */
   override enabled(input: boolean): boolean {
     return input;
   }
@@ -494,7 +494,7 @@ export class EmailValidator extends AbstractValidatorDirective {
   /** @internal */
   override createValidator = (input: number): ValidatorFn => emailValidator;
 
-  /** @nodoc */
+  /** @docs-private */
   override enabled(input: boolean): boolean {
     return input;
   }

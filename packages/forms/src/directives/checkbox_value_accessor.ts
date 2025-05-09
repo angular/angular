@@ -56,7 +56,7 @@ export class CheckboxControlValueAccessor
 {
   /**
    * Sets the "checked" property on the input element.
-   * @nodoc
+   * @docs-private
    */
   writeValue(value: any): void {
     this.setProperty('checked', value);

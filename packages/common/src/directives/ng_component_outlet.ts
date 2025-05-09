@@ -153,7 +153,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     );
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
     if (this._needToReCreateComponentInstance(changes)) {
       this._viewContainerRef.clear();
@@ -189,7 +189,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngDoCheck() {
     if (this._componentRef) {
       if (this.ngComponentOutletInputs) {
@@ -202,7 +202,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy() {
     this._moduleRef?.destroy();
   }

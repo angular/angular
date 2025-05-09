@@ -12,34 +12,34 @@
 
 import {
   Component,
+  ɵRender3ComponentFactory as ComponentFactory,
   ComponentRef,
-  Directive,
-  EnvironmentInjector,
-  InjectFlags,
-  InjectOptions,
-  Injector,
-  NgModule,
-  NgZone,
-  Pipe,
-  PlatformRef,
-  ProviderToken,
-  runInInjectionContext,
-  Type,
   ɵconvertToBitFlags as convertToBitFlags,
   ɵDeferBlockBehavior as DeferBlockBehavior,
+  Directive,
   ɵEffectScheduler as EffectScheduler,
+  EnvironmentInjector,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
-  ɵRender3ComponentFactory as ComponentFactory,
+  InjectFlags,
+  InjectOptions,
+  Injector,
+  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
+  NgModule,
   ɵRender3NgModuleRef as NgModuleRef,
+  NgZone,
+  Pipe,
+  PlatformRef,
+  ProviderToken,
   ɵresetCompiledComponents as resetCompiledComponents,
+  runInInjectionContext,
   ɵsetAllowDuplicateNgModuleIdsForTest as setAllowDuplicateNgModuleIdsForTest,
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
+  Type,
 } from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
@@ -436,7 +436,7 @@ export class TestBedImpl implements TestBed {
   /**
    * Internal-only flag to indicate whether a module
    * scoping queue has been checked and flushed already.
-   * @nodoc
+   * @docs-private
    */
   globalCompilationChecked = false;
 

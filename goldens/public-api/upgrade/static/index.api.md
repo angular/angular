@@ -54,13 +54,9 @@ export function setAngularLib(ng: any): void;
 // @public
 export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     constructor(name: string, elementRef: ElementRef, injector: Injector);
-    // (undocumented)
     ngDoCheck(): void;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
-    // (undocumented)
     ngOnInit(): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<UpgradeComponent, never, never, {}, {}, never, never, true, never>;

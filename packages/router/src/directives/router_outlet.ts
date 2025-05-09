@@ -17,15 +17,15 @@ import {
   InjectionToken,
   Injector,
   Input,
+  input,
   OnDestroy,
   OnInit,
   Output,
   reflectComponentType,
-  SimpleChanges,
-  ViewContainerRef,
   ɵRuntimeError as RuntimeError,
   Signal,
-  input,
+  SimpleChanges,
+  ViewContainerRef,
 } from '@angular/core';
 import {combineLatest, of, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
@@ -243,10 +243,10 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private location = inject(ViewContainerRef);
   private changeDetector = inject(ChangeDetectorRef);
   private inputBinder = inject(INPUT_BINDER, {optional: true});
-  /** @nodoc */
+  /** @docs-private */
   readonly supportsBindingToComponentInputs = true;
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
     if (changes['name']) {
       const {firstChange, previousValue} = changes['name'];
@@ -266,7 +266,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     // Ensure that the registered outlet is this one before removing it on the context.
     if (this.isTrackedInParentContexts(this.name)) {
@@ -279,7 +279,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     return this.parentContexts.getContext(outletName)?.outlet === this;
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnInit(): void {
     this.initializeOutletWithName();
   }
