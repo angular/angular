@@ -1171,6 +1171,106 @@ describe('quick info', () => {
     });
   });
 
+  describe('selectorless', () => {
+    beforeEach(() => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      project = env.addProject(
+        'test',
+        {
+          'app.ts': `
+            import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
+
+            @Component({template: ''})
+            export class TestComponent {
+              @Input() name!: string;
+              @Output() testEvent = new EventEmitter<string>();
+            }
+
+            @Directive()
+            export class TestDirective {
+              @Input() value!: number;
+              @Output() dirEvent = new EventEmitter<number>();
+            }
+
+            @Component({templateUrl: './app.html'})
+            export class AppCmp {
+              stringValue = 'hello';
+              numberValue = 123;
+              handleEvent() {}
+            }
+          `,
+          'app.html': 'Will be overridden',
+        },
+        {_enableSelectorless: true},
+      );
+    });
+
+    it('should work for selectorless components', () => {
+      expectQuickInfo({
+        templateOverride: '<TestComp¦onent/>',
+        expectedSpanText: '<TestComponent/>',
+        expectedDisplayString: '(component) TestComponent',
+      });
+    });
+
+    it('should work for selectorless directives', () => {
+      expectQuickInfo({
+        templateOverride: '<div @Test¦Directive></div>',
+        expectedSpanText: '@TestDirective',
+        expectedDisplayString: '(directive) TestDirective',
+      });
+    });
+
+    it('should work for selectorless component input', () => {
+      expectQuickInfo({
+        templateOverride: '<TestComponent [na¦me]="stringValue"/>',
+        expectedSpanText: 'name',
+        expectedDisplayString: '(property) TestComponent.name: string',
+      });
+    });
+
+    it('should work for selectorless component output', () => {
+      expectQuickInfo({
+        templateOverride: '<TestComponent (testEv¦ent)="handleEvent()"/>',
+        expectedSpanText: 'testEvent',
+        expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>',
+      });
+    });
+
+    it('should work for selectorless directive input', () => {
+      expectQuickInfo({
+        templateOverride: '<div @TestDirective([val¦ue]="numberValue")></div>',
+        expectedSpanText: 'value',
+        expectedDisplayString: '(property) TestDirective.value: number',
+      });
+    });
+
+    it('should work for selectorless directive output', () => {
+      expectQuickInfo({
+        templateOverride: '<div @TestDirective((dirEv¦ent)="handleEvent()")></div>',
+        expectedSpanText: 'dirEvent',
+        expectedDisplayString: '(event) TestDirective.dirEvent: EventEmitter<number>',
+      });
+    });
+
+    it('should work for selectorless component references', () => {
+      expectQuickInfo({
+        templateOverride: '<TestComponent #r¦ef/>',
+        expectedSpanText: 'ref',
+        expectedDisplayString: '(reference) ref: TestComponent',
+      });
+    });
+
+    it('should work for selectorless directive references', () => {
+      expectQuickInfo({
+        templateOverride: '<div @TestDirective(#r¦ef)></div>',
+        expectedSpanText: 'ref',
+        expectedDisplayString: '(reference) ref: TestDirective',
+      });
+    });
+  });
+
   function expectQuickInfo({
     templateOverride,
     expectedSpanText,
