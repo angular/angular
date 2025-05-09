@@ -111,6 +111,26 @@ export function createModuleAndProjectWithDeclarations(
   return env.addProject(projectName, {...projectFiles, ...standaloneFiles}, angularCompilerOptions);
 }
 
+export function createProjectWithStandaloneDeclarations(
+  env: LanguageServiceTestEnv,
+  projectName: string,
+  projectFiles: ProjectFiles,
+  angularCompilerOptions: TestableOptions = {},
+  standaloneFiles: ProjectFiles = {},
+): Project {
+  const externalClasses: string[] = [];
+  const externalImports: string[] = [];
+  for (const [fileName, fileContents] of Object.entries(projectFiles)) {
+    if (!fileName.endsWith('.ts')) {
+      continue;
+    }
+    const className = getFirstClassDeclaration(fileContents);
+    externalClasses.push(className);
+    externalImports.push(`import {${className}} from './${fileName.replace('.ts', '')}';`);
+  }
+  return env.addProject(projectName, {...projectFiles, ...standaloneFiles}, angularCompilerOptions);
+}
+
 export function humanizeDocumentSpanLike<T extends ts.DocumentSpan>(
   item: T,
   env: LanguageServiceTestEnv,
