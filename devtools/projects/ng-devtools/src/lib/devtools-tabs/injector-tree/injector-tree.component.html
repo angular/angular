@@ -4,7 +4,7 @@
   </p>
 }
 <as-split
-  [class.hidden]="!diDebugAPIsAvailable()"
+  [ngVisible]="diDebugAPIsAvailable()"
   unit="pixel"
   direction="vertical"
   [gutterSize]="9"
@@ -60,11 +60,11 @@
           </as-split-area>
         </as-split>
       </as-split-area>
-      @if (selectedNode() && providers().length > 0) {
+      @if (selectedNode() && sortedProviders().length > 0) {
         <as-split-area size="40" [minSize]="25">
           <ng-injector-providers
             [injector]="selectedNode()!.data.injector"
-            [providers]="providers()"
+            [providers]="sortedProviders()"
           />
         </as-split-area>
       }
