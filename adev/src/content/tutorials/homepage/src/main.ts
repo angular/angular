@@ -12,8 +12,8 @@ import {bootstrapApplication} from '@angular/platform-browser';
   `,
   imports: [FormsModule],
 })
-export class DemoComponent {
+export class Demo {
   name = '';
 }
 
-bootstrapApplication(DemoComponent);
+bootstrapApplication(Demo);

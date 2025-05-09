@@ -14,7 +14,7 @@ In this activity, you'll learn how to set up a form using a template-driven appr
 
 <docs-step title="Create an input field">
 
-In `user.component.ts`, update the template by adding a text input with the `id` set to `framework`, type set to `text`.
+In `user.ts`, update the template by adding a text input with the `id` set to `framework`, type set to `text`.
 
 ```angular-html
 <label for="framework">
@@ -29,7 +29,7 @@ In `user.component.ts`, update the template by adding a text input with the `id`
 
 For this form to use Angular features that enable data binding to forms, you'll need to import the `FormsModule`.
 
-Import the `FormsModule` from `@angular/forms` and add it to the `imports` array of the `UserComponent`.
+Import the `FormsModule` from `@angular/forms` and add it to the `imports` array of the `User`.
 
 <docs-code language="ts" highlight="[2, 7]">
 import {Component} from '@angular/core';
@@ -39,7 +39,7 @@ import {FormsModule} from '@angular/forms';
 ...
 imports: [FormsModule],
 })
-export class UserComponent {}
+export class User {}
 </docs-code>
 
 </docs-step>

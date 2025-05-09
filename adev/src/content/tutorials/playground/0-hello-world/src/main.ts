@@ -7,6 +7,6 @@ import {bootstrapApplication} from '@angular/platform-browser';
     Hello world!
   `,
 })
-export class PlaygroundComponent {}
+export class Playground {}
 
-bootstrapApplication(PlaygroundComponent);
+bootstrapApplication(Playground);

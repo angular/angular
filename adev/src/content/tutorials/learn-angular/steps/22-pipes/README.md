@@ -18,7 +18,7 @@ import {UpperCasePipe} from '@angular/common';
 template: `{{ loudMessage | uppercase }}`,
 imports: [UpperCasePipe],
 })
-class AppComponent {
+class App {
 loudMessage = 'we think you are doing great!'
 }
 </docs-code>
@@ -28,7 +28,7 @@ Now, it's your turn to give this a try:
 <docs-workflow>
 
 <docs-step title="Import the `LowerCase` pipe">
-First, update `app.component.ts` by adding the file level import for `LowerCasePipe` from `@angular/common`.
+First, update `app.ts` by adding the file level import for `LowerCasePipe` from `@angular/common`.
 
 ```ts
 import { LowerCasePipe } from '@angular/common';
@@ -49,7 +49,7 @@ Next, update `@Component()` decorator `imports` to include a reference to `Lower
 </docs-step>
 
 <docs-step title="Add the pipe to the template">
-Finally, in `app.component.ts` update the template to include the `lowercase` pipe:
+Finally, in `app.ts` update the template to include the `lowercase` pipe:
 
 ```ts
 template: `{{username | lowercase }}`

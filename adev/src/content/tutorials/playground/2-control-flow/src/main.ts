@@ -22,7 +22,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
     }
   `,
 })
-export class TodosComponent {
+export class Todos {
   todos: Array<{done: boolean; text: string}> = [];
 
   add(text: string) {
@@ -34,4 +34,4 @@ export class TodosComponent {
   }
 }
 
-bootstrapApplication(TodosComponent);
+bootstrapApplication(Todos);
