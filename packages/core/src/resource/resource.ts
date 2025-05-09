@@ -98,7 +98,8 @@ type WrappedRequest = {request: unknown; reload: number};
 abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly value: WritableSignal<T>;
   abstract readonly status: Signal<ResourceStatus>;
-  abstract readonly error: Signal<unknown>;
+  abstract readonly error: Signal<Error | undefined>;
+
   abstract reload(): boolean;
 
   constructor(value: Signal<T>) {
@@ -117,6 +118,10 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly isLoading = computed(() => this.status() === 'loading' || this.status() === 'reloading');
 
   hasValue(): this is ResourceRef<Exclude<T, undefined>> {
+    if (this.status() === 'error') {
+      return false;
+    }
+
     return this.value() !== undefined;
   }
 
@@ -150,7 +155,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   constructor(
     request: () => R,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
-    private readonly defaultValue: T,
+    defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
     injector: Injector,
   ) {
@@ -160,7 +165,21 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       computed(
         () => {
           const streamValue = this.state().stream?.();
-          return streamValue && isResolved(streamValue) ? streamValue.value : this.defaultValue;
+
+          if (!streamValue) {
+            return defaultValue;
+          }
+
+          // Prevents `hasValue()` from throwing an error when a reload happened in the error state
+          if (this.state().status === 'loading' && this.error()) {
+            return defaultValue;
+          }
+
+          if (!isResolved(streamValue)) {
+            throw new Error('Resource is currently in the error state', {cause: this.error()});
+          }
+
+          return streamValue.value;
         },
         {equal},
       ),
@@ -343,7 +362,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         extRequest,
         status: 'resolved',
         previousStatus: 'error',
-        stream: signal({error: err}),
+        stream: signal({error: encapsulateResourceError(err)}),
       });
     } finally {
       // Resolve the pending task now that the resource has a value.
@@ -378,7 +397,7 @@ function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoade
     try {
       return signal({value: await options.loader(params)});
     } catch (err) {
-      return signal({error: err});
+      return signal({error: encapsulateResourceError(err)});
     }
   };
 }
@@ -397,7 +416,7 @@ function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
     case 'loading':
       return state.extRequest.reload === 0 ? 'loading' : 'reloading';
     case 'resolved':
-      return isResolved(untracked(state.stream!)) ? 'resolved' : 'error';
+      return isResolved(state.stream!()) ? 'resolved' : 'error';
     default:
       return state.status;
   }
@@ -405,4 +424,12 @@ function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
 
 function isResolved<T>(state: ResourceStreamItem<T>): state is {value: T} {
   return (state as {error: unknown}).error === undefined;
+}
+
+export function encapsulateResourceError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new Error('Unknown error', {cause: error});
 }
