@@ -108,6 +108,9 @@ npm_translate_lock(
     data = [
         "//:package.json",
         "//:pnpm-workspace.yaml",
+        "//packages/compiler:package.json",
+        "//packages/compiler-cli:package.json",
+        "//tools/bazel/rules_angular_store:package.json",
     ],
     npmrc = "//:.npmrc",
     pnpm_lock = "//:pnpm-lock.yaml",
@@ -269,7 +272,7 @@ setup_dependencies_2()
 
 git_repository(
     name = "rules_angular",
-    commit = "e35da7371d02d0c8d165c518d532d66be7afb8a6",
+    commit = "ad3a2d652f41c953fad8f55c3959fde628fa8ebf",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
@@ -284,6 +287,6 @@ rules_angular_step2()
 load("@rules_angular//setup:step_3.bzl", "rules_angular_step3")
 
 rules_angular_step3(
-    angular_compiler_cli = "@angular//packages/compiler-cli",
-    typescript = "//:node_modules/typescript",
+    angular_compiler_cli = "@angular//tools/bazel/rules_angular_store:node_modules/@angular/compiler-cli",
+    typescript = "@angular//:node_modules/typescript",
 )
