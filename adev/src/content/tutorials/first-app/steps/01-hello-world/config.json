@@ -1,6 +1,6 @@
 {
   "title": "Hello world!",
   "type": "editor",
-  "answerSrc": "../02-HomeComponent/src",
+  "answerSrc": "../02-Home/src",
   "openFiles": ["src/app/app.ts"]
 }
