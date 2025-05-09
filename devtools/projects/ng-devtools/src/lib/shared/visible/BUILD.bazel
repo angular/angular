@@ -17,16 +17,20 @@ ng_module(
 ts_test_library(
     name = "visible_test",
     srcs = ["visible.directive.spec.ts"],
-    deps = [
+    interop_deps = [
         ":visible",
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
     ],
+    deps = [
+        "//:node_modules/tslib",
+    ],
 )
 
 karma_web_test_suite(
     name = "test",
+    visibility = ["//visibility:public"],
     deps = [
         ":visible_test",
     ],

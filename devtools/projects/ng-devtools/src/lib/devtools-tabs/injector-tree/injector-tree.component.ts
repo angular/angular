@@ -10,10 +10,10 @@ import {
   afterNextRender,
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
   input,
-  Input,
   NgZone,
   signal,
   viewChild,
@@ -74,6 +74,7 @@ export class InjectorTreeComponent {
   readonly diDebugAPIsAvailable = signal(false);
 
   readonly providers = input.required<SerializedProviderRecord[]>();
+  readonly componentExplorerView = input.required<ComponentExplorerView | null>();
   readonly sortedProviders = computed(() =>
     Array.from(this.providers()).sort((a, b) => {
       return a.token.localeCompare(b.token);
@@ -89,23 +90,22 @@ export class InjectorTreeComponent {
   hideInjectorsWithNoProviders = false;
   hideFrameworkInjectors = false;
 
-  private markRendered!: () => void;
-  private readonly rendered = new Promise<void>((r) => {
-    this.markRendered = r;
+  private markInitialized!: () => void;
+  private readonly initialized = new Promise<void>((r) => {
+    this.markInitialized = r;
   });
 
   constructor() {
     afterNextRender({
       write: () => {
         this.init();
-        this.markRendered();
       },
     });
-  }
 
-  @Input({required: true})
-  set componentExplorerView(view: ComponentExplorerView | null) {
-    this.rendered.then(() => {
+    effect(async () => {
+      await this.initialized;
+
+      const view = this.componentExplorerView();
       if (!view || view.forest.length === 0 || !view.forest[0].resolutionPath) {
         return;
       }
@@ -128,6 +128,8 @@ export class InjectorTreeComponent {
 
     this.setUpEnvironmentInjectorVisualizer();
     this.setUpElementInjectorVisualizer();
+
+    this.markInitialized();
   }
 
   toggleHideInjectorsWithNoProviders(): void {
