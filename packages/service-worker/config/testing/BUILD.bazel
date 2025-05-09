@@ -1,16 +1,19 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
 
-ts_library(
+ts_project(
     name = "testing",
     srcs = glob([
         "*.ts",
     ]),
-    deps = [
-        "//packages/service-worker/cli",
+    interop_deps = [
         "//packages/service-worker/config",
+    ],
+    tsconfig = "//packages/service-worker:tsconfig_build",
+    deps = [
+        "//packages/service-worker/cli:cli_rjs",
     ],
 )

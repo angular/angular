@@ -1,6 +1,16 @@
+load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
+
+rules_js_tsconfig(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
 
 ng_module(
     name = "service-worker",

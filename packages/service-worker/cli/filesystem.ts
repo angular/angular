@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Filesystem} from '../config';
+import {Filesystem} from '../config/index';
 import * as fs from 'fs';
 import * as path from 'path';
 
