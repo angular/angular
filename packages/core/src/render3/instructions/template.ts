@@ -296,8 +296,10 @@ function locateOrCreateContainerAnchorImpl(
 
   setSegmentHead(hydrationInfo, index, currentRNode);
   const viewContainerSize = calcSerializedContainerSize(hydrationInfo, index);
-  const comment = siblingAfter<RComment>(viewContainerSize, currentRNode)!;
-
+  let comment = siblingAfter<RComment>(viewContainerSize, currentRNode)!;
+  // this is just to see what happens. We need to adjust the container size here so that siblingAfter actually returns the real next sibling
+  // because it is a comment node, but viewContainerSize is 0 right now.
+  comment = comment.nextSibling! as RComment;
   if (ngDevMode) {
     validateMatchingNode(comment, Node.COMMENT_NODE, null, lView, tNode);
     markRNodeAsClaimedByHydration(comment);
