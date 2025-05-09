@@ -8,6 +8,7 @@
 
 import {Signal, WritableSignal} from '@angular/core';
 import {MetadataKey} from './metadata';
+import {DataKey} from './data';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -93,11 +94,15 @@ export interface FieldState<T> {
    * being submitted.
    */
   readonly submittedStatus: Signal<SubmittedStatus>;
+
+  data<D>(key: DataKey<D>): D | undefined;
+
   /**
    * Reactviely reads a metadata value from the field.
    * @param key The metadata key to read.
    */
-  metadata<M>(key: MetadataKey<M>): M;
+  metadata<M>(key: MetadataKey<M>): Signal<M>;
+
   /**
    * Sets the touched status of the field to `true`.
    */
@@ -157,4 +162,5 @@ export interface FieldContext<T> {
    * This can be used by the `LogicFunction` to implement cross-field logic.
    */
   resolve: <U>(path: FieldPath<U>) => Field<U>;
+  data: <D>(path: DataKey<D>) => D;
 }

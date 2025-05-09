@@ -1,31 +1,34 @@
-import {computed, signal} from '@angular/core';
+import {computed, Injector, signal} from '@angular/core';
 import {disabled, error, required, validate} from '../src/api/logic';
 import {apply, applyEach, form, submit} from '../src/api/structure';
 import {Schema} from '../src/api/types';
 import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
+import {TestBed} from '@angular/core/testing';
+
+const noopSchema: Schema<unknown> = () => {};
 
 describe('Node', () => {
   it('is untouched initially', () => {
-    const f = form(signal({a: 1, b: 2}));
+    const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
     expect(f.$state.touched()).toBe(false);
   });
 
   it('can get a child of a key that exists', () => {
-    const f = form(signal({a: 1, b: 2}));
+    const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
     expect(f.a).toBeDefined();
     expect(f.a.$state.value()).toBe(1);
   });
 
   describe('instances', () => {
     it('should get the same instance when asking for a child multiple times', () => {
-      const f = form(signal({a: 1, b: 2}));
+      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
       const child = f.a;
       expect(f.a).toBe(child);
     });
 
     it('should get the same instance when asking for a child multiple times', () => {
       const value = signal<{a: number; b?: number}>({a: 1, b: 2});
-      const f = form(value);
+      const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
       const child = f.a;
       value.set({a: 3});
       expect(f.a).toBe(child);
@@ -33,25 +36,27 @@ describe('Node', () => {
   });
 
   it('cannot get a child of a key that does not exist', () => {
-    const f = form(signal<{a: number; b: number; c?: number}>({a: 1, b: 2}));
+    const f = form(signal<{a: number; b: number; c?: number}>({a: 1, b: 2}), noopSchema, {
+      injector: TestBed.inject(Injector),
+    });
     expect(f.c).toBeUndefined();
   });
 
   it('can get a child inside of a computed', () => {
-    const f = form(signal({a: 1, b: 2}));
+    const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
     const childA = computed(() => f.a);
     expect(childA()).toBeDefined();
   });
 
   it('can get a child inside of a computed', () => {
-    const f = form(signal({a: 1, b: 2}));
+    const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
     const childA = computed(() => f.a);
     expect(childA()).toBeDefined();
   });
 
   describe('touched', () => {
     it('can be marked as touched', () => {
-      const f = form(signal({a: 1, b: 2}));
+      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.touched()).toBe(false);
 
       f.$state.markAsTouched();
@@ -59,7 +64,7 @@ describe('Node', () => {
     });
 
     it('propagates from the children', () => {
-      const f = form(signal({a: 1, b: 2}));
+      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.touched()).toBe(false);
 
       f.a.$state.markAsTouched();
@@ -67,7 +72,7 @@ describe('Node', () => {
     });
 
     it('does not propagate down', () => {
-      const f = form(signal({a: 1, b: 2}));
+      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
 
       expect(f.a.$state.touched()).toBe(false);
       f.$state.markAsTouched();
@@ -76,7 +81,7 @@ describe('Node', () => {
 
     it('does not consider children that get removed', () => {
       const value = signal<{a: number; b?: number}>({a: 1, b: 2});
-      const f = form(value);
+      const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.touched()).toBe(false);
 
       f.b!.$state.markAsTouched();
@@ -90,7 +95,7 @@ describe('Node', () => {
 
   describe('arrays', () => {
     it('should only have child nodes for elements that exist', () => {
-      const f = form(signal([1, 2]));
+      const f = form(signal([1, 2]), noopSchema, {injector: TestBed.inject(Injector)});
       expect(f[0]).toBeDefined();
       expect(f[1]).toBeDefined();
       expect(f[2]).not.toBeDefined();
@@ -98,27 +103,35 @@ describe('Node', () => {
     });
 
     it('should get the element node', () => {
-      const f = form(signal({names: [{name: 'Alex'}, {name: 'Miles'}]}), (p) => {
-        applyEach(p.names, (a) => {
-          disabled(a.name, ({value, resolve}) => {
-            const el = resolve(a);
-            expect(el.$state.value().name).toBe(value());
-            expect(resolve(p).names.findIndex((e) => e === el)).not.toBe(-1);
-            return true;
+      const f = form(
+        signal({names: [{name: 'Alex'}, {name: 'Miles'}]}),
+        (p) => {
+          applyEach(p.names, (a) => {
+            disabled(a.name, ({value, resolve}) => {
+              const el = resolve(a);
+              expect(el.$state.value().name).toBe(value());
+              expect(resolve(p).names.findIndex((e) => e === el)).not.toBe(-1);
+              return true;
+            });
           });
-        });
-      });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
       expect(f.names[0].name.$state.disabled()).toBe(true);
       expect(f.names[1].name.$state.disabled()).toBe(true);
     });
 
     it('should support element-level logic', () => {
-      const f = form(signal([1, 2, 3]), (p) => {
-        applyEach(p, (a) => {
-          a;
-          disabled(a, ({value}) => value() % 2 === 0);
-        });
-      });
+      const f = form(
+        signal([1, 2, 3]),
+        (p) => {
+          applyEach(p, (a) => {
+            a;
+            disabled(a, ({value}) => value() % 2 === 0);
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
       expect(f[0].$state.disabled()).toBe(false);
       expect(f[1].$state.disabled()).toBe(true);
       expect(f[2].$state.disabled()).toBe(false);
@@ -126,19 +139,23 @@ describe('Node', () => {
 
     it('should support dynamic elements', () => {
       const model = signal([1, 2, 3]);
-      const f = form(model, (p) => {
-        applyEach(p, (el) => {
-          // Disabled if even.
-          disabled(el, ({value}) => value() % 2 === 0);
-        });
-      });
+      const f = form(
+        model,
+        (p) => {
+          applyEach(p, (el) => {
+            // Disabled if even.
+            disabled(el, ({value}) => value() % 2 === 0);
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
       model.update((v) => [...v, 4]);
       expect(f[3].$state.disabled()).toBe(true);
     });
 
     it('should support removing elements', () => {
       const value = signal([1, 2, 3]);
-      const f = form(value);
+      const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
       f[2].$state.markAsTouched();
       expect(f.$state.touched()).toBe(true);
 
@@ -164,9 +181,13 @@ describe('Node', () => {
 
   describe('disabled', () => {
     it('should allow logic to make a node disabled', () => {
-      const f = form(signal({a: 1, b: 2}), (p) => {
-        disabled(p.a, ({value}) => value() !== 2);
-      });
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          disabled(p.a, ({value}) => value() !== 2);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
       const a = f.a;
       expect(f.$state.disabled()).toBe(false);
       expect(a.$state.disabled()).toBe(true);
@@ -177,50 +198,66 @@ describe('Node', () => {
     });
 
     it('should disable with reason', () => {
-      const f = form(signal({a: 1, b: 2}), (p) => {
-        disabled(p.a, () => true, 'a cannot be changed');
-      });
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          disabled(p.a, () => 'a cannot be changed');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.a.$state.disabled()).toBe(true);
-      expect(f.a.$state.metadata(DISABLED_REASON)).toBe('a cannot be changed');
+      expect(f.a.$state.metadata(DISABLED_REASON)()).toEqual(['a cannot be changed']);
     });
 
     it('should not have disabled reason if not disabled', () => {
-      const f = form(signal({a: 1, b: 2}), (p) => {
-        disabled(p.a, ({value}) => value() > 5, 'a cannot be changed');
-      });
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          disabled(p.a, ({value}) => (value() > 5 ? 'a cannot be changed' : false));
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.a.$state.disabled()).toBe(false);
-      expect(f.a.$state.metadata(DISABLED_REASON)).toBe('');
+      expect(f.a.$state.metadata(DISABLED_REASON)()).toEqual([]);
 
       f.a.$state.value.set(6);
 
       expect(f.a.$state.disabled()).toBe(true);
-      expect(f.a.$state.metadata(DISABLED_REASON)).toBe('a cannot be changed');
+      expect(f.a.$state.metadata(DISABLED_REASON)()).toEqual(['a cannot be changed']);
     });
 
     it('disabled reason should not propagate to children', () => {
-      const f = form(signal({a: 1, b: 2}), (p) => {
-        disabled(p, () => true, 'form unavailable');
-      });
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          disabled(p, () => 'form unavailable');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.$state.disabled()).toBe(true);
-      expect(f.$state.metadata(DISABLED_REASON)).toBe('form unavailable');
+      expect(f.$state.metadata(DISABLED_REASON)()).toEqual(['form unavailable']);
       expect(f.a.$state.disabled()).toBe(true);
-      expect(f.a.$state.metadata(DISABLED_REASON)).toBe('');
+      expect(f.a.$state.metadata(DISABLED_REASON)()).toEqual([]);
     });
   });
 
   describe('validation', () => {
     it('should validate field', () => {
-      const f = form(signal({a: 1, b: 2}), (p) => {
-        validate(p.a, ({value}) => {
-          if (value() > 10) {
-            return {kind: 'too damn high'};
-          }
-          return undefined;
-        });
-      });
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          validate(p.a, ({value}) => {
+            if (value() > 10) {
+              return {kind: 'too damn high'};
+            }
+            return undefined;
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.a.$state.errors()).toEqual([]);
       expect(f.a.$state.valid()).toBe(true);
@@ -235,14 +272,18 @@ describe('Node', () => {
     });
 
     it('should validate with multiple errors', () => {
-      const f = form(signal({a: 1, b: 2}), (p) => {
-        validate(p.a, ({value}) => {
-          if (value() > 10) {
-            return [{kind: 'too damn high'}, {kind: 'bad'}];
-          }
-          return undefined;
-        });
-      });
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          validate(p.a, ({value}) => {
+            if (value() > 10) {
+              return [{kind: 'too damn high'}, {kind: 'bad'}];
+            }
+            return undefined;
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.a.$state.errors()).toEqual([]);
       expect(f.a.$state.valid()).toBe(true);
@@ -253,15 +294,19 @@ describe('Node', () => {
     });
 
     it('should validate with shorthand syntax', () => {
-      const f = form(signal({a: 1, b: 2}), (p) => {
-        error(p.a, ({value}) => value() > 1);
-        error(p.a, ({value}) => value() > 10, 'too damn high');
-        error(
-          p.a,
-          ({value}) => value() > 100,
-          ({value}) => `${value()} is much too high`,
-        );
-      });
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          error(p.a, ({value}) => value() > 1);
+          error(p.a, ({value}) => value() > 10, 'too damn high');
+          error(
+            p.a,
+            ({value}) => value() > 100,
+            ({value}) => `${value()} is much too high`,
+          );
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.a.$state.errors()).toEqual([]);
       expect(f.a.$state.valid()).toBe(true);
@@ -288,73 +333,89 @@ describe('Node', () => {
 
     it('should validate required field', () => {
       const data = signal({first: '', last: ''});
-      const f = form(data, (name) => {
-        required(name.first);
-      });
+      const f = form(
+        data,
+        (name) => {
+          required(name.first);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.first.$state.errors()).toEqual([{kind: 'required'}]);
       expect(f.first.$state.valid()).toBe(false);
-      expect(f.first.$state.metadata(REQUIRED)).toBe(true);
+      expect(f.first.$state.metadata(REQUIRED)()).toBe(true);
 
       f.first.$state.value.set('Bob');
 
       expect(f.first.$state.errors()).toEqual([]);
       expect(f.first.$state.valid()).toBe(true);
-      expect(f.first.$state.metadata(REQUIRED)).toBe(true);
+      expect(f.first.$state.metadata(REQUIRED)()).toBe(true);
     });
 
     it('should validate conditionally required field', () => {
       const data = signal({first: '', last: ''});
-      const f = form(data, (name) => {
-        // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
-      });
+      const f = form(
+        data,
+        (name) => {
+          // first name required if last name specified
+          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.first.$state.errors()).toEqual([]);
       expect(f.first.$state.valid()).toBe(true);
-      expect(f.first.$state.metadata(REQUIRED)).toBe(false);
+      expect(f.first.$state.metadata(REQUIRED)()).toBe(false);
 
       f.last.$state.value.set('Loblaw');
 
       expect(f.first.$state.errors()).toEqual([{kind: 'required'}]);
       expect(f.first.$state.valid()).toBe(false);
-      expect(f.first.$state.metadata(REQUIRED)).toBe(true);
+      expect(f.first.$state.metadata(REQUIRED)()).toBe(true);
 
       f.first.$state.value.set('Bob');
 
       expect(f.first.$state.errors()).toEqual([]);
       expect(f.first.$state.valid()).toBe(true);
-      expect(f.first.$state.metadata(REQUIRED)).toBe(true);
+      expect(f.first.$state.metadata(REQUIRED)()).toBe(true);
     });
 
     it('should support custom empty predicate', () => {
       const data = signal({name: '', quantity: 0});
-      const f = form(data, (item) => {
-        required(item.quantity, undefined, undefined, (value) => value === 0);
-      });
+      const f = form(
+        data,
+        (item) => {
+          required(item.quantity, undefined, undefined, (value) => value === 0);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
-      expect(f.quantity.$state.metadata(REQUIRED)).toBe(true);
+      expect(f.quantity.$state.metadata(REQUIRED)()).toBe(true);
       expect(f.quantity.$state.errors()).toEqual([{kind: 'required'}]);
 
       f.quantity.$state.value.set(1);
-      expect(f.quantity.$state.metadata(REQUIRED)).toBe(true);
+      expect(f.quantity.$state.metadata(REQUIRED)()).toBe(true);
       expect(f.quantity.$state.errors()).toEqual([]);
     });
 
     it('should link required error messages to their predicate', () => {
       const data = signal({country: '', amount: 0, name: ''});
-      const f = form(data, (tx) => {
-        required(
-          tx.name,
-          ({resolve}) => resolve(tx.country).$state.value() === 'USA',
-          'Name is required in your country',
-        );
-        required(
-          tx.name,
-          ({resolve}) => resolve(tx.amount).$state.value() >= 1000,
-          'Name is required for large transactions',
-        );
-      });
+      const f = form(
+        data,
+        (tx) => {
+          required(
+            tx.name,
+            ({resolve}) => resolve(tx.country).$state.value() === 'USA',
+            'Name is required in your country',
+          );
+          required(
+            tx.name,
+            ({resolve}) => resolve(tx.amount).$state.value() >= 1000,
+            'Name is required for large transactions',
+          );
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.name.$state.errors()).toEqual([]);
 
@@ -382,10 +443,14 @@ describe('Node', () => {
   describe('submit', () => {
     it('maps errors to a field', async () => {
       const data = signal({first: '', last: ''});
-      const f = form(data, (name) => {
-        // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
-      });
+      const f = form(
+        data,
+        (name) => {
+          // first name required if last name specified
+          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       await submit(f, (form) => {
         return Promise.resolve([
@@ -402,10 +467,14 @@ describe('Node', () => {
     it('maps errors to a field', async () => {
       const initialValue = {first: 'meow', last: 'wuf'};
       const data = signal(initialValue);
-      const f = form(data, (name) => {
-        // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
-      });
+      const f = form(
+        data,
+        (name) => {
+          // first name required if last name specified
+          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       const submitSpy = jasmine.createSpy('submit');
 
@@ -420,10 +489,14 @@ describe('Node', () => {
     it('marks the form as submitting', async () => {
       const initialValue = {first: 'meow', last: 'wuf'};
       const data = signal(initialValue);
-      const f = form(data, (name) => {
-        // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
-      });
+      const f = form(
+        data,
+        (name) => {
+          // first name required if last name specified
+          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.$state.submittedStatus()).toBe('unsubmitted');
 
@@ -450,10 +523,14 @@ describe('Node', () => {
     it('works on child fields', async () => {
       const initialValue = {first: 'meow', last: 'wuf'};
       const data = signal(initialValue);
-      const f = form(data, (name) => {
-        // first name required if last name specified
-        required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
-      });
+      const f = form(
+        data,
+        (name) => {
+          // first name required if last name specified
+          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       const submitSpy = jasmine.createSpy('submit');
 
@@ -487,9 +564,13 @@ describe('Node', () => {
         address: {street: '', city: ''},
       });
 
-      const f = form(data, (p) => {
-        apply(p.address, addressSchema);
-      });
+      const f = form(
+        data,
+        (p) => {
+          apply(p.address, addressSchema);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.address.street.$state.disabled()).toBe(true);
     });
