@@ -12,8 +12,8 @@ In this activity, you'll learn how to use the `@Input` decorator to send informa
 
 To create an `Input` property, add the `@Input` decorator to a property of a component class:
 
-<docs-code header="user.component.ts" language="ts">
-class UserComponent {
+<docs-code header="user.ts" language="ts">
+class User {
   @Input() occupation = '';
 }
 </docs-code>
@@ -28,9 +28,9 @@ When you are ready to pass in a value through an `Input`, values can be set in t
 class App {}
 </docs-code>
 
-Make sure you bind the property `occupation` in your `UserComponent`.
+Make sure you bind the property `occupation` in your `User`.
 
-<docs-code header="user.component.ts" language="angular-ts">
+<docs-code header="user.ts" language="angular-ts">
 @Component({
   ...
   template: `<p>The user's occupation is {{occupation}}</p>`
@@ -40,7 +40,7 @@ Make sure you bind the property `occupation` in your `UserComponent`.
 <docs-workflow>
 
 <docs-step title="Define an `@Input` property">
-Update the code in `user.component.ts` to define an `Input` property on the `UserComponent` called `name`. For now, set the initial value to `empty string`. Be sure to update the template to interpolate the `name` property at the end of the sentence.
+Update the code in `user.ts` to define an `Input` property on the `User` called `name`. For now, set the initial value to `empty string`. Be sure to update the template to interpolate the `name` property at the end of the sentence.
 </docs-step>
 
 <docs-step title="Pass a value to the `@Input` property">

@@ -6,6 +6,6 @@ import {Component} from '@angular/core';
     <div>Username: {{ username }}</div>
   `,
 })
-export class UserComponent {
+export class User {
   username = 'youngTech';
 }
