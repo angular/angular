@@ -54,6 +54,7 @@ rollup_bundle(
         "//packages/core/schematics/migrations/test-bed-get:index.ts": "test-bed-get",
         "//packages/core/schematics/migrations/document-core:index.ts": "document-core",
         "//packages/core/schematics/migrations/control-flow-migration:index.ts": "control-flow-migration",
+        "//packages/core/schematics/migrations/http-xhr-backend:index.ts": "http-xhr-backend",
     },
     format = "cjs",
     link_workspace_root = True,
@@ -65,6 +66,7 @@ rollup_bundle(
     deps = [
         "//packages/core/schematics/migrations/control-flow-migration",
         "//packages/core/schematics/migrations/document-core",
+        "//packages/core/schematics/migrations/http-xhr-backend",
         "//packages/core/schematics/migrations/inject-flags",
         "//packages/core/schematics/migrations/test-bed-get",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
