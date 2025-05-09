@@ -9,7 +9,7 @@ import {Component} from '@angular/core';
   `,
   imports: [],
 })
-export class UserComponent {
+export class User {
   username = 'youngTech';
   favoriteFramework = '';
 }

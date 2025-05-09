@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
-import {UserComponent} from './user.component';
+import {User} from './user';
 
 @Component({
   selector: 'app-root',
   template: `
     <app-user />
   `,
-  imports: [UserComponent],
+  imports: [User],
 })
 export class App {}

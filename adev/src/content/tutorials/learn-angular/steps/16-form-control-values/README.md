@@ -26,7 +26,7 @@ To display the input value in a template, you can use the interpolation syntax `
     </label>
   `,
 })
-export class UserComponent {
+export class User {
   favoriteFramework = '';
 }
 </docs-code>
@@ -47,7 +47,7 @@ When you need to reference the input field value in the component class, you can
   `,
   ...
 })
-export class UserComponent {
+export class User {
   favoriteFramework = '';
   ...
 
