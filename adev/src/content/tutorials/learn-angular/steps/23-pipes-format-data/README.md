@@ -22,7 +22,7 @@ Time to customize some pipe output:
 
 <docs-step title="Format a number with `DecimalPipe`">
 
-In `app.component.ts`, update the template to include parameter for the `decimal` pipe.
+In `app.ts`, update the template to include parameter for the `decimal` pipe.
 
 <docs-code language="ts" highlight="[3]">
 template: `

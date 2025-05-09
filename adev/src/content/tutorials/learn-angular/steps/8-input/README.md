@@ -20,12 +20,12 @@ class UserComponent {
 
 When you are ready to pass in a value through an `Input`, values can be set in templates using the attribute syntax. Here's an example:
 
-<docs-code header="app.component.ts" language="angular-ts" highlight="[3]">
+<docs-code header="app.ts" language="angular-ts" highlight="[3]">
 @Component({
   ...
   template: `<app-user occupation="Angular Developer"></app-user>`
 })
-class AppComponent {}
+class App {}
 </docs-code>
 
 Make sure you bind the property `occupation` in your `UserComponent`.
@@ -44,7 +44,7 @@ Update the code in `user.component.ts` to define an `Input` property on the `Use
 </docs-step>
 
 <docs-step title="Pass a value to the `@Input` property">
-Update the code in `app.component.ts` to send in the `name` property with a value of `"Simran"`.
+Update the code in `app.ts` to send in the `name` property with a value of `"Simran"`.
 <br>
 
 When the code has been successfully updated, the app will display `The user's name is Simran`.

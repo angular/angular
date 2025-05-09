@@ -18,7 +18,7 @@ Angular provides a set of validation tools. To use them, first update the compon
 import {ReactiveFormsModule, Validators} from '@angular/forms';
 
 @Component({...})
-export class AppComponent {}
+export class App {}
 </docs-code>
 
 </docs-step>

@@ -12,7 +12,7 @@ In this activity, you'll learn how to leverage the `RouterLink` directive to mak
 
 <docs-step title="Import `RouterLink` directive">
 
-In `app.component.ts` add the `RouterLink` directive import to the existing import statement from `@angular/router` and add it to the `imports` array of your component decorator.
+In `app.ts` add the `RouterLink` directive import to the existing import statement from `@angular/router` and add it to the `imports` array of your component decorator.
 
 ```ts
 ...
