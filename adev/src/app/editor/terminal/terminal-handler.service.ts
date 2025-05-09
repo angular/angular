@@ -60,10 +60,11 @@ export class TerminalHandler {
       fitAddon = new FitAddon();
       if (type === TerminalType.READONLY) {
         instance = new Terminal({convertEol: true, disableStdin: true});
-        this.terminals[TerminalType.READONLY].set({instance, fitAddon});
+        this.terminals[type].set({instance, fitAddon});
       } else {
-        instance = new InteractiveTerminal(this.window, this.commandValidator);
-        this.terminals[TerminalType.READONLY].set({instance, fitAddon});
+        const newInstance = new InteractiveTerminal(this.window, this.commandValidator);
+        instance = newInstance;
+        this.terminals[type].set({instance: newInstance, fitAddon});
       }
       instance.loadAddon(fitAddon);
     }
