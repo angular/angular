@@ -25,4 +25,4 @@ import {Component} from '@angular/core';
   `,
   ],
 })
-export class ArticleCommentsComponent {}
+export class ArticleComments {}
