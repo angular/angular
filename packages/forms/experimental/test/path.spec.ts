@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {signal} from '@angular/core';
+import {Injector, signal} from '@angular/core';
 import {FieldPath, Schema} from '../public_api';
 import {validate} from '../src/api/logic';
 import {apply, applyEach, applyWhen, form} from '../src/api/structure';
 import {FieldPathNode, FieldRootPathNode} from '../src/path_node';
+import {TestBed} from '@angular/core/testing';
 
 describe('path', () => {
   describe('roots', () => {
@@ -40,6 +41,7 @@ describe('path', () => {
             }),
           );
         }),
+        {injector: TestBed.inject(Injector)},
       );
       const topRoots = (FieldPathNode.unwrapFieldPath(rootPath) as FieldRootPathNode).subroots;
       expect(topRoots.size).toBe(5);
@@ -55,61 +57,77 @@ describe('path', () => {
     it('Disallows using parent paths for applyWhen', () => {
       const data = signal({first: '', needLastName: false, last: ''});
 
-      form(data, (path) => {
-        applyWhen(
-          path,
-          ({value}) => value().needLastName,
-          (/* UNUSED */) => {
-            expect(() => {
-              validate(path.last, ({value}) =>
-                value().length > 0 ? undefined : {kind: 'required'},
-              );
-            }).toThrowError();
-          },
-        );
-      });
+      form(
+        data,
+        (path) => {
+          applyWhen(
+            path,
+            ({value}) => value().needLastName,
+            (/* UNUSED */) => {
+              expect(() => {
+                validate(path.last, ({value}) =>
+                  value().length > 0 ? undefined : {kind: 'required'},
+                );
+              }).toThrowError();
+            },
+          );
+        },
+        {injector: TestBed.inject(Injector)},
+      );
     });
 
     it('Disallows using parent paths for apply', () => {
       const data = signal({first: '', needLastName: false, last: ''});
 
-      form(data, (path) => {
-        apply(path, (/* UNUSED */) => {
-          expect(() => {
-            validate(path.last, ({value}) => {
-              return {kind: 'does not matter'};
-            });
-          }).toThrowError();
-        });
-      });
+      form(
+        data,
+        (path) => {
+          apply(path, (/* UNUSED */) => {
+            expect(() => {
+              validate(path.last, ({value}) => {
+                return {kind: 'does not matter'};
+              });
+            }).toThrowError();
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
     });
 
     it('Disallows using the same path', () => {
       const data = signal({first: '', needLastName: false, last: ''});
 
-      form(data, (path) => {
-        apply(path, (/* UNUSED */) => {
-          expect(() => {
-            validate(path, ({value}) => {
-              return {kind: 'does not matter'};
-            });
-          }).toThrowError();
-        });
-      });
+      form(
+        data,
+        (path) => {
+          apply(path, (/* UNUSED */) => {
+            expect(() => {
+              validate(path, ({value}) => {
+                return {kind: 'does not matter'};
+              });
+            }).toThrowError();
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
     });
 
     it('Disallows using parent paths for apply', () => {
       const data = signal({needLastName: false, items: [{first: '', last: ''}]});
 
-      form(data, (path) => {
-        applyEach(path.items, (/* UNUSED */) => {
-          expect(() => {
-            validate(path.needLastName, ({value}) => {
-              return {kind: 'does not matter'};
-            });
-          }).toThrowError();
-        });
-      });
+      form(
+        data,
+        (path) => {
+          applyEach(path.items, (/* UNUSED */) => {
+            expect(() => {
+              validate(path.needLastName, ({value}) => {
+                return {kind: 'does not matter'};
+              });
+            }).toThrowError();
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
     });
   });
 });

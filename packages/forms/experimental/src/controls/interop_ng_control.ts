@@ -98,7 +98,7 @@ export class InteropNgControl
 
   hasValidator(validator: ValidatorFn): boolean {
     if (validator === Validators.required) {
-      return this.field().metadata(REQUIRED);
+      return this.field().metadata(REQUIRED)();
     }
     return false;
   }

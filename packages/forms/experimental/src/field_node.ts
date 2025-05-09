@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, linkedSignal, Signal, signal, untracked, WritableSignal} from '@angular/core';
+import {
+  computed,
+  effect,
+  Injector,
+  linkedSignal,
+  runInInjectionContext,
+  Signal,
+  signal,
+  untracked,
+  WritableSignal,
+} from '@angular/core';
 import {MetadataKey} from './api/metadata';
 import type {
   Field,
@@ -20,6 +30,44 @@ import type {
 import {DYNAMIC, FieldLogicNode} from './logic_node';
 import {FieldPathNode, FieldRootPathNode} from './path_node';
 import {deepSignal} from './util/deep_signal';
+import {DataKey} from './api/data';
+
+export interface DataEntry {
+  value: unknown;
+  destroy: () => void;
+}
+
+export class FormFieldManager {
+  constructor(readonly injector: Injector) {}
+  readonly nodes = new Set<FieldNode>();
+
+  createFieldManagementEffect(root: FieldNode): void {
+    effect(
+      () => {
+        const liveNodes = new Set<FieldNode>();
+        this.markFieldsLive(root, liveNodes);
+
+        // Destroy all nodes that are no longer live.
+        for (const node of this.nodes) {
+          if (!liveNodes.has(node)) {
+            this.nodes.delete(node);
+            untracked(() => node.destroy());
+          }
+        }
+      },
+      {injector: this.injector},
+    );
+  }
+
+  private markFieldsLive(field: FieldNode, liveNodes: Set<FieldNode>): void {
+    liveNodes.add(field);
+    for (const child of field.children()) {
+      this.markFieldsLive(child, liveNodes);
+    }
+  }
+}
+
+type DestroyableInjector = Injector & {destroy(): void};
 
 /**
  * Internal node in the form graph for a given field.
@@ -42,7 +90,31 @@ export class FieldNode implements FieldState<unknown> {
    * Computed map of child fields, based on the current value of this field.
    */
   private readonly childrenMap: Signal<Map<PropertyKey, FieldNode> | undefined>;
+
   private serverErrors: WritableSignal<ValidationResult>;
+
+  private readonly dataMap = new Map<DataKey<unknown>, unknown>();
+  private readonly metadataMap = new Map<MetadataKey<unknown>, Signal<unknown>>();
+  private readonly dataMaps = computed(() => {
+    const maps = [this.dataMap];
+    for (const child of this.childrenMap()?.values() ?? []) {
+      maps.push(...child.dataMaps());
+    }
+    return maps;
+  });
+
+  /**
+   * Lazily initialized injector.
+   */
+  private _injector: DestroyableInjector | undefined = undefined;
+
+  private get injector(): DestroyableInjector {
+    this._injector ??= Injector.create({
+      providers: [],
+      parent: this.fieldManager.injector,
+    }) as DestroyableInjector;
+    return this._injector;
+  }
 
   /**
    * Lazily initialized value of `logicArgument`.
@@ -97,6 +169,14 @@ export class FieldNode implements FieldState<unknown> {
 
         return field.fieldProxy as Field<U>;
       },
+
+      data: <D>(key: DataKey<D>): D => {
+        const result = this.data(key);
+        if (result === undefined) {
+          throw new Error(`No value for data on field`);
+        }
+        return result;
+      },
     });
   }
 
@@ -107,11 +187,13 @@ export class FieldNode implements FieldState<unknown> {
   private logic: FieldLogicNode;
 
   private constructor(
+    private readonly fieldManager: FormFieldManager,
     readonly value: WritableSignal<unknown>,
     private readonly logicPath: FieldPathNode,
     readonly parent: FieldNode | undefined,
     readonly keyInParent: PropertyKey | undefined,
   ) {
+    this.fieldManager.nodes.add(this);
     this.logic = logicPath.logic;
 
     if (parent !== undefined && keyInParent !== undefined) {
@@ -134,6 +216,17 @@ export class FieldNode implements FieldState<unknown> {
       this.value();
       return [] as ValidationResult;
     });
+
+    // Instantiate data dependencies.
+    if (this.logic.dataFactories.size > 0) {
+      untracked(() =>
+        runInInjectionContext(this.injector, () => {
+          for (const [key, factory] of this.logic.dataFactories) {
+            this.dataMap.set(key, factory(this.fieldContext));
+          }
+        }),
+      );
+    }
   }
 
   /**
@@ -224,9 +317,22 @@ export class FieldNode implements FieldState<unknown> {
     ];
   });
 
-  metadata<M>(key: MetadataKey<M>): M {
-    // TODO: make this computed()
-    return this.logic.readMetadata(key, this.fieldContext) ?? key.defaultValue;
+  children(): Iterable<FieldNode> {
+    return this.childrenMap()?.values() ?? [];
+  }
+
+  data<D>(key: DataKey<D>): D | undefined {
+    return this.dataMap.get(key) as D | undefined;
+  }
+
+  metadata<M>(key: MetadataKey<M>): Signal<M> {
+    cast<MetadataKey<unknown>>(key);
+    if (!this.metadataMap.has(key)) {
+      const logic = this.logic.getMetadata(key);
+      const result = computed(() => logic.compute(this.fieldContext));
+      this.metadataMap.set(key, result);
+    }
+    return this.metadataMap.get(key)! as Signal<M>;
   }
 
   /**
@@ -291,6 +397,10 @@ export class FieldNode implements FieldState<unknown> {
     return value;
   }
 
+  destroy(): void {
+    this.injector.destroy();
+  }
+
   /**
    * Creates or updates the map of child `FieldNode`s for this node based on its current value.
    */
@@ -335,15 +445,25 @@ export class FieldNode implements FieldState<unknown> {
       childrenMap ??= new Map<PropertyKey, FieldNode>();
       childrenMap.set(
         key,
-        new FieldNode(deepSignal(this.value, key as never), childPath, this, key),
+        new FieldNode(
+          this.fieldManager,
+          deepSignal(this.value, key as never),
+          childPath,
+          this,
+          key,
+        ),
       );
     }
 
     return childrenMap;
   }
 
-  static newRoot<T>(value: WritableSignal<T>, path: FieldPathNode): FieldNode {
-    return new FieldNode(value, path, undefined, undefined);
+  static newRoot<T>(
+    formRoot: FormFieldManager,
+    value: WritableSignal<T>,
+    path: FieldPathNode,
+  ): FieldNode {
+    return new FieldNode(formRoot, value, path, undefined, undefined);
   }
 }
 
@@ -426,3 +546,5 @@ function lengthOfSharedPrefix(currentPath: PropertyKey[], targetPath: PropertyKe
   }
   return sharedPrefixLength;
 }
+
+function cast<T>(value: unknown): asserts value is T {}

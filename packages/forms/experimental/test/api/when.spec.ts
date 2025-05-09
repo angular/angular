@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Signal, signal} from '@angular/core';
+import {Injector, Signal, signal} from '@angular/core';
 import {validate} from '../../src/api/logic';
 import {applyEach, applyWhen, applyWhenValue, form} from '../../src/api/structure';
 import {Schema} from '../../src/api/types';
+import {TestBed} from '@angular/core/testing';
 
 export interface User {
   first: string;
@@ -23,11 +24,17 @@ describe('when', () => {
   it('validates child field according to condition', () => {
     const data = signal({first: '', needLastName: false, last: ''});
 
-    const f = form(data, (path) => {
-      applyWhen(path, needsLastNamePredicate, (namePath) => {
-        validate(namePath.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
-      });
-    });
+    const f = form(
+      data,
+      (path) => {
+        applyWhen(path, needsLastNamePredicate, (namePath) => {
+          validate(namePath.last, ({value}) =>
+            value().length > 0 ? undefined : {kind: 'required'},
+          );
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
 
     f.$state.value.set({first: 'meow', needLastName: false, last: ''});
     expect(f.last.$state.errors()).toEqual([]);
@@ -38,13 +45,17 @@ describe('when', () => {
   it('Disallows using non-local paths', () => {
     const data = signal({first: '', needLastName: false, last: ''});
 
-    const f = form(data, (path) => {
-      applyWhen(path, needsLastNamePredicate, (/* UNUSED */) => {
-        expect(() => {
-          validate(path.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
-        }).toThrowError();
-      });
-    });
+    const f = form(
+      data,
+      (path) => {
+        applyWhen(path, needsLastNamePredicate, (/* UNUSED */) => {
+          expect(() => {
+            validate(path.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
+          }).toThrowError();
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
   });
 
   it('supports merging two array schemas', () => {
@@ -62,12 +73,16 @@ describe('when', () => {
       });
     };
 
-    const f = form(data, (path) => {
-      applyEach(path.items, s);
-      applyWhen(path, needsLastNamePredicate, (names) => {
-        applyEach(names.items, s2);
-      });
-    });
+    const f = form(
+      data,
+      (path) => {
+        applyEach(path.items, s);
+        applyWhen(path, needsLastNamePredicate, (names) => {
+          applyEach(names.items, s2);
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
     f.needLastName.$state.value.set(true);
     expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required1'}, {kind: 'required2'}]);
     f.needLastName.$state.value.set(false);
@@ -80,9 +95,13 @@ describe('when', () => {
     const s: Schema<User> = (namePath) => {
       validate(namePath.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
     };
-    const f = form(data, (path) => {
-      applyWhen(path, needsLastNamePredicate, s);
-    });
+    const f = form(
+      data,
+      (path) => {
+        applyWhen(path, needsLastNamePredicate, s);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
 
     f.$state.value.set({first: 'meow', needLastName: false, last: ''});
     expect(f.last.$state.errors()).toEqual([]);
@@ -92,13 +111,19 @@ describe('when', () => {
 
   it('supports mix of conditional and non conditional validators', () => {
     const data = signal({first: '', needLastName: false, last: ''});
-    const f = form(data, (path) => {
-      validate(path.last, ({value}) => (value().length > 4 ? undefined : {kind: 'short'}));
+    const f = form(
+      data,
+      (path) => {
+        validate(path.last, ({value}) => (value().length > 4 ? undefined : {kind: 'short'}));
 
-      applyWhen(path, needsLastNamePredicate, (namePath /* Path */) => {
-        validate(namePath.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
-      });
-    });
+        applyWhen(path, needsLastNamePredicate, (namePath /* Path */) => {
+          validate(namePath.last, ({value}) =>
+            value().length > 0 ? undefined : {kind: 'required'},
+          );
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
 
     f.$state.value.set({first: 'meow', needLastName: false, last: ''});
     expect(f.last.$state.errors()).toEqual([{kind: 'short'}]);
@@ -114,11 +139,15 @@ describe('when', () => {
       });
     };
 
-    const f = form(data, (path) => {
-      applyWhen(path, needsLastNamePredicate, (names /* Path */) => {
-        applyEach(names.items, s);
-      });
-    });
+    const f = form(
+      data,
+      (path) => {
+        applyWhen(path, needsLastNamePredicate, (names /* Path */) => {
+          applyEach(names.items, s);
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
 
     expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required'}]);
     f.needLastName.$state.value.set(false);
@@ -129,15 +158,19 @@ describe('when', () => {
 describe('applyWhenValue', () => {
   it('accepts non-narrowing predicate', () => {
     const data = signal<{numOrNull: number | null}>({numOrNull: null});
-    const f = form(data, (path) => {
-      applyWhenValue(
-        path.numOrNull,
-        (value) => value === null || value > 0,
-        (num) => {
-          validate(num, ({value}) => ((value() ?? 0) < 10 ? {kind: 'too-small'} : undefined));
-        },
-      );
-    });
+    const f = form(
+      data,
+      (path) => {
+        applyWhenValue(
+          path.numOrNull,
+          (value) => value === null || value > 0,
+          (num) => {
+            validate(num, ({value}) => ((value() ?? 0) < 10 ? {kind: 'too-small'} : undefined));
+          },
+        );
+      },
+      {injector: TestBed.inject(Injector)},
+    );
 
     expect(f.numOrNull.$state.errors()).toEqual([{kind: 'too-small'}]);
     f.numOrNull.$state.value.set(5);
@@ -150,15 +183,19 @@ describe('applyWhenValue', () => {
 
   it('accepts narrowing-predicate and schema for narrowed type', () => {
     const data = signal<{numOrNull: number | null}>({numOrNull: null});
-    const f = form(data, (path) => {
-      applyWhenValue(
-        path.numOrNull,
-        (value) => value !== null,
-        (num) => {
-          validate(num, ({value}) => (value() < 10 ? {kind: 'too-small'} : undefined));
-        },
-      );
-    });
+    const f = form(
+      data,
+      (path) => {
+        applyWhenValue(
+          path.numOrNull,
+          (value) => value !== null,
+          (num) => {
+            validate(num, ({value}) => (value() < 10 ? {kind: 'too-small'} : undefined));
+          },
+        );
+      },
+      {injector: TestBed.inject(Injector)},
+    );
 
     expect(f.numOrNull.$state.errors()).toEqual([]);
     f.numOrNull.$state.value.set(5);
