@@ -7,8 +7,7 @@
  */
 
 import {Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {Store, Todo, TodoFactory} from './app/TodoStore';
 
@@ -19,7 +18,7 @@ import {Store, Todo, TodoFactory} from './app/TodoStore';
   standalone: false,
 })
 export class TodoApp {
-  todoEdit: Todo = null;
+  todoEdit: Todo | null = null;
 
   constructor(
     public todoStore: Store<Todo>,
@@ -74,4 +73,4 @@ export class TodoApp {
 @NgModule({declarations: [TodoApp], bootstrap: [TodoApp], imports: [BrowserModule]})
 export class ExampleModule {}
 
-platformBrowserDynamic().bootstrapModule(ExampleModule);
+platformBrowser().bootstrapModule(ExampleModule);

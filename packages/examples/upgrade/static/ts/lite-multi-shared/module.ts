@@ -15,8 +15,7 @@ import {
   NgModule,
   StaticProvider,
 } from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {downgradeComponent, downgradeModule} from '@angular/upgrade/static';
 
 declare var angular: ng.IAngularStatic;
@@ -95,7 +94,7 @@ export class Ng2CModule {
 let rootInjectorPromise: Promise<Injector> | null = null;
 const getRootInjector = (extraProviders: StaticProvider[]) => {
   if (!rootInjectorPromise) {
-    rootInjectorPromise = platformBrowserDynamic(extraProviders)
+    rootInjectorPromise = platformBrowser(extraProviders)
       .bootstrapModule(Ng2RootModule)
       .then((moduleRef) => moduleRef.injector);
   }
@@ -103,19 +102,19 @@ const getRootInjector = (extraProviders: StaticProvider[]) => {
 };
 
 const downgradedNg2AModule = downgradeModule(async (extraProviders: StaticProvider[]) => {
-  const rootInjector = await getRootInjector(extraProviders);
+  const rootInjector = await getRootInjector(extraProviders)!;
   const moduleAFactory = await rootInjector.get(Compiler).compileModuleAsync(Ng2AModule);
   return moduleAFactory.create(rootInjector);
 });
 const downgradedNg2BModule = downgradeModule(async (extraProviders: StaticProvider[]) => {
-  const rootInjector = await getRootInjector(extraProviders);
+  const rootInjector = await getRootInjector(extraProviders)!;
   const moduleBFactory = await rootInjector.get(Compiler).compileModuleAsync(Ng2BModule);
   return moduleBFactory.create(rootInjector);
 });
 // #enddocregion shared-root-module
 
 const downgradedNg2CModule = downgradeModule((extraProviders: StaticProvider[]) =>
-  (getPlatform() || platformBrowserDynamic(extraProviders)).bootstrapModule(Ng2CModule),
+  (getPlatform() || platformBrowser(extraProviders)).bootstrapModule(Ng2CModule),
 );
 
 // The AngularJS app including downgraded modules and components.

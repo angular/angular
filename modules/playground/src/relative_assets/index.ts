@@ -7,8 +7,7 @@
  */
 
 import {Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {MyCmp} from './app/my_cmp';
 
@@ -26,4 +25,4 @@ export class RelativeApp {}
 })
 export class ExampleModule {}
 
-platformBrowserDynamic().bootstrapModule(ExampleModule);
+platformBrowser().bootstrapModule(ExampleModule);

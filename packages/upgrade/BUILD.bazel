@@ -11,8 +11,9 @@ ng_module(
         ],
     ),
     deps = [
+        "//packages/compiler",
         "//packages/core",
-        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser",
         "//packages/upgrade/src/common",
         "//packages/zone.js/lib:zone_d_ts",
     ],

@@ -16,8 +16,7 @@ import {
   NgModule,
 } from '@angular/core';
 import {waitForAsync} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -94,7 +93,7 @@ withEachNg1Version(() => {
       const element = html('<ng2 name="World">project</ng2>');
 
       // Let's use a helper function to make this simpler
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(element.textContent)).toBe('ng2[ng1[Hello World!](transclude)](project)');
       });
     }));

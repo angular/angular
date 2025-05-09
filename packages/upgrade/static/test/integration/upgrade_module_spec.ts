@@ -7,8 +7,7 @@
  */
 
 import {destroyPlatform, NgModule, NgZone} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {
   getAngularJSGlobal,
@@ -34,7 +33,7 @@ withEachNg1Version(() => {
         }
 
         // Bootstrap the ng2 app.
-        const appRef = await platformBrowserDynamic().bootstrapModule(Ng2Module);
+        const appRef = await platformBrowser().bootstrapModule(Ng2Module);
         const upgrade = appRef.injector.get(UpgradeModule);
 
         expect(upgrade.$injector).toBeUndefined();
@@ -53,7 +52,7 @@ withEachNg1Version(() => {
         }
 
         // Bootstrap the ng2 app.
-        const appRef = await platformBrowserDynamic().bootstrapModule(Ng2Module);
+        const appRef = await platformBrowser().bootstrapModule(Ng2Module);
         const upgrade = appRef.injector.get(UpgradeModule);
 
         // Bootstrap the hybrid app.
@@ -77,7 +76,7 @@ withEachNg1Version(() => {
         }
 
         // Bootstrap the ng2 app.
-        const appRef = await platformBrowserDynamic().bootstrapModule(Ng2Module);
+        const appRef = await platformBrowser().bootstrapModule(Ng2Module);
         const upgrade = appRef.injector.get(UpgradeModule);
 
         expect(upgrade.injector).toBeDefined();
@@ -96,7 +95,7 @@ withEachNg1Version(() => {
         }
 
         // Bootstrap the ng2 app.
-        const appRef = await platformBrowserDynamic().bootstrapModule(Ng2Module);
+        const appRef = await platformBrowser().bootstrapModule(Ng2Module);
         const upgrade = appRef.injector.get(UpgradeModule);
 
         expect(upgrade.ngZone).toBeDefined();
@@ -118,7 +117,7 @@ withEachNg1Version(() => {
         }
 
         // Bootstrap the ng2 app.
-        const appRef = await platformBrowserDynamic().bootstrapModule(Ng2Module);
+        const appRef = await platformBrowser().bootstrapModule(Ng2Module);
         const upgrade = appRef.injector.get(UpgradeModule);
 
         // Bootstrap the hybrid app.
@@ -142,7 +141,7 @@ withEachNg1Version(() => {
         }
 
         // Bootstrap the ng2 app.
-        const appRef = await platformBrowserDynamic().bootstrapModule(Ng2Module);
+        const appRef = await platformBrowser().bootstrapModule(Ng2Module);
         const upgrade = appRef.injector.get(UpgradeModule);
 
         // Bootstrap the hybrid app.

@@ -33,8 +33,7 @@ import {
   ViewRef,
 } from '@angular/core';
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {downgradeComponent, downgradeModule, UpgradeComponent} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -91,7 +90,7 @@ withEachNg1Version(() => {
 
         const doDowngradeModule = (module: Type<any>) => {
           const bootstrapFn = (extraProviders: StaticProvider[]) =>
-            (getPlatform() || platformBrowserDynamic(extraProviders)).bootstrapModule(module);
+            (getPlatform() || platformBrowser(extraProviders)).bootstrapModule(module);
           return downgradeModule(bootstrapFn);
         };
 
@@ -225,7 +224,7 @@ withEachNg1Version(() => {
 
         const doDowngradeModule = (module: Type<any>) => {
           const bootstrapFn = (extraProviders: StaticProvider[]) => {
-            const platformRef = getPlatform() || platformBrowserDynamic(extraProviders);
+            const platformRef = getPlatform() || platformBrowser(extraProviders);
             return platformRef.bootstrapModule(module);
           };
           return downgradeModule(bootstrapFn);
@@ -304,7 +303,7 @@ withEachNg1Version(() => {
 
         const doDowngradeModule = (module: Type<any>) => {
           const bootstrapFn = (extraProviders: StaticProvider[]) => {
-            const platformRef = getPlatform() || platformBrowserDynamic(extraProviders);
+            const platformRef = getPlatform() || platformBrowser(extraProviders);
             return platformRef.bootstrapModule(module);
           };
           return downgradeModule(bootstrapFn);
@@ -394,7 +393,7 @@ withEachNg1Version(() => {
         const doDowngradeModule = (module: Type<any>) => {
           const bootstrapFn = (extraProviders: StaticProvider[]) => {
             if (!rootInjectorPromise) {
-              rootInjectorPromise = platformBrowserDynamic(extraProviders)
+              rootInjectorPromise = platformBrowser(extraProviders)
                 .bootstrapModule(Ng2ModuleRoot)
                 .then((ref) => ref.injector);
             }
@@ -496,7 +495,7 @@ withEachNg1Version(() => {
         const bootstrapFn = (extraProviders: StaticProvider[]) => {
           const platformRef =
             getPlatform() ||
-            platformBrowserDynamic([
+            platformBrowser([
               ...extraProviders,
               {provide: 'FOO', useValue: 'Plat-foo'},
               {provide: 'BAR', useValue: 'Plat-bar'},
@@ -596,7 +595,7 @@ withEachNg1Version(() => {
           const bootstrapFn = (extraProviders: StaticProvider[]) => {
             const platformRef =
               getPlatform() ||
-              platformBrowserDynamic([
+              platformBrowser([
                 ...extraProviders,
                 {provide: 'FOO', useValue: 'Plat-foo'},
                 {provide: 'BAR', useValue: 'Plat-bar'},
@@ -690,7 +689,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -760,7 +759,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -809,7 +808,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -848,7 +847,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -892,7 +891,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -966,7 +965,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -1016,7 +1015,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -1070,7 +1069,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -1163,7 +1162,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -1305,7 +1304,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -1356,7 +1355,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -1433,7 +1432,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -1489,7 +1488,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -1519,7 +1518,7 @@ withEachNg1Version(() => {
         }
 
         const bootstrapFn = (extraProviders: StaticProvider[]) =>
-          platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+          platformBrowser(extraProviders).bootstrapModule(Ng2Module);
         const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
         const ng1Module = angular
           .module_('ng1', [lazyModuleName])
@@ -1575,7 +1574,7 @@ withEachNg1Version(() => {
 
         const doDowngradeModule = (module: Type<any>) => {
           const bootstrapFn = (extraProviders: StaticProvider[]) =>
-            (getPlatform() || platformBrowserDynamic(extraProviders)).bootstrapModule(module);
+            (getPlatform() || platformBrowser(extraProviders)).bootstrapModule(module);
           return downgradeModule(bootstrapFn);
         };
 

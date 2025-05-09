@@ -7,15 +7,13 @@
  */
 
 import {createPlatformFactory, NgModule, platformCore, StaticProvider} from '@angular/core';
-import {ɵINTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS as INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from '@angular/platform-browser-dynamic';
-import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
+import {BrowserTestingModule} from '@angular/platform-browser/testing';
 import {
   ɵINTERNAL_SERVER_PLATFORM_PROVIDERS as INTERNAL_SERVER_PLATFORM_PROVIDERS,
   ɵSERVER_RENDER_PROVIDERS as SERVER_RENDER_PROVIDERS,
 } from '../../index';
 
 const INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS: StaticProvider[] = [
-  ...INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
   ...INTERNAL_SERVER_PLATFORM_PROVIDERS,
 ];
 
@@ -38,7 +36,7 @@ export const platformServerTesting = createPlatformFactory(
  * @deprecated from v20.0.0, use e2e testing to verify SSR behavior.
  */
 @NgModule({
-  exports: [BrowserDynamicTestingModule],
+  exports: [BrowserTestingModule],
   providers: SERVER_RENDER_PROVIDERS,
 })
 export class ServerTestingModule {}

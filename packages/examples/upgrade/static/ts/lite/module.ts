@@ -20,9 +20,8 @@ import {
   Output,
   StaticProvider,
 } from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
 // #docregion basic-how-to
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 // #enddocregion
 // #docregion basic-how-to
 import {downgradeComponent, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
@@ -145,7 +144,7 @@ class MyLazyAngularModule {
 // The function that will bootstrap the Angular module (when/if necessary).
 // (This would be omitted if we provided an `NgModuleFactory` directly.)
 const ng2BootstrapFn = (extraProviders: StaticProvider[]) =>
-  platformBrowserDynamic(extraProviders).bootstrapModule(MyLazyAngularModule);
+  platformBrowser(extraProviders).bootstrapModule(MyLazyAngularModule);
 // #enddocregion
 // (We are using the dynamic browser platform, as this example has not been compiled AOT.)
 

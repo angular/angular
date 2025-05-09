@@ -17,8 +17,7 @@ import {
   NgModule,
   Output,
 } from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {
   downgradeComponent,
   downgradeInjectable,
@@ -196,5 +195,5 @@ ng1AppModule.component('exampleApp', {
 // #docregion bootstrap-ng2
 // We bootstrap the Angular module as we would do in a normal Angular app.
 // (We are using the dynamic browser platform as this example has not been compiled AOT.)
-platformBrowserDynamic().bootstrapModule(Ng2AppModule);
+platformBrowser().bootstrapModule(Ng2AppModule);
 // #enddocregion

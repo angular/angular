@@ -25,8 +25,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
@@ -155,7 +154,7 @@ withEachNg1Version(() => {
              | modelA: {{modelA}}; modelB: {{modelB}}; eventA: {{eventA}}; eventB: {{eventB}};
            </div>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(document.body.textContent)).toEqual(
           'ignore: -; ' +
             'literal: Text; interpolate: Hello world; ' +
@@ -209,7 +208,7 @@ withEachNg1Version(() => {
           <ng2 literal="Text" message="Hello {{name}}"></ng2>
         </div>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(document.body.textContent)).toEqual('Message: Hello world');
 
         $apply(upgrade, 'name = "everyone"');
@@ -251,7 +250,7 @@ withEachNg1Version(() => {
             <ng2 [one-way-b]="dataB"></ng2>
           </div>`);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(document.body.textContent)).toEqual('oneWayB: B');
         $apply(upgrade, 'dataB= "everyone"');
         expect(multiTrim(document.body.textContent)).toEqual('oneWayB: everyone');
@@ -304,7 +303,7 @@ withEachNg1Version(() => {
           </div>
         `);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(element.textContent)).toEqual('model: newC; | value: newC');
         expect(listenerSpy).toHaveBeenCalledWith('newC');
       });
@@ -345,7 +344,7 @@ withEachNg1Version(() => {
 
       const element = html('<ng2 [value1]="value1" value2="{{ value2 }}"></ng2>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
 
         expect(element.textContent).toBe('0 | 0');
@@ -414,7 +413,7 @@ withEachNg1Version(() => {
 
       const element = html('<ng2 [value1]="value1" value2="{{ value2 }}"></ng2>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         const $rootScope = upgrade.$injector.get('$rootScope') as angular.IRootScopeService;
 
         expect(element.textContent).toBe('0 | 0');
@@ -474,7 +473,7 @@ withEachNg1Version(() => {
 
       const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(element.textContent).toBe('foo | foo');
 
         tick(1000);
@@ -527,7 +526,7 @@ withEachNg1Version(() => {
            <ng2 foo="qux" ng-if="true"></ng2>
          `);
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         const nodes = element.querySelectorAll('ng2');
         const expectedTextWith = (value: string) =>
           `ngOnChangesCount: 1 | firstChangesCount: 1 | initialValue: ${value}`;
@@ -584,7 +583,7 @@ withEachNg1Version(() => {
         ngDoBootstrap() {}
       }
 
-      platformBrowserDynamic()
+      platformBrowser()
         .bootstrapModule(Ng2Module)
         .then((ref) => {
           const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
@@ -635,7 +634,7 @@ withEachNg1Version(() => {
         })
         .directive('ng2', downgradeComponent({component: Ng2Component}));
       const element = html('<ng1></ng1>');
-      platformBrowserDynamic()
+      platformBrowser()
         .bootstrapModule(Ng2Module)
         .then((ref) => {
           const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
@@ -723,7 +722,7 @@ withEachNg1Version(() => {
 
       const element = html('<ng2-outer [destroy-it]="destroyIt"></ng2-outer>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(element.textContent).toBe('test');
         expect(destroyed).toBe(false);
 
@@ -756,7 +755,7 @@ withEachNg1Version(() => {
         .directive('ng2', downgradeComponent({component: Ng2Component}));
 
       const element = html('<div><ng1></ng1></div>');
-      const platformRef = platformBrowserDynamic();
+      const platformRef = platformBrowser();
 
       platformRef.bootstrapModule(Ng2Module).then((ref) => {
         const upgrade = ref.injector.get(UpgradeModule);
@@ -834,7 +833,7 @@ withEachNg1Version(() => {
         .directive('ng2', downgradeComponent({component: Ng2Component}));
 
       const element = html('<ng1></ng1>');
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         // the fact that the body contains the correct text means that the
         // downgraded component was able to access the moduleInjector
         // (since there is no other injector in this system)
@@ -861,7 +860,7 @@ withEachNg1Version(() => {
 
       const element = html('<works-component></works-component>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(document.body.textContent)).toBe('It works');
       });
     }));
@@ -895,7 +894,7 @@ withEachNg1Version(() => {
 
       const element = html('<root-component></root-component>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(document.body.textContent)).toBe('It works!');
       });
     }));
@@ -932,7 +931,7 @@ withEachNg1Version(() => {
 
       const element = html('<parent><child></child></parent>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(document.body.textContent)).toBe('parent(child)');
       });
     }));
@@ -967,7 +966,7 @@ withEachNg1Version(() => {
 
       const element = html('<ng2-a><ng2-b></ng2-b></ng2-a>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
         expect(element.textContent).toBe('Ng2 template');
       });
     }));
@@ -1013,7 +1012,7 @@ withEachNg1Version(() => {
 
       const element = html('<ng2></ng2>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then((upgrade) => {
         const modInjector = upgrade.injector;
         // Emulate the router lazy loading a module and creating a component
         const compiler = modInjector.get(Compiler);
@@ -1049,7 +1048,7 @@ withEachNg1Version(() => {
 
       const element = html('<ng2></ng2>');
 
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(
         () => {
           throw new Error('Expected bootstraping to fail.');
         },
@@ -1084,7 +1083,7 @@ withEachNg1Version(() => {
       }
 
       const element = html('<ng2></ng2>');
-      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+      bootstrap(platformBrowser(), Ng2Module, element, ng1Module).then(() => {
         expect(element.textContent).toBe('Hi from Angular!');
       });
     }));
