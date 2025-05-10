@@ -193,6 +193,7 @@
   "createNotification",
   "createStyleElement",
   "createTView",
+  "createTokenWithInjectionMarker",
   "deepForEach",
   "deepForEachProvider",
   "detachMovedView",
