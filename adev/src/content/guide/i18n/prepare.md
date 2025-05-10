@@ -223,7 +223,7 @@ An ICU expression includes a component property, an ICU clause, and the case sta
 
 </docs-code>
 
-The component property defines the variable
+The component property defines the variable.
 An ICU clause defines the type of conditional text.
 
 | ICU clause                                                           | Details                                                             |
