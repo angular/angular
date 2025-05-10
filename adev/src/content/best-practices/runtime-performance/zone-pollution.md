@@ -120,4 +120,4 @@ class AppComponent implements OnInit {
 }
 </docs-code>
 
-The scenario of dispatching events outside of the Angular zone may also arise. It's important to remember that triggering change detection (for example, manually) may result to the creation/update of views outside of the Angular zone.
+The scenario of dispatching events outside of the Angular zone may also arise. It's important to remember that triggering change detection (for example, manually) may result in the creation/update of views outside of the Angular zone.
