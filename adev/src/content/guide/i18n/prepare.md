@@ -32,7 +32,7 @@ To mark the greeting for translation, add the `i18n` attribute to the `<h1>` tag
 
 ### using conditional statement with `i18n`
 
-The following `<div>` tag will display translated text as part of `div` and `aria-label` based on toggle status 
+The following `<div>` tag will display translated text as part of `div` and `aria-label` based on toggle status
 
 <docs-code-multifile>
     <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html"  visibleRegion="i18n-conditional"/>
@@ -223,7 +223,7 @@ An ICU expression includes a component property, an ICU clause, and the case sta
 
 </docs-code>
 
-The component property defines the variable
+The component property defines the variable.
 An ICU clause defines the type of conditional text.
 
 | ICU clause                                                           | Details                                                             |
