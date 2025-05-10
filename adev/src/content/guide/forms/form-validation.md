@@ -268,7 +268,7 @@ The following code creates the validator class, `UniqueRoleValidator`, which imp
 
 <docs-code path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" visibleRegion="async-validator"/>
 
-The `actorsService` property is initialized with an instace of the `ActorsService` token, which defines the following interface.
+The `actorsService` property is initialized with an instance of the `ActorsService` token, which defines the following interface.
 
 <docs-code language="typescript">
 interface ActorsService {
