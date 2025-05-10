@@ -1,12 +1,16 @@
 :host {
+  display: block;
+
   .docs-viewer {
     &.docs-animate-content {
       animation: fade-in 500ms;
     }
   }
-  padding: var(--layout-padding);
-  
-  @media only screen and (min-width: 1430px) {
+
+  padding-top: var(--layout-padding);
+  padding-bottom: var(--layout-padding);
+
+  @media only screen and (min-width: 1431px) {
     display: flex;
     justify-content: center;
   }
