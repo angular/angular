@@ -1,12 +1,16 @@
 :host {
+  display: block;
+  padding-top: var(--layout-padding);
+  padding-bottom: var(--layout-padding);
+
   .docs-viewer {
     &.docs-animate-content {
       animation: fade-in 500ms;
     }
   }
-  padding: var(--layout-padding);
-  
-  @media only screen and (min-width: 1430px) {
+
+  //applying styles when TOC position got translated to the top right 
+  @media only screen and (min-width: 1431px) {
     display: flex;
     justify-content: center;
   }
