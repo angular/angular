@@ -451,6 +451,7 @@
   "isFormControlState",
   "isForwardRef",
   "isFunction",
+  "isInInjectionContext",
   "isInlineTemplate",
   "isInteropObservable",
   "isIterable",
