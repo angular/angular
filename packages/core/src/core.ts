@@ -17,6 +17,10 @@ export * from './authoring';
 // JSCompiler's conformance requirement for inferred const exports. See:
 // https://docs.google.com/document/d/1RXb1wYwsbJotO1KBgSDsAtKpduGmIHod9ADxuXcAvV4/edit?tab=t.0
 export {input} from './authoring/input/input';
+export type {
+  ExtractDirectiveSignalInputs,
+  ExtractedDirectiveInputValue,
+} from './authoring/input/input_type_checking';
 export {contentChild, contentChildren, viewChild, viewChildren} from './authoring/queries';
 export {model} from './authoring/model/model';
 

@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {
+  ExtractDirectiveSignalInputs,
+  ExtractedDirectiveInputValue,
+  SomeInputPropertyName,
+} from '../authoring/input/input_type_checking';
 import type {ChangeDetectorRef} from '../change_detection/change_detection';
 import type {Injector} from '../di/injector';
 import type {EnvironmentInjector} from '../di/r3_injector';
@@ -29,10 +34,21 @@ export abstract class ComponentRef<C> {
    * component using the `OnPush` change detection strategy. It will also assure that the
    * `OnChanges` lifecycle hook runs when a dynamically created component is change-detected.
    *
-   * @param name The name of an input.
-   * @param value The new value of an input.
+   * The method facilitates type-safe updates for input properties defined as `InputSignal`,
+   * `ModelSignal` or `InputSignalWithTransform` within the directives's type definition.
+   * The `name` parameter accepts either a known input property key or a custom string name.
+   * When a custom name does not correspond to a defined input property, the `value` type
+   * resolves to `unknown`.
+   *
+   * @param name The name of the input property to update, either a key of the component's input
+   * properties or a custom string identifier.
+   * @param value The new value to assign to the input property, type-inferred based on the
+   * specified `name`.
    */
-  abstract setInput(name: string, value: unknown): void;
+  abstract setInput<Field extends keyof ExtractDirectiveSignalInputs<C> | SomeInputPropertyName>(
+    name: Field | SomeInputPropertyName,
+    value: ExtractedDirectiveInputValue<C, Field>,
+  ): void;
 
   /**
    * The host or anchor element for this component instance.

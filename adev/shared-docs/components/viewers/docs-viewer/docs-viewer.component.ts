@@ -28,6 +28,7 @@ import {
   PendingTasks,
   output,
 } from '@angular/core';
+import type {ExtractedDirectiveInputValue} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TOC_SKIP_CONTENT_MARKER, NavigationState} from '../../../services/index';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
@@ -287,7 +288,7 @@ export class DocViewer implements OnChanges {
 
     if (inputs) {
       for (const [name, value] of Object.entries(inputs)) {
-        componentRef.setInput(name, value);
+        componentRef.setInput(name, value as ExtractedDirectiveInputValue<T, string>);
       }
     }
 
