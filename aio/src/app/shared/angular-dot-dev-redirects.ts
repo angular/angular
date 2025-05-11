@@ -179,6 +179,7 @@ const linksMap = new Map<string, string>([
   ['guide/signal-inputs', 'guide/signals/inputs'],
   ['guide/model-inputs', 'guide/signals/model'],
   ['guide/signal-queries', 'guide/signals/queries'],
+  ['tutorial/first-app', 'tutorials/first-app'],
   ['tutorial/first-app/first-app-lesson-01', 'tutorials/first-app'],
   ['tutorial/first-app/first-app-lesson-02', 'tutorials/first-app'],
   ['tutorial/first-app/first-app-lesson-03', 'tutorials/first-app'],
