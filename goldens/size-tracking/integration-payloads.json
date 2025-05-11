@@ -1,8 +1,8 @@
 {
   "cli-hello-world": {
     "uncompressed": {
-      "main": 132425,
-      "polyfills": 33792
+      "main": 137461,
+      "polyfills": 34579
     }
   },
   "cli-hello-world-ivy-i18n": {
