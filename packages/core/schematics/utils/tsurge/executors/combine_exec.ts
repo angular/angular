@@ -16,7 +16,7 @@ import {TsurgeMigration} from '../migration';
  * @returns the serializable combined unit data.
  */
 export async function executeCombinePhase<UnitData, GlobalData>(
-  migration: TsurgeMigration<UnitData, GlobalData>,
+  migration: TsurgeMigration<UnitData, GlobalData, unknown>,
   unitA: UnitData,
   unitB: UnitData,
 ): Promise<Serializable<UnitData>> {

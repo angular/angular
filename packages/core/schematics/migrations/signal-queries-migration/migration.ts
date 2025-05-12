@@ -644,15 +644,13 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       }
     }
 
-    return {
-      counters: {
-        queriesCount,
-        multiQueries,
-        incompatibleQueries,
-        ...fieldIncompatibleCounts,
-        ...classIncompatibleCounts,
-      },
-    };
+    return confirmAsSerializable({
+      queriesCount,
+      multiQueries,
+      incompatibleQueries,
+      ...fieldIncompatibleCounts,
+      ...classIncompatibleCounts,
+    });
   }
 }
 

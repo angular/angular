@@ -1586,14 +1586,14 @@ describe('signal queries migration', () => {
       ],
     );
 
-    expect(await getStatistics()).toEqual({
-      counters: {
-        queriesCount: 3,
-        multiQueries: 2,
-        incompatibleQueries: 2,
-        'incompat-field-Accessor': 1,
-        'incompat-field-WriteAssignment': 1,
-      },
+    // Cast as we dynamically add fields to the stats. This can be improved in follow-ups
+    // when stats for this migration are leveraging more complex data structures.
+    expect((await getStatistics()) as object).toEqual({
+      queriesCount: 3,
+      multiQueries: 2,
+      incompatibleQueries: 2,
+      'incompat-field-Accessor': 1,
+      'incompat-field-WriteAssignment': 1,
     });
   });
 
