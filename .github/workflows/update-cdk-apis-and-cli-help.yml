@@ -34,6 +34,8 @@ jobs:
           fetch-depth: 0
 
       # Angular CDK
+      - name: Create Branch
+        run: git checkout -b tmp-cdk-docs-update ${{ github.ref }}
       - name: Generate CDK apis
         run: node adev/scripts/update-cdk-apis/index.mjs
         env:
@@ -51,6 +53,8 @@ jobs:
           angular-robot-token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
 
       # Angular CLI
+      - name: Create Branch
+        run: git checkout -b tmp-cli-docs-update ${{ github.ref }}
       - name: Generate CLI help
         run: node adev/scripts/update-cli-help/index.mjs
         env:
