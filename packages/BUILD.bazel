@@ -1,7 +1,8 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
-load("//tools:defaults.bzl", "ts_config", "ts_library")
+load("//tools:defaults.bzl", "ts_config")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,12 +16,23 @@ copy_to_bin(
     srcs = ["package.json"],
 )
 
-ts_library(
+ts_project(
+    name = "goog_types",
+    srcs = ["goog.d.ts"],
+)
+
+ts_project(
     name = "types",
-    srcs = glob(["*.ts"]),
-    deps = [
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["goog.d.ts"],
+    ),
+    interop_deps = [
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//@types/hammerjs",
+    ],
+    deps = [
+        ":goog_types_rjs",
+        "//:node_modules/@types/hammerjs",
     ],
 )
 
