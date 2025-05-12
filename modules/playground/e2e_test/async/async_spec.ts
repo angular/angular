@@ -8,7 +8,6 @@
 
 import {verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {$, browser} from 'protractor';
-import {promise} from 'selenium-webdriver';
 
 describe('async', () => {
   const URL = '/';
@@ -69,7 +68,7 @@ describe('async', () => {
   });
 
   it('should wait via frameworkStabilizer', () => {
-    const whenAllStable = (): promise.Promise<any> => {
+    const whenAllStable = () => {
       return browser.executeAsyncScript('window.frameworkStabilizers[0](arguments[0]);');
     };
 

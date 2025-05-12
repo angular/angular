@@ -7,11 +7,10 @@
  */
 
 import chalk from 'chalk';
-import {Builder, WebDriver} from 'selenium-webdriver4';
+import {Builder, WebDriver} from 'selenium-webdriver';
 
 import {Browser, getUniqueId} from '../browser';
 
-import {IpcServer} from './ipc';
 import {openSauceConnectTunnel} from './sauce-connect-tunnel';
 
 const defaultCapabilities = {

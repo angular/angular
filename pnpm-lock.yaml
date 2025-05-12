@@ -133,11 +133,8 @@ importers:
         specifier: ^18.11.18
         version: 18.19.87
       '@types/selenium-webdriver':
-        specifier: 3.0.7
-        version: 3.0.7
-      '@types/selenium-webdriver4':
-        specifier: npm:@types/selenium-webdriver@4.1.28
-        version: /@types/selenium-webdriver@4.1.28
+        specifier: 4.1.28
+        version: 4.1.28
       '@types/semver':
         specifier: ^7.3.4
         version: 7.7.0
@@ -283,11 +280,8 @@ importers:
         specifier: ^7.0.0
         version: 7.8.2
       selenium-webdriver:
-        specifier: 3.5.0
-        version: 3.5.0
-      selenium-webdriver4:
-        specifier: npm:selenium-webdriver@4.31.0
-        version: /selenium-webdriver@4.31.0
+        specifier: 4.32.0
+        version: 4.32.0
       semver-dsl:
         specifier: ^1.0.1
         version: 1.0.1
@@ -6111,10 +6105,6 @@ packages:
 
   /@types/selenium-webdriver@3.0.26:
     resolution: {integrity: sha512-dyIGFKXfUFiwkMfNGn1+F6b80ZjR3uSYv1j6xVJSDlft5waZ2cwkHW4e7zNzvq7hiEackcgvBpmnXZrI1GltPg==, tarball: https://registry.npmjs.org/@types/selenium-webdriver/-/selenium-webdriver-3.0.26.tgz}
-
-  /@types/selenium-webdriver@3.0.7:
-    resolution: {integrity: sha512-tHdDdGUBKTbiLLwf5mF78EP35F31UZekG+GRNowl8G5rMQoupAT4qWn/7AaGOvmaqvROdqC3Io/hP1ZyO58QkA==, tarball: https://registry.npmjs.org/@types/selenium-webdriver/-/selenium-webdriver-3.0.7.tgz}
-    dev: false
 
   /@types/selenium-webdriver@4.1.28:
     resolution: {integrity: sha512-Au7CXegiS7oapbB16zxPToY4Cjzi9UQQMf3W2ZZM8PigMLTGR3iUAHjPUTddyE5g1SBjT/qpmvlsAQLBfNAdKg==, tarball: https://registry.npmjs.org/@types/selenium-webdriver/-/selenium-webdriver-4.1.28.tgz}
@@ -16047,16 +16037,6 @@ packages:
     resolution: {integrity: sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==, tarball: https://registry.npmjs.org/select-hose/-/select-hose-2.0.0.tgz}
     dev: false
 
-  /selenium-webdriver@3.5.0:
-    resolution: {integrity: sha512-1bCZYRfDy7vsu1dkLrclTLvWPxSo6rOIkxZXvB2wnzeWkEoiTKpw612EUGA3jRZxPzAzI9OlxuULJV8ge1vVXQ==, tarball: https://registry.npmjs.org/selenium-webdriver/-/selenium-webdriver-3.5.0.tgz}
-    engines: {node: '>= 6.9.0'}
-    dependencies:
-      jszip: 3.10.1
-      rimraf: 2.7.1
-      tmp: 0.0.30
-      xml2js: 0.4.23
-    dev: false
-
   /selenium-webdriver@3.6.0:
     resolution: {integrity: sha512-WH7Aldse+2P5bbFBO4Gle/nuQOdVwpHMTL6raL3uuBj/vPG07k6uzt3aiahu352ONBr5xXh0hDlM3LhtXPOC4Q==, tarball: https://registry.npmjs.org/selenium-webdriver/-/selenium-webdriver-3.6.0.tgz}
     engines: {node: '>= 6.9.0'}
@@ -16066,8 +16046,8 @@ packages:
       tmp: 0.0.30
       xml2js: 0.4.23
 
-  /selenium-webdriver@4.31.0:
-    resolution: {integrity: sha512-0MWEwypM0+c1NnZ87UEMxZdwphKoaK2UJ2qXzKWrJiM0gazFjgNVimxlHTOO90G2cOhphZqwpqSCJy62NTEzyA==, tarball: https://registry.npmjs.org/selenium-webdriver/-/selenium-webdriver-4.31.0.tgz}
+  /selenium-webdriver@4.32.0:
+    resolution: {integrity: sha512-dG48JJnB96Aea1iVaZOKGmd6yT6aemeI1heWI/i8DtfD3pDX7uIlwpDBoGauNhtXAaFaamP+U4hIab8zZkg3Ag==, tarball: https://registry.npmjs.org/selenium-webdriver/-/selenium-webdriver-4.32.0.tgz}
     engines: {node: '>= 18.20.5'}
     dependencies:
       '@bazel/runfiles': 6.3.1
@@ -19150,7 +19130,7 @@ packages:
       browser-sync: 3.0.4
       prettier: 3.4.2
       protractor: 7.0.0
-      selenium-webdriver: 4.31.0
+      selenium-webdriver: 4.32.0
       send: 1.2.0
       source-map: 0.7.4
       tmp: 0.2.3

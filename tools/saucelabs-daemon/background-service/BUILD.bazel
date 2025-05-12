@@ -9,9 +9,9 @@ ts_library(
         "//:browser-providers",
         "//tools/saucelabs-daemon",
         "@npm//@types/node",
-        "@npm//@types/selenium-webdriver4",
+        "@npm//@types/selenium-webdriver",
         "@npm//chalk",
-        "@npm//selenium-webdriver4",
+        "@npm//selenium-webdriver",
     ],
 )
 
