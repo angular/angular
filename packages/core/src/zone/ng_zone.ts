@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// Needed for the global `Zone` ambient types to be available.
+import type {} from 'zone.js';
+
 import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from '../change_detection/scheduling/flags';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';

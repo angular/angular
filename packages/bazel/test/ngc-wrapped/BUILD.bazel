@@ -21,7 +21,8 @@ ts_library(
 # .d.ts files (by default, jasmine_node_test would get the .js files).
 filegroup(
     name = "angular_core",
-    srcs = ["//packages/core"],
+    srcs = ["//packages/core:core_rjs"],
+    output_group = "types",
 )
 
 jasmine_node_test(
