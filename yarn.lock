@@ -465,7 +465,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#14ea8ca5b4adfb73a1f4ad531116cd448379a0a3":
   version "0.0.0-030487ad792aad6856c48b2d1e699b0d96e11a7b"
-  uid "14ea8ca5b4adfb73a1f4ad531116cd448379a0a3"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#14ea8ca5b4adfb73a1f4ad531116cd448379a0a3"
   dependencies:
     "@google-cloud/spanner" "7.21.0"
@@ -7372,7 +7371,7 @@ conventional-commits-parser@^6.0.0:
   dependencies:
     meow "^13.0.0"
 
-convert-source-map@^1.5.1, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
+convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.9.0.tgz#7faae62353fb4213366d0ca98358d22e8368b05f"
   integrity sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==

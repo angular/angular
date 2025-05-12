@@ -108,7 +108,7 @@
     "canonical-path": "1.0.0",
     "chalk": "^5.4.1",
     "chokidar": "^4.0.0",
-    "convert-source-map": "^1.5.1",
+    "convert-source-map": "^2.0.0",
     "d3": "^7.0.0",
     "diff": "^7.0.0",
     "domino": "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af",

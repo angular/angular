@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
 import {decode, encode, SourceMapMappings, SourceMapSegment} from '@jridgewell/sourcemap-codec';
 import mapHelpers from 'convert-source-map';
 
@@ -14,9 +16,11 @@ import {RawSourceMap, SourceMapInfo} from './raw_source_map';
 import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
 
 export function removeSourceMapComments(contents: string): string {
-  return mapHelpers
-    .removeMapFileComments(mapHelpers.removeComments(contents))
-    .replace(/\n\n$/, '\n');
+  // Cast to as any as typings are broken for this method.
+  return (mapHelpers.removeMapFileComments as any)(
+    mapHelpers.removeComments(contents),
+    (filename: string) => readFileSync(resolve('../my-dir', filename), 'utf-8'),
+  ).replace(/\n\n$/, '\n');
 }
 
 export class SourceFile {
