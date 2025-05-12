@@ -576,7 +576,7 @@ It creates an `ActivatedRoute` object with the routing information and injects i
 
 Here are the services injected into `HeroDetailComponent`:
 
-<docs-code header="app/hero/hero-detail.component.ts (inject)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="ctor"/>
+<docs-code header="app/hero/hero-detail.component.ts (inject)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="inject"/>
 
 The `HeroDetail` component needs the `id` parameter so it can fetch the corresponding hero using the `HeroDetailService`.
 The component has to get the `id` from the `ActivatedRoute.paramMap` property which is an `Observable`.
