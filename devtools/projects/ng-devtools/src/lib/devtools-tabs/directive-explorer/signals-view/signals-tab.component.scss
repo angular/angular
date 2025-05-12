@@ -8,6 +8,8 @@
     display: block;
     width: 100%;
     height: 100%;
+    color: white;
+
     ::ng-deep {
       .node-label {
         box-sizing: border-box;
@@ -21,51 +23,54 @@
         text-align: center;
         word-wrap: break-word;
         border-radius: 8px;
-        background-color: #ffaaaa;
+        background-color: var(--red-03);
+        cursor: pointer;
         transition: border-width 0.25s ease-in-out;
         border: 0px solid black;
         &.animating {
           border-width: 5px;
         }
         .header {
-          width: 100%;
+          width: 85%;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          background-color: #bb6666;
+          padding: 7.5%;
+          background-color: var(--red-06);
         }
         .body {
           flex: 1;
         }
       }
       .selected rect {
-        stroke: black;
-        stroke-width: 2px;
+        stroke: var(--dynamic-blue-02);
+        stroke-width: 3px;
         ry: 8px;
         rx: 8px;
       }
+
       .kind-signal {
-        background-color: #aaaaff;
+        background-color: var(--blue-02);
         .header {
-          background-color: #6666bb;
+          background-color: var(--blue-01);
         }
       }
       .kind-computed {
-        background-color: #aaffaa;
+        background-color: var(--green-02);
         .header {
-          background-color: #66bb66;
+          background-color: var(--green-01);
         }
       }
       .kind-effect {
-        background-color: #ffffaa;
+        background-color: var(--transparent-04);
         .header {
-          background-color: #bbbb66;
+          background-color: var(--color-tree-node-highlighted);
         }
       }
       .kind-template {
-        background-color: #aaaaaa;
+        background-color: var(--gray-400);
         .header {
-          background-color: #666666;
+          background-color: var(--gray-700);
         }
       }
     }
@@ -74,8 +79,10 @@
     position: absolute;
     bottom: 8px;
     right: 8px;
-    border: 1px solid black;
+    border: 1px solid var(--full-contrast);
     border-radius: 8px;
+    background: var(--color-background);
+    padding: 8px;
   }
   .no-signals {
     position: absolute;
@@ -92,5 +99,33 @@
     position: absolute;
     top: 8px;
     right: 8px;
+  }
+}
+
+ng-signals-value-tree {
+  margin-top: 8px;
+  border: 1px solid var(--tertiary-contrast);
+}
+
+.signal-metadata {
+  display: flex;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  flex-direction: column;
+
+  .metadata-field {
+    display: flex;
+
+    &:not(:first-child) {
+      border-top: 1px solid var(--tertiary-contrast);
+    }
+
+    .metadata-field-label {
+      background: var(--color-foreground);
+      padding-right: 2px;
+      margin-right: 4px;
+      min-width: 40px;
+      border-right: 1px solid var(--tertiary-contrast);
+    }
   }
 }

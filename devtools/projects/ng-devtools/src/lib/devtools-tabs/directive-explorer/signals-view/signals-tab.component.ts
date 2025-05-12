@@ -26,12 +26,13 @@ import {MatTreeFlattener} from '@angular/material/tree';
 import {MatIcon} from '@angular/material/icon';
 import {ApplicationOperations} from '../../../application-operations/index';
 import {FrameManager} from '../../../application-services/frame_manager';
+import {MatButton, MatIconButton} from '@angular/material/button';
 
 @Component({
   templateUrl: './signals-tab.component.html',
   selector: 'ng-signals-tab',
   styleUrl: './signals-tab.component.scss',
-  imports: [SignalsValueTreeComponent, MatIcon],
+  imports: [SignalsValueTreeComponent, MatIcon, MatIconButton, MatButton],
 })
 export class SignalsTabComponent {
   private svgComponent = viewChild.required<ElementRef>('component');

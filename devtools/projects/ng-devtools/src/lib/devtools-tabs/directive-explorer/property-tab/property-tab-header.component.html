@@ -22,5 +22,8 @@
 } @else {
   <div class="element-header">
     <div class="element-name">{{ currentSelectedElement().element }}</div>
+    <button ng-button type="button" size="compact" (click)="showGraph($event)">
+      Show Signal Graph
+    </button>
   </div>
 }

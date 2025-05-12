@@ -104,7 +104,7 @@ export class SignalsGraphVisualizer {
       header.textContent = node.label ?? 'Unnamed';
       const body = document.createElement('div');
       body.className = 'body';
-      body.textContent = node.preview.preview;
+      body.textContent = getBodyText(node);
       outer.appendChild(header);
       outer.appendChild(body);
       return outer;
@@ -186,4 +186,20 @@ export class SignalsGraphVisualizer {
       this._svg.clientHeight,
     ]);
   }
+}
+
+function getBodyText(node: DebugSignalGraphNode): string {
+  if (node.kind === 'signal' || node.kind === 'computed') {
+    return node.preview.preview;
+  }
+
+  if (node.kind === 'template') {
+    return '</>';
+  }
+
+  if (node.kind === 'effect') {
+    return '() => {}';
+  }
+
+  return '';
 }
