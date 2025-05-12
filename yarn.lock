@@ -3342,6 +3342,15 @@
     is-module "^1.0.0"
     resolve "^1.22.1"
 
+"@rollup/pluginutils@5.1.4", "@rollup/pluginutils@^5.0.1":
+  version "5.1.4"
+  resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-5.1.4.tgz#bb94f1f9eaaac944da237767cdfee6c5b2262d4a"
+  integrity sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ==
+  dependencies:
+    "@types/estree" "^1.0.0"
+    estree-walker "^2.0.2"
+    picomatch "^4.0.2"
+
 "@rollup/pluginutils@^3.0.9":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-3.1.0.tgz#706b4524ee6dc8b103b3c995533e5ad680c02b9b"
@@ -3350,15 +3359,6 @@
     "@types/estree" "0.0.39"
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
-
-"@rollup/pluginutils@^5.0.1":
-  version "5.1.4"
-  resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-5.1.4.tgz#bb94f1f9eaaac944da237767cdfee6c5b2262d4a"
-  integrity sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ==
-  dependencies:
-    "@types/estree" "^1.0.0"
-    estree-walker "^2.0.2"
-    picomatch "^4.0.2"
 
 "@rollup/rollup-android-arm-eabi@4.30.1":
   version "4.30.1"
@@ -14599,6 +14599,13 @@ rollup-plugin-preserve-shebang@^1.0.1:
   integrity sha512-gk7ExGBqvUinhgrvldKHkAKXXwRkWMXMZymNkrtn50uBgHITlhRjhnKmbNGwAIc4Bzgl3yLv7/8Fhi/XeHhFKg==
   dependencies:
     magic-string "^0.25.7"
+
+rollup-plugin-sourcemaps2@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-sourcemaps2/-/rollup-plugin-sourcemaps2-0.5.1.tgz#a8d31f039b129587b72b14039c03edd83e88b50a"
+  integrity sha512-y8yq66AM3gD2636cb6+mqGvrTnYJrCQt7lhzXxFShKxOA52PGtfsQdooOYtZWtXYc5bWsNXpD7CEs1m36CGZmw==
+  dependencies:
+    "@rollup/pluginutils" "5.1.4"
 
 rollup-plugin-sourcemaps@^0.6.3:
   version "0.6.3"
