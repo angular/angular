@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "ts_library", "tsec_test")
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = [
     "//packages:__pkg__",
@@ -7,7 +8,7 @@ package(default_visibility = [
     "//tools/public_api_guard:__pkg__",
 ])
 
-ts_library(
+ts_project(
     name = "signals",
     srcs = glob(
         [

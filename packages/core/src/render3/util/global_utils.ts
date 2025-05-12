@@ -5,6 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+
+/// <reference path="../../../../goog.d.ts" />
+
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
 import {setupFrameworkInjectorProfiler} from '../debug/framework_injector_profiler';

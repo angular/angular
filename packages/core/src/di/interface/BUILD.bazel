@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "ts_library", "tsec_test")
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = [
     "//devtools:__subpackages__",
@@ -7,7 +8,7 @@ package(default_visibility = [
     "//tools/public_api_guard:__pkg__",
 ])
 
-ts_library(
+ts_project(
     name = "interface",
     srcs = glob(
         [
@@ -15,9 +16,9 @@ ts_library(
         ],
     ),
     deps = [
-        "//packages/core/src/interface",
-        "//packages/core/src/util",
-        "@npm//rxjs",
+        "//:node_modules/rxjs",
+        "//packages/core/src/interface:interface_rjs",
+        "//packages/core/src/util:util_rjs",
     ],
 )
 
