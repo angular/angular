@@ -4,6 +4,7 @@ import {define} from '../src/api/data';
 import {applyEach, form} from '../src/api/structure';
 import {Schema} from '../src/api/types';
 import {validate} from '../src/api/logic';
+import {validateAsync} from '../src/api/async';
 
 interface Cat {
   name: string;
@@ -80,40 +81,67 @@ describe('resources', () => {
     expect(f[1].name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
   });
 
-  it('should create a resource per entry in an array', async () => {
+  it('should support tree validation for resources', async () => {
     const injector = TestBed.inject(Injector);
 
-    const destroyed: string[] = [];
     const s: Schema<Cat[]> = function (p) {
-      applyEach(p, (p) => {
-        const res = define(p.name, ({value}) => {
-          const initial = value();
-          inject(DestroyRef).onDestroy(() => destroyed.push(initial));
-          return resource({
-            request: () => ({x: value()}),
-            loader: async ({request}) => `got: ${request.x}`,
-          });
-        });
-
-        validate(p.name, ({data}) => {
-          const remote = data(res);
-          if (remote.hasValue()) {
-            return {kind: 'whatever', message: remote.value()!.toString()};
-          } else {
-            return undefined;
-          }
-        });
+      validateAsync(p, {
+        request: ({value}) => value(),
+        factory: (request) =>
+          resource({
+            request,
+            loader: async ({request}) => {
+              return request as Cat[];
+            },
+          }),
+        error: (cats, {resolve}) => {
+          return cats.map((cat, index) => ({
+            kind: 'meows_too_much',
+            name: cat.name,
+            field: resolve(p)[index],
+          }));
+        },
       });
     };
 
-    const cats = signal([{name: 'cat'}, {name: 'dog'}]);
+    const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
     const f = form(cats, s, {injector});
 
     await TestBed.inject(ApplicationRef).whenStable();
-    expect(destroyed).toEqual([]);
+    expect(f[0].$state.errors()).toEqual([
+      jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
+    ]);
+    expect(f[1].$state.errors()).toEqual([
+      jasmine.objectContaining({kind: 'meows_too_much', name: 'Ziggy'}),
+    ]);
+  });
 
-    cats.update((cats) => [cats[0]]);
+  it('should support tree validation for resources', async () => {
+    const injector = TestBed.inject(Injector);
+
+    const s: Schema<Cat[]> = function (p) {
+      validateAsync(p, {
+        request: ({value}) => value(),
+        factory: (request) =>
+          resource({
+            request,
+            loader: async ({request}) => {
+              return request as Cat[];
+            },
+          }),
+        error: (cats, {resolve}) => {
+          return {kind: 'meows_too_much', name: cats[0].name, field: resolve(p)[0]};
+        },
+      });
+    };
+
+    const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
+    const f = form(cats, s, {injector});
+
     await TestBed.inject(ApplicationRef).whenStable();
-    expect(destroyed).toEqual(['dog']);
+    expect(f[0].$state.errors()).toEqual([
+      jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
+    ]);
+    expect(f[1].$state.errors()).toEqual([]);
   });
 });

@@ -24,6 +24,7 @@ import type {
   FieldPath,
   FieldState,
   FormError,
+  FormTreeError,
   SubmittedStatus,
   ValidationResult,
 } from './api/types';
@@ -259,17 +260,19 @@ export class FieldNode implements FieldState<unknown> {
    *  - it has no errors
    *  - all of its children consider themselves valid
    */
-  readonly valid: Signal<boolean> = computed(() => {
+  readonly syncValid: Signal<boolean> = computed(() => {
     // Short-circuit checking children if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return true;
     }
     return this.reduceChildren(
-      this.errors().length === 0,
-      (child, value) => value && child.valid(),
+      this.syncErrors().length === 0,
+      (child, value) => value && child.syncValid(),
       shortCircuitFalse,
     );
   });
+
+  readonly valid = this.syncValid;
 
   /**
    * Whether this field is considered disabled.
@@ -305,17 +308,74 @@ export class FieldNode implements FieldState<unknown> {
    *
    * Computing this runs validators.
    */
-  readonly errors: Signal<FormError[]> = computed(() => {
+  readonly syncErrors: Signal<FormError[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
     }
 
     return [
-      ...(this.logic.errors.compute(this.fieldContext) ?? []),
+      ...(this.logic.syncErrors.compute(this.fieldContext) ?? []),
+      ...this.syncTreeErrors(),
       ...normalizeErrors(this.serverErrors()),
     ];
   });
+
+  readonly rawSyncTreeErrors: Signal<FormTreeError[]> = computed(() => {
+    if (this.shouldSkipValidation()) {
+      return [];
+    }
+
+    return [
+      ...(this.logic.syncTreeErrors.compute(this.fieldContext) ?? []).map((err) =>
+        !err.field ? {...err, field: this.fieldProxy} : err,
+      ),
+      ...(this.parent?.rawSyncTreeErrors() ?? []),
+    ];
+  });
+
+  readonly syncTreeErrors: Signal<FormError[]> = computed(
+    () => this.rawSyncTreeErrors().filter((err) => err.field === this.fieldProxy) as FormError[],
+  );
+
+  /**
+   * Validation errors for this field.
+   *
+   * Computing this runs validators.
+   */
+  readonly rawAsyncErrors: Signal<(FormTreeError | 'pending')[]> = computed(() => {
+    // Short-circuit running validators if validation doesn't apply to this field.
+    if (this.shouldSkipValidation()) {
+      return [];
+    }
+
+    return [
+      // TODO: add field in `validateAsync` and remove this map
+      ...(this.logic.asyncErrors.compute(this.fieldContext) ?? []).map((err) => {
+        if (err !== 'pending' && !err.field) {
+          return {...err, field: this.fieldProxy};
+        } else {
+          return err;
+        }
+      }),
+      // TODO: does it make sense to filter this to errors in this subtree?
+      ...(this.parent?.rawAsyncErrors() ?? []),
+    ];
+  });
+
+  readonly asyncErrors: Signal<(FormError | 'pending')[]> = computed(() => {
+    if (this.shouldSkipValidation()) {
+      return [];
+    }
+    return this.rawAsyncErrors().filter(
+      (err) => err === 'pending' || err.field! === this.fieldProxy,
+    ) as Array<FormError | 'pending'>;
+  });
+
+  readonly errors = computed(() => [
+    ...this.syncErrors(),
+    ...this.asyncErrors().filter((err) => err !== 'pending'),
+  ]);
 
   children(): Iterable<FieldNode> {
     return this.childrenMap()?.values() ?? [];
@@ -369,7 +429,7 @@ export class FieldNode implements FieldState<unknown> {
    *
    * Defined in terms of other conditions based on the field logic.
    */
-  private shouldSkipValidation(): boolean {
+  shouldSkipValidation(): boolean {
     return this.hidden() || this.disabled();
   }
 

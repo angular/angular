@@ -26,8 +26,13 @@ export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
  * message.
  */
 export interface FormError {
-  kind: string;
-  message?: string;
+  readonly kind: string;
+  readonly message?: string;
+  readonly field?: never;
+}
+
+export interface FormTreeError extends Omit<FormError, 'field'> {
+  readonly field?: Field<unknown>;
 }
 
 /**
@@ -86,9 +91,17 @@ export interface FieldState<T> {
    */
   readonly errors: Signal<FormError[]>;
   /**
+   * A signal containing the current errors for the field.
+   */
+  readonly syncErrors: Signal<FormError[]>;
+  /**
    * A signal indicating whether the field's value is currently valid.
    */
   readonly valid: Signal<boolean>;
+  /**
+   * A signal indicating whether the field's value is currently valid.
+   */
+  readonly syncValid: Signal<boolean>;
   /**
    * A signal indicating whether the field is currently unsubmitted, submitted, or in the process of
    * being submitted.
@@ -149,6 +162,9 @@ export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
  *  @template T Value type
  */
 export type Validator<T> = LogicFn<T, ValidationResult>;
+
+export type TreeValidator<T> = LogicFn<T, FormTreeError[]>;
+
 /**
  * An object containing context about the field a given logic function is bound to.
  */

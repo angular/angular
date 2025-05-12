@@ -1,7 +1,7 @@
 import {computed, Injector, signal} from '@angular/core';
-import {disabled, error, required, validate} from '../src/api/logic';
+import {disabled, error, required, validate, validateTree} from '../src/api/logic';
 import {apply, applyEach, form, submit} from '../src/api/structure';
-import {Schema} from '../src/api/types';
+import {FormTreeError, Schema} from '../src/api/types';
 import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
 import {TestBed} from '@angular/core/testing';
 
@@ -437,6 +437,76 @@ describe('Node', () => {
 
       f.amount.$state.value.set(100);
       expect(f.name.$state.errors()).toEqual([]);
+    });
+
+    describe('tree validation', () => {
+      it('should push errors to children', () => {
+        const cat = signal({name: 'Fluffy', age: 5});
+        const f = form(
+          cat,
+          (p) => {
+            validateTree(p, ({value, resolve}) => {
+              const errors: FormTreeError[] = [];
+              if (value().name.length > 8) {
+                errors.push({kind: 'long_name', field: resolve(p.name)});
+              }
+              if (value().age < 0) {
+                errors.push({kind: 'temporal_anomaly', field: resolve(p.age)});
+              }
+              return errors;
+            });
+          },
+          {injector: TestBed.inject(Injector)},
+        );
+
+        expect(f.name.$state.errors()).toEqual([]);
+        expect(f.age.$state.errors()).toEqual([]);
+
+        f.age.$state.value.set(-10);
+
+        expect(f.name.$state.errors()).toEqual([]);
+        expect(f.age.$state.errors()).toEqual([
+          jasmine.objectContaining({kind: 'temporal_anomaly'}),
+        ]);
+
+        cat.set({name: 'Fluffy McFluffington', age: 10});
+        expect(f.name.$state.errors()).toEqual([jasmine.objectContaining({kind: 'long_name'})]);
+        expect(f.age.$state.errors()).toEqual([]);
+      });
+
+      it('should push errors to children async', () => {
+        const cat = signal({name: 'Fluffy', age: 5});
+        const f = form(
+          cat,
+          (p) => {
+            validateTree(p, ({value, resolve}) => {
+              const errors: FormTreeError[] = [];
+              if (value().name.length > 8) {
+                errors.push({kind: 'long_name', field: resolve(p.name)});
+              }
+              if (value().age < 0) {
+                errors.push({kind: 'temporal_anomaly', field: resolve(p.age)});
+              }
+              return errors;
+            });
+          },
+          {injector: TestBed.inject(Injector)},
+        );
+
+        expect(f.name.$state.errors()).toEqual([]);
+        expect(f.age.$state.errors()).toEqual([]);
+
+        f.age.$state.value.set(-10);
+
+        expect(f.name.$state.errors()).toEqual([]);
+        expect(f.age.$state.errors()).toEqual([
+          jasmine.objectContaining({kind: 'temporal_anomaly'}),
+        ]);
+
+        cat.set({name: 'Fluffy McFluffington', age: 10});
+        expect(f.name.$state.errors()).toEqual([jasmine.objectContaining({kind: 'long_name'})]);
+        expect(f.age.$state.errors()).toEqual([]);
+      });
     });
   });
 

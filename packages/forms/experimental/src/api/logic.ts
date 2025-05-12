@@ -9,7 +9,7 @@
 import {MetadataKey, DISABLED_REASON, REQUIRED} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldPath, FormError, LogicFn, Validator} from './types';
+import type {FieldPath, FormError, LogicFn, TreeValidator, Validator} from './types';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -65,7 +65,14 @@ export function validate<T>(path: FieldPath<T>, logic: NoInfer<Validator<T>>): v
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.errors.push(logic);
+  pathNode.logic.syncErrors.push(logic);
+}
+
+export function validateTree<T>(path: FieldPath<T>, logic: NoInfer<TreeValidator<T>>): void {
+  assertPathIsCurrent(path);
+
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  pathNode.logic.syncTreeErrors.push(logic);
 }
 
 /**
@@ -89,11 +96,7 @@ export function required<T>(
   validate(path, (arg) => {
     if (logic(arg) && emptyPredicate(arg.value())) {
       message = typeof message === 'function' ? message(arg) : message;
-      const result = {kind: 'required'} as FormError;
-      if (message) {
-        result.message = message;
-      }
-      return result;
+      return message ? {kind: 'required', message} : {kind: 'required'};
     }
     return undefined;
   });
