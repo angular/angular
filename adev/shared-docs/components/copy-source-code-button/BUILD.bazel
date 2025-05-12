@@ -1,9 +1,9 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ng_module(
+ng_project(
     name = "copy-source-code-button",
     srcs = [
         "copy-source-code-button.component.ts",
@@ -11,15 +11,18 @@ ng_module(
     assets = [
         "copy-source-code-button.component.html",
     ],
+    interop_deps = [
+        "//packages/common",
+        "//packages/core",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs/components:__pkg__",
         "//adev/shared-docs/components/viewers:__pkg__",
     ],
     deps = [
-        "//adev/shared-docs/components/icon",
-        "//packages/common",
-        "//packages/core",
-        "@npm//@angular/cdk",
+        "//:node_modules/@angular/cdk",
+        "//adev/shared-docs/components/icon:icon_rjs",
     ],
 )
 

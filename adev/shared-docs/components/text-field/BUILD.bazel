@@ -1,10 +1,10 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ng_module(
+ng_project(
     name = "text-field",
     srcs = [
         "text-field.component.ts",
@@ -13,15 +13,18 @@ ng_module(
         ":text-field.component.css",
         "text-field.component.html",
     ],
+    interop_deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/forms",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs/components:__pkg__",
         "//adev/shared-docs/components/search-dialog:__pkg__",
     ],
     deps = [
-        "//adev/shared-docs/components/icon",
-        "//packages/common",
-        "//packages/core",
-        "//packages/forms",
+        "//adev/shared-docs/components/icon:icon_rjs",
     ],
 )
 
