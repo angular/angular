@@ -9,7 +9,7 @@ onlyBuiltDependencies: []
 overrides:
   https-proxy-agent: 7.0.6
   saucelabs: 9.0.2
-  '@angular/core': 20.0.0-next.9
+  '@angular/core': 20.0.0-rc.0
 
 importers:
 
@@ -17,7 +17,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(@angular/core@20.0.0-next.9)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)(vite@6.3.5)
+        version: 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)(vite@6.3.5)
       '@angular-devkit/core':
         specifier: 20.0.0-rc.0
         version: 20.0.0-rc.0(chokidar@4.0.3)
@@ -26,19 +26,19 @@ importers:
         version: 20.0.0-rc.0(chokidar@4.0.3)
       '@angular/build':
         specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(@angular/core@20.0.0-next.9)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.0)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2)
+        version: 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.0)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2)
       '@angular/cdk':
         specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
+        version: 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 20.0.0-rc.0
         version: 20.0.0-rc.0(@types/node@18.19.87)(chokidar@4.0.3)
       '@angular/material':
         specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(@angular/cdk@20.0.0-rc.0)(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/forms@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2)
+        version: 20.0.0-rc.0(@angular/cdk@20.0.0-rc.0)(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/forms@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2)
       '@angular/ssr':
         specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/router@20.0.0-rc.0)
+        version: 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/router@20.0.0-rc.0)
       '@babel/cli':
         specifier: 7.27.0
         version: 7.27.0(@babel/core@7.26.10)
@@ -251,10 +251,10 @@ importers:
         version: 2.0.1
       ngx-flamegraph:
         specifier: 0.0.12
-        version: 0.0.12(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)
+        version: 0.0.12(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)
       ngx-progressbar:
         specifier: ^14.0.0
-        version: 14.0.0(@angular/cdk@20.0.0-rc.0)(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@20.0.0-rc.0)(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
       open-in-idx:
         specifier: ^0.1.1
         version: 0.1.1
@@ -353,8 +353,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a
         version: github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a(@angular/ssr@20.0.0-rc.0)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-junit-reporter@2.0.1)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(rxjs@7.8.2)(terser@5.39.0)(tsx@4.19.3)(zone.js@0.15.0)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#14ea8ca5b4adfb73a1f4ad531116cd448379a0a3
-        version: github.com/angular/dev-infra-private-ng-dev-builds/14ea8ca5b4adfb73a1f4ad531116cd448379a0a3
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#1c4ab5db67425dc52b9bff25660dbf5e105a4d75
+        version: github.com/angular/dev-infra-private-ng-dev-builds/1c4ab5db67425dc52b9bff25660dbf5e105a4d75
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.26.10)
@@ -453,7 +453,7 @@ importers:
         version: 0.5.16
       angular-split:
         specifier: ^19.0.0
-        version: 19.0.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
+        version: 19.0.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
       check-side-effects:
         specifier: 0.0.23
         version: 0.0.23
@@ -745,12 +745,12 @@ packages:
     transitivePeerDependencies:
       - chokidar
 
-  /@angular-devkit/build-angular@20.0.0-rc.0(@angular/core@20.0.0-next.9)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)(vite@6.3.5):
+  /@angular-devkit/build-angular@20.0.0-rc.0(@angular/core@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)(vite@6.3.5):
     resolution: {integrity: sha512-dFiKXZTPV2Uiq938eHSxepCrZKPY3ZbS3L08Q6bgPTInq1hFIceaVty7Ujq90PD6DYEaY3bGKv+aynN8occcCw==, tarball: https://registry.npmjs.org/@angular-devkit/build-angular/-/build-angular-20.0.0-rc.0.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       '@angular/localize': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
@@ -799,10 +799,10 @@ packages:
       '@angular-devkit/architect': 0.2000.0-rc.0(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2000.0-rc.0(chokidar@4.0.3)(webpack-dev-server@5.2.1)(webpack@5.99.8)
       '@angular-devkit/core': 20.0.0-rc.0(chokidar@4.0.3)
-      '@angular/build': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.0)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
-      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)
-      '@angular/ssr': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/router@20.0.0-rc.0)
+      '@angular/build': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.0)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)
+      '@angular/ssr': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/router@20.0.0-rc.0)
       '@babel/core': 7.27.1
       '@babel/generator': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
@@ -960,7 +960,7 @@ packages:
   /@angular/benchpress@0.3.0(rxjs@7.8.2)(zone.js@0.15.0):
     resolution: {integrity: sha512-ApxoY5lTj1S0QFLdq5ZdTfdkIds1m3tma9EJOZpNVHRU9eCj2D/5+VFb5tlWsv9NHQ2S0XXkJjauFOAdfzT8uw==, tarball: https://registry.npmjs.org/@angular/benchpress/-/benchpress-0.3.0.tgz}
     dependencies:
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
       reflect-metadata: 0.1.14
     transitivePeerDependencies:
       - '@angular/compiler'
@@ -1003,7 +1003,7 @@ packages:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.1901.0-rc.0(chokidar@4.0.3)
-      '@angular/ssr': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/router@20.0.0-rc.0)
+      '@angular/ssr': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/router@20.0.0-rc.0)
       '@babel/core': 7.26.0
       '@babel/helper-annotate-as-pure': 7.25.9
       '@babel/helper-split-export-declaration': 7.24.7
@@ -1046,13 +1046,13 @@ packages:
       - yaml
     dev: true
 
-  /@angular/build@20.0.0-rc.0(@angular/core@20.0.0-next.9)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.0)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2):
+  /@angular/build@20.0.0-rc.0(@angular/core@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.0)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2):
     resolution: {integrity: sha512-cVKDaoloiiN06dMnsS0ARDP5QMKVpQSijTBHr2Fpvxi6615rTEQAhj/VgTECVYhkRRNm4cILP1RX1KvqWkawEA==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0-rc.0.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler': ^20.0.0 || ^20.0.0-next.0
       '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       '@angular/localize': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
@@ -1094,9 +1094,9 @@ packages:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2000.0-rc.0(chokidar@4.0.3)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
-      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)
-      '@angular/ssr': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/router@20.0.0-rc.0)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)
+      '@angular/ssr': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/router@20.0.0-rc.0)
       '@babel/core': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
       '@babel/helper-split-export-declaration': 7.24.7
@@ -1142,15 +1142,15 @@ packages:
       - yaml
     dev: false
 
-  /@angular/cdk@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(rxjs@7.8.2):
+  /@angular/cdk@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(rxjs@7.8.2):
     resolution: {integrity: sha512-dvSacjyg5+6GCQiQpXIfguFcjrtR2R0uweUL8R9ZpGRi35jA0HqUYYY99asqyvhMS/G7F0etxRaPWu/d6sHpzg==, tarball: https://registry.npmjs.org/@angular/cdk/-/cdk-20.0.0-rc.0.tgz}
     peerDependencies:
       '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
-      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
       parse5: 7.3.0
       rxjs: 7.8.2
       tslib: 2.8.1
@@ -1183,22 +1183,22 @@ packages:
       - supports-color
     dev: false
 
-  /@angular/common@20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2):
+  /@angular/common@20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2):
     resolution: {integrity: sha512-aaEjRPtVv0DF3q6wPHRfephY1kMYTefmFH35z+hzcUVIrVyYQdT/LIUX3L+C9ITfYyLmFWlENf3HxmVUILfXAg==, tarball: https://registry.npmjs.org/@angular/common/-/common-20.0.0-rc.0.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0}
     peerDependencies:
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  /@angular/core@20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0):
-    resolution: {integrity: sha512-dTcDo1mp3A0hsAAajgMHjb8DX/MweUrPqJH660iXSCZVSM5MqFUBhazrJgySt31CKCPE5F3W+ZeISN8QCi9pcQ==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.0.0-next.9.tgz}
-    engines: {node: ^20.11.1 || >=22.11.0}
+  /@angular/core@20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0):
+    resolution: {integrity: sha512-RKIXYA129vdrRKrnac2XOgpWuYusWqwM4KsQ7b5qKIMZabJ0a2GoOlezT6+NhPkOSsyygYuZtaia5wzQeU1acA==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.0.0-rc.0.tgz}
+    engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0}
     peerDependencies:
-      '@angular/compiler': 20.0.0-next.9
+      '@angular/compiler': 20.0.0-rc.0
       rxjs: ^6.5.3 || ^7.4.0
       zone.js: ~0.15.0
     peerDependenciesMeta:
@@ -1209,85 +1209,85 @@ packages:
       tslib: 2.8.1
       zone.js: 0.15.0
 
-  /@angular/forms@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2):
+  /@angular/forms@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2):
     resolution: {integrity: sha512-RH95gg+WBBHS+m6y2XDTCCUZMg6Xih1Y4G91tnBdzSxV32evqyNDrSA9IxOhC6Ztxcd+2aLg1S1hsaiMbF2Alw==, tarball: https://registry.npmjs.org/@angular/forms/-/forms-20.0.0-rc.0.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0}
     peerDependencies:
       '@angular/common': 20.0.0-rc.0
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       '@angular/platform-browser': 20.0.0-rc.0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
-      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
-      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)
+      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)
       rxjs: 7.8.2
       tslib: 2.8.1
     dev: false
 
-  /@angular/material@20.0.0-rc.0(@angular/cdk@20.0.0-rc.0)(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/forms@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2):
+  /@angular/material@20.0.0-rc.0(@angular/cdk@20.0.0-rc.0)(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/forms@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2):
     resolution: {integrity: sha512-Z6uaTLaTdfMoT2RnL8GB1na/n2/0d9Dk5h2wSsymyZFJz/U20btCQuor9Cvb/mUlrPs/uu/5SWDMpigRXlaomg==, tarball: https://registry.npmjs.org/@angular/material/-/material-20.0.0-rc.0.tgz}
     peerDependencies:
       '@angular/cdk': 20.0.0-rc.0
       '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       '@angular/forms': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/platform-browser': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
-      '@angular/cdk': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
-      '@angular/forms': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2)
-      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)
+      '@angular/cdk': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/forms': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)
       rxjs: 7.8.2
       tslib: 2.8.1
     dev: false
 
-  /@angular/platform-browser@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9):
+  /@angular/platform-browser@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0):
     resolution: {integrity: sha512-mu2g1PNJkGCJxyCA366nGQt3abX9jx+VTcPR1PRaLqY/sGzA42sYJTG/M74CIpfnx9Sxb1hD3/XCB3xbN5rPhw==, tarball: https://registry.npmjs.org/@angular/platform-browser/-/platform-browser-20.0.0-rc.0.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0}
     peerDependencies:
       '@angular/animations': 20.0.0-rc.0
       '@angular/common': 20.0.0-rc.0
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
     peerDependenciesMeta:
       '@angular/animations':
         optional: true
     dependencies:
-      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
       tslib: 2.8.1
 
-  /@angular/router@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2):
+  /@angular/router@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2):
     resolution: {integrity: sha512-QkViBejo2xZwyGMHcM7NJh8QxhrAEeNq58Yoph6owzGb1/LMArVvZgoJAJC8HW3ojHN8xFUIfgxM4sFjjcw0dA==, tarball: https://registry.npmjs.org/@angular/router/-/router-20.0.0-rc.0.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0}
     peerDependencies:
       '@angular/common': 20.0.0-rc.0
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       '@angular/platform-browser': 20.0.0-rc.0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
-      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
-      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)
+      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/platform-browser': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  /@angular/ssr@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/router@20.0.0-rc.0):
+  /@angular/ssr@20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/router@20.0.0-rc.0):
     resolution: {integrity: sha512-PqAXHxJvahRbEgDVpd8eYVqM0PEYd4kpvBtpoH532TQi173hoNQxYf9JY6O/ECADqe6ZEqiIgGWy41l1jt7XcA==, tarball: https://registry.npmjs.org/@angular/ssr/-/ssr-20.0.0-rc.0.tgz}
     peerDependencies:
       '@angular/common': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
       '@angular/router': ^20.0.0 || ^20.0.0-next.0
     peerDependenciesMeta:
       '@angular/platform-server':
         optional: true
     dependencies:
-      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
-      '@angular/router': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/router': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(@angular/platform-browser@20.0.0-rc.0)(rxjs@7.8.2)
       tslib: 2.8.1
 
   /@antfu/install-pkg@1.0.0:
@@ -6628,15 +6628,15 @@ packages:
     resolution: {integrity: sha512-vqsT6zwu80cZ8RY7qRQBZuy6Fq5X7/N5hkV9LzNT0c8b546rw4ErGK6muW1u2JnDKYa7+jJuaGM702bWir4HGw==, tarball: https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.8.3.tgz}
     dev: false
 
-  /angular-split@19.0.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(rxjs@7.8.2):
+  /angular-split@19.0.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(rxjs@7.8.2):
     resolution: {integrity: sha512-vQqXWLcCimFmInu2lpGKIfS9FtYBgKmoWenPjeYkHSRdWmb7HLGlQoNPj1oALrwdhIWFPdySgp0BIXDe2IAepQ==, tarball: https://registry.npmjs.org/angular-split/-/angular-split-19.0.0.tgz}
     peerDependencies:
       '@angular/common': '>=19.0.0'
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       rxjs: '>=7.0.0'
     dependencies:
-      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
       rxjs: 7.8.2
       tslib: 2.8.1
     dev: true
@@ -13790,28 +13790,28 @@ packages:
     engines: {node: '>= 0.4.0'}
     dev: true
 
-  /ngx-flamegraph@0.0.12(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9):
+  /ngx-flamegraph@0.0.12(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0):
     resolution: {integrity: sha512-YoxrqlL36Bg5Ca9fu10kuSUmaWHAvx7jkxINF4/4cXn9bBPRfu78FqnZ5LIULC0+iScZcSDSWDAnUdn8H7+wGw==, tarball: https://registry.npmjs.org/ngx-flamegraph/-/ngx-flamegraph-0.0.12.tgz}
     peerDependencies:
       '@angular/common': ^9.0.0
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
     dependencies:
-      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
       tslib: 2.8.1
     dev: false
 
-  /ngx-progressbar@14.0.0(@angular/cdk@20.0.0-rc.0)(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(rxjs@7.8.2):
+  /ngx-progressbar@14.0.0(@angular/cdk@20.0.0-rc.0)(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(rxjs@7.8.2):
     resolution: {integrity: sha512-tDj7h5F2aSI4/XaJjs50FnELVe6qFqyz3vVq22acacd3oDW2EyJB4c+IYaxMf5972OdTw0WL4n6UwQ3dqC+gCA==, tarball: https://registry.npmjs.org/ngx-progressbar/-/ngx-progressbar-14.0.0.tgz}
     peerDependencies:
       '@angular/cdk': '>=17.3.0'
       '@angular/common': '>=17.3.0'
-      '@angular/core': 20.0.0-next.9
+      '@angular/core': 20.0.0-rc.0
       rxjs: '>=7.0.0'
     dependencies:
-      '@angular/cdk': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-next.9)(rxjs@7.8.2)
-      '@angular/core': 20.0.0-next.9(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/cdk': 20.0.0-rc.0(@angular/common@20.0.0-rc.0)(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/common': 20.0.0-rc.0(@angular/core@20.0.0-rc.0)(rxjs@7.8.2)
+      '@angular/core': 20.0.0-rc.0(rxjs@7.8.2)(zone.js@0.15.0)
       rxjs: 7.8.2
       tslib: 2.8.1
     dev: false
@@ -19194,10 +19194,10 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/14ea8ca5b4adfb73a1f4ad531116cd448379a0a3:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/14ea8ca5b4adfb73a1f4ad531116cd448379a0a3}
+  github.com/angular/dev-infra-private-ng-dev-builds/1c4ab5db67425dc52b9bff25660dbf5e105a4d75:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/1c4ab5db67425dc52b9bff25660dbf5e105a4d75}
     name: '@angular/ng-dev'
-    version: 0.0.0-030487ad792aad6856c48b2d1e699b0d96e11a7b
+    version: 0.0.0-1685f0afc967fb7de4b46ccb22f22d779ee3086c
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 7.21.0(supports-color@10.0.0)
