@@ -1,10 +1,10 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ng_module(
+ng_project(
     name = "viewers",
     srcs = [
         "docs-viewer/docs-viewer.component.ts",
@@ -15,21 +15,25 @@ ng_module(
         ":example-viewer/example-viewer.component.css",
         "example-viewer/example-viewer.component.html",
     ],
+    interop_deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/router",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs/components:__pkg__",
     ],
     deps = [
-        "//adev/shared-docs/components/breadcrumb",
-        "//adev/shared-docs/components/copy-source-code-button",
-        "//adev/shared-docs/components/table-of-contents",
-        "//adev/shared-docs/interfaces",
-        "//adev/shared-docs/providers",
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
-        "@npm//@angular/cdk",
-        "@npm//@angular/material",
-        "@npm//@types/dom-view-transitions",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@types/dom-view-transitions",
+        "//:node_modules/rxjs",
+        "//adev/shared-docs/components/breadcrumb:breadcrumb_rjs",
+        "//adev/shared-docs/components/copy-source-code-button:copy-source-code-button_rjs",
+        "//adev/shared-docs/components/table-of-contents:table-of-contents_rjs",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/providers:providers_rjs",
     ],
 )
 

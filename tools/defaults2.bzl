@@ -1,6 +1,7 @@
 load("@aspect_rules_jasmine//jasmine:defs.bzl", _jasmine_test = "jasmine_test")
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
+load("@rules_angular//src/ng_package:index.bzl", _ng_package = "ng_package")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
@@ -87,6 +88,19 @@ def jasmine_test(name, data = [], args = [], **kwargs):
         ] + args,
         data = data + [
             "//:node_modules/source-map-support",
+        ],
+        **kwargs
+    )
+
+def ng_package(deps = [], **kwargs):
+    _ng_package(
+        deps = deps,
+        rollup_runtime_deps = [
+            "//:node_modules/@rollup/plugin-commonjs",
+            "//:node_modules/@rollup/plugin-node-resolve",
+            "//:node_modules/magic-string",
+            "//:node_modules/rollup-plugin-dts",
+            "//:node_modules/rollup-plugin-sourcemaps2",
         ],
         **kwargs
     )
