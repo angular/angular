@@ -9,7 +9,6 @@
 import ts from 'typescript';
 import {
   confirmAsSerializable,
-  MigrationStats,
   ProgramInfo,
   projectFile,
   ProjectFile,
@@ -128,21 +127,17 @@ export class SelfClosingTagsMigration extends TsurgeFunnelMigration<
     return confirmAsSerializable(globalMeta);
   }
 
-  override async stats(
-    globalMetadata: SelfClosingTagsCompilationUnitData,
-  ): Promise<MigrationStats> {
+  override async stats(globalMetadata: SelfClosingTagsCompilationUnitData) {
     const touchedFilesCount = globalMetadata.tagReplacements.length;
     const replacementCount = globalMetadata.tagReplacements.reduce(
       (acc, cur) => acc + cur.replacementCount,
       0,
     );
 
-    return {
-      counters: {
-        touchedFilesCount,
-        replacementCount,
-      },
-    };
+    return confirmAsSerializable({
+      touchedFilesCount,
+      replacementCount,
+    });
   }
 
   override async migrate(globalData: SelfClosingTagsCompilationUnitData) {

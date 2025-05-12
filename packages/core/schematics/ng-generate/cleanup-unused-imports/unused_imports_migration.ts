@@ -10,7 +10,6 @@ import ts from 'typescript';
 import {
   BaseProgramInfo,
   confirmAsSerializable,
-  MigrationStats,
   ProgramInfo,
   projectFile,
   ProjectFileID,
@@ -163,13 +162,11 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
     return confirmAsSerializable(combinedData);
   }
 
-  override async stats(globalMetadata: CompilationUnitData): Promise<MigrationStats> {
-    return {
-      counters: {
-        removedImports: globalMetadata.removedIdentifiers.length,
-        changedFiles: globalMetadata.changedFiles,
-      },
-    };
+  override async stats(globalMetadata: CompilationUnitData) {
+    return confirmAsSerializable({
+      removedImports: globalMetadata.removedIdentifiers.length,
+      changedFiles: globalMetadata.changedFiles,
+    });
   }
 
   /** Gets an ID that can be used to look up a node based on its location. */

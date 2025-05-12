@@ -16,7 +16,7 @@ import {Serializable} from '../helpers/serializable';
  * @returns the serializable migration unit data.
  */
 export async function executeAnalyzePhase<UnitData, GlobalData>(
-  migration: TsurgeMigration<UnitData, GlobalData>,
+  migration: TsurgeMigration<UnitData, GlobalData, unknown>,
   tsconfigAbsolutePath: string,
 ): Promise<Serializable<UnitData>> {
   const baseInfo = migration.createProgram(tsconfigAbsolutePath);
