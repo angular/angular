@@ -1,9 +1,9 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ng_module(
+ng_project(
     name = "icon",
     srcs = [
         "icon.component.ts",
@@ -11,6 +11,11 @@ ng_module(
     assets = [
         ":icon.component.css",
     ],
+    interop_deps = [
+        "//packages/common",
+        "//packages/core",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs/components:__pkg__",
         "//adev/shared-docs/components/copy-source-code-button:__pkg__",
@@ -19,10 +24,6 @@ ng_module(
         "//adev/shared-docs/components/text-field:__pkg__",
         "//adev/shared-docs/components/top-level-banner:__pkg__",
         "//adev/shared-docs/components/viewers:__pkg__",
-    ],
-    deps = [
-        "//packages/common",
-        "//packages/core",
     ],
 )
 

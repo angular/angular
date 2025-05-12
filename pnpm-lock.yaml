@@ -519,6 +519,9 @@ importers:
       prettier:
         specifier: ^3.0.0
         version: 3.5.3
+      rollup-plugin-sourcemaps2:
+        specifier: ^0.5.1
+        version: 0.5.1(@types/node@18.19.101)(rollup@4.41.0)
       semver:
         specifier: ^7.3.5
         version: 7.7.2
@@ -2677,7 +2680,6 @@ packages:
 
   /@bazel/typescript@5.8.1(typescript@5.7.3):
     resolution: {integrity: sha512-NAJ8WQHZL1WE1YmRoCrq/1hhG15Mvy/viWh6TkvFnBeEhNUiQUsA5GYyhU1ztnBIYW03nATO3vwhAEfO7Q0U5g==, tarball: https://registry.npmjs.org/@bazel/typescript/-/typescript-5.8.1.tgz}
-    deprecated: No longer maintained, https://github.com/aspect-build/rules_ts is the recommended replacement
     hasBin: true
     peerDependencies:
       typescript: '>=3.0.0'
@@ -4892,7 +4894,6 @@ packages:
       estree-walker: 2.0.2
       picomatch: 4.0.2
       rollup: 4.41.0
-    dev: false
 
   /@rollup/rollup-android-arm-eabi@4.30.1:
     resolution: {integrity: sha512-pSWY+EVt3rJ9fQ3IqlrEUtXh3cGqGtPDH1FQlNZehO2yYxCHEX1SPsz1M//NXwYfbTlcKr9WObLnJX9FsS9K1Q==, tarball: https://registry.npmjs.org/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.30.1.tgz}
@@ -9720,7 +9721,6 @@ packages:
 
   /estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==, tarball: https://registry.npmjs.org/estree-walker/-/estree-walker-2.0.2.tgz}
-    dev: false
 
   /esutils@1.1.6:
     resolution: {integrity: sha512-RG1ZkUT7iFJG9LSHr7KDuuMSlujfeTtMNIcInURxKAxhMtwQhI3NrQhz26gZQYlsYZQKzsnwtpKrFKj9K9Qu1A==, tarball: https://registry.npmjs.org/esutils/-/esutils-1.1.6.tgz}
@@ -15620,6 +15620,21 @@ packages:
     dependencies:
       magic-string: 0.25.9
     dev: false
+
+  /rollup-plugin-sourcemaps2@0.5.1(@types/node@18.19.101)(rollup@4.41.0):
+    resolution: {integrity: sha512-y8yq66AM3gD2636cb6+mqGvrTnYJrCQt7lhzXxFShKxOA52PGtfsQdooOYtZWtXYc5bWsNXpD7CEs1m36CGZmw==, tarball: https://registry.npmjs.org/rollup-plugin-sourcemaps2/-/rollup-plugin-sourcemaps2-0.5.1.tgz}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@types/node': '>=18.0.0'
+      rollup: '>=4'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.1.4(rollup@4.41.0)
+      '@types/node': 18.19.101
+      rollup: 4.41.0
+    dev: true
 
   /rollup-plugin-sourcemaps@0.6.3(@types/node@18.19.101)(rollup@4.41.0):
     resolution: {integrity: sha512-paFu+nT1xvuO1tPFYXGe+XnQvg4Hjqv/eIhG8i5EspfYYPBKL57X7iVbfv55aNVASg3dzWvES9dmWsL2KhfByw==, tarball: https://registry.npmjs.org/rollup-plugin-sourcemaps/-/rollup-plugin-sourcemaps-0.6.3.tgz}

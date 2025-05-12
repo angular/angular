@@ -1,10 +1,10 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ng_module(
+ng_project(
     name = "table-of-contents",
     srcs = [
         "table-of-contents.component.ts",
@@ -13,17 +13,20 @@ ng_module(
         ":table-of-contents.component.css",
         "table-of-contents.component.html",
     ],
+    interop_deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/router",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs/components:__pkg__",
         "//adev/shared-docs/components/viewers:__pkg__",
     ],
     deps = [
-        "//adev/shared-docs/components/icon",
-        "//adev/shared-docs/interfaces",
-        "//adev/shared-docs/services",
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
+        "//adev/shared-docs/components/icon:icon_rjs",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/services:services_rjs",
     ],
 )
 
