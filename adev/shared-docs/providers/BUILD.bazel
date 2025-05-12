@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ng_module")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -15,7 +14,7 @@ ts_project(
     visibility = ["//adev/shared-docs:__subpackages__"],
 )
 
-ng_module(
+ng_project(
     name = "lib",
     srcs = glob(
         [
@@ -26,10 +25,13 @@ ng_module(
             "**/*.spec.ts",
         ],
     ),
-    deps = [
-        "//adev/shared-docs/interfaces",
+    interop_deps = [
         "//packages/common",
         "//packages/core",
         "//packages/router",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
+    deps = [
+        "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )

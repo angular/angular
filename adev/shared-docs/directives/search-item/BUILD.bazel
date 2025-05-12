@@ -1,18 +1,21 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ng_module(
+ng_project(
     name = "search-item",
     srcs = [
         "search-item.directive.ts",
     ],
+    interop_deps = [
+        "//packages/core",
+    ],
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs/directives:__pkg__",
     ],
     deps = [
-        "//adev/shared-docs/interfaces",
-        "//packages/core",
-        "@npm//@angular/cdk",
+        "//:node_modules/@angular/cdk",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )

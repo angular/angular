@@ -222,6 +222,7 @@
     "preact": "^10.17.1",
     "preact-render-to-string": "^6.2.1",
     "prettier": "^3.0.0",
+    "rollup-plugin-sourcemaps2": "^0.5.1",
     "semver": "^7.3.5",
     "shiki": "^3.0.0",
     "tinyglobby": "^0.2.12",
