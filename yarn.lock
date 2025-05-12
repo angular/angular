@@ -449,10 +449,10 @@
     semver "7.7.1"
     yargs "17.7.2"
 
-"@angular/core@20.0.0-next.9", "@angular/core@^13.0.0 || ^14.0.0-0":
-  version "20.0.0-next.9"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-20.0.0-next.9.tgz#4b715973631be703a7bd5cca27446325980ae070"
-  integrity sha512-dTcDo1mp3A0hsAAajgMHjb8DX/MweUrPqJH660iXSCZVSM5MqFUBhazrJgySt31CKCPE5F3W+ZeISN8QCi9pcQ==
+"@angular/core@20.0.0-rc.0", "@angular/core@^13.0.0 || ^14.0.0-0":
+  version "20.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-20.0.0-rc.0.tgz#ea02d6f7a0a582adfd617e5a77377b8fb30981ec"
+  integrity sha512-RKIXYA129vdrRKrnac2XOgpWuYusWqwM4KsQ7b5qKIMZabJ0a2GoOlezT6+NhPkOSsyygYuZtaia5wzQeU1acA==
   dependencies:
     tslib "^2.3.0"
 
@@ -463,10 +463,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#14ea8ca5b4adfb73a1f4ad531116cd448379a0a3":
-  version "0.0.0-030487ad792aad6856c48b2d1e699b0d96e11a7b"
-  uid "14ea8ca5b4adfb73a1f4ad531116cd448379a0a3"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#14ea8ca5b4adfb73a1f4ad531116cd448379a0a3"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#1c4ab5db67425dc52b9bff25660dbf5e105a4d75":
+  version "0.0.0-1685f0afc967fb7de4b46ccb22f22d779ee3086c"
+  uid "1c4ab5db67425dc52b9bff25660dbf5e105a4d75"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#1c4ab5db67425dc52b9bff25660dbf5e105a4d75"
   dependencies:
     "@google-cloud/spanner" "7.21.0"
     "@octokit/rest" "21.1.1"
