@@ -46,8 +46,7 @@ export function migrate(options: Options): Rule {
       afterAnalysisFailure: () => {
         context.logger.error('Migration failed unexpectedly with no analysis data');
       },
-      whenDone: ({counters}) => {
-        const {touchedFilesCount, replacementCount} = counters;
+      whenDone: ({touchedFilesCount, replacementCount}) => {
         context.logger.info('');
         context.logger.info(`Successfully migrated to self-closing tags 🎉`);
         context.logger.info(

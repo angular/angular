@@ -91,6 +91,6 @@ export class DocumentCoreMigration extends TsurgeFunnelMigration<
   }
 
   override async stats() {
-    return {counters: {}};
+    return confirmAsSerializable({});
   }
 }
