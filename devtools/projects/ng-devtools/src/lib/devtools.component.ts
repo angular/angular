@@ -19,6 +19,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Frame} from './application-environment';
 import {BrowserStylesService} from './application-services/browser_styles_service';
 import {WINDOW_PROVIDER} from './application-providers/window_provider';
+import {MatIconRegistry} from '@angular/material/icon';
 
 const DETECT_ANGULAR_ATTEMPTS = 10;
 
@@ -84,6 +85,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   private readonly _themeService = inject(ThemeService);
   private readonly _frameManager = inject(FrameManager);
   private readonly _browserStyles = inject(BrowserStylesService);
+  private readonly _matIconRegistry = inject(MatIconRegistry);
 
   private _interval$ = interval(500).subscribe((attempt) => {
     if (attempt === DETECT_ANGULAR_ATTEMPTS) {
@@ -99,6 +101,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._themeService.initializeThemeWatcher();
     this._browserStyles.initBrowserSpecificStyles();
+    this._matIconRegistry.setDefaultFontSetClass('material-symbols-outlined');
 
     this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration, supportedApis}) => {
       this.angularStatus.set(version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST);
