@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_project")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "ts_test_library")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -18,5 +18,29 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/application-services:settings",
         "//devtools/projects/ng-devtools/src/lib/application-services:settings_store",
+    ],
+)
+
+ng_project(
+    name = "supported_apis",
+    srcs = ["supported_apis.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_application_providers_lib",
+    srcs = glob(["*_spec.ts"]),
+    deps = [
+        ":supported_apis",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_application_providers_lib",
     ],
 )

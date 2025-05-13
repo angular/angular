@@ -28,10 +28,10 @@
           />
         }
       </as-split-area>
-      @if (signalsOpen() && currentSelectedElement(); as currentSelectedElement) {
+      @if (signalsOpen() && signalGraph.element()) {
         <as-split-area [size]="signalGraphSplitSize()">
           <ng-signals-tab
-            [currentElement]="currentSelectedElement.position"
+            [preselectedNodeId]="preselectedSignalNodeId()"
             (close)="signalsOpen.set(false)"
           />
         </as-split-area>

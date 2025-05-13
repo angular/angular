@@ -29,6 +29,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph:signal-graph-manager",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view:signals-tab",
         "//devtools/projects/ng-devtools/src/lib/shared/split",
         "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split",
