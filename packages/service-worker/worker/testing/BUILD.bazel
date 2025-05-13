@@ -7,12 +7,13 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     interop_deps = [
-        "//packages:types",
         "//packages/core",
     ],
+    tsconfig = "//packages/service-worker:tsconfig_test",
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/typescript",
+        "//packages:types_rjs",
         "//packages/service-worker/worker:worker_rjs",
     ],
 )
