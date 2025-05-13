@@ -467,7 +467,7 @@ export function getSelectorlessTemplateSpanFromTcbLocations(
   ];
 
   // If it's not a self-closing template tag, we need to rename the end tag too.
-  if (node instanceof TmplAstComponent && node.endSourceSpan?.toString().startsWith('</')) {
+  if (node instanceof TmplAstComponent && !node.isSelfClosing && node.endSourceSpan !== null) {
     spans.push({
       fileName,
       textSpan: {
