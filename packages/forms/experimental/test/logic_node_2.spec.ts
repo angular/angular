@@ -343,4 +343,54 @@ describe('LogicNodeBuilder', () => {
       {kind: 'err-3'},
     ]);
   });
+
+  it('should support circular logic structures', () => {
+    // const s = schema((p) => {
+    //   validate(p, () => ({kind: 'err-1'})),
+    //   apply(p.next, s);
+    // }));
+
+    const builder = LogicNodeBuilder.newRoot();
+    builder.addErrorRule(() => [{kind: 'err-1'}]);
+    builder.getChild('next').mergeIn(builder);
+
+    const logicNode = builder.build();
+    expect(logicNode.logic.errors.compute(fakeFieldContext)).toEqual([{kind: 'err-1'}]);
+    expect(logicNode.getChild('next').logic.errors.compute(fakeFieldContext)).toEqual([
+      {kind: 'err-1'},
+    ]);
+    expect(
+      logicNode.getChild('next').getChild('next').logic.errors.compute(fakeFieldContext),
+    ).toEqual([{kind: 'err-1'}]);
+  });
+
+  it('should support circular logic structures with predicate', () => {
+    // const s = schema((p) => {
+    //   validate(p, () => ({kind: 'err-1'})),
+    //   applyWhen(p.next, pred, s);
+    // }));
+
+    const pred = signal(true);
+    const builder = LogicNodeBuilder.newRoot();
+    builder.addErrorRule(() => [{kind: 'err-1'}]);
+    builder.getChild('next').mergeIn(builder, {fn: pred, path: undefined!});
+
+    const logicNode = builder.build();
+    expect(logicNode.logic.errors.compute(fakeFieldContext)).toEqual([{kind: 'err-1'}]);
+    expect(logicNode.getChild('next').logic.errors.compute(fakeFieldContext)).toEqual([
+      {kind: 'err-1'},
+    ]);
+    expect(
+      logicNode.getChild('next').getChild('next').logic.errors.compute(fakeFieldContext),
+    ).toEqual([{kind: 'err-1'}]);
+
+    // TODO: test that verifies that the same predicate can resolve with a different field context
+    // on `.next` vs on `.next.next`
+    pred.set(false);
+    expect(logicNode.logic.errors.compute(fakeFieldContext)).toEqual([{kind: 'err-1'}]);
+    expect(logicNode.getChild('next').logic.errors.compute(fakeFieldContext)).toEqual([]);
+    expect(
+      logicNode.getChild('next').getChild('next').logic.errors.compute(fakeFieldContext),
+    ).toEqual([]);
+  });
 });
