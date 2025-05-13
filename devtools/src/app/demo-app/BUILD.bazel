@@ -1,5 +1,5 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -37,7 +37,7 @@ sass_binary(
     ],
 )
 
-ng_module(
+ng_project(
     name = "demo-app",
     srcs = [
         "demo-app.component.ts",
@@ -53,12 +53,14 @@ ng_module(
         "zippy.component.html",
         ":demo_app_component_styles",
     ] + _STYLE_LABELS,
-    deps = [
-        "//devtools/projects/ng-devtools-backend",
-        "//devtools/src:zone-unaware-iframe_message_bus",
-        "//devtools/src/app/demo-app/todo",
+    interop_deps = [
         "//packages/core",
         "//packages/elements",
         "//packages/router",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/src:zone-unaware-iframe_message_bus_rjs",
+        "//devtools/src/app/demo-app/todo:todo_rjs",
     ],
 )
