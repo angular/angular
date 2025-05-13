@@ -14,10 +14,14 @@ import {parseR3 as parse} from './view/util';
 
 // Transform an IVY AST to a flat list of nodes to ease testing
 class R3AstHumanizer implements t.Visitor<void> {
-  result: any[] = [];
+  result: (string | number | null)[][] = [];
 
   visitElement(element: t.Element) {
-    this.result.push(['Element', element.name]);
+    const res = ['Element', element.name];
+    this.result.push(res);
+    if (element.isSelfClosing) {
+      res.push('#selfClosing');
+    }
     this.visitAll([
       element.attributes,
       element.inputs,
@@ -29,7 +33,11 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitTemplate(template: t.Template) {
-    this.result.push(['Template']);
+    const res = ['Template'];
+    if (template.isSelfClosing) {
+      res.push('#selfClosing');
+    }
+    this.result.push(res);
     this.visitAll([
       template.attributes,
       template.inputs,
@@ -43,7 +51,11 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitContent(content: t.Content) {
-    this.result.push(['Content', content.selector]);
+    const res = ['Content', content.selector];
+    this.result.push(res);
+    if (content.isSelfClosing) {
+      res.push('#selfClosing');
+    }
     this.visitAll([content.attributes, content.children]);
   }
 
@@ -175,7 +187,11 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitComponent(component: t.Component) {
-    this.result.push(['Component', component.componentName, component.tagName, component.fullName]);
+    const res = ['Component', component.componentName, component.tagName, component.fullName];
+    if (component.isSelfClosing) {
+      res.push('#selfClosing');
+    }
+    this.result.push(res);
     this.visitAll([
       component.attributes,
       component.inputs,
@@ -948,7 +964,7 @@ describe('R3 template transform', () => {
           '@error {Loading failed :(}',
       ).toEqual([
         ['DeferredBlock'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockPlaceholder'],
         ['Text', 'Placeholder content!'],
@@ -967,7 +983,7 @@ describe('R3 template transform', () => {
           '<!-- Show this on error --> @error {Loading failed :(}',
       ).toEqual([
         ['DeferredBlock'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockPlaceholder'],
         ['Text', 'Placeholder content!'],
@@ -991,7 +1007,7 @@ describe('R3 template transform', () => {
         expectFromR3Nodes(parse(template, {preserveWhitespaces: true}).nodes).toEqual([
           // Note: we also expect the whitespace nodes between the blocks to be ignored here.
           ['DeferredBlock'],
-          ['Element', 'calendar-cmp'],
+          ['Element', 'calendar-cmp', '#selfClosing'],
           ['BoundAttribute', 0, 'date', 'current'],
           ['DeferredBlockPlaceholder'],
           ['Text', 'Placeholder content!'],
@@ -1009,7 +1025,7 @@ describe('R3 template transform', () => {
           '@loading (after 100ms; minimum 1.5s){Loading...}',
       ).toEqual([
         ['DeferredBlock'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockLoading', 'after 100ms', 'minimum 1500ms'],
         ['Text', 'Loading...'],
@@ -1021,7 +1037,7 @@ describe('R3 template transform', () => {
         '@defer {<calendar-cmp [date]="current"/>}' + '@placeholder (minimum 1.5s){Placeholder...}',
       ).toEqual([
         ['DeferredBlock'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockPlaceholder', 'minimum 1500ms'],
         ['Text', 'Placeholder...'],
@@ -1117,7 +1133,7 @@ describe('R3 template transform', () => {
         ['ViewportDeferredTrigger', 'container'],
         ['ImmediateDeferredTrigger'],
         ['BoundDeferredTrigger', 'isDataLoaded()'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockPlaceholder', 'minimum 500ms'],
         ['Text', 'Placeholder content!'],
@@ -1147,7 +1163,7 @@ describe('R3 template transform', () => {
             'interaction(button), viewport(container); prefetch on immediate; ' +
             'prefetch when isDataLoaded(); hydrate when shouldHydrate(); hydrate on viewport){',
         ],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['TextAttribute', '[date]', 'current'],
         ['Text', '}'],
         ['Text', '@loading (minimum 1s; after 100ms){'],
@@ -1176,7 +1192,7 @@ describe('R3 template transform', () => {
         ['ViewportDeferredTrigger', null],
         ['Text', 'hello'],
         ['DeferredBlockPlaceholder'],
-        ['Element', 'implied-trigger'],
+        ['Element', 'implied-trigger', '#selfClosing'],
       ]);
     });
 
@@ -2459,7 +2475,7 @@ describe('R3 template transform', () => {
         ['Text', 'Hello: '],
         ['Component', 'MyComp', null, 'MyComp'],
         ['Element', 'span'],
-        ['Component', 'OtherComp', null, 'OtherComp'],
+        ['Component', 'OtherComp', null, 'OtherComp', '#selfClosing'],
       ]);
     });
 
@@ -2494,7 +2510,7 @@ describe('R3 template transform', () => {
       ).toEqual([
         ['Template'],
         ['BoundAttribute', 0, 'ngIf', 'true'],
-        ['Component', 'MyComp', null, 'MyComp'],
+        ['Component', 'MyComp', null, 'MyComp', '#selfClosing'],
         ['Directive', 'Dir'],
         ['TextAttribute', 'static', '1'],
         ['BoundAttribute', 0, 'bound', 'expr'],
