@@ -118,6 +118,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     private dtsTransforms: DtsTransformRegistry,
     private semanticDepGraphUpdater: SemanticDepGraphUpdater | null,
     private sourceFileTypeIdentifier: SourceFileTypeIdentifier,
+    private emitDeclarationOnly: boolean,
   ) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
@@ -374,14 +375,16 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     ) {
       // Custom decorators found in local compilation mode! In this mode we don't support custom
       // decorators yet. But will eventually do (b/320536434). For now a temporary error is thrown.
+      const compilationModeName = this.emitDeclarationOnly
+        ? 'experimental declaration-only emission'
+        : 'local compilation';
       record.metaDiagnostics = [...nonNgDecoratorsInLocalMode].map((decorator) => ({
         category: ts.DiagnosticCategory.Error,
         code: Number('-99' + ErrorCode.DECORATOR_UNEXPECTED),
         file: getSourceFile(clazz),
         start: decorator.node.getStart(),
         length: decorator.node.getWidth(),
-        messageText:
-          'In local compilation mode, Angular does not support custom decorators. Ensure all class decorators are from Angular.',
+        messageText: `In ${compilationModeName} mode, Angular does not support custom decorators. Ensure all class decorators are from Angular.`,
       }));
       record.traits = foundTraits = [];
     }

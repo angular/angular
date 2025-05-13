@@ -60,7 +60,11 @@
           ]
         }
       ],
-      "compilationModeFilter": ["full compile", "local compile"]
+      "compilationModeFilter": [
+        "full compile",
+        "local compile",
+        "declaration-only emit"
+      ]
     },
     {
       "description": "should support complex selectors",

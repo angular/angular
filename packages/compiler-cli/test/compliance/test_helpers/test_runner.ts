@@ -9,6 +9,7 @@ import {FileSystem} from '../../../src/ngtsc/file_system';
 
 import {checkErrors, checkNoUnexpectedErrors} from './check_errors';
 import {checkExpectations} from './check_expectations';
+import {checkTypeDeclarations} from './check_type_declarations';
 import {CompileResult, initMockTestFileSystem} from './compile_test';
 import {
   CompilationMode,
@@ -47,7 +48,11 @@ function getFilenameForLocalCompilation(fileName: string): string {
 export function runTests(
   type: CompilationMode,
   compileFn: (fs: FileSystem, test: ComplianceTest) => CompileResult,
-  options: {isLocalCompilation?: boolean; skipMappingChecks?: boolean} = {},
+  options: {
+    isLocalCompilation?: boolean;
+    emitDeclarationOnly?: boolean;
+    skipMappingChecks?: boolean;
+  } = {},
 ) {
   describe(`compliance tests (${type})`, () => {
     for (const test of getAllComplianceTests()) {
@@ -69,7 +74,7 @@ export function runTests(
           }
 
           const fs = initMockTestFileSystem(test.realTestPath);
-          const {errors} = compileFn(fs, test);
+          const {errors, emittedFiles} = compileFn(fs, test);
           for (const expectation of test.expectations) {
             transformExpectation(expectation, !!options.isLocalCompilation);
             if (expectation.expectedErrors.length > 0) {
@@ -79,6 +84,9 @@ export function runTests(
                 expectation.expectedErrors,
                 errors,
               );
+            } else if (!!options.emitDeclarationOnly) {
+              checkNoUnexpectedErrors(test.relativePath, errors);
+              checkTypeDeclarations(fs, emittedFiles);
             } else {
               checkNoUnexpectedErrors(test.relativePath, errors);
               checkExpectations(

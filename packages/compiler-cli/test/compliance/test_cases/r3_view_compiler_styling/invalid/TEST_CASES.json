@@ -13,7 +13,10 @@
           ]
         }
       ],
-      "compilationModeFilter": ["full compile"]
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ]
     }
   ]
 }

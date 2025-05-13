@@ -210,6 +210,7 @@ function parseTransformOfInput(
       reflector,
       noopRefEmitter,
       CompilationMode.FULL,
+      /* emitDeclarationOnly */ false,
     );
   } catch (e: unknown) {
     if (!(e instanceof FatalDiagnosticError)) {
