@@ -18,6 +18,7 @@ import {
   InputSignal,
   OutputEmitterRef,
   OutputRef,
+  OutputRefSubscription,
   untracked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
@@ -38,7 +39,7 @@ import {InteropNgControl} from './interop_ng_control';
 export class FieldDirective<T> {
   readonly injector = inject(Injector);
   readonly field = input.required<Field<T>>();
-  readonly el = inject(ElementRef);
+  readonly el: ElementRef<HTMLElement> = inject(ElementRef);
   readonly cvaArray = inject<ControlValueAccessor[]>(NG_VALUE_ACCESSOR, {optional: true});
 
   private _ngControl: InteropNgControl | undefined;
@@ -107,12 +108,28 @@ export class FieldDirective<T> {
       const cleanupValue = cmp.value.subscribe((newValue) =>
         this.field().$state.value.set(newValue),
       );
-      const cleanupTouch = cmp.touch?.subscribe(() => this.field().$state.markAsTouched());
+      let cleanupTouch: OutputRefSubscription | undefined;
+      let cleanupDefaultTouch: (() => void) | undefined;
+      if (cmp.touch !== undefined) {
+        cleanupTouch = cmp.touch.subscribe(() => this.field().$state.markAsTouched());
+      } else {
+        // If the component did not give us a touch event stream, use the standard touch logic,
+        // marking it touched when the focus moves from inside the host element to outside.
+        const listener = (event: FocusEvent) => {
+          const newActiveEl = event.relatedTarget;
+          if (!this.el.nativeElement.contains(newActiveEl as Element | null)) {
+            this.field().$state.markAsTouched();
+          }
+        };
+        this.el.nativeElement.addEventListener('focusout', listener);
+        cleanupDefaultTouch = () => this.el.nativeElement.removeEventListener('focusout', listener);
+      }
 
       // Cleanup for output binding subscriptions:
       injector.get(DestroyRef).onDestroy(() => {
         cleanupValue.unsubscribe();
         cleanupTouch?.unsubscribe();
+        cleanupDefaultTouch?.();
       });
     } else {
       throw new Error(`Unhandled control?`);
