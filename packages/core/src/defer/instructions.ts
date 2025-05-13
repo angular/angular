@@ -27,7 +27,9 @@ import {
 import {removeLViewOnDestroy, storeLViewOnDestroy} from '../render3/util/view_utils';
 import {performanceMarkFeature} from '../util/performance';
 import {invokeAllTriggerCleanupFns, storeTriggerCleanupFn} from './cleanup';
-import {onHover, onInteraction, onViewport, registerDomTrigger} from './dom_triggers';
+//import {onHover, onInteraction, onViewport, registerDomTrigger} from './dom_triggers';
+import {onViewportWrapper, registerDomTrigger} from './dom_triggers';
+import {onHover, onInteraction} from '../../primitives/defer/src/triggers';
 import {onIdle} from './idle_scheduler';
 import {
   DEFER_BLOCK_STATE,
@@ -770,7 +772,7 @@ export function ɵɵdeferOnViewport(triggerIndex: number, walkUpTimes?: number) 
       tNode,
       triggerIndex,
       walkUpTimes,
-      onViewport,
+      onViewportWrapper,
       () => triggerDeferBlock(TriggerType.Regular, lView, tNode),
       TriggerType.Regular,
     );
@@ -806,7 +808,7 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
       tNode,
       triggerIndex,
       walkUpTimes,
-      onViewport,
+      onViewportWrapper,
       () => triggerPrefetching(tDetails, lView, tNode),
       TriggerType.Prefetch,
     );
