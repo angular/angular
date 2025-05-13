@@ -10,6 +10,7 @@ import {
   COMPILER_OPTIONS,
   CompilerFactory,
   createPlatformFactory,
+  PlatformRef,
   StaticProvider,
 } from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
@@ -29,8 +30,9 @@ export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: StaticProvider[] = [
 /**
  * @publicApi
  */
-export const platformBrowserDynamic = createPlatformFactory(
-  platformBrowser,
-  'browserDynamic',
-  INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
-);
+export const platformBrowserDynamic: (extraProviders?: StaticProvider[]) => PlatformRef =
+  createPlatformFactory(
+    platformBrowser,
+    'browserDynamic',
+    INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
+  );

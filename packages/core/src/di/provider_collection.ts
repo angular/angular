@@ -403,7 +403,7 @@ function deepForEachProvider(
   }
 }
 
-export const USE_VALUE = getClosureSafeProperty<ValueProvider>({
+export const USE_VALUE: string = getClosureSafeProperty<ValueProvider>({
   provide: String,
   useValue: getClosureSafeProperty,
 });

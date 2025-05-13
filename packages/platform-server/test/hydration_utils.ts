@@ -42,7 +42,7 @@ export const EMPTY_TEXT_NODE_COMMENT = 'ngetn';
 export const TEXT_NODE_SEPARATOR_COMMENT = 'ngtns';
 
 export const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
-export const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
+export const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE: string = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
 
 export const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 
