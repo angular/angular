@@ -42,7 +42,7 @@ export function getAllRouteGuards(
   future: RouterStateSnapshot,
   curr: RouterStateSnapshot,
   parentContexts: ChildrenOutletContexts,
-) {
+): Checks {
   const futureRoot = future._root;
   const currRoot = curr ? curr._root : null;
 

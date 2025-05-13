@@ -322,7 +322,7 @@ export class RouterLink implements OnChanges, OnDestroy {
 
   /** @docs-private */
   // TODO(atscott): Remove changes parameter in major version as a breaking change.
-  ngOnChanges(changes?: SimpleChanges) {
+  ngOnChanges(changes?: SimpleChanges): void {
     if (
       ngDevMode &&
       isUrlTree(this.routerLinkInput) &&
