@@ -247,7 +247,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   readonly supportsBindingToComponentInputs = true;
 
   /** @docs-private */
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['name']) {
       const {firstChange, previousValue} = changes['name'];
       if (firstChange) {
@@ -357,7 +357,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   /**
    * Called when the `RouteReuseStrategy` instructs to re-attach a previously detached subtree
    */
-  attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute) {
+  attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
     this.location.insert(ref.hostView);
@@ -375,7 +375,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     }
   }
 
-  activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector) {
+  activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector): void {
     if (this.isActivated) {
       throw new RuntimeError(
         RuntimeErrorCode.OUTLET_ALREADY_ACTIVATED,
@@ -453,12 +453,12 @@ export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>('');
 export class RoutedComponentInputBinder {
   private outletDataSubscriptions = new Map<RouterOutlet, Subscription>();
 
-  bindActivatedRouteToOutletComponent(outlet: RouterOutlet) {
+  bindActivatedRouteToOutletComponent(outlet: RouterOutlet): void {
     this.unsubscribeFromRouteData(outlet);
     this.subscribeToRouteData(outlet);
   }
 
-  unsubscribeFromRouteData(outlet: RouterOutlet) {
+  unsubscribeFromRouteData(outlet: RouterOutlet): void {
     this.outletDataSubscriptions.get(outlet)?.unsubscribe();
     this.outletDataSubscriptions.delete(outlet);
   }

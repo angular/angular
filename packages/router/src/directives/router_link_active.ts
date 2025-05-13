@@ -112,7 +112,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   private linkInputChangesSubscription?: Subscription;
   private _isActive = false;
 
-  get isActive() {
+  get isActive(): boolean {
     return this._isActive;
   }
 
