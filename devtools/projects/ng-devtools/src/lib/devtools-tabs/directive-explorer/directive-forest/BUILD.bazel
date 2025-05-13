@@ -1,7 +1,7 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -36,7 +36,7 @@ ng_project(
     ],
 )
 
-ts_library(
+ts_project(
     name = "directive_forest_utils",
     srcs = ["directive-forest-utils.ts"],
     deps = [

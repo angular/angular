@@ -1,8 +1,8 @@
-load("//devtools/tools:typescript.bzl", "ts_library")
+load("//devtools/tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//:__subpackages__"])
 
-ts_library(
+ts_project(
     name = "webtreemap",
     srcs = [
         "tree.ts",
