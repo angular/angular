@@ -12,6 +12,7 @@ import {
   ngDebugProfilerApiIsSupported,
   ngDebugRoutesApiIsSupported,
   ngDebugSignalGraphApiIsSupported,
+  ngDebugSignalPropertiesInspectionApiIsSupported,
   ngDebugTransferStateApiIsSupported,
 } from './ng-debug-api';
 import {Framework} from '../component-tree/core-enums';
@@ -153,6 +154,23 @@ describe('ng-debug-api', () => {
       (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
       (globalThis as any).ng.ɵgetTransferState = undefined;
       expect(ngDebugTransferStateApiIsSupported()).toBeFalse();
+    });
+  });
+
+  describe('ngDebugSignalPropertiesInspectionApiIsSupported', () => {
+    beforeEach(() => mockRoot());
+
+    it('should support signal properties inspection API', () => {
+      (globalThis as any).ng = fakeNgGlobal(Framework.Angular);
+      expect(ngDebugSignalPropertiesInspectionApiIsSupported()).toBeTrue();
+    });
+
+    it('should NOT support signal properties inspection API', () => {
+      (globalThis as any).ng = fakeNgGlobal(Framework.Wiz);
+      expect(ngDebugSignalPropertiesInspectionApiIsSupported()).toBeFalse();
+
+      (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
+      expect(ngDebugSignalPropertiesInspectionApiIsSupported()).toBeFalse();
     });
   });
 });

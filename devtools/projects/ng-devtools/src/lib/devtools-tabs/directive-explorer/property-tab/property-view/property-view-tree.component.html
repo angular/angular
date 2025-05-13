@@ -13,6 +13,7 @@
           (updateValue)="handleUpdate(node, $event)"
         />
       }
+      <ng-container [ngTemplateOutlet]="signalBtn" [ngTemplateOutletContext]="{ node }" />
     </mat-tree-node>
     <mat-tree-node
       matTreeNodePaddingIndent="14"
@@ -26,10 +27,26 @@
         &nbsp;
         <span class="name">{{ node.prop.name }}</span
         >:
-        <span class="value">
-          {{ node.prop.descriptor.preview }}
-        </span>
+        <span class="value">{{ node.prop.descriptor.preview }}</span>
+        <ng-container [ngTemplateOutlet]="signalBtn" [ngTemplateOutletContext]="{ node }" />
       </div>
     </mat-tree-node>
   </mat-tree>
 }
+
+<ng-template #signalBtn let-node="node">
+  @if (
+    supportedApis().signalPropertiesInspection && signalGraphEnabled() && getSignalNode(node);
+    as signalNode
+  ) {
+    <button
+      class="show-signal-btn"
+      type="button"
+      matTooltip="Show signal graph"
+      aria-label="Show signal graph"
+      (click)="showGraph($event, signalNode)"
+    >
+      <mat-icon>graph_2</mat-icon>
+    </button>
+  }
+</ng-template>
