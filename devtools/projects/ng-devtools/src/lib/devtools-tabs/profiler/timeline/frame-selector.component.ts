@@ -30,6 +30,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatCard} from '@angular/material/card';
 import {NgStyle} from '@angular/common';
+import {MatIconButton} from '@angular/material/button';
 
 const ITEM_WIDTH = 30;
 
@@ -41,6 +42,7 @@ const ITEM_WIDTH = 30;
     MatCard,
     MatTooltip,
     MatIcon,
+    MatIconButton,
     CdkVirtualScrollViewport,
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
