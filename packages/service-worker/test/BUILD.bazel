@@ -8,14 +8,15 @@ ts_project(
         "**/*.ts",
     ]),
     interop_deps = [
-        "//packages:types",
         "//packages/core",
         "//packages/core/testing",
         "//packages/service-worker",
         "//packages/service-worker/testing",
     ],
+    tsconfig = "//packages/service-worker:tsconfig_test",
     deps = [
         "//:node_modules/rxjs",
+        "//packages:types_rjs",
         "//packages/service-worker/worker:worker_rjs",
         "//packages/service-worker/worker/testing:testing_rjs",
     ],
