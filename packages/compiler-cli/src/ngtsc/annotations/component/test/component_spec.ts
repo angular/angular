@@ -162,6 +162,7 @@ function setup(
     /* implicitStandaloneValue */ true,
     /* typeCheckHostBindings */ true,
     /* enableSelectorless */ false,
+    /* emitDeclarationOnly */ false,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }

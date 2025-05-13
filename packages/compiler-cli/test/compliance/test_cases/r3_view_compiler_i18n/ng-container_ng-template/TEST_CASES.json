@@ -115,6 +115,10 @@
             "verifyUniqueConsts"
           ]
         }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "linked compile"
       ]
     },
     {

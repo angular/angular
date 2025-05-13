@@ -77,6 +77,7 @@ function setup(program: ts.Program, compilationMode = CompilationMode.FULL) {
     compilationMode,
     /* localCompilationExtraImportsTracker */ null,
     jitDeclarationRegistry,
+    /* emitDeclarationOnly */ false,
   );
 
   return {handler, reflectionHost};

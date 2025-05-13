@@ -62,6 +62,7 @@ runInEachFileSystem(() => {
         new DtsTransformRegistry(),
         null,
         fakeSfTypeIdentifier,
+        /* emitDeclarationOnly */ false,
       );
       const sourceFile = program.getSourceFile(filename)!;
 

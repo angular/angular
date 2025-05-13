@@ -393,6 +393,7 @@ export class NgCompiler {
   private readonly enableHmr: boolean;
   private readonly implicitStandaloneValue: boolean;
   private readonly enableSelectorless: boolean;
+  private readonly emitDeclarationOnly: boolean;
 
   /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
@@ -466,6 +467,8 @@ export class NgCompiler {
     this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
     this.enableLetSyntax = options['_enableLetSyntax'] ?? true;
     this.enableSelectorless = options['_enableSelectorless'] ?? false;
+    this.emitDeclarationOnly =
+      !!options.emitDeclarationOnly && !!options._geminiAllowEmitDeclarationOnly;
     // Standalone by default is enabled since v19. We need to toggle it here,
     // because the language service extension may be running with the latest
     // version of the compiler against an older version of Angular.
@@ -826,6 +829,7 @@ export class NgCompiler {
         this.delegatingPerfRecorder,
         compilation.isCore,
         this.closureCompilerEnabled,
+        this.emitDeclarationOnly,
       ),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
@@ -869,9 +873,15 @@ export class NgCompiler {
     // In local compilation mode we don't make use of .d.ts files for Angular compilation, so their
     // transformation can be ditched.
     if (
-      this.options.compilationMode !== 'experimental-local' &&
+      (this.options.compilationMode !== 'experimental-local' || this.emitDeclarationOnly) &&
       compilation.dtsTransforms !== null
     ) {
+      // If we are emitting declarations only, the script transformations are skipped by the TS
+      // compiler, so we have to add them to the afterDeclarations transforms to run their analysis
+      // because the declaration transform depends on their metadata output.
+      if (this.emitDeclarationOnly) {
+        afterDeclarations.push(...before);
+      }
       afterDeclarations.push(
         declarationTransformFactory(
           compilation.dtsTransforms,
@@ -1286,6 +1296,9 @@ export class NgCompiler {
           break;
       }
     }
+    if (this.emitDeclarationOnly) {
+      compilationMode = CompilationMode.LOCAL;
+    }
 
     const checker = this.inputProgram.getTypeChecker();
 
@@ -1513,6 +1526,7 @@ export class NgCompiler {
         this.implicitStandaloneValue,
         typeCheckHostBindings,
         this.enableSelectorless,
+        this.emitDeclarationOnly,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1541,6 +1555,7 @@ export class NgCompiler {
         this.implicitStandaloneValue,
         this.usePoisonedData,
         typeCheckHostBindings,
+        this.emitDeclarationOnly,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
@@ -1588,6 +1603,7 @@ export class NgCompiler {
         compilationMode,
         localCompilationExtraImportsTracker,
         jitDeclarationRegistry,
+        this.emitDeclarationOnly,
       ),
     ];
 
@@ -1601,6 +1617,7 @@ export class NgCompiler {
       dtsTransforms,
       semanticDepGraphUpdater,
       this.adapter,
+      this.emitDeclarationOnly,
     );
 
     // Template type-checking may use the `ProgramDriver` to produce new `ts.Program`(s). If this
