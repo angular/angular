@@ -2,7 +2,7 @@
 
 load("//tools:defaults2.bzl", _ts_project = "ts_project")
 
-def ts_library(name, **kwargs):
+def ts_project(name, **kwargs):
     _ts_project(
         name = name,
         tsconfig = "//devtools:tsconfig_build",
