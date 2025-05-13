@@ -12,9 +12,9 @@ ts_project(
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
-        "//packages/upgrade",
     ],
     deps = [
+        "//packages/upgrade:upgrade_rjs",
         "//packages/upgrade/src/common:common_rjs",
         "//packages/upgrade/src/common/test/helpers:helpers_rjs",
     ],

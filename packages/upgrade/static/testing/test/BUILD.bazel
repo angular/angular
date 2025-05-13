@@ -13,11 +13,11 @@ ts_project(
         "//packages/core",
         "//packages/core/testing",
         "//packages/upgrade/src/common",
-        "//packages/upgrade/static",
-        "//packages/upgrade/static/testing",
     ],
     deps = [
         "//packages/upgrade/src/common/test/helpers:helpers_rjs",
+        "//packages/upgrade/static:static_rjs",
+        "//packages/upgrade/static/testing:testing_rjs",
     ],
 )
 

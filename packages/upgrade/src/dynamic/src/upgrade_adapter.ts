@@ -56,6 +56,9 @@ import {
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
+// Needed for the global `Zone` ambient types to be available.
+import type {} from 'zone.js';
+
 let upgradeCount: number = 0;
 
 /**
