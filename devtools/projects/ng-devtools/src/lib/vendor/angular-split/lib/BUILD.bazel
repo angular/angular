@@ -1,19 +1,20 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "lib",
     srcs = glob(
         include = [
             "*.ts",
         ],
     ),
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",
+    interop_deps = [
         "//packages/common",
         "//packages/core",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split_rjs",
     ],
 )

@@ -14,6 +14,7 @@
     "importHelpers": true,
     "target": "es2020",
     "lib": ["es2020", "dom", "dom.iterable"],
+    "types": ["chrome"],
     "paths": {
       "@angular/*": [
         "../packages/*",
