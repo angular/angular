@@ -135,7 +135,7 @@ export class RouterScroller implements OnDestroy {
   }
 
   /** @docs-private */
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.routerEventsSubscription?.unsubscribe();
     this.scrollEventsSubscription?.unsubscribe();
   }

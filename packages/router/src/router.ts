@@ -58,6 +58,7 @@ import {
 } from './url_tree';
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
+import {RouterState} from './router_state';
 
 /**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
@@ -136,7 +137,7 @@ export class Router {
   /**
    * The current state of routing in this NgModule.
    */
-  get routerState() {
+  get routerState(): RouterState {
     return this.stateManager.getRouterState();
   }
 
