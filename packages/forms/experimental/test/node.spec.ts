@@ -1,9 +1,9 @@
 import {computed, Injector, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {disabled, error, required, validate} from '../src/api/logic';
+import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
 import {apply, applyEach, form, submit} from '../src/api/structure';
 import {Schema} from '../src/api/types';
-import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
-import {TestBed} from '@angular/core/testing';
 
 const noopSchema: Schema<unknown> = () => {};
 
@@ -437,6 +437,24 @@ describe('Node', () => {
 
       f.amount.$state.value.set(100);
       expect(f.name.$state.errors()).toEqual([]);
+    });
+
+    it('should not be required when disabled', () => {
+      const f = form(
+        signal(''),
+        (p) => {
+          disabled(p, ({value}) => value() === '');
+          required(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.$state.disabled()).toBe(true);
+      expect(f.$state.metadata(REQUIRED)()).toBe(false);
+
+      f.$state.value.set('val');
+      expect(f.$state.disabled()).toBe(false);
+      expect(f.$state.metadata(REQUIRED)()).toBe(true);
     });
   });
 

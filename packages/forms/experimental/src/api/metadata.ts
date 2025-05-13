@@ -6,16 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export interface MetadataOptions {
+  ignoreWhenDisabled: boolean;
+}
+
+const defaultMetadataOptions: MetadataOptions = {
+  ignoreWhenDisabled: false,
+};
+
 export class MetadataKey<TValue> {
   constructor(
     readonly defaultValue: () => TValue,
     readonly merge: (prev: TValue, next: TValue) => TValue,
+    readonly options: MetadataOptions = defaultMetadataOptions,
   ) {}
 }
 
 export const REQUIRED = new MetadataKey(
   () => false,
   (prev, next) => prev || next,
+  {ignoreWhenDisabled: true},
 );
 export const DISABLED_REASON = new MetadataKey<readonly string[]>(
   () => [],

@@ -17,6 +17,7 @@ import {
   untracked,
   WritableSignal,
 } from '@angular/core';
+import {DataKey} from './api/data';
 import {MetadataKey} from './api/metadata';
 import type {
   Field,
@@ -30,7 +31,6 @@ import type {
 import {DYNAMIC, FieldLogicNode} from './logic_node';
 import {FieldPathNode, FieldRootPathNode} from './path_node';
 import {deepSignal} from './util/deep_signal';
-import {DataKey} from './api/data';
 
 export interface DataEntry {
   value: unknown;
@@ -329,7 +329,14 @@ export class FieldNode implements FieldState<unknown> {
     cast<MetadataKey<unknown>>(key);
     if (!this.metadataMap.has(key)) {
       const logic = this.logic.getMetadata(key);
-      const result = computed(() => logic.compute(this.fieldContext));
+      const result = computed(() => {
+        // TODO: should we call `shouldSkipValidation` method or duplicate the logic here?
+        // This isn't really validation, so it feels a bit odd.
+        if (key.options.ignoreWhenDisabled && this.shouldSkipValidation()) {
+          return key.defaultValue();
+        }
+        return logic.compute(this.fieldContext);
+      });
       this.metadataMap.set(key, result);
     }
     return this.metadataMap.get(key)! as Signal<M>;
