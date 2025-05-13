@@ -10,7 +10,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {FlatTreeControl} from '@angular/cdk/tree';
 
-import {TreeNodeComponent} from './tree-node.component';
+import {NodeTextMatch, TreeNodeComponent} from './tree-node.component';
 import {FlatNode} from '../component-data-source';
 
 type DeepPartial<T> = T extends object ? {[P in keyof T]?: DeepPartial<T[P]>} : T;
@@ -56,7 +56,7 @@ describe('TreeNodeComponent', () => {
     fixture.componentRef.setInput('node', {
       ...srcNode,
       name: 'app-test',
-    } as FlatNode);
+    });
     fixture.detectChanges();
 
     const name = fixture.debugElement.query(By.css('.node-name'));
@@ -69,7 +69,7 @@ describe('TreeNodeComponent', () => {
       ...srcNode,
       name: 'app-test',
       directives: ['TooltipDirective'],
-    } as FlatNode);
+    });
     fixture.detectChanges();
 
     const name = fixture.debugElement.query(By.css('.node-name'));
@@ -82,7 +82,7 @@ describe('TreeNodeComponent', () => {
       ...srcNode,
       name: 'app-test',
       directives: ['TooltipDirective', 'CtxMenuDirective'],
-    } as FlatNode);
+    });
     fixture.detectChanges();
 
     const name = fixture.debugElement.query(By.css('.node-name'));
@@ -98,7 +98,7 @@ describe('TreeNodeComponent', () => {
       ...srcNode,
       name: 'app-test',
       onPush: true,
-    } as FlatNode);
+    });
     fixture.detectChanges();
 
     onPush = fixture.debugElement.query(By.css('.on-push'));
@@ -129,7 +129,7 @@ describe('TreeNodeComponent', () => {
     fixture.componentRef.setInput('node', {
       ...srcNode,
       newItem: true,
-    } as FlatNode);
+    });
     fixture.detectChanges();
 
     const classList = fixture.debugElement.nativeElement.classList;
@@ -137,11 +137,11 @@ describe('TreeNodeComponent', () => {
   });
 
   it('should mark the text that matches the filter', () => {
-    fixture.componentRef.setInput('textMatch', {startIdx: 3, endIdx: 27});
+    fixture.componentRef.setInput('textMatches', [{startIdx: 3, endIdx: 27}]);
     fixture.componentRef.setInput('node', {
       ...srcNode,
       name: 'my-long-component-name[WithADirective]',
-    } as FlatNode);
+    });
     fixture.detectChanges();
 
     const marked = fixture.debugElement.query(By.css('mark'));
@@ -149,11 +149,11 @@ describe('TreeNodeComponent', () => {
   });
 
   it('should mark the text that matches the filter (beginning of the string)', () => {
-    fixture.componentRef.setInput('textMatch', {startIdx: 0, endIdx: 9});
+    fixture.componentRef.setInput('textMatches', [{startIdx: 0, endIdx: 9}]);
     fixture.componentRef.setInput('node', {
       ...srcNode,
       name: 'app-large-component',
-    } as FlatNode);
+    });
     fixture.detectChanges();
 
     const marked = fixture.debugElement.query(By.css('mark'));
@@ -161,11 +161,11 @@ describe('TreeNodeComponent', () => {
   });
 
   it('should mark the text that matches the filter (end of the string)', () => {
-    fixture.componentRef.setInput('textMatch', {startIdx: 10, endIdx: 19});
+    fixture.componentRef.setInput('textMatches', [{startIdx: 10, endIdx: 19}]);
     fixture.componentRef.setInput('node', {
       ...srcNode,
       name: 'app-large-component',
-    } as FlatNode);
+    });
     fixture.detectChanges();
 
     const marked = fixture.debugElement.query(By.css('mark'));
@@ -173,14 +173,35 @@ describe('TreeNodeComponent', () => {
   });
 
   it('should mark the whole text, if it matches completely the filter', () => {
-    fixture.componentRef.setInput('textMatch', {startIdx: 0, endIdx: 8});
+    fixture.componentRef.setInput('textMatches', [{startIdx: 0, endIdx: 8}]);
     fixture.componentRef.setInput('node', {
       ...srcNode,
       name: 'app-test',
-    } as FlatNode);
+    });
     fixture.detectChanges();
 
     const marked = fixture.debugElement.query(By.css('mark'));
     expect(marked.nativeElement.innerText).toEqual('app-test');
+  });
+
+  it('should mark a sequence of matches', () => {
+    const matches: NodeTextMatch[] = [
+      {startIdx: 0, endIdx: 8}, // app-test
+      {startIdx: 13, endIdx: 16}, // Foo
+      {startIdx: 24, endIdx: 26}, // az
+    ];
+    fixture.componentRef.setInput('textMatches', matches);
+    fixture.componentRef.setInput('node', {
+      ...srcNode,
+      name: 'app-test-cmp[Foo][Bar][Baz]',
+    });
+    fixture.detectChanges();
+
+    const marked = fixture.debugElement.queryAll(By.css('mark'));
+
+    const [appTest, foo, az] = marked;
+    expect(appTest.nativeElement.innerText).toEqual('app-test');
+    expect(foo.nativeElement.innerText).toEqual('Foo');
+    expect(az.nativeElement.innerText).toEqual('az');
   });
 });
