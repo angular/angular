@@ -22,6 +22,8 @@ import {
   TmplAstVariable,
   TmplAstComponent,
   TmplAstDirective,
+  TmplAstRecursiveVisitor,
+  tmplAstVisitAll,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
@@ -412,71 +414,20 @@ export function getParentClassMeta(
   return compiler.getMeta(parentClass);
 }
 
-/**
- * Converts a given `ts.DocumentSpan` in a shim file into one or more spans in the template,
- * representing a selectorless component or directive. There can be more than one return value
- * when a component has a closing tag.
- */
-export function getSelectorlessTemplateSpanFromTcbLocations(
-  shimDocumentSpan: ts.DocumentSpan,
-  templateTypeChecker: TemplateTypeChecker,
-  program: ts.Program,
-  node: TmplAstComponent | TmplAstDirective,
-): ts.DocumentSpan[] | null {
-  const sf = program.getSourceFile(shimDocumentSpan.fileName);
-  if (sf === undefined) {
-    return null;
+/** Visitor that collects all selectorless AST nodes from a template. */
+export class SelectorlessCollector extends TmplAstRecursiveVisitor {
+  private nodes: (TmplAstComponent | TmplAstDirective)[] = [];
+
+  static getSelectorlessNodes(nodes: TmplAstNode[]): (TmplAstComponent | TmplAstDirective)[] {
+    const visitor = new SelectorlessCollector();
+    tmplAstVisitAll(visitor, nodes);
+    return visitor.nodes;
   }
 
-  let tcbNode = findTightestNode(sf, shimDocumentSpan.textSpan.start);
-  if (tcbNode === undefined) {
-    return null;
-  }
-
-  // Variables in the typecheck block are generated with the type on the right hand
-  // side: `var _t1 = null! as i1.DirA`. Finding references of DirA will return the type
-  // assertion and we need to map it back to the variable identifier _t1.
-  if (hasExpressionIdentifier(sf, tcbNode, ExpressionIdentifier.VARIABLE_AS_EXPRESSION)) {
-    while (tcbNode && !ts.isVariableDeclaration(tcbNode)) {
-      tcbNode = tcbNode.parent;
+  visit(node: TmplAstNode) {
+    if (node instanceof TmplAstComponent || node instanceof TmplAstDirective) {
+      this.nodes.push(node);
     }
+    node.visit(this);
   }
-
-  const mapping = getTemplateLocationFromTcbLocation(
-    templateTypeChecker,
-    absoluteFrom(shimDocumentSpan.fileName),
-    /* tcbIsShim */ true,
-    tcbNode.getStart(),
-  );
-
-  if (mapping === null) {
-    return null;
-  }
-
-  const fileName = mapping.templateUrl;
-  const {length} = node instanceof TmplAstComponent ? node.componentName : node.name;
-  const spans: ts.DocumentSpan[] = [
-    {
-      fileName,
-      textSpan: {
-        // +1 because of the opening `<` or `@`.
-        start: node.startSourceSpan.start.offset + 1,
-        length,
-      },
-    },
-  ];
-
-  // If it's not a self-closing template tag, we need to rename the end tag too.
-  if (node instanceof TmplAstComponent && !node.isSelfClosing && node.endSourceSpan !== null) {
-    spans.push({
-      fileName,
-      textSpan: {
-        // +2 because of the `</`.
-        start: node.endSourceSpan.start.offset + 2,
-        length,
-      },
-    });
-  }
-
-  return spans;
 }

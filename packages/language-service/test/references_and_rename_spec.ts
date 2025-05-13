@@ -2286,17 +2286,20 @@ describe('find references and rename locations', () => {
       it('should handle rename request for selectorless component from source file', () => {
         const file = project.openFile('test-component.ts');
         const template = project.openFile('app.html');
-        template.contents = '<TestComponent/>';
+        template.contents =
+          '<TestComponent/> {{123 + 456}} <div><TestComponent>Hello</TestComponent></div>';
         file.moveCursorToText('export class TestCom¦ponent {');
         const renameLocations = getRenameLocationsAtPosition(file)!;
 
-        expect(renameLocations).toBeUndefined();
-
-        // TODO(crisbeto): investigate if we can make this work.
-        // It would involve looking for all the component references and renaming them.
-        // expect(renameLocations.length).toBe(3);
-        // assertTextSpans(renameLocations, ['TestComponent']);
-        // assertFileNames(renameLocations, ['test-component.ts', 'app.html', 'app.ts']);
+        // There are 5 locations that need to be renamed:
+        // - Source file where the component is defined.
+        // - Self-closing tag in the template.
+        // - Opening tag in the template.
+        // - Closing tag in the template.
+        // - Import in the app component.
+        expect(renameLocations.length).toBe(5);
+        assertTextSpans(renameLocations, ['TestComponent']);
+        assertFileNames(renameLocations, ['test-component.ts', 'app.html', 'app.ts']);
       });
     });
   });
@@ -2476,17 +2479,19 @@ describe('find references and rename locations', () => {
       it('should handle rename request for selectorless component from source file', () => {
         const file = project.openFile('test-directive.ts');
         const template = project.openFile('app.html');
-        template.contents = '<div @TestDirective></div>';
+        template.contents =
+          '<div @TestDirective><span><input @TestDirective([value]="numberValue")></span></div>';
         file.moveCursorToText('export class TestDir¦ective {');
         const renameLocations = getRenameLocationsAtPosition(file)!;
 
-        expect(renameLocations).toBeUndefined();
-
-        // TODO(crisbeto): investigate if we can make this work.
-        // It would involve looking for all the component references and renaming them.
-        // expect(renameLocations.length).toBe(3);
-        // assertTextSpans(renameLocations, ['TestDirective']);
-        // assertFileNames(renameLocations, ['test-directive.ts', 'app.html', 'app.ts']);
+        // There are 4 locations that need to be renamed:
+        // - Source file where the directive is defined.
+        // - Reference on the `div` node.
+        // - Refernce on the `input` node.
+        // - Import in the app component.
+        expect(renameLocations.length).toBe(4);
+        assertTextSpans(renameLocations, ['TestDirective']);
+        assertFileNames(renameLocations, ['test-directive.ts', 'app.html', 'app.ts']);
       });
     });
   });
