@@ -1,14 +1,15 @@
 diff --git a/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl b/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
-index 6cee158..815a55d 100755
+index 4842aa1..ba03153 100755
 --- a/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/api-golden/index.bzl
-@@ -1,5 +1,5 @@
- load("@npm//@angular/build-tooling/bazel:extract_types.bzl", "extract_types")
--load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
-+load("@angular//tools/esm-interop:index.bzl", "nodejs_binary", "nodejs_test")
+@@ -1,6 +1,6 @@
+ load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+ load("@bazel_skylib//rules:write_file.bzl", "write_file")
+-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
++load("@angular//tools/esm-interop:index.bzl", "pkg_npm)
+ load("@npm//@angular/build-tooling/bazel/api-golden:index_rjs.bzl", _rjs_api_golden_test_npm_package = "api_golden_test_npm_package")
 
- nodejs_test_args = [
-     # Needed so that node doesn't walk back to the source directory.
+ default_strip_export_pattern = "^ɵ(?!ɵdefineInjectable|ɵinject|ɵInjectableDef)"
 diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/app-bundling/BUILD.bazel
 index 1c27a95..c239203 100755
 --- a/node_modules/@angular/build-tooling/bazel/app-bundling/BUILD.bazel
@@ -20,24 +21,9 @@ index 1c27a95..c239203 100755
  package(default_visibility = ["//visibility:public"])
 
 diff --git a/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl b/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl
-index d6249b8..707ae39 100755
+index d6249b8..7a361eb 100755
 --- a/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl
-@@ -4,11 +4,11 @@
- # found in the LICENSE file at https://angular.io/license
-
- load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
--load("@npm//@bazel/terser:index.bzl", "terser_minified")
--load("@npm//prettier:index.bzl", "prettier")
--load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
- load("@npm//@angular/build-tooling/bazel:expand_template.bzl", "expand_template")
- load("@npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_outputs")
-+load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
-+load("@npm//@bazel/terser:index.bzl", "terser_minified")
-+load("@npm//prettier:index.bzl", "prettier")
-
- def _create_esbuild_minify_options(debug = False):
-     # The minify options match with the configuration used by the CLI. The whitespace
 @@ -64,7 +64,8 @@ def app_bundle(
          name = "%s_esbuild_config" % name,
          config_file = ":%s_config_file" % name,
@@ -49,17 +35,16 @@ index d6249b8..707ae39 100755
          ],
          **common_base_attributes
 diff --git a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl
-index 8bfab84..e52327d 100755
+index 8bfab84..175cc9d 100755
 --- a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/benchmark_test.bzl
-@@ -1,5 +1,4 @@
+@@ -1,4 +1,4 @@
 -load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
--
 +load("@angular//tools:defaults.bzl", "protractor_web_test_suite")
+
  """
    Macro that can be used to define a benchmark test. This differentiates from
-   a normal Protractor test suite because we specify a custom "perf" configuration
-@@ -7,7 +6,7 @@ load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
+@@ -7,7 +7,7 @@ load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
    unless explicitly requested.
  """
 
@@ -68,7 +53,7 @@ index 8bfab84..e52327d 100755
      protractor_web_test_suite(
          name = name,
          browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
-@@ -20,6 +19,7 @@ def benchmark_test(name, server, tags = [], **kwargs):
+@@ -20,6 +20,7 @@ def benchmark_test(name, server, tags = [], **kwargs):
              "manual",
              "no-remote-exec",
          ],
@@ -77,7 +62,7 @@ index 8bfab84..e52327d 100755
              "manual",
              "no-remote-exec",
 diff --git a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
-index a8d1947..5a5e37f 100755
+index a8d1947..127fca6 100755
 --- a/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl
 @@ -1,7 +1,7 @@
@@ -95,8 +80,8 @@ index a8d1947..5a5e37f 100755
          ng_deps = [
 -            "@npm//@angular/core",
 -            "@npm//@angular/platform-browser",
-+           "@angular//packages/core",
-+           "@angular//packages/platform-browser",
++             "@angular//packages/core",
++             "@angular//packages/platform-browser",
          ],
          ng_assets = [],
          assets = None,
@@ -109,41 +94,22 @@ index a8d1947..5a5e37f 100755
 
      if not assets:
          html = prefix + "index.html"
-diff --git a/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel b/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel
-index 3a85025..12a2c55 100755
---- a/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel
-+++ b/node_modules/@angular/build-tooling/bazel/http-server/BUILD.bazel
-@@ -1,4 +1,4 @@
--load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-+load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
- load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
-
- package(default_visibility = ["//visibility:public"])
-diff --git a/node_modules/@angular/build-tooling/bazel/integration/index.bzl b/node_modules/@angular/build-tooling/bazel/integration/index.bzl
-index 6f99d65..1bd5183 100755
---- a/node_modules/@angular/build-tooling/bazel/integration/index.bzl
-+++ b/node_modules/@angular/build-tooling/bazel/integration/index.bzl
-@@ -1,4 +1,4 @@
--load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
-+load("@angular//tools/esm-interop:index.bzl", "nodejs_test")
-
- def _serialize_file(file):
-     """Serializes a file into a struct that matches the `BazelFileInfo` type in the
 diff --git a/node_modules/@angular/build-tooling/bazel/map-size-tracking/index.bzl b/node_modules/@angular/build-tooling/bazel/map-size-tracking/index.bzl
-index af0f305..ce46302 100755
+index af0f305..32bc88d 100755
 --- a/node_modules/@angular/build-tooling/bazel/map-size-tracking/index.bzl
 +++ b/node_modules/@angular/build-tooling/bazel/map-size-tracking/index.bzl
-@@ -3,7 +3,7 @@
+@@ -3,8 +3,7 @@
  # Use of this source code is governed by an MIT-style license that can be
  # found in the LICENSE file at https://angular.io/license
 
 -load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "nodejs_test")
+-
 +load("@angular//tools/esm-interop:index.bzl", "nodejs_binary", "nodejs_test")
-
  nodejs_args = ["--nobazel_run_linker"]
 
+ def js_mapping_size_test(
 diff --git a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
-index b2729ad..80ab926 100755
+index 97a75f7..2468d59 100755
 --- a/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
 +++ b/node_modules/@angular/build-tooling/shared-scripts/angular-optimization/BUILD.bazel
 @@ -24,7 +24,8 @@ js_library(
@@ -154,5 +120,5 @@ index b2729ad..80ab926 100755
 +        "@angular//packages/compiler",
 +        "@angular//packages/compiler-cli:npm_package",
          "@npm//@babel/core",
-         "@npm//@babel/plugin-proposal-async-generator-functions",
+         "@npm//@babel/plugin-transform-async-generator-functions",
      ],
