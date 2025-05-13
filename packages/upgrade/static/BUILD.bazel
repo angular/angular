@@ -1,10 +1,11 @@
-load("//tools:defaults.bzl", "generate_api_docs", "ng_module")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
 
-ng_module(
+ng_project(
     name = "static",
     srcs = glob(
         [
@@ -12,10 +13,12 @@ ng_module(
             "src/*.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/upgrade",
+    ],
+    deps = [
+        "//packages/upgrade:upgrade_rjs",
     ],
 )
 
