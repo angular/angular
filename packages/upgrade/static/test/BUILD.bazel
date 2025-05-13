@@ -14,11 +14,11 @@ ts_project(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "//packages/upgrade/static:static",
     ],
     deps = [
         "//packages/upgrade/src/common:common_rjs",
         "//packages/upgrade/src/common/test/helpers:helpers_rjs",
+        "//packages/upgrade/static:static_rjs",
     ],
 )
 
