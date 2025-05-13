@@ -1,6 +1,6 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
 load("//tools:defaults.bzl", "esbuild")
 
@@ -11,7 +11,7 @@ sass_binary(
     src = "app.component.scss",
 )
 
-ng_module(
+ng_project(
     name = "app",
     srcs = [
         "app.component.ts",
@@ -21,23 +21,26 @@ ng_module(
         "app.component.html",
         ":app_component_styles",
     ],
-    deps = [
-        ":chrome_application_environment",
-        ":chrome_application_operations",
-        ":zone_aware_chrome_message_bus",
-        "//devtools/projects/ng-devtools",
-        "//devtools/projects/ng-devtools-backend",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-        "//devtools/projects/protocol",
-        "//devtools/projects/shell-browser/src/app:backend",
-        "//devtools/projects/shell-browser/src/app:background",
+    interop_deps = [
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
-        "@npm//@angular/cdk",
-        "@npm//@angular/material",
-        "@npm//rxjs",
+    ],
+    deps = [
+        ":chrome_application_environment_rjs",
+        ":chrome_application_operations_rjs",
+        ":zone_aware_chrome_message_bus_rjs",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@types/chrome",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
+        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/shell-browser/src/app:backend_rjs",
+        "//devtools/projects/shell-browser/src/app:background_rjs",
     ],
 )
 
