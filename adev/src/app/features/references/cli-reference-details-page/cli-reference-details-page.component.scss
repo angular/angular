@@ -10,16 +10,13 @@
   padding-bottom: var(--layout-padding);
 
 
-  &:has(> docs-viewer.docs-with-TOC) {
-    &:has(docs-table-of-contents ul > li:nth-child(2)) {
 
-      //applying styles when TOC position got translated to the top right 
-      @media only screen and (min-width: 1431px) {
-        // take the available space except a reserved area for TOC
-        width: calc(100% - 16rem);
-      }
-    }
+  //applying styles when TOC position got translated to the top right 
+  @media only screen and (min-width: 1431px) {
+    // take the available space except a reserved area for TOC
+    width: calc(100% - 16rem);
   }
+
 
   docs-viewer {
     display: block;
