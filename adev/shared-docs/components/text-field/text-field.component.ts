@@ -63,8 +63,8 @@ export class TextField implements ControlValueAccessor {
   }
 
   // Implemented as part of ControlValueAccessor.
-  writeValue(value: string): void {
-    this.value.set(value);
+  writeValue(value: unknown): void {
+    this.value.set(typeof value === 'string' ? value : null);
   }
 
   // Implemented as part of ControlValueAccessor.
