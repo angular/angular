@@ -8,10 +8,10 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/service-worker/config",
-    ],
     tsconfig = "//packages/service-worker:tsconfig_build",
+    deps = [
+        "//packages/service-worker/config:config_rjs",
+    ],
 )
 
 esbuild_config(
