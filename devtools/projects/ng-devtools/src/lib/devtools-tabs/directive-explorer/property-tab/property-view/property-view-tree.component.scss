@@ -39,23 +39,31 @@
 }
 
 .show-signal-btn {
+  position: relative;
   border-radius: 50%;
   width: 16px;
   height: 16px;
   border: none;
-  background: var(--quinary-contrast);
-  color: var(--primary-contrast);
-  vertical-align: text-bottom;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dynamic-blue-02);
+  color: var(--septenary-contrast);
+  vertical-align: middle;
   padding: 0;
+  top: -1px;
+  margin-left: 0.25rem;
   cursor: pointer;
 
   &:hover {
-    background: var(--dynamic-blue-02);
-    color: var(--septenary-contrast);
+    background: color-mix(in srgb, var(--dynamic-blue-02) 80%, var(--full-contrast) 20%);
   }
 
   mat-icon {
-    top: 2px;
+    width: 11px;
+    height: 11px;
+    font-size: 11px;
+    top: 0;
   }
 }
 

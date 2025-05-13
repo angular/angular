@@ -97,3 +97,20 @@ export function ngDebugTransferStateApiIsSupported(): boolean {
   const ng = ngDebugClient();
   return ngDebugApiIsSupported(ng, 'ɵgetTransferState');
 }
+
+/** Checks whether Router API is supported within window.ng */
+export function ngDebugSignalPropertiesInspectionApiIsSupported(): boolean {
+  const ng = ngDebugClient();
+
+  // If all apps are Angular, make the API available.
+  const roots = getRoots();
+  return (
+    !!roots.length &&
+    roots.every((el) => {
+      const comp = ng.getComponent!(el)!;
+      const fw = ng.getDirectiveMetadata?.(comp)?.framework;
+      // `framework` might be optional in the case of `AngularDirectiveDebugMetadata`.
+      return !fw || fw === Framework.Angular;
+    })
+  );
+}

@@ -27,7 +27,6 @@ import {
   Route,
   SerializedInjector,
   SerializedProviderRecord,
-  SupportedApis,
 } from '../../../../protocol';
 
 import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
@@ -41,6 +40,7 @@ import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TransferStateComponent} from './transfer-state/transfer-state.component';
 import {TabUpdate} from './tab-update/index';
 import {Settings} from '../application-services/settings';
+import {SUPPORTED_APIS} from '../application-providers/supported_apis';
 
 type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transfer State';
 
@@ -68,15 +68,15 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transf
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsTabsComponent {
-  readonly applicationEnvironment = inject(ApplicationEnvironment);
   readonly frameManager = inject(FrameManager);
   readonly themeService = inject(ThemeService);
   private readonly tabUpdate = inject(TabUpdate);
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly settings = inject(Settings);
+  protected readonly applicationEnvironment = inject(ApplicationEnvironment);
+  protected readonly supportedApis = inject(SUPPORTED_APIS);
 
   readonly isHydrationEnabled = input(false);
-  readonly supportedApis = input.required<SupportedApis>();
   readonly frameSelected = output<Frame>();
 
   readonly activeTab = signal<Tab>('Components');

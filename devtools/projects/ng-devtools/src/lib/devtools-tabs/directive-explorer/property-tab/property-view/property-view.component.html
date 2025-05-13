@@ -8,5 +8,7 @@
   [directivePropControls]="directivePropControls()!"
   [directiveOutputControls]="directiveOutputControls()!"
   [directiveStateControls]="directiveStateControls()!"
+  [signalGraphEnabled]="signalGraphEnabled()"
   (inspect)="inspect.emit($event)"
+  (showSignalGraph)="showSignalGraph.emit($event)"
 ></ng-property-view-body>

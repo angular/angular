@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
-import {DirectivePosition} from '../../../../../../protocol';
+import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
 import {FlatNode} from '../property-resolver/element-property-resolver';
@@ -28,5 +28,5 @@ export class PropertyTabComponent {
 
   readonly viewSource = output<string>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
-  readonly showSignalGraph = output<FlatNode | null>();
+  readonly showSignalGraph = output<DebugSignalGraphNode | null>();
 }

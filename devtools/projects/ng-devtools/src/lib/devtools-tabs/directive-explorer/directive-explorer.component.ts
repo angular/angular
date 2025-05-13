@@ -17,10 +17,13 @@ import {
   signal,
   viewChild,
   ChangeDetectionStrategy,
+  computed,
+  linkedSignal,
 } from '@angular/core';
 import {
   ComponentExplorerView,
   ComponentExplorerViewQuery,
+  DebugSignalGraphNode,
   DevToolsNode,
   DirectivePosition,
   ElementPosition,
@@ -55,6 +58,7 @@ import {
 import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
 import {SplitComponent} from '../../shared/split/split.component';
 import {Direction} from '../../shared/split/interface';
+import {SignalGraphManager} from './signal-graph/signal-graph-manager';
 
 const FOREST_VER_SPLIT_SIZE = 30;
 const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;
@@ -86,6 +90,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
       provide: ElementPropertyResolver,
       useClass: ElementPropertyResolver,
     },
+    SignalGraphManager,
   ],
   imports: [
     SplitComponent,
@@ -132,6 +137,12 @@ export class DirectiveExplorerComponent {
 
   private readonly platform = inject(Platform);
   private readonly snackBar = inject(MatSnackBar);
+  protected readonly signalGraph = inject(SignalGraphManager);
+
+  protected readonly preselectedSignalNodeId = linkedSignal<IndexedNode | null, string | null>({
+    source: this.currentSelectedElement,
+    computation: () => null,
+  });
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
@@ -141,6 +152,8 @@ export class DirectiveExplorerComponent {
 
   protected readonly forestSplitSize = signal<number>(FOREST_VER_SPLIT_SIZE);
   protected readonly signalGraphSplitSize = signal<number>(SIGNAL_GRAPH_VER_SPLIT_SIZE);
+
+  private readonly currentElementPos = computed(() => this.currentSelectedElement()?.position);
 
   constructor() {
     afterRenderEffect((cleanup) => {
@@ -166,6 +179,7 @@ export class DirectiveExplorerComponent {
 
     this.subscribeToBackendEvents();
     this.refresh();
+    this.signalGraph.listen(this.currentElementPos);
   }
 
   private isNonTopLevelFirefoxFrame() {
@@ -367,8 +381,10 @@ export class DirectiveExplorerComponent {
     }
   }
 
-  showSignalGraph(node: PropertyFlatNode | null) {
-    // TBD: Use the node argument for graph node selection/highlighting.
+  showSignalGraph(node: DebugSignalGraphNode | null) {
+    if (node) {
+      this.preselectedSignalNodeId.set(node.id);
+    }
     this.signalsOpen.set(true);
   }
 
