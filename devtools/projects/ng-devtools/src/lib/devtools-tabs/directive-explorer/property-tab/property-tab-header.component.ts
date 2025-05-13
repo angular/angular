@@ -7,27 +7,26 @@
  */
 
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 import {IndexedNode} from '../directive-forest/index-forest';
 import {ComponentMetadataComponent} from './component-metadata.component';
-import {MatExpansionModule} from '@angular/material/expansion';
-import {MatIcon} from '@angular/material/icon';
+import {ButtonComponent} from '../../../shared/button/button.component';
 
 @Component({
   templateUrl: './property-tab-header.component.html',
   selector: 'ng-property-tab-header',
   styleUrls: ['./property-tab-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatExpansionModule, ComponentMetadataComponent, MatIcon],
+  imports: [MatExpansionModule, ComponentMetadataComponent, ButtonComponent],
 })
 export class PropertyTabHeaderComponent {
-  currentSelectedElement = input.required<IndexedNode>();
-  toggleSignalGraph = input<() =>void>();
+  readonly currentSelectedElement = input.required<IndexedNode>();
+  readonly signalGraphAvailable = input<boolean>(false);
+  readonly showSignalGraph = output<void>();
 
-  handleToggleSignalGraph(event: MouseEvent) {
+  showGraph(event: Event) {
     event.stopPropagation();
-    // we don't show the button unless toggleSignalGraph is defined
-    const toggleSignalGraphFn = this.toggleSignalGraph()!;
-    toggleSignalGraphFn();
+    this.showSignalGraph.emit();
   }
 }

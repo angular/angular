@@ -28,7 +28,7 @@
         <as-split-area size="70">
           <ng-signals-tab
             [currentElement]="currentSelectedElement.position"
-            (close)="closeSignalsTab()"
+            (close)="signalsOpen.set(false)"
             #signalsTab
           />
         </as-split-area>
@@ -40,7 +40,8 @@
       @if (currentSelectedElement(); as currentSelectedElement) {
         <ng-property-tab
           [currentSelectedElement]="currentSelectedElement"
-          [toggleSignalGraph]="signals() ? toggleSignalGraph : undefined"
+          [signalGraphAvailable]="!!signals()"
+          (showSignalGraph)="showSignalGraph($event)"
           (inspect)="inspect($event)"
           (viewSource)="viewSource($event)"
         />

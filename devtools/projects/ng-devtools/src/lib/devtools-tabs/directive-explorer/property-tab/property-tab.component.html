@@ -3,11 +3,13 @@
 @if (currentSelectedElement) {
   <ng-property-tab-header
     [currentSelectedElement]="currentSelectedElement"
-    [toggleSignalGraph]="toggleSignalGraph()"
+    [signalGraphAvailable]="signalGraphAvailable()"
+    (showSignalGraph)="showSignalGraph.emit(null)"
   />
   <ng-property-tab-body
     (inspect)="inspect.emit($event)"
     (viewSource)="viewSource.emit($event)"
+    (showSignalGraph)="showSignalGraph.emit($event)"
     [currentSelectedElement]="currentSelectedElement"
   />
 

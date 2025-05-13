@@ -120,7 +120,6 @@ export class DirectiveExplorerComponent {
   private readonly _frameManager = inject(FrameManager);
 
   private readonly platform = inject(Platform);
-
   private readonly snackBar = inject(MatSnackBar);
 
   constructor() {
@@ -348,11 +347,8 @@ export class DirectiveExplorerComponent {
     }
   }
 
-  closeSignalsTab() {
-    this.signalsOpen.set(false);
-  }
-
-  toggleSignalGraph = () => {
-    this.signalsOpen.set(!this.signalsOpen())
+  showSignalGraph(node: PropertyFlatNode | null) {
+    // TBD: Use the node argument for graph node selection/highlighting.
+    this.signalsOpen.set(true);
   }
 }
