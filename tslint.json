@@ -11,6 +11,7 @@
     // that rules written in TypeScript can be loaded without needing to be transpiled.
     "ts-node-loader": true,
     // Custom rules written in TypeScript.
+    "no-exported-inferred-call-type": true,
     "require-internal-with-underscore": true,
     "no-implicit-override-abstract": true,
     "validate-import-for-esm-cjs-interop": [
@@ -77,7 +78,10 @@
         "name": ["*", "getMutableClone"],
         "message": "Use a ts.factory.update* or ts.factory.create* method instead."
       },
-      {"name": ["performance", "mark"], "message": "`performance` methods aren't not fully supported in all environments like JSDOM and Cloudflare workers. Use 'performanceMark' from '@angular/core' instead."}
+      {
+        "name": ["performance", "mark"],
+        "message": "`performance` methods aren't not fully supported in all environments like JSDOM and Cloudflare workers. Use 'performanceMark' from '@angular/core' instead."
+      }
     ]
   },
   "jsRules": {

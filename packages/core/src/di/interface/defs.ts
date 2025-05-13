@@ -261,9 +261,13 @@ export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T> | null {
     : null;
 }
 
-export const NG_PROV_DEF = getClosureSafeProperty({ɵprov: getClosureSafeProperty});
-export const NG_INJ_DEF = getClosureSafeProperty({ɵinj: getClosureSafeProperty});
+export const NG_PROV_DEF: string = getClosureSafeProperty({ɵprov: getClosureSafeProperty});
+export const NG_INJ_DEF: string = getClosureSafeProperty({ɵinj: getClosureSafeProperty});
 
 // We need to keep these around so we can read off old defs if new defs are unavailable
-export const NG_INJECTABLE_DEF = getClosureSafeProperty({ngInjectableDef: getClosureSafeProperty});
-export const NG_INJECTOR_DEF = getClosureSafeProperty({ngInjectorDef: getClosureSafeProperty});
+export const NG_INJECTABLE_DEF: string = getClosureSafeProperty({
+  ngInjectableDef: getClosureSafeProperty,
+});
+export const NG_INJECTOR_DEF: string = getClosureSafeProperty({
+  ngInjectorDef: getClosureSafeProperty,
+});

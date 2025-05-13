@@ -176,4 +176,5 @@ export function nodes(html: string) {
   return Array.prototype.slice.call(div.childNodes);
 }
 
-export const withEachNg1Version = createWithEachNg1VersionFn(setAngularJSGlobal);
+export const withEachNg1Version: (specSuite: () => void) => void =
+  createWithEachNg1VersionFn(setAngularJSGlobal);

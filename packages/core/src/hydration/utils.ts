@@ -14,7 +14,7 @@ import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {isRootView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
-import {makeStateKey, TransferState} from '../transfer_state';
+import {makeStateKey, StateKey, TransferState} from '../transfer_state';
 import {assertDefined, assertEqual} from '../util/assert';
 import type {HydrationContext} from './annotate';
 
@@ -49,7 +49,8 @@ const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 /**
  * Lookup key used to reference DOM hydration data (ngh) in `TransferState`.
  */
-export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_TOKEN_ID);
+export const NGH_DATA_KEY: StateKey<SerializedView[]> =
+  makeStateKey<Array<SerializedView>>(TRANSFER_STATE_TOKEN_ID);
 
 /**
  * The name of the key used in the TransferState collection,
@@ -60,9 +61,9 @@ export const TRANSFER_STATE_DEFER_BLOCKS_INFO = '__nghDeferData__';
 /**
  * Lookup key used to retrieve defer block datain `TransferState`.
  */
-export const NGH_DEFER_BLOCKS_KEY = makeStateKey<{[key: string]: SerializedDeferBlock}>(
-  TRANSFER_STATE_DEFER_BLOCKS_INFO,
-);
+export const NGH_DEFER_BLOCKS_KEY: StateKey<{[key: string]: SerializedDeferBlock}> = makeStateKey<{
+  [key: string]: SerializedDeferBlock;
+}>(TRANSFER_STATE_DEFER_BLOCKS_INFO);
 
 /**
  * The name of the attribute that would be added to host component
