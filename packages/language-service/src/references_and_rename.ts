@@ -5,17 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {AST, TmplAstComponent, TmplAstDirective, TmplAstNode} from '@angular/compiler';
+import {AST, TmplAstComponent, TmplAstNode} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {MetaKind, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {MetaKind, PipeMeta, DirectiveMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {
-  SelectorlessComponentSymbol,
-  SelectorlessDirectiveSymbol,
-  SymbolKind,
-  TemplateTypeChecker,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {
@@ -23,8 +18,8 @@ import {
   FilePosition,
   getParentClassMeta,
   getRenameTextAndSpanAtPosition,
-  getSelectorlessTemplateSpanFromTcbLocations,
   getTargetDetailsAtTemplatePosition,
+  SelectorlessCollector,
   TemplateLocationDetails,
 } from './references_and_rename_utils';
 import {collectMemberMethods, findTightestNode} from './utils/ts_utils';
@@ -137,9 +132,6 @@ interface SelectorRenameContext {
 /** The context needed to perform a rename of a selectorless component/directive. */
 interface SelectorlessIdentifierRenameContext {
   type: RequestKind.SelectorlessIdentifier;
-
-  /** Node defining the component/directive. */
-  templateNode: TmplAstComponent | TmplAstDirective;
 
   /** Identifier of the class defining the class. */
   identifier: ts.Identifier;
@@ -311,7 +303,7 @@ export class RenameBuilder {
     return allRenameLocations.length > 0 ? allRenameLocations : null;
   }
 
-  findRenameLocationsAtTypescriptPosition(
+  private findRenameLocationsAtTypescriptPosition(
     renameRequest: RenameRequest,
   ): readonly ts.RenameLocation[] | null {
     return this.compiler.perfRecorder.inPhase(PerfPhase.LsReferencesAndRenames, () => {
@@ -336,15 +328,11 @@ export class RenameBuilder {
       for (const location of locations) {
         if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(location.fileName))) {
           if (renameRequest.type === RequestKind.SelectorlessIdentifier) {
-            const selectorlessEntries = getSelectorlessTemplateSpanFromTcbLocations(
-              location,
-              this.ttc,
-              this.compiler.getCurrentProgram(),
-              renameRequest.templateNode,
-            );
-            if (selectorlessEntries !== null) {
-              entries.push(...selectorlessEntries);
+            const selectorlessEntries = this.getSelectorlessRenameLocations(renameRequest);
+            if (selectorlessEntries === null) {
+              return null;
             }
+            entries.push(...selectorlessEntries);
           } else {
             const entry = convertToTemplateDocumentSpan(
               location,
@@ -410,13 +398,15 @@ export class RenameBuilder {
           targetDetails.symbol.kind === SymbolKind.SelectorlessComponent ||
           targetDetails.symbol.kind === SymbolKind.SelectorlessDirective
         ) {
-          const renameRequest = this.buildSelectorlessRenameRequestFromTemplate(
-            targetDetails.symbol,
-          );
-          if (renameRequest === null) {
+          const tsSymbol = targetDetails.symbol.tsSymbol;
+          const meta =
+            tsSymbol === null || tsSymbol.valueDeclaration === undefined
+              ? null
+              : this.compiler.getMeta(tsSymbol.valueDeclaration);
+          if (meta === null || meta.kind !== MetaKind.Directive) {
             return null;
           }
-          renameRequests.push(renameRequest);
+          renameRequests.push(this.buildSelectorlessRenameRequest(meta));
         } else {
           const renameRequest: RenameRequest = {
             type: RequestKind.DirectFromTemplate,
@@ -440,11 +430,16 @@ export class RenameBuilder {
       return null;
     }
     const meta = getParentClassMeta(requestNode, this.compiler);
-    if (meta !== null && meta.kind === MetaKind.Pipe && meta.nameExpr === requestNode) {
+
+    if (meta?.kind === MetaKind.Pipe && meta.nameExpr === requestNode) {
       return this.buildPipeRenameRequest(meta);
-    } else {
-      return {type: RequestKind.DirectFromTypeScript, requestNode};
     }
+
+    if (meta?.kind === MetaKind.Directive && meta.ref.node.name === requestNode) {
+      return this.buildSelectorlessRenameRequest(meta);
+    }
+
+    return {type: RequestKind.DirectFromTypeScript, requestNode};
   }
 
   private buildPipeRenameRequest(meta: PipeMeta): PipeRenameContext | null {
@@ -473,38 +468,100 @@ export class RenameBuilder {
     };
   }
 
-  private buildSelectorlessRenameRequestFromTemplate(
-    symbol: SelectorlessComponentSymbol | SelectorlessDirectiveSymbol,
-  ): SelectorlessIdentifierRenameContext | null {
-    if (symbol.tsSymbol === null || symbol.tsSymbol.valueDeclaration === undefined) {
-      return null;
-    }
-
-    const meta = this.compiler.getMeta(symbol.tsSymbol.valueDeclaration);
-    if (meta === null || meta.kind !== MetaKind.Directive) {
-      return null;
-    }
-
-    const nameNode = meta.ref.node.name;
-    const templateName =
-      symbol.kind === SymbolKind.SelectorlessComponent
-        ? symbol.templateNode.componentName
-        : symbol.templateNode.name;
-
-    // Do not rename aliased references.
-    if (templateName !== nameNode.text) {
-      return null;
-    }
+  private buildSelectorlessRenameRequest(meta: DirectiveMeta): SelectorlessIdentifierRenameContext {
+    const identifier = meta.ref.node.name;
 
     return {
       type: RequestKind.SelectorlessIdentifier,
-      templateNode: symbol.templateNode,
-      identifier: nameNode,
+      identifier,
       renamePosition: {
-        fileName: meta.ref.node.getSourceFile().fileName,
-        position: nameNode.getStart(),
+        fileName: identifier.getSourceFile().fileName,
+        position: identifier.getStart(),
       },
     };
+  }
+
+  /** Gets the rename locations for a selectorless request. */
+  private getSelectorlessRenameLocations(
+    request: SelectorlessIdentifierRenameContext,
+  ): ts.RenameLocation[] | null {
+    // Find all the references to the class.
+    const refs = this.tsLS.getReferencesAtPosition(
+      request.renamePosition.fileName,
+      request.renamePosition.position,
+    );
+
+    if (refs === undefined) {
+      return null;
+    }
+
+    const entries: ts.RenameLocation[] = [];
+    let hasSelectorlessReferences = false;
+
+    for (const ref of refs) {
+      // Preserve the TS-based references.
+      if (!this.ttc.isTrackedTypeCheckFile(absoluteFrom(ref.fileName))) {
+        entries.push(ref);
+        continue;
+      }
+
+      // Resolve the TCB references to their real locations.
+      const entry = convertToTemplateDocumentSpan(ref, this.ttc, this.compiler.getCurrentProgram());
+      const typeCheckInfo =
+        entry === null
+          ? undefined
+          : getTypeCheckInfoAtPosition(entry.fileName, entry.textSpan.start, this.compiler);
+
+      if (entry === null || typeCheckInfo === undefined) {
+        continue;
+      }
+
+      const nodes = SelectorlessCollector.getSelectorlessNodes(typeCheckInfo.nodes);
+
+      // Go through all the selectorless template nodes and look for matches.
+      for (const node of nodes) {
+        const startSpan = node.startSourceSpan;
+        const isComponent = node instanceof TmplAstComponent;
+        const name = isComponent ? node.componentName : node.name;
+
+        if (
+          // The span of the template node should match the span of the reference.
+          startSpan.start.offset !== entry.textSpan.start ||
+          startSpan.end.offset !== entry.textSpan.start + entry.textSpan.length ||
+          // Skip aliased directives.
+          name !== request.identifier.text
+        ) {
+          continue;
+        }
+
+        hasSelectorlessReferences = true;
+
+        entries.push({
+          fileName: entry.fileName,
+          textSpan: {
+            // +1 to skip over the `<` for components and `@` for directives.
+            start: entry.textSpan.start + 1,
+            length: name.length,
+          },
+        });
+
+        // Components also need to rename the closing tag.
+        if (isComponent && !node.isSelfClosing && node.endSourceSpan !== null) {
+          entries.push({
+            fileName: entry.fileName,
+            textSpan: {
+              // +2 to skip over the `</` of the closing tag.
+              start: node.endSourceSpan.start.offset + 2,
+              length: name.length,
+            },
+          });
+        }
+      }
+    }
+
+    // Do not produce any rename locations if there weren't any references in the template.
+    // This is for backwards compatibility since we should fall back to the TS language service.
+    return hasSelectorlessReferences ? entries : null;
   }
 }
 
