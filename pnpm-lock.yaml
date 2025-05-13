@@ -204,8 +204,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       domino:
-        specifier: https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af
-        version: github.com/angular/domino/8f228f8862540c6ccd14f76b5a1d9bb5458618af
+        specifier: https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b
+        version: github.com/angular/domino/93e720f143d0296dd2726ffbcf4fc12283363a7b
       hammerjs:
         specifier: ~2.0.8
         version: 2.0.8
@@ -352,8 +352,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a
         version: github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a(@angular/ssr@20.0.0-rc.0)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.0)(tsx@4.19.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#1c4ab5db67425dc52b9bff25660dbf5e105a4d75
-        version: github.com/angular/dev-infra-private-ng-dev-builds/1c4ab5db67425dc52b9bff25660dbf5e105a4d75
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#a871c115e04a76587fcd418107ad985752610ccf
+        version: github.com/angular/dev-infra-private-ng-dev-builds/a871c115e04a76587fcd418107ad985752610ccf
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.26.10)
@@ -1046,7 +1046,7 @@ packages:
     peerDependencies:
       '@angular/compiler': ^20.0.0 || ^20.0.0-next.0
       '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': ^20.0.0 || ^20.0.0-next.0
+      '@angular/core': 20.0.0-rc.0
       '@angular/localize': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
@@ -1203,7 +1203,7 @@ packages:
     resolution: {integrity: sha512-PqAXHxJvahRbEgDVpd8eYVqM0PEYd4kpvBtpoH532TQi173hoNQxYf9JY6O/ECADqe6ZEqiIgGWy41l1jt7XcA==, tarball: https://registry.npmjs.org/@angular/ssr/-/ssr-20.0.0-rc.0.tgz}
     peerDependencies:
       '@angular/common': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': ^20.0.0 || ^20.0.0-next.0
+      '@angular/core': 20.0.0-rc.0
       '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
       '@angular/router': ^20.0.0 || ^20.0.0-next.0
     peerDependenciesMeta:
@@ -19085,10 +19085,10 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/1c4ab5db67425dc52b9bff25660dbf5e105a4d75:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/1c4ab5db67425dc52b9bff25660dbf5e105a4d75}
+  github.com/angular/dev-infra-private-ng-dev-builds/a871c115e04a76587fcd418107ad985752610ccf:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/a871c115e04a76587fcd418107ad985752610ccf}
     name: '@angular/ng-dev'
-    version: 0.0.0-1685f0afc967fb7de4b46ccb22f22d779ee3086c
+    version: 0.0.0-892760b7f6cf0d08a51778674a9b13ebc1a809a7
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 7.21.0(supports-color@10.0.0)
@@ -19107,8 +19107,8 @@ packages:
       - encoding
     dev: true
 
-  github.com/angular/domino/8f228f8862540c6ccd14f76b5a1d9bb5458618af:
-    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/8f228f8862540c6ccd14f76b5a1d9bb5458618af}
+  github.com/angular/domino/93e720f143d0296dd2726ffbcf4fc12283363a7b:
+    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b}
     name: '@angular/domino'
     version: 2.1.6
     dev: false
