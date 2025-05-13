@@ -31,7 +31,7 @@ const logger: ts.server.Logger = {
 };
 
 export const TEST_SRCDIR = process.env['TEST_SRCDIR']!;
-export const PROJECT_DIR = join(
+export const PROJECT_DIR: string = join(
   TEST_SRCDIR,
   'angular',
   'packages',
@@ -40,11 +40,11 @@ export const PROJECT_DIR = join(
   'legacy',
   'project',
 );
-export const TSCONFIG = join(PROJECT_DIR, 'tsconfig.json');
-export const APP_COMPONENT = join(PROJECT_DIR, 'app', 'app.component.ts');
-export const APP_MAIN = join(PROJECT_DIR, 'app', 'main.ts');
-export const PARSING_CASES = join(PROJECT_DIR, 'app', 'parsing-cases.ts');
-export const TEST_TEMPLATE = join(PROJECT_DIR, 'app', 'test.ng');
+export const TSCONFIG: string = join(PROJECT_DIR, 'tsconfig.json');
+export const APP_COMPONENT: string = join(PROJECT_DIR, 'app', 'app.component.ts');
+export const APP_MAIN: string = join(PROJECT_DIR, 'app', 'main.ts');
+export const PARSING_CASES: string = join(PROJECT_DIR, 'app', 'parsing-cases.ts');
+export const TEST_TEMPLATE: string = join(PROJECT_DIR, 'app', 'test.ng');
 
 const NOOP_FILE_WATCHER: ts.FileWatcher = {
   close() {},

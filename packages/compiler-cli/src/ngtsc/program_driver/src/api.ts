@@ -22,7 +22,7 @@ export interface FileUpdate {
   originalFile: ts.SourceFile | null;
 }
 
-export const NgOriginalFile = Symbol('NgOriginalFile');
+export const NgOriginalFile: unique symbol = Symbol('NgOriginalFile');
 
 /**
  * If an updated file has an associated original source file, then the original source file
