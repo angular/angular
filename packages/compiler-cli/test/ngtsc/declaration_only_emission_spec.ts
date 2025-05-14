@@ -31,7 +31,7 @@ runInEachFileSystem(() => {
           noCheck: true,
         },
         angularCompilerOptions: {
-          _geminiAllowEmitDeclarationOnly: true,
+          _experimentalAllowEmitDeclarationOnly: true,
         },
       };
       env.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));

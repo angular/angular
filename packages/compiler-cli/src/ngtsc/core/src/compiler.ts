@@ -468,7 +468,7 @@ export class NgCompiler {
     this.enableLetSyntax = options['_enableLetSyntax'] ?? true;
     this.enableSelectorless = options['_enableSelectorless'] ?? false;
     this.emitDeclarationOnly =
-      !!options.emitDeclarationOnly && !!options._geminiAllowEmitDeclarationOnly;
+      !!options.emitDeclarationOnly && !!options._experimentalAllowEmitDeclarationOnly;
     // Standalone by default is enabled since v19. We need to toggle it here,
     // because the language service extension may be running with the latest
     // version of the compiler against an older version of Angular.
