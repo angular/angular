@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild_esm_bundle")
-load("//tools:defaults2.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
@@ -27,7 +27,6 @@ ts_project(
             "entities.mts",
         ],
     ),
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     deps = [
         ":entities_rjs",
         "//:node_modules/@bazel/runfiles",
@@ -45,7 +44,6 @@ ts_project(
     srcs = [
         "entities.mts",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs/pipeline/api-gen/rendering:__pkg__",
         "//docs/pipeline/guides:__pkg__",
