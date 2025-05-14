@@ -7,7 +7,7 @@
 // @public
 export interface BazelAndG3Options {
     annotateForClosureCompiler?: boolean;
-    _geminiAllowEmitDeclarationOnly?: boolean;
+    _experimentalAllowEmitDeclarationOnly?: boolean;
     generateDeepReexports?: boolean;
     generateExtraImportsInLocalMode?: boolean;
     onlyExplicitDeferDependencyImports?: boolean;

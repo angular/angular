@@ -43,7 +43,7 @@ function emitDeclarationOnlyTest(fs: FileSystem, test: ComplianceTest): CompileR
     },
     {
       ...test.angularCompilerOptions,
-      _geminiAllowEmitDeclarationOnly: true,
+      _experimentalAllowEmitDeclarationOnly: true,
     },
   );
 }
