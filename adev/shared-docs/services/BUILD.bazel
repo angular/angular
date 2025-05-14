@@ -1,5 +1,5 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
 load("//tools:defaults.bzl", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -11,7 +11,6 @@ ts_project(
     interop_deps = [
         ":lib",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_test",
     visibility = ["//adev/shared-docs:__subpackages__"],
 )
 
@@ -32,9 +31,7 @@ ng_project(
         "//packages/core/rxjs-interop",
         "//packages/router",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     deps = [
-        "//:node_modules/@algolia/client-common",
         "//:node_modules/algoliasearch",
         "//:node_modules/rxjs",
         "//adev/shared-docs/interfaces:interfaces_rjs",
@@ -57,7 +54,6 @@ ts_project(
         "//packages/core",
         "//packages/core/testing",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_test",
 )
 
 karma_web_test_suite(
