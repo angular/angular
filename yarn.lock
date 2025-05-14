@@ -467,10 +467,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#1c4ab5db67425dc52b9bff25660dbf5e105a4d75":
-  version "0.0.0-1685f0afc967fb7de4b46ccb22f22d779ee3086c"
-  uid "1c4ab5db67425dc52b9bff25660dbf5e105a4d75"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#1c4ab5db67425dc52b9bff25660dbf5e105a4d75"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#a871c115e04a76587fcd418107ad985752610ccf":
+  version "0.0.0-892760b7f6cf0d08a51778674a9b13ebc1a809a7"
+  uid a871c115e04a76587fcd418107ad985752610ccf
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#a871c115e04a76587fcd418107ad985752610ccf"
   dependencies:
     "@google-cloud/spanner" "7.21.0"
     "@octokit/rest" "21.1.1"
@@ -7959,10 +7959,10 @@ domhandler@^5.0.2, domhandler@^5.0.3:
   dependencies:
     domelementtype "^2.3.0"
 
-"domino@https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af":
+"domino@https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b":
   version "2.1.6+git"
-  uid "8f228f8862540c6ccd14f76b5a1d9bb5458618af"
-  resolved "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af"
+  uid "93e720f143d0296dd2726ffbcf4fc12283363a7b"
+  resolved "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b"
 
 dompurify@^3.2.4:
   version "3.2.5"
