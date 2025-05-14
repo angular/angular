@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID} from '../../application/application_tokens';
+import {stashEventListenerImpl} from '../../event_delegation_utils';
 import {TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
-import {RElement, RNode} from '../interfaces/renderer_dom';
+import {RElement} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, INJECTOR, LView, RENDERER, TView} from '../interfaces/view';
+import {CLEANUP, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 import {
@@ -24,24 +24,6 @@ import {
 import {listenToOutput} from '../view/directive_outputs';
 import {wrapListener} from '../view/listeners';
 import {loadComponentRenderer} from './shared';
-
-/**
- * Represents a signature of a function that disables event replay feature
- * for server-side rendered applications. This function is overridden with
- * an actual implementation when the event replay feature is enabled via
- * `withEventReplay()` call.
- */
-type StashEventListener = (el: RNode, eventName: string, listenerFn: (e?: any) => any) => void;
-
-const stashEventListeners = new Map<string, StashEventListener>();
-
-export function setStashFn(appId: string, fn: StashEventListener) {
-  stashEventListeners.set(appId, fn);
-}
-
-export function clearStashFn(appId: string) {
-  stashEventListeners.delete(appId);
-}
 
 /**
  * Adds an event listener to the current node.
@@ -161,7 +143,6 @@ export function listenerInternal(
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const firstCreatePass = tView.firstCreatePass;
   const tCleanup = firstCreatePass ? getOrCreateTViewCleanup(tView) : null;
-  const context = lView[CONTEXT];
 
   // When the ɵɵlistener instruction was generated and is executed we know that there is either a
   // native listener or a directive output on this element. As such we we know that we will have to
@@ -218,9 +199,7 @@ export function listenerInternal(
       processOutputs = false;
     } else {
       listenerFn = wrapListener(tNode, lView, listenerFn);
-      const appId = lView[INJECTOR].get(APP_ID);
-      const stashEventListener = stashEventListeners.get(appId);
-      stashEventListener?.(target as RElement, eventName, listenerFn);
+      stashEventListenerImpl(lView, target, eventName, listenerFn);
       const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
       ngDevMode && ngDevMode.rendererAddEventListener++;
 

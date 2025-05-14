@@ -22,7 +22,6 @@ import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application
 import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
-import {clearStashFn, setStashFn} from '../render3/instructions/listener';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {CLEANUP, LView, TView} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
@@ -40,6 +39,8 @@ import {
   JSACTION_EVENT_CONTRACT,
   invokeListeners,
   removeListeners,
+  setStashFn,
+  enableStashEventListenerImpl,
 } from '../event_delegation_utils';
 import {APP_ID} from '../application/application_tokens';
 import {performanceMarkFeature} from '../util/performance';
@@ -106,15 +107,23 @@ export function withEventReplay(): Provider[] {
           if (!appsWithEventReplay.has(appRef)) {
             const jsActionMap = inject(JSACTION_BLOCK_ELEMENT_MAP);
             if (shouldEnableEventReplay(injector)) {
+              enableStashEventListenerImpl();
               const appId = injector.get(APP_ID);
-              setStashFn(appId, (rEl: RNode, eventName: string, listenerFn: VoidFunction) => {
-                // If a user binds to a ng-container and uses a directive that binds using a host listener,
-                // this element could be a comment node. So we need to ensure we have an actual element
-                // node before stashing anything.
-                if ((rEl as Node).nodeType !== Node.ELEMENT_NODE) return;
-                sharedStashFunction(rEl as RElement, eventName, listenerFn);
-                sharedMapFunction(rEl as RElement, jsActionMap);
-              });
+              const clearStashFn = setStashFn(
+                appId,
+                (rEl: RNode, eventName: string, listenerFn: VoidFunction) => {
+                  // If a user binds to a ng-container and uses a directive that binds using a host listener,
+                  // this element could be a comment node. So we need to ensure we have an actual element
+                  // node before stashing anything.
+                  if ((rEl as Node).nodeType !== Node.ELEMENT_NODE) return;
+                  sharedStashFunction(rEl as RElement, eventName, listenerFn);
+                  sharedMapFunction(rEl as RElement, jsActionMap);
+                },
+              );
+              // Clean up the reference to the function set by the environment initializer,
+              // as the function closure may capture injected elements and prevent them
+              // from being properly garbage collected.
+              appRef.onDestroy(clearStashFn);
             }
           }
         },
@@ -145,10 +154,6 @@ export function withEventReplay(): Provider[] {
                 // no elements are still captured in the global list and are not prevented
                 // from being garbage collected.
                 clearAppScopedEarlyEventContract(appId);
-                // Clean up the reference to the function set by the environment initializer,
-                // as the function closure may capture injected elements and prevent them
-                // from being properly garbage collected.
-                clearStashFn(appId);
               }
             });
 
