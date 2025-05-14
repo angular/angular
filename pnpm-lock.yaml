@@ -84,8 +84,8 @@ importers:
         specifier: ^28.0.0
         version: 28.0.3(rollup@4.35.0)
       '@rollup/plugin-node-resolve':
-        specifier: ^13.0.4
-        version: 13.3.0(rollup@4.35.0)
+        specifier: ^16.0.0
+        version: 16.0.1(rollup@4.35.0)
       '@schematics/angular':
         specifier: 20.0.0-rc.0
         version: 20.0.0-rc.0(chokidar@4.0.3)
@@ -1046,7 +1046,7 @@ packages:
     peerDependencies:
       '@angular/compiler': ^20.0.0 || ^20.0.0-next.0
       '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': 20.0.0-rc.0
+      '@angular/core': ^20.0.0 || ^20.0.0-next.0
       '@angular/localize': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
@@ -1203,7 +1203,7 @@ packages:
     resolution: {integrity: sha512-PqAXHxJvahRbEgDVpd8eYVqM0PEYd4kpvBtpoH532TQi173hoNQxYf9JY6O/ECADqe6ZEqiIgGWy41l1jt7XcA==, tarball: https://registry.npmjs.org/@angular/ssr/-/ssr-20.0.0-rc.0.tgz}
     peerDependencies:
       '@angular/common': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': 20.0.0-rc.0
+      '@angular/core': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
       '@angular/router': ^20.0.0 || ^20.0.0-next.0
     peerDependenciesMeta:
@@ -4768,16 +4768,18 @@ packages:
       rollup: 4.35.0
     dev: false
 
-  /@rollup/plugin-node-resolve@13.3.0(rollup@4.35.0):
-    resolution: {integrity: sha512-Lus8rbUo1eEcnS4yTFKLZrVumLPY+YayBdWXgFSHYhTT2iJbMhoaaBL3xl5NCdeRytErGr8tZ0L71BMRmnlwSw==, tarball: https://registry.npmjs.org/@rollup/plugin-node-resolve/-/plugin-node-resolve-13.3.0.tgz}
-    engines: {node: '>= 10.0.0'}
+  /@rollup/plugin-node-resolve@16.0.1(rollup@4.35.0):
+    resolution: {integrity: sha512-tk5YCxJWIG81umIvNkSod2qK5KyQW19qcBF/B78n1bjtOON6gzKoVeSzAE8yHCZEDmqkHKkxplExA8KzdJLJpA==, tarball: https://registry.npmjs.org/@rollup/plugin-node-resolve/-/plugin-node-resolve-16.0.1.tgz}
+    engines: {node: '>=14.0.0'}
     peerDependencies:
-      rollup: ^2.42.0
+      rollup: ^2.78.0||^3.0.0||^4.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
     dependencies:
-      '@rollup/pluginutils': 3.1.0(rollup@4.35.0)
-      '@types/resolve': 1.17.1
+      '@rollup/pluginutils': 5.1.4(rollup@4.35.0)
+      '@types/resolve': 1.20.2
       deepmerge: 4.3.1
-      is-builtin-module: 3.2.1
       is-module: 1.0.0
       resolve: 1.22.10
       rollup: 4.35.0
@@ -6014,10 +6016,8 @@ packages:
       '@types/node': 22.15.3
     dev: true
 
-  /@types/resolve@1.17.1:
-    resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==, tarball: https://registry.npmjs.org/@types/resolve/-/resolve-1.17.1.tgz}
-    dependencies:
-      '@types/node': 22.15.3
+  /@types/resolve@1.20.2:
+    resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==, tarball: https://registry.npmjs.org/@types/resolve/-/resolve-1.20.2.tgz}
     dev: false
 
   /@types/responselike@1.0.3:
@@ -7411,6 +7411,7 @@ packages:
   /builtin-modules@3.3.0:
     resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==, tarball: https://registry.npmjs.org/builtin-modules/-/builtin-modules-3.3.0.tgz}
     engines: {node: '>=6'}
+    dev: true
 
   /bundle-name@4.1.0:
     resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==, tarball: https://registry.npmjs.org/bundle-name/-/bundle-name-4.1.0.tgz}
@@ -11594,13 +11595,6 @@ packages:
   /is-buffer@1.1.6:
     resolution: {integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==, tarball: https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.6.tgz}
     dev: true
-
-  /is-builtin-module@3.2.1:
-    resolution: {integrity: sha512-BSLE3HnV2syZ0FK0iMA/yUGplUeMmNz4AW5fnTunbCIqZi4vG3WjJT9FHMy5D69xmAYBHXQhJdALdpwVxV501A==, tarball: https://registry.npmjs.org/is-builtin-module/-/is-builtin-module-3.2.1.tgz}
-    engines: {node: '>=6'}
-    dependencies:
-      builtin-modules: 3.3.0
-    dev: false
 
   /is-callable@1.2.7:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==, tarball: https://registry.npmjs.org/is-callable/-/is-callable-1.2.7.tgz}
