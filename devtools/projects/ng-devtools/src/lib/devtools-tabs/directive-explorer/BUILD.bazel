@@ -27,6 +27,7 @@ ng_module(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view:signals-tab",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
         "//devtools/projects/protocol",
         "//packages/common",

@@ -40,6 +40,7 @@ sass_binary(
 ng_module(
     name = "demo-app",
     srcs = [
+        "cookies.component.ts",
         "demo-app.component.ts",
         "demo-app.routes.ts",
         "heavy.component.ts",

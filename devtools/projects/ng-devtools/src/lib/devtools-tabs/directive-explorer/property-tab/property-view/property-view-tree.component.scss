@@ -38,6 +38,27 @@
   margin-left: 18px;
 }
 
+.show-signal-btn {
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: var(--quinary-contrast);
+  color: var(--primary-contrast);
+  vertical-align: text-bottom;
+  padding: 0;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--dynamic-blue-02);
+    color: var(--septenary-contrast);
+  }
+
+  mat-icon {
+    top: 2px;
+  }
+}
+
 .property-list {
   margin: 5px 5px 5px 15px;
   mat-tree-node {

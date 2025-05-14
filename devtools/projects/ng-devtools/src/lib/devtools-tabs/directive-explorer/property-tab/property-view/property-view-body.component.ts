@@ -51,6 +51,7 @@ export class PropertyViewBodyComponent {
   readonly directiveStateControls = input.required<DirectiveTreeData>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
+  readonly showSignalGraph = output<FlatNode>();
 
   protected readonly dependencies = computed(() => {
     const metadata = this.controller().directiveMetadata;
