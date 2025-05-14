@@ -14,14 +14,11 @@ ts_project(
             "main.ts",
         ],
     ),
-    tsconfig = "//packages/service-worker:tsconfig_build",
-    deps = ["//:node_modules/@types/node"],
 )
 
 ts_project(
     name = "main",
     srcs = ["main.ts"],
-    tsconfig = "//packages/service-worker:tsconfig_build",
     deps = [":worker_rjs"],
 )
 

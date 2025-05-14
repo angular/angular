@@ -1,6 +1,0 @@
-{
-  "extends": "../tsconfig-test.json",
-  "compilerOptions": {
-    "types": ["node", "jasmine"]
-  }
-}

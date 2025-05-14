@@ -9,7 +9,6 @@ ng_project(
     interop_deps = [
         "//packages/core",
     ],
-    tsconfig = "//packages/service-worker:tsconfig_test",
     deps = [
         "//:node_modules/rxjs",
     ],
