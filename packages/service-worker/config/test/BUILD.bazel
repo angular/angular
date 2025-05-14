@@ -7,7 +7,6 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    tsconfig = "//packages/service-worker:tsconfig_test",
     deps = [
         "//packages/service-worker/config:config_rjs",
         "//packages/service-worker/config/testing:testing_rjs",
