@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -12,7 +12,6 @@ ts_project(
         "//adev/shared-docs/directives/external-link",
         "//adev/shared-docs/directives/search-item",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_test",
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],

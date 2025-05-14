@@ -1,6 +1,6 @@
 load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild_esm_bundle")
-load("//tools:defaults2.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
@@ -25,7 +25,6 @@ ts_project(
     interop_deps = [
         "@angular//packages/compiler-cli",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     deps = [
         "//:node_modules/@bazel/runfiles",
         "//:node_modules/@types/node",
