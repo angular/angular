@@ -1,5 +1,6 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 load("//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
-load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+load("//tools:defaults2.bzl", "jasmine_test")
 
 render_api_to_html(
     name = "test",
@@ -17,7 +18,6 @@ ts_project(
             "**/*.spec.mts",
         ],
     ),
-    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [
         "//:node_modules/@bazel/runfiles",
         "//:node_modules/@types/jsdom",
