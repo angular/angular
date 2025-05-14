@@ -9,6 +9,7 @@
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import * as o from '../../output/output_ast';
+import * as t from '../r3_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {CssSelector} from '../../directive_matching';
 import {ShadowCss} from '../../shadow_css';
@@ -217,10 +218,15 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn = o.variable(fnName);
   }
 
+  let nodes = meta.template.nodes;
+  if (nodes.length > 0 && meta.isStandalone && meta.declarations.length === 0) {
+    nodes = replaceWithStaticHtmlIfPossible(nodes);
+  }
+
   // First the template is ingested into IR:
   const tpl = ingestComponent(
     meta.name,
-    meta.template.nodes,
+    nodes,
     constantPool,
     meta.relativeContextFilePath,
     meta.i18nUseExternalIds,
@@ -773,4 +779,120 @@ export function compileDeferResolverFunction(
   }
 
   return o.arrowFn([], o.literalArr(depExpressions));
+}
+
+function replaceWithStaticHtmlIfPossible(nodes: t.Node[]): t.Node[] {
+  const isStaticHtmlVisitor = new IsStaticHtmlVisitor();
+  t.visitAll(isStaticHtmlVisitor, nodes);
+
+  if (isStaticHtmlVisitor.isStaticHtml) {
+    return [
+      new t.StaticHtml(
+        nodesToString(nodes),
+        new ParseSourceSpan(nodes[0].sourceSpan.start, nodes.at(-1)!.sourceSpan.end),
+      ),
+    ];
+  } else {
+    return nodes;
+  }
+}
+
+class IsStaticHtmlVisitor extends t.RecursiveVisitor {
+  isStaticHtml = true;
+
+  override visitVariable(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitUnknownBlock(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitDeferredBlock(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitDeferredBlockPlaceholder(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitDeferredBlockLoading(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitDeferredBlockError(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitIfBlock(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitIfBlockBranch(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitForLoopBlock(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitForLoopBlockEmpty(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitSwitchBlock(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitSwitchBlockCase(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitDeferredTrigger(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitBoundEvent(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitBoundAttribute(): void {
+    this.isStaticHtml = false;
+  }
+  override visitLetDeclaration(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitIcu(icu: t.Icu): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitReference(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitContent(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitBoundText(): void {
+    this.isStaticHtml = false;
+  }
+
+  override visitTemplate(): void {
+    this.isStaticHtml = false;
+  }
+}
+
+function nodesToString(nodes: t.Node[]): string {
+  return nodes
+    .map((node) => {
+      if (node instanceof t.Text) {
+        return node.value;
+      } else if (node instanceof t.Element) {
+        return node.sourceSpan.toString();
+      }
+      return '';
+    })
+    .join('');
 }

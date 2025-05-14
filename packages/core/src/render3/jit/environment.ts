@@ -219,4 +219,6 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵtwoWayListener': r3.ɵɵtwoWayListener,
 
   'ɵɵreplaceMetadata': r3.ɵɵreplaceMetadata,
+
+  'ɵɵstaticHtml': r3.ɵɵstaticHtml,
 }))();
