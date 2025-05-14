@@ -288,7 +288,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(
-        'Cannot use the "imports" field in a selectorless components',
+        'Cannot use the "imports" field in a selectorless component',
       );
     });
 
@@ -313,7 +313,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(
-        'Cannot use the "deferredImports" field in a selectorless components',
+        'Cannot use the "deferredImports" field in a selectorless component',
       );
     });
 
