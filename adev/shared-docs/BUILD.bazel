@@ -1,7 +1,8 @@
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
+load("//adev/shared-docs:defaults.bzl", "ng_project")
 load("//tools:defaults.bzl", "pkg_npm")
-load("//tools:defaults2.bzl", "ng_package", "ng_project")
+load("//tools:defaults2.bzl", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -30,7 +31,6 @@ ng_project(
     srcs = [
         "index.ts",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     deps = [
         "//adev/shared-docs/components:components_rjs",
         "//adev/shared-docs/directives:directives_rjs",

@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -7,7 +7,6 @@ ts_project(
     srcs = [
         "index.ts",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//adev/shared-docs:__subpackages__"],
     deps = [
         ":lib_rjs",
@@ -29,7 +28,6 @@ ts_project(
         "//packages/core",
         "//packages/router",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     deps = [
         "//:node_modules/@types/node",
         "//:node_modules/@webcontainer/api",

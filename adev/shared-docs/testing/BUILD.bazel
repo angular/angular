@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -10,7 +10,6 @@ ts_project(
     interop_deps = [
         ":lib",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//adev/shared-docs:__subpackages__"],
 )
 
@@ -25,7 +24,6 @@ ts_project(
     interop_deps = [
         "//packages/core",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     deps = [
         "//:node_modules/@webcontainer/api",
     ],

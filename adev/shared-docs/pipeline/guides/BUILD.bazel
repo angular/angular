@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 ts_project(
     name = "guides",
@@ -9,7 +9,6 @@ ts_project(
         ],
         exclude = ["index.mts"],
     ),
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
@@ -33,7 +32,6 @@ ts_project(
     srcs = [
         "index.mts",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
