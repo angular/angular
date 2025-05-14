@@ -1,6 +1,6 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
 load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
@@ -54,7 +54,6 @@ ts_project(
     interop_deps = [
         "@angular//packages/compiler-cli",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [
         "//:node_modules/@types/node",
         "//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json_lib_rjs",
