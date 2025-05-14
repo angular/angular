@@ -1,7 +1,7 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
 load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
 load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
 
 generate_api_manifest(
     name = "test",
@@ -30,7 +30,6 @@ ts_project(
     interop_deps = [
         "//packages/compiler-cli",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [
         "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib_rjs",
     ],
