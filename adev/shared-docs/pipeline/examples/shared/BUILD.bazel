@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -9,7 +9,6 @@ ts_project(
             "*.mts",
         ],
     ),
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     deps = [
         "//:node_modules/@types/node",
     ],
