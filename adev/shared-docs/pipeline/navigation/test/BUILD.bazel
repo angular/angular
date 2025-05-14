@@ -1,5 +1,5 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/navigation:__subpackages__"])
 
@@ -7,7 +7,6 @@ ts_project(
     name = "unit_test_lib",
     testonly = True,
     srcs = glob(["*.spec.mts"]),
-    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [
         "//:node_modules/@types/node",
         "//adev/shared-docs/pipeline/navigation:lib_rjs",
