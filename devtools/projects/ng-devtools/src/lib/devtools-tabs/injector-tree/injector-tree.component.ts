@@ -43,6 +43,15 @@ import {
   splitInjectorPathsIntoElementAndEnvironmentPaths,
   transformInjectorResolutionPathsIntoTree,
 } from './injector-tree-fns';
+import {
+  Direction,
+  ResponsiveSplitConfig,
+  ResponsiveSplitDirective,
+} from '../../shared/responsive-split/responsive-split.directive';
+
+const ENV_HIERARCHY_VER_SIZE = 35;
+const EL_HIERARCHY_VER_SIZE = 65;
+const HIERARCHY_HOR_SIZE = 50;
 
 @Component({
   selector: 'ng-injector-tree',
@@ -54,6 +63,7 @@ import {
     MatIcon,
     MatTooltip,
     MatCheckbox,
+    ResponsiveSplitDirective,
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
@@ -76,6 +86,15 @@ export class InjectorTreeComponent {
 
   hideInjectorsWithNoProviders = false;
   hideFrameworkInjectors = false;
+
+  protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
+    defaultDirection: 'vertical',
+    aspectRatioBreakpoint: 1.5,
+    breakpointDirection: 'horizontal',
+  };
+
+  protected readonly envHierarchySize = signal<number>(0);
+  protected readonly elHierarchySize = signal<number>(0);
 
   constructor() {
     afterNextRender({
@@ -368,5 +387,15 @@ export class InjectorTreeComponent {
         name: injector.name,
       },
     ]);
+  }
+
+  onResponsiveSplitDirChange(direction: Direction) {
+    if (direction === 'vertical') {
+      this.envHierarchySize.set(ENV_HIERARCHY_VER_SIZE);
+      this.elHierarchySize.set(EL_HIERARCHY_VER_SIZE);
+    } else {
+      this.envHierarchySize.set(HIERARCHY_HOR_SIZE);
+      this.elHierarchySize.set(HIERARCHY_HOR_SIZE);
+    }
   }
 }
