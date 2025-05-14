@@ -188,7 +188,7 @@ if (dtsMode) {
     nodeResolve({
       mainFields: ['es2020', 'es2015', 'module', 'browser'],
       jail: process.cwd(),
-      customResolveOptions: {moduleDirectory: nodeModulesRoot},
+      modulePaths: [nodeModulesRoot],
     }),
     commonjs({ignoreGlobal: true}),
     sourcemaps(),
