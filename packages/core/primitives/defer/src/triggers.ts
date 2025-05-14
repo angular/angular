@@ -1,3 +1,10 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
 
 /** Configuration object used to register passive and capturing events. */
 const eventListenerOptions: AddEventListenerOptions = {
@@ -12,7 +19,7 @@ const hoverTriggers = new WeakMap<Element, DeferEventEntry>();
 const interactionTriggers = new WeakMap<Element, DeferEventEntry>();
 
 /** Currently-registered `viewport` triggers. */
-const viewportTriggers = new WeakMap<Element, DeferEventEntry>();
+export const viewportTriggers = new WeakMap<Element, DeferEventEntry>();
 
 /** Names of the events considered as interaction events. */
 export const interactionEventNames = ['click', 'keydown'] as const;
@@ -37,14 +44,12 @@ class DeferEventEntry {
   };
 }
 
-export function getViewportTriggers() {
-  return viewportTriggers;
-}
-
 /**
  * Registers an interaction trigger.
  * @param trigger Element that is the trigger.
  * @param callback Callback to be invoked when the trigger is interacted with.
+ * @return cleanup function which removes trigger Element from interactionTriggers map
+ * and interaction event listeners from the trigger Element
  */
 export function onInteraction(trigger: Element, callback: VoidFunction): VoidFunction {
   let entry = interactionTriggers.get(trigger);
@@ -86,11 +91,12 @@ export function onInteraction(trigger: Element, callback: VoidFunction): VoidFun
   };
 }
 
-
 /**
  * Registers a hover trigger.
  * @param trigger Element that is the trigger.
  * @param callback Callback to be invoked when the trigger is hovered over.
+ * @return cleanup function which removes trigger element from hoverTriggers map
+ * and removes hover interaction event listeners from the trigger element
  */
 export function onHover(trigger: Element, callback: VoidFunction): VoidFunction {
   let entry = hoverTriggers.get(trigger);
@@ -120,28 +126,41 @@ export function onHover(trigger: Element, callback: VoidFunction): VoidFunction 
   };
 }
 
-export interface Observer {
-  observe: (target: Element) => void,
-  unobserve: (target: Element) => void,
-  disconnect: () => void;
+/**
+ * Used to create an IntersectionObserver instance.
+ * @return IntersectionObserver that is used by onViewport
+ */
+export function createIntersectionObserver() {
+  return new IntersectionObserver((entries) => {
+    for (const current of entries) {
+      if (current.isIntersecting && viewportTriggers.has(current.target)) {
+        viewportTriggers.get(current.target)!.listener();
+      }
+    }
+  });
 }
 
 /**
  * Registers a viewport trigger.
  * @param trigger Element that is the trigger.
  * @param callback Callback to be invoked when the trigger comes into the viewport.
- * @param observer Observer interface which provides a way to observe changes to target element
+ * @param observerFactoryFn Factory function which returns an IntersectionObserver
+ * @return cleanup function which removes trigger Element from viewportTriggers map
+ * and tells the intersection observer to stop observing trigger Element and set
+ * intersectionObserver to null if there are no more Elements to observe
  */
 export function onViewport(
   trigger: Element,
   callback: VoidFunction,
-  observer: Observer, 
+  observerFactoryFn: () => IntersectionObserver,
 ): VoidFunction {
   let entry = viewportTriggers.get(trigger);
 
+  intersectionObserver = intersectionObserver || observerFactoryFn();
+
   if (!entry) {
     entry = new DeferEventEntry();
-    observer.observe(trigger);
+    intersectionObserver!.observe(trigger);
     viewportTriggers.set(trigger, entry);
     observedViewportElements++;
   }
@@ -149,7 +168,6 @@ export function onViewport(
   entry.callbacks.add(callback);
 
   return () => {
-    // It's possible that a different cleanup callback fully removed this element already.
     if (!viewportTriggers.has(trigger)) {
       return;
     }
@@ -157,88 +175,14 @@ export function onViewport(
     entry!.callbacks.delete(callback);
 
     if (entry!.callbacks.size === 0) {
-      observer.unobserve(trigger);
+      intersectionObserver?.unobserve(trigger);
       viewportTriggers.delete(trigger);
       observedViewportElements--;
     }
 
     if (observedViewportElements === 0) {
-      observer.disconnect();
+      intersectionObserver?.disconnect();
+      intersectionObserver = null;
     }
   };
 }
-
-
-// function createIntersectionObserver(ngZone: NgZone | undefined): IntersectionObserver {
-//   return new IntersectionObserver((entries) => {
-//     for (const current of entries) {
-//       // Only invoke the callbacks if the specific element is intersecting.
-//       if (current.isIntersecting && viewportTriggers.has(current.target)) {
-//         if (ngZone) {
-//           ngZone!.run(viewportTriggers.get(current.target)!.listener);
-//         } else {
-//           viewportTriggers.get(current.target)!.listener();
-//         }
-//       }
-//     }
-//   })
-// }
-
-// /**
-//  * Registers a viewport trigger.
-//  * @param trigger Element that is the trigger.
-//  * @param callback Callback to be invoked when the trigger comes into the viewport.
-//  * @param injector Injector that can be used by the trigger to resolve DI tokens.
-//  */
-// export function onViewport(
-//   trigger: Element,
-//   callback: VoidFunction,
-//   injector?: Injector,
-// ): VoidFunction {
-//   const ngZone = injector?.get(NgZone);
-//   let entry = viewportTriggers.get(trigger);
-
-//   if (!intersectionObserver) {
-//     if (injector) {
-//       intersectionObserver = ngZone!.runOutsideAngular(() => {
-//         return createIntersectionObserver(ngZone);
-//       });
-//     } else {
-//       intersectionObserver = createIntersectionObserver(ngZone);
-//     }
-//   }
-
-//   if (!entry) {
-//     entry = new DeferEventEntry();
-//     if (ngZone) {
-//       ngZone.runOutsideAngular(() => intersectionObserver!.observe(trigger));
-//     } else {
-//       intersectionObserver!.observe(trigger);
-//     }
-//     viewportTriggers.set(trigger, entry);
-//     observedViewportElements++;
-//   }
-
-//   entry.callbacks.add(callback);
-
-//   return () => {
-//     // It's possible that a different cleanup callback fully removed this element already.
-//     if (!viewportTriggers.has(trigger)) {
-//       return;
-//     }
-
-//     entry!.callbacks.delete(callback);
-
-//     if (entry!.callbacks.size === 0) {
-//       intersectionObserver?.unobserve(trigger);
-//       viewportTriggers.delete(trigger);
-//       observedViewportElements--;
-//     }
-
-//     if (observedViewportElements === 0) {
-//       intersectionObserver?.disconnect();
-//       intersectionObserver = null;
-//     }
-//   };
-// }
-

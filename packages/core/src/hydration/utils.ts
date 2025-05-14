@@ -36,7 +36,7 @@ import {
 import {IS_INCREMENTAL_HYDRATION_ENABLED, JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
-import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
+import {hoverEventNames, interactionEventNames} from '../../primitives/defer/src/triggers';
 import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
 import {sharedMapFunction} from '../event_delegation_utils';
 import {isDetachedByI18n} from '../i18n/utils';
