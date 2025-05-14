@@ -36,7 +36,7 @@ import {
   invokeTriggerCleanupFns,
   storeTriggerCleanupFn,
 } from './cleanup';
-import {onViewport} from './dom_triggers';
+import {onViewportWrapper} from './dom_triggers';
 import {onIdle} from './idle_scheduler';
 import {
   DEFER_BLOCK_STATE,
@@ -701,7 +701,7 @@ function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger
   if (elementTriggers.length > 0) {
     const registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
     for (let elementTrigger of elementTriggers) {
-      const cleanupFn = onViewport(
+      const cleanupFn = onViewportWrapper(
         elementTrigger.el,
         () => triggerHydrationFromBlockName(injector, elementTrigger.blockName),
         injector,
