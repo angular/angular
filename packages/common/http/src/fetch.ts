@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, InjectionToken, NgZone} from '@angular/core';
+import {ApplicationRef, inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -73,6 +73,7 @@ export class FetchBackend implements HttpBackend {
   private readonly fetchImpl =
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
+  private readonly appRef = inject(ApplicationRef);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
@@ -152,6 +153,14 @@ export class FetchBackend implements HttpBackend {
       // Here calling the async ReadableStreamDefaultReader.read() is responsible for triggering CD
       await this.ngZone.runOutsideAngular(async () => {
         while (true) {
+          // Prevent reading chunks if the app is destroyed. Otherwise, we risk doing
+          // unnecessary work or triggering side effects after teardown.
+          // This may happen if the app was explicitly destroyed before
+          // the response returned entirely.
+          if (this.appRef.destroyed) {
+            break;
+          }
+
           const {done, value} = await reader.read();
 
           if (done) {
