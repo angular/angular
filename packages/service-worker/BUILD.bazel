@@ -13,15 +13,6 @@ rules_js_tsconfig(
     ],
 )
 
-rules_js_tsconfig(
-    name = "tsconfig_test",
-    src = "tsconfig-test.json",
-    deps = [
-        "//:node_modules/@types/node",
-        "//packages:tsconfig_test",
-    ],
-)
-
 ng_project(
     name = "service-worker",
     srcs = glob(

@@ -8,6 +8,18 @@ load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
 npm_package = _npm_package
 ts_config = _ts_config
 
+def _determine_tsconfig(testonly):
+    if native.package_name().startswith("packages/compiler-cli/src/ngtsc"):
+        return "//packages/compiler-cli:tsconfig_test" if testonly else "//packages/compiler-cli:tsconfig_build"
+
+    if native.package_name().startswith("packages/service-worker"):
+        return "//packages:tsconfig_test" if testonly else "//packages/service-worker:tsconfig_build"
+
+    if native.package_name().startswith("packages"):
+        return "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
+
+    fail("Failing... a tsconfig value must be provided.")
+
 def ts_project(
         name,
         source_map = True,
@@ -17,10 +29,7 @@ def ts_project(
     module_name = kwargs.pop("module_name", compute_module_name(testonly))
 
     if tsconfig == None:
-        if native.package_name().startswith("packages/compiler-cli/src/ngtsc"):
-            tsconfig = "//packages/compiler-cli:tsconfig_test" if testonly else "//packages/compiler-cli:tsconfig_build"
-        elif native.package_name().startswith("packages"):
-            tsconfig = "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
+        tsconfig = _determine_tsconfig(testonly)
 
     _ts_project(
         name,
@@ -39,8 +48,9 @@ def ng_project(
         **kwargs):
     module_name = kwargs.pop("module_name", compute_module_name(testonly))
 
-    if tsconfig == None and native.package_name().startswith("packages"):
-        tsconfig = "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
+    if tsconfig == None:
+        tsconfig = _determine_tsconfig(testonly)
+
     _ts_project(
         name,
         source_map = source_map,
