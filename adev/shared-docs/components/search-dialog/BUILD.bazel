@@ -1,6 +1,6 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
 load("//tools:defaults.bzl", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -19,7 +19,6 @@ ng_project(
         "//packages/forms",
         "//packages/router",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs/components:__pkg__",
     ],
@@ -59,7 +58,6 @@ ts_project(
         "//packages/router",
         "//packages/router/testing",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_test",
 )
 
 karma_web_test_suite(

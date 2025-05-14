@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -13,7 +13,6 @@ ts_project(
             "tutorial.mts",
         ],
     ),
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     deps = [
         "//:node_modules/@types/node",
         "//:node_modules/@webcontainer/api",
@@ -27,7 +26,6 @@ ts_project(
     srcs = [
         "playground.mts",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
@@ -43,7 +41,6 @@ ts_project(
     srcs = [
         "tutorial.mts",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
