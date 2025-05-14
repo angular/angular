@@ -7,7 +7,14 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {afterNextRender, Component, effect, input, viewChild} from '@angular/core';
+import {
+  afterNextRender,
+  afterRenderEffect,
+  Component,
+  effect,
+  input,
+  viewChild,
+} from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
 import {Route} from '../../../../../protocol';
 import {RouterTreeVisualizer} from './router-tree-visualizer';
@@ -32,12 +39,19 @@ export class RouterTreeComponent {
   routes = input<Route[]>([]);
   snapToRoot = input(false);
 
+  private markVisualizerReady!: () => void;
+  private readonly visualizerReady = new Promise<void>((r) => {
+    this.markVisualizerReady = r;
+  });
+
   constructor() {
-    effect(() => {
+    effect(async () => {
+      await this.visualizerReady;
       this.renderGraph(this.routes());
     });
 
-    effect(() => {
+    effect(async () => {
+      await this.visualizerReady;
       if (this.snapToRoot()) {
         this.routerTreeVisualizer.snapToRoot(0.6);
       }
@@ -63,6 +77,8 @@ export class RouterTreeComponent {
     this.routerTreeVisualizer = new RouterTreeVisualizer(container, group, {
       nodeSeparation: () => 1,
     });
+
+    this.markVisualizerReady();
   }
 
   searchRoutes(event: Event) {
