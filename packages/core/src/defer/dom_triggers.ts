@@ -23,7 +23,7 @@ import {
 import {assertElement, assertEqual} from '../util/assert';
 import {NgZone} from '../zone';
 import {storeTriggerCleanupFn} from './cleanup';
-import {Observer, getViewportTriggers, onViewport} from '../../primitives/defer/src/triggers';
+import {Observer, viewportTriggers, onViewport} from '../../primitives/defer/src/triggers';
 import {
   DEFER_BLOCK_STATE,
   DeferBlockInternalState,
@@ -44,7 +44,7 @@ export function onViewportWrapper(trigger: Element, callback: VoidFunction, inje
   return onViewport(trigger, callback, angularInjectorObserver);
 }
 
-class AngularIntersectionObserver implements Observer{
+class AngularIntersectionObserver implements Observer {
   private intersectionObserver: IntersectionObserver;
   private ngZone: NgZone;
   constructor(injector: Injector) {
@@ -52,12 +52,12 @@ class AngularIntersectionObserver implements Observer{
     this.intersectionObserver = this.ngZone.runOutsideAngular(() => {
       return new IntersectionObserver((entries) => {
         for (const current of entries) {
-          if (current.isIntersecting && getViewportTriggers().has(current.target)) {
-            this.ngZone.run(getViewportTriggers().get(current.target)!.listener)
+          if (current.isIntersecting && viewportTriggers.has(current.target)) {
+            this.ngZone.run(viewportTriggers.get(current.target)!.listener);
           }
         }
-      })
-    })
+      });
+    });
   }
 
   observe(target: Element) {

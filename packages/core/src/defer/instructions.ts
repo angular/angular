@@ -27,7 +27,6 @@ import {
 import {removeLViewOnDestroy, storeLViewOnDestroy} from '../render3/util/view_utils';
 import {performanceMarkFeature} from '../util/performance';
 import {invokeAllTriggerCleanupFns, storeTriggerCleanupFn} from './cleanup';
-//import {onHover, onInteraction, onViewport, registerDomTrigger} from './dom_triggers';
 import {onViewportWrapper, registerDomTrigger} from './dom_triggers';
 import {onHover, onInteraction} from '../../primitives/defer/src/triggers';
 import {onIdle} from './idle_scheduler';

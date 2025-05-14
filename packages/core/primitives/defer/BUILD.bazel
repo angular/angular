@@ -1,0 +1,14 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = [
+    "//packages/core:__subpackages__",
+])
+
+ts_library(
+    name = "triggers",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+)
