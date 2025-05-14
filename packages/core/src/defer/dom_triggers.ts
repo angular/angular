@@ -23,7 +23,7 @@ import {
 import {assertElement, assertEqual} from '../util/assert';
 import {NgZone} from '../zone';
 import {storeTriggerCleanupFn} from './cleanup';
-import {Observer, getViewportTriggers, onViewport} from '../../primitives/defer/src/triggers';
+import {onViewport, createIntersectionObserver} from '../../primitives/defer/src/triggers';
 import {
   DEFER_BLOCK_STATE,
   DeferBlockInternalState,
@@ -40,37 +40,12 @@ import {getLDeferBlockDetails} from './utils';
  * @param injector Injector that can be used by the trigger to resolve DI tokens.
  */
 export function onViewportWrapper(trigger: Element, callback: VoidFunction, injector: Injector) {
-  const angularInjectorObserver = new AngularIntersectionObserver(injector);
-  return onViewport(trigger, callback, angularInjectorObserver);
-}
-
-class AngularIntersectionObserver implements Observer{
-  private intersectionObserver: IntersectionObserver;
-  private ngZone: NgZone;
-  constructor(injector: Injector) {
-    this.ngZone = injector.get(NgZone);
-    this.intersectionObserver = this.ngZone.runOutsideAngular(() => {
-      return new IntersectionObserver((entries) => {
-        for (const current of entries) {
-          if (current.isIntersecting && getViewportTriggers().has(current.target)) {
-            this.ngZone.run(getViewportTriggers().get(current.target)!.listener)
-          }
-        }
-      })
-    })
-  }
-
-  observe(target: Element) {
-    this.ngZone.runOutsideAngular(() => this.intersectionObserver.observe(target));
-  }
-
-  unobserve(target: Element) {
-    this.intersectionObserver.unobserve(target);
-  }
-
-  disconnect() {
-    this.intersectionObserver.disconnect();
-  }
+  const ngZone = injector.get(NgZone);
+  return onViewport(
+    trigger,
+    () => ngZone.run(callback),
+    () => ngZone.runOutsideAngular(() => createIntersectionObserver()),
+  );
 }
 
 /**
