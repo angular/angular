@@ -16,7 +16,7 @@ import {TsurgeMigration} from '../migration';
  * @returns the serializable global meta.
  */
 export async function executeGlobalMetaPhase<UnitData, GlobalData>(
-  migration: TsurgeMigration<UnitData, GlobalData>,
+  migration: TsurgeMigration<UnitData, GlobalData, unknown>,
   combinedUnitData: UnitData,
 ): Promise<Serializable<GlobalData>> {
   return await migration.globalMeta(combinedUnitData);

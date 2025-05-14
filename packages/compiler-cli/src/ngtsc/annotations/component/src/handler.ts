@@ -797,7 +797,7 @@ export class ComponentDecoratorHandler
           makeDiagnostic(
             ErrorCode.UNSUPPORTED_SELECTORLESS_COMPONENT_FIELD,
             (rawImports || rawDeferredImports)!,
-            `Cannot use the "${rawImports === null ? 'deferredImports' : 'imports'}" field in a selectorless components`,
+            `Cannot use the "${rawImports === null ? 'deferredImports' : 'imports'}" field in a selectorless component`,
           ),
         );
       }

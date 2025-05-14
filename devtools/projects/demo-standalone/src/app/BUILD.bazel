@@ -1,19 +1,21 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "app",
     srcs = [
         "app.component.ts",
     ],
-    deps = [
-        "//devtools/projects/demo-standalone/src/app/demo-app",
-        "//devtools/projects/demo-standalone/src/app/devtools-app",
-        "//devtools/projects/ng-devtools",
+    interop_deps = [
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
         "//packages/router",
+    ],
+    deps = [
+        "//devtools/projects/demo-standalone/src/app/demo-app:demo-app_rjs",
+        "//devtools/projects/demo-standalone/src/app/devtools-app:devtools-app_rjs",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
     ],
 )

@@ -5,7 +5,6 @@
 ```ts
 
 import { AfterContentInit } from '@angular/core';
-import * as _angular_router from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';

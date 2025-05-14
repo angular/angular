@@ -1,5 +1,5 @@
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,7 +8,7 @@ exports_files([
     "tsconfig.spec.json",
 ])
 
-ts_library(
+ts_project(
     name = "protocol",
     srcs = glob(
         ["**/*.ts"],

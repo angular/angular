@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {isNodeDescendantOf} from './is_descendant_of';
 
 /** Symbol that can be used to mark a variable as reserved, synthetically. */
-export const ReservedMarker = Symbol();
+export const ReservedMarker: unique symbol = Symbol();
 
 // typescript/stable/src/compiler/types.ts;l=967;rcl=651008033
 export interface LocalsContainer extends ts.Node {

@@ -29,11 +29,11 @@ import {TestRun} from './test_run';
  *
  * @returns a mock file system with the applied replacements of the migration.
  */
-export async function runTsurgeMigration<UnitData, GlobalData>(
-  migration: TsurgeMigration<UnitData, GlobalData>,
+export async function runTsurgeMigration<Stats>(
+  migration: TsurgeMigration<unknown, unknown, Stats>,
   files: {name: AbsoluteFsPath; contents: string; isProgramRootFile?: boolean}[],
   compilerOptions: ts.CompilerOptions = {},
-): Promise<TestRun> {
+): Promise<TestRun<Stats>> {
   const mockFs = getFileSystem();
   if (!(mockFs instanceof MockFileSystem)) {
     throw new Error('Expected a mock file system for `runTsurgeMigration`.');

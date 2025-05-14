@@ -2,5 +2,5 @@
   "title": "Deferrable Views",
   "type": "editor",
   "nextTutorial": "first-app",
-  "openFiles": ["src/app/app.component.ts"]
+  "openFiles": ["src/app/app.ts"]
 }

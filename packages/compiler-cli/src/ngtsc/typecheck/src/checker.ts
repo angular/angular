@@ -16,6 +16,8 @@ import {
   PropertyRead,
   SafePropertyRead,
   TemplateEntity,
+  TmplAstComponent,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstHostElement,
   TmplAstNode,
@@ -68,6 +70,8 @@ import {
   PotentialImportMode,
   PotentialPipe,
   ProgramTypeCheckAdapter,
+  SelectorlessComponentSymbol,
+  SelectorlessDirectiveSymbol,
   Symbol,
   TcbLocation,
   TemplateDiagnostic,
@@ -670,6 +674,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
   getSymbolOfNode(node: TmplAstTemplate, component: ts.ClassDeclaration): TemplateSymbol | null;
   getSymbolOfNode(node: TmplAstElement, component: ts.ClassDeclaration): ElementSymbol | null;
+  getSymbolOfNode(
+    node: TmplAstComponent,
+    component: ts.ClassDeclaration,
+  ): SelectorlessComponentSymbol | null;
+  getSymbolOfNode(
+    node: TmplAstDirective,
+    component: ts.ClassDeclaration,
+  ): SelectorlessDirectiveSymbol | null;
   getSymbolOfNode(node: AST | TmplAstNode, component: ts.ClassDeclaration): Symbol | null {
     const builder = this.getOrCreateSymbolBuilder(component);
     if (builder === null) {

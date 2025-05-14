@@ -7,7 +7,7 @@
 import { Compiler } from '@angular/core';
 import { CompilerFactory } from '@angular/core';
 import { CompilerOptions } from '@angular/core';
-import * as i0 from '@angular/core';
+import { PlatformRef } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 import { Version } from '@angular/core';
 
@@ -18,7 +18,7 @@ export class JitCompilerFactory implements CompilerFactory {
 }
 
 // @public (undocumented)
-export const platformBrowserDynamic: (extraProviders?: StaticProvider[]) => i0.PlatformRef;
+export const platformBrowserDynamic: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 // @public (undocumented)
 export const VERSION: Version;

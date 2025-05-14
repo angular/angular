@@ -27,9 +27,9 @@ export enum MigrationStage {
 }
 
 /** Information necessary to run a Tsurge migration in the devkit. */
-export interface TsurgeDevkitMigration {
+export interface TsurgeDevkitMigration<Stats> {
   /** Instantiates the migration. */
-  getMigration: (fs: FileSystem) => TsurgeMigration<unknown, unknown>;
+  getMigration: (fs: FileSystem) => TsurgeMigration<unknown, unknown, Stats>;
 
   /** File tree of the schematic. */
   tree: Tree;
@@ -53,11 +53,13 @@ export interface TsurgeDevkitMigration {
   afterAnalysisFailure?: () => void;
 
   /** Called when the migration is done running and stats are available. Useful for logging. */
-  whenDone?: (stats: MigrationStats) => void;
+  whenDone?: (stats: Stats) => void;
 }
 
 /** Runs a Tsurge within an Angular Devkit context. */
-export async function runMigrationInDevkit(config: TsurgeDevkitMigration): Promise<void> {
+export async function runMigrationInDevkit<Stats>(
+  config: TsurgeDevkitMigration<Stats>,
+): Promise<void> {
   const {buildPaths, testPaths} = await getProjectTsConfigPaths(config.tree);
 
   if (!buildPaths.length && !testPaths.length) {

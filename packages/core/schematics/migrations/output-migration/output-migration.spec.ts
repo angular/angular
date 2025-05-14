@@ -678,9 +678,9 @@ describe('outputs', () => {
       ]);
 
       const stats = await runResults.getStatistics();
-      expect(stats.counters['detectedOutputs']).toBe(4);
-      expect(stats.counters['problematicOutputs']).toBe(2);
-      expect(stats.counters['successRate']).toBe(0.5);
+      expect(stats['detectedOutputs']).toBe(4);
+      expect(stats['problematicOutputs']).toBe(2);
+      expect(stats['successRate']).toBe(0.5);
     });
 
     it('should capture migration statistics without problematic usages', async () => {
@@ -696,9 +696,9 @@ describe('outputs', () => {
       ]);
 
       const stats = await runResults.getStatistics();
-      expect(stats.counters['detectedOutputs']).toBe(2);
-      expect(stats.counters['problematicOutputs']).toBe(0);
-      expect(stats.counters['successRate']).toBe(1);
+      expect(stats['detectedOutputs']).toBe(2);
+      expect(stats['problematicOutputs']).toBe(0);
+      expect(stats['successRate']).toBe(1);
     });
   });
 

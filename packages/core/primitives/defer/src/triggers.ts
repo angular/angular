@@ -27,6 +27,9 @@ export const interactionEventNames = ['click', 'keydown'] as const;
 /** Names of the events considered as hover events. */
 export const hoverEventNames = ['mouseenter', 'mouseover', 'focusin'] as const;
 
+/** `IntersectionObserver` used to observe `viewport` triggers. */
+let intersectionObserver: IntersectionObserver | null = null;
+
 /** Number of elements currently observed with `viewport` triggers. */
 let observedViewportElements = 0;
 
@@ -66,7 +69,7 @@ export function onInteraction(trigger: Element, callback: VoidFunction): VoidFun
     interactionTriggers.set(trigger, entry);
 
     for (const name of interactionEventNames) {
-      trigger.addEventListener(name, entry!.listener, eventListenerOptions);
+      trigger.addEventListener(name, entry.listener, eventListenerOptions);
     }
   }
 
@@ -119,28 +122,38 @@ export function onHover(trigger: Element, callback: VoidFunction): VoidFunction 
   };
 }
 
-export interface Observer {
-  observe: (target: Element) => void;
-  unobserve: (target: Element) => void;
-  disconnect: () => void;
+/**
+ * Used to create an IntersectionObserver instance.
+ * @returns IntersectionObserver that is used by onViewport
+ */
+export function createIntersectionObserver() {
+  return new IntersectionObserver((entries) => {
+    for (const current of entries) {
+      if (current.isIntersecting && viewportTriggers.has(current.target)) {
+        viewportTriggers.get(current.target)!.listener();
+      }
+    }
+  });
 }
 
 /**
  * Registers a viewport trigger.
  * @param trigger Element that is the trigger.
  * @param callback Callback to be invoked when the trigger comes into the viewport.
- * @param observer Observer interface which provides a way to observe changes to target element
+ * @param observerFactoryFn Factory function which returns an IntersectionObserver
  */
 export function onViewport(
   trigger: Element,
   callback: VoidFunction,
-  observer: Observer,
+  observerFactoryFn: () => IntersectionObserver,
 ): VoidFunction {
   let entry = viewportTriggers.get(trigger);
 
+  intersectionObserver = intersectionObserver || observerFactoryFn();
+
   if (!entry) {
     entry = new DeferEventEntry();
-    observer.observe(trigger);
+    intersectionObserver!.observe(trigger);
     viewportTriggers.set(trigger, entry);
     observedViewportElements++;
   }
@@ -148,7 +161,6 @@ export function onViewport(
   entry.callbacks.add(callback);
 
   return () => {
-    // It's possible that a different cleanup callback fully removed this element already.
     if (!viewportTriggers.has(trigger)) {
       return;
     }
@@ -156,13 +168,14 @@ export function onViewport(
     entry!.callbacks.delete(callback);
 
     if (entry!.callbacks.size === 0) {
-      observer.unobserve(trigger);
+      intersectionObserver?.unobserve(trigger);
       viewportTriggers.delete(trigger);
       observedViewportElements--;
     }
 
     if (observedViewportElements === 0) {
-      observer.disconnect();
+      intersectionObserver?.disconnect();
+      intersectionObserver = null;
     }
   };
 }

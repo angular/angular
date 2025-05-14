@@ -905,10 +905,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       return undefined;
     }
     if (
-      element.endSourceSpan &&
-      isWithin(this.position, element.endSourceSpan) &&
-      // start and end spans are the same for self closing tags
-      element.endSourceSpan.start !== element.startSourceSpan.start
+      !element.isSelfClosing &&
+      element.endSourceSpan !== null &&
+      isWithin(this.position, element.endSourceSpan)
     ) {
       return undefined;
     }

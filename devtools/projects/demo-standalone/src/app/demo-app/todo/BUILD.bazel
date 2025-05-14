@@ -1,20 +1,22 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "todo",
     srcs = [
         "dialog.component.ts",
         "todo-app.component.ts",
     ],
-    deps = [
-        "//devtools/projects/demo-standalone/src/app/demo-app/todo/about",
-        "//devtools/projects/demo-standalone/src/app/demo-app/todo/home",
+    interop_deps = [
         "//packages/common",
         "//packages/core",
         "//packages/forms",
         "//packages/router",
-        "@npm//@angular/material",
+    ],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//devtools/projects/demo-standalone/src/app/demo-app/todo/about:about_rjs",
+        "//devtools/projects/demo-standalone/src/app/demo-app/todo/home:home_rjs",
     ],
 )

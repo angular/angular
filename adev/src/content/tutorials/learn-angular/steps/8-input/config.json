@@ -1,5 +1,5 @@
 {
-  "openFiles": ["src/app/user.component.ts", "src/app/app.component.ts"],
+  "openFiles": ["src/app/user.ts", "src/app/app.ts"],
   "title": "Communicating with @Input",
   "type": "editor"
 }

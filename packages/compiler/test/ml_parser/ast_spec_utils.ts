@@ -41,6 +41,9 @@ class _Humanizer implements html.Visitor {
 
   visitElement(element: html.Element): any {
     const res = this._appendContext(element, [html.Element, element.name, this.elDepth++]);
+    if (element.isSelfClosing) {
+      res.push('#selfClosing');
+    }
     if (this.includeSourceSpan) {
       res.push(element.startSourceSpan.toString() ?? null);
       res.push(element.endSourceSpan?.toString() ?? null);
@@ -134,6 +137,9 @@ class _Humanizer implements html.Visitor {
       node.fullName,
       this.elDepth++,
     ]);
+    if (node.isSelfClosing) {
+      res.push('#selfClosing');
+    }
     if (this.includeSourceSpan) {
       res.push(node.startSourceSpan.toString() ?? null, node.endSourceSpan?.toString() ?? null);
     }

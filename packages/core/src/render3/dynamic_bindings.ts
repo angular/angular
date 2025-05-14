@@ -18,7 +18,7 @@ import {stringifyForError} from './util/stringify_utils';
 import {createOutputListener} from './view/directive_outputs';
 
 /** Symbol used to store and retrieve metadata about a binding. */
-export const BINDING = /* @__PURE__ */ Symbol('BINDING');
+export const BINDING: unique symbol = /* @__PURE__ */ Symbol('BINDING');
 
 /**
  * A dynamically-defined binding targeting.

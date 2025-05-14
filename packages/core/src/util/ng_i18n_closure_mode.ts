@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/// <reference path="../../../goog.d.ts" />
+
 import {global} from './global';
 
 declare global {

@@ -2966,6 +2966,7 @@ var require_context = __commonJS({
         this.action = process.env.GITHUB_ACTION;
         this.actor = process.env.GITHUB_ACTOR;
         this.job = process.env.GITHUB_JOB;
+        this.runAttempt = parseInt(process.env.GITHUB_RUN_ATTEMPT, 10);
         this.runNumber = parseInt(process.env.GITHUB_RUN_NUMBER, 10);
         this.runId = parseInt(process.env.GITHUB_RUN_ID, 10);
         this.apiUrl = (_a = process.env.GITHUB_API_URL) !== null && _a !== void 0 ? _a : `https://api.github.com`;
@@ -7326,6 +7327,7 @@ var require_tmp = __commonJS({
 // 
 var require_constants = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SEMVER_SPEC_VERSION = "2.0.0";
     var MAX_LENGTH = 256;
     var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
@@ -7356,6 +7358,7 @@ var require_constants = __commonJS({
 // 
 var require_debug = __commonJS({
   ""(exports, module) {
+    "use strict";
     var debug = typeof process === "object" && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG) ? (...args) => console.error("SEMVER", ...args) : () => {
     };
     module.exports = debug;
@@ -7365,6 +7368,7 @@ var require_debug = __commonJS({
 // 
 var require_re = __commonJS({
   ""(exports, module) {
+    "use strict";
     var {
       MAX_SAFE_COMPONENT_LENGTH,
       MAX_SAFE_BUILD_LENGTH,
@@ -7405,8 +7409,8 @@ var require_re = __commonJS({
     createToken("NONNUMERICIDENTIFIER", `\\d*[a-zA-Z-]${LETTERDASHNUMBER}*`);
     createToken("MAINVERSION", `(${src[t.NUMERICIDENTIFIER]})\\.(${src[t.NUMERICIDENTIFIER]})\\.(${src[t.NUMERICIDENTIFIER]})`);
     createToken("MAINVERSIONLOOSE", `(${src[t.NUMERICIDENTIFIERLOOSE]})\\.(${src[t.NUMERICIDENTIFIERLOOSE]})\\.(${src[t.NUMERICIDENTIFIERLOOSE]})`);
-    createToken("PRERELEASEIDENTIFIER", `(?:${src[t.NUMERICIDENTIFIER]}|${src[t.NONNUMERICIDENTIFIER]})`);
-    createToken("PRERELEASEIDENTIFIERLOOSE", `(?:${src[t.NUMERICIDENTIFIERLOOSE]}|${src[t.NONNUMERICIDENTIFIER]})`);
+    createToken("PRERELEASEIDENTIFIER", `(?:${src[t.NONNUMERICIDENTIFIER]}|${src[t.NUMERICIDENTIFIER]})`);
+    createToken("PRERELEASEIDENTIFIERLOOSE", `(?:${src[t.NONNUMERICIDENTIFIER]}|${src[t.NUMERICIDENTIFIERLOOSE]})`);
     createToken("PRERELEASE", `(?:-(${src[t.PRERELEASEIDENTIFIER]}(?:\\.${src[t.PRERELEASEIDENTIFIER]})*))`);
     createToken("PRERELEASELOOSE", `(?:-?(${src[t.PRERELEASEIDENTIFIERLOOSE]}(?:\\.${src[t.PRERELEASEIDENTIFIERLOOSE]})*))`);
     createToken("BUILDIDENTIFIER", `${LETTERDASHNUMBER}+`);
@@ -7452,6 +7456,7 @@ var require_re = __commonJS({
 // 
 var require_parse_options = __commonJS({
   ""(exports, module) {
+    "use strict";
     var looseOption = Object.freeze({ loose: true });
     var emptyOpts = Object.freeze({});
     var parseOptions = (options) => {
@@ -7470,6 +7475,7 @@ var require_parse_options = __commonJS({
 // 
 var require_identifiers = __commonJS({
   ""(exports, module) {
+    "use strict";
     var numeric = /^[0-9]+$/;
     var compareIdentifiers = (a, b) => {
       const anum = numeric.test(a);
@@ -7491,9 +7497,10 @@ var require_identifiers = __commonJS({
 // 
 var require_semver = __commonJS({
   ""(exports, module) {
+    "use strict";
     var debug = require_debug();
     var { MAX_LENGTH, MAX_SAFE_INTEGER } = require_constants();
-    var { safeRe: re, safeSrc: src, t } = require_re();
+    var { safeRe: re, t } = require_re();
     var parseOptions = require_parse_options();
     var { compareIdentifiers } = require_identifiers();
     var SemVer = class {
@@ -7636,8 +7643,7 @@ var require_semver = __commonJS({
             throw new Error("invalid increment argument: identifier is empty");
           }
           if (identifier) {
-            const r = new RegExp(`^${this.options.loose ? src[t.PRERELEASELOOSE] : src[t.PRERELEASE]}$`);
-            const match = `-${identifier}`.match(r);
+            const match = `-${identifier}`.match(this.options.loose ? re[t.PRERELEASELOOSE] : re[t.PRERELEASE]);
             if (!match || match[1] !== identifier) {
               throw new Error(`invalid identifier: ${identifier}`);
             }
@@ -7746,6 +7752,7 @@ var require_semver = __commonJS({
 // 
 var require_parse = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var parse3 = (version, options, throwErrors = false) => {
       if (version instanceof SemVer) {
@@ -7767,6 +7774,7 @@ var require_parse = __commonJS({
 // 
 var require_valid = __commonJS({
   ""(exports, module) {
+    "use strict";
     var parse3 = require_parse();
     var valid = (version, options) => {
       const v = parse3(version, options);
@@ -7779,6 +7787,7 @@ var require_valid = __commonJS({
 // 
 var require_clean = __commonJS({
   ""(exports, module) {
+    "use strict";
     var parse3 = require_parse();
     var clean = (version, options) => {
       const s = parse3(version.trim().replace(/^[=v]+/, ""), options);
@@ -7791,6 +7800,7 @@ var require_clean = __commonJS({
 // 
 var require_inc = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var inc = (version, release, options, identifier, identifierBase) => {
       if (typeof options === "string") {
@@ -7814,6 +7824,7 @@ var require_inc = __commonJS({
 // 
 var require_diff = __commonJS({
   ""(exports, module) {
+    "use strict";
     var parse3 = require_parse();
     var diff = (version1, version2) => {
       const v1 = parse3(version1, null, true);
@@ -7857,6 +7868,7 @@ var require_diff = __commonJS({
 // 
 var require_major = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var major = (a, loose) => new SemVer(a, loose).major;
     module.exports = major;
@@ -7866,6 +7878,7 @@ var require_major = __commonJS({
 // 
 var require_minor = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var minor = (a, loose) => new SemVer(a, loose).minor;
     module.exports = minor;
@@ -7875,6 +7888,7 @@ var require_minor = __commonJS({
 // 
 var require_patch = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var patch = (a, loose) => new SemVer(a, loose).patch;
     module.exports = patch;
@@ -7884,6 +7898,7 @@ var require_patch = __commonJS({
 // 
 var require_prerelease = __commonJS({
   ""(exports, module) {
+    "use strict";
     var parse3 = require_parse();
     var prerelease = (version, options) => {
       const parsed = parse3(version, options);
@@ -7896,6 +7911,7 @@ var require_prerelease = __commonJS({
 // 
 var require_compare = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var compare = (a, b, loose) => new SemVer(a, loose).compare(new SemVer(b, loose));
     module.exports = compare;
@@ -7905,6 +7921,7 @@ var require_compare = __commonJS({
 // 
 var require_rcompare = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compare = require_compare();
     var rcompare = (a, b, loose) => compare(b, a, loose);
     module.exports = rcompare;
@@ -7914,6 +7931,7 @@ var require_rcompare = __commonJS({
 // 
 var require_compare_loose = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compare = require_compare();
     var compareLoose = (a, b) => compare(a, b, true);
     module.exports = compareLoose;
@@ -7923,6 +7941,7 @@ var require_compare_loose = __commonJS({
 // 
 var require_compare_build = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var compareBuild = (a, b, loose) => {
       const versionA = new SemVer(a, loose);
@@ -7936,6 +7955,7 @@ var require_compare_build = __commonJS({
 // 
 var require_sort = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compareBuild = require_compare_build();
     var sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose));
     module.exports = sort;
@@ -7945,6 +7965,7 @@ var require_sort = __commonJS({
 // 
 var require_rsort = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compareBuild = require_compare_build();
     var rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose));
     module.exports = rsort;
@@ -7954,6 +7975,7 @@ var require_rsort = __commonJS({
 // 
 var require_gt = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compare = require_compare();
     var gt = (a, b, loose) => compare(a, b, loose) > 0;
     module.exports = gt;
@@ -7963,6 +7985,7 @@ var require_gt = __commonJS({
 // 
 var require_lt = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compare = require_compare();
     var lt = (a, b, loose) => compare(a, b, loose) < 0;
     module.exports = lt;
@@ -7972,6 +7995,7 @@ var require_lt = __commonJS({
 // 
 var require_eq = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compare = require_compare();
     var eq = (a, b, loose) => compare(a, b, loose) === 0;
     module.exports = eq;
@@ -7981,6 +8005,7 @@ var require_eq = __commonJS({
 // 
 var require_neq = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compare = require_compare();
     var neq = (a, b, loose) => compare(a, b, loose) !== 0;
     module.exports = neq;
@@ -7990,6 +8015,7 @@ var require_neq = __commonJS({
 // 
 var require_gte = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compare = require_compare();
     var gte = (a, b, loose) => compare(a, b, loose) >= 0;
     module.exports = gte;
@@ -7999,6 +8025,7 @@ var require_gte = __commonJS({
 // 
 var require_lte = __commonJS({
   ""(exports, module) {
+    "use strict";
     var compare = require_compare();
     var lte = (a, b, loose) => compare(a, b, loose) <= 0;
     module.exports = lte;
@@ -8008,6 +8035,7 @@ var require_lte = __commonJS({
 // 
 var require_cmp = __commonJS({
   ""(exports, module) {
+    "use strict";
     var eq = require_eq();
     var neq = require_neq();
     var gt = require_gt();
@@ -8057,6 +8085,7 @@ var require_cmp = __commonJS({
 // 
 var require_coerce = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var parse3 = require_parse();
     var { safeRe: re, t } = require_re();
@@ -8102,6 +8131,7 @@ var require_coerce = __commonJS({
 // 
 var require_lrucache = __commonJS({
   ""(exports, module) {
+    "use strict";
     var LRUCache = class {
       constructor() {
         this.max = 1e3;
@@ -8139,6 +8169,7 @@ var require_lrucache = __commonJS({
 // 
 var require_range = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SPACE_CHARACTERS = /\s+/g;
     var Range = class {
       constructor(range, options) {
@@ -8513,6 +8544,7 @@ var require_range = __commonJS({
 // 
 var require_comparator = __commonJS({
   ""(exports, module) {
+    "use strict";
     var ANY = Symbol("SemVer ANY");
     var Comparator = class {
       static get ANY() {
@@ -8625,6 +8657,7 @@ var require_comparator = __commonJS({
 // 
 var require_satisfies = __commonJS({
   ""(exports, module) {
+    "use strict";
     var Range = require_range();
     var satisfies = (version, range, options) => {
       try {
@@ -8641,6 +8674,7 @@ var require_satisfies = __commonJS({
 // 
 var require_to_comparators = __commonJS({
   ""(exports, module) {
+    "use strict";
     var Range = require_range();
     var toComparators = (range, options) => new Range(range, options).set.map((comp) => comp.map((c) => c.value).join(" ").trim().split(" "));
     module.exports = toComparators;
@@ -8650,6 +8684,7 @@ var require_to_comparators = __commonJS({
 // 
 var require_max_satisfying = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var Range = require_range();
     var maxSatisfying = (versions, range, options) => {
@@ -8678,6 +8713,7 @@ var require_max_satisfying = __commonJS({
 // 
 var require_min_satisfying = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var Range = require_range();
     var minSatisfying = (versions, range, options) => {
@@ -8706,6 +8742,7 @@ var require_min_satisfying = __commonJS({
 // 
 var require_min_version = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var Range = require_range();
     var gt = require_gt();
@@ -8762,6 +8799,7 @@ var require_min_version = __commonJS({
 // 
 var require_valid2 = __commonJS({
   ""(exports, module) {
+    "use strict";
     var Range = require_range();
     var validRange = (range, options) => {
       try {
@@ -8777,6 +8815,7 @@ var require_valid2 = __commonJS({
 // 
 var require_outside = __commonJS({
   ""(exports, module) {
+    "use strict";
     var SemVer = require_semver();
     var Comparator = require_comparator();
     var { ANY } = Comparator;
@@ -8845,6 +8884,7 @@ var require_outside = __commonJS({
 // 
 var require_gtr = __commonJS({
   ""(exports, module) {
+    "use strict";
     var outside = require_outside();
     var gtr = (version, range, options) => outside(version, range, ">", options);
     module.exports = gtr;
@@ -8854,6 +8894,7 @@ var require_gtr = __commonJS({
 // 
 var require_ltr = __commonJS({
   ""(exports, module) {
+    "use strict";
     var outside = require_outside();
     var ltr = (version, range, options) => outside(version, range, "<", options);
     module.exports = ltr;
@@ -8863,6 +8904,7 @@ var require_ltr = __commonJS({
 // 
 var require_intersects = __commonJS({
   ""(exports, module) {
+    "use strict";
     var Range = require_range();
     var intersects = (r1, r2, options) => {
       r1 = new Range(r1, options);
@@ -8876,6 +8918,7 @@ var require_intersects = __commonJS({
 // 
 var require_simplify = __commonJS({
   ""(exports, module) {
+    "use strict";
     var satisfies = require_satisfies();
     var compare = require_compare();
     module.exports = (versions, range, options) => {
@@ -8925,6 +8968,7 @@ var require_simplify = __commonJS({
 // 
 var require_subset = __commonJS({
   ""(exports, module) {
+    "use strict";
     var Range = require_range();
     var Comparator = require_comparator();
     var { ANY } = Comparator;
@@ -9087,6 +9131,7 @@ var require_subset = __commonJS({
 // 
 var require_semver2 = __commonJS({
   ""(exports, module) {
+    "use strict";
     var internalRe = require_re();
     var constants = require_constants();
     var SemVer = require_semver();

@@ -21,7 +21,7 @@ import {Replacement} from '../replacement';
  *   absolute project directory path (to allow for applying).
  */
 export async function executeMigratePhase<UnitData, GlobalData>(
-  migration: TsurgeMigration<UnitData, GlobalData>,
+  migration: TsurgeMigration<UnitData, GlobalData, unknown>,
   globalMetadata: GlobalData,
   tsconfigAbsolutePath: string,
 ): Promise<{replacements: Replacement[]; projectRoot: AbsoluteFsPath}> {

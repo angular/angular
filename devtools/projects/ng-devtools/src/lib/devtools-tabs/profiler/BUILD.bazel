@@ -1,5 +1,5 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -24,7 +24,7 @@ _STYLE_LABELS = [
     for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
 ]
 
-ng_module(
+ng_project(
     name = "profiler",
     srcs = [
         "file-api-service.ts",
@@ -35,13 +35,15 @@ ng_module(
         "profiler.component.html",
         "profiler-import-dialog.component.html",
     ] + _STYLE_LABELS,
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/common",
         "//packages/core",
         "//packages/forms",
-        "@npm//@angular/material",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline:timeline_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )

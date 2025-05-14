@@ -74,7 +74,7 @@ export class ChildrenOutletContexts {
     return contexts;
   }
 
-  onOutletReAttached(contexts: Map<string, OutletContext>) {
+  onOutletReAttached(contexts: Map<string, OutletContext>): void {
     this.contexts = contexts;
   }
 

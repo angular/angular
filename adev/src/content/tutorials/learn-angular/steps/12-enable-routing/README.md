@@ -49,7 +49,7 @@ providers: [provideRouter(routes)],
 
 Finally, to make sure your app is ready to use the Angular Router, you need to tell the app where you expect the router to display the desired content. Accomplish that by using the `RouterOutlet` directive from `@angular/router`.
 
-Update the template for `AppComponent` by adding `<router-outlet />`
+Update the template for `App` by adding `<router-outlet />`
 
 <docs-code language="angular-ts" highlight="[11]">
 import {RouterOutlet} from '@angular/router';
@@ -65,7 +65,7 @@ template: `     <nav>
   `,
 imports: [RouterOutlet],
 })
-export class AppComponent {}
+export class App {}
 </docs-code>
 
 </docs-step>

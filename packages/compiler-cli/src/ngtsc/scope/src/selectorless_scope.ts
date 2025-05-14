@@ -13,7 +13,7 @@ import {ComponentScopeKind, ComponentScopeReader, SelectorlessScope} from './api
 import ts from 'typescript';
 
 /**
- * Computes the scope for a selectorless components by looking at imports within the same
+ * Computes the scope for a selectorless component by looking at imports within the same
  * file and resolving them to metadata.
  */
 export class SelectorlessComponentScopeReader implements ComponentScopeReader {

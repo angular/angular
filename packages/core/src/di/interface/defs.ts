@@ -261,5 +261,5 @@ export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T> | null {
   return type && type.hasOwnProperty(NG_INJ_DEF) ? (type as any)[NG_INJ_DEF] : null;
 }
 
-export const NG_PROV_DEF = getClosureSafeProperty({ɵprov: getClosureSafeProperty});
-export const NG_INJ_DEF = getClosureSafeProperty({ɵinj: getClosureSafeProperty});
+export const NG_PROV_DEF: string = getClosureSafeProperty({ɵprov: getClosureSafeProperty});
+export const NG_INJ_DEF: string = getClosureSafeProperty({ɵinj: getClosureSafeProperty});

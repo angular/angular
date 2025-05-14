@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "types": ["node", "jasmine"],
+    "plugins": [{
+      "name": "@bazel/tsetse",
+      "disabledRules": ["must-use-promises"]
+    }]
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "_enableSelectorless": true
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
+}

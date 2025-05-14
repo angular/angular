@@ -6,5 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// TODO(devversion): Remove this file during `rules_js` migration.
+
 /** Dummy typings for systemjs. */
 declare var System: any;

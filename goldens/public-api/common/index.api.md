@@ -874,16 +874,16 @@ export { PopStateEvent_2 as PopStateEvent }
 export const PRECONNECT_CHECK_BLOCKLIST: InjectionToken<(string | string[])[]>;
 
 // @public
-export const provideCloudflareLoader: (path: string) => i0.Provider[];
+export const provideCloudflareLoader: (path: string) => Provider[];
 
 // @public
-export const provideCloudinaryLoader: (path: string) => i0.Provider[];
+export const provideCloudinaryLoader: (path: string) => Provider[];
 
 // @public
-export const provideImageKitLoader: (path: string) => i0.Provider[];
+export const provideImageKitLoader: (path: string) => Provider[];
 
 // @public
-export const provideImgixLoader: (path: string) => i0.Provider[];
+export const provideImgixLoader: (path: string) => Provider[];
 
 // @public
 export function provideNetlifyLoader(path?: string): Provider[];

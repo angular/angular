@@ -760,7 +760,7 @@ class UrlParser {
   }
 }
 
-export function createRoot(rootCandidate: UrlSegmentGroup) {
+export function createRoot(rootCandidate: UrlSegmentGroup): UrlSegmentGroup {
   return rootCandidate.segments.length > 0
     ? new UrlSegmentGroup([], {[PRIMARY_OUTLET]: rootCandidate})
     : rootCandidate;

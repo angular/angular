@@ -37,7 +37,7 @@ export class AfterRenderManager {
   });
 }
 
-export const AFTER_RENDER_PHASES = /* @__PURE__ **/ (() =>
+export const AFTER_RENDER_PHASES: AfterRenderPhase[] = /* @__PURE__ **/ (() =>
   [
     AfterRenderPhase.EarlyRead,
     AfterRenderPhase.Write,

@@ -61,11 +61,10 @@ export function migrate(options: Options): Rule {
         context.logger.info(`Processing analysis data between targets...`);
         context.logger.info(``);
       },
-      whenDone: ({counters}) => {
+      whenDone: ({queriesCount, incompatibleQueries}) => {
         context.logger.info('');
         context.logger.info(`Successfully migrated to signal queries 🎉`);
 
-        const {queriesCount, incompatibleQueries} = counters;
         const migratedQueries = queriesCount - incompatibleQueries;
 
         context.logger.info('');

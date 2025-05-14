@@ -65,7 +65,10 @@ function writeTsconfig(
 
 export type TestableOptions = TypeCheckingOptions &
   InternalOptions &
-  Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'>;
+  Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'> & {
+    // This already exists in `InternalOptions`, but it's `internal` so it's stripped away.
+    _enableSelectorless?: boolean;
+  };
 
 export class Project {
   private tsProject: ts.server.Project;

@@ -231,15 +231,13 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       }
     }
 
-    return {
-      counters: {
-        fullCompilationInputs,
-        sourceInputs,
-        incompatibleInputs,
-        ...fieldIncompatibleCounts,
-        ...classIncompatibleCounts,
-      },
-    };
+    return confirmAsSerializable({
+      fullCompilationInputs,
+      sourceInputs,
+      incompatibleInputs,
+      ...fieldIncompatibleCounts,
+      ...classIncompatibleCounts,
+    });
   }
 }
 

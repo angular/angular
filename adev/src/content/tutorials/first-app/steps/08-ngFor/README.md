@@ -19,27 +19,27 @@ For a more in depth explanation, please refer to the [Built-in directives](guide
 
 <docs-workflow>
 
-<docs-step title="Add housing data to the `HomeComponent`">
+<docs-step title="Add housing data to the `Home`">
 
-In the `HomeComponent` there is only a single housing location. In this step, you will add an array of `HousingLocation` entries.
+In the `Home` there is only a single housing location. In this step, you will add an array of `HousingLocation` entries.
 
-1. In `src/app/home/home.component.ts`, remove the `housingLocation` property from the `HomeComponent` class.
-1. Update the `HomeComponent` class to have a property called `housingLocationList`. Update your code to match the following code:
-    <docs-code header="Add housingLocationList property" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.component.ts" visibleLines="26-131"/>
+1. In `src/app/home/home.ts`, remove the `housingLocation` property from the `Home` class.
+1. Update the `Home` class to have a property called `housingLocationList`. Update your code to match the following code:
+    <docs-code header="Add housingLocationList property" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="26-131"/>
 
     IMPORTANT: Do not remove the `@Component` decorator, you will update that code in an upcoming step.
 
 </docs-step>
 
-<docs-step title="Update the `HomeComponent` template to use `ngFor`">
+<docs-step title="Update the `Home` template to use `ngFor`">
 Now the app has a dataset that you can use to display the entries in the browser using the `ngFor` directive.
 
 1. Update the `<app-housing-location>` tag in the template code to this:
-    <docs-code header="Add ngFor to HomeComponent template" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.component.ts" visibleLines="[17,22]"/>
+    <docs-code header="Add ngFor to Home template" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="[17,22]"/>
 
-    Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it referred to the property on the `HomeComponent` class.
+    Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it referred to the property on the `Home` class.
 
-    IMPORTANT: Don't forget to import the `NgFor` directive in your `HomeComponent` class.
+    IMPORTANT: Don't forget to import the `NgFor` directive in your `Home` class.
 
 1. Save all changes.
 

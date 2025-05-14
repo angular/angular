@@ -77,7 +77,7 @@ def _ts_project_module_impl(ctx):
             LinkablePackageInfo(
                 package_name = ctx.attr.module_name,
                 package_path = "",
-                path = "%s/%s/%s" % (ctx.bin_dir.path, ctx.label.workspace_root, ctx.label.package),
+                path = "%s/%s" % (ctx.bin_dir.path, ctx.label.package),
                 files = info.sources,
             ),
         )

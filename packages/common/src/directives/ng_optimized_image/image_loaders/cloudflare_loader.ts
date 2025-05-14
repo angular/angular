@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Provider} from '@angular/core';
 import {PLACEHOLDER_QUALITY} from './constants';
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
@@ -20,7 +21,7 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  *
  * @publicApi
  */
-export const provideCloudflareLoader = createImageLoader(
+export const provideCloudflareLoader: (path: string) => Provider[] = createImageLoader(
   createCloudflareUrl,
   ngDevMode ? ['https://<ZONE>/cdn-cgi/image/<OPTIONS>/<SOURCE-IMAGE>'] : undefined,
 );

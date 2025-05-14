@@ -1,5 +1,5 @@
 <div class="adev-editor-container" #editorContainer>
-  <as-split class="docs-editor" [direction]="splitDirection" restrictMove="true" gutterSize="5">
+  <as-split class="docs-editor" [direction]="splitDirection()" restrictMove="true" gutterSize="5">
     <as-split-area class="adev-left-side" size="50">
       <!-- Code Editor -->
       @if (!displayOnlyTerminal()) {

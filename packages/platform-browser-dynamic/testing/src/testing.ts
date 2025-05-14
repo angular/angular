@@ -13,10 +13,8 @@ import {BrowserTestingModule} from '@angular/platform-browser/testing';
 /**
  * @publicApi
  */
-export const platformBrowserDynamicTesting = createPlatformFactory(
-  platformBrowserDynamic,
-  'browserDynamicTesting',
-);
+export const platformBrowserDynamicTesting: (extraProviders?: StaticProvider[]) => PlatformRef =
+  createPlatformFactory(platformBrowserDynamic, 'browserDynamicTesting');
 
 /**
  * NgModule for testing.

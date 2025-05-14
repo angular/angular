@@ -14,7 +14,7 @@ To inject a service or some other injectable resource into your component use th
 
 <docs-code language="ts" highlight="[3]">
 @Component({...})
-class PetCarDashboardComponent {
+class PetCarDashboard {
     constructor(private petCareService: PetCareService) {
         ...
     }
@@ -33,7 +33,7 @@ Alright, now you give this a try:
 
 <docs-step title="Update the code to use constructor-based DI">
 
-In `app.component.ts`, update the constructor code to match the code below:
+In `app.ts`, update the constructor code to match the code below:
 
 TIP: Remember, if you get stuck refer to the example on this activity page.
 

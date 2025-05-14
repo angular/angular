@@ -16,7 +16,7 @@ import {TsurgeMigration} from '../migration';
  * prefer parallel execution of combining via e.g. Beam combiners.
  */
 export async function synchronouslyCombineUnitData<UnitData>(
-  migration: TsurgeMigration<UnitData, unknown>,
+  migration: TsurgeMigration<UnitData, unknown, unknown>,
   unitDatas: UnitData[],
 ): Promise<UnitData | null> {
   if (unitDatas.length === 0) {

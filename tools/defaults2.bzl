@@ -1,9 +1,11 @@
 load("@aspect_rules_jasmine//jasmine:defs.bzl", _jasmine_test = "jasmine_test")
+load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
 
+npm_package = _npm_package
 ts_config = _ts_config
 
 def ts_project(

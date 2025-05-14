@@ -14,15 +14,9 @@ import {BaseProgramInfo, ProgramInfo} from './program_info';
 import {Serializable} from './helpers/serializable';
 import {createBaseProgramInfo} from './helpers/create_program';
 
-/**
- * Type describing statistics that could be tracked
- * by migrations.
- *
- * Statistics may be tracked depending on the runner.
- */
-export interface MigrationStats {
-  counters: Record<string, number>;
-}
+/** Type helper extracting the stats type of a migration. */
+export type MigrationStats<T> =
+  T extends TsurgeBaseMigration<unknown, unknown, infer Stats> ? Stats : never;
 
 /**
  * @private
@@ -32,7 +26,12 @@ export interface MigrationStats {
  * For example, this class exposes methods to conveniently create
  * TypeScript programs, while also allowing migration authors to override.
  */
-export abstract class TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMetadata> {
+export abstract class TsurgeBaseMigration<
+  UnitAnalysisMetadata,
+  CombinedGlobalMetadata,
+  // Note: Even when optional, they can be inferred from implementations.
+  Stats = unknown,
+> {
   /**
    * Advanced Tsurge users can override this method, but most of the time,
    * overriding {@link prepareProgram} is more desirable.
@@ -103,5 +102,5 @@ export abstract class TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMe
   ): Promise<Serializable<CombinedGlobalMetadata>>;
 
   /** Extract statistics based on the global metadata. */
-  abstract stats(globalMetadata: CombinedGlobalMetadata): Promise<MigrationStats>;
+  abstract stats(globalMetadata: CombinedGlobalMetadata): Promise<Serializable<Stats>>;
 }

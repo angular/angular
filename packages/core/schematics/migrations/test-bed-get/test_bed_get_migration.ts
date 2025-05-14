@@ -110,6 +110,6 @@ export class TestBedGetMigration extends TsurgeFunnelMigration<
   }
 
   override async stats() {
-    return {counters: {}};
+    return confirmAsSerializable({});
   }
 }

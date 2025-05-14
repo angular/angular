@@ -13,6 +13,8 @@ import {
   PropertyRead,
   SafePropertyRead,
   TemplateEntity,
+  TmplAstComponent,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstHostElement,
   TmplAstNode,
@@ -30,7 +32,14 @@ import {ClassDeclaration} from '../../reflection';
 import {FullSourceMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
 import {GlobalCompletion} from './completion';
 import {PotentialDirective, PotentialImport, PotentialImportMode, PotentialPipe} from './scope';
-import {ElementSymbol, Symbol, TcbLocation, TemplateSymbol} from './symbols';
+import {
+  ElementSymbol,
+  SelectorlessComponentSymbol,
+  SelectorlessDirectiveSymbol,
+  Symbol,
+  TcbLocation,
+  TemplateSymbol,
+} from './symbols';
 
 /**
  * Interface to the Angular Template Type Checker to extract diagnostics and intelligence from the
@@ -119,6 +128,14 @@ export interface TemplateTypeChecker {
    */
   getSymbolOfNode(node: TmplAstElement, component: ts.ClassDeclaration): ElementSymbol | null;
   getSymbolOfNode(node: TmplAstTemplate, component: ts.ClassDeclaration): TemplateSymbol | null;
+  getSymbolOfNode(
+    node: TmplAstComponent,
+    component: ts.ClassDeclaration,
+  ): SelectorlessComponentSymbol | null;
+  getSymbolOfNode(
+    node: TmplAstDirective,
+    component: ts.ClassDeclaration,
+  ): SelectorlessDirectiveSymbol | null;
   getSymbolOfNode(node: AST | TmplAstNode, component: ts.ClassDeclaration): Symbol | null;
 
   /**

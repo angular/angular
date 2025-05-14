@@ -1,13 +1,16 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "testing",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages/core",
-        "@npm//rxjs",
+    ],
+    tsconfig = "//packages/service-worker:tsconfig_test",
+    deps = [
+        "//:node_modules/rxjs",
     ],
 )

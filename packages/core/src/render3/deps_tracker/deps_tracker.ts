@@ -28,15 +28,6 @@ import {
 } from './api';
 
 /**
- * Indicates whether to use the runtime dependency tracker for scope calculation in JIT compilation.
- * The value "false" means the old code path based on patching scope info into the types will be
- * used.
- *
- * @deprecated For migration purposes only, to be removed soon.
- */
-export const USE_RUNTIME_DEPS_TRACKER_FOR_JIT = true;
-
-/**
  * An implementation of DepsTrackerApi which will be used for JIT and local compilation.
  */
 class DepsTracker implements DepsTrackerApi {

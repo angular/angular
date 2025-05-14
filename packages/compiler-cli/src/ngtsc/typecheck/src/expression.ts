@@ -54,7 +54,7 @@ import {tsCastToAny, tsNumericExpression} from './ts_util';
  * - Some flavor of function call, like `isNan(0) as any` - requires even more characters than the
  *   NaN option and has the same issue with `noLib`.
  */
-export const ANY_EXPRESSION = ts.factory.createAsExpression(
+export const ANY_EXPRESSION: ts.AsExpression = ts.factory.createAsExpression(
   ts.factory.createNumericLiteral('0'),
   ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
 );

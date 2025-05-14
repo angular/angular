@@ -15,6 +15,7 @@ import {
   ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
+  PlatformRef,
 } from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
 import {BrowserModule, platformBrowser} from '../../index';
@@ -25,7 +26,8 @@ import {DOMTestComponentRenderer} from './dom_test_component_renderer';
  *
  * @publicApi
  */
-export const platformBrowserTesting = createPlatformFactory(platformBrowser, 'browserTesting');
+export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => PlatformRef =
+  createPlatformFactory(platformBrowser, 'browserTesting');
 
 /**
  * NgModule for testing.

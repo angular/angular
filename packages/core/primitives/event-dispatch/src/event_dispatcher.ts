@@ -19,7 +19,8 @@ import {Restriction} from './restriction';
 export type Replayer = (eventInfoWrappers: Event[]) => void;
 
 /** An internal symbol used to indicate whether propagation should be stopped or not. */
-export const PROPAGATION_STOPPED_SYMBOL = /* @__PURE__ */ Symbol.for('propagationStopped');
+export const PROPAGATION_STOPPED_SYMBOL: unique symbol =
+  /* @__PURE__ */ Symbol.for('propagationStopped');
 
 /** Extra event phases beyond what the browser provides. */
 export const EventPhase = {
