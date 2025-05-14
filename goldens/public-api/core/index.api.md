@@ -180,6 +180,12 @@ export interface BaseResourceOptions<T, R> {
 }
 
 // @public
+export interface Binding {
+    // (undocumented)
+    readonly [BINDING]: unknown;
+}
+
+// @public
 export function booleanAttribute(value: unknown): boolean;
 
 // @public
