@@ -1,5 +1,5 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
 
 ts_project(
     name = "unit_test_lib",
@@ -7,7 +7,6 @@ ts_project(
     srcs = glob([
         "**/*.spec.mts",
     ]),
-    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [
         "//:node_modules/@bazel/runfiles",
         "//:node_modules/@types/jsdom",
@@ -22,7 +21,6 @@ ts_project(
     srcs = [
         "bootstrap.init.mts",
     ],
-    tsconfig = "//adev/shared-docs:tsconfig_test",
 )
 
 jasmine_node_test(

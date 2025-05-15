@@ -60,6 +60,7 @@ APPLICATION_DEPS = [
     "@npm//@angular/platform-server",
     "@npm//@angular/router",
     "@npm//@angular/ssr",
+    "@npm//fflate",
     "@npm//marked",
     "@npm//ngx-progressbar",
     "@npm//rxjs",
