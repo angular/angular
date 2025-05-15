@@ -1,3 +1,5 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
 .adev-footer-columns {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -18,8 +20,8 @@
   transition: background-color 0.3s ease;
 
   // this accounts for absolutely positioned TOC on the right
-  @media only screen and (min-width: 1430px) {
-    width: calc(100% - 195px - var(--layout-padding) * 3);
+  @include mq.for-large-desktop-up{   
+   width: calc(100% - 195px - var(--layout-padding) * 3);
   }
 
   h2 {
