@@ -11,6 +11,7 @@ import path from 'path';
 import assert from 'assert';
 import {SignalInputMigration} from './migration';
 import {writeMigrationReplacements} from './write_replacements';
+import {NodeJSFileSystem} from '../../../../../compiler-cli';
 
 main(
   path.resolve(process.argv[2]),
@@ -34,8 +35,7 @@ export async function main(
     insertTodosForSkippedFields,
     upgradeAnalysisPhaseToAvoidBatch: true,
   });
-  const baseInfo = migration.createProgram(absoluteTsconfigPath);
-  const info = migration.prepareProgram(baseInfo);
+  const info = migration.createProgram(absoluteTsconfigPath, new NodeJSFileSystem());
 
   await migration.analyze(info);
 

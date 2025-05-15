@@ -43,7 +43,7 @@ export function createNgtscProgram(
     ngCompiler: ngtscProgram.compiler,
     program: ngtscProgram.getTsProgram(),
     userOptions: tsconfig.options,
-    programAbsoluteRootFileNames: tsconfig.rootNames,
+    __programAbsoluteRootFileNames: tsconfig.rootNames,
     host: tsHost,
   };
 }
