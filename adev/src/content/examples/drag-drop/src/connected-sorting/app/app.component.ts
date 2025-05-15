@@ -1,19 +1,19 @@
-import {Component} from '@angular/core';
 import {
+  CdkDrag,
   CdkDragDrop,
+  CdkDropList,
   moveItemInArray,
   transferArrayItem,
-  CdkDrag,
-  CdkDropList,
 } from '@angular/cdk/drag-drop';
+import {Component} from '@angular/core';
 
 /**
  * @title Drag&Drop connected sorting
  */
 @Component({
   selector: 'cdk-drag-drop-connected-sorting-example',
-  templateUrl: 'cdk-drag-drop-connected-sorting-example.html',
-  styleUrl: 'cdk-drag-drop-connected-sorting-example.css',
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css',
   standalone: true,
   imports: [CdkDropList, CdkDrag],
 })

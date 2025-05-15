@@ -1,4 +1,3 @@
-import {Component} from '@angular/core';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -6,14 +5,15 @@ import {
   CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
+import {Component} from '@angular/core';
 
 /**
  * @title Drag&Drop custom placeholder
  */
 @Component({
   selector: 'cdk-drag-drop-custom-placeholder-example',
-  templateUrl: 'cdk-drag-drop-custom-placeholder-example.html',
-  styleUrl: 'cdk-drag-drop-custom-placeholder-example.css',
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css',
   standalone: true,
   imports: [CdkDropList, CdkDrag, CdkDragPlaceholder],
 })

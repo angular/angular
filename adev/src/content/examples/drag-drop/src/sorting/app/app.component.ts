@@ -1,13 +1,13 @@
+import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {Component} from '@angular/core';
-import {CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray} from '@angular/cdk/drag-drop';
 
 /**
  * @title Drag&Drop sorting
  */
 @Component({
   selector: 'cdk-drag-drop-sorting-example',
-  templateUrl: 'cdk-drag-drop-sorting-example.html',
-  styleUrl: 'cdk-drag-drop-sorting-example.css',
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css',
   standalone: true,
   imports: [CdkDropList, CdkDrag],
 })

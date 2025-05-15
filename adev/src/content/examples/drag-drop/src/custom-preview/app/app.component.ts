@@ -1,19 +1,19 @@
-import {Component} from '@angular/core';
 import {
-  CdkDragDrop,
-  CdkDropList,
-  CdkDragPreview,
   CdkDrag,
+  CdkDragDrop,
+  CdkDragPreview,
+  CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
+import {Component} from '@angular/core';
 
 /**
  * @title Drag&Drop custom preview
  */
 @Component({
   selector: 'cdk-drag-drop-custom-preview-example',
-  templateUrl: 'cdk-drag-drop-custom-preview-example.html',
-  styleUrl: 'cdk-drag-drop-custom-preview-example.css',
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css',
   standalone: true,
   imports: [CdkDropList, CdkDrag, CdkDragPreview],
 })
