@@ -1,7 +1,7 @@
-load("//tools:defaults.bzl", "ts_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "browser_test_lib",
     testonly = True,
     srcs = glob(
@@ -9,9 +9,11 @@ ts_library(
             "**/*.ts",
         ],
     ),
-    deps = [
-        "//packages/core/primitives/event-dispatch",
+    interop_deps = [
         "//packages/private/testing",
+    ],
+    deps = [
+        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
     ],
 )
 
