@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MetadataKey, DISABLED_REASON, REQUIRED} from '../api/metadata';
+import {DISABLED_REASON, MetadataKey, REQUIRED} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldPath, FormError, LogicFn, TreeValidator, Validator} from './types';
+import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -21,7 +21,7 @@ import type {FieldPath, FormError, LogicFn, TreeValidator, Validator} from './ty
  */
 export function disabled<T>(
   path: FieldPath<T>,
-  logic: NoInfer<LogicFn<T, boolean | string>>,
+  logic: NoInfer<LogicFn<T, boolean | string>> = () => true,
 ): void {
   assertPathIsCurrent(path);
 
@@ -37,6 +37,20 @@ export function disabled<T>(
 
   pathNode.logic.disabled.push((ctx) => Boolean(logic(ctx)));
   metadata(path, DISABLED_REASON, reasonFn);
+}
+
+/**
+ * Adds logic to a field to conditionally make it readonly.
+ *
+ * @param path The target path to make readonly.
+ * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is readonly.
+ * @template T The data type of the field the logic is being added to.
+ */
+export function readonly<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>> = () => true) {
+  assertPathIsCurrent(path);
+
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  pathNode.logic.readonly.push(logic);
 }
 
 /**

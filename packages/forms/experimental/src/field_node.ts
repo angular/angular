@@ -17,6 +17,7 @@ import {
   untracked,
   WritableSignal,
 } from '@angular/core';
+import {DataKey} from './api/data';
 import {MetadataKey} from './api/metadata';
 import type {
   Field,
@@ -31,7 +32,6 @@ import type {
 import {DYNAMIC, FieldLogicNode} from './logic_node';
 import {FieldPathNode, FieldRootPathNode} from './path_node';
 import {deepSignal} from './util/deep_signal';
-import {DataKey} from './api/data';
 
 export interface DataEntry {
   value: unknown;
@@ -285,6 +285,16 @@ export class FieldNode implements FieldState<unknown> {
   );
 
   /**
+   * Whether this field is considered readonly.
+   *
+   * This field considers itself readonly if its parent is readonly or its own logic considers it
+   * readonly.
+   */
+  readonly readonly: Signal<boolean> = computed(
+    () => (this.parent?.readonly() || this.logic.readonly.compute(this.fieldContext)) ?? false,
+  );
+
+  /**
    * The submitted status of the form.
    */
   readonly submittedStatus: Signal<SubmittedStatus> = computed(() =>
@@ -430,7 +440,7 @@ export class FieldNode implements FieldState<unknown> {
    * Defined in terms of other conditions based on the field logic.
    */
   shouldSkipValidation(): boolean {
-    return this.hidden() || this.disabled();
+    return this.hidden() || this.disabled() || this.readonly();
   }
 
   /**
