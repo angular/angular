@@ -1,9 +1,9 @@
 import {computed, Injector, signal} from '@angular/core';
-import {disabled, error, required, validate, validateTree} from '../src/api/logic';
+import {TestBed} from '@angular/core/testing';
+import {disabled, error, readonly, required, validate, validateTree} from '../src/api/logic';
+import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
 import {apply, applyEach, form, submit} from '../src/api/structure';
 import {FormTreeError, Schema} from '../src/api/types';
-import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
-import {TestBed} from '@angular/core/testing';
 
 const noopSchema: Schema<unknown> = () => {};
 
@@ -241,6 +241,72 @@ describe('Node', () => {
       expect(f.$state.metadata(DISABLED_REASON)()).toEqual(['form unavailable']);
       expect(f.a.$state.disabled()).toBe(true);
       expect(f.a.$state.metadata(DISABLED_REASON)()).toEqual([]);
+    });
+  });
+
+  describe('readonly', () => {
+    it('should allow logic to make a field readonly', () => {
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          readonly(p.a);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.$state.readonly()).toBe(false);
+      expect(f.a.$state.readonly()).toBe(true);
+      expect(f.b.$state.readonly()).toBe(false);
+    });
+
+    it('should allow logic to make a field conditionally readonly', () => {
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          readonly(p.a, ({value}) => value() > 10);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a.$state.readonly()).toBe(false);
+
+      f.a.$state.value.set(11);
+      expect(f.a.$state.readonly()).toBe(true);
+    });
+
+    it('should make children of readonly parent readonly', () => {
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          readonly(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.$state.readonly()).toBe(true);
+      expect(f.a.$state.readonly()).toBe(true);
+      expect(f.b.$state.readonly()).toBe(true);
+    });
+
+    it('should not validate readonly fields', () => {
+      const isReadonly = signal(false);
+      const f = form(
+        signal(''),
+        (p) => {
+          readonly(p, isReadonly);
+          required(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.$state.metadata(REQUIRED)()).toBe(true);
+      expect(f.$state.valid()).toBe(false);
+      expect(f.$state.readonly()).toBe(false);
+
+      isReadonly.set(true);
+      expect(f.$state.metadata(REQUIRED)()).toBe(true);
+      expect(f.$state.valid()).toBe(true);
+      expect(f.$state.readonly()).toBe(true);
     });
   });
 

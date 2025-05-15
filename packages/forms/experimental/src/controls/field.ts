@@ -100,6 +100,7 @@ export class FieldDirective<T> {
       // Input bindings:
       maybeSynchronize(injector, () => this.field().$state.value(), cmp.value);
       maybeSynchronize(injector, () => this.field().$state.disabled(), cmp.disabled);
+      maybeSynchronize(injector, () => this.field().$state.readonly(), cmp.readonly);
       maybeSynchronize(injector, () => this.field().$state.errors(), cmp.errors);
       maybeSynchronize(injector, () => this.field().$state.touched(), cmp.touched);
       maybeSynchronize(injector, () => this.field().$state.valid(), cmp.valid);

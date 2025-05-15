@@ -41,6 +41,7 @@ export interface DataDefinition {
 export class FieldLogicNode {
   readonly hidden: BooleanOrLogic;
   readonly disabled: BooleanOrLogic;
+  readonly readonly: BooleanOrLogic;
   readonly syncErrors: ArrayMergeLogic<FormError>;
   readonly syncTreeErrors: ArrayMergeLogic<FormTreeError>;
   readonly asyncErrors: ArrayMergeLogic<FormTreeError | 'pending'>;
@@ -53,6 +54,7 @@ export class FieldLogicNode {
   private constructor(private predicate: Predicate | undefined) {
     this.hidden = new BooleanOrLogic(predicate);
     this.disabled = new BooleanOrLogic(predicate);
+    this.readonly = new BooleanOrLogic(predicate);
     this.syncErrors = new ArrayMergeLogic<FormError>(predicate);
     this.syncTreeErrors = new ArrayMergeLogic<FormTreeError>(predicate);
     this.asyncErrors = new ArrayMergeLogic<FormTreeError | 'pending'>(predicate);
@@ -83,6 +85,7 @@ export class FieldLogicNode {
     // Merge standard logic.
     this.hidden.mergeIn(other.hidden);
     this.disabled.mergeIn(other.disabled);
+    this.readonly.mergeIn(other.readonly);
     this.syncErrors.mergeIn(other.syncErrors);
 
     // Merge data

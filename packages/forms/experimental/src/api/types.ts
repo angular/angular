@@ -7,8 +7,8 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
-import {MetadataKey} from './metadata';
 import {DataKey} from './data';
+import {MetadataKey} from './metadata';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -86,6 +86,10 @@ export interface FieldState<T> {
    * A signal indicating whether the field is currently disabled.
    */
   readonly disabled: Signal<boolean>;
+  /**
+   * A signal indicating whether the field is currently readonly.
+   */
+  readonly readonly: Signal<boolean>;
   /**
    * A signal containing the current errors for the field.
    */
