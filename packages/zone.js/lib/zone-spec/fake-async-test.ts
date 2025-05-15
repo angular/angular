@@ -7,6 +7,7 @@
  */
 
 import {ZoneType} from '../zone-impl';
+import {type ProxyZoneSpec} from './proxy';
 
 const global: any =
   (typeof window === 'object' && window) || (typeof self === 'object' && self) || globalThis.global;
@@ -789,12 +790,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 
 let _fakeAsyncTestZoneSpec: FakeAsyncTestZoneSpec | null = null;
 
-type ProxyZoneSpecType = {
-  setDelegate(delegateSpec: ZoneSpec): void;
-  getDelegate(): ZoneSpec;
-  resetDelegate(): void;
-};
-function getProxyZoneSpec(): {get(): ProxyZoneSpecType; assertPresent: () => ProxyZoneSpecType} {
+function getProxyZoneSpec(): typeof ProxyZoneSpec | undefined {
   return Zone && (Zone as any)['ProxyZoneSpec'];
 }
 
@@ -809,8 +805,7 @@ export function resetFakeAsyncZone() {
     _fakeAsyncTestZoneSpec.unlockDatePatch();
   }
   _fakeAsyncTestZoneSpec = null;
-  // in node.js testing we may not have ProxyZoneSpec in which case there is nothing to reset.
-  getProxyZoneSpec() && getProxyZoneSpec().assertPresent().resetDelegate();
+  getProxyZoneSpec()?.get()?.resetDelegate();
 }
 
 /**
@@ -838,14 +833,21 @@ export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...ar
   const {flush = true} = options;
   // Not using an arrow function to preserve context passed from call site
   const fakeAsyncFn: any = function (this: unknown, ...args: any[]) {
-    const ProxyZoneSpec = getProxyZoneSpec();
-    if (!ProxyZoneSpec) {
+    const spec = getProxyZoneSpec();
+    if (spec === undefined) {
       throw new Error(
-        'ProxyZoneSpec is needed for the async() test helper but could not be found. ' +
-          'Please make sure that your environment includes zone.js/plugins/proxy',
+        'ProxyZoneSpec is needed for the fakeAsync() test helper but could not be found. ' +
+          'Make sure that your environment includes zone-testing.js',
       );
     }
-    const proxyZoneSpec = ProxyZoneSpec.assertPresent();
+    const proxyZoneSpec = spec.get();
+    if (!proxyZoneSpec) {
+      throw new Error(
+        'fakeAsync() requires running inside a ProxyZoneSpec.' +
+          'zone-testing.js monkey patches jasmine, jest, and mocha APIs to do this automatically and ensure the same one is shared so fakeAsync can capture all timers and microtasks.' +
+          'Use `fakeAsync.allowNewProxyZone` if you want to allow creating a new one when the wrapped function is invoked.',
+      );
+    }
     if (Zone.current.get('FakeAsyncTestZoneSpec')) {
       throw new Error('fakeAsync() calls can not be nested');
     }
@@ -894,7 +896,28 @@ export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...ar
       resetFakeAsyncZone();
     }
   };
-  (fakeAsyncFn as any).isFakeAsync = true;
+  fakeAsyncFn.isFakeAsync = true;
+  return fakeAsyncFn;
+}
+
+export function fakeAsyncAllowNewProxyZone(...args: Parameters<typeof fakeAsync>) {
+  const fakeAsyncFn = () => {
+    const proxyZoneSpec = getProxyZoneSpec();
+    if (proxyZoneSpec === undefined) {
+      throw new Error(
+        'ProxyZoneSpec is needed for the fakeAsync() test helper but could not be found. ' +
+          'Make sure that your environment includes zone-testing.js',
+      );
+    }
+
+    if (proxyZoneSpec.get() == undefined) {
+      const proxyZoneSpecInstance = new (getProxyZoneSpec() as any)() as ProxyZoneSpec;
+      const proxyZone = Zone.current.fork(proxyZoneSpecInstance);
+      return proxyZone.run(fakeAsync(...args));
+    }
+    return fakeAsync(...args)();
+  };
+  fakeAsyncFn.isFakeAsync = true;
   return fakeAsyncFn;
 }
 
@@ -973,6 +996,7 @@ export function patchFakeAsyncTest(Zone: ZoneType): void {
         tick,
         flush,
         fakeAsync,
+        fakeAsyncAllowNewProxyZone,
       };
     },
     true,

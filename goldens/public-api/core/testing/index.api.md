@@ -62,10 +62,18 @@ export enum DeferBlockState {
 // @public
 export function discardPeriodicTasks(): void;
 
-// @public
-export function fakeAsync(fn: Function, options?: {
-    flush?: boolean;
-}): (...args: any[]) => any;
+// @public (undocumented)
+export const fakeAsync: FakeAsyncFn;
+
+// @public (undocumented)
+export interface FakeAsyncFn {
+    (fn: Function, options?: {
+        flush?: boolean;
+    }): (...args: any[]) => any;
+    allowNewProxyZone(fn: Function, options?: {
+        flush?: boolean;
+    }): (...args: any[]) => any;
+}
 
 // @public
 export function flush(maxTurns?: number): number;

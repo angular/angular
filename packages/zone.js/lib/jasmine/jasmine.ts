@@ -9,6 +9,7 @@
 /// <reference types="jasmine"/>
 
 import {ZoneType} from '../zone-impl';
+import {type ProxyZoneSpec} from '../zone-spec/proxy';
 
 ('use strict');
 declare let jest: any;
@@ -37,9 +38,9 @@ export function patchJasmine(Zone: ZoneType): void {
     (jasmine as any)['__zone_patch__'] = true;
 
     const SyncTestZoneSpec: {new (name: string): ZoneSpec} = (Zone as any)['SyncTestZoneSpec'];
-    const ProxyZoneSpec: {new (): ZoneSpec} = (Zone as any)['ProxyZoneSpec'];
+    const ProxyZoneSpecType: typeof ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'];
     if (!SyncTestZoneSpec) throw new Error('Missing: SyncTestZoneSpec');
-    if (!ProxyZoneSpec) throw new Error('Missing: ProxyZoneSpec');
+    if (!ProxyZoneSpecType) throw new Error('Missing: ProxyZoneSpec');
 
     const ambientZone = Zone.current;
 
@@ -268,7 +269,7 @@ export function patchJasmine(Zone: ZoneType): void {
     }
     interface QueueRunner {
       execute(): void;
-      testProxyZoneSpec: ZoneSpec | null;
+      testProxyZoneSpec: ProxyZoneSpec | null;
       testProxyZone: Zone | null;
     }
     interface QueueRunnerAttrs {
@@ -331,7 +332,7 @@ export function patchJasmine(Zone: ZoneType): void {
           ) {
             // jasmine timeout, we can make the error message more
             // reasonable to tell what tasks are pending
-            const proxyZoneSpec: any = this && this.testProxyZoneSpec;
+            const proxyZoneSpec = this && this.testProxyZoneSpec;
             if (proxyZoneSpec) {
               const pendingTasksInfo = proxyZoneSpec.getAndClearPendingTasksInfo();
               try {
@@ -370,7 +371,7 @@ export function patchJasmine(Zone: ZoneType): void {
         //   - Because ProxyZone is parent fo `childZone` fakeAsync can retroactively add
         //     fakeAsync behavior to the childZone.
 
-        this.testProxyZoneSpec = new ProxyZoneSpec();
+        this.testProxyZoneSpec = new ProxyZoneSpecType();
         this.testProxyZone = ambientZone.fork(this.testProxyZoneSpec);
         if (!Zone.currentTask) {
           // if we are not running in a task then if someone would register a
