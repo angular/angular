@@ -803,10 +803,8 @@ describe('reactivity', () => {
           }
         }
 
-        const fixture = TestBed.createComponent(TestCmp);
+        TestBed.createComponent(TestCmp);
         TestBed.tick();
-        expect(log).toEqual([]);
-        fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });
 
@@ -876,17 +874,17 @@ describe('reactivity', () => {
           vcr = inject(ViewContainerRef);
         }
 
-        const fixture = TestBed.createComponent(DriverCmp);
-        fixture.detectChanges();
+        const componentRef = createComponent(DriverCmp, {
+          environmentInjector: TestBed.inject(EnvironmentInjector),
+        });
+        componentRef.changeDetectorRef.detectChanges();
 
-        fixture.componentInstance.vcr.createComponent(TestCmp);
+        componentRef.instance.vcr.createComponent(TestCmp);
 
         // Verify that simply creating the component didn't schedule the effect.
-        TestBed.tick();
+        TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual([]);
-
-        // Running change detection should schedule and run the effect.
-        fixture.detectChanges();
+        componentRef.changeDetectorRef.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });
 
@@ -915,8 +913,6 @@ describe('reactivity', () => {
 
         const fixture = TestBed.createComponent(TestCmp);
         TestBed.tick();
-        expect(log).toEqual([]);
-        fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });
 
