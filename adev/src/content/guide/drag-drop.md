@@ -44,7 +44,7 @@ export class DragDropExample {}
 
 You can make any element draggable by adding the `cdkDrag` directive. By default, all draggable elements support free dragging.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/overview/app/app.component.html">
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/overview/app/app.component.ts">
   <docs-code header="app/app.component.html" path="adev/src/content/examples/drag-drop/src/overview/app/app.component.html"/>
   <docs-code header="app/app.component.ts" path="adev/src/content/examples/drag-drop/src/overview/app/app.component.ts"/>
   <docs-code header="app/app.component.css" path="adev/src/content/examples/drag-drop/src/overview/app/app.component.css"/>
