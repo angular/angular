@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(
     default_visibility = [
@@ -7,18 +7,18 @@ package(
     ],
 )
 
-ts_library(
+ts_project(
     name = "inject-flags",
     srcs = glob(["**/*.ts"]),
-    tsconfig = "//packages/core/schematics:tsconfig.json",
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
-        "@npm//@angular-devkit/schematics",
-        "@npm//@types/node",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
     ],
 )
