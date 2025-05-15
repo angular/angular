@@ -63,8 +63,8 @@ importers:
         specifier: 5.8.1
         version: 5.8.1(rollup@4.40.2)
       '@bazel/runfiles':
-        specifier: 5.8.1
-        version: 5.8.1
+        specifier: 6.3.1
+        version: 6.3.1
       '@bazel/terser':
         specifier: 5.8.1
         version: 5.8.1(terser@5.39.0)
@@ -2570,6 +2570,7 @@ packages:
 
   /@bazel/runfiles@5.8.1:
     resolution: {integrity: sha512-NDdfpdQ6rZlylgv++iMn5FkObC/QlBQvipinGLSOguTYpRywmieOyJ29XHvUilspwTFSILWpoE9CqMGkHXug1g==, tarball: https://registry.npmjs.org/@bazel/runfiles/-/runfiles-5.8.1.tgz}
+    dev: true
 
   /@bazel/runfiles@6.3.1:
     resolution: {integrity: sha512-1uLNT5NZsUVIGS4syuHwTzZ8HycMPyr6POA3FCE4GbMtc4rhoJk8aZKtNIRthJYfL+iioppi+rTfH3olMPr9nA==, tarball: https://registry.npmjs.org/@bazel/runfiles/-/runfiles-6.3.1.tgz}
