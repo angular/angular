@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(
     default_visibility = [
@@ -7,14 +7,12 @@ package(
     ],
 )
 
-ts_library(
+ts_project(
     name = "explicit-standalone-flag",
     srcs = glob(["**/*.ts"]),
-    tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
-        "//packages/core/schematics/utils",
-        "@npm//@angular-devkit/schematics",
-        "@npm//@types/node",
-        "@npm//typescript",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
+        "//packages/core/schematics/utils:utils_rjs",
     ],
 )
