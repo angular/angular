@@ -23,14 +23,12 @@ import {Replacement} from '../../../utils/tsurge/replacement';
 import {populateKnownInputsFromGlobalData} from './batch/populate_global_data';
 import {executeMigrationPhase} from './phase_migrate';
 import {filterIncompatibilitiesForBestEffortMode} from './best_effort_mode';
-import assert from 'assert';
 import {
   ClassIncompatibilityReason,
   FieldIncompatibilityReason,
 } from './passes/problematic_patterns/incompatibility';
 import {MigrationConfig} from './migration_config';
 import {ClassFieldUniqueKey} from './passes/reference_resolution/known_fields';
-import {createBaseProgramInfo} from '../../../utils/tsurge/helpers/create_program';
 
 /**
  * Tsurge migration for migrating Angular `@Input()` declarations to
@@ -50,9 +48,8 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     super();
   }
 
-  // Override the default program creation, to add extra flags.
-  override createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo {
-    return createBaseProgramInfo(tsconfigAbsPath, fs, {
+  override createProgram(tsconfigAbsPath: string, fs: FileSystem): ProgramInfo {
+    return super.createProgram(tsconfigAbsPath, fs, {
       _compilePoisonedComponents: true,
       // We want to migrate non-exported classes too.
       compileNonExportedClasses: true,
@@ -63,8 +60,11 @@ export class SignalInputMigration extends TsurgeComplexMigration<
     });
   }
 
-  override prepareProgram(baseInfo: BaseProgramInfo): ProgramInfo {
-    const info = super.prepareProgram(baseInfo);
+  /**
+   * Prepares the program for this migration with additional custom
+   * fields to allow for batch-mode testing.
+   */
+  private _prepareProgram(info: ProgramInfo): ProgramInfo {
     // Optional filter for testing. Allows for simulation of parallel execution
     // even if some tsconfig's have overlap due to sharing of TS sources.
     // (this is commonly not the case in g3 where deps are `.d.ts` files).
@@ -74,7 +74,7 @@ export class SignalInputMigration extends TsurgeComplexMigration<
         // Optional replacement filter. Allows parallel execution in case
         // some tsconfig's have overlap due to sharing of TS sources.
         // (this is commonly not the case in g3 where deps are `.d.ts` files).
-        !limitToRootNamesOnly || info.programAbsoluteRootFileNames!.includes(f.fileName),
+        !limitToRootNamesOnly || info.__programAbsoluteRootFileNames!.includes(f.fileName),
     );
 
     return {
@@ -87,12 +87,14 @@ export class SignalInputMigration extends TsurgeComplexMigration<
   prepareAnalysisDeps(info: ProgramInfo): AnalysisProgramInfo {
     const analysisInfo = {
       ...info,
-      ...prepareAnalysisInfo(info.program, info.ngCompiler, info.programAbsoluteRootFileNames),
+      ...prepareAnalysisInfo(info.program, info.ngCompiler, info.__programAbsoluteRootFileNames),
     };
     return analysisInfo;
   }
 
   override async analyze(info: ProgramInfo) {
+    info = this._prepareProgram(info);
+
     const analysisDeps = this.prepareAnalysisDeps(info);
     const knownInputs = new KnownInputs(info, this.config);
     const result = new MigrationResult();
@@ -163,6 +165,8 @@ export class SignalInputMigration extends TsurgeComplexMigration<
       analysisDeps: AnalysisProgramInfo;
     },
   ) {
+    info = this._prepareProgram(info);
+
     const knownInputs = nonBatchData?.knownInputs ?? new KnownInputs(info, this.config);
     const result = nonBatchData?.result ?? new MigrationResult();
     const host = nonBatchData?.host ?? createMigrationHost(info, this.config);
