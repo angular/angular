@@ -10,9 +10,9 @@ import {absoluteFrom, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_sys
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
-import {BaseProgramInfo, ProgramInfo} from './program_info';
+import {ProgramInfo} from './program_info';
 import {Serializable} from './helpers/serializable';
-import {createBaseProgramInfo} from './helpers/create_program';
+import {createBaseProgramInfo, getProgramInfoFromBaseInfo} from './helpers/create_program';
 
 /**
  * Type describing statistics that could be tracked
@@ -34,8 +34,7 @@ export interface MigrationStats {
  */
 export abstract class TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMetadata> {
   /**
-   * Advanced Tsurge users can override this method, but most of the time,
-   * overriding {@link prepareProgram} is more desirable.
+   * Creates the TypeScript program for a given compilation unit.
    *
    * By default:
    *  - In 3P: Ngtsc programs are being created.
@@ -43,43 +42,10 @@ export abstract class TsurgeBaseMigration<UnitAnalysisMetadata, CombinedGlobalMe
    */
   createProgram(
     tsconfigAbsPath: string,
-    fs?: FileSystem,
-    optionOverrides?: NgCompilerOptions,
-  ): BaseProgramInfo {
-    return createBaseProgramInfo(tsconfigAbsPath, fs, optionOverrides);
-  }
-
-  // Optional function to prepare the base `ProgramInfo` even further,
-  // for the analyze and migrate phases. E.g. determining source files.
-  prepareProgram(info: BaseProgramInfo): ProgramInfo {
-    const fullProgramSourceFiles = [...info.program.getSourceFiles()];
-    const sourceFiles = fullProgramSourceFiles.filter(
-      (f) =>
-        !f.isDeclarationFile &&
-        // Note `isShim` will work for the initial program, but for TCB programs, the shims are no longer annotated.
-        !isShim(f) &&
-        !f.fileName.endsWith('.ngtypecheck.ts'),
-    );
-
-    // Sort it by length in reverse order (longest first). This speeds up lookups,
-    // since there's no need to keep going through the array once a match is found.
-    const sortedRootDirs = getRootDirs(info.host, info.userOptions).sort(
-      (a, b) => b.length - a.length,
-    );
-
-    // TODO: Consider also following TS's logic here, finding the common source root.
-    // See: Program#getCommonSourceDirectory.
-    const primaryRoot = absoluteFrom(
-      info.userOptions.rootDir ?? sortedRootDirs.at(-1) ?? info.program.getCurrentDirectory(),
-    );
-
-    return {
-      ...info,
-      sourceFiles,
-      fullProgramSourceFiles,
-      sortedRootDirs,
-      projectRoot: primaryRoot,
-    };
+    fs: FileSystem,
+    optionsOverride?: NgCompilerOptions,
+  ): ProgramInfo {
+    return getProgramInfoFromBaseInfo(createBaseProgramInfo(tsconfigAbsPath, fs, optionsOverride));
   }
 
   /** Analyzes the given TypeScript project and returns serializable compilation unit data. */

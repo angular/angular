@@ -13,5 +13,6 @@ ts_project(
     deps = [
         "//:node_modules/@angular-devkit/core",
         "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
     ],
 )

@@ -37,7 +37,7 @@ interface MigrateResult {
  *   - {@link TsurgeFunnelMigration}
  *   - {@link TsurgeComplexMigration}
  *
- *  TODO: Link design doc
+ *  http://go/tsurge-design
  */
 export type TsurgeMigration<UnitAnalysisMetadata, CombinedGlobalMetadata> =
   | TsurgeComplexMigration<UnitAnalysisMetadata, CombinedGlobalMetadata>

@@ -12,11 +12,11 @@ import {DevkitMigrationFilesystem} from './devkit_filesystem';
 import {groupReplacementsByFile} from '../group_replacements';
 import {synchronouslyCombineUnitData} from '../combine_units';
 import {TsurgeFunnelMigration, TsurgeMigration} from '../../migration';
-import {MigrationStats} from '../../base_migration';
 import {Replacement, TextUpdate} from '../../replacement';
 import {ProjectRootRelativePath} from '../../project_paths';
 import {ProgramInfo} from '../../program_info';
 import {getProjectTsConfigPaths} from '../../../../utils/project_tsconfig_paths';
+import ts from 'typescript';
 
 export enum MigrationStage {
   /** The migration is analyzing an entrypoint */
@@ -72,13 +72,17 @@ export async function runMigrationInDevkit(config: TsurgeDevkitMigration): Promi
   const unitResults: unknown[] = [];
 
   const isFunnelMigration = migration instanceof TsurgeFunnelMigration;
+  const compilationUnitAssignments = new Map<string, string>();
+
   for (const tsconfigPath of tsconfigPaths) {
     config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Analysis);
-    const baseInfo = migration.createProgram(tsconfigPath, fs);
-    const info = migration.prepareProgram(baseInfo);
-    config.afterProgramCreation?.(info, fs, MigrationStage.Analysis);
+    const info = migration.createProgram(tsconfigPath, fs);
 
+    modifyProgramInfoToEnsureNonOverlappingFiles(tsconfigPath, info, compilationUnitAssignments);
+
+    config.afterProgramCreation?.(info, fs, MigrationStage.Analysis);
     config.beforeUnitAnalysis?.(tsconfigPath);
+
     unitResults.push(await migration.analyze(info));
   }
 
@@ -100,8 +104,9 @@ export async function runMigrationInDevkit(config: TsurgeDevkitMigration): Promi
 
     for (const tsconfigPath of tsconfigPaths) {
       config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Migrate);
-      const baseInfo = migration.createProgram(tsconfigPath, fs);
-      const info = migration.prepareProgram(baseInfo);
+      const info = migration.createProgram(tsconfigPath, fs);
+      modifyProgramInfoToEnsureNonOverlappingFiles(tsconfigPath, info, compilationUnitAssignments);
+
       config.afterProgramCreation?.(info, fs, MigrationStage.Migrate);
 
       const result = await migration.migrate(globalMeta, info);
@@ -129,4 +134,38 @@ export async function runMigrationInDevkit(config: TsurgeDevkitMigration): Promi
   }
 
   config.whenDone?.(await migration.stats(globalMeta));
+}
+
+/**
+ * Special logic for devkit migrations. In the Angular CLI, or in 3P precisely,
+ * projects can have tsconfigs with overlapping source files. i.e. two tsconfigs
+ * like e.g. build or test include the same `ts.SourceFile` (`.ts`). Migrations
+ * should never have 2+ compilation units with overlapping source files as this
+ * can result in duplicated replacements or analysis— hence we only ever assign a
+ * source file to a compilation unit *once*.
+ *
+ * Note that this is fine as we expect Tsurge migrations to work together as
+ * isolated compilation units— so it shouldn't matter if worst case a `.ts`
+ * file ends up in the e.g. test program.
+ */
+function modifyProgramInfoToEnsureNonOverlappingFiles(
+  tsconfigPath: string,
+  info: ProgramInfo,
+  compilationUnitAssignments: Map<string, string>,
+) {
+  const sourceFiles: ts.SourceFile[] = [];
+
+  for (const sf of info.sourceFiles) {
+    const assignment = compilationUnitAssignments.get(sf.fileName);
+
+    // File is already assigned to a different compilation unit.
+    if (assignment !== undefined && assignment !== tsconfigPath) {
+      continue;
+    }
+
+    compilationUnitAssignments.set(sf.fileName, tsconfigPath);
+    sourceFiles.push(sf);
+  }
+
+  info.sourceFiles = sourceFiles;
 }

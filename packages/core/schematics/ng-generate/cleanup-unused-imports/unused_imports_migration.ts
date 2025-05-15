@@ -8,7 +8,6 @@
 
 import ts from 'typescript';
 import {
-  BaseProgramInfo,
   confirmAsSerializable,
   MigrationStats,
   ProgramInfo,
@@ -20,7 +19,7 @@ import {
   TsurgeFunnelMigration,
 } from '../../utils/tsurge';
 import {ErrorCode, FileSystem, ngErrorCode} from '@angular/compiler-cli';
-import {DiagnosticCategoryLabel} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {DiagnosticCategoryLabel, NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
 
@@ -71,7 +70,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
 > {
   private printer = ts.createPrinter();
 
-  override createProgram(tsconfigAbsPath: string, fs?: FileSystem): BaseProgramInfo {
+  override createProgram(tsconfigAbsPath: string, fs: FileSystem): ProgramInfo {
     return super.createProgram(tsconfigAbsPath, fs, {
       extendedDiagnostics: {
         checks: {

@@ -17,7 +17,7 @@ import {
   SignalQueriesMigration,
 } from '@angular/core/schematics/migrations/signal-queries-migration';
 import assert from 'assert';
-import {projectFile} from '../../../../core/schematics/utils/tsurge';
+import {projectFile, getProgramInfoFromBaseInfo} from '../../../../core/schematics/utils/tsurge';
 import {FieldIncompatibilityReason} from '../../../../core/schematics/migrations/signal-migration/src';
 import {
   isFieldIncompatibility,
@@ -43,15 +43,15 @@ export async function applySignalQueriesRefactoring(
     shouldMigrateQuery,
   });
 
-  const programInfo = migration.prepareProgram({
+  const programInfo = getProgramInfoFromBaseInfo({
     ngCompiler: compiler,
     program: compiler.getCurrentProgram(),
     userOptions: compilerOptions,
-    programAbsoluteRootFileNames: [],
     host: {
       getCanonicalFileName: (file) => project.projectService.toCanonicalFileName(file),
       getCurrentDirectory: () => project.getCurrentDirectory(),
     },
+    __programAbsoluteRootFileNames: [],
   });
 
   const unitData = await migration.analyze(programInfo);

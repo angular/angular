@@ -10,7 +10,7 @@ import {Serializable} from '../helpers/serializable';
 import {TsurgeMigration} from '../migration';
 
 /**
- * Executes the combine phase for the given migration against
+ * 1P Logic: Executes the combine phase for the given migration against
  * two unit analyses.
  *
  * @returns the serializable combined unit data.

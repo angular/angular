@@ -58,8 +58,7 @@ export async function runTsurgeMigration<UnitData, GlobalData>(
     }),
   );
 
-  const baseInfo = migration.createProgram('/tsconfig.json', mockFs);
-  const info = migration.prepareProgram(baseInfo);
+  const info = migration.createProgram('/tsconfig.json', mockFs);
 
   const unitData = await migration.analyze(info);
   const globalMeta = await migration.globalMeta(unitData);

@@ -19,6 +19,7 @@ import {
   nonIgnorableFieldIncompatibilities,
   SignalInputMigration,
 } from '@angular/core/schematics/migrations/signal-migration/src';
+import {getProgramInfoFromBaseInfo} from '@angular/core/schematics/utils/tsurge';
 import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 
@@ -42,15 +43,15 @@ export async function applySignalInputRefactoring(
   });
 
   await migration.analyze(
-    migration.prepareProgram({
+    getProgramInfoFromBaseInfo({
       ngCompiler: compiler,
       program: compiler.getCurrentProgram(),
       userOptions: compilerOptions,
-      programAbsoluteRootFileNames: [],
       host: {
         getCanonicalFileName: (file) => project.projectService.toCanonicalFileName(file),
         getCurrentDirectory: () => project.getCurrentDirectory(),
       },
+      __programAbsoluteRootFileNames: [],
     }),
   );
 
