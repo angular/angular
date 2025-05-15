@@ -13,6 +13,9 @@ import {isCaptureEventType} from './event_type';
 import {UnrenamedEventContract} from './eventcontract';
 import {Restriction} from './restriction';
 
+// Necessary to make the `ngDevMode` global types available.
+import '../../../src/util/ng_dev_mode';
+
 /**
  * A replayer is a function that is called when there are queued events, from the `EventContract`.
  */
