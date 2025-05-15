@@ -9,7 +9,7 @@ filegroup(
 filegroup(
     name = "embeddable",
     srcs = glob(
-        ["*/src/app/**"],
+        ["**/app/**"],
         exclude = [
             "testing/**",  # Can't embed test code
             "i18n/**",  # @angular/localize/init not available in docs app
