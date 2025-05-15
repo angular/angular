@@ -1,3 +1,21 @@
+<a name="20.0.0-rc.1"></a>
+# 20.0.0-rc.1 (2025-05-15)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e0d378d20e7](https://github.com/angular/angular/commit/e0d378d20e768d353b01bc28e10ad53c5485b426) | fix | incorrectly handling let declarations inside i18n ([#60512](https://github.com/angular/angular/pull/60512)) |
+| [768239a89cb](https://github.com/angular/angular/commit/768239a89cba7e7cf1f497e15589705b1446f8a6) | perf | reduce allocations for let declarations only used in the same view ([#60512](https://github.com/angular/angular/pull/60512)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9ec9c7e1b84](https://github.com/angular/angular/commit/9ec9c7e1b8473c76661ad09a3961016ccc4ddfc7) | fix | avoid fatal diagnostics for invalid module schemas ([#61220](https://github.com/angular/angular/pull/61220)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4fe34f4cfea](https://github.com/angular/angular/commit/4fe34f4cfea2aa0e355afa04c7183545637283c3) | fix | enable stashing only when `withEventReplay()` is invoked ([#61077](https://github.com/angular/angular/pull/61077)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0-rc.0"></a>
 # 20.0.0-rc.0 (2025-05-07)
 ### common
