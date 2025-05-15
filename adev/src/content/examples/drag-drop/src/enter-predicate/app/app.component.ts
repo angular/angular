@@ -1,19 +1,19 @@
-import {Component} from '@angular/core';
 import {
+  CdkDrag,
   CdkDragDrop,
+  CdkDropList,
   moveItemInArray,
   transferArrayItem,
-  CdkDrag,
-  CdkDropList,
 } from '@angular/cdk/drag-drop';
+import {Component} from '@angular/core';
 
 /**
  * @title Drag&Drop enter predicate
  */
 @Component({
   selector: 'cdk-drag-drop-enter-predicate-example',
-  templateUrl: 'cdk-drag-drop-enter-predicate-example.html',
-  styleUrl: 'cdk-drag-drop-enter-predicate-example.css',
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css',
   standalone: true,
   imports: [CdkDropList, CdkDrag],
 })

@@ -1,13 +1,13 @@
-import {Component} from '@angular/core';
 import {CdkDrag} from '@angular/cdk/drag-drop';
+import {Component} from '@angular/core';
 
 /**
  * @title Programmatically setting the free drag position
  */
 @Component({
   selector: 'cdk-drag-drop-free-drag-position-example',
-  templateUrl: 'cdk-drag-drop-free-drag-position-example.html',
-  styleUrl: 'cdk-drag-drop-free-drag-position-example.css',
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css',
   standalone: true,
   imports: [CdkDrag],
 })
