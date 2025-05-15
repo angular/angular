@@ -287,6 +287,27 @@ describe('Node', () => {
       expect(f.a.$state.readonly()).toBe(true);
       expect(f.b.$state.readonly()).toBe(true);
     });
+
+    it('should not validate readonly fields', () => {
+      const isReadonly = signal(false);
+      const f = form(
+        signal(''),
+        (p) => {
+          readonly(p, isReadonly);
+          required(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.$state.metadata(REQUIRED)()).toBe(true);
+      expect(f.$state.valid()).toBe(false);
+      expect(f.$state.readonly()).toBe(false);
+
+      isReadonly.set(true);
+      expect(f.$state.metadata(REQUIRED)()).toBe(true);
+      expect(f.$state.valid()).toBe(true);
+      expect(f.$state.readonly()).toBe(true);
+    });
   });
 
   describe('validation', () => {

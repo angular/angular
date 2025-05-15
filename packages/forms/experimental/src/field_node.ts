@@ -440,7 +440,7 @@ export class FieldNode implements FieldState<unknown> {
    * Defined in terms of other conditions based on the field logic.
    */
   shouldSkipValidation(): boolean {
-    return this.hidden() || this.disabled();
+    return this.hidden() || this.disabled() || this.readonly();
   }
 
   /**
