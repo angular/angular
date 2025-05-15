@@ -15,6 +15,9 @@ def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/service-worker"):
         return "//packages:tsconfig_test" if testonly else "//packages/service-worker:tsconfig_build"
 
+    if native.package_name().startswith("packages/core/schematics"):
+        return "//packages/core/schematics:tsconfig_test" if testonly else "//packages/core/schematics:tsconfig_build"
+
     if native.package_name().startswith("packages/core"):
         return "//packages/core:tsconfig_test" if testonly else "//packages/core:tsconfig_build"
 
