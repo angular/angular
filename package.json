@@ -234,8 +234,7 @@
   },
   "resolutions": {
     "https-proxy-agent": "7.0.6",
-    "saucelabs": "9.0.2",
-    "@angular/core": "20.0.0-rc.0"
+    "saucelabs": "9.0.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": []
