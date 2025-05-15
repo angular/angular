@@ -1,8 +1,9 @@
-load("//tools:defaults.bzl", "esbuild", "ts_library", "tsec_test")
+load("//tools:defaults.bzl", "esbuild", "tsec_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "event-dispatch",
     srcs = glob(
         [
@@ -11,7 +12,7 @@ ts_library(
     ),
     module_name = "@angular/core/primitives/event-dispatch",
     deps = [
-        "//packages/core/src/util",  # Implicit dependency on ngDevMode
+        "//packages/core/src/util:util_rjs",  # Implicit dependency on ngDevMode
     ],
 )
 
@@ -36,10 +37,11 @@ esbuild(
         "sourcemap": False,
         "resolveExtensions": [
             ".mjs",
+            ".js",
         ],
         "legalComments": "none",
     },
-    entry_point = ":contract_binary.ts",
+    entry_point = ":contract_binary.js",
     format = "iife",
     minify = True,
     sourcemap = "inline",
