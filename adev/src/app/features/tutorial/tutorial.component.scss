@@ -94,7 +94,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
   .docs-viewer {
 
     //applying styles when TOC position got translated to the top right 
-    @media only screen and (min-width: 1431px) {
+    @include mq.for-large-desktop-up {
       // take the available space except a reserved area for TOC
       margin-left: 0rem;
       width: unset;
@@ -148,7 +148,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
 .adev-split-tutorial {
   width: 50%;
 
-  @include mq.for-big-desktop-up {
+  @include mq.for-extra-large-desktop-up {
     width: 100%;
   }
 
