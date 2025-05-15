@@ -1,19 +1,13 @@
-load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+load("//tools:defaults.bzl", "nodejs_binary")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "src",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["test/**"],
     ),
-    visibility = [
-        "//packages/core/schematics/migrations/output-migration:__pkg__",
-        "//packages/core/schematics/migrations/signal-migration/test:__pkg__",
-        "//packages/core/schematics/migrations/signal-queries-migration:__pkg__",
-        "//packages/core/schematics/ng-generate/signal-input-migration:__pkg__",
-        "//packages/language-service:__subpackages__",
-    ],
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/annotations",
@@ -38,22 +32,31 @@ ts_library(
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/ast",
-        "@npm//@types/node",
-        "@npm//magic-string",
-        "@npm//typescript",
+    ],
+    visibility = [
+        "//packages/core/schematics/migrations/output-migration:__pkg__",
+        "//packages/core/schematics/migrations/signal-migration/test:__pkg__",
+        "//packages/core/schematics/migrations/signal-queries-migration:__pkg__",
+        "//packages/core/schematics/ng-generate/signal-input-migration:__pkg__",
+        "//packages/language-service:__subpackages__",
+    ],
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/magic-string",
+        "//:node_modules/typescript",
     ],
 )
 
 nodejs_binary(
     name = "bin",
     data = [":src"],
-    entry_point = ":cli.ts",
+    entry_point = ":cli.js",
     visibility = ["//packages/core/schematics/migrations/signal-migration/test:__pkg__"],
 )
 
 nodejs_binary(
     name = "batch_test_bin",
     data = [":src"],
-    entry_point = ":batch/test_bin.ts",
+    entry_point = ":batch/test_bin.js",
     visibility = ["//packages/core/schematics/migrations/signal-migration/test:__pkg__"],
 )
