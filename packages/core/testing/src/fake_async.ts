@@ -25,7 +25,7 @@ export function resetFakeAsyncZone(): void {
 }
 
 export function resetFakeAsyncZoneIfExists(): void {
-  if (fakeAsyncTestModule) {
+  if (fakeAsyncTestModule && (Zone as any)['ProxyZoneSpec']?.isLoaded()) {
     fakeAsyncTestModule.resetFakeAsyncZone();
   }
 }
