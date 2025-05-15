@@ -22,7 +22,7 @@ def nodejs_binary(
     _nodejs_binary(
         name = name,
         testonly = testonly,
-        entry_point = str(entry_point).replace(".js", ".mjs"),
+        entry_point = entry_point,
         env = env,
         templated_args = templated_args,
         use_esm = True,
