@@ -45,21 +45,17 @@
 @include mq.for-tablet-portrait-up();
 @include mq.for-tablet-landscape-up();
 @include mq.for-desktop-up();
-@include mq.for-big-desktop-up();
+@include mq.for-extra-large-desktop-up();
 @include mq.for-tablet-landscape-down();
 
 // temporary just to show different options of code component UI.
 $primary: mat.m2-define-palette(mat.$m2-indigo-palette);
 $accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
-$theme: mat.m2-define-light-theme(
-  (
-    color: (
-      primary: $primary,
-      accent: $accent,
-    ),
-    typography: mat.m2-define-typography-config(),
-  )
-);
+$theme: mat.m2-define-light-theme((color: (primary: $primary,
+        accent: $accent,
+      ),
+      typography: mat.m2-define-typography-config(),
+    ));
 
 // Include material core styles.
 @include cdk.a11y-visually-hidden();
@@ -85,6 +81,7 @@ $theme: mat.m2-define-light-theme(
 
 // Disable view transitions when reduced motion is requested.
 @media (prefers-reduced-motion) {
+
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
@@ -121,6 +118,7 @@ $theme: mat.m2-define-light-theme(
 
   a {
     color: inherit;
+
     &:hover {
       text-decoration: underline;
     }
