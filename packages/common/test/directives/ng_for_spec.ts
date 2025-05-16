@@ -9,7 +9,7 @@
 import {CommonModule, NgFor, NgForOf} from '../../index';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 
 let thisArg: any;
