@@ -28,6 +28,9 @@ import {
   HttpResponse,
 } from './response';
 
+// Needed for the global `Zone` ambient types to be available.
+import type {} from 'zone.js';
+
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
 /**

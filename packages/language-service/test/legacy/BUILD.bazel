@@ -17,6 +17,7 @@ ts_library(
 filegroup(
     name = "package_types",
     srcs = [
+        "//packages/common:common_rjs",
         "//packages/core:core_rjs",
     ],
     output_group = "types",
