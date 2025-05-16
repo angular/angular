@@ -196,6 +196,9 @@ export class ComponentFixture<T> {
    */
   autoDetectChanges(): void;
   autoDetectChanges(autoDetect = true): void {
+    if (!autoDetect && this.zonelessEnabled) {
+      throw new Error('Cannot set autoDetect to false with zoneless change detection.');
+    }
     if (this._noZoneOptionIsSet && !this.zonelessEnabled) {
       throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
     }
