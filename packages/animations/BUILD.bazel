@@ -1,8 +1,9 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "animations",
     srcs = glob(
         [
@@ -10,9 +11,11 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages/common",
-        "//packages/core",
+    ],
+    deps = [
+        "//packages/core:core_rjs",
     ],
 )
 
