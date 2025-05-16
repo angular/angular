@@ -13,7 +13,6 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
-  Optional,
   Output,
   Pipe,
   PipeTransform,
