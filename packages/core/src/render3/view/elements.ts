@@ -16,7 +16,7 @@ import {
   type TElementNode,
 } from '../interfaces/node';
 import {isContentQueryHost} from '../interfaces/type_checks';
-import type {LView, TView} from '../interfaces/view';
+import {type LView, type TView} from '../interfaces/view';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getOrCreateTNode} from '../tnode_manipulation';
 import {mergeHostAttrs} from '../util/attrs_utils';
