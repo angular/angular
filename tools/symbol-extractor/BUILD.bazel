@@ -7,9 +7,9 @@ ts_project(
     name = "lib",
     testonly = True,
     srcs = glob(
-        ["**/*.ts"],
+        ["**/*.mts"],
         exclude = [
-            "**/*_spec.ts",
+            "**/*_spec.mts",
             "**/*_spec",
         ],
     ),
@@ -25,7 +25,7 @@ ts_project(
     name = "test_lib",
     testonly = 1,
     srcs = glob(
-        ["**/*_spec.ts"],
+        ["**/*_spec.mts"],
         exclude = ["symbol_extractor_spec/**"],
     ),
     tsconfig = "//tools:tsconfig_test",

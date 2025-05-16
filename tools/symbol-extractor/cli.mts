@@ -8,8 +8,9 @@
 
 import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
+import * as path from 'path';
 
-import {SymbolExtractor} from './symbol_extractor';
+import {SymbolExtractor} from './symbol_extractor.mjs';
 
 const args = process.argv.slice(2) as [string, string];
 process.exitCode = main(args) ? 0 : 1;
@@ -24,19 +25,19 @@ process.exitCode = main(args) ? 0 : 1;
 function main(argv: [string, string, string] | [string, string]): boolean {
   const javascriptFilePath = runfiles.resolveWorkspaceRelative(argv[0]);
   const goldenFilePath = runfiles.resolveWorkspaceRelative(argv[1]);
-  const doUpdate = argv[2] == '--accept';
+  const doUpdate = argv[2] === '--accept';
 
   console.info('Input javascript file:', javascriptFilePath);
 
   const javascriptContent = fs.readFileSync(javascriptFilePath).toString();
   const goldenContent = fs.readFileSync(goldenFilePath).toString();
-
   const symbolExtractor = new SymbolExtractor(javascriptFilePath, javascriptContent);
 
-  let passed: boolean = false;
+  let passed = false;
   if (doUpdate) {
-    fs.writeFileSync(goldenFilePath, JSON.stringify(symbolExtractor.actual, undefined, 2));
-    console.error('Updated gold file:', goldenFilePath);
+    const goldenOutFilePath = path.join(process.env['BUILD_WORKING_DIRECTORY']!, argv[1]);
+    fs.writeFileSync(goldenOutFilePath, JSON.stringify(symbolExtractor.actual, undefined, 2));
+    console.error('Updated gold file:', goldenOutFilePath);
     passed = true;
   } else {
     passed = symbolExtractor.compareAndPrintError(goldenContent);

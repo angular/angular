@@ -17,7 +17,7 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         src,
         golden,
     ]
-    entry_point = "//tools/symbol-extractor:cli.js"
+    entry_point = "//tools/symbol-extractor:cli.mjs"
 
     js_test(
         name = name,
