@@ -91,12 +91,26 @@ export function getOrCreateTNode(
   type: TNodeType,
   name: string | null,
   attrs: TAttributes | null,
-): TElementNode &
-  TContainerNode &
-  TElementContainerNode &
-  TProjectionNode &
-  TIcuContainerNode &
-  TLetDeclarationNode {
+):
+  | TElementNode
+  | TContainerNode
+  | TElementContainerNode
+  | TProjectionNode
+  | TIcuContainerNode
+  | TLetDeclarationNode;
+export function getOrCreateTNode(
+  tView: TView,
+  index: number,
+  type: TNodeType,
+  name: string | null,
+  attrs: TAttributes | null,
+):
+  | TElementNode
+  | TContainerNode
+  | TElementContainerNode
+  | TProjectionNode
+  | TIcuContainerNode
+  | TLetDeclarationNode {
   ngDevMode &&
     index !== 0 && // 0 are bogus nodes and they are OK. See `createContainerRef` in
     // `view_engine_compatibility` for additional context.
@@ -123,11 +137,12 @@ export function getOrCreateTNode(
     ngDevMode && assertEqual(index, tNode.index, 'Expecting same index');
   }
   setCurrentTNode(tNode, true);
-  return tNode as TElementNode &
-    TContainerNode &
-    TElementContainerNode &
-    TProjectionNode &
-    TIcuContainerNode;
+  return tNode as
+    | TElementNode
+    | TContainerNode
+    | TElementContainerNode
+    | TProjectionNode
+    | TIcuContainerNode;
 }
 
 export function createTNodeAtIndex(
