@@ -14,13 +14,10 @@ import {
   setSegmentHead,
 } from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
-import {assertEqual, assertNumber} from '../../util/assert';
-import {assertHasParent} from '../assert';
+import {assertDefined, assertEqual, assertNumber} from '../../util/assert';
 import {createCommentNode} from '../dom_node_manipulation';
-import {registerPostOrderHooks} from '../hooks';
 import {TNode, TNodeType} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
-import {isContentQueryHost} from '../interfaces/type_checks';
 import {HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {
@@ -29,13 +26,10 @@ import {
   getCurrentTNode,
   getLView,
   getTView,
-  isCurrentTNodeParent,
   isInSkipHydrationBlock,
   lastNodeWasCreated,
-  setCurrentTNode,
-  setCurrentTNodeAsNotParent,
 } from '../state';
-import {elementLikeStartShared} from './shared';
+import {elementLikeEndShared, elementLikeStartShared} from './shared';
 
 /**
  * Creates a logical container for other nodes (<ng-container>) backed by a comment node in the DOM.
@@ -87,24 +81,11 @@ export function ɵɵelementContainerStart(
  * @codeGenApi
  */
 export function ɵɵelementContainerEnd(): typeof ɵɵelementContainerEnd {
-  let currentTNode = getCurrentTNode()!;
   const tView = getTView();
-  if (isCurrentTNodeParent()) {
-    setCurrentTNodeAsNotParent();
-  } else {
-    ngDevMode && assertHasParent(currentTNode);
-    currentTNode = currentTNode.parent!;
-    setCurrentTNode(currentTNode, false);
-  }
-
+  const initialTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
+  const currentTNode = elementLikeEndShared(tView, initialTNode);
   ngDevMode && assertTNodeType(currentTNode, TNodeType.ElementContainer);
-
-  if (tView.firstCreatePass) {
-    registerPostOrderHooks(tView, currentTNode);
-    if (isContentQueryHost(currentTNode)) {
-      tView.queries!.elementEnd(currentTNode);
-    }
-  }
   return ɵɵelementContainerEnd;
 }
 
