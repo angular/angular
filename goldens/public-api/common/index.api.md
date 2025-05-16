@@ -716,9 +716,9 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
     constructor(_viewContainerRef: ViewContainerRef);
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    ngTemplateOutlet: TemplateRef<C> | null;
-    ngTemplateOutletContext: C | null;
-    ngTemplateOutletInjector: Injector | null;
+    ngTemplateOutlet: TemplateRef<C> | null | undefined;
+    ngTemplateOutletContext: C | null | undefined;
+    ngTemplateOutletInjector: Injector | null | undefined;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet<any>, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": { "alias": "ngTemplateOutletContext"; "required": false; }; "ngTemplateOutlet": { "alias": "ngTemplateOutlet"; "required": false; }; "ngTemplateOutletInjector": { "alias": "ngTemplateOutletInjector"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
