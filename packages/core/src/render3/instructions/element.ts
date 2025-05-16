@@ -60,7 +60,7 @@ import {
   setCurrentTNodeAsNotParent,
   wasLastNodeCreated,
 } from '../state';
-import {elementEndFirstCreatePass, elementStartFirstCreatePass} from '../view/elements';
+import {elementEndFirstCreatePass, elementLikeStartFirstCreatePass} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
@@ -105,10 +105,11 @@ export function ɵɵelementStart(
 
   const renderer = lView[RENDERER];
   const tNode = tView.firstCreatePass
-    ? elementStartFirstCreatePass(
+    ? elementLikeStartFirstCreatePass(
         adjustedIndex,
         tView,
         lView,
+        TNodeType.Element,
         name,
         findDirectiveDefMatches,
         getBindingsEnabled(),

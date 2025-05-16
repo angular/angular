@@ -19,7 +19,7 @@ import {assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {createCommentNode} from '../dom_node_manipulation';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
+import {TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
@@ -39,49 +39,12 @@ import {
   setCurrentTNodeAsNotParent,
   wasLastNodeCreated,
 } from '../state';
-import {computeStaticStyling} from '../styling/static_styling';
-import {mergeHostAttrs} from '../util/attrs_utils';
-import {getConstant} from '../util/view_utils';
-
-import {getOrCreateTNode} from '../tnode_manipulation';
-import {resolveDirectives} from '../view/directives';
 import {
   createDirectivesInstances,
   findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
-
-function elementContainerStartFirstCreatePass(
-  index: number,
-  tView: TView,
-  lView: LView,
-  attrsIndex?: number | null,
-  localRefsIndex?: number,
-): TElementContainerNode {
-  const tViewConsts = tView.consts;
-  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
-  const tNode = getOrCreateTNode(tView, index, TNodeType.ElementContainer, 'ng-container', attrs);
-
-  // While ng-container doesn't necessarily support styling, we use the style context to identify
-  // and execute directives on the ng-container.
-  if (attrs !== null) {
-    computeStaticStyling(tNode, attrs, true);
-  }
-
-  const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
-  if (getBindingsEnabled()) {
-    resolveDirectives(tView, lView, tNode, localRefs, findDirectiveDefMatches);
-  }
-
-  // Merge the template attrs last so that they have the highest priority.
-  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
-
-  if (tView.queries !== null) {
-    tView.queries.elementStart(tView, tNode);
-  }
-
-  return tNode;
-}
+import {elementLikeStartFirstCreatePass} from '../view/elements';
 
 /**
  * Creates a logical container for other nodes (<ng-container>) backed by a comment node in the DOM.
@@ -105,7 +68,7 @@ export function ɵɵelementContainerStart(
 ): typeof ɵɵelementContainerStart {
   const lView = getLView();
   const tView = getTView();
-  const adjustedIndex = index + HEADER_OFFSET;
+  const adjustedIndex = HEADER_OFFSET + index;
 
   ngDevMode && assertIndexInRange(lView, adjustedIndex);
   ngDevMode &&
@@ -116,7 +79,17 @@ export function ɵɵelementContainerStart(
     );
 
   const tNode = tView.firstCreatePass
-    ? elementContainerStartFirstCreatePass(adjustedIndex, tView, lView, attrsIndex, localRefsIndex)
+    ? elementLikeStartFirstCreatePass(
+        adjustedIndex,
+        tView,
+        lView,
+        TNodeType.ElementContainer,
+        'ng-container',
+        findDirectiveDefMatches,
+        getBindingsEnabled(),
+        attrsIndex,
+        localRefsIndex,
+      )
     : (tView.data[adjustedIndex] as TElementContainerNode);
   setCurrentTNode(tNode, true);
 
