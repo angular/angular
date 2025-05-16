@@ -54,7 +54,9 @@ jobs:
 
       # Angular CLI
       - name: Create Branch
-        run: git checkout -b tmp-cli-docs-update ${{ github.ref }}
+        run: |
+          git reset --hard HEAD
+          git checkout -b tmp-cli-docs-update ${{ github.ref }}
       - name: Generate CLI help
         run: node adev/scripts/update-cli-help/index.mjs
         env:
