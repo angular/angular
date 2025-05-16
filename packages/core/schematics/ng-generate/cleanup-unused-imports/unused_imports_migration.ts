@@ -94,6 +94,11 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
         diag.length !== undefined &&
         diag.code === ngErrorCode(ErrorCode.UNUSED_STANDALONE_IMPORTS)
       ) {
+        // Skip files that aren't owned by this compilation unit.
+        if (!info.sourceFiles.includes(diag.file)) {
+          return;
+        }
+
         if (!nodePositions.has(diag.file)) {
           nodePositions.set(diag.file, new Set());
         }

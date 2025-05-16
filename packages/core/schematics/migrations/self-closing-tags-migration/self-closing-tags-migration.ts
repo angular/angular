@@ -110,12 +110,9 @@ export class SelfClosingTagsMigration extends TsurgeFunnelMigration<
     unitA: SelfClosingTagsCompilationUnitData,
     unitB: SelfClosingTagsCompilationUnitData,
   ): Promise<Serializable<SelfClosingTagsCompilationUnitData>> {
-    const uniqueReplacements = removeDuplicateReplacements([
-      ...unitA.tagReplacements,
-      ...unitB.tagReplacements,
-    ]);
-
-    return confirmAsSerializable({tagReplacements: uniqueReplacements});
+    return confirmAsSerializable({
+      tagReplacements: [...unitA.tagReplacements, ...unitB.tagReplacements],
+    });
   }
 
   override async globalMeta(
@@ -164,21 +161,4 @@ function prepareTextReplacement(
       toInsert: replacement,
     }),
   );
-}
-
-function removeDuplicateReplacements(
-  replacements: SelfClosingTagsMigrationData[],
-): SelfClosingTagsMigrationData[] {
-  const uniqueFiles = new Set<string>();
-  const result: SelfClosingTagsMigrationData[] = [];
-
-  for (const replacement of replacements) {
-    const fileId = replacement.file.id;
-    if (!uniqueFiles.has(fileId)) {
-      uniqueFiles.add(fileId);
-      result.push(replacement);
-    }
-  }
-
-  return result;
 }
