@@ -10,7 +10,7 @@ import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {SymbolExtractor} from './symbol_extractor';
+import {SymbolExtractor} from './symbol_extractor.mjs';
 
 describe('scenarios', () => {
   const symbolExtractorSpecDir = path.dirname(
