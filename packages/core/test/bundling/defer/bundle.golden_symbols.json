@@ -276,7 +276,7 @@
   "detectChangesInternal",
   "diPublicInInjector",
   "elementEndFirstCreatePass",
-  "elementStartFirstCreatePass",
+  "elementLikeStartFirstCreatePass",
   "enterDI",
   "enterView",
   "epoch",

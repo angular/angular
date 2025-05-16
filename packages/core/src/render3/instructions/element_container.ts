@@ -14,18 +14,15 @@ import {
   setSegmentHead,
 } from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
-import {assertEqual, assertIndexInRange, assertNumber} from '../../util/assert';
+import {assertEqual, assertNumber} from '../../util/assert';
 import {assertHasParent} from '../assert';
-import {attachPatchData} from '../context_discovery';
 import {createCommentNode} from '../dom_node_manipulation';
 import {registerPostOrderHooks} from '../hooks';
-import {TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
+import {TNode, TNodeType} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
-import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {isContentQueryHost} from '../interfaces/type_checks';
+import {HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {appendChild} from '../node_manipulation';
-import {executeContentQueries} from '../queries/query_execution';
 import {
   getBindingIndex,
   getBindingsEnabled,
@@ -37,14 +34,8 @@ import {
   lastNodeWasCreated,
   setCurrentTNode,
   setCurrentTNodeAsNotParent,
-  wasLastNodeCreated,
 } from '../state';
-import {
-  createDirectivesInstances,
-  findDirectiveDefMatches,
-  saveResolvedLocalsInData,
-} from './shared';
-import {elementLikeStartFirstCreatePass} from '../view/elements';
+import {elementLikeStartShared} from './shared';
 
 /**
  * Creates a logical container for other nodes (<ng-container>) backed by a comment node in the DOM.
@@ -68,48 +59,24 @@ export function ɵɵelementContainerStart(
 ): typeof ɵɵelementContainerStart {
   const lView = getLView();
   const tView = getTView();
-  const adjustedIndex = HEADER_OFFSET + index;
-
-  ngDevMode && assertIndexInRange(lView, adjustedIndex);
+  const bindingsEnabled = getBindingsEnabled();
   ngDevMode &&
     assertEqual(
       getBindingIndex(),
       tView.bindingStartIndex,
       'element containers should be created before any bindings',
     );
-
-  const tNode = tView.firstCreatePass
-    ? elementLikeStartFirstCreatePass(
-        adjustedIndex,
-        tView,
-        lView,
-        TNodeType.ElementContainer,
-        'ng-container',
-        findDirectiveDefMatches,
-        getBindingsEnabled(),
-        attrsIndex,
-        localRefsIndex,
-      )
-    : (tView.data[adjustedIndex] as TElementContainerNode);
-  setCurrentTNode(tNode, true);
-
-  const comment = _locateOrCreateElementContainerNode(tView, lView, tNode, index);
-  lView[adjustedIndex] = comment;
-
-  if (wasLastNodeCreated()) {
-    appendChild(tView, lView, comment, tNode);
-  }
-  attachPatchData(comment, lView);
-
-  if (isDirectiveHost(tNode)) {
-    createDirectivesInstances(tView, lView, tNode);
-    executeContentQueries(tView, tNode, lView);
-  }
-
-  if (localRefsIndex != null) {
-    saveResolvedLocalsInData(lView, tNode);
-  }
-
+  elementLikeStartShared(
+    lView,
+    tView,
+    index,
+    TNodeType.ElementContainer,
+    'ng-container',
+    _locateOrCreateElementContainerNode,
+    bindingsEnabled,
+    attrsIndex,
+    localRefsIndex,
+  );
   return ɵɵelementContainerStart;
 }
 
@@ -166,10 +133,11 @@ let _locateOrCreateElementContainerNode: typeof locateOrCreateElementContainerNo
   tView: TView,
   lView: LView,
   tNode: TNode,
+  commentText: string,
   index: number,
 ) => {
   lastNodeWasCreated(true);
-  return createCommentNode(lView[RENDERER], ngDevMode ? 'ng-container' : '');
+  return createCommentNode(lView[RENDERER], ngDevMode ? commentText : '');
 };
 
 /**
@@ -181,6 +149,7 @@ function locateOrCreateElementContainerNode(
   tView: TView,
   lView: LView,
   tNode: TNode,
+  commentText: string,
   index: number,
 ): RComment {
   let comment: RComment;
@@ -195,7 +164,7 @@ function locateOrCreateElementContainerNode(
 
   // Regular creation mode.
   if (isNodeCreationMode) {
-    return createCommentNode(lView[RENDERER], ngDevMode ? 'ng-container' : '');
+    return createCommentNode(lView[RENDERER], ngDevMode ? commentText : '');
   }
 
   // Hydration mode, looking up existing elements in DOM.
