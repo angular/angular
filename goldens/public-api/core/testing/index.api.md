@@ -11,7 +11,9 @@ import { Subscription } from 'rxjs';
 // @public
 export class ComponentFixture<T> {
     constructor(componentRef: ComponentRef<T>);
-    autoDetectChanges(autoDetect?: boolean): void;
+    // @deprecated
+    autoDetectChanges(autoDetect: boolean): void;
+    autoDetectChanges(): void;
     changeDetectorRef: ChangeDetectorRef;
     checkNoChanges(): void;
     componentInstance: T;
