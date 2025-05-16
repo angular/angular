@@ -11,7 +11,7 @@
   class="docs-text-field"
 />
 
-@if (resetLabel()) {
+@if (resetLabel() && inputRef.value.length > 0) {
   <button
     type="reset"
     [title]="resetLabel()"
