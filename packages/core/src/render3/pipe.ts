@@ -14,7 +14,7 @@ import {Type} from '../interface/type';
 import {InjectorProfilerContext, setInjectorProfilerContext} from './debug/injector_profiler';
 import {getFactoryDef} from './definition_factory';
 import {NodeInjector, setIncludeViewProviders} from './di';
-import {store, ɵɵdirectiveInject} from './instructions/all';
+import {ɵɵdirectiveInject} from './instructions/all';
 import {isHostComponentStandalone} from './instructions/element_validation';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {TTextNode} from './interfaces/node';
@@ -27,7 +27,7 @@ import {
   pureFunctionVInternal,
 } from './pure_function';
 import {getBindingRoot, getCurrentTNode, getLView, getTView} from './state';
-import {load} from './util/view_utils';
+import {load, store} from './util/view_utils';
 
 /**
  * Create a pipe.
