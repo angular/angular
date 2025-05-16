@@ -138,6 +138,17 @@ export function load<T>(view: LView | TData, index: number): T {
   return view[index];
 }
 
+/** Store a value in the `data` at a given `index`. */
+export function store<T>(tView: TView, lView: LView, index: number, value: T): void {
+  // We don't store any static data for local variables, so the first time
+  // we see the template, we should store as null to avoid a sparse array
+  if (index >= tView.data.length) {
+    tView.data[index] = null;
+    tView.blueprint[index] = null;
+  }
+  lView[index] = value;
+}
+
 export function getComponentLViewByIndex(nodeIndex: number, hostView: LView): LView {
   // Could be an LView or an LContainer. If LContainer, unwrap to find LView.
   ngDevMode && assertIndexInRange(hostView, nodeIndex);
