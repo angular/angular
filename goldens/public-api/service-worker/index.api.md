@@ -46,6 +46,12 @@ export class SwPush {
             title: string;
         };
     }>;
+    readonly notificationCloses: Observable<{
+        action: string;
+        notification: NotificationOptions & {
+            title: string;
+        };
+    }>;
     requestSubscription(options: {
         serverPublicKey: string;
     }): Promise<PushSubscription>;

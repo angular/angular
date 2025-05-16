@@ -1193,6 +1193,44 @@ import {envIsSupported} from '../testing/utils';
       });
     });
 
+    describe('notification close events', () => {
+      it('broadcasts notification close events', async () => {
+        expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+        const notification = {title: 'This is a test with action', body: 'Test body with action'};
+        await driver.initialized;
+        await scope.handleClick(
+          {title: 'This is a test with action', body: 'Test body with action'},
+          'button',
+        );
+        await scope.handleClose(notification, '');
+
+        const {messages} = scope.clients.getMock('default')!;
+
+        expect(messages).toEqual([
+          {
+            type: 'NOTIFICATION_CLICK',
+            data: {
+              action: 'button',
+              notification: {
+                title: notification.title,
+                body: notification.body,
+              },
+            },
+          },
+          {
+            type: 'NOTIFICATION_CLOSE',
+            data: {
+              action: '',
+              notification: {
+                title: notification.title,
+                body: notification.body,
+              },
+            },
+          },
+        ]);
+      });
+    });
+
     it('prefetches updates to lazy cache when set', async () => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
