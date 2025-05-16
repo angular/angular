@@ -185,8 +185,20 @@ export class ComponentFixture<T> {
    * Also runs detectChanges once so that any existing change is detected.
    *
    * @param autoDetect Whether to autodetect changes. By default, `true`.
+   * @deprecated For `autoDetect: true`, use `autoDetectChanges()`.
+   * We have not seen a use-case for `autoDetect: false` but `changeDetectorRef.detach()` is a close equivalent.
    */
+  autoDetectChanges(autoDetect: boolean): void;
+  /**
+   * Enables automatically synchronizing the view, as it would in an application.
+   *
+   * Also runs detectChanges once so that any existing change is detected.
+   */
+  autoDetectChanges(): void;
   autoDetectChanges(autoDetect = true): void {
+    if (!autoDetect && this.zonelessEnabled) {
+      throw new Error('Cannot set autoDetect to false with zoneless change detection.');
+    }
     if (this._noZoneOptionIsSet && !this.zonelessEnabled) {
       throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
     }
