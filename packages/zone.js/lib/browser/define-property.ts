@@ -86,7 +86,7 @@ export function _redefineProperty(obj: any, prop: string, desc: any) {
 }
 
 function isUnconfigurable(obj: any, prop: any) {
-  return obj && obj[unconfigurablesKey] && obj[unconfigurablesKey][prop];
+  return obj?.[unconfigurablesKey]?.[prop];
 }
 
 function rewriteDescriptor(obj: any, prop: string, desc: any) {
