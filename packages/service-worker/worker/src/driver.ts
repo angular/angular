@@ -181,11 +181,12 @@ export class Driver implements Debuggable, UpdateSource {
       }
     });
 
-    // Handle the fetch, message, and push events.
+    // Handle the fetch, message, and push, notificationclick and notificationclose events.
     this.scope.addEventListener('fetch', (event) => this.onFetch(event!));
     this.scope.addEventListener('message', (event) => this.onMessage(event!));
     this.scope.addEventListener('push', (event) => this.onPush(event!));
-    this.scope.addEventListener('notificationclick', (event) => this.onClick(event!));
+    this.scope.addEventListener('notificationclick', (event) => this.onClick(event));
+    this.scope.addEventListener('notificationclose', (event) => this.onClose(event));
 
     // The debugger generates debug pages in response to debugging requests.
     this.debugger = new DebugHandler(this, this.adapter);
@@ -376,6 +377,11 @@ export class Driver implements Debuggable, UpdateSource {
     event.waitUntil(this.handleClick(event.notification, event.action));
   }
 
+  private onClose(event: NotificationEvent): void {
+    // Handle the close event and keep the SW alive until it's handled.
+    event.waitUntil(this.handleClose(event.notification, event.action));
+  }
+
   private async ensureInitialized(event: ExtendableEvent): Promise<void> {
     // Since the SW may have just been started, it may or may not have been initialized already.
     // `this.initialized` will be `null` if initialization has not yet been attempted, or will be a
@@ -477,6 +483,29 @@ export class Driver implements Debuggable, UpdateSource {
 
     await this.broadcast({
       type: 'NOTIFICATION_CLICK',
+      data: {action, notification: options},
+    });
+  }
+
+  /**
+   * Handles the closing of a notification by extracting its options and
+   * broadcasting a `NOTIFICATION_CLOSE` message.
+   *
+   * This is typically called when a notification is dismissed by the user
+   * or closed programmatically, and it relays that information to clients
+   * listening for service worker events.
+   *
+   * @param notification - The original `Notification` object that was closed.
+   * @param action - The action string associated with the close event, if any (usually an empty string).
+   */
+  private async handleClose(notification: Notification, action: string): Promise<void> {
+    const options: {-readonly [K in keyof Notification]?: Notification[K]} = {};
+    NOTIFICATION_OPTION_NAMES.filter((name) => name in notification).forEach(
+      (name) => (options[name] = notification[name]),
+    );
+
+    await this.broadcast({
+      type: 'NOTIFICATION_CLOSE',
       data: {action, notification: options},
     });
   }
