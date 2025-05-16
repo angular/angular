@@ -40,6 +40,7 @@ function emitDeclarationOnlyTest(fs: FileSystem, test: ComplianceTest): CompileR
     {
       ...test.compilerOptions,
       emitDeclarationOnly: true,
+      noCheck: true,
     },
     {
       ...test.angularCompilerOptions,
