@@ -48,25 +48,34 @@ export function identifyPotentialTypeScriptReference<D extends ClassFieldDescrip
 
   let target: ts.Symbol | undefined = undefined;
 
-  // Resolve binding elements to their declaration symbol.
-  // Commonly inputs are accessed via object expansion. e.g. `const {input} = this;`.
-  if (ts.isBindingElement(node.parent)) {
-    // Skip binding elements that are using spread.
-    if (node.parent.dotDotDotToken !== undefined) {
-      return;
-    }
+  try {
+    // Resolve binding elements to their declaration symbol.
+    // Commonly inputs are accessed via object expansion. e.g. `const {input} = this;`.
+    if (ts.isBindingElement(node.parent)) {
+      // Skip binding elements that are using spread.
+      if (node.parent.dotDotDotToken !== undefined) {
+        return;
+      }
 
-    const bindingInfo = resolveBindingElement(node.parent);
-    if (bindingInfo === null) {
-      // The declaration could not be resolved. Skip analyzing this.
-      return;
-    }
+      const bindingInfo = resolveBindingElement(node.parent);
+      if (bindingInfo === null) {
+        // The declaration could not be resolved. Skip analyzing this.
+        return;
+      }
 
-    const bindingType = checker.getTypeAtLocation(bindingInfo.pattern);
-    const resolved = lookupPropertyAccess(checker, bindingType, [bindingInfo.propertyName]);
-    target = resolved?.symbol;
-  } else {
-    target = checker.getSymbolAtLocation(node);
+      const bindingType = checker.getTypeAtLocation(bindingInfo.pattern);
+      const resolved = lookupPropertyAccess(checker, bindingType, [bindingInfo.propertyName]);
+      target = resolved?.symbol;
+    } else {
+      target = checker.getSymbolAtLocation(node);
+    }
+  } catch (e) {
+    console.error('Unexpected error while trying to resolve identifier reference:');
+    console.error(e);
+
+    // Gracefully skip analyzing. This can happen when e.g. a reference is named similar
+    // to an input, but is dependant on `.d.ts` that is not necessarily available (clutz dts).
+    return;
   }
 
   noTargetSymbolCheck: if (target === undefined) {
