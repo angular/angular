@@ -597,7 +597,12 @@ export class ApplicationRef {
     if (!this.zonelessEnabled) {
       this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
     }
-    this._tick();
+    try {
+      this.includeAllTestViews = true;
+      this._tick();
+    } finally {
+      this.includeAllTestViews = false;
+    }
   }
 
   /** @internal */

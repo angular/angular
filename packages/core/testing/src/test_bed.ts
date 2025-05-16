@@ -806,17 +806,7 @@ export class TestBedImpl implements TestBed {
    * @publicApi
    */
   tick(): void {
-    const appRef = this.inject(ApplicationRef);
-    try {
-      // TODO(atscott): ApplicationRef.tick should set includeAllTestViews to true itself rather than doing this here and in ComponentFixture
-      // The behavior should be that TestBed.tick, ComponentFixture.detectChanges, and ApplicationRef.tick all result in the test fixtures
-      // getting synchronized, regardless of whether they are autoDetect: true.
-      // Automatic scheduling (zone or zoneless) will call _tick which will _not_ include fixtures with autoDetect: false
-      (appRef as any).includeAllTestViews = true;
-      appRef.tick();
-    } finally {
-      (appRef as any).includeAllTestViews = false;
-    }
+    this.inject(ApplicationRef).tick();
   }
 }
 
