@@ -1432,6 +1432,130 @@
           "memberTags": []
         },
         {
+          "name": "getHarnessAtIndex",
+          "signatures": [
+            {
+              "name": "getHarnessAtIndex",
+              "entryType": "function",
+              "description": "Searches for an instance of the component corresponding to the given harness type and index\nunder the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\ninstance. The index specifies the offset of the component to find. If no matching\ncomponent is found at that index, an error is thrown.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A query for a harness to create"
+                },
+                {
+                  "name": "param",
+                  "comment": "The zero-indexed offset of the component to find"
+                },
+                {
+                  "name": "return",
+                  "comment": "An instance of the given harness type"
+                },
+                {
+                  "name": "throws",
+                  "comment": "If a matching component instance can't be found."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "A query for a harness to create",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "offset",
+                  "description": "",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Searches for an instance of the component corresponding to the given harness type and index\n   * under the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\n   * instance. The index specifies the offset of the component to find. If no matching\n   * component is found at that index, an error is thrown.\n   * @param query A query for a harness to create\n   * @param index The zero-indexed offset of the component to find\n   * @return An instance of the given harness type\n   * @throws If a matching component instance can't be found.\n   */",
+              "returnType": "Promise<T>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "offset",
+                "description": "",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<T>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "getHarnessAtIndex",
+            "description": "Searches for an instance of the component corresponding to the given harness type and index\nunder the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\ninstance. The index specifies the offset of the component to find. If no matching\ncomponent is found at that index, an error is thrown.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "param",
+                "comment": "The zero-indexed offset of the component to find"
+              },
+              {
+                "name": "return",
+                "comment": "An instance of the given harness type"
+              },
+              {
+                "name": "throws",
+                "comment": "If a matching component instance can't be found."
+              }
+            ],
+            "rawComment": "/**\n   * Searches for an instance of the component corresponding to the given harness type and index\n   * under the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\n   * instance. The index specifies the offset of the component to find. If no matching\n   * component is found at that index, an error is thrown.\n   * @param query A query for a harness to create\n   * @param index The zero-indexed offset of the component to find\n   * @return An instance of the given harness type\n   * @throws If a matching component instance can't be found.\n   */"
+          },
+          "entryType": "function",
+          "description": "Searches for an instance of the component corresponding to the given harness type and index\nunder the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\ninstance. The index specifies the offset of the component to find. If no matching\ncomponent is found at that index, an error is thrown.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "param",
+              "comment": "The zero-indexed offset of the component to find"
+            },
+            {
+              "name": "return",
+              "comment": "An instance of the given harness type"
+            },
+            {
+              "name": "throws",
+              "comment": "If a matching component instance can't be found."
+            }
+          ],
+          "rawComment": "/**\n   * Searches for an instance of the component corresponding to the given harness type and index\n   * under the `HarnessEnvironment`'s root element, and returns a `ComponentHarness` for that\n   * instance. The index specifies the offset of the component to find. If no matching\n   * component is found at that index, an error is thrown.\n   * @param query A query for a harness to create\n   * @param index The zero-indexed offset of the component to find\n   * @return An instance of the given harness type\n   * @throws If a matching component instance can't be found.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
           "name": "getAllHarnesses",
           "signatures": [
             {
@@ -1514,6 +1638,92 @@
             }
           ],
           "rawComment": "/**\n   * Searches for all instances of the component corresponding to the given harness type under the\n   * `HarnessEnvironment`'s root element, and returns a list `ComponentHarness` for each instance.\n   * @param query A query for a harness to create\n   * @return A list instances of the given harness type.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "countHarnesses",
+          "signatures": [
+            {
+              "name": "countHarnesses",
+              "entryType": "function",
+              "description": "Searches for all instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns the number that were found.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A query for a harness to create"
+                },
+                {
+                  "name": "return",
+                  "comment": "The number of instances that were found."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "A query for a harness to create",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Searches for all instance of the component corresponding to the given harness type under the\n   * `HarnessEnvironment`'s root element, and returns the number that were found.\n   * @param query A query for a harness to create\n   * @return The number of instances that were found.\n   */",
+              "returnType": "Promise<number>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<number>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "countHarnesses",
+            "description": "Searches for all instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns the number that were found.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "return",
+                "comment": "The number of instances that were found."
+              }
+            ],
+            "rawComment": "/**\n   * Searches for all instance of the component corresponding to the given harness type under the\n   * `HarnessEnvironment`'s root element, and returns the number that were found.\n   * @param query A query for a harness to create\n   * @return The number of instances that were found.\n   */"
+          },
+          "entryType": "function",
+          "description": "Searches for all instance of the component corresponding to the given harness type under the\n`HarnessEnvironment`'s root element, and returns the number that were found.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "return",
+              "comment": "The number of instances that were found."
+            }
+          ],
+          "rawComment": "/**\n   * Searches for all instance of the component corresponding to the given harness type under the\n   * `HarnessEnvironment`'s root element, and returns the number that were found.\n   * @param query A query for a harness to create\n   * @return The number of instances that were found.\n   */",
           "memberType": "method",
           "memberTags": []
         },
@@ -2120,7 +2330,7 @@
       "source": {
         "filePath": "src/cdk/testing/harness-environment.ts",
         "startLine": 45,
-        "endLine": 401
+        "endLine": 435
       }
     },
     {
@@ -3240,6 +3450,81 @@
           "memberTags": []
         },
         {
+          "name": "getHarnessAtIndex",
+          "signatures": [],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "index",
+                "description": "The zero-indexed offset of the matching component instance to return",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<T>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "getHarnessAtIndex",
+            "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessLoader`'s root element, and returns a `ComponentHarness` for the instance on the page\nat the given index. If no matching component exists at that index, an error is thrown.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "param",
+                "comment": "The zero-indexed offset of the matching component instance to return"
+              },
+              {
+                "name": "return",
+                "comment": "An instance of the given harness type."
+              },
+              {
+                "name": "throws",
+                "comment": "If a matching component instance can't be found at the given index."
+              }
+            ],
+            "rawComment": "/**\n   * Searches for an instance of the component corresponding to the given harness type under the\n   * `HarnessLoader`'s root element, and returns a `ComponentHarness` for the instance on the page\n   * at the given index. If no matching component exists at that index, an error is thrown.\n   * @param query A query for a harness to create\n   * @param index The zero-indexed offset of the matching component instance to return\n   * @return An instance of the given harness type.\n   * @throws If a matching component instance can't be found at the given index.\n   */"
+          },
+          "entryType": "function",
+          "description": "Searches for an instance of the component corresponding to the given harness type under the\n`HarnessLoader`'s root element, and returns a `ComponentHarness` for the instance on the page\nat the given index. If no matching component exists at that index, an error is thrown.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "param",
+              "comment": "The zero-indexed offset of the matching component instance to return"
+            },
+            {
+              "name": "return",
+              "comment": "An instance of the given harness type."
+            },
+            {
+              "name": "throws",
+              "comment": "If a matching component instance can't be found at the given index."
+            }
+          ],
+          "rawComment": "/**\n   * Searches for an instance of the component corresponding to the given harness type under the\n   * `HarnessLoader`'s root element, and returns a `ComponentHarness` for the instance on the page\n   * at the given index. If no matching component exists at that index, an error is thrown.\n   * @param query A query for a harness to create\n   * @param index The zero-indexed offset of the matching component instance to return\n   * @return An instance of the given harness type.\n   * @throws If a matching component instance can't be found at the given index.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
           "name": "getAllHarnesses",
           "signatures": [],
           "implementation": {
@@ -3288,6 +3573,58 @@
             }
           ],
           "rawComment": "/**\n   * Searches for all instances of the component corresponding to the given harness type under the\n   * `HarnessLoader`'s root element, and returns a list `ComponentHarness` for each instance.\n   * @param query A query for a harness to create\n   * @return A list instances of the given harness type.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "countHarnesses",
+          "signatures": [],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "A query for a harness to create",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<number>",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "countHarnesses",
+            "description": "Searches for all instances of the component corresponding to the given harness type under the\n`HarnessLoader`'s root element, and returns the total count of all matching components.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A query for a harness to create"
+              },
+              {
+                "name": "return",
+                "comment": "An integer indicating the number of instances that were found."
+              }
+            ],
+            "rawComment": "/**\n   * Searches for all instances of the component corresponding to the given harness type under the\n   * `HarnessLoader`'s root element, and returns the total count of all matching components.\n   * @param query A query for a harness to create\n   * @return An integer indicating the number of instances that were found.\n   */"
+          },
+          "entryType": "function",
+          "description": "Searches for all instances of the component corresponding to the given harness type under the\n`HarnessLoader`'s root element, and returns the total count of all matching components.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A query for a harness to create"
+            },
+            {
+              "name": "return",
+              "comment": "An integer indicating the number of instances that were found."
+            }
+          ],
+          "rawComment": "/**\n   * Searches for all instances of the component corresponding to the given harness type under the\n   * `HarnessLoader`'s root element, and returns the total count of all matching components.\n   * @param query A query for a harness to create\n   * @return An integer indicating the number of instances that were found.\n   */",
           "memberType": "method",
           "memberTags": []
         },
@@ -3352,7 +3689,7 @@
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
         "startLine": 81,
-        "endLine": 137
+        "endLine": 156
       }
     },
     {
@@ -3685,6 +4022,33 @@
         "filePath": "src/cdk/testing/change-detection.ts",
         "startLine": 129,
         "endLine": 137
+      }
+    },
+    {
+      "name": "TextOptions",
+      "isAbstract": false,
+      "entryType": "interface",
+      "members": [
+        {
+          "name": "exclude",
+          "type": "string | undefined",
+          "memberType": "property",
+          "memberTags": [
+            "optional"
+          ],
+          "description": "Optional selector for elements whose content should be excluded from the text string.",
+          "jsdocTags": []
+        }
+      ],
+      "generics": [],
+      "description": "Options that affect the text returned by `TestElement.text`.",
+      "jsdocTags": [],
+      "rawComment": "/**\n * Options that affect the text returned by `TestElement.text`.\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/src/cdk/testing/test-element.ts",
+        "startLine": 186,
+        "endLine": 189
       }
     },
     {
@@ -4107,35 +4471,8 @@
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
-        "startLine": 144,
-        "endLine": 299
-      }
-    },
-    {
-      "name": "TextOptions",
-      "isAbstract": false,
-      "entryType": "interface",
-      "members": [
-        {
-          "name": "exclude",
-          "type": "string | undefined",
-          "memberType": "property",
-          "memberTags": [
-            "optional"
-          ],
-          "description": "Optional selector for elements whose content should be excluded from the text string.",
-          "jsdocTags": []
-        }
-      ],
-      "generics": [],
-      "description": "Options that affect the text returned by `TestElement.text`.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * Options that affect the text returned by `TestElement.text`.\n */",
-      "implements": [],
-      "source": {
-        "filePath": "/src/cdk/testing/test-element.ts",
-        "startLine": 186,
-        "endLine": 189
+        "startLine": 163,
+        "endLine": 318
       }
     },
     {
@@ -4582,8 +4919,8 @@
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
-        "startLine": 305,
-        "endLine": 454
+        "startLine": 324,
+        "endLine": 473
       }
     },
     {
@@ -4932,6 +5269,131 @@
           "memberTags": []
         },
         {
+          "name": "getHarnessAtIndex",
+          "signatures": [
+            {
+              "name": "getHarnessAtIndex",
+              "entryType": "function",
+              "description": "Gets a matching harness for the given query and index within the current harness's content.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "The harness query to search for."
+                },
+                {
+                  "name": "param",
+                  "comment": "The zero-indexed offset of the component to find."
+                },
+                {
+                  "name": "returns",
+                  "comment": "The first harness matching the given query."
+                },
+                {
+                  "name": "throws",
+                  "comment": "If no matching harness is found."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "The harness query to search for.",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "index",
+                  "description": "The zero-indexed offset of the component to find.",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Gets a matching harness for the given query and index within the current harness's content.\n   * @param query The harness query to search for.\n   * @param index The zero-indexed offset of the component to find.\n   * @returns The first harness matching the given query.\n   * @throws If no matching harness is found.\n   */",
+              "returnType": "Promise<T>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "The harness query to search for.",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "index",
+                "description": "The zero-indexed offset of the component to find.",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<T>",
+            "returnDescription": "The first harness matching the given query.",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "getHarnessAtIndex",
+            "description": "Gets a matching harness for the given query and index within the current harness's content.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "The harness query to search for."
+              },
+              {
+                "name": "param",
+                "comment": "The zero-indexed offset of the component to find."
+              },
+              {
+                "name": "returns",
+                "comment": "The first harness matching the given query."
+              },
+              {
+                "name": "throws",
+                "comment": "If no matching harness is found."
+              }
+            ],
+            "rawComment": "/**\n   * Gets a matching harness for the given query and index within the current harness's content.\n   * @param query The harness query to search for.\n   * @param index The zero-indexed offset of the component to find.\n   * @returns The first harness matching the given query.\n   * @throws If no matching harness is found.\n   */"
+          },
+          "entryType": "function",
+          "description": "Gets a matching harness for the given query and index within the current harness's content.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "The harness query to search for."
+            },
+            {
+              "name": "param",
+              "comment": "The zero-indexed offset of the component to find."
+            },
+            {
+              "name": "returns",
+              "comment": "The first harness matching the given query."
+            },
+            {
+              "name": "throws",
+              "comment": "If no matching harness is found."
+            }
+          ],
+          "rawComment": "/**\n   * Gets a matching harness for the given query and index within the current harness's content.\n   * @param query The harness query to search for.\n   * @param index The zero-indexed offset of the component to find.\n   * @returns The first harness matching the given query.\n   * @throws If no matching harness is found.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
           "name": "getAllHarnesses",
           "signatures": [
             {
@@ -5019,6 +5481,93 @@
           "memberTags": []
         },
         {
+          "name": "countHarnesses",
+          "signatures": [
+            {
+              "name": "countHarnesses",
+              "entryType": "function",
+              "description": "Returns the number of matching harnesses for the given query within the current harness's\ncontent.",
+              "generics": [
+                {
+                  "name": "T",
+                  "constraint": "ComponentHarness"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "The harness query to search for."
+                },
+                {
+                  "name": "returns",
+                  "comment": "The number of matching harnesses for the given query."
+                }
+              ],
+              "params": [
+                {
+                  "name": "query",
+                  "description": "The harness query to search for.",
+                  "type": "HarnessQuery<T>",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Returns the number of matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns The number of matching harnesses for the given query.\n   */",
+              "returnType": "Promise<number>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "query",
+                "description": "The harness query to search for.",
+                "type": "HarnessQuery<T>",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<number>",
+            "returnDescription": "The number of matching harnesses for the given query.",
+            "generics": [
+              {
+                "name": "T",
+                "constraint": "ComponentHarness"
+              }
+            ],
+            "name": "countHarnesses",
+            "description": "Returns the number of matching harnesses for the given query within the current harness's\ncontent.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "The harness query to search for."
+              },
+              {
+                "name": "returns",
+                "comment": "The number of matching harnesses for the given query."
+              }
+            ],
+            "rawComment": "/**\n   * Returns the number of matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns The number of matching harnesses for the given query.\n   */"
+          },
+          "entryType": "function",
+          "description": "Returns the number of matching harnesses for the given query within the current harness's\ncontent.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "The harness query to search for."
+            },
+            {
+              "name": "returns",
+              "comment": "The number of matching harnesses for the given query."
+            }
+          ],
+          "rawComment": "/**\n   * Returns the number of matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns The number of matching harnesses for the given query.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
           "name": "hasHarness",
           "signatures": [
             {
@@ -5039,7 +5588,7 @@
                 },
                 {
                   "name": "returns",
-                  "comment": "Whetehr there is matching harnesses for the given query."
+                  "comment": "Whether there is matching harnesses for the given query."
                 }
               ],
               "params": [
@@ -5051,7 +5600,7 @@
                   "isRestParam": false
                 }
               ],
-              "rawComment": "/**\n   * Checks whether there is a matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns Whetehr there is matching harnesses for the given query.\n   */",
+              "rawComment": "/**\n   * Checks whether there is a matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns Whether there is matching harnesses for the given query.\n   */",
               "returnType": "Promise<boolean>"
             }
           ],
@@ -5067,7 +5616,7 @@
             ],
             "isNewType": false,
             "returnType": "Promise<boolean>",
-            "returnDescription": "Whetehr there is matching harnesses for the given query.",
+            "returnDescription": "Whether there is matching harnesses for the given query.",
             "generics": [
               {
                 "name": "T",
@@ -5084,10 +5633,10 @@
               },
               {
                 "name": "returns",
-                "comment": "Whetehr there is matching harnesses for the given query."
+                "comment": "Whether there is matching harnesses for the given query."
               }
             ],
-            "rawComment": "/**\n   * Checks whether there is a matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns Whetehr there is matching harnesses for the given query.\n   */"
+            "rawComment": "/**\n   * Checks whether there is a matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns Whether there is matching harnesses for the given query.\n   */"
           },
           "entryType": "function",
           "description": "Checks whether there is a matching harnesses for the given query within the current harness's\ncontent.",
@@ -5098,10 +5647,10 @@
             },
             {
               "name": "returns",
-              "comment": "Whetehr there is matching harnesses for the given query."
+              "comment": "Whether there is matching harnesses for the given query."
             }
           ],
-          "rawComment": "/**\n   * Checks whether there is a matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns Whetehr there is matching harnesses for the given query.\n   */",
+          "rawComment": "/**\n   * Checks whether there is a matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns Whether there is matching harnesses for the given query.\n   */",
           "memberType": "method",
           "memberTags": []
         },
@@ -5567,8 +6116,8 @@
       ],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
-        "startLine": 460,
-        "endLine": 530
+        "startLine": 479,
+        "endLine": 574
       }
     },
     {
@@ -5597,8 +6146,8 @@
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
-        "startLine": 536,
-        "endLine": 545
+        "startLine": 580,
+        "endLine": 589
       }
     },
     {
@@ -5634,8 +6183,8 @@
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
-        "startLine": 548,
-        "endLine": 553
+        "startLine": 592,
+        "endLine": 597
       }
     },
     {
@@ -6262,8 +6811,8 @@
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
-        "startLine": 559,
-        "endLine": 687
+        "startLine": 603,
+        "endLine": 731
       }
     }
   ],
@@ -6341,11 +6890,11 @@
       "@angular/cdk/testing"
     ],
     [
-      "LocatorFactory",
+      "TextOptions",
       "@angular/cdk/testing"
     ],
     [
-      "TextOptions",
+      "LocatorFactory",
       "@angular/cdk/testing"
     ],
     [
@@ -6633,7 +7182,15 @@
       "@angular/cdk/testing"
     ],
     [
+      "HarnessEnvironment.getHarnessAtIndex",
+      "@angular/cdk/testing"
+    ],
+    [
       "HarnessEnvironment.getAllHarnesses",
+      "@angular/cdk/testing"
+    ],
+    [
+      "HarnessEnvironment.countHarnesses",
       "@angular/cdk/testing"
     ],
     [
@@ -6801,7 +7358,15 @@
       "@angular/cdk/testing"
     ],
     [
+      "HarnessLoader.getHarnessAtIndex",
+      "@angular/cdk/testing"
+    ],
+    [
       "HarnessLoader.getAllHarnesses",
+      "@angular/cdk/testing"
+    ],
+    [
+      "HarnessLoader.countHarnesses",
       "@angular/cdk/testing"
     ],
     [
@@ -6814,6 +7379,14 @@
     ],
     [
       "parallel",
+      "@angular/cdk/testing"
+    ],
+    [
+      "TextOptions",
+      "@angular/cdk/testing"
+    ],
+    [
+      "TextOptions.exclude",
       "@angular/cdk/testing"
     ],
     [
@@ -6862,14 +7435,6 @@
     ],
     [
       "LocatorFactory.waitForTasksOutsideAngular",
-      "@angular/cdk/testing"
-    ],
-    [
-      "TextOptions",
-      "@angular/cdk/testing"
-    ],
-    [
-      "TextOptions.exclude",
       "@angular/cdk/testing"
     ],
     [
@@ -6929,7 +7494,15 @@
       "@angular/cdk/testing"
     ],
     [
+      "ContentContainerComponentHarness.getHarnessAtIndex",
+      "@angular/cdk/testing"
+    ],
+    [
       "ContentContainerComponentHarness.getAllHarnesses",
+      "@angular/cdk/testing"
+    ],
+    [
+      "ContentContainerComponentHarness.countHarnesses",
       "@angular/cdk/testing"
     ],
     [
