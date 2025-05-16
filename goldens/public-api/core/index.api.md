@@ -1598,10 +1598,9 @@ export function resolveForwardRef<T>(type: T): T;
 
 // @public
 export interface Resource<T> {
-    readonly error: Signal<unknown>;
+    readonly error: Signal<Error | undefined>;
     hasValue(): this is Resource<Exclude<T, undefined>>;
     readonly isLoading: Signal<boolean>;
-    reload(): boolean;
     readonly status: Signal<ResourceStatus>;
     readonly value: Signal<T>;
 }
@@ -1649,7 +1648,7 @@ export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => 
 export type ResourceStreamItem<T> = {
     value: T;
 } | {
-    error: unknown;
+    error: Error;
 };
 
 // @public
@@ -2013,6 +2012,7 @@ export interface WritableResource<T> extends Resource<T> {
     asReadonly(): Resource<T>;
     // (undocumented)
     hasValue(): this is WritableResource<Exclude<T, undefined>>;
+    reload(): boolean;
     set(value: T): void;
     update(updater: (value: T) => T): void;
     // (undocumented)
