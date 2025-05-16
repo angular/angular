@@ -8,7 +8,7 @@
 
 import {Subscription} from 'rxjs';
 
-import {ApplicationRef} from '../../application/application_ref';
+import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
 import {
   ENVIRONMENT_INITIALIZER,
   EnvironmentInjector,
@@ -58,7 +58,8 @@ export class NgZoneChangeDetectionScheduler {
         }
         this.zone.run(() => {
           try {
-            this.applicationRef.tick();
+            this.applicationRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
+            this.applicationRef._tick();
           } catch (e) {
             this.applicationErrorHandler(e);
           }

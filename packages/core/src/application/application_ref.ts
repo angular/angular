@@ -318,12 +318,17 @@ export class ApplicationRef {
 
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
-  private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
+  private allTestViews: Set<InternalViewRef<unknown>> = new Set();
+  private autoDetectTestViews: Set<InternalViewRef<unknown>> = new Set();
+  private includeAllTestViews = false;
   /** @internal */
   afterTick = new Subject<void>();
   /** @internal */
   get allViews(): Array<InternalViewRef<unknown>> {
-    return [...this.externalTestViews.keys(), ...this._views];
+    return [
+      ...(this.includeAllTestViews ? this.allTestViews : this.autoDetectTestViews).keys(),
+      ...this._views,
+    ];
   }
 
   /**
@@ -592,7 +597,12 @@ export class ApplicationRef {
     if (!this.zonelessEnabled) {
       this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
     }
-    this._tick();
+    try {
+      this.includeAllTestViews = true;
+      this._tick();
+    } finally {
+      this.includeAllTestViews = false;
+    }
   }
 
   /** @internal */
@@ -648,6 +658,11 @@ export class ApplicationRef {
     }
 
     let runs = 0;
+    if (this.allTestViews.size) {
+      // Test views don't get attached to the application in the normal way so the dirty flags might not be present
+      // if the view has autoDetect off. We shouldn't ever actually skip any dirty views.
+      this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
+    }
     while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
       profiler(ProfilerEvent.ChangeDetectionSyncStart);
       this.synchronizeOnce();
