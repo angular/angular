@@ -97,6 +97,7 @@
   "InjectionToken",
   "Injector",
   "InputFlags",
+  "ISOLATED_SHADOW_DOM",
   "ItemComponent",
   "KeyEventsPlugin",
   "LOCALE_ID2",

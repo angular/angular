@@ -84,6 +84,7 @@
   "InjectionToken",
   "Injector",
   "InputFlags",
+  "ISOLATED_SHADOW_DOM",
   "KeyEventsPlugin",
   "LOADING_AFTER_SLOT",
   "LOCALE_ID2",

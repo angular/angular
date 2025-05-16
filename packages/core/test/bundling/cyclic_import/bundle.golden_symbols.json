@@ -63,6 +63,7 @@
   "InjectionToken",
   "Injector",
   "InputFlags",
+  "ISOLATED_SHADOW_DOM",
   "KeyEventsPlugin",
   "LOCALE_ID2",
   "MODIFIER_KEYS",
