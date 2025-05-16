@@ -8,7 +8,13 @@
 
 import {assertFirstCreatePass} from '../assert';
 import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TNode, TNodeType, type TElementNode} from '../interfaces/node';
+import {
+  TAttributes,
+  TElementContainerNode,
+  TNode,
+  TNodeType,
+  type TElementNode,
+} from '../interfaces/node';
 import {isContentQueryHost} from '../interfaces/type_checks';
 import type {LView, TView} from '../interfaces/view';
 import {computeStaticStyling} from '../styling/static_styling';
@@ -17,21 +23,23 @@ import {mergeHostAttrs} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 import {resolveDirectives, type DirectiveMatcherStrategy} from './directives';
 
-export function elementStartFirstCreatePass(
+export function elementLikeStartFirstCreatePass(
   index: number,
   tView: TView,
   lView: LView,
+  type: TNodeType.Element | TNodeType.ElementContainer,
   name: string,
   directiveMatcher: DirectiveMatcherStrategy,
   bindingsEnabled: boolean,
   attrsIndex?: number | null,
   localRefsIndex?: number,
-): TElementNode {
+): TElementNode | TElementContainerNode {
   ngDevMode && assertFirstCreatePass(tView);
-
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
-  const tNode = getOrCreateTNode(tView, index, TNodeType.Element, name, attrs);
+  const tNode = getOrCreateTNode(tView, index, type, name, attrs) as
+    | TElementNode
+    | TElementContainerNode;
 
   if (bindingsEnabled) {
     resolveDirectives(
