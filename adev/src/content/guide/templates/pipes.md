@@ -161,7 +161,7 @@ Always use parentheses in your expressions when operator precedence may be ambig
 
 ### Change detection with pipes
 
-By default, all pipes are considered `pure`, which means that it only executes when a primitive input value (such as a `String`, `Number`, `Boolean`, or `Symbol`) or a changed object reference (such as `Array`, `Object`, `Function`, or `Date`). Pure pipes offer a performance advantage because Angular can avoid calling the transformation function if the passed value has not changed.
+By default, all pipes are considered `pure`, which means that it only executes when a primitive input value (such as a `String`, `Number`, `Boolean`, or `Symbol`) or a object reference (such as `Array`, `Object`, `Function`, or `Date`) is changed. Pure pipes offer a performance advantage because Angular can avoid calling the transformation function if the passed value has not changed.
 
 As a result, this means that mutations to object properties or array items are not detected unless the entire object or array reference is replaced with a different instance. If you want this level of change detection, refer to [detecting changes within arrays or objects](#detecting-change-within-arrays-or-objects).
 
