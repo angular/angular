@@ -25,7 +25,7 @@ import {
   assertString,
 } from '../../util/assert';
 import {CharCode} from '../../util/char_code';
-import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visitor';
+import {loadIcuContainerVisitor} from './i18n_icu_container_visitor';
 
 import {getDocument} from '../interfaces/document';
 import {
