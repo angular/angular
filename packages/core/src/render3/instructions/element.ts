@@ -24,51 +24,31 @@ import {
   setSegmentHead,
 } from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
-import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
-import {assertHasParent} from '../assert';
-import {attachPatchData} from '../context_discovery';
-import {
-  clearElementContents,
-  createElementNode,
-  setupStaticAttributes,
-} from '../dom_node_manipulation';
-import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
-import {Renderer} from '../interfaces/renderer';
+import {assertDefined, assertEqual} from '../../util/assert';
+import {clearElementContents, createElementNode} from '../dom_node_manipulation';
+import {hasClassInput, hasStyleInput, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {appendChild} from '../node_manipulation';
-import {executeContentQueries} from '../queries/query_execution';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
   getBindingIndex,
   getBindingsEnabled,
   getCurrentTNode,
-  getElementDepthCount,
   getLView,
   getNamespace,
   getTView,
-  increaseElementDepthCount,
-  isCurrentTNodeParent,
   isInSkipHydrationBlock,
   isSkipHydrationRootTNode,
   lastNodeWasCreated,
   leaveSkipHydrationBlock,
-  setCurrentTNode,
-  setCurrentTNodeAsNotParent,
-  wasLastNodeCreated,
 } from '../state';
-import {elementEndFirstCreatePass, elementStartFirstCreatePass} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {
-  createDirectivesInstances,
-  findDirectiveDefMatches,
-  saveResolvedLocalsInData,
-} from './shared';
+import {elementLikeEndShared, elementLikeStartShared} from './shared';
 
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
@@ -93,63 +73,36 @@ export function ɵɵelementStart(
 ): typeof ɵɵelementStart {
   const lView = getLView();
   const tView = getTView();
-  const adjustedIndex = HEADER_OFFSET + index;
-
+  const bindingsEnabled = getBindingsEnabled();
   ngDevMode &&
     assertEqual(
       getBindingIndex(),
       tView.bindingStartIndex,
       'elements should be created before any bindings',
     );
-  ngDevMode && assertIndexInRange(lView, adjustedIndex);
-
-  const renderer = lView[RENDERER];
-  const tNode = tView.firstCreatePass
-    ? elementStartFirstCreatePass(
-        adjustedIndex,
-        tView,
-        lView,
-        name,
-        findDirectiveDefMatches,
-        getBindingsEnabled(),
-        attrsIndex,
-        localRefsIndex,
-      )
-    : (tView.data[adjustedIndex] as TElementNode);
-
-  const native = _locateOrCreateElementNode(tView, lView, tNode, renderer, name, index);
-  lView[adjustedIndex] = native;
-
-  const hasDirectives = isDirectiveHost(tNode);
+  const tNode = elementLikeStartShared(
+    lView,
+    tView,
+    index,
+    TNodeType.Element,
+    name,
+    _locateOrCreateElementNode,
+    bindingsEnabled,
+    attrsIndex,
+    localRefsIndex,
+  );
 
   if (ngDevMode && tView.firstCreatePass) {
-    validateElementIsKnown(native, lView, tNode.value, tView.schemas, hasDirectives);
+    const lView = getLView();
+    validateElementIsKnown(
+      lView[tNode.index],
+      lView,
+      tNode.value,
+      tView.schemas,
+      isDirectiveHost(tNode),
+    );
   }
 
-  setCurrentTNode(tNode, true);
-  setupStaticAttributes(renderer, native, tNode);
-
-  if (!isDetachedByI18n(tNode) && wasLastNodeCreated()) {
-    // In the i18n case, the translation may have removed this element, so only add it if it is not
-    // detached. See `TNodeType.Placeholder` and `LFrame.inI18n` for more context.
-    appendChild(tView, lView, native, tNode);
-  }
-
-  // any immediate children of a component or template container must be pre-emptively
-  // monkey-patched with the component view data so that the element can be inspected
-  // later on using any element discovery utility methods (see `element_discovery.ts`)
-  if (getElementDepthCount() === 0 || hasDirectives) {
-    attachPatchData(native, lView);
-  }
-  increaseElementDepthCount();
-
-  if (hasDirectives) {
-    createDirectivesInstances(tView, lView, tNode);
-    executeContentQueries(tView, tNode, lView);
-  }
-  if (localRefsIndex !== null) {
-    saveResolvedLocalsInData(lView, tNode);
-  }
   return ɵɵelementStart;
 }
 
@@ -160,36 +113,37 @@ export function ɵɵelementStart(
  * @codeGenApi
  */
 export function ɵɵelementEnd(): typeof ɵɵelementEnd {
-  let currentTNode = getCurrentTNode()!;
-  ngDevMode && assertDefined(currentTNode, 'No parent node to close.');
-  if (isCurrentTNodeParent()) {
-    setCurrentTNodeAsNotParent();
-  } else {
-    ngDevMode && assertHasParent(getCurrentTNode());
-    currentTNode = currentTNode.parent!;
-    setCurrentTNode(currentTNode, false);
-  }
+  const tView = getTView();
+  const initialTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
 
-  const tNode = currentTNode;
-  ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
+  const currentTNode = elementLikeEndShared(tView, initialTNode);
+  ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode);
 
-  if (isSkipHydrationRootTNode(tNode)) {
+  if (isSkipHydrationRootTNode(currentTNode)) {
     leaveSkipHydrationBlock();
   }
 
   decreaseElementDepthCount();
 
-  const tView = getTView();
-  if (tView.firstCreatePass) {
-    elementEndFirstCreatePass(tView, tNode);
+  if (currentTNode.classesWithoutHost != null && hasClassInput(currentTNode)) {
+    setDirectiveInputsWhichShadowsStyling(
+      tView,
+      currentTNode,
+      getLView(),
+      currentTNode.classesWithoutHost,
+      true,
+    );
   }
 
-  if (tNode.classesWithoutHost != null && hasClassInput(tNode)) {
-    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.classesWithoutHost, true);
-  }
-
-  if (tNode.stylesWithoutHost != null && hasStyleInput(tNode)) {
-    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.stylesWithoutHost, false);
+  if (currentTNode.stylesWithoutHost != null && hasStyleInput(currentTNode)) {
+    setDirectiveInputsWhichShadowsStyling(
+      tView,
+      currentTNode,
+      getLView(),
+      currentTNode.stylesWithoutHost,
+      false,
+    );
   }
   return ɵɵelementEnd;
 }
@@ -220,12 +174,11 @@ let _locateOrCreateElementNode: typeof locateOrCreateElementNodeImpl = (
   tView: TView,
   lView: LView,
   tNode: TNode,
-  renderer: Renderer,
   name: string,
   index: number,
 ) => {
   lastNodeWasCreated(true);
-  return createElementNode(renderer, name, getNamespace());
+  return createElementNode(lView[RENDERER], name, getNamespace());
 };
 
 /**
@@ -236,7 +189,6 @@ function locateOrCreateElementNodeImpl(
   tView: TView,
   lView: LView,
   tNode: TNode,
-  renderer: Renderer,
   name: string,
   index: number,
 ): RElement {
@@ -250,7 +202,7 @@ function locateOrCreateElementNodeImpl(
 
   // Regular creation mode.
   if (isNodeCreationMode) {
-    return createElementNode(renderer, name, getNamespace());
+    return createElementNode(lView[RENDERER], name, getNamespace());
   }
 
   // Hydration mode, looking up an existing element in DOM.

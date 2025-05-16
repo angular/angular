@@ -385,7 +385,7 @@
   "detectChangesInternal",
   "diPublicInInjector",
   "elementEndFirstCreatePass",
-  "elementStartFirstCreatePass",
+  "elementLikeStartFirstCreatePass",
   "emptyPathMatch",
   "encodeUriQuery",
   "encodeUriSegment",
