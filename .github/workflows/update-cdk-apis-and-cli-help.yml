@@ -32,8 +32,6 @@ jobs:
           persist-credentials: false
 
       # Angular CDK
-      - name: Create Branch
-        run: git checkout -b tmp-cdk-docs-update ${{ github.ref }}
       - name: Generate CDK apis
         run: node adev/scripts/update-cdk-apis/index.mjs
         env:
@@ -60,10 +58,9 @@ jobs:
             Updated Angular CDK api files.
 
       # Angular CLI
-      - name: Create Branch
+      - name: Reset to current GitHub ref
         run: |
-          git reset --hard HEAD
-          git checkout -b tmp-cli-docs-update ${{ github.ref }}
+          git reset --hard ${{ github.ref }}
       - name: Generate CLI help
         run: node adev/scripts/update-cli-help/index.mjs
         env:
