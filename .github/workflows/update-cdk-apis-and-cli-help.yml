@@ -30,8 +30,6 @@ jobs:
           # account that is attempted to be used for authentication, instead the remote is set to
           # an authenticated URL.
           persist-credentials: false
-          # This is needed as otherwise the PR creation will fail with `shallow update not allowed` when the forked branch is not in sync.
-          fetch-depth: 0
 
       # Angular CDK
       - name: Create Branch
@@ -41,16 +39,25 @@ jobs:
         env:
           ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN }}
       - name: Create a PR CDK apis (if necessary)
-        uses: angular/dev-infra/github-actions/create-pr-for-changes@43b8195028f62c7a10f793a0f7c48893531a32dc
+        uses: peter-evans/create-pull-request@v7.0.8 # v7.0.8
         with:
-          branch-prefix: update-cdk-apis
-          pr-title: 'docs: update Angular CDK apis [${{github.ref_name}}]'
-          pr-description: |
+          token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
+          push-to-fork: 'angular-robot/angular'
+          delete-branch: true
+          maintainer-can-modify: false
+          branch: docs-update-cdk-apis-${{github.ref_name}}
+          committer: Angular Robot <angular-robot@google.com>
+          author: Angular Robot <angular-robot@google.com>
+          title: 'docs: update Angular CDK apis [${{github.ref_name}}]'
+          body: |
             Updated Angular CDK api files.
-          pr-labels: |
+          labels: |
             action: review
             area: docs
-          angular-robot-token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
+          commit-message: |
+            docs: update Angular CDK apis
+
+            Updated Angular CDK api files.
 
       # Angular CLI
       - name: Create Branch
@@ -61,14 +68,23 @@ jobs:
         run: node adev/scripts/update-cli-help/index.mjs
         env:
           ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN }}
-      - name: Create a PR CLI help (if necessary)
-        uses: angular/dev-infra/github-actions/create-pr-for-changes@43b8195028f62c7a10f793a0f7c48893531a32dc
+      - name: Create a PR CDK apis (if necessary)
+        uses: peter-evans/create-pull-request@v7.0.8 # v7.0.8
         with:
-          branch-prefix: update-cli-help
-          pr-title: 'docs: update Angular CLI help [${{github.ref_name}}]'
-          pr-description: |
+          token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
+          push-to-fork: 'angular-robot/angular'
+          delete-branch: true
+          maintainer-can-modify: false
+          branch: docs-update-cli-help-${{github.ref_name}}
+          committer: Angular Robot <angular-robot@google.com>
+          author: Angular Robot <angular-robot@google.com>
+          title: 'docs: update Angular CLI help [${{github.ref_name}}]'
+          body: |
             Updated Angular CLI help contents.
-          pr-labels: |
+          labels: |
             action: review
             area: docs
-          angular-robot-token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
+          commit-message: |
+            docs: update Angular CLI help
+
+            Updated Angular CLI help contents.
