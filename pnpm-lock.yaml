@@ -15,29 +15,29 @@ importers:
   .:
     dependencies:
       '@angular-devkit/build-angular':
-        specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)
+        specifier: 20.0.0-rc.2
+        version: 20.0.0-rc.2(@angular/ssr@20.0.0-rc.2)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2)
       '@angular-devkit/core':
-        specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(chokidar@4.0.3)
+        specifier: 20.0.0-rc.2
+        version: 20.0.0-rc.2(chokidar@4.0.3)
       '@angular-devkit/schematics':
-        specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(chokidar@4.0.3)
+        specifier: 20.0.0-rc.2
+        version: 20.0.0-rc.2(chokidar@4.0.3)
       '@angular/build':
-        specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.0)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2)
+        specifier: 20.0.0-rc.2
+        version: 20.0.0-rc.2(@angular/ssr@20.0.0-rc.2)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.1)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2)
       '@angular/cdk':
-        specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(rxjs@7.8.2)
+        specifier: 20.0.0-rc.1
+        version: 20.0.0-rc.1(rxjs@7.8.2)
       '@angular/cli':
-        specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(@types/node@18.19.87)(chokidar@4.0.3)
+        specifier: 20.0.0-rc.2
+        version: 20.0.0-rc.2(@types/node@18.19.87)(chokidar@4.0.3)
       '@angular/material':
-        specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(@angular/cdk@20.0.0-rc.0)(rxjs@7.8.2)
+        specifier: 20.0.0-rc.1
+        version: 20.0.0-rc.1(@angular/cdk@20.0.0-rc.1)(rxjs@7.8.2)
       '@angular/ssr':
-        specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0
+        specifier: 20.0.0-rc.2
+        version: 20.0.0-rc.2
       '@babel/cli':
         specifier: 7.27.2
         version: 7.27.2(@babel/core@7.27.1)
@@ -67,7 +67,7 @@ importers:
         version: 6.3.1
       '@bazel/terser':
         specifier: 5.8.1
-        version: 5.8.1(terser@5.39.0)
+        version: 5.8.1(terser@5.39.1)
       '@bazel/worker':
         specifier: 5.8.1
         version: 5.8.1
@@ -87,8 +87,8 @@ importers:
         specifier: ^16.0.0
         version: 16.0.1(rollup@4.40.2)
       '@schematics/angular':
-        specifier: 20.0.0-rc.0
-        version: 20.0.0-rc.0(chokidar@4.0.3)
+        specifier: 20.0.0-rc.2
+        version: 20.0.0-rc.2(chokidar@4.0.3)
       '@stackblitz/sdk':
         specifier: ^1.11.0
         version: 1.11.0
@@ -253,7 +253,7 @@ importers:
         version: 0.0.12
       ngx-progressbar:
         specifier: ^14.0.0
-        version: 14.0.0(@angular/cdk@20.0.0-rc.0)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@20.0.0-rc.1)(rxjs@7.8.2)
       open-in-idx:
         specifier: ^0.1.1
         version: 0.1.1
@@ -304,7 +304,7 @@ importers:
         version: 0.18.10
       terser:
         specifier: ^5.8.0
-        version: 5.39.0
+        version: 5.39.1
       tinyglobby:
         specifier: ^0.2.12
         version: 0.2.13
@@ -346,14 +346,14 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       '@angular-devkit/architect-cli':
-        specifier: 0.2000.0-rc.0
-        version: 0.2000.0-rc.0(chokidar@4.0.3)
+        specifier: 0.2000.0-rc.2
+        version: 0.2000.0-rc.2(chokidar@4.0.3)
       '@angular/build-tooling':
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a
-        version: github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a(@angular/ssr@20.0.0-rc.0)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.0)(tsx@4.19.3)
+        version: github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a(@angular/ssr@20.0.0-rc.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.1)(tsx@4.19.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#a871c115e04a76587fcd418107ad985752610ccf
-        version: github.com/angular/dev-infra-private-ng-dev-builds/a871c115e04a76587fcd418107ad985752610ccf
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#8225f7c340e6d66fd3822ea0f3042797755f9d0a
+        version: github.com/angular/dev-infra-private-ng-dev-builds/8225f7c340e6d66fd3822ea0f3042797755f9d0a
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.27.1)
@@ -404,7 +404,7 @@ importers:
         version: 6.36.6
       '@inquirer/prompts':
         specifier: ^7.0.0
-        version: 7.5.0(@types/node@18.19.87)
+        version: 7.5.1(@types/node@18.19.87)
       '@lezer/common':
         specifier: ^1.1.2
         version: 1.2.3
@@ -524,7 +524,7 @@ importers:
         version: 3.5.3
       semver:
         specifier: ^7.3.5
-        version: 7.7.1
+        version: 7.7.2
       shiki:
         specifier: ^3.0.0
         version: 3.3.0
@@ -578,7 +578,7 @@ importers:
         version: 0.2.2
       semver:
         specifier: ^7.0.0
-        version: 7.7.1
+        version: 7.7.2
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -754,13 +754,13 @@ packages:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  /@angular-devkit/architect-cli@0.2000.0-rc.0(chokidar@4.0.3):
-    resolution: {integrity: sha512-inyeokdQI83zVY9n07dOTPLotDb+wSnC6+Cj/2pkfug1aVBq1bC+lZKrHO2BMkaWaXwrusTBJ0ikgxqKSh90GQ==, tarball: https://registry.npmjs.org/@angular-devkit/architect-cli/-/architect-cli-0.2000.0-rc.0.tgz}
+  /@angular-devkit/architect-cli@0.2000.0-rc.2(chokidar@4.0.3):
+    resolution: {integrity: sha512-oxI6DNBECDYPt2Kwiq9Nzl7vgNoILXiMNgoD1fj0YTjAM0fhzRTos3SO1FQrM808g6hShd9y2lRSGdttn0gvag==, tarball: https://registry.npmjs.org/@angular-devkit/architect-cli/-/architect-cli-0.2000.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
     dependencies:
-      '@angular-devkit/architect': 0.2000.0-rc.0(chokidar@4.0.3)
-      '@angular-devkit/core': 20.0.0-rc.0(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0-rc.2(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0-rc.2(chokidar@4.0.3)
       ansi-colors: 4.1.3
       progress: 2.0.3
       yargs-parser: 21.1.1
@@ -778,17 +778,17 @@ packages:
       - chokidar
     dev: true
 
-  /@angular-devkit/architect@0.2000.0-rc.0(chokidar@4.0.3):
-    resolution: {integrity: sha512-O3sVOvEou7+d0YbIE/OzHs6EU/xrHjSwi3z1djyNSJflhwTe6qyY4wdzdggwWt6z6iS5sLsMolsnhR6hYfuK+A==, tarball: https://registry.npmjs.org/@angular-devkit/architect/-/architect-0.2000.0-rc.0.tgz}
+  /@angular-devkit/architect@0.2000.0-rc.2(chokidar@4.0.3):
+    resolution: {integrity: sha512-Djnp29FKGZvfNBY6CZOTMV0RCpKWcukHTH0q1FZMAqCQX56At9828AvPDssKsSs5+ngq3LVIHLBNaPAqMULE0Q==, tarball: https://registry.npmjs.org/@angular-devkit/architect/-/architect-0.2000.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     dependencies:
-      '@angular-devkit/core': 20.0.0-rc.0(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0-rc.2(chokidar@4.0.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - chokidar
 
-  /@angular-devkit/build-angular@20.0.0-rc.0(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2):
-    resolution: {integrity: sha512-dFiKXZTPV2Uiq938eHSxepCrZKPY3ZbS3L08Q6bgPTInq1hFIceaVty7Ujq90PD6DYEaY3bGKv+aynN8occcCw==, tarball: https://registry.npmjs.org/@angular-devkit/build-angular/-/build-angular-20.0.0-rc.0.tgz}
+  /@angular-devkit/build-angular@20.0.0-rc.2(@angular/ssr@20.0.0-rc.2)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.3)(typescript@5.8.2):
+    resolution: {integrity: sha512-CrAfBf4GsE2ZEk95Mi5Z+Gv71K0ovWCZ6fxnXtSNll+LW0cdhUeDekkKla3yUk6gVdIIP6hJEe4ggWVd+uffcw==, tarball: https://registry.npmjs.org/@angular-devkit/build-angular/-/build-angular-20.0.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
@@ -797,7 +797,7 @@ packages:
       '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
       '@angular/service-worker': ^20.0.0 || ^20.0.0-next.0
-      '@angular/ssr': ^20.0.0-rc.0
+      '@angular/ssr': ^20.0.0-rc.2
       '@web/test-runner': ^0.20.0
       browser-sync: ^3.0.2
       jest: ^29.5.0
@@ -838,11 +838,11 @@ packages:
         optional: true
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2000.0-rc.0(chokidar@4.0.3)
-      '@angular-devkit/build-webpack': 0.2000.0-rc.0(chokidar@4.0.3)(webpack-dev-server@5.2.1)(webpack@5.99.8)
-      '@angular-devkit/core': 20.0.0-rc.0(chokidar@4.0.3)
-      '@angular/build': 20.0.0-rc.0(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.0)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2)
-      '@angular/ssr': 20.0.0-rc.0
+      '@angular-devkit/architect': 0.2000.0-rc.2(chokidar@4.0.3)
+      '@angular-devkit/build-webpack': 0.2000.0-rc.2(chokidar@4.0.3)(webpack-dev-server@5.2.1)(webpack@5.99.8)
+      '@angular-devkit/core': 20.0.0-rc.2(chokidar@4.0.3)
+      '@angular/build': 20.0.0-rc.2(@angular/ssr@20.0.0-rc.2)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.1)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2)
+      '@angular/ssr': 20.0.0-rc.2
       '@babel/core': 7.27.1
       '@babel/generator': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
@@ -853,7 +853,7 @@ packages:
       '@babel/preset-env': 7.27.2(@babel/core@7.27.1)
       '@babel/runtime': 7.27.1
       '@discoveryjs/json-ext': 0.6.3
-      '@ngtools/webpack': 20.0.0-rc.0(typescript@5.8.2)(webpack@5.99.8)
+      '@ngtools/webpack': 20.0.0-rc.2(typescript@5.8.2)(webpack@5.99.8)
       '@vitejs/plugin-basic-ssl': 2.0.0(vite@6.3.5)
       ansi-colors: 4.1.3
       autoprefixer: 10.4.21(postcss@8.5.3)
@@ -882,12 +882,12 @@ packages:
       protractor: 7.0.0
       resolve-url-loader: 5.0.0
       rxjs: 7.8.2
-      sass: 1.87.0
-      sass-loader: 16.0.5(sass@1.87.0)(webpack@5.99.8)
-      semver: 7.7.1
+      sass: 1.88.0
+      sass-loader: 16.0.5(sass@1.88.0)(webpack@5.99.8)
+      semver: 7.7.2
       source-map-loader: 5.0.0(webpack@5.99.8)
       source-map-support: 0.5.21
-      terser: 5.39.0
+      terser: 5.39.1
       tree-kill: 1.2.2
       tslib: 2.8.1
       typescript: 5.8.2
@@ -934,14 +934,14 @@ packages:
       webpack-sources: 1.3.0
     dev: true
 
-  /@angular-devkit/build-webpack@0.2000.0-rc.0(chokidar@4.0.3)(webpack-dev-server@5.2.1)(webpack@5.99.8):
-    resolution: {integrity: sha512-pejJMhyzxetoJ5GpXOkybh6oJOPgKs+wMLA/U3F4oxT4EpwcUY+kl0VoANtqDDkHEC1cDmsWzI6XyBesmIQIfw==, tarball: https://registry.npmjs.org/@angular-devkit/build-webpack/-/build-webpack-0.2000.0-rc.0.tgz}
+  /@angular-devkit/build-webpack@0.2000.0-rc.2(chokidar@4.0.3)(webpack-dev-server@5.2.1)(webpack@5.99.8):
+    resolution: {integrity: sha512-ZH9QpGVSiXICPxI0O+aT/eFPmlNINOrl2rALFeFHyZY7DtkI5e5BLffCMw4LMD37mu81tAwYfbjC16WJQ1bQjA==, tarball: https://registry.npmjs.org/@angular-devkit/build-webpack/-/build-webpack-0.2000.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       webpack: ^5.30.0
       webpack-dev-server: ^5.0.2
     dependencies:
-      '@angular-devkit/architect': 0.2000.0-rc.0(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0-rc.2(chokidar@4.0.3)
       rxjs: 7.8.2
       webpack: 5.99.8(esbuild@0.25.4)
       webpack-dev-server: 5.2.1(webpack@5.99.8)
@@ -967,8 +967,8 @@ packages:
       source-map: 0.7.4
     dev: true
 
-  /@angular-devkit/core@20.0.0-rc.0(chokidar@4.0.3):
-    resolution: {integrity: sha512-Crj0G0occyB1ftUQoAj4ONouJuQ336FryWhehslIzZCOGxzwPWUw/ersaIKHmGr80sQ39fL4iUUaiFmm5EyG/A==, tarball: https://registry.npmjs.org/@angular-devkit/core/-/core-20.0.0-rc.0.tgz}
+  /@angular-devkit/core@20.0.0-rc.2(chokidar@4.0.3):
+    resolution: {integrity: sha512-BGCSAIyUkGiuLQOqVjmBODRdVIJYc1RsO5GQzGmn0kZBsehu+RiELLhhbgfrSUJil0gJxgMML4x4vgIUofBEEQ==, tarball: https://registry.npmjs.org/@angular-devkit/core/-/core-20.0.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       chokidar: ^4.0.0
@@ -984,11 +984,11 @@ packages:
       rxjs: 7.8.2
       source-map: 0.7.4
 
-  /@angular-devkit/schematics@20.0.0-rc.0(chokidar@4.0.3):
-    resolution: {integrity: sha512-VJMahL7uvTT4L5fzzIrcv4bSnsXQG+2HNLQK4EWmG4j2vdKOcpCXL6EbE+ZD2ZDSqmNGSIAV0YHnsMD7mjTNYw==, tarball: https://registry.npmjs.org/@angular-devkit/schematics/-/schematics-20.0.0-rc.0.tgz}
+  /@angular-devkit/schematics@20.0.0-rc.2(chokidar@4.0.3):
+    resolution: {integrity: sha512-VmpjYyCfFL39gl1wVDR8cikpjJj6WUlGe18N1LjJEUcwVjeoYsLQyxurM6JTv2IfyfYsIbr2FwpOpdajvzWEBQ==, tarball: https://registry.npmjs.org/@angular-devkit/schematics/-/schematics-20.0.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     dependencies:
-      '@angular-devkit/core': 20.0.0-rc.0(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0-rc.2(chokidar@4.0.3)
       jsonc-parser: 3.3.1
       magic-string: 0.30.17
       ora: 5.4.1
@@ -1007,7 +1007,7 @@ packages:
       - zone.js
     dev: true
 
-  /@angular/build@19.1.0-rc.0(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3):
+  /@angular/build@19.1.0-rc.0(@angular/ssr@20.0.0-rc.2)(@types/node@18.19.87)(chokidar@4.0.3)(terser@5.39.1)(tsx@4.19.3)(typescript@5.7.3):
     resolution: {integrity: sha512-ALl+MVMYBF+E7HyAQ+1MtE6sNIOAX0o2Sfs0wdIQfM2unRl6jPsz/Ker4BjnNQIK4wRCcstyzBv5mZBDulfFIQ==, tarball: https://registry.npmjs.org/@angular/build/-/build-19.1.0-rc.0.tgz}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1042,7 +1042,7 @@ packages:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.1901.0-rc.0(chokidar@4.0.3)
-      '@angular/ssr': 20.0.0-rc.0
+      '@angular/ssr': 20.0.0-rc.2
       '@babel/core': 7.26.0
       '@babel/helper-annotate-as-pure': 7.25.9
       '@babel/helper-split-export-declaration': 7.24.7
@@ -1065,7 +1065,7 @@ packages:
       sass: 1.83.1
       semver: 7.6.3
       typescript: 5.7.3
-      vite: 6.0.7(@types/node@18.19.87)(sass@1.83.1)(terser@5.39.0)(tsx@4.19.3)
+      vite: 6.0.7(@types/node@18.19.87)(sass@1.83.1)(terser@5.39.1)(tsx@4.19.3)
       watchpack: 2.4.2
     optionalDependencies:
       lmdb: 3.2.2
@@ -1083,8 +1083,8 @@ packages:
       - yaml
     dev: true
 
-  /@angular/build@20.0.0-rc.0(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.0)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2):
-    resolution: {integrity: sha512-cVKDaoloiiN06dMnsS0ARDP5QMKVpQSijTBHr2Fpvxi6615rTEQAhj/VgTECVYhkRRNm4cILP1RX1KvqWkawEA==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0-rc.0.tgz}
+  /@angular/build@20.0.0-rc.2(@angular/ssr@20.0.0-rc.2)(@types/node@18.19.87)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.1)(tslib@2.8.1)(tsx@4.19.3)(typescript@5.8.2):
+    resolution: {integrity: sha512-vif6SJFtKsdHCMZElaSEo0ghNqtWhnRGvz0s07Y2+YCPEXEzzFh9aMtehWEYwltrbSev4hU3cbfFN7q14vXMZA==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler': ^20.0.0 || ^20.0.0-next.0
@@ -1094,7 +1094,7 @@ packages:
       '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
       '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
       '@angular/service-worker': ^20.0.0 || ^20.0.0-next.0
-      '@angular/ssr': ^20.0.0-rc.0
+      '@angular/ssr': ^20.0.0-rc.2
       karma: ^6.4.0
       less: ^4.2.0
       ng-packagr: ^20.0.0 || ^20.0.0-next.0
@@ -1130,12 +1130,12 @@ packages:
         optional: true
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2000.0-rc.0(chokidar@4.0.3)
-      '@angular/ssr': 20.0.0-rc.0
+      '@angular-devkit/architect': 0.2000.0-rc.2(chokidar@4.0.3)
+      '@angular/ssr': 20.0.0-rc.2
       '@babel/core': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
       '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 5.1.9(@types/node@18.19.87)
+      '@inquirer/confirm': 5.1.10(@types/node@18.19.87)
       '@vitejs/plugin-basic-ssl': 2.0.0(vite@6.3.5)
       beasties: 0.3.3
       browserslist: 4.24.4
@@ -1153,13 +1153,13 @@ packages:
       piscina: 5.0.0
       postcss: 8.5.3
       rollup: 4.40.2
-      sass: 1.87.0
-      semver: 7.7.1
+      sass: 1.88.0
+      semver: 7.7.2
       source-map-support: 0.5.21
       tinyglobby: 0.2.13
       tslib: 2.8.1
       typescript: 5.8.2
-      vite: 6.3.5(@types/node@18.19.87)(less@4.3.0)(sass@1.87.0)(terser@5.39.0)(tsx@4.19.3)
+      vite: 6.3.5(@types/node@18.19.87)(less@4.3.0)(sass@1.88.0)(terser@5.39.1)(tsx@4.19.3)
       watchpack: 2.4.2
     optionalDependencies:
       lmdb: 3.3.0
@@ -1177,8 +1177,8 @@ packages:
       - yaml
     dev: false
 
-  /@angular/cdk@20.0.0-rc.0(rxjs@7.8.2):
-    resolution: {integrity: sha512-dvSacjyg5+6GCQiQpXIfguFcjrtR2R0uweUL8R9ZpGRi35jA0HqUYYY99asqyvhMS/G7F0etxRaPWu/d6sHpzg==, tarball: https://registry.npmjs.org/@angular/cdk/-/cdk-20.0.0-rc.0.tgz}
+  /@angular/cdk@20.0.0-rc.1(rxjs@7.8.2):
+    resolution: {integrity: sha512-YlY5uKCfuMm98YGGunFOcpdr8hgEtOlXSs7i6oCSnXll0IxngcbKt2OpnEWqGMSxhVbJ3/B+/SK/8goBui5tVw==, tarball: https://registry.npmjs.org/@angular/cdk/-/cdk-20.0.0-rc.1.tgz}
     peerDependencies:
       '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/core': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
@@ -1189,17 +1189,17 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /@angular/cli@20.0.0-rc.0(@types/node@18.19.87)(chokidar@4.0.3):
-    resolution: {integrity: sha512-fP+OWXhxjNVHSQbofoQv5mEB1JKc+Dh/q/1tUMk+T2VM3QsMZpelWRXb3Wk6jlScwDMChyr3VjaEngAUnoEF3A==, tarball: https://registry.npmjs.org/@angular/cli/-/cli-20.0.0-rc.0.tgz}
+  /@angular/cli@20.0.0-rc.2(@types/node@18.19.87)(chokidar@4.0.3):
+    resolution: {integrity: sha512-/XbwlcuEWhGYJj1TX46/lvcctUd0McphlQa27sMMeNnveuPWYmW1RptbRGT8GF47Fqrlcxzg03rgtqKVYSevYw==, tarball: https://registry.npmjs.org/@angular/cli/-/cli-20.0.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
     dependencies:
-      '@angular-devkit/architect': 0.2000.0-rc.0(chokidar@4.0.3)
-      '@angular-devkit/core': 20.0.0-rc.0(chokidar@4.0.3)
-      '@angular-devkit/schematics': 20.0.0-rc.0(chokidar@4.0.3)
-      '@inquirer/prompts': 7.5.0(@types/node@18.19.87)
-      '@listr2/prompt-adapter-inquirer': 2.0.22(@inquirer/prompts@7.5.0)
-      '@schematics/angular': 20.0.0-rc.0(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0-rc.2(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0-rc.2(chokidar@4.0.3)
+      '@angular-devkit/schematics': 20.0.0-rc.2(chokidar@4.0.3)
+      '@inquirer/prompts': 7.5.1(@types/node@18.19.87)
+      '@listr2/prompt-adapter-inquirer': 2.0.22(@inquirer/prompts@7.5.1)
+      '@schematics/angular': 20.0.0-rc.2(chokidar@4.0.3)
       '@yarnpkg/lockfile': 1.1.0
       ini: 5.0.0
       jsonc-parser: 3.3.1
@@ -1208,7 +1208,7 @@ packages:
       npm-pick-manifest: 10.0.0
       pacote: 20.0.0
       resolve: 1.22.10
-      semver: 7.7.1
+      semver: 7.7.2
       yargs: 17.7.2
     transitivePeerDependencies:
       - '@types/node'
@@ -1227,23 +1227,23 @@ packages:
       tslib: 2.8.1
     dev: true
 
-  /@angular/material@20.0.0-rc.0(@angular/cdk@20.0.0-rc.0)(rxjs@7.8.2):
-    resolution: {integrity: sha512-Z6uaTLaTdfMoT2RnL8GB1na/n2/0d9Dk5h2wSsymyZFJz/U20btCQuor9Cvb/mUlrPs/uu/5SWDMpigRXlaomg==, tarball: https://registry.npmjs.org/@angular/material/-/material-20.0.0-rc.0.tgz}
+  /@angular/material@20.0.0-rc.1(@angular/cdk@20.0.0-rc.1)(rxjs@7.8.2):
+    resolution: {integrity: sha512-chD273pzqc1ghOP5dwPXaftcfn4vwDL43VZT1Vl2CFSy9+A3Bnd1MB1O0VVrUYQe1bi38TCJ9QwZjPmCOAOzHQ==, tarball: https://registry.npmjs.org/@angular/material/-/material-20.0.0-rc.1.tgz}
     peerDependencies:
-      '@angular/cdk': 20.0.0-rc.0
+      '@angular/cdk': 20.0.0-rc.1
       '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/core': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/forms': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/platform-browser': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
-      '@angular/cdk': 20.0.0-rc.0(rxjs@7.8.2)
+      '@angular/cdk': 20.0.0-rc.1(rxjs@7.8.2)
       rxjs: 7.8.2
       tslib: 2.8.1
     dev: false
 
-  /@angular/ssr@20.0.0-rc.0:
-    resolution: {integrity: sha512-PqAXHxJvahRbEgDVpd8eYVqM0PEYd4kpvBtpoH532TQi173hoNQxYf9JY6O/ECADqe6ZEqiIgGWy41l1jt7XcA==, tarball: https://registry.npmjs.org/@angular/ssr/-/ssr-20.0.0-rc.0.tgz}
+  /@angular/ssr@20.0.0-rc.2:
+    resolution: {integrity: sha512-HYEcj+rDaMmoAfM2YeYu7wBlvLZZvHFA0bdsMmCidVq8XI/lloefARHVh22Xu6qFu2jKX1D6tMGMlkJR047Lzw==, tarball: https://registry.npmjs.org/@angular/ssr/-/ssr-20.0.0-rc.2.tgz}
     peerDependencies:
       '@angular/common': ^20.0.0 || ^20.0.0-next.0
       '@angular/core': ^20.0.0 || ^20.0.0-next.0
@@ -2575,13 +2575,13 @@ packages:
   /@bazel/runfiles@6.3.1:
     resolution: {integrity: sha512-1uLNT5NZsUVIGS4syuHwTzZ8HycMPyr6POA3FCE4GbMtc4rhoJk8aZKtNIRthJYfL+iioppi+rTfH3olMPr9nA==, tarball: https://registry.npmjs.org/@bazel/runfiles/-/runfiles-6.3.1.tgz}
 
-  /@bazel/terser@5.8.1(terser@5.39.0):
+  /@bazel/terser@5.8.1(terser@5.39.1):
     resolution: {integrity: sha512-TPjSDhw1pSZt9P2hd/22IJwl8KCZiJL+u2gB5mghBTCFDVdC5Dgsx135pFtvlqc6LjjOvd3s6dzcQr0YJo2HSg==, tarball: https://registry.npmjs.org/@bazel/terser/-/terser-5.8.1.tgz}
     hasBin: true
     peerDependencies:
       terser: '>=4.0.0 <5.9.0'
     dependencies:
-      terser: 5.39.0
+      terser: 5.39.1
 
   /@bazel/typescript@5.8.1(typescript@5.7.3):
     resolution: {integrity: sha512-NAJ8WQHZL1WE1YmRoCrq/1hhG15Mvy/viWh6TkvFnBeEhNUiQUsA5GYyhU1ztnBIYW03nATO3vwhAEfO7Q0U5g==, tarball: https://registry.npmjs.org/@bazel/typescript/-/typescript-5.8.1.tgz}
@@ -2776,7 +2776,7 @@ packages:
     dependencies:
       '@types/semver': 7.7.0
       conventional-commits-parser: 6.1.0
-      semver: 7.7.1
+      semver: 7.7.2
     dev: true
 
   /@cspotcode/source-map-support@0.8.1:
@@ -3419,8 +3419,8 @@ packages:
       - supports-color
     dev: true
 
-  /@inquirer/checkbox@4.1.5(@types/node@18.19.87):
-    resolution: {integrity: sha512-swPczVU+at65xa5uPfNP9u3qx/alNwiaykiI/ExpsmMSQW55trmZcwhYWzw/7fj+n6Q8z1eENvR7vFfq9oPSAQ==, tarball: https://registry.npmjs.org/@inquirer/checkbox/-/checkbox-4.1.5.tgz}
+  /@inquirer/checkbox@4.1.6(@types/node@18.19.87):
+    resolution: {integrity: sha512-62u896rWCtKKE43soodq5e/QcRsA22I+7/4Ov7LESWnKRO6BVo2A1DFLDmXL9e28TB0CfHc3YtkbPm7iwajqkg==, tarball: https://registry.npmjs.org/@inquirer/checkbox/-/checkbox-4.1.6.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3428,7 +3428,7 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/figures': 1.0.11
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
@@ -3441,13 +3441,13 @@ packages:
     peerDependencies:
       '@types/node': '>=18'
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
     dev: true
 
-  /@inquirer/confirm@5.1.9(@types/node@18.19.87):
-    resolution: {integrity: sha512-NgQCnHqFTjF7Ys2fsqK2WtnA8X1kHyInyG+nMIuHowVTIgIuS10T4AznI/PvbqSpJqjCUqNBlKGh1v3bwLFL4w==, tarball: https://registry.npmjs.org/@inquirer/confirm/-/confirm-5.1.9.tgz}
+  /@inquirer/confirm@5.1.10(@types/node@18.19.87):
+    resolution: {integrity: sha512-FxbQ9giWxUWKUk2O5XZ6PduVnH2CZ/fmMKMBkH71MHJvWr7WL5AHKevhzF1L5uYWB2P548o1RzVxrNd3dpmk6g==, tarball: https://registry.npmjs.org/@inquirer/confirm/-/confirm-5.1.10.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3455,12 +3455,12 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
 
-  /@inquirer/core@10.1.10(@types/node@18.19.87):
-    resolution: {integrity: sha512-roDaKeY1PYY0aCqhRmXihrHjoSW2A00pV3Ke5fTpMCkzcGF64R8e0lw3dK+eLEHwS4vB5RnW1wuQmvzoRul8Mw==, tarball: https://registry.npmjs.org/@inquirer/core/-/core-10.1.10.tgz}
+  /@inquirer/core@10.1.11(@types/node@18.19.87):
+    resolution: {integrity: sha512-BXwI/MCqdtAhzNQlBEFE7CEflhPkl/BqvAuV/aK6lW3DClIfYVDWPP/kXuXHtBWC7/EEbNqd/1BGq2BGBBnuxw==, tarball: https://registry.npmjs.org/@inquirer/core/-/core-10.1.11.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3478,8 +3478,8 @@ packages:
       wrap-ansi: 6.2.0
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/editor@4.2.10(@types/node@18.19.87):
-    resolution: {integrity: sha512-5GVWJ+qeI6BzR6TIInLP9SXhWCEcvgFQYmcRG6d6RIlhFjM5TyG18paTGBgRYyEouvCmzeco47x9zX9tQEofkw==, tarball: https://registry.npmjs.org/@inquirer/editor/-/editor-4.2.10.tgz}
+  /@inquirer/editor@4.2.11(@types/node@18.19.87):
+    resolution: {integrity: sha512-YoZr0lBnnLFPpfPSNsQ8IZyKxU47zPyVi9NLjCWtna52//M/xuL0PGPAxHxxYhdOhnvY2oBafoM+BI5w/JK7jw==, tarball: https://registry.npmjs.org/@inquirer/editor/-/editor-4.2.11.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3487,13 +3487,13 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
       external-editor: 3.1.0
 
-  /@inquirer/expand@4.0.12(@types/node@18.19.87):
-    resolution: {integrity: sha512-jV8QoZE1fC0vPe6TnsOfig+qwu7Iza1pkXoUJ3SroRagrt2hxiL+RbM432YAihNR7m7XnU0HWl/WQ35RIGmXHw==, tarball: https://registry.npmjs.org/@inquirer/expand/-/expand-4.0.12.tgz}
+  /@inquirer/expand@4.0.13(@types/node@18.19.87):
+    resolution: {integrity: sha512-HgYNWuZLHX6q5y4hqKhwyytqAghmx35xikOGY3TcgNiElqXGPas24+UzNPOwGUZa5Dn32y25xJqVeUcGlTv+QQ==, tarball: https://registry.npmjs.org/@inquirer/expand/-/expand-4.0.13.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3501,7 +3501,7 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
       yoctocolors-cjs: 2.1.2
@@ -3510,8 +3510,8 @@ packages:
     resolution: {integrity: sha512-eOg92lvrn/aRUqbxRyvpEWnrvRuTYRifixHkYVpJiygTgVSBIHDqLh0SrMQXkafvULg3ck11V7xvR+zcgvpHFw==, tarball: https://registry.npmjs.org/@inquirer/figures/-/figures-1.0.11.tgz}
     engines: {node: '>=18'}
 
-  /@inquirer/input@4.1.9(@types/node@18.19.87):
-    resolution: {integrity: sha512-mshNG24Ij5KqsQtOZMgj5TwEjIf+F2HOESk6bjMwGWgcH5UBe8UoljwzNFHqdMbGYbgAf6v2wU/X9CAdKJzgOA==, tarball: https://registry.npmjs.org/@inquirer/input/-/input-4.1.9.tgz}
+  /@inquirer/input@4.1.10(@types/node@18.19.87):
+    resolution: {integrity: sha512-kV3BVne3wJ+j6reYQUZi/UN9NZGZLxgc/tfyjeK3mrx1QI7RXPxGp21IUTv+iVHcbP4ytZALF8vCHoxyNSC6qg==, tarball: https://registry.npmjs.org/@inquirer/input/-/input-4.1.10.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3519,12 +3519,12 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
 
-  /@inquirer/number@3.0.12(@types/node@18.19.87):
-    resolution: {integrity: sha512-7HRFHxbPCA4e4jMxTQglHJwP+v/kpFsCf2szzfBHy98Wlc3L08HL76UDiA87TOdX5fwj2HMOLWqRWv9Pnn+Z5Q==, tarball: https://registry.npmjs.org/@inquirer/number/-/number-3.0.12.tgz}
+  /@inquirer/number@3.0.13(@types/node@18.19.87):
+    resolution: {integrity: sha512-IrLezcg/GWKS8zpKDvnJ/YTflNJdG0qSFlUM/zNFsdi4UKW/CO+gaJpbMgQ20Q58vNKDJbEzC6IebdkprwL6ew==, tarball: https://registry.npmjs.org/@inquirer/number/-/number-3.0.13.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3532,12 +3532,12 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
 
-  /@inquirer/password@4.0.12(@types/node@18.19.87):
-    resolution: {integrity: sha512-FlOB0zvuELPEbnBYiPaOdJIaDzb2PmJ7ghi/SVwIHDDSQ2K4opGBkF+5kXOg6ucrtSUQdLhVVY5tycH0j0l+0g==, tarball: https://registry.npmjs.org/@inquirer/password/-/password-4.0.12.tgz}
+  /@inquirer/password@4.0.13(@types/node@18.19.87):
+    resolution: {integrity: sha512-NN0S/SmdhakqOTJhDwOpeBEEr8VdcYsjmZHDb0rblSh2FcbXQOr+2IApP7JG4WE3sxIdKytDn4ed3XYwtHxmJQ==, tarball: https://registry.npmjs.org/@inquirer/password/-/password-4.0.13.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3545,13 +3545,13 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
       ansi-escapes: 4.3.2
 
-  /@inquirer/prompts@7.5.0(@types/node@18.19.87):
-    resolution: {integrity: sha512-tk8Bx7l5AX/CR0sVfGj3Xg6v7cYlFBkEahH+EgBB+cZib6Fc83dwerTbzj7f2+qKckjIUGsviWRI1d7lx6nqQA==, tarball: https://registry.npmjs.org/@inquirer/prompts/-/prompts-7.5.0.tgz}
+  /@inquirer/prompts@7.5.1(@types/node@18.19.87):
+    resolution: {integrity: sha512-5AOrZPf2/GxZ+SDRZ5WFplCA2TAQgK3OYrXCYmJL5NaTu4ECcoWFlfUZuw7Es++6Njv7iu/8vpYJhuzxUH76Vg==, tarball: https://registry.npmjs.org/@inquirer/prompts/-/prompts-7.5.1.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3559,20 +3559,20 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/checkbox': 4.1.5(@types/node@18.19.87)
-      '@inquirer/confirm': 5.1.9(@types/node@18.19.87)
-      '@inquirer/editor': 4.2.10(@types/node@18.19.87)
-      '@inquirer/expand': 4.0.12(@types/node@18.19.87)
-      '@inquirer/input': 4.1.9(@types/node@18.19.87)
-      '@inquirer/number': 3.0.12(@types/node@18.19.87)
-      '@inquirer/password': 4.0.12(@types/node@18.19.87)
-      '@inquirer/rawlist': 4.1.0(@types/node@18.19.87)
-      '@inquirer/search': 3.0.12(@types/node@18.19.87)
-      '@inquirer/select': 4.2.0(@types/node@18.19.87)
+      '@inquirer/checkbox': 4.1.6(@types/node@18.19.87)
+      '@inquirer/confirm': 5.1.10(@types/node@18.19.87)
+      '@inquirer/editor': 4.2.11(@types/node@18.19.87)
+      '@inquirer/expand': 4.0.13(@types/node@18.19.87)
+      '@inquirer/input': 4.1.10(@types/node@18.19.87)
+      '@inquirer/number': 3.0.13(@types/node@18.19.87)
+      '@inquirer/password': 4.0.13(@types/node@18.19.87)
+      '@inquirer/rawlist': 4.1.1(@types/node@18.19.87)
+      '@inquirer/search': 3.0.13(@types/node@18.19.87)
+      '@inquirer/select': 4.2.1(@types/node@18.19.87)
       '@types/node': 18.19.87
 
-  /@inquirer/rawlist@4.1.0(@types/node@18.19.87):
-    resolution: {integrity: sha512-6ob45Oh9pXmfprKqUiEeMz/tjtVTFQTgDDz1xAMKMrIvyrYjAmRbQZjMJfsictlL4phgjLhdLu27IkHNnNjB7g==, tarball: https://registry.npmjs.org/@inquirer/rawlist/-/rawlist-4.1.0.tgz}
+  /@inquirer/rawlist@4.1.1(@types/node@18.19.87):
+    resolution: {integrity: sha512-VBUC0jPN2oaOq8+krwpo/mf3n/UryDUkKog3zi+oIi8/e5hykvdntgHUB9nhDM78RubiyR1ldIOfm5ue+2DeaQ==, tarball: https://registry.npmjs.org/@inquirer/rawlist/-/rawlist-4.1.1.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3580,13 +3580,13 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/search@3.0.12(@types/node@18.19.87):
-    resolution: {integrity: sha512-H/kDJA3kNlnNIjB8YsaXoQI0Qccgf0Na14K1h8ExWhNmUg2E941dyFPrZeugihEa9AZNW5NdsD/NcvUME83OPQ==, tarball: https://registry.npmjs.org/@inquirer/search/-/search-3.0.12.tgz}
+  /@inquirer/search@3.0.13(@types/node@18.19.87):
+    resolution: {integrity: sha512-9g89d2c5Izok/Gw/U7KPC3f9kfe5rA1AJ24xxNZG0st+vWekSk7tB9oE+dJv5JXd0ZSijomvW0KPMoBd8qbN4g==, tarball: https://registry.npmjs.org/@inquirer/search/-/search-3.0.13.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3594,14 +3594,14 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/figures': 1.0.11
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/select@4.2.0(@types/node@18.19.87):
-    resolution: {integrity: sha512-KkXQ4aSySWimpV4V/TUJWdB3tdfENZUU765GjOIZ0uPwdbGIG6jrxD4dDf1w68uP+DVtfNhr1A92B+0mbTZ8FA==, tarball: https://registry.npmjs.org/@inquirer/select/-/select-4.2.0.tgz}
+  /@inquirer/select@4.2.1(@types/node@18.19.87):
+    resolution: {integrity: sha512-gt1Kd5XZm+/ddemcT3m23IP8aD8rC9drRckWoP/1f7OL46Yy2FGi8DSmNjEjQKtPl6SV96Kmjbl6p713KXJ/Jg==, tarball: https://registry.npmjs.org/@inquirer/select/-/select-4.2.1.tgz}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -3609,7 +3609,7 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.10(@types/node@18.19.87)
+      '@inquirer/core': 10.1.11(@types/node@18.19.87)
       '@inquirer/figures': 1.0.11
       '@inquirer/type': 3.0.6(@types/node@18.19.87)
       '@types/node': 18.19.87
@@ -3785,13 +3785,13 @@ packages:
       '@lezer/lr': 1.4.2
     dev: true
 
-  /@listr2/prompt-adapter-inquirer@2.0.22(@inquirer/prompts@7.5.0):
+  /@listr2/prompt-adapter-inquirer@2.0.22(@inquirer/prompts@7.5.1):
     resolution: {integrity: sha512-hV36ZoY+xKL6pYOt1nPNnkciFkn89KZwqLhAFzJvYysAvL5uBQdiADZx/8bIDXIukzzwG0QlPYolgMzQUtKgpQ==, tarball: https://registry.npmjs.org/@listr2/prompt-adapter-inquirer/-/prompt-adapter-inquirer-2.0.22.tgz}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@inquirer/prompts': '>= 3 < 8'
     dependencies:
-      '@inquirer/prompts': 7.5.0(@types/node@18.19.87)
+      '@inquirer/prompts': 7.5.1(@types/node@18.19.87)
       '@inquirer/type': 1.5.5
     dev: false
 
@@ -4153,8 +4153,8 @@ packages:
       - supports-color
     dev: true
 
-  /@ngtools/webpack@20.0.0-rc.0(typescript@5.8.2)(webpack@5.99.8):
-    resolution: {integrity: sha512-bawbfDlbvFz6De4oV2n9wpFNTWOSIxmbs+fqZcrSenP1SUiN1iVGRQBibk/q1rvutN0nWdPRsQFmRe4JeTDgkw==, tarball: https://registry.npmjs.org/@ngtools/webpack/-/webpack-20.0.0-rc.0.tgz}
+  /@ngtools/webpack@20.0.0-rc.2(typescript@5.8.2)(webpack@5.99.8):
+    resolution: {integrity: sha512-8TAQA6KNbZSgYcm+CzKvVOl8PY3trazaLMDZMEDFa3KUrQSmrAeZstVJzS54S+ovhc56KXdDmo8ipq7ObPKpAg==, tarball: https://registry.npmjs.org/@ngtools/webpack/-/webpack-20.0.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
@@ -4219,7 +4219,7 @@ packages:
     resolution: {integrity: sha512-q9CRWjpHCMIh5sVyefoD1cA7PkvILqCZsnSOEUUivORLjxCO/Irmue2DprETiNgEqktDBZaM1Bi+jrarx1XdCg==, tarball: https://registry.npmjs.org/@npmcli/fs/-/fs-3.1.1.tgz}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
     dev: true
     optional: true
 
@@ -4227,7 +4227,7 @@ packages:
     resolution: {integrity: sha512-/xGlezI6xfGO9NwuJlnwz/K14qD1kCSAGtacBHnGzeAIuJGazcp45KP5NuyARXoKb7cwulAGWVsbeSxdG/cb0Q==, tarball: https://registry.npmjs.org/@npmcli/fs/-/fs-4.0.0.tgz}
     engines: {node: ^18.17.0 || >=20.5.0}
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
     dev: false
 
   /@npmcli/git@6.0.3:
@@ -4240,7 +4240,7 @@ packages:
       npm-pick-manifest: 10.0.0
       proc-log: 5.0.0
       promise-retry: 2.0.1
-      semver: 7.7.1
+      semver: 7.7.2
       which: 5.0.0
     dev: false
 
@@ -4267,7 +4267,7 @@ packages:
       hosted-git-info: 8.1.0
       json-parse-even-better-errors: 4.0.0
       proc-log: 5.0.0
-      semver: 7.7.1
+      semver: 7.7.2
       validate-npm-package-license: 3.0.4
     dev: false
 
@@ -4715,7 +4715,7 @@ packages:
       extract-zip: 2.0.1
       progress: 2.0.3
       proxy-agent: 6.5.0
-      semver: 7.7.1
+      semver: 7.7.2
       tar-fs: 3.0.8
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -5153,12 +5153,12 @@ packages:
       - '@types/node'
     dev: false
 
-  /@schematics/angular@20.0.0-rc.0(chokidar@4.0.3):
-    resolution: {integrity: sha512-LLsoqOO5waTnqvpa5zI9PyltHr/mKRrzznGzQ5IDDHKk8Vm1KgVd0+MHOPXHPCNPDgARbARM/yXwPa5dqeOYlA==, tarball: https://registry.npmjs.org/@schematics/angular/-/angular-20.0.0-rc.0.tgz}
+  /@schematics/angular@20.0.0-rc.2(chokidar@4.0.3):
+    resolution: {integrity: sha512-PqZ7qYZKghnDaXM10J80XNlXV5n4fu/1GneYu7GQpJVPe3MIcbk+ooNierZuo0++CkWU7eEIx13e6M70gcREUw==, tarball: https://registry.npmjs.org/@schematics/angular/-/angular-20.0.0-rc.2.tgz}
     engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     dependencies:
-      '@angular-devkit/core': 20.0.0-rc.0(chokidar@4.0.3)
-      '@angular-devkit/schematics': 20.0.0-rc.0(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0-rc.2(chokidar@4.0.3)
+      '@angular-devkit/schematics': 20.0.0-rc.2(chokidar@4.0.3)
       jsonc-parser: 3.3.1
     transitivePeerDependencies:
       - chokidar
@@ -6028,7 +6028,7 @@ packages:
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
     dependencies:
-      vite: 6.0.7(@types/node@18.19.87)(sass@1.83.1)(terser@5.39.0)(tsx@4.19.3)
+      vite: 6.0.7(@types/node@18.19.87)(sass@1.83.1)(terser@5.39.1)(tsx@4.19.3)
     dev: true
 
   /@vitejs/plugin-basic-ssl@2.0.0(vite@6.3.5):
@@ -6037,7 +6037,7 @@ packages:
     peerDependencies:
       vite: ^6.0.0
     dependencies:
-      vite: 6.3.5(@types/node@18.19.87)(less@4.3.0)(sass@1.87.0)(terser@5.39.0)(tsx@4.19.3)
+      vite: 6.3.5(@types/node@18.19.87)(less@4.3.0)(sass@1.88.0)(terser@5.39.1)(tsx@4.19.3)
     dev: false
 
   /@wdio/config@6.12.1:
@@ -8130,7 +8130,7 @@ packages:
       conventional-commits-filter: 5.0.0
       handlebars: 4.7.8
       meow: 13.2.0
-      semver: 7.7.1
+      semver: 7.7.2
     dev: true
 
   /conventional-changelog@6.0.0:
@@ -8341,7 +8341,7 @@ packages:
       postcss-modules-scope: 3.2.1(postcss@8.5.3)
       postcss-modules-values: 4.0.0(postcss@8.5.3)
       postcss-value-parser: 4.2.0
-      semver: 7.7.1
+      semver: 7.7.2
       webpack: 5.99.8(esbuild@0.25.4)
     dev: false
 
@@ -9602,7 +9602,7 @@ packages:
       promise-breaker: 6.0.0
       qs: 6.14.0
       raw-body: 2.5.2
-      semver: 7.7.1
+      semver: 7.7.2
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -10015,7 +10015,7 @@ packages:
       progress: 2.0.3
       proxy-agent: 6.5.0
       retry: 0.13.1
-      semver: 7.7.1
+      semver: 7.7.2
       sql-formatter: 15.6.1
       stream-chain: 2.2.5
       stream-json: 1.9.1
@@ -10519,7 +10519,7 @@ packages:
       es6-error: 4.1.1
       matcher: 3.0.0
       roarr: 2.15.4
-      semver: 7.7.1
+      semver: 7.7.2
       serialize-error: 7.0.1
     dev: true
 
@@ -11929,7 +11929,7 @@ packages:
       '@babel/parser': 7.27.2
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
-      semver: 7.7.1
+      semver: 7.7.2
     transitivePeerDependencies:
       - supports-color
 
@@ -12198,7 +12198,7 @@ packages:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.7.1
+      semver: 7.7.2
     dev: true
 
   /jsprim@1.4.2:
@@ -12910,7 +12910,7 @@ packages:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==, tarball: https://registry.npmjs.org/make-dir/-/make-dir-4.0.0.tgz}
     engines: {node: '>=10'}
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
 
   /make-error@1.3.6:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==, tarball: https://registry.npmjs.org/make-error/-/make-error-1.3.6.tgz}
@@ -13540,7 +13540,7 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /ngx-progressbar@14.0.0(@angular/cdk@20.0.0-rc.0)(rxjs@7.8.2):
+  /ngx-progressbar@14.0.0(@angular/cdk@20.0.0-rc.1)(rxjs@7.8.2):
     resolution: {integrity: sha512-tDj7h5F2aSI4/XaJjs50FnELVe6qFqyz3vVq22acacd3oDW2EyJB4c+IYaxMf5972OdTw0WL4n6UwQ3dqC+gCA==, tarball: https://registry.npmjs.org/ngx-progressbar/-/ngx-progressbar-14.0.0.tgz}
     peerDependencies:
       '@angular/cdk': '>=17.3.0'
@@ -13548,7 +13548,7 @@ packages:
       '@angular/core': '>=17.3.0'
       rxjs: '>=7.0.0'
     dependencies:
-      '@angular/cdk': 20.0.0-rc.0(rxjs@7.8.2)
+      '@angular/cdk': 20.0.0-rc.1(rxjs@7.8.2)
       rxjs: 7.8.2
       tslib: 2.8.1
     dev: false
@@ -13613,7 +13613,7 @@ packages:
       make-fetch-happen: 13.0.1
       nopt: 7.2.1
       proc-log: 4.2.0
-      semver: 7.7.1
+      semver: 7.7.2
       tar: 6.2.1
       which: 4.0.0
     transitivePeerDependencies:
@@ -13632,7 +13632,7 @@ packages:
       make-fetch-happen: 14.0.3
       nopt: 8.1.0
       proc-log: 5.0.0
-      semver: 7.7.1
+      semver: 7.7.2
       tar: 7.4.3
       tinyglobby: 0.2.13
       which: 5.0.0
@@ -13665,7 +13665,7 @@ packages:
     engines: {node: ^16.14.0 || >=18.0.0}
     dependencies:
       hosted-git-info: 7.0.2
-      semver: 7.7.1
+      semver: 7.7.2
       validate-npm-package-license: 3.0.4
     dev: true
 
@@ -13707,7 +13707,7 @@ packages:
     resolution: {integrity: sha512-u6DCwbow5ynAX5BdiHQ9qvexme4U3qHW3MWe5NqH+NeBm0LbiH6zvGjNNew1fY+AZZUtVHbOPF3j7mJxbUzpXg==, tarball: https://registry.npmjs.org/npm-install-checks/-/npm-install-checks-7.1.1.tgz}
     engines: {node: ^18.17.0 || >=20.5.0}
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
     dev: false
 
   /npm-normalize-package-bin@4.0.0:
@@ -13721,7 +13721,7 @@ packages:
     dependencies:
       hosted-git-info: 8.1.0
       proc-log: 5.0.0
-      semver: 7.7.1
+      semver: 7.7.2
       validate-npm-package-name: 6.0.0
     dev: false
 
@@ -13739,7 +13739,7 @@ packages:
       npm-install-checks: 7.1.1
       npm-normalize-package-bin: 4.0.0
       npm-package-arg: 12.0.2
-      semver: 7.7.1
+      semver: 7.7.2
     dev: false
 
   /npm-registry-fetch@18.0.2:
@@ -14251,7 +14251,7 @@ packages:
       minimist: 1.2.8
       open: 7.4.2
       rimraf: 2.7.1
-      semver: 7.7.1
+      semver: 7.7.2
       slash: 2.0.0
       tmp: 0.0.33
       yaml: 2.7.1
@@ -14538,7 +14538,7 @@ packages:
       cosmiconfig: 9.0.0(typescript@5.8.2)
       jiti: 1.21.7
       postcss: 8.5.3
-      semver: 7.7.1
+      semver: 7.7.2
       webpack: 5.99.8(esbuild@0.25.4)
     transitivePeerDependencies:
       - typescript
@@ -15476,7 +15476,7 @@ packages:
       jest-worker: 26.6.2
       rollup: 1.11.3
       serialize-javascript: 4.0.0
-      terser: 5.39.0
+      terser: 5.39.1
     dev: true
 
   /rollup@1.11.3:
@@ -15652,7 +15652,7 @@ packages:
   /safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==, tarball: https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz}
 
-  /sass-loader@16.0.5(sass@1.87.0)(webpack@5.99.8):
+  /sass-loader@16.0.5(sass@1.88.0)(webpack@5.99.8):
     resolution: {integrity: sha512-oL+CMBXrj6BZ/zOq4os+UECPL+bWqt6OAC6DWS8Ln8GZRcMDjlJ4JC3FBDuHJdYaFWIdKNIBYmtZtK2MaMkNIw==, tarball: https://registry.npmjs.org/sass-loader/-/sass-loader-16.0.5.tgz}
     engines: {node: '>= 18.12.0'}
     peerDependencies:
@@ -15674,7 +15674,7 @@ packages:
         optional: true
     dependencies:
       neo-async: 2.6.2
-      sass: 1.87.0
+      sass: 1.88.0
       webpack: 5.99.8(esbuild@0.25.4)
     dev: false
 
@@ -15690,8 +15690,8 @@ packages:
       '@parcel/watcher': 2.5.1
     dev: true
 
-  /sass@1.87.0:
-    resolution: {integrity: sha512-d0NoFH4v6SjEK7BoX810Jsrhj7IQSYHAHLi/iSpgqKc7LaIDshFRlSg5LOymf9FqQhxEHs2W5ZQXlvy0KD45Uw==, tarball: https://registry.npmjs.org/sass/-/sass-1.87.0.tgz}
+  /sass@1.88.0:
+    resolution: {integrity: sha512-sF6TWQqjFvr4JILXzG4ucGOLELkESHL+I5QJhh7CNaE+Yge0SI+ehCatsXhJ7ymU1hAFcIS3/PBpjdIbXoyVbg==, tarball: https://registry.npmjs.org/sass/-/sass-1.88.0.tgz}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -15832,8 +15832,8 @@ packages:
     hasBin: true
     dev: true
 
-  /semver@7.7.1:
-    resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==, tarball: https://registry.npmjs.org/semver/-/semver-7.7.1.tgz}
+  /semver@7.7.2:
+    resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==, tarball: https://registry.npmjs.org/semver/-/semver-7.7.2.tgz}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -16918,12 +16918,12 @@ packages:
       jest-worker: 27.5.1
       schema-utils: 4.3.2
       serialize-javascript: 6.0.2
-      terser: 5.39.0
+      terser: 5.39.1
       webpack: 5.99.8(esbuild@0.25.4)
     dev: false
 
-  /terser@5.39.0:
-    resolution: {integrity: sha512-LBAhFyLho16harJoWMg/nZsQYgTrg5jXOn2nCYjRUcZZEdE3qa2zb8QEDRUGVZBW4rlazf2fxkg8tztybTaqWw==, tarball: https://registry.npmjs.org/terser/-/terser-5.39.0.tgz}
+  /terser@5.39.1:
+    resolution: {integrity: sha512-Mm6+uad0ZuDtcV8/4uOZQDQ8RuiC5Pu+iZRedJtF7yA/27sPL7d++In/AJKpWZlU3SYMPPkVfwetn6sgZ66pUA==, tarball: https://registry.npmjs.org/terser/-/terser-5.39.1.tgz}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
@@ -17753,7 +17753,7 @@ packages:
       pupa: 2.1.1
       registry-auth-token: 5.1.0
       registry-url: 5.1.0
-      semver: 7.7.1
+      semver: 7.7.2
       semver-diff: 3.1.1
       xdg-basedir: 4.0.0
     transitivePeerDependencies:
@@ -17938,7 +17938,7 @@ packages:
       teex: 1.0.1
     dev: true
 
-  /vite@6.0.7(@types/node@18.19.87)(sass@1.83.1)(terser@5.39.0)(tsx@4.19.3):
+  /vite@6.0.7(@types/node@18.19.87)(sass@1.83.1)(terser@5.39.1)(tsx@4.19.3):
     resolution: {integrity: sha512-RDt8r/7qx9940f8FcOIAH9PTViRrghKaK2K1jY3RaAURrEUbm9Du1mJ72G+jlhtG3WwodnfzY8ORQZbBavZEAQ==, tarball: https://registry.npmjs.org/vite/-/vite-6.0.7.tgz}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
@@ -17983,13 +17983,13 @@ packages:
       postcss: 8.5.3
       rollup: 4.40.2
       sass: 1.83.1
-      terser: 5.39.0
+      terser: 5.39.1
       tsx: 4.19.3
     optionalDependencies:
       fsevents: 2.3.3
     dev: true
 
-  /vite@6.3.5(@types/node@18.19.87)(less@4.3.0)(sass@1.87.0)(terser@5.39.0)(tsx@4.19.3):
+  /vite@6.3.5(@types/node@18.19.87)(less@4.3.0)(sass@1.88.0)(terser@5.39.1)(tsx@4.19.3):
     resolution: {integrity: sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==, tarball: https://registry.npmjs.org/vite/-/vite-6.3.5.tgz}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
@@ -18036,8 +18036,8 @@ packages:
       picomatch: 4.0.2
       postcss: 8.5.3
       rollup: 4.40.2
-      sass: 1.87.0
-      terser: 5.39.0
+      sass: 1.88.0
+      terser: 5.39.1
       tinyglobby: 0.2.13
       tsx: 4.19.3
     optionalDependencies:
@@ -18794,14 +18794,14 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==, tarball: https://registry.npmjs.org/zwitch/-/zwitch-2.0.4.tgz}
     dev: true
 
-  github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a(@angular/ssr@20.0.0-rc.0)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.0)(tsx@4.19.3):
+  github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a(@angular/ssr@20.0.0-rc.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.1)(tsx@4.19.3):
     resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-build-tooling-builds/tar.gz/ce04ec6cf7604014191821a637e60964a1a3bb4a}
     id: github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a
     name: '@angular/build-tooling'
     version: 0.0.0-2670abf637fa155971cdd1f7e570a7f234922a65
     dependencies:
       '@angular/benchpress': 0.3.0(rxjs@7.8.2)
-      '@angular/build': 19.1.0-rc.0(@angular/ssr@20.0.0-rc.0)(@types/node@18.19.87)(chokidar@4.0.3)(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)
+      '@angular/build': 19.1.0-rc.0(@angular/ssr@20.0.0-rc.2)(@types/node@18.19.87)(chokidar@4.0.3)(terser@5.39.1)(tsx@4.19.3)(typescript@5.7.3)
       '@babel/core': 7.27.1
       '@babel/plugin-proposal-async-generator-functions': 7.20.7(@babel/core@7.27.1)
       '@bazel/buildifier': 6.3.3
@@ -18809,7 +18809,7 @@ packages:
       '@bazel/esbuild': 5.8.1
       '@bazel/protractor': 5.8.1(protractor@7.0.0)
       '@bazel/runfiles': 5.8.1
-      '@bazel/terser': 5.8.1(terser@5.39.0)
+      '@bazel/terser': 5.8.1(terser@5.39.1)
       '@bazel/typescript': 5.8.1(typescript@5.7.3)
       '@microsoft/api-extractor': 7.49.1(@types/node@18.19.87)
       '@types/browser-sync': 2.29.0
@@ -18867,10 +18867,10 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/a871c115e04a76587fcd418107ad985752610ccf:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/a871c115e04a76587fcd418107ad985752610ccf}
+  github.com/angular/dev-infra-private-ng-dev-builds/8225f7c340e6d66fd3822ea0f3042797755f9d0a:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8225f7c340e6d66fd3822ea0f3042797755f9d0a}
     name: '@angular/ng-dev'
-    version: 0.0.0-892760b7f6cf0d08a51778674a9b13ebc1a809a7
+    version: 0.0.0-0823edf256e181000db928a26c9de656a6a3d203
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 7.21.0(supports-color@10.0.0)
@@ -18879,7 +18879,7 @@ packages:
       '@types/supports-color': 10.0.0
       '@yarnpkg/lockfile': 1.1.0
       chalk: 5.4.1
-      semver: 7.7.1
+      semver: 7.7.2
       supports-color: 10.0.0
       typed-graphqlify: 3.1.6
       typescript: 4.9.5
