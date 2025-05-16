@@ -124,6 +124,7 @@ export interface FieldState<T> {
    * Sets the touched status of the field to `true`.
    */
   markAsTouched(): void;
+
   /**
    * Resets the `submittedStatus` of the field and all descendant fields to unsubmitted.
    */
@@ -177,6 +178,11 @@ export interface FieldContext<T> {
    * A signal of the value of the field that the logic function is bound to.
    */
   readonly value: Signal<T>;
+  readonly state: FieldState<T>;
+  readonly field: Field<T>;
+  readonly valueOf: <P>(p: FieldPath<P>) => P;
+  readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
+  readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
   /**
    * A function that gets the `Field` for a given `FieldPath`.
    * This can be used by the `LogicFunction` to implement cross-field logic.
