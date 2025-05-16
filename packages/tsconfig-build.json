@@ -32,7 +32,12 @@
     "importHelpers": true,
     "paths": {
       "zone.js": ["./zone.js/lib/zone"],
-      "@angular/*": ["./*/index", "./*"]
+      "@angular/*": [
+        "./*/index",
+        // TODO: Remove this when we no longer use any deep imports to specific files which are not
+        // public API
+        "./*"
+      ]
     }
   },
   "bazelOptions": {
