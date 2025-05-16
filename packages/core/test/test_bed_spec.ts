@@ -40,6 +40,8 @@ import {
   ɵɵsetNgModuleScope as setNgModuleScope,
   ɵɵtext as text,
   DOCUMENT,
+  signal,
+  provideZonelessChangeDetection,
 } from '../src/core';
 import {DeferBlockBehavior} from '../testing';
 import {TestBed, TestBedImpl} from '../testing/src/test_bed';
@@ -50,6 +52,7 @@ import {NgModuleType} from '../src/render3';
 import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
 import {setClassMetadataAsync} from '../src/render3/metadata';
 import {
+  ComponentFixtureAutoDetect,
   TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT,
   THROW_ON_UNKNOWN_ELEMENTS_DEFAULT,
   THROW_ON_UNKNOWN_PROPERTIES_DEFAULT,
@@ -2272,6 +2275,58 @@ describe('TestBed', () => {
     }
 
     expect(TestBed.runInInjectionContext(functionThatUsesInject)).toEqual(expectedValue);
+  });
+
+  describe('TestBed.tick', () => {
+    @Component({
+      template: '{{state()}}',
+    })
+    class Thing1 {
+      state = signal(1);
+    }
+
+    describe('with zone change detection', () => {
+      it('should update fixtures with autoDetect', () => {
+        TestBed.configureTestingModule({
+          providers: [{provide: ComponentFixtureAutoDetect, useValue: true}],
+        });
+        const {nativeElement, componentInstance} = TestBed.createComponent(Thing1);
+        expect(nativeElement.textContent).toBe('1');
+
+        componentInstance.state.set(2);
+        TestBed.tick();
+        expect(nativeElement.textContent).toBe('2');
+      });
+
+      it('should update fixtures without autoDetect', () => {
+        const {nativeElement, componentInstance} = TestBed.createComponent(Thing1);
+        expect(nativeElement.textContent).toBe(''); // change detection didn't run yet
+
+        componentInstance.state.set(2);
+        TestBed.tick();
+        expect(nativeElement.textContent).toBe('2');
+      });
+    });
+
+    describe('with zoneless change detection', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [provideZonelessChangeDetection()],
+        });
+      });
+
+      it('should update fixtures with zoneless', async () => {
+        const fixture = TestBed.createComponent(Thing1);
+        await fixture.whenStable();
+
+        const {nativeElement, componentInstance} = fixture;
+        expect(nativeElement.textContent).toBe('1');
+
+        componentInstance.state.set(2);
+        TestBed.tick();
+        expect(nativeElement.textContent).toBe('2');
+      });
+    });
   });
 });
 

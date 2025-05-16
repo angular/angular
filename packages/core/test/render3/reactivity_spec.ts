@@ -803,10 +803,8 @@ describe('reactivity', () => {
           }
         }
 
-        const fixture = TestBed.createComponent(TestCmp);
+        TestBed.createComponent(TestCmp);
         TestBed.tick();
-        expect(log).toEqual([]);
-        fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });
 
@@ -883,10 +881,6 @@ describe('reactivity', () => {
 
         // Verify that simply creating the component didn't schedule the effect.
         TestBed.tick();
-        expect(log).toEqual([]);
-
-        // Running change detection should schedule and run the effect.
-        fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });
 
@@ -915,8 +909,6 @@ describe('reactivity', () => {
 
         const fixture = TestBed.createComponent(TestCmp);
         TestBed.tick();
-        expect(log).toEqual([]);
-        fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });
 
