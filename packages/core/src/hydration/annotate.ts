@@ -21,12 +21,18 @@ import {Renderer2} from '../render';
 import {assertTNode} from '../render3/assert';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
 import {getComponentDef} from '../render3/def_getters';
-import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
+import {
+  CONTAINER_HEADER_OFFSET,
+  LContainer,
+  MOVED_VIEWS,
+  NATIVE,
+} from '../render3/interfaces/container';
 import {isLetDeclaration, isTNodeShape, TNode, TNodeType} from '../render3/interfaces/node';
 import {RComment, RElement} from '../render3/interfaces/renderer_dom';
 import {
   hasI18n,
   isComponentHost,
+  isContentQueryHost,
   isLContainer,
   isProjectionTNode,
   isRootView,
@@ -39,6 +45,7 @@ import {
   LView,
   PARENT,
   RENDERER,
+  T_HOST,
   TView,
   TVIEW,
   TViewType,
@@ -595,16 +602,35 @@ function serializeLView(
       continue;
     }
 
+    const projectionHostNode = getComponentHost(tNode);
+
     // Check if a native node that represents a given TNode is disconnected from the DOM tree.
     // Such nodes must be excluded from the hydration (since the hydration won't be able to
     // find them), so the TNode ids are collected and used at runtime to skip the hydration.
     //
     // This situation may happen during the content projection, when some nodes don't make it
     // into one of the content projection slots (for example, when there is no default
-    // <ng-content /> slot in projector component's template).
-    if (isDisconnectedNode(tNode, lView) && isContentProjectedNode(tNode)) {
-      appendDisconnectedNodeIndex(ngh, tNode);
-      continue;
+    if (isDisconnectedNode(tNode, lView) && projectionHostNode !== null) {
+      if (!isContentQueryHost(projectionHostNode)) {
+        appendDisconnectedNodeIndex(ngh, tNode);
+        continue;
+      }
+
+      // the lView[i] is the LContainer representing the template being
+      // projected in this case.
+      if (isLContainer(lView[i])) {
+        const lContainer = lView[i] as LContainer;
+
+        // This is the comment node of the ng-template in question (it's disconnected)
+        const anchorNode = lContainer[NATIVE];
+
+        // This is the actual ng-template that's being projected
+        const movedLView = lContainer[MOVED_VIEWS];
+        debugger;
+        // appendSerializedNodePath(ngh, targetNode as TNode, lView, i18nChildren);
+      }
+
+      //TODO: get the list of root nodes for the projection, annotate them, move on
     }
 
     if (Array.isArray(tNode.projection)) {
@@ -867,20 +893,20 @@ function insertCorruptedTextNodeMarkers(
 }
 
 /**
- * Detects whether a given TNode represents a node that
- * is being content projected.
+ * Gets the Component Host Node if it exists, which
+ * means the input node is being content projected
  */
-function isContentProjectedNode(tNode: TNode): boolean {
+function getComponentHost(tNode: TNode): TNode | null {
   let currentTNode = tNode;
   while (currentTNode != null) {
     // If we come across a component host node in parent nodes -
     // this TNode is in the content projection section.
     if (isComponentHost(currentTNode)) {
-      return true;
+      return currentTNode;
     }
     currentTNode = currentTNode.parent as TNode;
   }
-  return false;
+  return null;
 }
 
 /**
