@@ -352,8 +352,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a
         version: github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a(@angular/ssr@20.0.0-rc.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.1)(tsx@4.19.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#8225f7c340e6d66fd3822ea0f3042797755f9d0a
-        version: github.com/angular/dev-infra-private-ng-dev-builds/8225f7c340e6d66fd3822ea0f3042797755f9d0a
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#11b4744f3e0ecd5b6d9d6f719de17f34efef72c9
+        version: github.com/angular/dev-infra-private-ng-dev-builds/11b4744f3e0ecd5b6d9d6f719de17f34efef72c9
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.27.1)
@@ -10030,7 +10030,7 @@ packages:
       winston: 3.17.0
       winston-transport: 4.9.0
       ws: 7.5.10
-      yaml: 2.7.1
+      yaml: 2.8.0
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -13927,7 +13927,7 @@ packages:
   /openapi3-ts@3.2.0:
     resolution: {integrity: sha512-/ykNWRV5Qs0Nwq7Pc0nJ78fgILvOT/60OxEmB3v7yQ8a8Bwcm43D4diaYazG/KBn6czA+52XYy931WFLMCUeSg==, tarball: https://registry.npmjs.org/openapi3-ts/-/openapi3-ts-3.2.0.tgz}
     dependencies:
-      yaml: 2.7.1
+      yaml: 2.8.0
     dev: true
 
   /opener@1.5.2:
@@ -14254,7 +14254,7 @@ packages:
       semver: 7.7.2
       slash: 2.0.0
       tmp: 0.0.33
-      yaml: 2.7.1
+      yaml: 2.8.0
     dev: true
 
   /path-case@3.0.4:
@@ -18682,9 +18682,9 @@ packages:
     engines: {node: '>=18'}
     dev: false
 
-  /yaml@2.7.1:
-    resolution: {integrity: sha512-10ULxpnOCQXxJvBgxsn9ptjq6uviG/htZKk9veJGhlqn3w/DxQ631zFF+nlQXLwmImeS5amR2dl2U8sg6U9jsQ==, tarball: https://registry.npmjs.org/yaml/-/yaml-2.7.1.tgz}
-    engines: {node: '>= 14'}
+  /yaml@2.8.0:
+    resolution: {integrity: sha512-4lLa/EcQCB0cJkyts+FpIRx5G/llPxfP6VQU5KByHEhLxY3IJCH0f0Hy1MHI8sClTvsIb8qwRJ6R/ZdlDJ/leQ==, tarball: https://registry.npmjs.org/yaml/-/yaml-2.8.0.tgz}
+    engines: {node: '>= 14.6'}
     hasBin: true
     dev: true
 
@@ -18867,10 +18867,10 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/8225f7c340e6d66fd3822ea0f3042797755f9d0a:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8225f7c340e6d66fd3822ea0f3042797755f9d0a}
+  github.com/angular/dev-infra-private-ng-dev-builds/11b4744f3e0ecd5b6d9d6f719de17f34efef72c9:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/11b4744f3e0ecd5b6d9d6f719de17f34efef72c9}
     name: '@angular/ng-dev'
-    version: 0.0.0-0823edf256e181000db928a26c9de656a6a3d203
+    version: 0.0.0-4d867b54b0a8b4a5a5b1aafc826098546d715148
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 7.21.0(supports-color@10.0.0)
@@ -18884,7 +18884,7 @@ packages:
       typed-graphqlify: 3.1.6
       typescript: 4.9.5
       which: 5.0.0
-      yaml: 2.7.1
+      yaml: 2.8.0
     transitivePeerDependencies:
       - encoding
     dev: true
