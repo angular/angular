@@ -349,8 +349,8 @@ importers:
         specifier: 0.2000.0-rc.2
         version: 0.2000.0-rc.2(chokidar@4.0.3)
       '@angular/build-tooling':
-        specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#ce04ec6cf7604014191821a637e60964a1a3bb4a
-        version: github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a(@angular/ssr@20.0.0-rc.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.1)(tsx@4.19.4)
+        specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4
+        version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/ssr@20.0.0-rc.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.1)(tsx@4.19.4)
       '@angular/ng-dev':
         specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#8225f7c340e6d66fd3822ea0f3042797755f9d0a
         version: github.com/angular/dev-infra-private-ng-dev-builds/8225f7c340e6d66fd3822ea0f3042797755f9d0a
@@ -18717,11 +18717,11 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: true
 
-  github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a(@angular/ssr@20.0.0-rc.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.1)(tsx@4.19.4):
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-build-tooling-builds/tar.gz/ce04ec6cf7604014191821a637e60964a1a3bb4a}
-    id: github.com/angular/dev-infra-private-build-tooling-builds/ce04ec6cf7604014191821a637e60964a1a3bb4a
+  github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/ssr@20.0.0-rc.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.1)(tsx@4.19.4):
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-build-tooling-builds/tar.gz/5db176c0f3211663830fd3ff4064c1dff0eaccb4}
+    id: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4
     name: '@angular/build-tooling'
-    version: 0.0.0-2670abf637fa155971cdd1f7e570a7f234922a65
+    version: 0.0.0-d44be7e28087c3499d70dda9859d51c1cd3fe1bf
     dependencies:
       '@angular/benchpress': 0.3.0(rxjs@7.8.2)
       '@angular/build': 19.1.0-rc.0(@angular/ssr@20.0.0-rc.2)(@types/node@18.19.100)(chokidar@4.0.3)(terser@5.39.1)(tsx@4.19.4)(typescript@5.7.3)
