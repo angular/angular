@@ -46,6 +46,7 @@ ng_project(
         "//packages/core/primitives/dom-navigation",
         "//packages/core/primitives/event-dispatch",
         "//packages/zone.js/lib:zone_d_ts",
+        "//packages/core/primitives/defer:triggers",
     ],
     deps = [
         "//:node_modules/rxjs",
