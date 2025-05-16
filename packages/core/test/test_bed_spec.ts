@@ -2315,7 +2315,7 @@ describe('TestBed', () => {
         });
       });
 
-      it('should update fixtures with autoDetect', async () => {
+      it('should update fixtures with zoneless', async () => {
         const fixture = TestBed.createComponent(Thing1);
         await fixture.whenStable();
 
@@ -2323,21 +2323,6 @@ describe('TestBed', () => {
         expect(nativeElement.textContent).toBe('1');
 
         componentInstance.state.set(2);
-        TestBed.tick();
-        expect(nativeElement.textContent).toBe('2');
-      });
-
-      it('should update fixtures without autoDetect', async () => {
-        const fixture = TestBed.createComponent(Thing1);
-        fixture.autoDetectChanges(false);
-
-        const {nativeElement, componentInstance} = fixture;
-        expect(nativeElement.textContent).toBe('1');
-
-        componentInstance.state.set(2);
-        await fixture.whenStable();
-        expect(nativeElement.textContent).toBe('1');
-
         TestBed.tick();
         expect(nativeElement.textContent).toBe('2');
       });

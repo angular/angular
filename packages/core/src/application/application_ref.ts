@@ -653,11 +653,6 @@ export class ApplicationRef {
     }
 
     let runs = 0;
-    if (this.allTestViews.size) {
-      // Test views don't get attached to the application in the normal way so the dirty flags might not be present
-      // if the view has autoDetect off. We shouldn't ever actually skip any dirty views.
-      this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
-    }
     while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
       profiler(ProfilerEvent.ChangeDetectionSyncStart);
       this.synchronizeOnce();
