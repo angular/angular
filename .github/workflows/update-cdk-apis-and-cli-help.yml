@@ -65,7 +65,7 @@ jobs:
         run: node adev/scripts/update-cli-help/index.mjs
         env:
           ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN }}
-      - name: Create a PR CDK apis (if necessary)
+      - name: Create a PR CLI help (if necessary)
         uses: peter-evans/create-pull-request@v7.0.8 # v7.0.8
         with:
           token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
