@@ -17907,8 +17907,7 @@ var require_anchors = __commonJS({
       return {
         onAnchor: (source) => {
           aliasObjects.push(source);
-          if (!prevAnchors)
-            prevAnchors = anchorNames(doc);
+          prevAnchors ?? (prevAnchors = anchorNames(doc));
           const anchor = findNewAnchor(prefix, prevAnchors);
           prevAnchors.add(anchor);
           return anchor;
@@ -18073,23 +18072,35 @@ var require_Alias = __commonJS({
           }
         });
       }
-      resolve(doc) {
+      resolve(doc, ctx) {
+        let nodes;
+        if (ctx?.aliasResolveCache) {
+          nodes = ctx.aliasResolveCache;
+        } else {
+          nodes = [];
+          visit.visit(doc, {
+            Node: (_key, node) => {
+              if (identity.isAlias(node) || identity.hasAnchor(node))
+                nodes.push(node);
+            }
+          });
+          if (ctx)
+            ctx.aliasResolveCache = nodes;
+        }
         let found = void 0;
-        visit.visit(doc, {
-          Node: (_key, node) => {
-            if (node === this)
-              return visit.visit.BREAK;
-            if (node.anchor === this.source)
-              found = node;
-          }
-        });
+        for (const node of nodes) {
+          if (node === this)
+            break;
+          if (node.anchor === this.source)
+            found = node;
+        }
         return found;
       }
       toJSON(_arg, ctx) {
         if (!ctx)
           return { source: this.source };
         const { anchors: anchors2, doc, maxAliasCount } = ctx;
-        const source = this.resolve(doc);
+        const source = this.resolve(doc, ctx);
         if (!source) {
           const msg = `Unresolved alias (the anchor must be set before the alias): ${this.source}`;
           throw new ReferenceError(msg);
@@ -18218,8 +18229,7 @@ var require_createNode = __commonJS({
       if (aliasDuplicateObjects && value && typeof value === "object") {
         ref = sourceObjects.get(value);
         if (ref) {
-          if (!ref.anchor)
-            ref.anchor = onAnchor(value);
+          ref.anchor ?? (ref.anchor = onAnchor(value));
           return new Alias.Alias(ref.anchor);
         } else {
           ref = { anchor: null, node: null };
@@ -18750,7 +18760,7 @@ ${indent}${start}${value}${end}`;
       if (implicitKey && value.includes("\n") || inFlow && /[[\]{},]/.test(value)) {
         return quotedString(value, ctx);
       }
-      if (!value || /^[\n\t ,[\]{}#&*!|>'"%@`]|^[?-]$|^[?-][ \t]|[\n:][ \t]|[ \t]\n|[\n\t ]#|[\n\t :]$/.test(value)) {
+      if (/^[\n\t ,[\]{}#&*!|>'"%@`]|^[?-]$|^[?-][ \t]|[\n:][ \t]|[ \t]\n|[\n\t ]#|[\n\t :]$/.test(value)) {
         return implicitKey || inFlow || !value.includes("\n") ? quotedString(value, ctx) : blockString(item, ctx, onComment, onChompKeep);
       }
       if (!implicitKey && !inFlow && type !== Scalar.Scalar.PLAIN && value.includes("\n")) {
@@ -18882,7 +18892,7 @@ var require_stringify = __commonJS({
         tagObj = tags.find((t) => t.nodeClass && obj instanceof t.nodeClass);
       }
       if (!tagObj) {
-        const name = obj?.constructor?.name ?? typeof obj;
+        const name = obj?.constructor?.name ?? (obj === null ? "null" : typeof obj);
         throw new Error(`Tag not resolved for ${name} value`);
       }
       return tagObj;
@@ -18896,7 +18906,7 @@ var require_stringify = __commonJS({
         anchors$1.add(anchor);
         props.push(`&${anchor}`);
       }
-      const tag = node.tag ? node.tag : tagObj.default ? null : tagObj.tag;
+      const tag = node.tag ?? (tagObj.default ? null : tagObj.tag);
       if (tag)
         props.push(doc.directives.tagString(tag));
       return props.join(" ");
@@ -18919,8 +18929,7 @@ var require_stringify = __commonJS({
       }
       let tagObj = void 0;
       const node = identity.isNode(item) ? item : ctx.doc.createNode(item, { onTagObj: (o) => tagObj = o });
-      if (!tagObj)
-        tagObj = getTagObject(ctx.doc.schema.tags, node);
+      tagObj ?? (tagObj = getTagObject(ctx.doc.schema.tags, node));
       const props = stringifyProps(node, tagObj, ctx);
       if (props.length > 0)
         ctx.indentAtStart = (ctx.indentAtStart ?? 0) + props.length + 1;
@@ -19072,7 +19081,7 @@ ${ctx.indent}`;
 var require_log = __commonJS({
   ""(exports) {
     "use strict";
-    var node_process = __require("node:process");
+    var node_process = __require("process");
     function debug(logLevel, ...messages) {
       if (logLevel === "debug")
         console.log(...messages);
@@ -19941,7 +19950,7 @@ var require_schema2 = __commonJS({
 var require_binary = __commonJS({
   ""(exports) {
     "use strict";
-    var node_buffer = __require("node:buffer");
+    var node_buffer = __require("buffer");
     var Scalar = require_Scalar();
     var stringifyString = require_stringifyString();
     var binary = {
@@ -19977,8 +19986,7 @@ var require_binary = __commonJS({
         } else {
           throw new Error("This environment does not support writing binary tags; either Buffer or btoa is required");
         }
-        if (!type)
-          type = Scalar.Scalar.BLOCK_LITERAL;
+        type ?? (type = Scalar.Scalar.BLOCK_LITERAL);
         if (type !== Scalar.Scalar.QUOTE_DOUBLE) {
           const lineWidth = Math.max(ctx.options.lineWidth - ctx.indent.length, ctx.options.minContentWidth);
           const n = Math.ceil(str.length / lineWidth);
@@ -21102,8 +21110,7 @@ var require_resolve_props = __commonJS({
             if (token.source.endsWith(":"))
               onError(token.offset + token.source.length - 1, "BAD_ALIAS", "Anchor ending in : is ambiguous", true);
             anchor = token;
-            if (start === null)
-              start = token.offset;
+            start ?? (start = token.offset);
             atNewline = false;
             hasSpace = false;
             reqSpace = true;
@@ -21112,8 +21119,7 @@ var require_resolve_props = __commonJS({
             if (tag)
               onError(token, "MULTIPLE_TAGS", "A node can have at most one tag");
             tag = token;
-            if (start === null)
-              start = token.offset;
+            start ?? (start = token.offset);
             atNewline = false;
             hasSpace = false;
             reqSpace = true;
@@ -22176,8 +22182,7 @@ var require_util_empty_scalar_position = __commonJS({
     "use strict";
     function emptyScalarPosition(offset, before, pos) {
       if (before) {
-        if (pos === null)
-          pos = before.length;
+        pos ?? (pos = before.length);
         for (let i = pos - 1; i >= 0; --i) {
           let st = before[i];
           switch (st.type) {
@@ -22349,7 +22354,7 @@ var require_compose_doc = __commonJS({
 var require_composer = __commonJS({
   ""(exports) {
     "use strict";
-    var node_process = __require("node:process");
+    var node_process = __require("process");
     var directives = require_directives();
     var Document = require_Document();
     var errors = require_errors();
@@ -23547,7 +23552,7 @@ var require_line_counter = __commonJS({
 var require_parser = __commonJS({
   ""(exports) {
     "use strict";
-    var node_process = __require("node:process");
+    var node_process = __require("process");
     var cst = require_cst();
     var lexer = require_lexer();
     function includesToken(list, type) {
