@@ -59,9 +59,9 @@ export function scheduleMacroTaskWithCurrentZone(
 declare const WorkerGlobalScope: any;
 
 export const zoneSymbol = __symbol__;
-const isWindowExists = typeof window !== 'undefined';
-const internalWindow: any = isWindowExists ? window : undefined;
-const _global: any = (isWindowExists && internalWindow) || globalThis;
+const windowExists = typeof window !== 'undefined';
+const internalWindow: any = windowExists ? window : undefined;
+const _global: any = (windowExists && internalWindow) || globalThis;
 
 const REMOVE_ATTRIBUTE = 'removeAttribute';
 
@@ -107,36 +107,30 @@ export function isPropertyWritable(propertyDesc: any) {
   return !(typeof propertyDesc.get === 'function' && typeof propertyDesc.set === 'undefined');
 }
 
-export const isWebWorker: boolean =
+export const isWebWorker =
   typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+
+const _isRealBrowser = !!(windowExists && internalWindow['HTMLElement']);
+
+const _isRealNodeProcess =
+  typeof _global.process !== 'undefined' && _global.process.toString() === '[object process]';
 
 // Make sure to access `process` through `_global` so that WebPack does not accidentally browserify
 // this code.
-export const isNode: boolean =
-  !('nw' in _global) &&
-  typeof _global.process !== 'undefined' &&
-  _global.process.toString() === '[object process]';
+export const isNode = !('nw' in _global) && _isRealNodeProcess;
 
-export const isBrowser: boolean =
-  !isNode && !isWebWorker && !!(isWindowExists && internalWindow['HTMLElement']);
+export const isBrowser = !isNode && !isWebWorker && _isRealBrowser;
 
 // we are in electron of nw, so we are both browser and nodejs
 // Make sure to access `process` through `_global` so that WebPack does not accidentally browserify
 // this code.
-export const isMix: boolean =
-  typeof _global.process !== 'undefined' &&
-  _global.process.toString() === '[object process]' &&
-  !isWebWorker &&
-  !!(isWindowExists && internalWindow['HTMLElement']);
+export const isMix = _isRealNodeProcess && !isWebWorker && _isRealBrowser;
 
 const zoneSymbolEventNames: {[eventName: string]: string} = {};
 
 const enableBeforeunloadSymbol = zoneSymbol('enable_beforeunload');
 
 const wrapFn = function (this: unknown, event: Event) {
-  // https://github.com/angular/zone.js/issues/911, in IE, sometimes
-  // event will be undefined, so we need to use window.event
-  event = event || _global.event;
   if (!event) {
     return;
   }
@@ -152,21 +146,19 @@ const wrapFn = function (this: unknown, event: Event) {
     // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror#window.onerror
     // and onerror callback will prevent default when callback return true
     const errorEvent: ErrorEvent = event as any;
-    result =
-      listener &&
-      listener.call(
-        this,
-        errorEvent.message,
-        errorEvent.filename,
-        errorEvent.lineno,
-        errorEvent.colno,
-        errorEvent.error,
-      );
+    result = listener?.call(
+      this,
+      errorEvent.message,
+      errorEvent.filename,
+      errorEvent.lineno,
+      errorEvent.colno,
+      errorEvent.error,
+    );
     if (result === true) {
       event.preventDefault();
     }
   } else {
-    result = listener && listener.apply(this, arguments);
+    result = listener?.apply(this, arguments);
     if (
       // https://github.com/angular/angular/issues/47579
       // https://www.w3.org/TR/2011/WD-html5-20110525/history.html#beforeunloadevent
@@ -326,26 +318,13 @@ export function patchClass(className: string) {
   _global[zoneSymbol(className)] = OriginalClass;
 
   _global[className] = function () {
-    const a = bindArguments(<any>arguments, className);
-    switch (a.length) {
-      case 0:
-        this[originalInstanceKey] = new OriginalClass();
-        break;
-      case 1:
-        this[originalInstanceKey] = new OriginalClass(a[0]);
-        break;
-      case 2:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1]);
-        break;
-      case 3:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1], a[2]);
-        break;
-      case 4:
-        this[originalInstanceKey] = new OriginalClass(a[0], a[1], a[2], a[3]);
-        break;
-      default:
-        throw new Error('Arg list too long.');
+    const args = bindArguments(<any>arguments, className);
+
+    if (args.length > 4) {
+      throw new Error('Arg list too long.');
     }
+
+    this[originalInstanceKey] = Reflect.construct(OriginalClass, args);
   };
 
   // attach original delegate to patched function
@@ -353,71 +332,70 @@ export function patchClass(className: string) {
 
   const instance = new OriginalClass(function () {});
 
-  let prop;
-  for (prop in instance) {
+  for (const prop in instance) {
     // https://bugs.webkit.org/show_bug.cgi?id=44721
     if (className === 'XMLHttpRequest' && prop === 'responseBlob') continue;
-    (function (prop) {
-      if (typeof instance[prop] === 'function') {
-        _global[className].prototype[prop] = function () {
-          return this[originalInstanceKey][prop].apply(this[originalInstanceKey], arguments);
-        };
-      } else {
-        ObjectDefineProperty(_global[className].prototype, prop, {
-          set: function (fn) {
-            if (typeof fn === 'function') {
-              this[originalInstanceKey][prop] = wrapWithCurrentZone(fn, className + '.' + prop);
-              // keep callback in wrapped function so we can
-              // use it in Function.prototype.toString to return
-              // the native one.
-              attachOriginToPatched(this[originalInstanceKey][prop], fn);
-            } else {
-              this[originalInstanceKey][prop] = fn;
-            }
-          },
-          get: function () {
-            return this[originalInstanceKey][prop];
-          },
-        });
-      }
-    })(prop);
+
+    if (typeof instance[prop] === 'function') {
+      _global[className].prototype[prop] = function () {
+        return this[originalInstanceKey][prop].apply(this[originalInstanceKey], arguments);
+      };
+    } else {
+      ObjectDefineProperty(_global[className].prototype, prop, {
+        set: function (fn) {
+          if (typeof fn === 'function') {
+            this[originalInstanceKey][prop] = wrapWithCurrentZone(fn, className + '.' + prop);
+            // keep callback in wrapped function so we can
+            // use it in Function.prototype.toString to return
+            // the native one.
+            attachOriginToPatched(this[originalInstanceKey][prop], fn);
+          } else {
+            this[originalInstanceKey][prop] = fn;
+          }
+        },
+        get: function () {
+          return this[originalInstanceKey][prop];
+        },
+      });
+    }
   }
 
-  for (prop in OriginalClass) {
+  for (const prop in OriginalClass) {
     if (prop !== 'prototype' && OriginalClass.hasOwnProperty(prop)) {
       _global[className][prop] = OriginalClass[prop];
     }
   }
 }
 
-export function copySymbolProperties(src: any, dest: any) {
-  if (typeof (Object as any).getOwnPropertySymbols !== 'function') {
+let copySymbolProperties: ((source: any, destination: any) => void) | null = null;
+
+export function setCopySymbolPropertiesForNodeJS(): void {
+  if (copySymbolProperties) {
     return;
   }
-  const symbols: any = (Object as any).getOwnPropertySymbols(src);
-  symbols.forEach((symbol: any) => {
-    const desc = Object.getOwnPropertyDescriptor(src, symbol);
-    Object.defineProperty(dest, symbol, {
-      get: function () {
-        return src[symbol];
-      },
-      set: function (value: any) {
-        if (desc && (!desc.writable || typeof desc.set !== 'function')) {
-          // if src[symbol] is not writable or not have a setter, just return
-          return;
-        }
-        src[symbol] = value;
-      },
-      enumerable: desc ? desc.enumerable : true,
-      configurable: desc ? desc.configurable : true,
+
+  // This is a tree-shakable implementation that excludes the
+  // `copySymbolProperties` function from browser bundles.
+  copySymbolProperties = (source: any, destination: any) => {
+    const symbols = Object.getOwnPropertySymbols(source);
+    symbols.forEach((symbol) => {
+      const desc = Object.getOwnPropertyDescriptor(source, symbol);
+      Object.defineProperty(destination, symbol, {
+        get: function () {
+          return source[symbol];
+        },
+        set: function (value: any) {
+          if (desc && (!desc.writable || typeof desc.set !== 'function')) {
+            // if src[symbol] is not writable or not have a setter, just return
+            return;
+          }
+          source[symbol] = value;
+        },
+        enumerable: desc ? desc.enumerable : true,
+        configurable: desc ? desc.configurable : true,
+      });
     });
-  });
-}
-
-let shouldCopySymbolProperties = false;
-
-export function setShouldCopySymbolProperties(flag: boolean) {
-  shouldCopySymbolProperties = flag;
+  };
 }
 
 export function patchMethod(
@@ -433,10 +411,6 @@ export function patchMethod(
   while (proto && !proto.hasOwnProperty(name)) {
     proto = ObjectGetPrototypeOf(proto);
   }
-  if (!proto && target[name]) {
-    // somehow we did not find it, but we can see it. This happens on IE for Window properties.
-    proto = target;
-  }
 
   const delegateName = zoneSymbol(name);
   let delegate: Function | null = null;
@@ -451,9 +425,7 @@ export function patchMethod(
         return patchDelegate(this, arguments as any);
       };
       attachOriginToPatched(proto[name], delegate);
-      if (shouldCopySymbolProperties) {
-        copySymbolProperties(delegate, proto[name]);
-      }
+      copySymbolProperties?.(delegate, proto[name]);
     }
   }
   return delegate;
@@ -542,23 +514,21 @@ export function attachOriginToPatched(patched: Function, original: any) {
   (patched as any)[zoneSymbol('OriginalDelegate')] = original;
 }
 
-let isDetectedIEOrEdge = false;
-let ieOrEdge = false;
-
+let _isEdge!: boolean;
+// We're only checking whether we're in Edge, since IE is no longer supported.
+// The function name has not been updated to minimize the number of changes.
 export function isIEOrEdge() {
-  if (isDetectedIEOrEdge) {
-    return ieOrEdge;
+  if (_isEdge != null) {
+    return _isEdge;
   }
 
-  isDetectedIEOrEdge = true;
-
   try {
-    const ua = internalWindow.navigator.userAgent;
-    if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1 || ua.indexOf('Edge/') !== -1) {
-      ieOrEdge = true;
-    }
-  } catch (error) {}
-  return ieOrEdge;
+    _isEdge = internalWindow.navigator.userAgent.indexOf('Edge/') !== -1;
+  } catch {
+    _isEdge = false;
+  }
+
+  return _isEdge;
 }
 
 export function isFunction(value: unknown): value is Function {

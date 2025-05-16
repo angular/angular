@@ -87,7 +87,7 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
       'Worker',
     ]);
     const ignoreErrorProperties: IgnoreProperty[] = [];
-    // In older browsers like IE or Edge, event handler properties (e.g., `onclick`)
+    // In older browsers like Edge, event handler properties (e.g., `onclick`)
     // may not be defined directly on the `window` object but on its prototype (`WindowPrototype`).
     // To ensure complete coverage, we use the prototype when checking
     // for and patching these properties.

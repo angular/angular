@@ -89,16 +89,14 @@ export const zoneSymbolEventNames: any = {};
 export const globalSources: any = {};
 
 const EVENT_NAME_SYMBOL_REGX = new RegExp('^' + ZONE_SYMBOL_PREFIX + '(\\w+)(true|false)$');
-const IMMEDIATE_PROPAGATION_SYMBOL = zoneSymbol('propagationStopped');
 
 function prepareEventNames(eventName: string, eventNameToString?: (eventName: string) => string) {
-  const falseEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + FALSE_STR;
-  const trueEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + TRUE_STR;
+  const transformedEventName = eventNameToString ? eventNameToString(eventName) : eventName;
+  const falseEventName = transformedEventName + FALSE_STR;
+  const trueEventName = transformedEventName + TRUE_STR;
   const symbol = ZONE_SYMBOL_PREFIX + falseEventName;
   const symbolCapture = ZONE_SYMBOL_PREFIX + trueEventName;
-  zoneSymbolEventNames[eventName] = {};
-  zoneSymbolEventNames[eventName][FALSE_STR] = symbol;
-  zoneSymbolEventNames[eventName][TRUE_STR] = symbolCapture;
+  zoneSymbolEventNames[eventName] = {[FALSE_STR]: symbol, [TRUE_STR]: symbolCapture};
 }
 
 export interface PatchEventTargetOptions {
@@ -197,12 +195,11 @@ export function patchEventTarget(
   apis: any[],
   patchOptions?: PatchEventTargetOptions,
 ) {
-  const ADD_EVENT_LISTENER = (patchOptions && patchOptions.add) || ADD_EVENT_LISTENER_STR;
-  const REMOVE_EVENT_LISTENER = (patchOptions && patchOptions.rm) || REMOVE_EVENT_LISTENER_STR;
+  const ADD_EVENT_LISTENER = patchOptions?.add || ADD_EVENT_LISTENER_STR;
+  const REMOVE_EVENT_LISTENER = patchOptions?.rm || REMOVE_EVENT_LISTENER_STR;
 
-  const LISTENERS_EVENT_LISTENER = (patchOptions && patchOptions.listeners) || 'eventListeners';
-  const REMOVE_ALL_LISTENERS_EVENT_LISTENER =
-    (patchOptions && patchOptions.rmAll) || 'removeAllListeners';
+  const LISTENERS_EVENT_LISTENER = patchOptions?.listeners || 'eventListeners';
+  const REMOVE_ALL_LISTENERS_EVENT_LISTENER = patchOptions?.rmAll || 'removeAllListeners';
 
   const zoneSymbolAddEventListener = zoneSymbol(ADD_EVENT_LISTENER);
 
@@ -218,7 +215,7 @@ export function patchEventTarget(
       return;
     }
     const delegate = task.callback;
-    if (typeof delegate === 'object' && delegate.handleEvent) {
+    if (delegate?.handleEvent) {
       // create the bind version of handleEvent when invoke
       task.callback = (event: Event) => delegate.handleEvent(event);
       task.originalDelegate = delegate;
@@ -234,7 +231,7 @@ export function patchEventTarget(
       error = err;
     }
     const options = task.options;
-    if (options && typeof options === 'object' && options.once) {
+    if (options?.once) {
       // if options.once is true, after invoke once remove listener here
       // only browser need to do this, nodejs eventEmitter will cal removeListener
       // inside EventEmitter.once
@@ -244,58 +241,61 @@ export function patchEventTarget(
     return error;
   };
 
-  function globalCallback(context: unknown, event: Event, isCapture: boolean) {
-    // https://github.com/angular/zone.js/issues/911, in IE, sometimes
-    // event will be undefined, so we need to use window.event
-    event = event || _global.event;
+  function globalCallback(context: unknown, event: Event, capture: boolean) {
     if (!event) {
       return;
     }
-    // event.target is needed for Samsung TV and SourceBuffer
-    // || global is needed https://github.com/angular/zone.js/issues/190
+
+    // Use `context` if available; otherwise fallback to `event.target`
+    // (needed for Samsung Smart TVs and `SourceBuffer` events),
+    // or `_global` as a last resort.
+    // See: https://github.com/angular/zone.js/issues/190
     const target: any = context || event.target || _global;
-    const tasks = target[zoneSymbolEventNames[event.type][isCapture ? TRUE_STR : FALSE_STR]];
+    const tasks = target[zoneSymbolEventNames[event.type][capture ? TRUE_STR : FALSE_STR]];
+
     if (tasks) {
       const errors = [];
-      // invoke all tasks which attached to current target with given event.type and capture = false
-      // for performance concern, if task.length === 1, just invoke
+      // For performance reasons, if there's only one task, invoke it directly.
       if (tasks.length === 1) {
         const err = invokeTask(tasks[0], target, event);
         err && errors.push(err);
       } else {
-        // https://github.com/angular/zone.js/issues/836
-        // copy the tasks array before invoke, to avoid
-        // the callback will remove itself or other listener
-        const copyTasks = tasks.slice();
-        for (let i = 0; i < copyTasks.length; i++) {
-          if (event && (event as any)[IMMEDIATE_PROPAGATION_SYMBOL] === true) {
+        // See https://github.com/angular/zone.js/issues/836
+        // Copy the tasks array before invoking callbacks
+        // to prevent issues when a callback removes itself or other listeners.
+        for (const task of tasks.slice()) {
+          if (stoppedImmediatePropagation.delete(event)) {
             break;
           }
-          const err = invokeTask(copyTasks[i], target, event);
+          const err = invokeTask(task, target, event);
           err && errors.push(err);
         }
       }
+
       // Since there is only one error, we don't need to schedule microTask
       // to throw the error.
       if (errors.length === 1) {
         throw errors[0];
       } else {
-        for (let i = 0; i < errors.length; i++) {
-          const err = errors[i];
+        // Microtasks let all errors surface individually, without interfering with each other.
+        // Each error is scheduled to throw after the current script completes.
+        // This ensures every error gets logged and is visible in the console
+        // (via `uncaughtException` / `unhandledrejection`).
+        for (const error of errors) {
           api.nativeScheduleMicroTask(() => {
-            throw err;
+            throw error;
           });
         }
       }
     }
   }
 
-  // global shared zoneAwareCallback to handle all event callback with capture = false
+  // Global shared zone-aware callback to handle all event listeners with `capture = false`.
   const globalZoneAwareCallback = function (this: unknown, event: Event) {
     return globalCallback(this, event, false);
   };
 
-  // global shared zoneAwareCallback to handle all event callback with capture = true
+  // Global shared zone-aware callback to handle all event listeners with `capture = true`.
   const globalZoneAwareCaptureCallback = function (this: unknown, event: Event) {
     return globalCallback(this, event, true);
   };
@@ -305,39 +305,23 @@ export function patchEventTarget(
       return false;
     }
 
-    let useGlobalCallback = true;
-    if (patchOptions && patchOptions.useG !== undefined) {
-      useGlobalCallback = patchOptions.useG;
-    }
-    const validateHandler = patchOptions && patchOptions.vh;
-
-    let checkDuplicate = true;
-    if (patchOptions && patchOptions.chkDup !== undefined) {
-      checkDuplicate = patchOptions.chkDup;
-    }
-
-    let returnTarget = false;
-    if (patchOptions && patchOptions.rt !== undefined) {
-      returnTarget = patchOptions.rt;
-    }
+    const useGlobalCallback = patchOptions?.useG ?? true;
+    const validateHandler = patchOptions?.vh;
+    const checkDuplicate = patchOptions?.chkDup ?? true;
+    const returnTarget = patchOptions?.rt ?? false;
 
     let proto = obj;
     while (proto && !proto.hasOwnProperty(ADD_EVENT_LISTENER)) {
       proto = ObjectGetPrototypeOf(proto);
     }
-    if (!proto && obj[ADD_EVENT_LISTENER]) {
-      // somehow we did not find it, but we can see it. This happens on IE for Window properties.
-      proto = obj;
-    }
 
-    if (!proto) {
-      return false;
-    }
-    if (proto[zoneSymbolAddEventListener]) {
+    // If no prototype found or if the prototype already has the patched symbol, exit early.
+    if (!proto || proto[zoneSymbolAddEventListener]) {
       return false;
     }
 
-    const eventNameToString = patchOptions && patchOptions.eventNameToString;
+    const transferEventName = patchOptions?.transferEventName;
+    const eventNameToString = patchOptions?.eventNameToString;
 
     // We use a shared global `taskData` to pass data for `scheduleEventTask`,
     // eliminating the need to create a new object solely for passing data.
@@ -359,7 +343,7 @@ export function patchEventTarget(
       proto[REMOVE_ALL_LISTENERS_EVENT_LISTENER]);
 
     let nativePrependEventListener: any;
-    if (patchOptions && patchOptions.prepend) {
+    if (patchOptions?.prepend) {
       nativePrependEventListener = proto[zoneSymbol(patchOptions.prepend)] =
         proto[patchOptions.prepend];
     }
@@ -524,8 +508,8 @@ export function patchEventTarget(
       return function (this: unknown) {
         const target = this || _global;
         let eventName = arguments[0];
-        if (patchOptions && patchOptions.transferEventName) {
-          eventName = patchOptions.transferEventName(eventName);
+        if (transferEventName) {
+          eventName = transferEventName(eventName);
         }
         let delegate: EventListenerOrEventListenerObject = arguments[1];
         if (!delegate) {
@@ -575,7 +559,7 @@ export function patchEventTarget(
         }
 
         const capture = !options ? false : typeof options === 'boolean' ? true : options.capture;
-        const once = options && typeof options === 'object' ? options.once : false;
+        const once = options?.once ?? false;
 
         const zone = Zone.current;
         let symbolEventNames = zoneSymbolEventNames[eventName];
@@ -732,8 +716,8 @@ export function patchEventTarget(
     proto[REMOVE_EVENT_LISTENER] = function () {
       const target = this || _global;
       let eventName = arguments[0];
-      if (patchOptions && patchOptions.transferEventName) {
-        eventName = patchOptions.transferEventName(eventName);
+      if (transferEventName) {
+        eventName = transferEventName(eventName);
       }
       const options = arguments[2];
 
@@ -807,8 +791,8 @@ export function patchEventTarget(
     proto[LISTENERS_EVENT_LISTENER] = function () {
       const target = this || _global;
       let eventName = arguments[0];
-      if (patchOptions && patchOptions.transferEventName) {
-        eventName = patchOptions.transferEventName(eventName);
+      if (transferEventName) {
+        eventName = transferEventName(eventName);
       }
 
       const listeners: any[] = [];
@@ -846,8 +830,8 @@ export function patchEventTarget(
         // remove removeListener listener finally
         this[REMOVE_ALL_LISTENERS_EVENT_LISTENER].call(this, 'removeListener');
       } else {
-        if (patchOptions && patchOptions.transferEventName) {
-          eventName = patchOptions.transferEventName(eventName);
+        if (transferEventName) {
+          eventName = transferEventName(eventName);
         }
         const symbolEventNames = zoneSymbolEventNames[eventName];
         if (symbolEventNames) {
@@ -903,6 +887,7 @@ export function patchEventTarget(
 }
 
 export function findEventTasks(target: any, eventName: string): Task[] {
+  // If no specific event name is provided, search all keys for matching event symbols.
   if (!eventName) {
     const foundTasks: any[] = [];
     for (let prop in target) {
@@ -910,44 +895,42 @@ export function findEventTasks(target: any, eventName: string): Task[] {
       let evtName = match && match[1];
       if (evtName && (!eventName || evtName === eventName)) {
         const tasks: any = target[prop];
-        if (tasks) {
-          for (let i = 0; i < tasks.length; i++) {
-            foundTasks.push(tasks[i]);
-          }
-        }
+        tasks && foundTasks.push(...tasks);
       }
     }
     return foundTasks;
   }
+
+  // Resolve the internal zone symbol mapping for the given event name.
   let symbolEventName = zoneSymbolEventNames[eventName];
   if (!symbolEventName) {
     prepareEventNames(eventName);
     symbolEventName = zoneSymbolEventNames[eventName];
   }
-  const captureFalseTasks = target[symbolEventName[FALSE_STR]];
-  const captureTrueTasks = target[symbolEventName[TRUE_STR]];
-  if (!captureFalseTasks) {
-    return captureTrueTasks ? captureTrueTasks.slice() : [];
-  } else {
-    return captureTrueTasks
-      ? captureFalseTasks.concat(captureTrueTasks)
-      : captureFalseTasks.slice();
-  }
+
+  const falseTasks = target[symbolEventName[FALSE_STR]] || [];
+  const trueTasks = target[symbolEventName[TRUE_STR]] || [];
+
+  return falseTasks.concat(trueTasks);
 }
 
+// Patching native browser `Event` objects, especially by adding custom
+// properties directly to instances (like `event[IMMEDIATE_PROPAGATION_SYMBOL]` = true),
+// can lead to performance issues.
+const stoppedImmediatePropagation = new WeakMap<Event, boolean>();
 export function patchEventPrototype(global: any, api: _ZonePrivate) {
   const Event = global['Event'];
-  if (Event && Event.prototype) {
+  if (Event?.prototype) {
     api.patchMethod(
       Event.prototype,
       'stopImmediatePropagation',
       (delegate: Function) =>
         function (self: any, args: any[]) {
-          self[IMMEDIATE_PROPAGATION_SYMBOL] = true;
+          stoppedImmediatePropagation.set(self, true);
           // we need to call the native stopImmediatePropagation
           // in case in some hybrid application, some part of
           // application will be controlled by zone, some are not
-          delegate && delegate.apply(self, args);
+          delegate?.apply(self, args);
         },
     );
   }

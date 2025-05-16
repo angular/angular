@@ -774,10 +774,10 @@ export function initZone(): ZoneType {
   const performance: {mark(name: string): void; measure(name: string, label: string): void} =
     global['performance'];
   function mark(name: string) {
-    performance && performance['mark'] && performance['mark'](name);
+    performance?.['mark']?.(name);
   }
   function performanceMeasure(name: string, label: string) {
-    performance && performance['measure'] && performance['measure'](name, label);
+    performance?.['measure']?.(name, label);
   }
   mark('Zone');
 
@@ -845,12 +845,8 @@ export function initZone(): ZoneType {
     constructor(parent: ZoneImpl | null, zoneSpec: ZoneSpec | null) {
       this._parent = parent as ZoneImpl;
       this._name = zoneSpec ? zoneSpec.name || 'unnamed' : '<root>';
-      this._properties = (zoneSpec && zoneSpec.properties) || {};
-      this._zoneDelegate = new _ZoneDelegate(
-        this,
-        this._parent && this._parent._zoneDelegate,
-        zoneSpec,
-      );
+      this._properties = zoneSpec?.properties || {};
+      this._zoneDelegate = new _ZoneDelegate(this, this._parent?._zoneDelegate, zoneSpec);
     }
 
     public get(key: string): any {
@@ -1222,8 +1218,8 @@ export function initZone(): ZoneType {
       this._hasTaskDlgtOwner = null;
       this._hasTaskCurrZone = null;
 
-      const zoneSpecHasTask = zoneSpec && zoneSpec.onHasTask;
-      const parentHasTask = parentDelegate && parentDelegate._hasTaskZS;
+      const zoneSpecHasTask = zoneSpec?.onHasTask;
+      const parentHasTask = parentDelegate?._hasTaskZS;
       if (zoneSpecHasTask || parentHasTask) {
         // If we need to report hasTask, than this ZS needs to do ref counting on tasks. In such
         // a case all task related interceptors must go through this ZD. We can't short circuit it.
@@ -1358,13 +1354,12 @@ export function initZone(): ZoneType {
       // hasTask should not throw error so other ZoneDelegate
       // can still trigger hasTask callback
       try {
-        this._hasTaskZS &&
-          this._hasTaskZS.onHasTask!(
-            this._hasTaskDlgt!,
-            this._hasTaskCurrZone!,
-            targetZone,
-            isEmpty,
-          );
+        this._hasTaskZS?.onHasTask!(
+          this._hasTaskDlgt!,
+          this._hasTaskCurrZone!,
+          targetZone,
+          isEmpty,
+        );
       } catch (err) {
         this.handleError(targetZone, err);
       }
@@ -1421,7 +1416,7 @@ export function initZone(): ZoneType {
       this.callback = callback;
       const self = this;
       // TODO: @JiaLiPassion options should have interface
-      if (type === eventTask && options && (options as any).useG) {
+      if (type === eventTask && (options as any)?.useG) {
         this.invoke = ZoneTask.invokeTask;
       } else {
         this.invoke = function () {
@@ -1476,7 +1471,7 @@ export function initZone(): ZoneType {
     }
 
     public toString() {
-      if (this.data && typeof this.data.handleId !== 'undefined') {
+      if (this.data?.handleId) {
         return this.data.handleId.toString();
       } else {
         return Object.prototype.toString.call(this);

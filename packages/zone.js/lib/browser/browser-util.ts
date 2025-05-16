@@ -18,7 +18,7 @@ export function patchCallbacks(
   }
   const nativeDelegate = (target[symbol] = target[method]);
   target[method] = function (name: any, opts: any, options?: any) {
-    if (opts && opts.prototype) {
+    if (opts?.prototype) {
       callbacks.forEach(function (callback) {
         const source = `${targetName}.${method}::` + callback;
         const prototype = opts.prototype;
@@ -33,7 +33,7 @@ export function patchCallbacks(
         try {
           if (prototype.hasOwnProperty(callback)) {
             const descriptor = api.ObjectGetOwnPropertyDescriptor(prototype, callback);
-            if (descriptor && descriptor.value) {
+            if (descriptor?.value) {
               descriptor.value = api.wrapWithCurrentZone(descriptor.value, source);
               api._redefineProperty(opts.prototype, callback, descriptor);
             } else if (prototype[callback]) {

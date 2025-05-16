@@ -15,7 +15,7 @@ export function patchMessagePort(Zone: ZoneType): void {
    */
   Zone.__load_patch('MessagePort', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     const MessagePort = global['MessagePort'];
-    if (typeof MessagePort !== 'undefined' && MessagePort.prototype) {
+    if (MessagePort?.prototype) {
       api.patchOnProperties(MessagePort.prototype, ['message', 'messageerror']);
     }
   });

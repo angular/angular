@@ -13,23 +13,21 @@ export function eventTargetPatch(_global: any, api: _ZonePrivate) {
   }
   const {eventNames, zoneSymbolEventNames, TRUE_STR, FALSE_STR, ZONE_SYMBOL_PREFIX} =
     api.getGlobalObjects()!;
-  //  predefine all __zone_symbol__ + eventName + true/false string
-  for (let i = 0; i < eventNames.length; i++) {
-    const eventName = eventNames[i];
+  // Predefine all zone symbol event name mappings for both `capture = false` and `true`.
+  // This avoids recomputing symbol strings at runtime and improves performance.
+  for (const eventName of eventNames) {
     const falseEventName = eventName + FALSE_STR;
     const trueEventName = eventName + TRUE_STR;
     const symbol = ZONE_SYMBOL_PREFIX + falseEventName;
     const symbolCapture = ZONE_SYMBOL_PREFIX + trueEventName;
-    zoneSymbolEventNames[eventName] = {};
-    zoneSymbolEventNames[eventName][FALSE_STR] = symbol;
-    zoneSymbolEventNames[eventName][TRUE_STR] = symbolCapture;
+    zoneSymbolEventNames[eventName] = {[FALSE_STR]: symbol, [TRUE_STR]: symbolCapture};
   }
 
-  const EVENT_TARGET = _global['EventTarget'];
-  if (!EVENT_TARGET || !EVENT_TARGET.prototype) {
+  const EventTarget = _global['EventTarget'];
+  if (!EventTarget?.prototype) {
     return;
   }
-  api.patchEventTarget(_global, api, [EVENT_TARGET && EVENT_TARGET.prototype]);
+  api.patchEventTarget(_global, api, [EventTarget.prototype]);
 
   return true;
 }
