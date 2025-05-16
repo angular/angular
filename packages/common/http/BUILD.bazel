@@ -1,10 +1,11 @@
-load("//tools:defaults.bzl", "api_golden_test", "generate_api_docs", "ng_module")
+load("//tools:defaults.bzl", "api_golden_test", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
 
-ng_module(
+ng_project(
     name = "http",
     srcs = glob(
         [
@@ -12,10 +13,12 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    deps = [
-        "//packages/common",
+    interop_deps = [
         "//packages/core",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/common:common_rjs",
     ],
 )
 
