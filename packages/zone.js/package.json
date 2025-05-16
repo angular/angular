@@ -17,12 +17,14 @@
     "jest-environment-node": "^29.0.3",
     "mocha": "^11.0.0",
     "mock-require": "3.0.3",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "vitest": "^3.1.3"
   },
   "scripts": {
     "electrontest": "cd test/extra && node electron.js",
     "jest:test": "jest --config ./test/jest/jest.config.js ./test/jest/jest.spec.js",
     "jest:nodetest": "jest --config ./test/jest/jest.node.config.js ./test/jest/jest.spec.js",
+    "vitest:test": "vitest ./test/vitest/vitest.spec.js",
     "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs"
   },
   "repository": {
