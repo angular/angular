@@ -53,6 +53,16 @@ export class SwUpdate {
     return this.sw.isEnabled;
   }
 
+  /**
+   * Tracks the in-progress `checkForUpdate()` operation.
+   *
+   * If a check is already underway, additional calls to `checkForUpdate()` will return
+   * the same promise to avoid redundant update checks and manifest re-fetching.
+   *
+   * This is cleared once the operation completes or fails.
+   */
+  private ongoingCheckForUpdate: Promise<boolean> | null = null;
+
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
       this.versionUpdates = NEVER;
@@ -81,8 +91,22 @@ export class SwUpdate {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
+    // Concurrent calls to `checkForUpdate()` will result in duplicate manifest
+    // fetches and hashes, which is inefficient and unnecessary.
+    // As thus, we store the ongoing promise in a private property, and reuse
+    // it for concurrent calls.
+    // Once it resolves or rejects, clear the reference so that future
+    // calls proceed as normal.
+    if (this.ongoingCheckForUpdate) {
+      return this.ongoingCheckForUpdate;
+    }
     const nonce = this.sw.generateNonce();
-    return this.sw.postMessageWithOperation('CHECK_FOR_UPDATES', {nonce}, nonce);
+    this.ongoingCheckForUpdate = this.sw
+      .postMessageWithOperation('CHECK_FOR_UPDATES', {nonce}, nonce)
+      .finally(() => {
+        this.ongoingCheckForUpdate = null;
+      });
+    return this.ongoingCheckForUpdate;
   }
 
   /**
