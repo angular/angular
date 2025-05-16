@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive} from '@angular/core';
-import {ElementRef} from '@angular/core/src/linker/element_ref';
+import {Component, Directive, ElementRef} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {hasClass} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
