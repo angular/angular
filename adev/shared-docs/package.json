@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@webcontainer/api": "^1.1.8",
-    "diff": "~7.0.0",
+    "diff": "~8.0.0",
     "emoji-regex": "~10.4.0",
     "fflate": "^0.8.2",
     "html-entities": "~2.6.0",
