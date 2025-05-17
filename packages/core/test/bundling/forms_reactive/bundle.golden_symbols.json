@@ -527,7 +527,6 @@
   "ngOnChangesSetInput",
   "ngZoneInstanceId",
   "noSideEffects",
-  "nonNull",
   "noop",
   "noop2",
   "normalizeValidators",

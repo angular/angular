@@ -11,9 +11,9 @@ import {Type} from '../interface/type';
 import {flatten} from '../util/array_utils';
 import {noSideEffects} from '../util/closure';
 import {EMPTY_ARRAY} from '../util/empty';
-import {getNgModuleDefOrThrow} from './def_getters';
+import {getNgModuleDefOrThrow, getPipeDef} from './def_getters';
 
-import {extractDefListOrFactory} from './definition';
+import {extractDefListOrFactory, extractDirectiveDef} from './definition';
 import {depsTracker} from './deps_tracker/deps_tracker';
 import {
   ComponentDef,
@@ -38,8 +38,8 @@ export function ɵɵsetComponentScope(
   pipes: Type<any>[] | (() => Type<any>[]),
 ): void {
   const def = type.ɵcmp as ComponentDef<any>;
-  def.directiveDefs = extractDefListOrFactory(directives, /* pipeDef */ false);
-  def.pipeDefs = extractDefListOrFactory(pipes, /* pipeDef */ true);
+  def.directiveDefs = extractDefListOrFactory(directives, extractDirectiveDef);
+  def.pipeDefs = extractDefListOrFactory(pipes, getPipeDef);
 }
 
 /**
