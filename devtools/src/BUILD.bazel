@@ -78,6 +78,7 @@ filegroup(
         ":browser_specific_styles",
         ":demo_styles",
         ":index.html",
+        "//devtools/src/assets",
         "//packages/zone.js/bundles:zone.umd.js",
     ],
 )

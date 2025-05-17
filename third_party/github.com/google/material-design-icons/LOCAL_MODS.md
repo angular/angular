@@ -1,1 +1,0 @@
-- `material-icons.css` has been modified to only load the `truetype` icons font.
