@@ -110,9 +110,6 @@ importers:
       '@types/convert-source-map':
         specifier: ^2.0.0
         version: 2.0.3
-      '@types/diff':
-        specifier: ^7.0.0
-        version: 7.0.2
       '@types/dom-navigation':
         specifier: ^1.0.5
         version: 1.0.5
@@ -5603,10 +5600,6 @@ packages:
       '@types/d3-transition': 3.0.9
       '@types/d3-zoom': 3.0.8
     dev: true
-
-  /@types/diff@7.0.2:
-    resolution: {integrity: sha512-JSWRMozjFKsGlEjiiKajUjIJVKuKdE3oVy2DNtK+fUo8q82nhFZ2CPQwicAIkXrofahDXrWJ7mjelvZphMS98Q==, tarball: https://registry.npmjs.org/@types/diff/-/diff-7.0.2.tgz}
-    dev: false
 
   /@types/dom-navigation@1.0.5:
     resolution: {integrity: sha512-aM1Mr488jX62+6b9zdEtPHFnI7ILgvbII4BaBJMaqhhbDBupJJJ8+nXFVyQT1ptujOUAg6Sojkjk3j6rU73Bwg==, tarball: https://registry.npmjs.org/@types/dom-navigation/-/dom-navigation-1.0.5.tgz}
