@@ -111,6 +111,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle a pipe that does not have a name",
+      "inputFiles": [
+        "nameless_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid definition",
+          "files": [
+            "nameless_pipe.js"
+          ]
+        }
+      ]
     }
   ]
 }

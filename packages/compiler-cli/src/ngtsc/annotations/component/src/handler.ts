@@ -1677,7 +1677,7 @@ export class ComponentDecoratorHandler
       const scopeDeps = isModuleScope ? scope.compilation.dependencies : scope.dependencies;
       for (const dep of scopeDeps) {
         // Outside of selectorless the pipes are referred to by their defined name.
-        if (dep.kind === MetaKind.Pipe) {
+        if (dep.kind === MetaKind.Pipe && dep.name !== null) {
           pipes.set(dep.name, dep);
         }
         dependencies.push(dep);
@@ -1725,7 +1725,7 @@ export class ComponentDecoratorHandler
 
       const deferBlockMatcher = new SelectorMatcher<DirectiveMeta[]>();
       for (const dep of allDependencies) {
-        if (dep.kind === MetaKind.Pipe) {
+        if (dep.kind === MetaKind.Pipe && dep.name !== null) {
           pipes.set(dep.name, dep);
         } else if (dep.kind === MetaKind.Directive && dep.selector !== null) {
           deferBlockMatcher.addSelectables(CssSelector.parse(dep.selector), [dep]);

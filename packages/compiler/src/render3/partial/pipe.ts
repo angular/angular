@@ -54,7 +54,7 @@ export function createPipeDefinitionMap(
   }
 
   // e.g. `name: "myPipe"`
-  definitionMap.set('name', o.literal(meta.pipeName));
+  definitionMap.set('name', o.literal(meta.pipeName ?? meta.name));
 
   if (meta.pure === false) {
     // e.g. `pure: false`

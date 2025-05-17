@@ -137,7 +137,7 @@ export interface DirectiveEntry extends ClassEntry {
 }
 
 export interface PipeEntry extends ClassEntry {
-  pipeName: string;
+  pipeName: string | null;
   isStandalone: boolean;
   usage: string;
   isPure: boolean;
