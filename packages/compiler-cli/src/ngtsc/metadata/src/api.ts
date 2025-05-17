@@ -358,7 +358,7 @@ export interface TemplateGuardMeta {
 export interface PipeMeta {
   kind: MetaKind.Pipe;
   ref: Reference<ClassDeclaration>;
-  name: string;
+  name: string | null;
   nameExpr: ts.Expression | null;
   isStandalone: boolean;
   isPure: boolean;

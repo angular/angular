@@ -30,7 +30,7 @@ export interface R3PipeMetadata {
   /**
    * Name of the pipe.
    */
-  pipeName: string;
+  pipeName: string | null;
 
   /**
    * Dependencies of the pipe's constructor.
@@ -52,7 +52,11 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata): R3CompiledExp
   const definitionMapValues: {key: string; quoted: boolean; value: o.Expression}[] = [];
 
   // e.g. `name: 'myPipe'`
-  definitionMapValues.push({key: 'name', value: o.literal(metadata.pipeName), quoted: false});
+  definitionMapValues.push({
+    key: 'name',
+    value: o.literal(metadata.pipeName ?? metadata.name),
+    quoted: false,
+  });
 
   // e.g. `type: MyPipe`
   definitionMapValues.push({key: 'type', value: metadata.type.value, quoted: false});
