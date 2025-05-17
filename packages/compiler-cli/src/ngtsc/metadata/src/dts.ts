@@ -246,11 +246,15 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
     const type = def.type.typeArguments[1];
-    if (!ts.isLiteralTypeNode(type) || !ts.isStringLiteral(type.literal)) {
+
+    if (
+      !ts.isLiteralTypeNode(type) ||
+      (!ts.isStringLiteral(type.literal) && type.literal.kind !== ts.SyntaxKind.NullKeyword)
+    ) {
       // The type metadata was the wrong type.
       return null;
     }
-    const name = type.literal.text;
+    const name = ts.isStringLiteral(type.literal) ? type.literal.text : null;
 
     const isStandalone =
       def.type.typeArguments.length > 2 && (readBooleanType(def.type.typeArguments[2]) ?? false);

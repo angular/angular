@@ -138,7 +138,7 @@ export class TypeCheckScopeRegistry {
       for (const dep of allDependencies) {
         if (dep.kind === MetaKind.Directive) {
           directives.push(dep);
-        } else if (dep.kind === MetaKind.Pipe) {
+        } else if (dep.kind === MetaKind.Pipe && dep.name !== null) {
           pipes.set(dep.name, dep);
         }
       }

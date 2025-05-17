@@ -747,12 +747,13 @@ runInEachFileSystem(() => {
     });
 
     it('should import capitalized pipes implicitly', () => {
+      // TODO(crisbeto): remove `null!` from the pipes when public API is updated.
       env.write(
         'pipe.ts',
         `
           import {Pipe} from '@angular/core';
 
-          @Pipe({name: 'Foo'})
+          @Pipe(null!)
           export class FooPipe {
             transform(value: number) {
               return value + 1;
@@ -779,7 +780,40 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should import capitalized pipes from external modules implicitly', () => {
+      env.write(
+        'node_modules/external/index.d.ts',
+        `
+          import * as i0 from "@angular/core";
+
+          export declare class FooPipe {
+            transform(value: number): number;
+            static ɵfac: i0.ɵɵFactoryDeclaration<FooPipe, never>;
+            static ɵpipe: i0.ɵɵPipeDeclaration<FooPipe, null, true>;
+          }
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {FooPipe} from 'external';
+
+          @Component({template: '<div>{{ "hello" | FooPipe }}</div>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+      );
+    });
+
     it('should be able to alias imports of selectorless dependencies', () => {
+      // TODO(crisbeto): remove `null!` from the pipes when public API is updated.
       env.write(
         'dep.ts',
         `
@@ -791,7 +825,7 @@ runInEachFileSystem(() => {
           @Directive()
           export class DepDir {}
 
-          @Pipe({name: 'dep'})
+          @Pipe(null!)
           export class DepPipe {
             transform(value: number) {
               return value;
@@ -840,12 +874,13 @@ runInEachFileSystem(() => {
         `,
       );
 
+      // TODO(crisbeto): remove `null!` from the pipes when public API is updated.
       env.write(
         'pipe.ts',
         `
           import {Pipe} from '@angular/core';
 
-          @Pipe({name: 'dep'})
+          @Pipe(null!)
           export default class DepPipe {
             transform(value: number) {
               return value;
@@ -918,6 +953,7 @@ runInEachFileSystem(() => {
     });
 
     it('should emit references to selectorless symbols', () => {
+      // TODO(crisbeto): remove `null!` from the pipes when public API is updated.
       env.write(
         'dep.ts',
         `
@@ -929,7 +965,7 @@ runInEachFileSystem(() => {
           @Directive()
           export class DepDir {}
 
-          @Pipe({name: 'dep'})
+          @Pipe(null!)
           export class DepPipe {
             transform(value: number) {
               return value;
@@ -1042,12 +1078,13 @@ runInEachFileSystem(() => {
         `,
       );
 
+      // TODO(crisbeto): remove `null!` from the pipes when public API is updated.
       env.write(
         'dep-pipe.ts',
         `
           import { Pipe } from '@angular/core';
 
-          @Pipe({name: 'dep'})
+          @Pipe(null!)
           export class DepPipe {
             transform(value: number) {
               return value;
@@ -1081,6 +1118,68 @@ runInEachFileSystem(() => {
           'import("./dep-pipe").then(m => m.DepPipe)];',
       );
       expect(jsContents).toContain('ɵɵdefer(1, 0, Comp_Defer_1_DepsFn);');
+    });
+
+    it('should generate metadata for a pipe without a name', () => {
+      // TODO(crisbeto): remove `null!` from the pipes when public API is updated.
+      env.write(
+        'pipe.ts',
+        `
+          import {Pipe} from '@angular/core';
+
+          @Pipe(null!)
+          export class FooPipe {
+            transform(value: any) {
+              return value;
+            }
+          }
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('pipe.js');
+      const dtsContents = env.getContents('pipe.d.ts');
+
+      expect(jsContents).toContain('ɵɵdefinePipe({ name: "FooPipe", type: FooPipe, pure: true });');
+      expect(dtsContents).toContain('ɵɵPipeDeclaration<FooPipe, null, true>;');
+    });
+
+    it('should not expose pipe under its class name if selectorless is disabled', () => {
+      env.tsconfig({
+        _enableSelectorless: false,
+        strictTemplates: true,
+      });
+
+      // TODO(crisbeto): remove `null!` from the pipes when public API is updated.
+      env.write(
+        'pipe.ts',
+        `
+          import {Pipe} from '@angular/core';
+
+          @Pipe(null!)
+          export class FooPipe {
+            transform(value: number) {
+              return value;
+            }
+          }
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import { Component } from '@angular/core';
+          import { FooPipe } from './pipe';
+
+          @Component({template: '{{"hello" | FooPipe}}', imports: [FooPipe]})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`No pipe found with name 'FooPipe'.`);
     });
   });
 });
