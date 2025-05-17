@@ -157,6 +157,8 @@ export interface TestBed {
     overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed;
     // (undocumented)
     get platform(): PlatformRef;
+    // (undocumented)
+    prepareAsyncComponents(): Promise<any>;
     resetTestEnvironment(): void;
     // (undocumented)
     resetTestingModule(): TestBed;
