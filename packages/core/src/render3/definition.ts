@@ -28,11 +28,9 @@ import type {
   DependencyTypeList,
   DirectiveDef,
   DirectiveDefFeature,
-  DirectiveDefListOrFactory,
   HostBindingsFunction,
   InputTransformFunction,
   PipeDef,
-  PipeDefListOrFactory,
   TypeOrFactory,
   ViewQueriesFunction,
 } from './interfaces/definition';
@@ -382,8 +380,8 @@ export function ɵɵdefineComponent<T>(
 
     initFeatures(def);
     const dependencies = componentDefinition.dependencies;
-    def.directiveDefs = extractDefListOrFactory(dependencies, /* pipeDef */ false);
-    def.pipeDefs = extractDefListOrFactory(dependencies, /* pipeDef */ true);
+    def.directiveDefs = extractDefListOrFactory(dependencies, extractDirectiveDef);
+    def.pipeDefs = extractDefListOrFactory(dependencies, getPipeDef);
     def.id = getComponentId(def);
 
     return def;
@@ -392,10 +390,6 @@ export function ɵɵdefineComponent<T>(
 
 export function extractDirectiveDef(type: Type<any>): DirectiveDef<any> | ComponentDef<any> | null {
   return getComponentDef(type) || getDirectiveDef(type);
-}
-
-function nonNull<T>(value: T | null): value is T {
-  return value !== null;
 }
 
 /**
@@ -657,28 +651,27 @@ function initFeatures<T>(definition: DirectiveDef<T> | ComponentDef<T>): void {
   definition.features?.forEach((fn) => fn(definition));
 }
 
-export function extractDefListOrFactory(
+export function extractDefListOrFactory<T>(
   dependencies: TypeOrFactory<DependencyTypeList> | undefined,
-  pipeDef: false,
-): DirectiveDefListOrFactory | null;
-export function extractDefListOrFactory(
-  dependencies: TypeOrFactory<DependencyTypeList> | undefined,
-  pipeDef: true,
-): PipeDefListOrFactory | null;
-export function extractDefListOrFactory(
-  dependencies: TypeOrFactory<DependencyTypeList> | undefined,
-  pipeDef: boolean,
-): unknown {
+  defExtractor: (type: Type<unknown>) => T | null,
+): (() => T[]) | T[] | null {
   if (!dependencies) {
     return null;
   }
 
-  const defExtractor = pipeDef ? getPipeDef : extractDirectiveDef;
+  return () => {
+    const resolvedDependencies = typeof dependencies === 'function' ? dependencies() : dependencies;
+    const result: T[] = [];
 
-  return () =>
-    (typeof dependencies === 'function' ? dependencies() : dependencies)
-      .map((dep) => defExtractor(dep))
-      .filter(nonNull);
+    for (const dep of resolvedDependencies) {
+      const definition = defExtractor(dep);
+      if (definition !== null) {
+        result.push(definition);
+      }
+    }
+
+    return result;
+  };
 }
 
 /**
