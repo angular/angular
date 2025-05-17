@@ -81,7 +81,6 @@
     "@types/bluebird": "^3.5.27",
     "@types/chrome": "^0.0.322",
     "@types/convert-source-map": "^2.0.0",
-    "@types/diff": "^7.0.0",
     "@types/dom-navigation": "^1.0.5",
     "@types/hammerjs": "2.0.46",
     "@types/jasmine": "^5.0.0",
