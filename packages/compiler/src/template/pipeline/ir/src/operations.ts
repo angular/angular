@@ -140,6 +140,11 @@ export class OpList<OpT extends Op<OpT>> {
     first.prev = prev;
   }
 
+  clear(): void {
+    this.head.next = this.tail;
+    this.tail.prev = this.head;
+  }
+
   /**
    * `OpList` is iterable via the iteration protocol.
    *

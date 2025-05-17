@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
 
-
 @Component({
   selector: 'my-lazy-cmp',
-  template: 'Hi!',
+  template: '{{hi}}',
 })
 class MyLazyCmp {
+  hi = 'Hi!';
 }
 
 @Component({
@@ -23,7 +23,7 @@ class MyLazyCmp {
 		} @error {
 			Failed to load dependencies :(
 		}
-	`
+	`,
 })
 class SimpleComponent {
   isVisible = false;
