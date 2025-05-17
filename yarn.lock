@@ -320,7 +320,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4":
   version "0.0.0-d44be7e28087c3499d70dda9859d51c1cd3fe1bf"
-  uid "5db176c0f3211663830fd3ff4064c1dff0eaccb4"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4"
   dependencies:
     "@angular/benchpress" "0.3.0"
@@ -469,7 +468,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#8f3889eedc8b9f55b266f129b9ada4ef1a453fe1":
   version "0.0.0-aef915fe9306251b2dc4edd3717ccb5d4fb5c75c"
-  uid "8f3889eedc8b9f55b266f129b9ada4ef1a453fe1"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#8f3889eedc8b9f55b266f129b9ada4ef1a453fe1"
   dependencies:
     "@google-cloud/spanner" "7.21.0"
@@ -4150,11 +4148,6 @@
     "@types/d3-transition" "*"
     "@types/d3-zoom" "*"
 
-"@types/diff@^7.0.0":
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/@types/diff/-/diff-7.0.2.tgz#d638edebf3c97aa4962b6f1164a7921ab3de9f83"
-  integrity sha512-JSWRMozjFKsGlEjiiKajUjIJVKuKdE3oVy2DNtK+fUo8q82nhFZ2CPQwicAIkXrofahDXrWJ7mjelvZphMS98Q==
-
 "@types/dom-navigation@^1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@types/dom-navigation/-/dom-navigation-1.0.5.tgz#5fd6ed014d3ee66b53b0733b6c50994c105b542d"
@@ -7816,8 +7809,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b":
-  version "2.1.6+git"
-  uid "93e720f143d0296dd2726ffbcf4fc12283363a7b"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b"
 
 dompurify@^3.2.4:
