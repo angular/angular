@@ -10,13 +10,7 @@
  * @suppress {missingRequire}
  */
 
-import {
-  isFunction,
-  isNumber,
-  patchMethod,
-  scheduleMacroTaskWithCurrentZone,
-  zoneSymbol,
-} from './utils';
+import {patchMethod, scheduleMacroTaskWithCurrentZone, zoneSymbol} from './utils';
 
 export const taskSymbol = zoneSymbol('zoneTask');
 
@@ -182,4 +176,12 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
         }
       },
   );
+}
+
+function isFunction(value: unknown): value is Function {
+  return typeof value === 'function';
+}
+
+function isNumber(value: unknown): value is number {
+  return typeof value === 'number';
 }

@@ -67,7 +67,7 @@ export function patchBrowser(Zone: ZoneType): void {
     eventTargetPatch(global, api);
     // patch XMLHttpRequestEventTarget's addEventListener/removeEventListener
     const XMLHttpRequestEventTarget = (global as any)['XMLHttpRequestEventTarget'];
-    if (XMLHttpRequestEventTarget && XMLHttpRequestEventTarget.prototype) {
+    if (XMLHttpRequestEventTarget?.prototype) {
       api.patchEventTarget(global, api, [XMLHttpRequestEventTarget.prototype]);
     }
   });
@@ -255,8 +255,7 @@ export function patchBrowser(Zone: ZoneType): void {
                 clearTask,
               );
               if (
-                self &&
-                self[XHR_ERROR_BEFORE_SCHEDULED] === true &&
+                self?.[XHR_ERROR_BEFORE_SCHEDULED] === true &&
                 !options.aborted &&
                 task.state === SCHEDULED
               ) {
@@ -275,12 +274,12 @@ export function patchBrowser(Zone: ZoneType): void {
         () =>
           function (self: any, args: any[]) {
             const task: Task = findPendingTask(self);
-            if (task && typeof task.type == 'string') {
+            if (typeof task?.type == 'string') {
               // If the XHR has already completed, do nothing.
               // If the XHR has already been aborted, do nothing.
               // Fix #569, call abort multiple times before done will cause
               // macroTask task count be negative number
-              if (task.cancelFn == null || (task.data && (<XHROptions>task.data).aborted)) {
+              if (task.cancelFn == null || (<XHROptions>task.data)?.aborted) {
                 return;
               }
               task.zone.cancelTask(task);
@@ -298,8 +297,9 @@ export function patchBrowser(Zone: ZoneType): void {
 
   Zone.__load_patch('geolocation', (global: any) => {
     /// GEO_LOCATION
-    if (global['navigator'] && global['navigator'].geolocation) {
-      patchPrototype(global['navigator'].geolocation, ['getCurrentPosition', 'watchPosition']);
+    const geolocation = global['navigator']?.geolocation;
+    if (geolocation) {
+      patchPrototype(geolocation, ['getCurrentPosition', 'watchPosition']);
     }
   });
 
