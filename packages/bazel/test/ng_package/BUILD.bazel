@@ -68,7 +68,7 @@ ts_library(
     deps = [
         "//packages:types",
         "@npm//@bazel/runfiles",
-        "@npm//@types/diff",
+        "@npm//diff",
     ],
 )
 
@@ -85,7 +85,6 @@ jasmine_node_test(
     # file is based on non-ivy output and therefore won't work for ngc and Ivy at the same time.
     # TODO: Update test to rely on Ivy partial compilation after View Engine's removal, update the
     # golden files as appropriate for the change in compilation.
-    deps = ["@npm//diff"],
 )
 
 nodejs_binary(
@@ -97,7 +96,6 @@ nodejs_binary(
         ":example_spec_lib",
         "//packages/bazel/test/ng_package/example:npm_package",
         "//packages/bazel/test/ng_package/example-with-ts-library:npm_package",
-        "@npm//diff",
     ],
     entry_point = ":example_package.spec.ts",
     templated_args = ["--accept"],

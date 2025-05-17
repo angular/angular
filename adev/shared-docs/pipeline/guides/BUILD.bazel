@@ -15,7 +15,6 @@ ts_project(
     ],
     deps = [
         "//:node_modules/@bazel/runfiles",
-        "//:node_modules/@types/diff",
         "//:node_modules/@types/jsdom",
         "//:node_modules/@types/node",
         "//:node_modules/diff",
