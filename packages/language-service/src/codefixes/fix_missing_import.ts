@@ -47,7 +47,7 @@ export const missingImportMeta: CodeActionMeta = {
   },
 };
 
-function getCodeActions({typeCheckInfo, start, compiler}: CodeActionContext) {
+function getCodeActions({typeCheckInfo, start, compiler, moduleSpecifiers}: CodeActionContext) {
   if (typeCheckInfo === null) {
     return [];
   }
@@ -84,7 +84,12 @@ function getCodeActions({typeCheckInfo, start, compiler}: CodeActionContext) {
   }
   for (const currMatch of matches.values()) {
     const currentMatchCodeAction =
-      getCodeActionToImportTheDirectiveDeclaration(compiler, importOn, currMatch) ?? [];
+      getCodeActionToImportTheDirectiveDeclaration(
+        compiler,
+        importOn,
+        currMatch,
+        moduleSpecifiers,
+      ) ?? [];
 
     codeActions.push(
       ...currentMatchCodeAction.map<ts.CodeFixAction>((action) => {
