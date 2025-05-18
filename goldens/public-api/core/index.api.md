@@ -1776,9 +1776,9 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
 }
 
 // @public
-export abstract class TemplateRef<C> {
-    abstract createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
-    abstract readonly elementRef: ElementRef;
+export class TemplateRef<C> {
+    createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
+    readonly elementRef: ElementRef;
 }
 
 // @public
