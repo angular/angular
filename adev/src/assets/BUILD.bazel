@@ -7,6 +7,7 @@ copy_to_directory(
     name = "content",
     srcs = [
         "//adev/src/content",
+        "//adev/src/content/ai",
         "//adev/src/content/best-practices",
         "//adev/src/content/best-practices/runtime-performance",
         "//adev/src/content/cdk:cdk_docs",
