@@ -612,6 +612,16 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     ],
   },
   {
+    label: 'Build with AI',
+    children: [
+      {
+        label: 'Get Started',
+        path: 'ai',
+        contentPath: 'ai/overview',
+      },
+    ],
+  },
+  {
     label: 'Developer Tools',
     children: [
       {
