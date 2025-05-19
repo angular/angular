@@ -17,13 +17,12 @@ import {
   hasSkipHydrationAttrOnTNode,
 } from '../../hydration/skip_hydration';
 import {
+  canHydrateNode,
   getSerializedContainerViews,
-  isDisconnectedNode,
   markRNodeAsClaimedByHydration,
   markRNodeAsSkippedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {isDetachedByI18n} from '../../i18n/utils';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {clearElementContents, createElementNode} from '../dom_node_manipulation';
 import {hasClassInput, hasStyleInput, TNode, TNodeType} from '../interfaces/node';
@@ -40,7 +39,6 @@ import {
   getLView,
   getNamespace,
   getTView,
-  isInSkipHydrationBlock,
   isSkipHydrationRootTNode,
   lastNodeWasCreated,
   leaveSkipHydrationBlock,
@@ -192,12 +190,7 @@ function locateOrCreateElementNodeImpl(
   name: string,
   index: number,
 ): RElement {
-  const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode =
-    !hydrationInfo ||
-    isInSkipHydrationBlock() ||
-    isDetachedByI18n(tNode) ||
-    isDisconnectedNode(hydrationInfo, index);
+  const isNodeCreationMode = !canHydrateNode(lView, tNode);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
@@ -206,6 +199,7 @@ function locateOrCreateElementNodeImpl(
   }
 
   // Hydration mode, looking up an existing element in DOM.
+  const hydrationInfo = lView[HYDRATION]!;
   const native = locateNextRNode<RElement>(hydrationInfo, tView, lView, tNode)!;
   ngDevMode && validateMatchingNode(native, Node.ELEMENT_NODE, name, lView, tNode);
   ngDevMode && markRNodeAsClaimedByHydration(native);

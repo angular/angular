@@ -10,11 +10,10 @@ import {TEMPLATES} from '../../hydration/interfaces';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {
   calcSerializedContainerSize,
-  isDisconnectedNode,
+  canHydrateNode,
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {isDetachedByI18n} from '../../i18n/utils';
 import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertEqual} from '../../util/assert';
 import {assertFirstCreatePass} from '../assert';
@@ -263,12 +262,7 @@ function locateOrCreateContainerAnchorImpl(
   tNode: TNode,
   index: number,
 ): RComment {
-  const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode =
-    !hydrationInfo ||
-    isInSkipHydrationBlock() ||
-    isDetachedByI18n(tNode) ||
-    isDisconnectedNode(hydrationInfo, index);
+  const isNodeCreationMode = !canHydrateNode(lView, tNode);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
@@ -276,6 +270,7 @@ function locateOrCreateContainerAnchorImpl(
     return createContainerAnchorImpl(tView, lView, tNode, index);
   }
 
+  const hydrationInfo = lView[HYDRATION]!;
   const ssrId = hydrationInfo.data[TEMPLATES]?.[index] ?? null;
 
   // Apply `ssrId` value to the underlying TView if it was not previously set.
