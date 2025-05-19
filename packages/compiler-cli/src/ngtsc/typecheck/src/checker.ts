@@ -142,6 +142,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   private elementTagCache = new Map<ts.ClassDeclaration, Map<string, PotentialDirective | null>>();
 
   private isComplete = false;
+  private priorResultsAdopted = false;
 
   constructor(
     private originalProgram: ts.Program,
@@ -514,30 +515,43 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return engine;
   }
 
-  private maybeAdoptPriorResultsForFile(sf: ts.SourceFile): void {
-    const sfPath = absoluteFromSourceFile(sf);
-    if (this.state.has(sfPath)) {
-      const existingResults = this.state.get(sfPath)!;
-
-      if (existingResults.isComplete) {
-        // All data for this file has already been generated, so no need to adopt anything.
-        return;
-      }
-    }
-
-    const previousResults = this.priorBuild.priorTypeCheckingResultsFor(sf);
-    if (previousResults === null || !previousResults.isComplete) {
+  private maybeAdoptPriorResults() {
+    if (this.priorResultsAdopted) {
       return;
     }
 
-    this.perf.eventCount(PerfEvent.ReuseTypeCheckFile);
-    this.state.set(sfPath, previousResults);
+    for (const sf of this.originalProgram.getSourceFiles()) {
+      if (sf.isDeclarationFile || isShim(sf)) {
+        continue;
+      }
+
+      const sfPath = absoluteFromSourceFile(sf);
+      if (this.state.has(sfPath)) {
+        const existingResults = this.state.get(sfPath)!;
+
+        if (existingResults.isComplete) {
+          // All data for this file has already been generated, so no need to adopt anything.
+          continue;
+        }
+      }
+
+      const previousResults = this.priorBuild.priorTypeCheckingResultsFor(sf);
+      if (previousResults === null || !previousResults.isComplete) {
+        continue;
+      }
+
+      this.perf.eventCount(PerfEvent.ReuseTypeCheckFile);
+      this.state.set(sfPath, previousResults);
+    }
+
+    this.priorResultsAdopted = true;
   }
 
   private ensureAllShimsForAllFiles(): void {
     if (this.isComplete) {
       return;
     }
+    this.maybeAdoptPriorResults();
 
     this.perf.inPhase(PerfPhase.TcbGeneration, () => {
       const host = new WholeProgramTypeCheckingHost(this);
@@ -547,8 +561,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         if (sf.isDeclarationFile || isShim(sf)) {
           continue;
         }
-
-        this.maybeAdoptPriorResultsForFile(sf);
 
         const sfPath = absoluteFromSourceFile(sf);
         const fileData = this.getFileData(sfPath);
@@ -567,9 +579,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   private ensureAllShimsForOneFile(sf: ts.SourceFile): void {
-    this.perf.inPhase(PerfPhase.TcbGeneration, () => {
-      this.maybeAdoptPriorResultsForFile(sf);
+    this.maybeAdoptPriorResults();
 
+    this.perf.inPhase(PerfPhase.TcbGeneration, () => {
       const sfPath = absoluteFromSourceFile(sf);
 
       const fileData = this.getFileData(sfPath);
@@ -590,12 +602,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   private ensureShimForComponent(component: ts.ClassDeclaration): void {
+    this.maybeAdoptPriorResults();
+
     const sf = component.getSourceFile();
     const sfPath = absoluteFromSourceFile(sf);
     const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
-
-    this.maybeAdoptPriorResultsForFile(sf);
-
     const fileData = this.getFileData(sfPath);
 
     if (fileData.shimData.has(shimPath)) {
