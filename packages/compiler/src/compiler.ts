@@ -31,6 +31,7 @@ import * as core from './core';
 import {publishFacade} from './jit_compiler_facade';
 import {global} from './util';
 
+export {SECURITY_SCHEMA} from './schema/dom_security_schema';
 export {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from './core';
 export {core};
 
@@ -240,6 +241,10 @@ export {
 } from './core';
 import * as outputAst from './output/output_ast';
 export {outputAst};
+export {CompilerFacadeImpl} from './jit_compiler_facade';
+export {setEnableTemplateSourceLocations} from './render3/view/config';
+export {escapeRegExp} from './util';
+
 // This file only reexports content of the `src` folder. Keep it that way.
 
 // This function call has a global side effects and publishes the compiler into global namespace for

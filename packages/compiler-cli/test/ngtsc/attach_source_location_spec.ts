@@ -9,7 +9,7 @@
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
-import {setEnableTemplateSourceLocations} from '@angular/compiler/src/render3/view/config';
+import {setEnableTemplateSourceLocations} from '@angular/compiler';
 
 const testFiles = loadStandardTestFiles({fakeCommon: true});
 

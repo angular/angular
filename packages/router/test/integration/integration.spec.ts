@@ -16,8 +16,8 @@ import {
   NgModule,
   ɵConsole as Console,
 } from '@angular/core';
-import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fakeAsync, inject, TestBed} from '@angular/core/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {
   ActivationEnd,
   ActivationStart,

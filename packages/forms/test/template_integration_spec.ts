@@ -26,7 +26,7 @@ import {
   Validator,
 } from '../index';
 import {By} from '@angular/platform-browser';
-import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
+import {dispatchEvent, sortedClassList} from '@angular/private/testing';
 import {merge} from 'rxjs';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';

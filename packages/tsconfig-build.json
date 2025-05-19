@@ -33,12 +33,8 @@
     "paths": {
       "angular-in-memory-web-api": ["./misc/angular-in-memory-web-api/index"],
       "zone.js": ["./zone.js/lib/zone"],
-      "@angular/*": [
-        "./*/index",
-        // TODO: Remove this when we no longer use any deep imports to specific files which are not
-        // public API
-        "./*"
-      ]
+      "@angular/*": ["./*/index"],
+      "@angular/common/locales/*": ["./common/locales/*"]
     }
   },
   "bazelOptions": {

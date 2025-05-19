@@ -12,6 +12,7 @@ ts_project(
         "//packages/platform-browser/animations",
         "//packages/platform-browser/animations/async",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
     deps = [
         "//packages:types_rjs",

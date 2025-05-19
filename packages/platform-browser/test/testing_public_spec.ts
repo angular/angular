@@ -34,7 +34,8 @@ import {
   waitForAsync,
   withModule,
 } from '@angular/core/testing';
-import {expect} from '../testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
+import {isBrowser} from '@angular/private/testing';
 
 // Services, and components for the tests.
 

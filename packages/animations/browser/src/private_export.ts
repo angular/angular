@@ -32,3 +32,5 @@ export {
   camelCaseToDashCase as ɵcamelCaseToDashCase,
   normalizeKeyframes as ɵnormalizeKeyframes,
 } from './util';
+export {TransitionAnimationPlayer as ɵTransitionAnimationPlayer} from './render/transition_animation_engine';
+export {ENTER_CLASSNAME as ɵENTER_CLASSNAME, LEAVE_CLASSNAME as ɵLEAVE_CLASSNAME} from './util';

@@ -37,7 +37,7 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../../index';
 import {InjectableAnimationEngine} from '../../../animations/src/providers';
-import {el} from '../../../testing/src/browser_util';
+import {el, isNode} from '@angular/private/testing';
 
 import {
   AsyncAnimationRendererFactory,
