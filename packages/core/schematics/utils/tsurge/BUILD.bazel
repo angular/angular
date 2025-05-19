@@ -23,7 +23,6 @@ ts_project(
     ],
     visibility = [":users"],
     deps = [
-        "//:node_modules/@types/diff",
         "//:node_modules/@types/jasmine",
         "//:node_modules/chalk",
         "//:node_modules/diff",
