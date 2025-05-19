@@ -7,8 +7,8 @@
  */
 import {filter, tap, first} from 'rxjs/operators';
 import {Event} from '../../index';
-import {fakeAsync, inject} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fakeAsync, inject, TestBed} from '@angular/core/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {
   Router,
   ChildActivationStart,

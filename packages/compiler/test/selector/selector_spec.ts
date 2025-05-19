@@ -7,7 +7,7 @@
  */
 
 import {CssSelector, SelectorMatcher} from '../../src/selector';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
+import {el} from '@angular/private/testing';
 
 describe('SelectorMatcher', () => {
   let matcher: SelectorMatcher;

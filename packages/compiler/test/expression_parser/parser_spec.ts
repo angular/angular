@@ -22,7 +22,7 @@ import {
 } from '../../src/expression_parser/ast';
 import {Lexer} from '../../src/expression_parser/lexer';
 import {Parser, SplitInterpolation} from '../../src/expression_parser/parser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 import {unparse, unparseWithSpan} from './utils/unparser';
 import {validate} from './utils/validator';

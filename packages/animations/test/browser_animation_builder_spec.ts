@@ -20,6 +20,7 @@ import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-br
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ɵAsyncAnimationRendererFactory as AsyncAnimationRendererFactory} from '@angular/platform-browser/animations/async';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
+import {isNode} from '@angular/private/testing';
 
 describe('BrowserAnimationBuilder', () => {
   if (isNode) {

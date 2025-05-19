@@ -18,6 +18,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {dispatchEvent, isNode, sortedClassList} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
+import {merge, NEVER, Observable, of, Subject, Subscription, timer} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
 import {
   AbstractControl,
   AsyncValidator,
@@ -41,11 +46,6 @@ import {
   Validator,
   Validators,
 } from '../index';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {merge, NEVER, Observable, of, Subject, Subscription, timer} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
 
 import {
   ControlEvent,

@@ -21,6 +21,3 @@
 // /packages/tsconfig-test.json when `testonly = True` is set
 // and packages such as platform-server that need these types should
 // use `/// <reference types="x">` in their main entry points
-
-declare let isNode: boolean;
-declare let isBrowser: boolean;

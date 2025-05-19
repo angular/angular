@@ -9,6 +9,7 @@ import {ApplicationRef, NgZone} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {EventManager} from '../../../index';
 import {HammerGestureConfig, HammerGesturesPlugin} from '../../../src/dom/events/hammer_gestures';
+import {isNode} from '@angular/private/testing';
 
 describe('HammerGesturesPlugin', () => {
   let plugin: HammerGesturesPlugin;

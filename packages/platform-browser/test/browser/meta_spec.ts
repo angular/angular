@@ -10,7 +10,7 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule, Meta} from '../../index';
-import {expect} from '../../testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('Meta service', () => {
   let doc: Document;

@@ -8,6 +8,7 @@
 
 import {DomElementSchemaRegistry} from '../../src/schema/dom_element_schema_registry';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
+import {isNode} from '@angular/private/testing';
 
 import {Element} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';

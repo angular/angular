@@ -10,7 +10,7 @@ import {Location} from '@angular/common';
 import {fakeAsync, TestBed, inject, ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Router} from '../../src';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {
   advance,
   RootCmp,

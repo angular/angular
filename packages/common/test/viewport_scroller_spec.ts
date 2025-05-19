@@ -7,6 +7,7 @@
  */
 
 import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
+import {isNode} from '@angular/private/testing';
 
 describe('BrowserViewportScroller', () => {
   describe('setHistoryScrollRestoration', () => {
