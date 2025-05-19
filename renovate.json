@@ -6,11 +6,9 @@
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
       "yarn install --frozen-lockfile --non-interactive",
-      "yarn bazel sync --only=repo || true",
       "yarn ng-dev misc update-generated-files"
     ],
     "fileFilters": [
-      ".aspect/rules/external_repository_action_cache/**/*",
       ".github/actions/deploy-docs-site/**/*",
       "packages/**/*",
       "pnpm-lock.yaml"

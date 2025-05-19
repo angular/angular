@@ -21,7 +21,7 @@
     "// 2": "Find the usage you are looking for with:",
     "// 3": "yarn ng-dev --help",
     "/ ": "",
-    "postinstall": "node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js && patch-package --patch-dir tools/esm-interop/patches/npm && patch-package --patch-dir tools/npm-patches",
+    "postinstall": "node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js && patch-package --patch-dir tools/esm-interop/patches/npm && patch-package --patch-dir tools/npm-patches && (yarn bazel sync --only=repo || true)",
     "prepare": "husky",
     "ng-dev": "tsx --tsconfig .ng-dev/tsconfig.json node_modules/@angular/ng-dev/bundles/cli.mjs",
     "build": "tsx --tsconfig scripts/tsconfig.json scripts/build/build-packages-dist.mts",
