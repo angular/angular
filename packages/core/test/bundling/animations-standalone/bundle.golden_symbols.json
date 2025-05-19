@@ -273,7 +273,7 @@
   "detectChangesInternal",
   "diPublicInInjector",
   "documentElement",
-  "elementEndFirstCreatePass",
+  "elementLikeEndFirstCreatePass",
   "elementLikeStartFirstCreatePass",
   "enterDI",
   "enterView",

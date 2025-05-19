@@ -69,7 +69,7 @@ export function elementLikeStartFirstCreatePass(
   return tNode;
 }
 
-export function elementEndFirstCreatePass(tView: TView, tNode: TNode) {
+export function elementLikeEndFirstCreatePass(tView: TView, tNode: TNode) {
   ngDevMode && assertFirstCreatePass(tView);
   registerPostOrderHooks(tView, tNode);
   if (isContentQueryHost(tNode)) {

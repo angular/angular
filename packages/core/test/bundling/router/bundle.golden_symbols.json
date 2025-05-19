@@ -384,7 +384,7 @@
   "detectChangesInViewIfAttached",
   "detectChangesInternal",
   "diPublicInInjector",
-  "elementEndFirstCreatePass",
+  "elementLikeEndFirstCreatePass",
   "elementLikeStartFirstCreatePass",
   "emptyPathMatch",
   "encodeUriQuery",
