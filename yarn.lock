@@ -468,7 +468,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#8f3889eedc8b9f55b266f129b9ada4ef1a453fe1":
   version "0.0.0-aef915fe9306251b2dc4edd3717ccb5d4fb5c75c"
-  uid "8f3889eedc8b9f55b266f129b9ada4ef1a453fe1"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#8f3889eedc8b9f55b266f129b9ada4ef1a453fe1"
   dependencies:
     "@google-cloud/spanner" "7.21.0"
@@ -4148,11 +4147,6 @@
     "@types/d3-timer" "*"
     "@types/d3-transition" "*"
     "@types/d3-zoom" "*"
-
-"@types/diff@^7.0.0":
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/@types/diff/-/diff-7.0.2.tgz#d638edebf3c97aa4962b6f1164a7921ab3de9f83"
-  integrity sha512-JSWRMozjFKsGlEjiiKajUjIJVKuKdE3oVy2DNtK+fUo8q82nhFZ2CPQwicAIkXrofahDXrWJ7mjelvZphMS98Q==
 
 "@types/dom-navigation@^1.0.5":
   version "1.0.5"
