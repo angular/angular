@@ -21,6 +21,9 @@ def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/core"):
         return "//packages/core:tsconfig_test" if testonly else "//packages/core:tsconfig_build"
 
+    if native.package_name().startswith("packages/benchpress"):
+        return "//packages:tsconfig_test" if testonly else "//packages/benchpress:tsconfig_build"
+
     if native.package_name().startswith("packages"):
         return "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
 
