@@ -77,7 +77,7 @@ import {executeContentQueries} from './queries/query_execution';
 import {enterView, leaveView} from './state';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getTNode} from './util/view_utils';
-import {elementEndFirstCreatePass, elementLikeStartFirstCreatePass} from './view/elements';
+import {elementLikeEndFirstCreatePass, elementLikeStartFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {BINDING, Binding, DirectiveWithBindings} from './dynamic_bindings';
@@ -328,7 +328,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         createDirectivesInstances(rootTView, rootLView, hostTNode);
         executeContentQueries(rootTView, hostTNode, rootLView);
 
-        elementEndFirstCreatePass(rootTView, hostTNode);
+        elementLikeEndFirstCreatePass(rootTView, hostTNode);
 
         if (projectableNodes !== undefined) {
           projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);

@@ -25,7 +25,6 @@ import {
 } from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
 import {assertDefined, assertEqual} from '../../util/assert';
-import {assertHasParent} from '../assert';
 import {clearElementContents, createElementNode} from '../dom_node_manipulation';
 import {hasClassInput, hasStyleInput, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
@@ -41,19 +40,15 @@ import {
   getLView,
   getNamespace,
   getTView,
-  isCurrentTNodeParent,
   isInSkipHydrationBlock,
   isSkipHydrationRootTNode,
   lastNodeWasCreated,
   leaveSkipHydrationBlock,
-  setCurrentTNode,
-  setCurrentTNodeAsNotParent,
 } from '../state';
-import {elementEndFirstCreatePass} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {elementLikeStartShared} from './shared';
+import {elementLikeEndShared, elementLikeStartShared} from './shared';
 
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
@@ -118,36 +113,37 @@ export function ɵɵelementStart(
  * @codeGenApi
  */
 export function ɵɵelementEnd(): typeof ɵɵelementEnd {
-  let currentTNode = getCurrentTNode()!;
   const tView = getTView();
-  ngDevMode && assertDefined(currentTNode, 'No parent node to close.');
-  if (isCurrentTNodeParent()) {
-    setCurrentTNodeAsNotParent();
-  } else {
-    ngDevMode && assertHasParent(getCurrentTNode());
-    currentTNode = currentTNode.parent!;
-    setCurrentTNode(currentTNode, false);
-  }
+  const initialTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
 
-  const tNode = currentTNode;
-  ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
+  const currentTNode = elementLikeEndShared(tView, initialTNode);
+  ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode);
 
-  if (isSkipHydrationRootTNode(tNode)) {
+  if (isSkipHydrationRootTNode(currentTNode)) {
     leaveSkipHydrationBlock();
   }
 
   decreaseElementDepthCount();
 
-  if (tView.firstCreatePass) {
-    elementEndFirstCreatePass(tView, tNode);
+  if (currentTNode.classesWithoutHost != null && hasClassInput(currentTNode)) {
+    setDirectiveInputsWhichShadowsStyling(
+      tView,
+      currentTNode,
+      getLView(),
+      currentTNode.classesWithoutHost,
+      true,
+    );
   }
 
-  if (tNode.classesWithoutHost != null && hasClassInput(tNode)) {
-    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.classesWithoutHost, true);
-  }
-
-  if (tNode.stylesWithoutHost != null && hasStyleInput(tNode)) {
-    setDirectiveInputsWhichShadowsStyling(tView, tNode, getLView(), tNode.stylesWithoutHost, false);
+  if (currentTNode.stylesWithoutHost != null && hasStyleInput(currentTNode)) {
+    setDirectiveInputsWhichShadowsStyling(
+      tView,
+      currentTNode,
+      getLView(),
+      currentTNode.stylesWithoutHost,
+      false,
+    );
   }
   return ɵɵelementEnd;
 }

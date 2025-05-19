@@ -20,7 +20,7 @@ import {assertIndexInRange, assertNotSame} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../ng_reflect';
 import {stringify} from '../../util/stringify';
-import {assertFirstCreatePass, assertLView} from '../assert';
+import {assertFirstCreatePass, assertHasParent, assertLView} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
@@ -60,12 +60,15 @@ import {profiler} from '../profiler';
 import {ProfilerEvent} from '../profiler_types';
 import {
   getCurrentDirectiveIndex,
+  getCurrentTNode,
   getElementDepthCount,
   getSelectedIndex,
   increaseElementDepthCount,
+  isCurrentTNodeParent,
   isInCheckNoChangesMode,
   setCurrentDirectiveIndex,
   setCurrentTNode,
+  setCurrentTNodeAsNotParent,
   setSelectedIndex,
   wasLastNodeCreated,
 } from '../state';
@@ -79,7 +82,7 @@ import {createComponentLView} from '../view/construction';
 import {selectIndexInternal} from './advance';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
-import {elementLikeStartFirstCreatePass} from '../view/elements';
+import {elementLikeEndFirstCreatePass, elementLikeStartFirstCreatePass} from '../view/elements';
 import {isDetachedByI18n} from '../../i18n/utils';
 import {appendChild} from '../node_manipulation';
 import {executeContentQueries} from '../queries/query_execution';
@@ -633,6 +636,25 @@ export function elementLikeStartShared(
   }
 
   return tNode;
+}
+
+/** Shared code between instructions that indicate the end of an element. */
+export function elementLikeEndShared(tView: TView, tNode: TNode): TNode {
+  let currentTNode = tNode;
+
+  if (isCurrentTNodeParent()) {
+    setCurrentTNodeAsNotParent();
+  } else {
+    ngDevMode && assertHasParent(getCurrentTNode());
+    currentTNode = currentTNode.parent!;
+    setCurrentTNode(currentTNode, false);
+  }
+
+  if (tView.firstCreatePass) {
+    elementLikeEndFirstCreatePass(tView, currentTNode);
+  }
+
+  return currentTNode;
 }
 
 ///////////////////////////////

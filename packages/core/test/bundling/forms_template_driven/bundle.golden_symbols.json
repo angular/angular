@@ -317,7 +317,7 @@
   "detectChangesInViewIfAttached",
   "detectChangesInternal",
   "diPublicInInjector",
-  "elementEndFirstCreatePass",
+  "elementLikeEndFirstCreatePass",
   "elementLikeStartFirstCreatePass",
   "enterDI",
   "enterView",
