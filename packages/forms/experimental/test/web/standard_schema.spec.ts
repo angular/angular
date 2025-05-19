@@ -1,8 +1,11 @@
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import * as z from 'zod';
-import {form} from '../public_api';
-import {validateStandardSchema} from '../src/api/standard_schema';
+import {form} from '../../public_api';
+import {validateStandardSchema} from '../../src/api/standard_schema';
+
+// Note: Must run as a web test, since our node tests down-level `Promise` and zod relies on
+// `instanceof Promise` working correclty.
 
 describe('standard schema integration', () => {
   it('should perform sync validation using a standard schema', async () => {
@@ -42,20 +45,17 @@ describe('standard schema integration', () => {
   it('should perform async validation using a standard schema', async () => {
     const injector = TestBed.inject(Injector);
 
-    const zodName = z.object({
-      first: z.string().min(2),
-      last: z.string().min(3),
-    });
-
-    // I don't know how to get zod to make async standard schema, so whatever.
-    const asyncStandardSchemaDef = {...zodName['~standard']};
-    const validate = asyncStandardSchemaDef.validate;
-    asyncStandardSchemaDef.validate = async (value: unknown) => await validate(value);
+    const zodNameAsync = z
+      .object({
+        first: z.string().min(2),
+        last: z.string().min(3),
+      })
+      .refine(async () => true);
 
     const nameForm = form(
       signal({first: '', last: ''}),
       (p) => {
-        validateStandardSchema(p, {['~standard']: asyncStandardSchemaDef});
+        validateStandardSchema(p, zodNameAsync);
       },
       {injector},
     );

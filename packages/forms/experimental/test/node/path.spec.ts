@@ -8,8 +8,15 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+<<<<<<< HEAD:packages/forms/experimental/test/path.spec.ts
 import {FieldPath, SchemaFn, validate, apply, applyEach, form, applyWhen} from '../public_api';
 import {FieldPathNode, FieldRootPathNode} from '../src/path_node';
+=======
+import {FieldPath, Schema} from '../../public_api';
+import {validate} from '../../src/api/logic';
+import {apply, applyEach, applyWhen, form} from '../../src/api/structure';
+import {FieldPathNode, FieldRootPathNode} from '../../src/path_node';
+>>>>>>> aac6b4d8f3 (use zod's actual async refinement instead of hacks):packages/forms/experimental/test/node/path.spec.ts
 
 describe('path', () => {
   describe('roots', () => {
