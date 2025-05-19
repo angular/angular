@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {FactoryTarget} from './compiler_facade_interface';
 import * as o from './output/output_ast';
 import {
   compileFactoryFunction,
-  FactoryTarget,
   R3DependencyMetadata,
   R3FactoryDelegateType,
   R3FactoryMetadata,
