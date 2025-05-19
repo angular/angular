@@ -2,10 +2,10 @@
 # Input hashes for repository rule npm_translate_lock(name = "npm2", pnpm_lock = "@//:pnpm-lock.yaml").
 # This file should be checked into version control along with the pnpm-lock.yaml file.
 .npmrc=-1406867100
-package.json=-115596762
+package.json=1718865092
 packages/compiler-cli/package.json=571832290
 packages/compiler/package.json=-426903429
-pnpm-lock.yaml=1434682987
+pnpm-lock.yaml=-1455624729
 pnpm-workspace.yaml=353334404
 tools/bazel/rules_angular_store/package.json=-239561259
-yarn.lock=1406221091
+yarn.lock=991542193
