@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AsyncPipe} from '@angular/common';
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {AsyncPipe, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {BehaviorSubject} from 'rxjs';
+import {filter, take, tap} from 'rxjs/operators';
+import {toSignal} from '../rxjs-interop';
 import {
-  afterNextRender,
   afterEveryRender,
+  afterNextRender,
   ApplicationRef,
   ChangeDetectorRef,
   Component,
@@ -26,33 +29,29 @@ import {
   NgZone,
   Output,
   PLATFORM_ID,
-  provideZonelessChangeDetection as provideZonelessChangeDetection,
   provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   signal,
   TemplateRef,
   Type,
   ViewChild,
   ViewContainerRef,
 } from '../src/core';
-import {toSignal} from '../rxjs-interop';
 import {
   ComponentFixture,
   ComponentFixtureAutoDetect,
-  TestBed,
   fakeAsync,
   flush,
+  TestBed,
   tick,
 } from '../testing';
-import {bootstrapApplication} from '@angular/platform-browser';
-import {withBody} from '@angular/private/testing';
-import {BehaviorSubject, firstValueFrom} from 'rxjs';
-import {filter, take, tap} from 'rxjs/operators';
 
+import {provideNoopAnimations} from '@angular/platform-browser/animations';
+import {isBrowser, isNode, withBody} from '@angular/private/testing';
+import {ChangeDetectionSchedulerImpl} from '../src/change_detection/scheduling/zoneless_scheduling_impl';
 import {RuntimeError, RuntimeErrorCode} from '../src/errors';
 import {scheduleCallbackWithRafRace} from '../src/util/callback_scheduler';
-import {ChangeDetectionSchedulerImpl} from '../src/change_detection/scheduling/zoneless_scheduling_impl';
 import {global} from '../src/util/global';
-import {provideNoopAnimations} from '@angular/platform-browser/animations';
 
 function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
   return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();

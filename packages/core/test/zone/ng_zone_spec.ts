@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// Needed for the global `Zone` ambient types to be available.
+import type {} from 'zone.js';
+
 import {firstValueFrom} from 'rxjs';
 import {Component, EventEmitter, NgZone, provideZoneChangeDetection} from '../../src/core';
 import {TestBed, fakeAsync, flush, flushMicrotasks, inject, waitForAsync} from '../../testing';
@@ -14,6 +17,7 @@ import {Log} from '../../testing/src/testing_internal';
 import {scheduleCallbackWithRafRace as scheduler} from '../../src/util/callback_scheduler';
 import {global} from '../../src/util/global';
 import {NoopNgZone} from '../../src/zone/ng_zone';
+import {isBrowser} from '@angular/private/testing';
 
 const resultTimer = 1000;
 // Schedules a macrotask (using a timer)

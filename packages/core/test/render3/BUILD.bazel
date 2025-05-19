@@ -1,8 +1,9 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "render3_lib",
     testonly = True,
     srcs = glob(
@@ -16,9 +17,8 @@ ts_library(
             "matchers.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         ":matchers",
-        "//packages:types",
         "//packages/animations",
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
@@ -35,29 +35,31 @@ ts_library(
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "matchers",
     testonly = True,
     srcs = [
         "is_shape_of.ts",
         "matchers.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/core",
     ],
 )
 
-ts_library(
+ts_project(
     name = "domino",
     testonly = True,
     srcs = [
         "load_domino.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/common",
         "//packages/compiler",
         "//packages/platform-server",
@@ -66,13 +68,13 @@ ts_library(
     ],
 )
 
-ts_library(
+ts_project(
     name = "render3_node_lib",
     testonly = True,
     srcs = [],
     deps = [
-        ":domino",
-        ":render3_lib",
+        ":domino_rjs",
+        ":render3_lib_rjs",
     ],
 )
 

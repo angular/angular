@@ -1,15 +1,16 @@
-load("//tools:defaults.bzl", "app_bundle", "ts_library")
 load("@npm//@angular/build-tooling/bazel/map-size-tracking:index.bzl", "js_mapping_size_test")
+load("//tools:defaults.bzl", "app_bundle")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "core_all",
     srcs = ["index.ts"],
-    tags = [],
-    deps = [
+    interop_deps = [
         "//packages/core",
     ],
+    tags = [],
 )
 
 app_bundle(

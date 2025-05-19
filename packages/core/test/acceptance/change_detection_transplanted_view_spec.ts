@@ -28,9 +28,9 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
-import {provideCheckNoChangesConfig} from '@angular/core/src/change_detection/provide_check_no_changes_config';
+import {provideCheckNoChangesConfig} from '../../src/change_detection/provide_check_no_changes_config';
 import {ComponentFixture, TestBed} from '../../testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {of} from 'rxjs';
 
 describe('change detection for transplanted views', () => {
