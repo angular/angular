@@ -11,8 +11,8 @@ import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {DomEventsPlugin} from '../../../src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '../../../src/dom/events/event_manager';
 
-import {createMouseEvent, el} from '../../../testing/src/browser_util';
 import {TestBed} from '@angular/core/testing';
+import {isNode, createMouseEvent, el} from '@angular/private/testing';
 
 (function () {
   if (isNode) return;

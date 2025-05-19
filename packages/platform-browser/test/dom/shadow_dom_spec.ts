@@ -9,7 +9,8 @@
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '../../index';
-import {expect} from '../../testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
+import {isNode} from '@angular/private/testing';
 
 describe('ShadowDOM Support', () => {
   if (isNode) {

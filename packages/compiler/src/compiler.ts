@@ -32,6 +32,7 @@ import {publishFacade} from './jit_compiler_facade';
 import * as outputAst from './output/output_ast';
 import {global} from './util';
 
+export {SECURITY_SCHEMA} from './schema/dom_security_schema';
 export {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from './core';
 export {core};
 
@@ -247,9 +248,11 @@ export * from './resource_loader';
 export * from './schema/dom_element_schema_registry';
 export * from './schema/element_schema_registry';
 export * from './directive_matching';
-export {Version} from './util';
+export {Version, escapeRegExp} from './util';
 export * from './version';
 export {outputAst};
+export {CompilerFacadeImpl} from './jit_compiler_facade';
+
 // This file only reexports content of the `src` folder. Keep it that way.
 
 // This function call has a global side effects and publishes the compiler into global namespace for

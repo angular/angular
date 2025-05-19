@@ -9,7 +9,7 @@
 import {CommonModule, SlicePipe} from '../../index';
 import {Component} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('SlicePipe', () => {
   let list: number[];

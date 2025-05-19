@@ -53,7 +53,8 @@ import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '../../index';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {provideAnimations, provideNoopAnimations} from '../../animations';
-import {expect} from '../../testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
+import {isNode} from '@angular/private/testing';
 
 import {bootstrapApplication} from '../../src/browser';
 

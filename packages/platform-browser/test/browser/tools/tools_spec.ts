@@ -8,6 +8,7 @@
 
 import {ApplicationRef, Injector, ɵglobal as global} from '@angular/core';
 import {ComponentRef} from '@angular/core/src/render3';
+import {isNode} from '@angular/private/testing';
 import {disableDebugTools, enableDebugTools} from '../../../index';
 
 import {AngularProfiler} from '../../../src/browser/tools/common_tools';
