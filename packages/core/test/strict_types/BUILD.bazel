@@ -17,7 +17,7 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    extends = "//packages:tsconfig_test",
+    extends = "//packages/core:tsconfig_test",
     tsconfig = ":tsconfig",
     deps = [
         "//packages/core:core_rjs",

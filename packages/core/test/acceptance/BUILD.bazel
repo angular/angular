@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_module")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -45,17 +45,17 @@ ts_project(
     ],
 )
 
-# Note: The `forward_ref` example tests are built through this `ng_module` sub-target.
+# Note: The `forward_ref` example tests are built through this `ng_project` sub-target.
 # This is done so that DI decorator/type metadata is processed manually by the compiler
 # ahead of time. We cannot rely on the official TypeScript decorator downlevel emit (for JIT),
 # as the output is not compatible with `forwardRef` and ES2015+. More details here:
 # https://github.com/angular/angular/commit/323651bd38909b0f4226bcb6c8f5abafa91cf9d9.
 # https://github.com/microsoft/TypeScript/issues/27519.
-ng_module(
+ng_project(
     name = "forward_ref_test_lib",
     testonly = True,
     srcs = SPEC_FILES_WITH_FORWARD_REFS,
-    deps = [
+    interop_deps = [
         "//packages/core",
         "//packages/core/testing",
     ],

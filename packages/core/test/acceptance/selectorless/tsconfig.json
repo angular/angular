@@ -1,17 +1,10 @@
 {
+  "extends": "../../../tsconfig-test.json",
   "compilerOptions": {
-    "strict": true,
-    "types": ["node", "jasmine"],
-    "plugins": [{
-      "name": "@bazel/tsetse",
-      "disabledRules": ["must-use-promises"]
-    }]
+    "strict": true
   },
   "angularCompilerOptions": {
     "strictTemplates": true,
     "_enableSelectorless": true
-  },
-  "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true
   }
 }
