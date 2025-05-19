@@ -11,7 +11,7 @@ import {
   patchMacroTask,
   patchMethod,
   patchOnProperties,
-  setShouldCopySymbolProperties,
+  setCopySymbolPropertiesImpl,
 } from '../common/utils';
 import {ZoneType} from '../zone-impl';
 
@@ -21,6 +21,6 @@ export function patchNodeUtil(Zone: ZoneType): void {
     api.patchMethod = patchMethod;
     api.bindArguments = bindArguments;
     api.patchMacroTask = patchMacroTask;
-    setShouldCopySymbolProperties(true);
+    setCopySymbolPropertiesImpl();
   });
 }
