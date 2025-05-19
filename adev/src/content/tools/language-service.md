@@ -172,6 +172,10 @@ Angular Language Service can be used with Neovim by using the [nvim-lspconfig](h
 
 2. [Configure angularls for nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#angularls)
 
+### Zed
+
+In [Zed](https://zed.dev), install the extension from [Extensions: Marketplace](https://zed.dev/extensions?query=angular).
+
 ## How the Language Service works
 
 When you use an editor with a language service, the editor starts a separate language-service process and communicates with it through an [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call), using the [Language Server Protocol](https://microsoft.github.io/language-server-protocol).
