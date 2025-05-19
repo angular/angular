@@ -1,14 +1,15 @@
-load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
+load("//tools:defaults.bzl", "app_bundle", "http_server")
+load("//tools:defaults2.bzl", "ng_project")
 
-ng_module(
+ng_project(
     name = "test_lib",
     srcs = ["index.ts"],
-    tags = ["no-cache"],
-    deps = [
+    interop_deps = [
         "//packages/core",
         "//packages/platform-browser",
         "//packages/zone.js/lib",
     ],
+    tags = ["no-cache"],
 )
 
 filegroup(

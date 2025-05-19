@@ -1,16 +1,16 @@
 load("@npm//http-server:index.bzl", "http_server")
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_module")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "cyclic_import",
     srcs = [
         "index.ts",
         "trigger.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/core",
         "//packages/platform-browser",
     ],
