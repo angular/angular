@@ -17,6 +17,9 @@ import {
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
+// Needed for the `Promise.withResolvers()` usage below.
+import '../../src/util/promise_with_resolvers';
+
 abstract class MockBackend<T, R> {
   protected pending = new Map<
     T,

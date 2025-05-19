@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_module", "nodejs_binary", "npm_package_bin")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "nodejs_binary", "npm_package_bin")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -8,12 +8,16 @@ TEST_FILES = glob(
     exclude = ["authoring_test_compiler.ts"],
 )
 
-TEST_DEPS = [
+TEST_INTEROP_DEPS = [
     "//packages/core",
     "//packages/core/rxjs-interop",
     "//packages/core/testing",
     "//packages/platform-browser",
     "//packages/core/primitives/signals",
+]
+
+TEST_DEPS = [
+    "//:node_modules/rxjs",
 ]
 
 ts_project(
@@ -55,21 +59,16 @@ ts_project(
     name = "test_jit_lib",
     testonly = True,
     srcs = ["transformed_%s" % file for file in TEST_FILES],
-    interop_deps = TEST_DEPS,
-    deps = [
-        # TODO: Only rely on `TEST_DEPS`. This should be removed during `rules_js` migration.
-        "//:node_modules/rxjs",
-    ],
+    interop_deps = TEST_INTEROP_DEPS,
+    deps = TEST_DEPS,
 )
 
-ng_module(
+ng_project(
     name = "test_lib",
     testonly = True,
     srcs = TEST_FILES,
-    deps = TEST_DEPS + [
-        # TODO: Only rely on `TEST_DEPS`. This should be removed during `rules_js` migration.
-        "@npm//rxjs",
-    ],
+    interop_deps = TEST_INTEROP_DEPS,
+    deps = TEST_DEPS,
 )
 
 jasmine_node_test(
