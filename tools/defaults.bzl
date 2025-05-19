@@ -213,6 +213,7 @@ def ng_package(name, readme_md = None, license_banner = None, license = None, de
 def pkg_npm(name, deps = [], validate = True, **kwargs):
     """Default values for pkg_npm"""
     visibility = kwargs.pop("visibility", None)
+    tags = kwargs.pop("tags", [])
 
     common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
     substitutions = dict(common_substitutions, **{
@@ -246,6 +247,18 @@ def pkg_npm(name, deps = [], validate = True, **kwargs):
         }),
         deps = [":%s_js_module_output" % name],
         visibility = visibility,
+        tags = tags,
+        **kwargs
+    )
+
+    _pkg_npm(
+        name = "%s_nosub" % name,
+        validate = validate,
+        substitutions = common_substitutions,
+        deps = [":%s_js_module_output" % name],
+        visibility = visibility,
+        # should not be built unless it is a dependency of another rule
+        tags = ["manual"],
         **kwargs
     )
 
