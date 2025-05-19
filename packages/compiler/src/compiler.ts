@@ -191,7 +191,6 @@ export {
 } from './render3/r3_class_metadata_compiler';
 export {
   compileFactoryFunction,
-  FactoryTarget,
   R3DependencyMetadata,
   R3FactoryMetadata,
 } from './render3/r3_factory';
@@ -252,6 +251,7 @@ export {Version, escapeRegExp} from './util';
 export * from './version';
 export {outputAst};
 export {CompilerFacadeImpl} from './jit_compiler_facade';
+export {FactoryTarget} from './compiler_facade_interface';
 
 // This file only reexports content of the `src` folder. Keep it that way.
 
