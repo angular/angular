@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DISABLED_REASON, MetadataKey, REQUIRED} from '../api/metadata';
+import {DISABLED_REASON, MetadataKey, REQUIRED, MIN} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
+import type {FieldPath, LogicFn, TreeValidator, ValidationResult, Validator} from './types';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -87,33 +87,6 @@ export function validateTree<T>(path: FieldPath<T>, logic: NoInfer<TreeValidator
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.syncTreeErrors.push(logic);
-}
-
-/**
- * Adds logic to a field to conditionally make it required. A required field has metadata to
- * indicate that it is required, and has a validation error if its value is empty.
- *
- * @param path The target path to add the required logic to.
- * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is required.
- * @param message An optional user-facing message to add to the error, or a `LogicFn<T, string>`
- *   that returns the user-facing message
- * @param emptyPredicate An optional custom predicate to determine if a value is considered empty.
- * @template T The data type of the field the logic is being added to.
- */
-export function required<T>(
-  path: FieldPath<T>,
-  logic: NoInfer<LogicFn<T, boolean>> = () => true,
-  message?: string | NoInfer<LogicFn<T, string>>,
-  emptyPredicate: (value: T) => boolean = (value) => value == null || value === '',
-): void {
-  metadata(path, REQUIRED, logic);
-  validate(path, (arg) => {
-    if (logic(arg) && emptyPredicate(arg.value())) {
-      message = typeof message === 'function' ? message(arg) : message;
-      return message ? {kind: 'required', message} : {kind: 'required'};
-    }
-    return undefined;
-  });
 }
 
 /**
