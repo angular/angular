@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {CommonModule, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {
   ApplicationRef,
   NgZone,
@@ -40,7 +39,7 @@ import {
   provideZoneChangeDetection,
 } from '../../src/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '../../testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {BehaviorSubject} from 'rxjs';
 
 describe('change detection', () => {

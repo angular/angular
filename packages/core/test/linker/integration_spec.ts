@@ -50,14 +50,8 @@ import {TemplateRef} from '../../src/linker/template_ref';
 import {ViewContainerRef} from '../../src/linker/view_container_ref';
 import {EmbeddedViewRef} from '../../src/linker/view_ref';
 import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '../../testing';
-import {TestBedCompiler} from '../../testing/src/test_bed_compiler';
-import {
-  createMouseEvent,
-  dispatchEvent,
-  el,
-  isCommentNode,
-} from '@angular/platform-browser/testing/src/browser_util';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 
 import {stringify} from '../../src/util/stringify';
 

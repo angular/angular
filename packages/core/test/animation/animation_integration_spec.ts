@@ -43,7 +43,7 @@ import {
   BrowserAnimationsModule,
   NoopAnimationsModule,
 } from '@angular/platform-browser/animations';
-import {hasStyle} from '@angular/platform-browser/testing/src/browser_util';
+import {hasStyle, isNode} from '@angular/private/testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';

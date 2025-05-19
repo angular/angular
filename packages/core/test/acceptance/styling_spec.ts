@@ -27,7 +27,7 @@ import {
   getSortedStyle,
 } from '../../testing/src/styling';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
-import {expectPerfCounters} from '@angular/private/testing';
+import {isBrowser, expectPerfCounters} from '@angular/private/testing';
 
 describe('styling', () => {
   beforeEach(ngDevModeResetPerfCounters);

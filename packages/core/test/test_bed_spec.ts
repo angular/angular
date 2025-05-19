@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {ɵPLATFORM_BROWSER_ID, DOCUMENT} from '@angular/common';
 import {
   APP_INITIALIZER,
   ChangeDetectorRef,
@@ -44,7 +44,7 @@ import {
 import {DeferBlockBehavior} from '../testing';
 import {TestBed, TestBedImpl} from '../testing/src/test_bed';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 import {NgModuleType} from '../src/render3';
 import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
@@ -54,7 +54,6 @@ import {
   THROW_ON_UNKNOWN_ELEMENTS_DEFAULT,
   THROW_ON_UNKNOWN_PROPERTIES_DEFAULT,
 } from '../testing/src/test_bed_common';
-import {DOCUMENT} from '@angular/common/src/dom_tokens';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -1784,7 +1783,7 @@ describe('TestBed', () => {
 
       // Set `PLATFORM_ID` to a browser platform value to trigger defer loading
       // while running tests in Node.
-      const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
+      const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: ɵPLATFORM_BROWSER_ID}];
 
       TestBed.configureTestingModule({imports: [ParentCmp], providers: [COMMON_PROVIDERS]});
       TestBed.overrideProvider(ImportantService, {useValue: {value: 'overridden'}});

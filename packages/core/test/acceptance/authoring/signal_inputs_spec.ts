@@ -16,9 +16,9 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import {setUseMicrotaskEffectsByDefault} from '@angular/core/src/render3/reactivity/effect';
 import {SIGNAL} from '../../../primitives/signals';
 import {TestBed} from '../../../testing';
+import {setUseMicrotaskEffectsByDefault} from '../../../src/render3/reactivity/effect';
 
 describe('signal inputs', () => {
   let prev: boolean;

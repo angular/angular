@@ -22,7 +22,7 @@ import {
 } from '../../src/core';
 import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('projection', () => {
   function getElementHtml(element: HTMLElement) {
