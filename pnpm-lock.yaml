@@ -111,8 +111,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.3
       '@types/diff':
-        specifier: ^7.0.0
-        version: 7.0.2
+        specifier: ^8.0.0
+        version: 8.0.0
       '@types/dom-navigation':
         specifier: ^1.0.5
         version: 1.0.5
@@ -5604,8 +5604,11 @@ packages:
       '@types/d3-zoom': 3.0.8
     dev: true
 
-  /@types/diff@7.0.2:
-    resolution: {integrity: sha512-JSWRMozjFKsGlEjiiKajUjIJVKuKdE3oVy2DNtK+fUo8q82nhFZ2CPQwicAIkXrofahDXrWJ7mjelvZphMS98Q==, tarball: https://registry.npmjs.org/@types/diff/-/diff-7.0.2.tgz}
+  /@types/diff@8.0.0:
+    resolution: {integrity: sha512-o7jqJM04gfaYrdCecCVMbZhNdG6T1MHg/oQoRFdERLV+4d+V7FijhiEAbFu0Usww84Yijk9yH58U4Jk4HbtzZw==, tarball: https://registry.npmjs.org/@types/diff/-/diff-8.0.0.tgz}
+    deprecated: This is a stub types definition. diff provides its own type definitions, so you do not need this installed.
+    dependencies:
+      diff: 8.0.1
     dev: false
 
   /@types/dom-navigation@1.0.5:
