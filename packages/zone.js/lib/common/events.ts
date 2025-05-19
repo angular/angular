@@ -245,9 +245,6 @@ export function patchEventTarget(
   };
 
   function globalCallback(context: unknown, event: Event, isCapture: boolean) {
-    // https://github.com/angular/zone.js/issues/911, in IE, sometimes
-    // event will be undefined, so we need to use window.event
-    event = event || _global.event;
     if (!event) {
       return;
     }
@@ -324,10 +321,6 @@ export function patchEventTarget(
     let proto = obj;
     while (proto && !proto.hasOwnProperty(ADD_EVENT_LISTENER)) {
       proto = ObjectGetPrototypeOf(proto);
-    }
-    if (!proto && obj[ADD_EVENT_LISTENER]) {
-      // somehow we did not find it, but we can see it. This happens on IE for Window properties.
-      proto = obj;
     }
 
     if (!proto) {

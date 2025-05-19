@@ -134,9 +134,6 @@ const zoneSymbolEventNames: {[eventName: string]: string} = {};
 const enableBeforeunloadSymbol = zoneSymbol('enable_beforeunload');
 
 const wrapFn = function (this: unknown, event: Event) {
-  // https://github.com/angular/zone.js/issues/911, in IE, sometimes
-  // event will be undefined, so we need to use window.event
-  event = event || _global.event;
   if (!event) {
     return;
   }
@@ -433,10 +430,6 @@ export function patchMethod(
   while (proto && !proto.hasOwnProperty(name)) {
     proto = ObjectGetPrototypeOf(proto);
   }
-  if (!proto && target[name]) {
-    // somehow we did not find it, but we can see it. This happens on IE for Window properties.
-    proto = target;
-  }
 
   const delegateName = zoneSymbol(name);
   let delegate: Function | null = null;
@@ -542,23 +535,21 @@ export function attachOriginToPatched(patched: Function, original: any) {
   (patched as any)[zoneSymbol('OriginalDelegate')] = original;
 }
 
-let isDetectedIEOrEdge = false;
-let ieOrEdge = false;
-
+let _isEdge!: boolean;
+// We're only checking whether we're in Edge, since IE is no longer supported.
+// The function name has not been updated to minimize the number of changes.
 export function isIEOrEdge() {
-  if (isDetectedIEOrEdge) {
-    return ieOrEdge;
+  if (_isEdge != null) {
+    return _isEdge;
   }
 
-  isDetectedIEOrEdge = true;
-
   try {
-    const ua = internalWindow.navigator.userAgent;
-    if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1 || ua.indexOf('Edge/') !== -1) {
-      ieOrEdge = true;
-    }
-  } catch (error) {}
-  return ieOrEdge;
+    _isEdge = internalWindow.navigator.userAgent.indexOf('Edge/') !== -1;
+  } catch {
+    _isEdge = false;
+  }
+
+  return _isEdge;
 }
 
 export function isFunction(value: unknown): value is Function {
