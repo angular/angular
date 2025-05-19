@@ -10,6 +10,7 @@ import {
   CompilerFacade,
   CoreEnvironment,
   ExportedCompilerFacade,
+  FactoryTarget,
   LegacyInputPartialMapping,
   OpaqueValue,
   R3ComponentMetadataFacade,
@@ -57,7 +58,7 @@ import {
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
 import {DeferredBlock} from './render3/r3_ast';
-import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata} from './render3/r3_factory';
+import {compileFactoryFunction, R3DependencyMetadata} from './render3/r3_factory';
 import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 import {R3JitReflector} from './render3/r3_jit';
 import {
