@@ -71,7 +71,7 @@ const formControlBinding: Provider = {
  * - this is just one extra run no matter how many `ngModel`s have been changed.
  * - this is a general problem when using `exportAs` for directives!
  */
-const resolvedPromise = (() => Promise.resolve())();
+const resolvedPromise = /* @__PURE__ */ (() => Promise.resolve())();
 
 /**
  * @description
