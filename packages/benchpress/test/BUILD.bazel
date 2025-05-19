@@ -1,18 +1,18 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    # TODO(alanagius) fix benchpress to compile with es2022
-    devmode_target = "es2020",
-    prodmode_target = "es2020",
-    deps = [
+    interop_deps = [
         "//packages:types",
-        "//packages/benchpress",
-        "//packages/core",
-        "//packages/core/testing",
-        "@npm//protractor",
+    ],
+    deps = [
+        "//:node_modules/protractor",
+        "//packages/benchpress:benchpress_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )
 
