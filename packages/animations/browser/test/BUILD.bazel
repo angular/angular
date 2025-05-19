@@ -5,6 +5,9 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
+    interop_deps = [
+        "//packages/private/testing",
+    ],
     deps = [
         "//packages:types_rjs",
         "//packages/animations:animations_rjs",

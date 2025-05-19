@@ -30,7 +30,7 @@ import {
   AbsoluteSimpleLinkCmp,
   createRoot,
 } from './integration_helpers';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 export function eagerUrlUpdateStrategyIntegrationSuite() {
   describe('"eager" urlUpdateStrategy', () => {

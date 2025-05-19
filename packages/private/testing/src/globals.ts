@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export * from './src/utils';
-export * from './src/browser_utils';
-export * from './src/globals';
+// Set by the test initialization scripts.
+
+export const isBrowser = !!(globalThis as any).isBrowser;
+export const isNode = !!(globalThis as any).isNode;

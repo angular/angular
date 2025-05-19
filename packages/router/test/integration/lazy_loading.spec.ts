@@ -17,7 +17,7 @@ import {
   QueryList,
 } from '@angular/core';
 import {fakeAsync, TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {
   Router,
   Event,

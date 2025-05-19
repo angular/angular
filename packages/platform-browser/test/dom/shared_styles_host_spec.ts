@@ -8,7 +8,7 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {SharedStylesHost} from '../../src/dom/shared_styles_host';
-import {expect} from '../../testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('SharedStylesHost', () => {
   let doc: Document;
