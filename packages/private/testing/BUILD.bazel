@@ -16,7 +16,10 @@ ng_module(
     ),
     module_name = "@angular/private/testing",
     deps = [
+        "//packages/common",
         "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
         "//packages/platform-server:bundled_domino_lib",
     ],
 )

@@ -38,9 +38,7 @@ import {
 } from '../index';
 import {provideAnimationsAsync} from '../async';
 import {DomRendererFactory2} from '../../src/dom/dom_renderer';
-import {withBody} from '@angular/private/testing';
-
-import {el} from '../../testing/src/browser_util';
+import {withBody, isNode, el} from '@angular/private/testing';
 
 (function () {
   if (isNode) return;

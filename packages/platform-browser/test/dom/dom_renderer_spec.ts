@@ -13,7 +13,8 @@ import {
   NAMESPACE_URIS,
   REMOVE_STYLES_ON_COMPONENT_DESTROY,
 } from '../../src/dom/dom_renderer';
-import {expect} from '../../testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
+import {isNode} from '@angular/private/testing';
 
 describe('DefaultDomRendererV2', () => {
   if (isNode) {

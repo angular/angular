@@ -21,6 +21,7 @@ import {
   NgModule,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {isNode} from '@angular/private/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {

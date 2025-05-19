@@ -25,6 +25,7 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
         "@npm//source-map",
     ],
 )

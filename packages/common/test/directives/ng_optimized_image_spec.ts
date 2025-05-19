@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig} from '../../index';
-import {RuntimeErrorCode} from '../../src/errors';
-import {PLATFORM_SERVER_ID} from '../../src/platform_id';
 import {ChangeDetectionStrategy, Component, PLATFORM_ID, Provider, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {withHead} from '@angular/private/testing';
+import {isBrowser, isNode, withHead} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
+import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig} from '../../index';
+import {RuntimeErrorCode} from '../../src/errors';
+import {PLATFORM_SERVER_ID} from '../../src/platform_id';
 
 import {PRELOADED_IMAGES} from '../..//src/directives/ng_optimized_image/tokens';
 import {

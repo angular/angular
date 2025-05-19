@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {Component, destroyPlatform} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
-import {withBody} from '@angular/private/testing';
+import {withBody, isNode} from '@angular/private/testing';
 import {
   Event,
   NavigationEnd,

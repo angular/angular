@@ -9,8 +9,8 @@
 import {CommonModule, Location} from '@angular/common';
 import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {Component, Injectable, NgModule, Type} from '@angular/core';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fakeAsync, ComponentFixture, TestBed, tick} from '@angular/core/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '../index';
 import {EMPTY, of} from 'rxjs';
 

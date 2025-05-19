@@ -9,9 +9,9 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Type} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
-import {By} from '../../index';
+import {By} from '@angular/platform-browser';
 
-import {childNodesAsList, hasClass, hasStyle, isCommentNode} from './browser_util';
+import {childNodesAsList, hasClass, hasStyle, isCommentNode} from '../src/browser_utils';
 
 /**
  * Jasmine matchers that check Angular specific conditions.

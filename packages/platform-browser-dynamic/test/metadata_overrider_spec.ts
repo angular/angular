@@ -7,7 +7,7 @@
  */
 
 import {ɵMetadataOverrider as MetadataOverrider} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 interface SomeMetadataType {
   plainProp?: string;
