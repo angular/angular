@@ -184,7 +184,6 @@ export {
   compileFactoryFunction,
   R3DependencyMetadata,
   R3FactoryMetadata,
-  FactoryTarget,
 } from './render3/r3_factory';
 export {
   compileNgModule,
@@ -244,6 +243,7 @@ export {outputAst};
 export {CompilerFacadeImpl} from './jit_compiler_facade';
 export {setEnableTemplateSourceLocations} from './render3/view/config';
 export {escapeRegExp} from './util';
+export {FactoryTarget} from './compiler_facade_interface';
 
 // This file only reexports content of the `src` folder. Keep it that way.
 
