@@ -152,6 +152,13 @@ export interface TestBed {
   createComponent<T>(component: Type<T>): ComponentFixture<T>;
 
   /**
+   * Execute any pending effects.
+   *
+   * @deprecated use `TestBed.tick()` instead
+   */
+  flushEffects(): void;
+
+  /**
    * Execute any pending work required to synchronize model to the UI.
    *
    * @publicApi 20.0
@@ -388,6 +395,10 @@ export class TestBedImpl implements TestBed {
 
   static get ngModule(): Type<any> | Type<any>[] {
     return TestBedImpl.INSTANCE.ngModule;
+  }
+
+  static flushEffects(): void {
+    return TestBedImpl.INSTANCE.tick();
   }
 
   static tick(): void {
@@ -798,6 +809,15 @@ export class TestBedImpl implements TestBed {
     } finally {
       testRenderer.removeAllRootElements?.();
     }
+  }
+
+  /**
+   * Execute any pending effects by executing any pending work required to synchronize model to the UI.
+   *
+   * @deprecated use `TestBed.tick()` instead
+   */
+  flushEffects(): void {
+    this.tick();
   }
 
   /**
