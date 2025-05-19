@@ -89,7 +89,6 @@ export const zoneSymbolEventNames: any = {};
 export const globalSources: any = {};
 
 const EVENT_NAME_SYMBOL_REGX = new RegExp('^' + ZONE_SYMBOL_PREFIX + '(\\w+)(true|false)$');
-const IMMEDIATE_PROPAGATION_SYMBOL = zoneSymbol('propagationStopped');
 
 function prepareEventNames(eventName: string, eventNameToString?: (eventName: string) => string) {
   const falseEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + FALSE_STR;
@@ -268,7 +267,7 @@ export function patchEventTarget(
         // the callback will remove itself or other listener
         const copyTasks = tasks.slice();
         for (let i = 0; i < copyTasks.length; i++) {
-          if (event && (event as any)[IMMEDIATE_PROPAGATION_SYMBOL] === true) {
+          if (stoppedImmediatePropagation.delete(event)) {
             break;
           }
           const err = invokeTask(copyTasks[i], target, event);
@@ -935,15 +934,16 @@ export function findEventTasks(target: any, eventName: string): Task[] {
   }
 }
 
+const stoppedImmediatePropagation = new WeakMap<Event, true>();
 export function patchEventPrototype(global: any, api: _ZonePrivate) {
   const Event = global['Event'];
-  if (Event && Event.prototype) {
+  if (Event?.prototype) {
     api.patchMethod(
       Event.prototype,
       'stopImmediatePropagation',
       (delegate: Function) =>
         function (self: any, args: any[]) {
-          self[IMMEDIATE_PROPAGATION_SYMBOL] = true;
+          stoppedImmediatePropagation.set(self, true);
           // we need to call the native stopImmediatePropagation
           // in case in some hybrid application, some part of
           // application will be controlled by zone, some are not
