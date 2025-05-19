@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -57,17 +58,21 @@ http_server(
     ],
 )
 
-ts_library(
+ts_project(
     name = "img_dir_e2e_tests_lib",
     testonly = True,
     srcs = ["e2e/browser-logs-util.ts"] + glob([
         "e2e/**/*.e2e-spec.ts",
     ]),
+    interop_deps = [
+        "//packages/private/testing",
+    ],
     tsconfig = ":e2e/tsconfig-e2e.json",
     deps = [
-        "//packages/private/testing",
-        "@npm//@types/selenium-webdriver",
-        "@npm//protractor",
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/@types/node",
+        "//:node_modules/@types/selenium-webdriver",
+        "//:node_modules/protractor",
     ],
 )
 

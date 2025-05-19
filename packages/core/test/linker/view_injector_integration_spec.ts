@@ -35,7 +35,7 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {ComponentFixture, fakeAsync, TestBed} from '../../testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 @Directive({
   selector: '[simpleDirective]',

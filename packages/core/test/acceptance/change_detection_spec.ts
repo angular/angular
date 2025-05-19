@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {BehaviorSubject} from 'rxjs';
 import {
   ApplicationRef,

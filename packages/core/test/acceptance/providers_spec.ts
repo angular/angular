@@ -21,7 +21,7 @@ import {
 import {leaveView, specOnlyIsInstructionStateEmpty} from '../../src/render3/state';
 import {inject, TestBed, waitForAsync} from '../../testing';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('providers', () => {
   describe('inheritance', () => {

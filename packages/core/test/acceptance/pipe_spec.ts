@@ -29,7 +29,7 @@ import {
   ɵɵinject,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('pipe', () => {
   @Pipe({

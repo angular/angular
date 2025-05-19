@@ -26,6 +26,7 @@ import {
   getSortedStyle,
 } from '../../testing/src/styling';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
+import {isBrowser} from '@angular/private/testing';
 
 describe('styling', () => {
   describe('apply in prioritization order', () => {

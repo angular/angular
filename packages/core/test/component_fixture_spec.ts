@@ -27,8 +27,8 @@ import {
   waitForAsync,
   withModule,
 } from '../testing';
-import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {dispatchEvent} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 
 @Component({
   selector: 'simple-comp',

@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "lib": ["es2015"],
-    "types": ["node", "jasminewd2"]
+    "lib": ["es2022"],
+    "types": ["node", "jasminewd2"],
+    "declaration": true,
+    "sourceMap": true
   }
 }

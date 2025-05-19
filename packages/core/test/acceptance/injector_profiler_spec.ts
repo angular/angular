@@ -23,7 +23,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '../../src/core';
-import {InternalInjectFlags} from '@angular/core/src/di/interface/injector';
+import {InternalInjectFlags} from '../../src/di/interface/injector';
 import {NullInjector} from '../../src/di/null_injector';
 import {
   isClassProvider,
