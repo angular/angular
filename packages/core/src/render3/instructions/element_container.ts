@@ -8,12 +8,11 @@
 import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {
+  canHydrateNode,
   getNgContainerSize,
-  isDisconnectedNode,
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {isDetachedByI18n} from '../../i18n/utils';
 import {assertDefined, assertEqual, assertNumber} from '../../util/assert';
 import {createCommentNode} from '../dom_node_manipulation';
 import {TNode, TNodeType} from '../interfaces/node';
@@ -26,7 +25,6 @@ import {
   getCurrentTNode,
   getLView,
   getTView,
-  isInSkipHydrationBlock,
   lastNodeWasCreated,
 } from '../state';
 import {elementLikeEndShared, elementLikeStartShared} from './shared';
@@ -134,12 +132,7 @@ function locateOrCreateElementContainerNode(
   index: number,
 ): RComment {
   let comment: RComment;
-  const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode =
-    !hydrationInfo ||
-    isInSkipHydrationBlock() ||
-    isDisconnectedNode(hydrationInfo, index) ||
-    isDetachedByI18n(tNode);
+  const isNodeCreationMode = !canHydrateNode(lView, tNode);
 
   lastNodeWasCreated(isNodeCreationMode);
 
@@ -149,6 +142,7 @@ function locateOrCreateElementContainerNode(
   }
 
   // Hydration mode, looking up existing elements in DOM.
+  const hydrationInfo = lView[HYDRATION]!;
   const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
   ngDevMode && validateNodeExists(currentRNode, lView, tNode);
 

@@ -191,6 +191,7 @@
   "callHook",
   "callHookInternal",
   "callHooks",
+  "canHydrateNode",
   "checkStable",
   "cleanUpView",
   "cleanupDehydratedIcuData",
