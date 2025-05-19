@@ -7,7 +7,7 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
+import {isTextNode} from '@angular/private/testing';
 
 describe('dom adapter', () => {
   let defaultDoc: any;

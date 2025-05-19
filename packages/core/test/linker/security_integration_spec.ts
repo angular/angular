@@ -8,7 +8,7 @@
 
 import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '../../src/core';
 import {ComponentFixture, getTestBed, TestBed} from '../../testing';
-import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'my-comp',

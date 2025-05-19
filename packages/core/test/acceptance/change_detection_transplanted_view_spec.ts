@@ -30,7 +30,7 @@ import {
 } from '../../src/core';
 import {provideExperimentalCheckNoChangesForDebug} from '../../src/change_detection/scheduling/exhaustive_check_no_changes';
 import {ComponentFixture, TestBed} from '../../testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {of} from 'rxjs';
 
 describe('change detection for transplanted views', () => {

@@ -1,5 +1,6 @@
 load("@npm//http-server:index.bzl", "http_server")
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_module", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_module")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -25,16 +26,17 @@ app_bundle(
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
-    deps = [
-        "//packages:types",
+    interop_deps = [
         "//packages/compiler",
         "//packages/core/testing",
         "//packages/private/testing",
-        "@npm//@bazel/runfiles",
+    ],
+    deps = [
+        "//:node_modules/@bazel/runfiles",
     ],
 )
 

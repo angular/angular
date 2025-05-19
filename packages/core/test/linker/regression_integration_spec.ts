@@ -37,7 +37,7 @@ import {
 } from '../../src/core';
 import {fakeAsync, inject, TestBed, tick} from '../../testing';
 import {BrowserModule, By, platformBrowser} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('regressions', () => {
   beforeEach(() => {

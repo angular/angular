@@ -1,13 +1,13 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "ivy_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    deps = [
-        "//packages:types",
+    interop_deps = [
         "//packages/core",
         "//packages/core/src/di/interface",
     ],

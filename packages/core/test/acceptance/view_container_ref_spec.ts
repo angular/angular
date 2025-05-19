@@ -45,7 +45,7 @@ import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, DomSanitizer} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('ViewContainerRef', () => {
   /**

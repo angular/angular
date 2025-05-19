@@ -36,11 +36,11 @@ import {
   ɵsetDocument,
   ɵɵdefineComponent,
 } from '../../src/core';
-import {stringifyForError} from '@angular/core/src/render3/util/stringify_utils';
 import {TestBed} from '../../testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 import {global} from '../../src/util/global';
+import {stringifyForError} from '../../src/render3/util/stringify_utils';
 
 describe('component', () => {
   describe('view destruction', () => {

@@ -40,9 +40,9 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {ComponentFixture, fakeAsync, TestBed} from '../../testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {By} from '@angular/platform-browser';
+import {isTextNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 
 import {MockResourceLoader} from './resource_loader_mock';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';

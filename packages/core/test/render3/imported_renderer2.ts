@@ -6,11 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
+import {
+  ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
+  ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID,
+} from '@angular/common';
+import {
+  EventManager,
+  EventManagerPlugin,
+  ɵDomRendererFactory2,
+  ɵSharedStylesHost,
+} from '@angular/platform-browser';
+import {isNode} from '@angular/private/testing';
 import {type ListenerOptions, NgZone, RendererFactory2, RendererType2} from '../../src/core';
 import {NoopNgZone} from '../../src/zone/ng_zone';
-import {EventManager, ɵDomRendererFactory2, ɵSharedStylesHost} from '@angular/platform-browser';
-import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 
 export class SimpleDomEventsPlugin extends EventManagerPlugin {
   constructor(doc: any) {
