@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {FactoryTarget} from '../../compiler_facade_interface';
 import * as o from '../../output/output_ast';
-import {createFactoryType, FactoryTarget, R3FactoryMetadata} from '../r3_factory';
+import {createFactoryType, R3FactoryMetadata} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {R3CompiledExpression} from '../util';
 import {DefinitionMap} from '../view/util';
