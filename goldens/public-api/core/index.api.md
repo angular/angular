@@ -669,6 +669,9 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 // @public
 export function enableProdMode(): void;
 
+// @public
+export function enableProfiling(): () => void;
+
 // @public @deprecated
 export const ENVIRONMENT_INITIALIZER: InjectionToken<readonly (() => void)[]>;
 
