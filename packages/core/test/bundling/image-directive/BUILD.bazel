@@ -1,9 +1,9 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "esbuild", "http_server", "protractor_web_test_suite")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "image-directive",
     srcs = [
         "e2e/basic/basic.ts",
@@ -18,7 +18,7 @@ ng_module(
         "index.ts",
         "playground.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
