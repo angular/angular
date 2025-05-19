@@ -133,7 +133,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should show correct error message when using an external reference in simple host directive on a component', () => {
+    it('should emit type declarations containing external reference in simple host directive on a component', () => {
       env.write(
         'test.ts',
         `
@@ -149,16 +149,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'External references in host directives are not supported in experimental declaration-only emission mode',
+      expect(dtsContent).toContain(
+        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using an external reference in host directive object on a component', () => {
+    it('should emit type declarations containing external reference in host directive object on a component', () => {
       env.write(
         'test.ts',
         `
@@ -176,16 +175,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'External references in host directives are not supported in experimental declaration-only emission mode',
+      expect(dtsContent).toContain(
+        'static ɵcmp: i0.ɵɵComponentDeclaration<HostComp, "host-comp", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using an external reference in simple host directive on a directive', () => {
+    it('should emit type declarations containing external reference in simple host directive on a directive', () => {
       env.write(
         'test.ts',
         `
@@ -200,16 +198,15 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const errors = env.driveDiagnostics();
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
 
-      expect(errors.length).toBe(1);
-      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
-      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'External references in host directives are not supported in experimental declaration-only emission mode',
+      expect(dtsContent).toContain(
+        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
       );
     });
 
-    it('should show correct error message when using an external reference in host directive object on a directive', () => {
+    it('should emit type declarations containing external reference in host directive object on a directive', () => {
       env.write(
         'test.ts',
         `
@@ -226,12 +223,349 @@ runInEachFileSystem(() => {
         `,
       );
 
+      env.driveMain();
+      const dtsContent = env.getContents('test.d.ts');
+
+      expect(dtsContent).toContain(
+        'static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, "[host-dir]", never, {}, {}, never, never, true, [{ directive: typeof i1.Dir; inputs: {}; outputs: {}; }]>;',
+      );
+    });
+
+    it('should show correct error message when using an indirect external reference in a simple host directive on a component', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DirIndirect = Dir;
+
+        @Component({
+          template: '',
+          selector: 'host-comp',
+          hostDirectives: [DirIndirect],
+        })
+        export class HostComp {}
+        `,
+      );
+
       const errors = env.driveDiagnostics();
 
       expect(errors.length).toBe(1);
       expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
       expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-        'External references in host directives are not supported in experimental declaration-only emission mode',
+        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+      );
+    });
+
+    it('should show correct error message when using an indirect external reference in host directive object on a component', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DirIndirect = Dir;
+
+        @Component({
+          template: '',
+          selector: 'host-comp',
+          hostDirectives: [{
+            directive: DirIndirect,
+          }],
+        })
+        export class HostComp {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+      );
+    });
+
+    it('should show correct error message when using an indirect external reference in a simple host directive on a directive', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DirIndirect = Dir;
+
+        @Directive({
+          selector: '[host-dir]',
+          hostDirectives: [DirIndirect],
+        })
+        export class HostDir {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+      );
+    });
+
+    it('should show correct error message when using an indirect external reference in host directive object on a directive', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DirIndirect = Dir;
+
+        @Directive({
+          selector: '[host-dir]',
+          hostDirectives: [{
+            directive: DirIndirect,
+          }],
+        })
+        export class HostDir {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead',
+      );
+    });
+
+    it('should show correct error message when using a property access expression resolving to an indirect external reference in a simple host directive on a component', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DIR = {
+          Dir
+        };
+
+        @Component({
+          template: '',
+          selector: 'host-comp',
+          hostDirectives: [DIR.Dir],
+        })
+        export class HostComp {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      );
+    });
+
+    it('should show correct error message when using a property access expression resolving to an indirect external reference in host directive object on a component', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DIR = {
+          Dir
+        };
+
+        @Component({
+          template: '',
+          selector: 'host-comp',
+          hostDirectives: [{
+            directive: DIR.Dir,
+          }],
+        })
+        export class HostComp {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      );
+    });
+
+    it('should show correct error message when using a property access expression resolving to an indirect external reference in a simple host directive on a directive', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DIR = {
+          Dir
+        };
+
+        @Directive({
+          selector: '[host-dir]',
+          hostDirectives: [DIR.Dir],
+        })
+        export class HostDir {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      );
+    });
+
+    it('should show correct error message when using a property access expression resolving to an indirect external reference in host directive object on a directive', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DIR = {
+          Dir
+        };
+
+        @Directive({
+          selector: '[host-dir]',
+          hostDirectives: [{
+            directive: DIR.Dir,
+          }],
+        })
+        export class HostDir {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      );
+    });
+
+    it('should show correct error message when using an expression resovling to an external reference in a simple host directive on a component', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DirArray = [Dir];
+
+        @Component({
+          template: '',
+          selector: 'host-comp',
+          hostDirectives: [DirArray[0]],
+        })
+        export class HostComp {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      );
+    });
+
+    it('should show correct error message when using an expression resovling to an external reference in host directive object on a component', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DirArray = [Dir];
+
+        @Component({
+          template: '',
+          selector: 'host-comp',
+          hostDirectives: [{
+            directive: DirArray[0],
+          }],
+        })
+        export class HostComp {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      );
+    });
+
+    it('should show correct error message when using an expression resovling to an external reference in a simple host directive on a directive', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DirArray = [Dir];
+
+        @Directive({
+          selector: '[host-dir]',
+          hostDirectives: [DirArray[0]],
+        })
+        export class HostDir {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
+      );
+    });
+
+    it('should show correct error message when using an expression resovling to an external reference in host directive object on a directive', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive} from '@angular/core';
+        import {Dir} from './dir';
+
+        const DirArray = [Dir];
+
+        @Directive({
+          selector: '[host-dir]',
+          hostDirectives: [{
+            directive: DirArray[0],
+          }],
+        })
+        export class HostDir {}
+        `,
+      );
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+      expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
+        'In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead',
       );
     });
 

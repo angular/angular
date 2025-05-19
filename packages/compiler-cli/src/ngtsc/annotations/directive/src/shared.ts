@@ -11,6 +11,7 @@ import {
   emitDistinctChangesOnlyDefaultValue,
   Expression,
   ExternalExpr,
+  ExternalReference,
   ForwardRefHandling,
   getSafePropertyAccessString,
   MaybeForwardRefExpression,
@@ -395,6 +396,7 @@ export function extractDirectiveMetadata(
       : extractHostDirectives(
           rawHostDirectives,
           evaluator,
+          reflector,
           compilationMode,
           createForwardRefResolver(isCore),
           emitDeclarationOnly,
@@ -1733,6 +1735,7 @@ function getHostBindingErrorNode(error: ParseError, hostExpr: ts.Expression): ts
 function extractHostDirectives(
   rawHostDirectives: ts.Expression,
   evaluator: PartialEvaluator,
+  reflector: ReflectionHost,
   compilationMode: CompilationMode,
   forwardRefResolver: ForeignFunctionResolver,
   emitDeclarationOnly: boolean,
@@ -1768,7 +1771,7 @@ function extractHostDirectives(
       }
     }
 
-    let directive: Reference<ClassDeclaration> | Expression;
+    let directive: Reference<ClassDeclaration> | Expression | ExternalReference;
     let nameForErrors = (fieldName: string) => '@Directive.hostDirectives';
     if (compilationMode === CompilationMode.LOCAL && hostReference instanceof DynamicValue) {
       // At the moment in local compilation we only support simple array for host directives, i.e.,
@@ -1780,22 +1783,38 @@ function extractHostDirectives(
         !ts.isIdentifier(hostReference.node) &&
         !ts.isPropertyAccessExpression(hostReference.node)
       ) {
+        const compilationModeName = emitDeclarationOnly
+          ? 'experimental declaration-only emission'
+          : 'local compilation';
         throw new FatalDiagnosticError(
           ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
           hostReference.node,
-          `In local compilation mode, host directive cannot be an expression. Use an identifier instead`,
+          `In ${compilationModeName} mode, host directive cannot be an expression. Use an identifier instead`,
         );
       }
 
       if (emitDeclarationOnly) {
-        throw new FatalDiagnosticError(
-          ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
-          hostReference.node,
-          'External references in host directives are not supported in experimental declaration-only emission mode',
-        );
+        if (ts.isIdentifier(hostReference.node)) {
+          const importInfo = reflector.getImportOfIdentifier(hostReference.node);
+          if (importInfo) {
+            directive = new ExternalReference(importInfo.from, importInfo.name);
+          } else {
+            throw new FatalDiagnosticError(
+              ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
+              hostReference.node,
+              `In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead`,
+            );
+          }
+        } else {
+          throw new FatalDiagnosticError(
+            ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
+            hostReference.node,
+            `In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead`,
+          );
+        }
+      } else {
+        directive = new WrappedNodeExpr(hostReference.node);
       }
-
-      directive = new WrappedNodeExpr(hostReference.node);
     } else if (hostReference instanceof Reference) {
       directive = hostReference as Reference<ClassDeclaration>;
       nameForErrors = (fieldName: string) =>
@@ -1865,6 +1884,11 @@ function toHostDirectiveMetadata(
       context,
       refEmitter,
     );
+  } else if (hostDirective.directive instanceof ExternalReference) {
+    directive = {
+      value: new ExternalExpr(hostDirective.directive),
+      type: new ExternalExpr(hostDirective.directive),
+    };
   } else {
     directive = {
       value: hostDirective.directive,
