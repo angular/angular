@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {inject, Injectable} from '@angular/core';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {Location} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 import {

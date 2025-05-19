@@ -9,7 +9,7 @@
 import {Location} from '@angular/common';
 import {Component, Injectable, NgModule, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '../index';
 import {EMPTY, of} from 'rxjs';
 

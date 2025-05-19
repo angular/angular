@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {CommonModule, Location} from '@angular/common';
 import {Component, OnDestroy, NgModule, InjectionToken, Inject, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';

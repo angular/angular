@@ -10,7 +10,7 @@ import {Location} from '@angular/common';
 import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {Router} from '../../src';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {
   RootCmp,
   BlankCmp,

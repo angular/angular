@@ -12,3 +12,4 @@ export {
 } from './server';
 export {SERVER_CONTEXT as ɵSERVER_CONTEXT, renderInternal as ɵrenderInternal} from './utils';
 export {ENABLE_DOM_EMULATION as ɵENABLE_DOM_EMULATION} from './tokens';
+export {DominoAdapter as ɵDominoAdapter} from './domino_adapter';

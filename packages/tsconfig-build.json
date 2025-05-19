@@ -32,7 +32,8 @@
     "importHelpers": true,
     "paths": {
       "zone.js": ["./zone.js/lib/zone"],
-      "@angular/*": ["./*/index"]
+      "@angular/*": ["./*/index"],
+      "@angular/common/locales/*": ["./common/locales/*"]
     }
   },
   "bazelOptions": {

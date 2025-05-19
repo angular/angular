@@ -9,8 +9,8 @@
 import {Component, Directive} from '@angular/core';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-import {hasClass} from '@angular/platform-browser/testing/src/browser_util';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {hasClass} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('non-bindable', () => {
   beforeEach(() => {

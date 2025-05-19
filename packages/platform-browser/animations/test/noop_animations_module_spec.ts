@@ -10,6 +10,7 @@ import {ɵAnimationEngine} from '@angular/animations/browser';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, NoopAnimationsModule, provideNoopAnimations} from '../index';
+import {isNode} from '@angular/private/testing';
 
 describe('NoopAnimationsModule', () => {
   beforeEach(() => {
