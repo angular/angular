@@ -16,8 +16,6 @@ import {
   EnvironmentInjector,
   Injector,
   Input,
-  NgModule,
-  NO_ERRORS_SCHEMA,
   OnInit,
   reflectComponentType,
   TemplateRef,
@@ -26,8 +24,9 @@ import {
   ViewEncapsulation,
 } from '../../src/core';
 import {ComponentFixture, TestBed} from '../../testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {By} from '@angular/platform-browser';
+import {expect} from '@angular/private/testing/matchers';
+import {isNode} from '@angular/private/testing';
 
 describe('projection', () => {
   beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));

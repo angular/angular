@@ -7,7 +7,7 @@
  */
 
 import {Sanitizer, Type} from '../../src/core';
-import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
+import {stringifyElement} from '@angular/private/testing';
 
 import {extractDirectiveDef} from '../../src/render3/definition';
 import {refreshView} from '../../src/render3/instructions/change_detection';

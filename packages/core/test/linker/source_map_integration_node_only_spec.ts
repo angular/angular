@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ResourceLoader, SourceMap} from '@angular/compiler';
-import {CompilerFacadeImpl} from '@angular/compiler/src/jit_compiler_facade';
-import {JitEvaluator} from '@angular/compiler/src/output/output_jit';
-import {escapeRegExp} from '@angular/compiler/src/util';
+import {
+  ResourceLoader,
+  SourceMap,
+  JitEvaluator,
+  CompilerFacadeImpl,
+  escapeRegExp,
+} from '@angular/compiler';
 import {Attribute, Component, Directive, ErrorHandler} from '../../src/core';
 import {CompilerFacade, ExportedCompilerFacade} from '../../src/compiler/compiler_facade';
 import {resolveComponentResources} from '../../src/metadata/resource_loading';
-import {fakeAsync, TestBed, tick} from '../../testing';
+import {TestBed} from '../../testing';
 
 import {MockResourceLoader} from './resource_loader_mock';
 import {extractSourceMap, originalPositionFor} from './source_map_util';

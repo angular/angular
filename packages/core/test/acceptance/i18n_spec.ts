@@ -38,7 +38,7 @@ import {getComponentLView} from '../../src/render3/util/discovery_utils';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '../../testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {BehaviorSubject} from 'rxjs';
 import {provideNgReflectAttributes} from '../../src/ng_reflect';
 

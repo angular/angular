@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_module", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_module")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -6,16 +7,14 @@ SPEC_FILES_WITH_FORWARD_REFS = [
     "di_forward_ref_spec.ts",
 ]
 
-ts_library(
+ts_project(
     name = "acceptance_lib",
     testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = SPEC_FILES_WITH_FORWARD_REFS,
     ),
-    # Visible to //:saucelabs_unit_tests
-    visibility = ["//:__pkg__"],
-    deps = [
+    interop_deps = [
         "//packages/animations",
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
@@ -38,7 +37,11 @@ ts_library(
         "//packages/private/testing",
         "//packages/router",
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//rxjs",
+    ],
+    # Visible to //:saucelabs_unit_tests
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//:node_modules/rxjs",
     ],
 )
 

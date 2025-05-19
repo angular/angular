@@ -25,7 +25,7 @@ import {
   ElementRef,
 } from '../../src/core';
 import {ComponentFixture, TestBed, waitForAsync} from '../../testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {Subject} from 'rxjs';
 
 import {stringify} from '../../src/util/stringify';

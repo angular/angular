@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ExternalReference} from '@angular/compiler';
-import {Identifiers} from '@angular/compiler/src/render3/r3_identifiers';
+import {ExternalReference, R3Identifiers} from '@angular/compiler';
 
 import {angularCoreEnv} from '../../src/render3/jit/environment';
 
@@ -63,7 +62,7 @@ describe('r3 jit environment', () => {
   it('should support all r3 symbols', () => {
     Object
       // Map over the static properties of Identifiers.
-      .values(Identifiers)
+      .values(R3Identifiers)
       // A few such properties are string constants. Ignore them, and focus on ExternalReferences.
       .filter(isExternalReference)
       // Some references are to interface types. Only take properties which have runtime values.

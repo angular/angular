@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_module", "nodejs_binary", "npm_package_bin", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_module", "nodejs_binary", "npm_package_bin")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -13,20 +14,21 @@ TEST_DEPS = [
     "//packages/core/testing",
     "//packages/platform-browser",
     "//packages/core/primitives/signals",
-    "@npm//rxjs",
 ]
 
-ts_library(
+ts_project(
     name = "test_compiler_lib",
     testonly = True,
     srcs = ["authoring_test_compiler.ts"],
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/transform/jit",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )
 
@@ -37,7 +39,7 @@ nodejs_binary(
         ":test_compiler_lib",
         "//packages:package_json",
     ],
-    entry_point = ":authoring_test_compiler.ts",
+    entry_point = ":authoring_test_compiler.js",
 )
 
 npm_package_bin(
@@ -49,18 +51,25 @@ npm_package_bin(
     tool = ":test_compiler",
 )
 
-ts_library(
+ts_project(
     name = "test_jit_lib",
     testonly = True,
     srcs = ["transformed_%s" % file for file in TEST_FILES],
-    deps = TEST_DEPS,
+    interop_deps = TEST_DEPS,
+    deps = [
+        # TODO: Only rely on `TEST_DEPS`. This should be removed during `rules_js` migration.
+        "//:node_modules/rxjs",
+    ],
 )
 
 ng_module(
     name = "test_lib",
     testonly = True,
     srcs = TEST_FILES,
-    deps = TEST_DEPS,
+    deps = TEST_DEPS + [
+        # TODO: Only rely on `TEST_DEPS`. This should be removed during `rules_js` migration.
+        "@npm//rxjs",
+    ],
 )
 
 jasmine_node_test(

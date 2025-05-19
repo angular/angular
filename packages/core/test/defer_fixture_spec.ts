@@ -10,7 +10,7 @@ import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {Component, PLATFORM_ID} from '../src/core';
 import {PendingTasksInternal} from '../src/pending_tasks';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '../testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 @Component({
   selector: 'second-deferred-comp',
