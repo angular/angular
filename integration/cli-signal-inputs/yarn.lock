@@ -203,6 +203,11 @@
   dependencies:
     tslib "^2.3.0"
 
+"@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
+  version "20.0.0-next.4"
+  dependencies:
+    tslib "^2.3.0"
+
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
   version "20.0.0-next.4"
   dependencies:
