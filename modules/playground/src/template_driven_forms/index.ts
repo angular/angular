@@ -10,8 +10,7 @@
 
 import {Component, Directive, Host, NgModule} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, NG_VALIDATORS, NgForm} from '@angular/forms';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 /**
  * A domain model we are binding the form controls to.
@@ -31,7 +30,7 @@ class CheckoutModel {
 /**
  * Custom validator.
  */
-export function creditCardValidator(c: FormControl): {[key: string]: boolean} {
+export function creditCardValidator(c: FormControl): {[key: string]: boolean} | null {
   if (c.value && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
@@ -82,7 +81,7 @@ export class ShowError {
     this.formDir = formDir;
   }
 
-  get errorMessage(): string {
+  get errorMessage(): string | null {
     const form: FormGroup = this.formDir.form;
     const control = form.get(this.controlPath);
     if (control && control.touched) {
@@ -185,4 +184,4 @@ export class TemplateDrivenForms {
 })
 export class ExampleModule {}
 
-platformBrowserDynamic().bootstrapModule(ExampleModule);
+platformBrowser().bootstrapModule(ExampleModule);

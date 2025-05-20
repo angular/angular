@@ -10,7 +10,7 @@ ng_module(
     deps = [
         "//packages/animations",
         "//packages/core",
-        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser",
         "//packages/platform-browser/animations",
     ],
 )

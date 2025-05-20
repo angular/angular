@@ -8,8 +8,7 @@
 
 import {HttpClientJsonpModule, HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {JsonpCmp} from './app/jsonp_comp';
 
@@ -20,4 +19,4 @@ import {JsonpCmp} from './app/jsonp_comp';
 })
 export class ExampleModule {}
 
-platformBrowserDynamic().bootstrapModule(ExampleModule);
+platformBrowser().bootstrapModule(ExampleModule);
