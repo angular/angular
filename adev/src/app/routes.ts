@@ -216,6 +216,10 @@ const REDIRECT_ROUTES: Route[] = [
     redirectTo: '/guide/components',
   },
   {
+    path: 'hmr',
+    redirectTo: '/tools/cli/build-system-migration#hot-module-replacement',
+  },
+  {
     path: 'guide',
     children: [
       {
