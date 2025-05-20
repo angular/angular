@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {assertDefined, assertString} from '../util/assert';
+import {escapeCommentText} from '../util/dom';
+import {TNode} from './interfaces/node';
 import {Renderer} from './interfaces/renderer';
 import {RComment, RElement, RNode, RText} from './interfaces/renderer_dom';
-import {escapeCommentText} from '../util/dom';
-import {assertDefined, assertString} from '../util/assert';
+import {SanitizerFn} from './interfaces/sanitization';
 import {setUpAttributes} from './util/attrs_utils';
-import {TNode} from './interfaces/node';
+import {renderStringify} from './util/stringify_utils';
 
 export function createTextNode(renderer: Renderer, value: string): RText {
   return renderer.createText(value);
@@ -100,6 +102,33 @@ export function nativeRemoveNode(
  */
 export function clearElementContents(rElement: RElement): void {
   rElement.textContent = '';
+}
+
+/**
+ * Set a value of a DOM element attribute. An attribute is removed if the value is null or undefined.
+ */
+
+export function setElementAttribute(
+  renderer: Renderer,
+  element: RElement,
+  namespace: string | null | undefined,
+  tagName: string | null,
+  name: string,
+  value: any,
+  sanitizer: SanitizerFn | null | undefined,
+) {
+  if (value == null) {
+    if (sanitizer != null) {
+      // Execute sanitizer to enforce security controls (e.g., neutralizing iframe)
+      sanitizer(value, tagName || '', name);
+    }
+    renderer.removeAttribute(element, name, namespace);
+  } else {
+    const strValue =
+      sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
+
+    renderer.setAttribute(element, name, strValue as string, namespace);
+  }
 }
 
 /**
