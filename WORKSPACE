@@ -108,6 +108,7 @@ npm_translate_lock(
     data = [
         "//:package.json",
         "//:pnpm-workspace.yaml",
+        "//adev/shared-docs/pipeline/api-gen:package.json",
         "//packages/compiler:package.json",
         "//packages/compiler-cli:package.json",
         "//tools/bazel/rules_angular_store:package.json",

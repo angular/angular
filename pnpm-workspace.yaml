@@ -1,5 +1,6 @@
 packages:
   - .
+  - adev/shared-docs/pipeline/api-gen
   - packages/compiler/
   - packages/compiler-cli/
   - tools/bazel/rules_angular_store/
