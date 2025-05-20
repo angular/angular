@@ -6,7 +6,7 @@ TIP: This guide assumes you've already read the [component harnesses overview gu
 
 ### CDK Installation
 
-The [Component Dev Kit (CDK)](https://material.angular.io/cdk/categories) is a set of behavior primitives for building components. To use the component harnesses, first install `@angular/cdk` from npm. You can do this from your terminal using the Angular CLI:
+The [Component Dev Kit (CDK)](https://material.angular.dev/cdk/categories) is a set of behavior primitives for building components. To use the component harnesses, first install `@angular/cdk` from npm. You can do this from your terminal using the Angular CLI:
 
 <docs-code language="shell">
   ng add @angular/cdk
@@ -155,7 +155,7 @@ While every harness defines an API specific to its corresponding component, they
 
 Beyond that, the API of any given harness is specific to its corresponding component; refer to the component's documentation to learn how to use a specific harness.
 
-As an example, the following is a test for a component that uses the [Angular Material slider component harness](https://material.angular.io/components/slider/api#MatSliderHarness):
+As an example, the following is a test for a component that uses the [Angular Material slider component harness](https://material.angular.dev/components/slider/api#MatSliderHarness):
 
 <docs-code language="typescript">
 it('should get value of slider thumb', async () => {

@@ -17,7 +17,7 @@ Otherwise, to add support for other environments, you need to define how to inte
 
 ### CDK Installation
 
-The [Component Dev Kit (CDK)](https://material.angular.io/cdk/categories) is a set of behavior primitives for building components. To use the component harnesses, first install `@angular/cdk` from npm. You can do this from your terminal using the Angular CLI:
+The [Component Dev Kit (CDK)](https://material.angular.dev/cdk/categories) is a set of behavior primitives for building components. To use the component harnesses, first install `@angular/cdk` from npm. You can do this from your terminal using the Angular CLI:
 
 <docs-code language="shell">
   ng add @angular/cdk
