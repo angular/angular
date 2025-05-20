@@ -1822,7 +1822,7 @@ export const RECOMMENDATIONS: Step[] = [
     material: true,
     step: 'v15 mat refactor',
     action:
-      'In Angular Material v15, many of the components have been refactored to be based on the official Material Design Components for Web (MDC). This change affected the DOM and CSS classes of many components. <a href="https://rc.material.angular.io/guide/mdc-migration" alt="Link to more information about this change">Read further</a>',
+      'In Angular Material v15, many of the components have been refactored to be based on the official Material Design Components for Web (MDC). This change affected the DOM and CSS classes of many components. <a href="https://rc.material.angular.dev/guide/mdc-migration" alt="Link to more information about this change">Read further</a>',
   },
   {
     possibleIn: 1500,

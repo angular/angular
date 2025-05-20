@@ -17,7 +17,7 @@ For the full API reference, please see the [Angular CDK's drag and drop API refe
 
 ### CDK Installation
 
-The [Component Dev Kit (CDK)](https://material.angular.io/cdk/categories) is a set of behavior primitives for building components. To use the drag and drop directives, first install `@angular/cdk` from npm. You can do this from your terminal using Angular CLI:
+The [Component Dev Kit (CDK)](https://material.angular.dev/cdk/categories) is a set of behavior primitives for building components. To use the drag and drop directives, first install `@angular/cdk` from npm. You can do this from your terminal using Angular CLI:
 
 <docs-code language="shell">
   ng add @angular/cdk

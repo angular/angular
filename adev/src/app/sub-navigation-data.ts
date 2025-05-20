@@ -902,11 +902,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Angular CDK',
-        path: 'https://material.angular.io/cdk/categories',
+        path: 'https://material.angular.dev/cdk/categories',
       },
       {
         label: 'Angular Material',
-        path: 'https://material.angular.io/',
+        path: 'https://material.angular.dev/',
       },
     ],
   },
