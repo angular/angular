@@ -8,8 +8,8 @@
 
 import 'zone.js/lib/browser/rollup-main';
 
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {platformBrowser} from '@angular/platform-browser';
 
 import {AppModule} from './module';
 
-platformBrowserDynamic().bootstrapModule(AppModule);
+platformBrowser().bootstrapModule(AppModule);
