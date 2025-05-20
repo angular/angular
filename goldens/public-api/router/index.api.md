@@ -5,7 +5,6 @@
 ```ts
 
 import { AfterContentInit } from '@angular/core';
-import * as _angular_router from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { ElementRef } from '@angular/core';
@@ -723,7 +722,7 @@ export class Router {
     resetConfig(config: Routes): void;
     // @deprecated
     routeReuseStrategy: RouteReuseStrategy;
-    get routerState(): _angular_router.RouterState;
+    get routerState(): RouterState;
     serializeUrl(url: UrlTree): string;
     setUpLocationChangeListener(): void;
     get url(): string;
