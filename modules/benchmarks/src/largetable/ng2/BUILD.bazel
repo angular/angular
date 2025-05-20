@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -16,7 +16,6 @@ ng_module(
         "//modules/benchmarks/src/largetable:util_lib",
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
     ],
 )
 

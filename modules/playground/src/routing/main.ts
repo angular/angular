@@ -7,8 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
 
 import {DbService, DraftsCmp, InboxApp, InboxCmp, ROUTER_CONFIG} from './app/inbox-app';
@@ -21,4 +20,4 @@ import {DbService, DraftsCmp, InboxApp, InboxCmp, ROUTER_CONFIG} from './app/inb
 })
 export class RoutingExampleModule {}
 
-platformBrowserDynamic().bootstrapModule(RoutingExampleModule);
+platformBrowser().bootstrapModule(RoutingExampleModule);
