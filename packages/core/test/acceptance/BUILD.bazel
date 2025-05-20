@@ -30,7 +30,6 @@ ts_project(
         "//packages/localize",
         "//packages/localize/init",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/platform-server",

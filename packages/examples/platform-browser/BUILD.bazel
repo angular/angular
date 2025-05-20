@@ -9,7 +9,6 @@ ng_module(
         "//packages/compiler",
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
     ],
 )
 

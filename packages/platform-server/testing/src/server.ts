@@ -13,7 +13,6 @@ import {
   PlatformRef,
   StaticProvider,
 } from '@angular/core';
-import {ɵINTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS as INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from '@angular/platform-browser-dynamic';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {
   ɵINTERNAL_SERVER_PLATFORM_PROVIDERS as INTERNAL_SERVER_PLATFORM_PROVIDERS,
@@ -21,7 +20,6 @@ import {
 } from '../../index';
 
 const INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS: StaticProvider[] = [
-  ...INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
   ...INTERNAL_SERVER_PLATFORM_PROVIDERS,
 ];
 

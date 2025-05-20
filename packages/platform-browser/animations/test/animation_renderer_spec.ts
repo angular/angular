@@ -30,8 +30,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {bootstrapApplication} from '../../index';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {bootstrapApplication, platformBrowser} from '../../index';
 import {
   BrowserAnimationsModule,
   ɵInjectableAnimationEngine as InjectableAnimationEngine,
@@ -383,7 +382,7 @@ import {withBody, isNode, el} from '@angular/private/testing';
         })
         class AppModule {}
 
-        const ngModuleRef = await platformBrowserDynamic().bootstrapModule(AppModule);
+        const ngModuleRef = await platformBrowser().bootstrapModule(AppModule);
 
         const root = document.body.querySelector('app-root')!;
         expect(root.textContent).toEqual('app-root content');
@@ -437,7 +436,7 @@ import {withBody, isNode, el} from '@angular/private/testing';
         })
         class AppModule {}
 
-        const ngModuleRef = await platformBrowserDynamic().bootstrapModule(AppModule);
+        const ngModuleRef = await platformBrowser().bootstrapModule(AppModule);
 
         const root = document.body.querySelector('app-root')!;
         expect(root.textContent).toEqual('app-root content');

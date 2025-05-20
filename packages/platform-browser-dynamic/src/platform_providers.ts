@@ -18,7 +18,7 @@ import {ResourceLoader} from '@angular/compiler';
 import {ResourceLoaderImpl} from './resource_loader/resource_loader_impl';
 import {JitCompilerFactory} from './compiler_factory';
 
-export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: StaticProvider[] = [
+const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: StaticProvider[] = [
   {
     provide: COMPILER_OPTIONS,
     useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl, deps: []}]},

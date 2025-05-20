@@ -12,7 +12,6 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "//packages/router",
         "//packages/zone.js/lib",
         "@npm//rxjs",
