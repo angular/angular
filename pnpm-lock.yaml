@@ -349,8 +349,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4
         version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/ssr@20.0.0-rc.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.39.2)(tsx@4.19.4)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#32c4a4b15963cdd60dd1a35e92f75e538936fcdf
-        version: github.com/angular/dev-infra-private-ng-dev-builds/32c4a4b15963cdd60dd1a35e92f75e538936fcdf
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#4f577359f5daa7a0217caee193492781f1cf5c7f
+        version: github.com/angular/dev-infra-private-ng-dev-builds/4f577359f5daa7a0217caee193492781f1cf5c7f
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.27.1)
@@ -19185,10 +19185,10 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/32c4a4b15963cdd60dd1a35e92f75e538936fcdf:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/32c4a4b15963cdd60dd1a35e92f75e538936fcdf}
+  github.com/angular/dev-infra-private-ng-dev-builds/4f577359f5daa7a0217caee193492781f1cf5c7f:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/4f577359f5daa7a0217caee193492781f1cf5c7f}
     name: '@angular/ng-dev'
-    version: 0.0.0-a9061f8b8f7bb7b0ea2b578d48dcfd4e6b83a18b
+    version: 0.0.0-a24e0366b7fb42ab3df4e7e92e75d10288dd1d54
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 7.21.0(supports-color@10.0.0)
