@@ -200,7 +200,7 @@
     "check-side-effects": "0.0.23",
     "cldr": "7.9.0",
     "cldrjs": "0.5.5",
-    "conventional-changelog": "^6.0.0",
+    "conventional-changelog": "^7.0.0",
     "emoji-regex": "^10.3.0",
     "fflate": "^0.8.2",
     "firebase-tools": "^14.0.0",
