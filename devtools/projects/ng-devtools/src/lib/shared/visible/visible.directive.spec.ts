@@ -40,13 +40,13 @@ describe('VisibleDirective', () => {
     fixture.componentRef.setInput('visible', true);
     fixture.detectChanges();
 
-    expect(targetEl.classList.contains('hidden')).toBeFalse();
+    expect(targetEl.hasAttribute('hidden')).toBeFalse();
   });
 
   it('should hide the test component', () => {
     fixture.componentRef.setInput('visible', false);
     fixture.detectChanges();
 
-    expect(targetEl.classList.contains('hidden')).toBeTrue();
+    expect(targetEl.hasAttribute('hidden')).toBeTrue();
   });
 });

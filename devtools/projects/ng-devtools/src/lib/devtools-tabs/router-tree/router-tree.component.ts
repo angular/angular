@@ -13,6 +13,7 @@ import {
   Component,
   effect,
   input,
+  signal,
   viewChild,
 } from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
@@ -39,20 +40,17 @@ export class RouterTreeComponent {
   routes = input<Route[]>([]);
   snapToRoot = input(false);
 
-  private markVisualizerReady!: () => void;
-  private readonly visualizerReady = new Promise<void>((r) => {
-    this.markVisualizerReady = r;
-  });
+  private readonly visualizerReady = signal<boolean>(false);
 
   constructor() {
     effect(async () => {
-      await this.visualizerReady;
-      this.renderGraph(this.routes());
+      if (this.visualizerReady()) {
+        this.renderGraph(this.routes());
+      }
     });
 
     effect(async () => {
-      await this.visualizerReady;
-      if (this.snapToRoot()) {
+      if (this.visualizerReady() && this.snapToRoot()) {
         this.routerTreeVisualizer.snapToRoot(0.6);
       }
     });
@@ -78,7 +76,7 @@ export class RouterTreeComponent {
       nodeSeparation: () => 1,
     });
 
-    this.markVisualizerReady();
+    this.visualizerReady.set(true);
   }
 
   searchRoutes(event: Event) {

@@ -11,7 +11,7 @@ import {Directive, input} from '@angular/core';
 @Directive({
   selector: '[ngVisible]',
   host: {
-    '[class.hidden]': '!condition()',
+    '[attr.hidden]': '!condition() ? true : null',
   },
 })
 export class VisibleDirective {

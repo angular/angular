@@ -80,12 +80,12 @@
       />
 
       @let profilerVisible = activeTab() === 'Profiler';
-      @defer (when profilerVisible) {
+      @defer (when profilerVisible; prefetch on idle) {
         <ng-profiler [ngVisible]="profilerVisible" />
       }
 
       @let routerTreeVisible = activeTab() === 'Router Tree';
-      @defer (when routerTreeVisible) {
+      @defer (when routerTreeVisible; prefetch on idle) {
         <ng-router-tree
           [ngVisible]="routerTreeVisible"
           [snapToRoot]="snapToRoot()"
@@ -94,7 +94,7 @@
       }
 
       @let injectorTreeVisible = activeTab() === 'Injector Tree';
-      @defer (when injectorTreeVisible) {
+      @defer (when injectorTreeVisible; prefetch on idle) {
         <ng-injector-tree
           [ngVisible]="injectorTreeVisible"
           [componentExplorerView]="componentExplorerView()"
