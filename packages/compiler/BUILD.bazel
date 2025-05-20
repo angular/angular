@@ -1,9 +1,9 @@
-load("//tools:defaults.bzl", "ng_package", "ts_library", "tsec_test")
-load("//tools:defaults2.bzl", "npm_package")
+load("//tools:defaults.bzl", "ng_package", "tsec_test")
+load("//tools:defaults2.bzl", "npm_package", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "compiler",
     srcs = glob(
         [
@@ -37,7 +37,10 @@ ng_package(
         "//integration:__subpackages__",
         "//modules/ssr-benchmarks:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/core/test/bundling:__subpackages__",
+        "//packages/core/test/playground/zone-signal-input:__pkg__",
         "//packages/language-service/test:__pkg__",
+        "@npm//@angular/build-tooling/shared-scripts:__subpackages__",
     ],
     deps = [
         ":compiler",
