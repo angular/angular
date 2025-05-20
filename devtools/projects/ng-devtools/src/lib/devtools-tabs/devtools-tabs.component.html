@@ -142,6 +142,16 @@
         >
       </label>
     }
+    @if (supportedApis().signals) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle
+          [checked]="signalGraphEnabled()"
+          (change)="setSignalGraph($event.checked)"
+        >
+          Enable Signal Graph (experimental)</mat-slide-toggle
+        >
+      </label>
+    }
   </div>
 </mat-menu>
 
