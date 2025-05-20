@@ -3,9 +3,9 @@ import {TestBed} from '@angular/core/testing';
 import {disabled, error, readonly, required, validate, validateTree} from '../src/api/logic';
 import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
 import {apply, applyEach, form, submit} from '../src/api/structure';
-import {FormTreeError, Schema} from '../src/api/types';
+import {FormTreeError, SchemaOrSchemaFn} from '../src/api/types';
 
-const noopSchema: Schema<unknown> = () => {};
+const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
 
 describe('Node', () => {
   it('is untouched initially', () => {
@@ -691,7 +691,7 @@ describe('Node', () => {
         city: string;
       }
 
-      const addressSchema: Schema<Address> = (p) => {
+      const addressSchema: SchemaOrSchemaFn<Address> = (p) => {
         disabled(p.street, () => true);
       };
 

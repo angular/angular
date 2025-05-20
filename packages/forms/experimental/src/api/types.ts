@@ -146,9 +146,22 @@ export type FieldPath<T> = {
     : {});
 
 /**
- * A function that binds logic to the given `FieldPath`.
+ * Defines logic for a form of type T.
  */
-export type Schema<T> = (p: FieldPath<T>) => void;
+export type Schema<in T> = {
+  // Save type as `T => void` rather than `T` since `Schema` is contravariant on `T`. */
+  [ɵɵTYPE]: (_: T) => void;
+};
+
+/**
+ * Function that defines rules for a schema.
+ */
+export type SchemaFn<T> = (p: FieldPath<T>) => void;
+
+/**
+ * A schema or schema definition function.
+ */
+export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
 
 /**
  * A function that recevies the `FieldContext` for the field the logic is bound to and returns

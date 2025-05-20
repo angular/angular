@@ -11,7 +11,15 @@ import {inject, Injector, WritableSignal} from '@angular/core';
 import {FieldNode, FormFieldManager} from '../field_node';
 import {FieldPathNode, FieldRootPathNode} from '../path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema';
-import type {Field, FieldPath, LogicFn, Schema, ServerError} from './types';
+import type {
+  Field,
+  FieldPath,
+  LogicFn,
+  Schema,
+  SchemaFn,
+  SchemaOrSchemaFn,
+  ServerError,
+} from './types';
 
 export interface FormOptions {
   injector?: Injector;
@@ -57,7 +65,7 @@ export interface FormOptions {
  */
 export function form<T>(
   model: WritableSignal<T>,
-  schema?: NoInfer<Schema<T>>,
+  schema?: NoInfer<SchemaOrSchemaFn<T>>,
   options?: FormOptions,
 ): Field<T> {
   const injector = options?.injector ?? inject(Injector);
@@ -105,7 +113,7 @@ export function form<T>(
  * element of the array.
  * @template T The data type of an element in the array.
  */
-export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<Schema<T>>): void {
+export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<SchemaOrSchemaFn<T>>): void {
   assertPathIsCurrent(path);
 
   const elementPath = FieldPathNode.unwrapFieldPath(path).element.fieldPathProxy;
@@ -128,7 +136,7 @@ export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<Schema<T>>): 
  * @param path The target path to apply the schema to.
  * @param schema The schema to apply to the property
  */
-export function apply<T>(path: FieldPath<T>, schema: NoInfer<Schema<T>>): void {
+export function apply<T>(path: FieldPath<T>, schema: NoInfer<SchemaOrSchemaFn<T>>): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
@@ -147,7 +155,7 @@ export function apply<T>(path: FieldPath<T>, schema: NoInfer<Schema<T>>): void {
 export function applyWhen<T>(
   path: FieldPath<T>,
   logic: LogicFn<T, boolean>,
-  schema: NoInfer<Schema<T>>,
+  schema: NoInfer<SchemaOrSchemaFn<T>>,
 ): void {
   assertPathIsCurrent(path);
 
@@ -168,7 +176,7 @@ export function applyWhen<T>(
 export function applyWhenValue<T, TNarrowed extends T>(
   path: FieldPath<T>,
   predicate: (value: T) => value is TNarrowed,
-  schema: NoInfer<Schema<TNarrowed>>,
+  schema: NoInfer<SchemaOrSchemaFn<TNarrowed>>,
 ): void;
 /**
  * Conditionally applies a predefined schema to a given `FieldPath`.
@@ -181,12 +189,12 @@ export function applyWhenValue<T, TNarrowed extends T>(
 export function applyWhenValue<T>(
   path: FieldPath<T>,
   predicate: (value: T) => boolean,
-  schema: NoInfer<Schema<T>>,
+  schema: NoInfer<SchemaOrSchemaFn<T>>,
 ): void;
 export function applyWhenValue(
   path: FieldPath<unknown>,
   predicate: (value: unknown) => boolean,
-  schema: Schema<unknown>,
+  schema: SchemaOrSchemaFn<unknown>,
 ) {
   applyWhen(path, ({value}) => predicate(value()), schema);
 }
@@ -230,4 +238,8 @@ export async function submit<T>(
     (error.field.$state as FieldNode).setServerErrors(error.error);
   }
   api.setSubmittedStatus('submitted');
+}
+
+export function schema<T>(fn: SchemaFn<T>): Schema<T> {
+  return fn as unknown as Schema<T>;
 }
