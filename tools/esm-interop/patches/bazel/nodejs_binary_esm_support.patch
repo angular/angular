@@ -92,3 +92,134 @@ index 3b8ce74..85bc77d 100755
  }
 
  _NODEJS_EXECUTABLE_OUTPUTS = {
+diff --git internal/node/node_patches.cjs internal/node/node_patches.cjs
+index 239bb5f..1c02e06 100755
+--- internal/node/node_patches.cjs
++++ internal/node/node_patches.cjs
+@@ -15,7 +15,7 @@ var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof win
+
+ function createCommonjsModule(fn) {
+   var module = { exports: {} };
+-	return fn(module, module.exports), module.exports;
++  return fn(module, module.exports), module.exports;
+ }
+
+ var fs = createCommonjsModule(function (module, exports) {
+@@ -95,7 +95,7 @@ const patcher = (fs = fs__default['default'], roots) => {
+             args[args.length - 1] = (err, stats) => {
+                 if (err)
+                     return cb(err);
+-                path__default['default'].resolve(args[0]);
++                path__default['default'].resolve(args[0].toString());
+                 if (!stats.isSymbolicLink()) {
+                     return cb(null, stats);
+                 }
+@@ -116,7 +116,7 @@ const patcher = (fs = fs__default['default'], roots) => {
+                             return cb(err);
+                         }
+                     }
+-                    str = path__default['default'].resolve(path__default['default'].dirname(args[0]), str);
++                    str = path__default['default'].resolve(path__default['default'].dirname(args[0].toString()), str);
+                     if (isEscape(str, args[0])) {
+                         // if it's an out link we have to return the original stat.
+                         return origStat(args[0], (err, plainStat) => {
+@@ -143,7 +143,7 @@ const patcher = (fs = fs__default['default'], roots) => {
+                 if (err)
+                     return cb(err);
+                 if (isEscape(str, args[0])) {
+-                    cb(null, path__default['default'].resolve(args[0]));
++                    cb(null, path__default['default'].resolve(args[0].toString()));
+                 }
+                 else {
+                     cb(null, str);
+@@ -161,7 +161,7 @@ const patcher = (fs = fs__default['default'], roots) => {
+                     if (err)
+                         return cb(err);
+                     if (isEscape(str, args[0])) {
+-                        cb(null, path__default['default'].resolve(args[0]));
++                        cb(null, path__default['default'].resolve(args[0].toString()));
+                     }
+                     else {
+                         cb(null, str);
+@@ -176,9 +176,9 @@ const patcher = (fs = fs__default['default'], roots) => {
+         if (cb) {
+             cb = once(cb);
+             args[args.length - 1] = (err, str) => {
+-                args[0] = path__default['default'].resolve(args[0]);
++                args[0] = path__default['default'].resolve(args[0].toString());
+                 if (str)
+-                    str = path__default['default'].resolve(path__default['default'].dirname(args[0]), str);
++                    str = path__default['default'].resolve(path__default['default'].dirname(args[0].toString()), str);
+                 if (err)
+                     return cb(err);
+                 if (isEscape(str, args[0])) {
+@@ -196,13 +196,13 @@ const patcher = (fs = fs__default['default'], roots) => {
+     // tslint:disable-next-line:no-any
+     fs.lstatSync = (...args) => {
+         const stats = origLstatSync(...args);
+-        const linkPath = path__default['default'].resolve(args[0]);
++        const linkPath = path__default['default'].resolve(args[0].toString());
+         if (!stats.isSymbolicLink()) {
+             return stats;
+         }
+         let linkTarget;
+         try {
+-            linkTarget = path__default['default'].resolve(path__default['default'].dirname(args[0]), origReadlinkSync(linkPath));
++            linkTarget = path__default['default'].resolve(path__default['default'].dirname(args[0].toString()), origReadlinkSync(linkPath));
+         }
+         catch (e) {
+             if (e.code === 'ENOENT') {
+@@ -228,7 +228,7 @@ const patcher = (fs = fs__default['default'], roots) => {
+     fs.realpathSync = (...args) => {
+         const str = origRealpathSync(...args);
+         if (isEscape(str, args[0])) {
+-            return path__default['default'].resolve(args[0]);
++            return path__default['default'].resolve(args[0].toString());
+         }
+         return str;
+     };
+@@ -236,14 +236,14 @@ const patcher = (fs = fs__default['default'], roots) => {
+     fs.realpathSync.native = (...args) => {
+         const str = origRealpathSyncNative(...args);
+         if (isEscape(str, args[0])) {
+-            return path__default['default'].resolve(args[0]);
++            return path__default['default'].resolve(args[0].toString());
+         }
+         return str;
+     };
+     // tslint:disable-next-line:no-any
+     fs.readlinkSync = (...args) => {
+-        args[0] = path__default['default'].resolve(args[0]);
+-        const str = path__default['default'].resolve(path__default['default'].dirname(args[0]), origReadlinkSync(...args));
++        args[0] = path__default['default'].resolve(args[0].toString());
++        const str = path__default['default'].resolve(path__default['default'].dirname(args[0].toString()), origReadlinkSync(...args));
+         if (isEscape(str, args[0]) || str === args[0]) {
+             const e = new Error('EINVAL: invalid argument, readlink \'' + args[0] + '\'');
+             // tslint:disable-next-line:no-any
+@@ -254,7 +254,7 @@ const patcher = (fs = fs__default['default'], roots) => {
+     };
+     // tslint:disable-next-line:no-any
+     fs.readdir = (...args) => {
+-        const p = path__default['default'].resolve(args[0]);
++        const p = path__default['default'].resolve(args[0].toString());
+         let cb = args[args.length - 1];
+         if (typeof cb !== 'function') {
+             // this will likely throw callback required error.
+@@ -284,7 +284,7 @@ const patcher = (fs = fs__default['default'], roots) => {
+     // tslint:disable-next-line:no-any
+     fs.readdirSync = (...args) => {
+         const res = origReaddirSync(...args);
+-        const p = path__default['default'].resolve(args[0]);
++        const p = path__default['default'].resolve(args[0].toString());
+         // tslint:disable-next-line:no-any
+         res.forEach((v) => {
+             handleDirentSync(p, v);
+@@ -504,6 +504,8 @@ const escapeFunction = (roots) => {
+     // ensure roots are always absolute
+     roots = roots.map(root => path__default['default'].resolve(root));
+     function isEscape(linkTarget, linkPath) {
++      linkTarget = linkTarget.toString();
++      linkPath = linkPath.toString();
+         if (!path__default['default'].isAbsolute(linkPath)) {
+             linkPath = path__default['default'].resolve(linkPath);
+         }
