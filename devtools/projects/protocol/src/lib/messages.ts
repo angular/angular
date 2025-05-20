@@ -338,6 +338,7 @@ export interface SupportedApis {
   profiler: boolean;
   dependencyInjection: boolean;
   routes: boolean;
+  signals: boolean;
 }
 
 export interface Events {

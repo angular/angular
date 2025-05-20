@@ -11,6 +11,7 @@ import {
   ngDebugDependencyInjectionApiIsSupported,
   ngDebugProfilerApiIsSupported,
   ngDebugRoutesApiIsSupported,
+  ngDebugSignalGraphApiIsSupported,
 } from './ng-debug-api';
 
 /**
@@ -22,10 +23,12 @@ export function getSupportedApis(): SupportedApis {
   const profiler = ngDebugProfilerApiIsSupported();
   const dependencyInjection = ngDebugDependencyInjectionApiIsSupported();
   const routes = ngDebugRoutesApiIsSupported();
+  const signals = ngDebugSignalGraphApiIsSupported();
 
   return {
     profiler,
     dependencyInjection,
     routes,
+    signals,
   };
 }
