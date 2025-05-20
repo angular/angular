@@ -1,15 +1,15 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "utils",
     testonly = True,
     srcs = glob(
         ["*.ts"],
     ),
+    interop_deps = [
+        "//packages/compiler",
+    ],
     visibility = [
         "//packages/compiler/test:__subpackages__",
-    ],
-    deps = [
-        "//packages/compiler",
     ],
 )
