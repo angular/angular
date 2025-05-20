@@ -6,20 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  afterNextRender,
-  computed,
-  Directive,
-  ElementRef,
-  inject,
-  input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  output,
-  Renderer2,
-} from '@angular/core';
+import {Directive, ElementRef, inject, input, NgZone, OnDestroy, output} from '@angular/core';
 import {SplitComponent} from '../../vendor/angular-split/public_api';
+import {WINDOW} from '../../application-providers/window_provider';
 
 const RESIZE_DEBOUNCE = 50; // in milliseconds
 
@@ -34,17 +23,25 @@ export type ResponsiveSplitConfig = {
   breakpointDirection: Direction;
 };
 
+interface ResizeObserverClass {
+  new (callback: ResizeObserverCallback): ResizeObserver;
+}
+
+interface ExtendedWindow extends Window {
+  ResizeObserver: ResizeObserverClass;
+}
+
 /** Make as-split direction responsive. */
 @Directive({
   selector: 'as-split[ngResponsiveSplit]',
 })
-export class ResponsiveSplitDirective implements OnInit, OnDestroy {
+export class ResponsiveSplitDirective implements OnDestroy {
   private readonly host = inject(SplitComponent);
   private readonly elementRef = inject(ElementRef);
-  private readonly renderer = inject(Renderer2);
   private readonly zone = inject(NgZone);
+  private readonly window = inject<ExtendedWindow>(WINDOW);
   private resizeTimeout?: ReturnType<typeof setTimeout>;
-  private resizeUnlisten?: () => void;
+  private resizeObserver: ResizeObserver;
 
   protected readonly config = input.required<ResponsiveSplitConfig>({
     alias: 'ngResponsiveSplit',
@@ -53,31 +50,30 @@ export class ResponsiveSplitDirective implements OnInit, OnDestroy {
   protected readonly directionChange = output<Direction>();
 
   constructor() {
-    afterNextRender({
-      write: () => this.applyDirection(),
+    this.resizeObserver = new this.window.ResizeObserver(([entry]) => {
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = setTimeout(() => {
+        // Since used in a ResizeObserver which is not
+        // patched by zone.js, run inside a zone.
+        this.zone.run(() => {
+          if (entry.contentBoxSize) {
+            const [{inlineSize, blockSize}] = entry.contentBoxSize;
+            this.applyDirection(inlineSize, blockSize);
+          }
+        });
+      }, RESIZE_DEBOUNCE);
     });
-  }
 
-  ngOnInit() {
-    this.zone.runOutsideAngular(() => {
-      this.resizeUnlisten = this.renderer.listen('window', 'resize', () => this.onWindowResize());
-    });
+    this.resizeObserver.observe(this.elementRef.nativeElement);
   }
 
   ngOnDestroy() {
-    this.resizeUnlisten?.();
+    clearTimeout(this.resizeTimeout);
+    this.resizeObserver?.unobserve(this.elementRef.nativeElement);
   }
 
-  protected onWindowResize() {
-    if (this.resizeTimeout) {
-      clearTimeout(this.resizeTimeout);
-    }
-    this.resizeTimeout = setTimeout(() => this.applyDirection(), RESIZE_DEBOUNCE);
-  }
-
-  private applyDirection() {
-    const {clientWidth, clientHeight} = this.elementRef.nativeElement;
-    const ratio = clientWidth / clientHeight;
+  private applyDirection(width: number, height: number) {
+    const ratio = width / height;
     const {defaultDirection, breakpointDirection, aspectRatioBreakpoint} = this.config();
     let newDir: Direction = defaultDirection;
 
