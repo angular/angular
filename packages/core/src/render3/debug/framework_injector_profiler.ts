@@ -82,7 +82,7 @@ class DIDebugData {
   }
 }
 
-let frameworkDIDebugData = new DIDebugData();
+let frameworkDIDebugData = /* @__PURE__ */ new DIDebugData();
 
 export function getFrameworkDIDebugData(): DIDebugData {
   return frameworkDIDebugData;
