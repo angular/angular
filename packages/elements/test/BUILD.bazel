@@ -11,8 +11,6 @@ ts_library(
         "//packages/core/testing",
         "//packages/elements",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
-        "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/testing",
         "@npm//rxjs",
     ],

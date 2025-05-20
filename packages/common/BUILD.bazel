@@ -104,7 +104,6 @@ generate_api_docs(
         ":files_for_docgen",
         "//packages:common_files_and_deps_for_docs",
         "//packages/platform-browser:files_for_docgen",
-        "//packages/platform-browser-dynamic:files_for_docgen",
     ],
     entry_point = ":index.ts",
     module_name = "@angular/common",
