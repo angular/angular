@@ -7556,7 +7556,7 @@ d3@^7.0.0, d3@^7.9.0:
     d3-transition "3"
     d3-zoom "3"
 
-dagre-d3-es@7.0.11:
+dagre-d3-es@7.0.11, dagre-d3-es@^7.0.11:
   version "7.0.11"
   resolved "https://registry.yarnpkg.com/dagre-d3-es/-/dagre-d3-es-7.0.11.tgz#2237e726c0577bfe67d1a7cfd2265b9ab2c15c40"
   integrity sha512-tvlJLyQf834SylNKax8Wkzco/1ias1OPw8DcUMDE7oUIoSEW25riQVuiu/0OWEFqT0cxHT3Pa9/D82Jr47IONw==
@@ -7952,8 +7952,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b":
-  version "2.1.6+git"
-  uid "93e720f143d0296dd2726ffbcf4fc12283363a7b"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b"
 
 dompurify@^3.2.4:

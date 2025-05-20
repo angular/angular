@@ -110,6 +110,7 @@
     "chokidar": "^4.0.0",
     "convert-source-map": "^1.5.1",
     "d3": "^7.0.0",
+    "dagre-d3-es": "^7.0.11",
     "diff": "^8.0.0",
     "domino": "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b",
     "hammerjs": "~2.0.8",

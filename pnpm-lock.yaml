@@ -197,6 +197,9 @@ importers:
       d3:
         specifier: ^7.0.0
         version: 7.9.0
+      dagre-d3-es:
+        specifier: ^7.0.11
+        version: 7.0.11
       diff:
         specifier: ^8.0.0
         version: 8.0.1
@@ -8910,7 +8913,6 @@ packages:
     dependencies:
       d3: 7.9.0
       lodash-es: 4.17.21
-    dev: true
 
   /dashdash@1.14.1:
     resolution: {integrity: sha512-jRFi8UDGo6j+odZiEpjazZaWqEal3w/basFjQHQEwVtZJGDpxbH1MeYluwCS8Xq5wmLJooDlMgvVarmWfGM44g==, tarball: https://registry.npmjs.org/dashdash/-/dashdash-1.14.1.tgz}
@@ -12974,7 +12976,6 @@ packages:
 
   /lodash-es@4.17.21:
     resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==, tarball: https://registry.npmjs.org/lodash-es/-/lodash-es-4.17.21.tgz}
-    dev: true
 
   /lodash._objecttypes@2.4.1:
     resolution: {integrity: sha512-XpqGh1e7hhkOzftBfWE7zt+Yn9mVHFkDhicVttvKLsoCMLVVL+xTQjfjB4X4vtznauxv0QZ5ZAeqjvat0dh62Q==, tarball: https://registry.npmjs.org/lodash._objecttypes/-/lodash._objecttypes-2.4.1.tgz}
