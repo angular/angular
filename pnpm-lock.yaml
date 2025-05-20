@@ -460,8 +460,8 @@ importers:
         specifier: 0.5.5
         version: 0.5.5
       conventional-changelog:
-        specifier: ^6.0.0
-        version: 6.0.0
+        specifier: ^7.0.0
+        version: 7.0.1
       emoji-regex:
         specifier: ^10.3.0
         version: 10.4.0
@@ -2680,6 +2680,7 @@ packages:
 
   /@bazel/typescript@5.8.1(typescript@5.7.3):
     resolution: {integrity: sha512-NAJ8WQHZL1WE1YmRoCrq/1hhG15Mvy/viWh6TkvFnBeEhNUiQUsA5GYyhU1ztnBIYW03nATO3vwhAEfO7Q0U5g==, tarball: https://registry.npmjs.org/@bazel/typescript/-/typescript-5.8.1.tgz}
+    deprecated: No longer maintained, https://github.com/aspect-build/rules_ts is the recommended replacement
     hasBin: true
     peerDependencies:
       typescript: '>=3.0.0'
@@ -2869,6 +2870,22 @@ packages:
         optional: true
     dependencies:
       '@types/semver': 7.7.0
+      conventional-commits-parser: 6.1.0
+      semver: 7.7.2
+    dev: true
+
+  /@conventional-changelog/git-client@2.2.0(conventional-commits-parser@6.1.0):
+    resolution: {integrity: sha512-pi7zipe40jaf0GBmC0COO7jh1m1U2ZZ0LRbt19ydVleZ5pfwy3yGb+Tl40irqJz69+UqmE9+ZjaJc7j46Jhqng==, tarball: https://registry.npmjs.org/@conventional-changelog/git-client/-/git-client-2.2.0.tgz}
+    engines: {node: '>=18'}
+    peerDependencies:
+      conventional-commits-filter: ^5.0.0
+      conventional-commits-parser: ^6.1.0
+    peerDependenciesMeta:
+      conventional-commits-filter:
+        optional: true
+      conventional-commits-parser:
+        optional: true
+    dependencies:
       conventional-commits-parser: 6.1.0
       semver: 7.7.2
     dev: true
@@ -8285,7 +8302,7 @@ packages:
     dependencies:
       '@hutson/parse-repository-url': 5.0.0
       add-stream: 1.0.0
-      conventional-changelog-writer: 8.0.1
+      conventional-changelog-writer: 8.1.0
       conventional-commits-parser: 6.1.0
       git-raw-commits: 5.0.0(conventional-commits-parser@6.1.0)
       git-semver-tags: 8.0.0(conventional-commits-parser@6.1.0)
@@ -8329,8 +8346,8 @@ packages:
     engines: {node: '>=18'}
     dev: true
 
-  /conventional-changelog-writer@8.0.1:
-    resolution: {integrity: sha512-hlqcy3xHred2gyYg/zXSMXraY2mjAYYo0msUCpK+BGyaVJMFCKWVXPIHiaacGO2GGp13kvHWXFhYmxT4QQqW3Q==, tarball: https://registry.npmjs.org/conventional-changelog-writer/-/conventional-changelog-writer-8.0.1.tgz}
+  /conventional-changelog-writer@8.1.0:
+    resolution: {integrity: sha512-dpC440QnORNCO81XYuRRFOLCsjKj4W7tMkUIn3lR6F/FAaJcWLi7iCj6IcEvSQY2zw6VUgwUKd5DEHKEWrpmEQ==, tarball: https://registry.npmjs.org/conventional-changelog-writer/-/conventional-changelog-writer-8.1.0.tgz}
     engines: {node: '>=18'}
     hasBin: true
     dependencies:
@@ -8355,6 +8372,23 @@ packages:
       conventional-changelog-jquery: 6.0.0
       conventional-changelog-jshint: 5.0.0
       conventional-changelog-preset-loader: 5.0.0
+    transitivePeerDependencies:
+      - conventional-commits-filter
+    dev: true
+
+  /conventional-changelog@7.0.1:
+    resolution: {integrity: sha512-o+htNF/eQte/I3ykDGiZ6+WgmNLlyMYpL3kSU7Gw9WEfSc2KH8dE7Ywqad9umZ2FDX4R1VU/y3Mw7IcsQ+cjkA==, tarball: https://registry.npmjs.org/conventional-changelog/-/conventional-changelog-7.0.1.tgz}
+    engines: {node: '>=18'}
+    hasBin: true
+    dependencies:
+      '@conventional-changelog/git-client': 2.2.0(conventional-commits-parser@6.1.0)
+      '@types/normalize-package-data': 2.4.4
+      conventional-changelog-preset-loader: 5.0.0
+      conventional-changelog-writer: 8.1.0
+      conventional-commits-parser: 6.1.0
+      fd-package-json: 1.2.0
+      meow: 13.2.0
+      normalize-package-data: 7.0.0
     transitivePeerDependencies:
       - conventional-commits-filter
     dev: true
@@ -10069,6 +10103,12 @@ packages:
     dependencies:
       websocket-driver: 0.7.4
 
+  /fd-package-json@1.2.0:
+    resolution: {integrity: sha512-45LSPmWf+gC5tdCQMNH4s9Sr00bIkiD9aN7dc5hqkrEw1geRYyDQS1v1oMHAW3ysfxfndqGsrDREHHjNNbKUfA==, tarball: https://registry.npmjs.org/fd-package-json/-/fd-package-json-1.2.0.tgz}
+    dependencies:
+      walk-up-path: 3.0.1
+    dev: true
+
   /fd-slicer2@1.2.0:
     resolution: {integrity: sha512-3lBUNUckhMZduCc4g+Pw4Ve16LD9vpX9b8qUkkKq2mgDRLYWzblszZH2luADnJqjJe+cypngjCuKRm/IW12rRw==, tarball: https://registry.npmjs.org/fd-slicer2/-/fd-slicer2-1.2.0.tgz}
     dependencies:
@@ -11238,7 +11278,6 @@ packages:
     engines: {node: ^18.17.0 || >=20.5.0}
     dependencies:
       lru-cache: 10.4.3
-    dev: false
 
   /hpack.js@2.1.6:
     resolution: {integrity: sha512-zJxVehUdMGIKsRaNt7apO2Gqp0BdqW5yaiGHXXmbpvxgBYVZnAql+BJb4RO5ad2MgpbZKn5G6nMnegrH1FcNYQ==, tarball: https://registry.npmjs.org/hpack.js/-/hpack.js-2.1.6.tgz}
@@ -13839,6 +13878,15 @@ packages:
     engines: {node: ^16.14.0 || >=18.0.0}
     dependencies:
       hosted-git-info: 7.0.2
+      semver: 7.7.2
+      validate-npm-package-license: 3.0.4
+    dev: true
+
+  /normalize-package-data@7.0.0:
+    resolution: {integrity: sha512-k6U0gKRIuNCTkwHGZqblCfLfBRh+w1vI6tBo+IeJwq2M8FUiOqhX7GH+GArQGScA7azd1WfyRCvxoXDO3hQDIA==, tarball: https://registry.npmjs.org/normalize-package-data/-/normalize-package-data-7.0.0.tgz}
+    engines: {node: ^18.17.0 || >=20.5.0}
+    dependencies:
+      hosted-git-info: 8.1.0
       semver: 7.7.2
       validate-npm-package-license: 3.0.4
     dev: true
@@ -18366,6 +18414,10 @@ packages:
     engines: {node: '>=18'}
     dependencies:
       xml-name-validator: 5.0.0
+    dev: true
+
+  /walk-up-path@3.0.1:
+    resolution: {integrity: sha512-9YlCL/ynK3CTlrSRrDxZvUauLzAswPCrsaCgilqFevUYpeEW0/3ScEjaa3kbW/T0ghhkEr7mv+fpjqn1Y1YuTA==, tarball: https://registry.npmjs.org/walk-up-path/-/walk-up-path-3.0.1.tgz}
     dev: true
 
   /watchpack@2.4.2:
