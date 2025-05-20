@@ -50,7 +50,7 @@ jobs:
           body: |
             Updated Angular CDK api files.
           labels: |
-            action: review
+            action: merge
             area: docs
           commit-message: |
             docs: update Angular CDK apis
@@ -79,7 +79,7 @@ jobs:
           body: |
             Updated Angular CLI help contents.
           labels: |
-            action: review
+            action: merge
             area: docs
           commit-message: |
             docs: update Angular CLI help
