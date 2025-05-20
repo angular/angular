@@ -48,9 +48,9 @@ ng_package(
 # Long-term, `pkg_npm` will be migrated to `npm_package` in general.
 npm_package(
     name = "pkg",
-    srcs = [":npm_package"],
+    srcs = [":npm_package_nosub"],
     replace_prefixes = {
-        "npm_package/": "",
+        "npm_package_nosub/": "",
     },
 )
 
