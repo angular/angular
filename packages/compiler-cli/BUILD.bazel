@@ -129,7 +129,6 @@ pkg_npm(
     ],
     visibility = [
         "//adev:__pkg__",
-        "//adev/shared-docs/pipeline/api-gen:__subpackages__",
         "//integration:__subpackages__",
         "//modules/benchmarks:__subpackages__",
         "//modules/playground:__subpackages__",
