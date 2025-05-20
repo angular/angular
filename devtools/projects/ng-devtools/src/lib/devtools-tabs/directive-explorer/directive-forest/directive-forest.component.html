@@ -1,81 +1,21 @@
 <ng-filter
-  [hasMatched]="hasMatched"
   (filter)="handleFilter($event)"
-  (nextMatched)="nextMatched()"
-  (prevMatched)="prevMatched()"
->
-</ng-filter>
+  (nextMatched)="navigateMatchedNode('next')"
+  (prevMatched)="navigateMatchedNode('prev')"
+  [matchesCount]="matchesCount()"
+  [currentMatch]="currentlyMatchedIndex() + 1"
+/>
 <cdk-virtual-scroll-viewport class="tree-wrapper" [itemSize]="itemHeight">
-  <ng-container *cdkVirtualFor="let node of dataSource; let idx = index">
-    <div
-      [class]="{
-        matched: isMatched(node),
-        selected: isSelected(node),
-        highlighted: isHighlighted(node),
-        'new-node': node.newItem
-      }"
-      class="tree-node"
-      (click)="selectAndEnsureVisible(node)"
-      (dblclick)="handleSelectDomElement(node)"
-      (mouseenter)="highlightNode(node.position)"
-      (mouseleave)="removeHighlight()"
-      [style.padding-left]="15 + 15 * node.level + 'px'"
-    >
-      <div class="tree-node-info">
-        @if (node.expandable) {
-          <!-- We stop propagration on dblClick to prevent to show the element panel -->
-          <button
-            [style.left]="15 * node.level + 'px'"
-            (click)="treeControl.toggle(node)"
-            (dblclick)="stopPropagation($event)"
-            [attr.aria-label]="'toggle ' + node.name"
-          >
-            <mat-icon class="mat-icon-rtl-mirror">
-              {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
-            </mat-icon>
-          </button>
-        }
-        <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
-
-        @if (node.directives) {
-          <span class="dir-names">[{{ node.directives }}]</span>
-        }
-        @if (isSelected(node)) {
-          <span class="console-reference"> == $ng0 </span>
-        }
-
-        @switch (node.hydration?.status) {
-          @case ('hydrated') {
-            <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
-          }
-          @case ('skipped') {
-            <mat-icon matTooltip="Hydration skipped" class="hydration skipped"
-              >invert_colors_off</mat-icon
-            >
-          }
-          @case ('mismatched') {
-            <mat-icon matTooltip="Hydration mismatch" class="hydration mismatched"
-              >error_outline</mat-icon
-            >
-          }
-        }
-      </div>
-      @if (
-        treeControl.isExpanded(node) &&
-        node.hydration?.status === 'mismatched' &&
-        (node.hydration.expectedNodeDetails || node.hydration.actualNodeDetails)
-      ) {
-        <div class="hydration-error">
-          @if (node.hydration.expectedNodeDetails) {
-            <div>Expected Dom:</div>
-            <pre>{{node.hydration.expectedNodeDetails}}</pre>
-          }
-          @if (node.hydration.actualNodeDetails) {
-            <div>Actual Dom:</div>
-            <pre>{{node.hydration.actualNodeDetails}}</pre>
-          }
-        </div>
-      }
-    </div>
-  </ng-container>
+  <ng-tree-node
+    *cdkVirtualFor="let node of dataSource; let idx = index"
+    [node]="node"
+    [selectedNode]="selectedNode()"
+    [highlightedId]="highlightIdInTreeFromElement()"
+    [treeControl]="treeControl"
+    [textMatch]="matchedNodes().get(idx)"
+    (selectNode)="selectAndEnsureVisible($event)"
+    (selectDomElement)="handleSelectDomElement($event)"
+    (highlightNode)="highlightNode($event)"
+    (removeHighlight)="removeHighlight()"
+  />
 </cdk-virtual-scroll-viewport>

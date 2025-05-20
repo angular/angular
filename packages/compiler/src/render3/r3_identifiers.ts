@@ -283,6 +283,11 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static conditionalCreate: o.ExternalReference = {name: 'ɵɵconditionalCreate', moduleName: CORE};
+  static conditionalBranchCreate: o.ExternalReference = {
+    name: 'ɵɵconditionalBranchCreate',
+    moduleName: CORE,
+  };
   static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
   static repeater: o.ExternalReference = {name: 'ɵɵrepeater', moduleName: CORE};
   static repeaterCreate: o.ExternalReference = {name: 'ɵɵrepeaterCreate', moduleName: CORE};
@@ -334,7 +339,7 @@ export class Identifiers {
   static pipeBind4: o.ExternalReference = {name: 'ɵɵpipeBind4', moduleName: CORE};
   static pipeBindV: o.ExternalReference = {name: 'ɵɵpipeBindV', moduleName: CORE};
 
-  static hostProperty: o.ExternalReference = {name: 'ɵɵhostProperty', moduleName: CORE};
+  static domProperty: o.ExternalReference = {name: 'ɵɵdomProperty', moduleName: CORE};
 
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
 
@@ -548,11 +553,6 @@ export class Identifiers {
 
   static HostDirectivesFeature: o.ExternalReference = {
     name: 'ɵɵHostDirectivesFeature',
-    moduleName: CORE,
-  };
-
-  static InputTransformsFeatureFeature: o.ExternalReference = {
-    name: 'ɵɵInputTransformsFeature',
     moduleName: CORE,
   };
 

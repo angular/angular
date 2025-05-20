@@ -13,7 +13,7 @@ import {AbsoluteFsPath} from '../../file_system';
 /**
  * A `Symbol` which is used to patch extension data onto `ts.SourceFile`s.
  */
-export const NgExtension = Symbol('NgExtension');
+export const NgExtension: unique symbol = Symbol('NgExtension');
 
 /**
  * Contents of the `NgExtension` property of a `ts.SourceFile`.

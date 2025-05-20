@@ -10,5 +10,5 @@ import {DocContent} from './doc-content';
 
 /** The service responsible for fetching static content for docs pages */
 export interface DocsContentLoader {
-  getContent(path: string): Promise<DocContent | undefined>;
+  getContent(path: string): Promise<DocContent>;
 }

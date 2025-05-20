@@ -12,7 +12,7 @@ import {
   isInputContainerNode,
   MigrationConfig,
 } from '@angular/core/schematics/migrations/signal-migration/src';
-import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '@angular/language-service/api';
+import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 import ts from 'typescript';
 import {isTypeScriptFile} from '../../utils';
 import {findTightestNode, getParentClassDeclaration} from '../../utils/ts_utils';

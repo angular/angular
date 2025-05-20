@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PLATFORM_ID} from '@angular/core';
+import {Injector, PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   NgswCommChannel,
@@ -14,17 +14,17 @@ import {
   VersionDetectedEvent,
   VersionEvent,
   VersionReadyEvent,
-} from '@angular/service-worker/src/low_level';
-import {ngswCommChannelFactory, SwRegistrationOptions} from '@angular/service-worker/src/provider';
-import {SwPush} from '@angular/service-worker/src/push';
-import {SwUpdate} from '@angular/service-worker/src/update';
+} from '../src/low_level';
+import {ngswCommChannelFactory, SwRegistrationOptions} from '../src/provider';
+import {SwPush} from '../src/push';
+import {SwUpdate} from '../src/update';
 import {
   MockPushManager,
   MockPushSubscription,
   MockServiceWorkerContainer,
   MockServiceWorkerRegistration,
   patchDecodeBase64,
-} from '@angular/service-worker/testing/mock';
+} from '../testing/mock';
 import {filter} from 'rxjs/operators';
 
 describe('ServiceWorker library', () => {
@@ -62,21 +62,32 @@ describe('ServiceWorker library', () => {
   });
 
   describe('ngswCommChannelFactory', () => {
-    it('gives disabled NgswCommChannel for platform-server', () => {
-      TestBed.configureTestingModule({
-        providers: [
-          {provide: PLATFORM_ID, useValue: 'server'},
-          {provide: SwRegistrationOptions, useValue: {enabled: true}},
-          {
-            provide: NgswCommChannel,
-            useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
-          },
-        ],
+    describe('server', () => {
+      beforeEach(() => {
+        globalThis['ngServerMode'] = true;
       });
 
-      expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
+      afterEach(() => {
+        globalThis['ngServerMode'] = undefined;
+      });
+
+      it('gives disabled NgswCommChannel for platform-server', () => {
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: PLATFORM_ID, useValue: 'server'},
+            {provide: SwRegistrationOptions, useValue: {enabled: true}},
+            {
+              provide: NgswCommChannel,
+              useFactory: ngswCommChannelFactory,
+              deps: [SwRegistrationOptions, Injector],
+            },
+          ],
+        });
+
+        expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
+      });
     });
+
     it("gives disabled NgswCommChannel when 'enabled' option is false", () => {
       TestBed.configureTestingModule({
         providers: [
@@ -85,7 +96,7 @@ describe('ServiceWorker library', () => {
           {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
+            deps: [SwRegistrationOptions, Injector],
           },
         ],
       });
@@ -100,7 +111,7 @@ describe('ServiceWorker library', () => {
           {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
+            deps: [SwRegistrationOptions, Injector],
           },
         ],
       });
@@ -129,7 +140,7 @@ describe('ServiceWorker library', () => {
           {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID],
+            deps: [SwRegistrationOptions, Injector],
           },
         ],
       });
@@ -226,7 +237,7 @@ describe('ServiceWorker library', () => {
           await push.unsubscribe();
           throw new Error('`unsubscribe()` should fail');
         } catch (err) {
-          expect((err as Error).message).toBe('Not subscribed to push notifications.');
+          expect((err as Error).message).toContain('Not subscribed to push notifications.');
         }
       });
 
@@ -259,7 +270,7 @@ describe('ServiceWorker library', () => {
           await push.unsubscribe();
           throw new Error('`unsubscribe()` should fail');
         } catch (err) {
-          expect((err as Error).message).toBe('Unsubscribe failed!');
+          expect((err as Error).message).toContain('Unsubscribe failed!');
         }
       });
 

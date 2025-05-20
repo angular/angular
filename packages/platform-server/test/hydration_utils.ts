@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -42,7 +42,7 @@ export const EMPTY_TEXT_NODE_COMMENT = 'ngetn';
 export const TEXT_NODE_SEPARATOR_COMMENT = 'ngtns';
 
 export const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
-export const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
+export const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE: string = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
 
 export const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 
@@ -253,19 +253,27 @@ export async function ssr(
     enableHydration?: boolean;
   } = {},
 ): Promise<string> {
-  const defaultHtml = DEFAULT_DOCUMENT;
-  const {enableHydration = true, envProviders = [], hydrationFeatures = () => []} = options;
-  const providers = [
-    ...envProviders,
-    provideServerRendering(),
-    enableHydration ? provideClientHydration(...hydrationFeatures()) : [],
-  ];
+  try {
+    // Enter server mode for the duration of this function.
+    globalThis['ngServerMode'] = true;
 
-  const bootstrap = () => bootstrapApplication(component, {providers});
+    const defaultHtml = DEFAULT_DOCUMENT;
+    const {enableHydration = true, envProviders = [], hydrationFeatures = () => []} = options;
+    const providers = [
+      ...envProviders,
+      provideServerRendering(),
+      enableHydration ? provideClientHydration(...hydrationFeatures()) : [],
+    ];
 
-  return renderApplication(bootstrap, {
-    document: options?.doc ?? defaultHtml,
-  });
+    const bootstrap = () => bootstrapApplication(component, {providers});
+
+    return await renderApplication(bootstrap, {
+      document: options?.doc ?? defaultHtml,
+    });
+  } finally {
+    // Leave server mode so the remaining test is back in "client mode".
+    globalThis['ngServerMode'] = undefined;
+  }
 }
 
 /**
@@ -285,4 +293,18 @@ export function verifyEmptyConsole(appRef: ApplicationRef) {
 export function clearConsole(appRef: ApplicationRef) {
   const console = appRef.injector.get(Console) as DebugConsole;
   console.logs = [];
+}
+
+// Clears all the counts in ngDevMode
+export function resetNgDevModeCounters() {
+  if (typeof ngDevMode === 'object') {
+    // Reset all ngDevMode counters.
+    for (const metric of Object.keys(ngDevMode!)) {
+      const currentValue = (ngDevMode as unknown as {[key: string]: number | boolean})[metric];
+      if (typeof currentValue === 'number') {
+        // Rest only numeric values, which represent counters.
+        (ngDevMode as unknown as {[key: string]: number | boolean})[metric] = 0;
+      }
+    }
+  }
 }

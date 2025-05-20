@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {DefaultUrlSerializer, Event, NavigationEnd, NavigationStart} from '@angular/router';
+import {TestBed, tick} from '@angular/core/testing';
+import {DefaultUrlSerializer, Event, NavigationEnd, NavigationStart} from '../index';
 import {Subject} from 'rxjs';
 import {filter, switchMap, take} from 'rxjs/operators';
 
 import {Scroll} from '../src/events';
 import {RouterScroller} from '../src/router_scroller';
 import {ApplicationRef, ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {timeout} from './helpers';
 
 // TODO: add tests that exercise the `withInMemoryScrolling` feature of the provideRouter function
 describe('RouterScroller', () => {
@@ -150,7 +151,7 @@ describe('RouterScroller', () => {
   });
 
   describe('extending a scroll service', () => {
-    it('work', fakeAsync(() => {
+    it('work', async () => {
       const {events, viewportScroller} = createRouterScroller({
         scrollPositionRestoration: 'disabled',
         anchorScrolling: 'disabled',
@@ -165,7 +166,7 @@ describe('RouterScroller', () => {
             setTimeout(() => {
               r.next(p);
               r.complete();
-            }, 1000);
+            }, 10);
             return r;
           }),
         )
@@ -175,31 +176,31 @@ describe('RouterScroller', () => {
 
       events.next(new NavigationStart(1, '/a'));
       events.next(new NavigationEnd(1, '/a', '/a'));
-      tick();
+      await timeout();
       setScroll(viewportScroller, 10, 100);
 
       events.next(new NavigationStart(2, '/b'));
       events.next(new NavigationEnd(2, '/b', '/b'));
-      tick();
+      await timeout();
       setScroll(viewportScroller, 20, 200);
 
       events.next(new NavigationStart(3, '/c'));
       events.next(new NavigationEnd(3, '/c', '/c'));
-      tick();
+      await timeout();
       setScroll(viewportScroller, 30, 300);
 
       events.next(new NavigationStart(4, '/a', 'popstate', {navigationId: 1}));
       events.next(new NavigationEnd(4, '/a', '/a'));
 
-      tick(500);
+      await timeout(5);
       expect(viewportScroller.scrollToPosition).not.toHaveBeenCalled();
 
       events.next(new NavigationStart(5, '/a', 'popstate', {navigationId: 1}));
       events.next(new NavigationEnd(5, '/a', '/a'));
 
-      tick(5000);
+      await timeout(50);
       expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([10, 100]);
-    }));
+    });
   });
 
   function createRouterScroller({

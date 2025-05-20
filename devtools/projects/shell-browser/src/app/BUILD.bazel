@@ -1,7 +1,7 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_module.bzl", "ng_module")
-load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
 load("//tools:defaults.bzl", "esbuild")
 
 package(default_visibility = ["//visibility:public"])
@@ -11,7 +11,7 @@ sass_binary(
     src = "app.component.scss",
 )
 
-ng_module(
+ng_project(
     name = "app",
     srcs = [
         "app.component.ts",
@@ -21,130 +21,145 @@ ng_module(
         "app.component.html",
         ":app_component_styles",
     ],
-    deps = [
-        ":chrome_application_environment",
-        ":chrome_application_operations",
-        ":zone_aware_chrome_message_bus",
-        "//devtools/projects/ng-devtools",
-        "//devtools/projects/ng-devtools-backend",
-        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/protocol",
-        "//devtools/projects/shell-browser/src/app:backend",
-        "//devtools/projects/shell-browser/src/app:background",
+    interop_deps = [
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
-        "@npm//@angular/material",
-        "@npm//rxjs",
+    ],
+    deps = [
+        ":chrome_application_environment_rjs",
+        ":chrome_application_operations_rjs",
+        ":zone_aware_chrome_message_bus_rjs",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@types/chrome",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
+        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/shell-browser/src/app:backend_rjs",
+        "//devtools/projects/shell-browser/src/app:background_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "ng_validate",
     srcs = [
         "ng-validate.ts",
     ],
     deps = [
-        "@npm//@types/chrome",
+        "//:node_modules/@types/chrome",
     ],
 )
 
-ts_library(
+ts_project(
     name = "chrome_window_extensions",
     srcs = [
         "chrome-window-extensions.ts",
     ],
+    interop_deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+    ],
     deps = [
-        "//devtools/projects/ng-devtools-backend",
-        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
-        "//devtools/projects/protocol",
-        "@npm//@types",
+        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "chrome_application_environment",
     srcs = [
         "chrome-application-environment.ts",
     ],
+    interop_deps = [
+        "//devtools/projects/ng-devtools:ng-devtools",
+    ],
     deps = [
-        "//devtools/projects/ng-devtools",
-        "//devtools/projects/shell-browser/src/environments:environment",
-        "@npm//@types",
+        "//devtools/projects/shell-browser/src/environments:environment_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "chrome_application_operations",
     srcs = [
         "chrome-application-operations.ts",
     ],
-    deps = [
-        ":chrome_application_environment",
-        "//devtools/projects/ng-devtools",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
+        "//devtools/projects/ng-devtools:ng-devtools",
+    ],
+    deps = [
+        ":chrome_application_environment_rjs",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "same_page_message_bus",
     srcs = [
         "same-page-message-bus.ts",
     ],
-    deps = [
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
+    ],
+    deps = [
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "zone_aware_chrome_message_bus",
     srcs = [
         "zone-aware-chrome-message-bus.ts",
     ],
-    deps = [
-        ":chrome_message_bus",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
+    ],
+    deps = [
+        ":chrome_message_bus_rjs",
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "chrome_message_bus",
     srcs = [
         "chrome-message-bus.ts",
     ],
-    deps = [
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
+    ],
+    deps = [
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "background",
     srcs = [
         "background.ts",
     ],
     deps = [
-        ":tab_manager",
-        "//devtools/projects/protocol",
-        "//devtools/projects/shell-browser/src/app:detect_angular_for_extension_icon",
+        ":detect_angular_for_extension_icon_rjs",
+        ":tab_manager_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "tab_manager",
     srcs = [
         "tab_manager.ts",
     ],
     deps = [
-        "//devtools/projects/protocol",
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
@@ -161,47 +176,45 @@ ts_test_library(
         "tab_manager_spec.ts",
     ],
     deps = [
-        ":tab_manager",
+        ":tab_manager_rjs",
+        "//:node_modules/@types/chrome",
     ],
 )
 
-ts_library(
+ts_project(
     name = "backend",
     srcs = [
         "backend.ts",
     ],
     deps = [
-        ":same_page_message_bus",
-        "//devtools/projects/ng-devtools-backend",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/shell-browser/src/app:chrome_window_extensions",
-        "@npm//@types",
+        ":chrome_window_extensions_rjs",
+        ":same_page_message_bus_rjs",
+        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "content_script",
     srcs = [
         "content-script.ts",
     ],
     deps = [
-        ":chrome_message_bus",
-        ":same_page_message_bus",
-        "//devtools/projects/protocol",
-        "@npm//@types",
+        ":chrome_message_bus_rjs",
+        ":same_page_message_bus_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "detect_angular_for_extension_icon",
     srcs = [
         "detect-angular-for-extension-icon.ts",
     ],
     deps = [
-        ":same_page_message_bus",
-        "//devtools/projects/protocol",
-        "//devtools/projects/shared-utils",
-        "@npm//@types",
+        ":same_page_message_bus_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/shared-utils:shared-utils_rjs",
     ],
 )
 

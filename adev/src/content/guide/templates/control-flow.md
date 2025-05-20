@@ -2,7 +2,7 @@
 
 Angular templates support control flow blocks that let you conditionally show, hide, and repeat elements.
 
-Note: This was previously accomplished with the *ngIf, *ngFor, and \*ngSwitch directives.
+NOTE: This was previously accomplished with the *ngIf, *ngFor, and \*ngSwitch directives.
 
 ## Conditionally display content with `@if`, `@else-if` and `@else`
 
@@ -49,6 +49,8 @@ A typical `@for` loop looks like:
   {{ item.name }}
 }
 ```
+
+Angular's `@for` block does not support flow-modifying statements like JavaScript's `continue` or `break`.
 
 ### Why is `track` in `@for` blocks important?
 

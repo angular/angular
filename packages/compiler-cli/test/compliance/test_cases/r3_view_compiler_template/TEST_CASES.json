@@ -10,7 +10,7 @@
         {
           "files": [
             {
-              "expected": "nested_template_context.pipeline.js",
+              "expected": "nested_template_context.js",
               "generated": "nested_template_context.js"
             }
           ],
@@ -78,7 +78,7 @@
         {
           "files": [
             {
-              "expected": "ng_for_parent_context_variables.pipeline.js",
+              "expected": "ng_for_parent_context_variables.js",
               "generated": "ng_for_parent_context_variables.js"
             }
           ],

@@ -1,6 +1,6 @@
 # Custom events with outputs
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular components can define custom events by assigning a property to the `output` function:
 
@@ -110,7 +110,7 @@ See [RxJS interop with component and directive outputs](ecosystem/rxjs-interop/o
 
 ## Declaring outputs with the `@Output` decorator
 
-Tip: While the Angular team recommends using the `output` function for new projects, the
+TIP: While the Angular team recommends using the `output` function for new projects, the
 original decorator-based `@Output` API remains fully supported.
 
 You can alternatively define custom events by assigning a property to a new `EventEmitter` and adding the `@Output` decorator:

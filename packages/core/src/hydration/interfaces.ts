@@ -19,11 +19,15 @@ export const REFERENCE_NODE_BODY = 'b';
 /**
  * Describes navigation steps that the runtime logic need to perform,
  * starting from a given (known) element.
+ * We're not using enum `NodeNavigationStep` because it produces more code overhead;
+ * thus, using plain `const` eliminates extra bytes. We can't use `const enum` due
+ * to single-file compilation restrictions.
  */
-export enum NodeNavigationStep {
-  FirstChild = 'f',
-  NextSibling = 'n',
-}
+
+export type NodeNavigationStep = 'f' | 'n';
+
+export const NODE_NAVIGATION_STEP_FIRST_CHILD = 'f';
+export const NODE_NAVIGATION_STEP_NEXT_SIBLING = 'n';
 
 /**
  * Keys within serialized view data structure to represent various
@@ -158,7 +162,7 @@ export interface SerializedDeferBlock {
   /**
    * This contains the unique id of this defer block's parent, if it exists.
    */
-  [DEFER_PARENT_BLOCK_ID]: string | null;
+  [DEFER_PARENT_BLOCK_ID]?: string;
 
   /**
    * This field represents a status, based on the `DeferBlockState` enum.
@@ -177,7 +181,7 @@ export interface SerializedDeferBlock {
    * The list of triggers that exist for incremental hydration, based on the
    * `Trigger` enum.
    */
-  [DEFER_HYDRATE_TRIGGERS]: (DeferBlockTrigger | SerializedTriggerDetails)[] | null;
+  [DEFER_HYDRATE_TRIGGERS]?: (DeferBlockTrigger | SerializedTriggerDetails)[];
 }
 
 export interface SerializedTriggerDetails {

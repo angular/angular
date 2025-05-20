@@ -9,6 +9,7 @@
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {ParseTreeResult, TreeError} from '../../src/ml_parser/parser';
+import {TokenizeOptions} from '../../src/ml_parser/lexer';
 import {TokenType} from '../../src/ml_parser/tokens';
 import {ParseError} from '../../src/parse_util';
 
@@ -199,13 +200,13 @@ describe('HtmlParser', () => {
 
       it('should support self closing void elements', () => {
         expect(humanizeDom(parser.parse('<input />', 'TestComp'))).toEqual([
-          [html.Element, 'input', 0],
+          [html.Element, 'input', 0, '#selfClosing'],
         ]);
       });
 
       it('should support self closing foreign elements', () => {
         expect(humanizeDom(parser.parse('<math />', 'TestComp'))).toEqual([
-          [html.Element, ':math:math', 0],
+          [html.Element, ':math:math', 0, '#selfClosing'],
         ]);
       });
 
@@ -409,7 +410,7 @@ describe('HtmlParser', () => {
 
       it('should support namespace', () => {
         expect(humanizeDom(parser.parse('<svg:use xlink:href="Port" />', 'TestComp'))).toEqual([
-          [html.Element, ':svg:use', 0],
+          [html.Element, ':svg:use', 0, '#selfClosing'],
           [html.Attribute, ':xlink:href', 'Port', ['Port']],
         ]);
       });
@@ -809,7 +810,7 @@ describe('HtmlParser', () => {
       it('should parse a block with an HTML element', () => {
         expect(humanizeDom(parser.parse('@defer {<my-cmp/>}', 'TestComp'))).toEqual([
           [html.Block, 'defer', 0],
-          [html.Element, 'my-cmp', 1],
+          [html.Element, 'my-cmp', 1, '#selfClosing'],
         ]);
       });
 
@@ -831,7 +832,7 @@ describe('HtmlParser', () => {
           [html.Block, 'case', 1],
           [html.BlockParameter, '1'],
           [html.Text, 'hello', 2, ['hello']],
-          [html.Element, 'my-cmp', 2],
+          [html.Element, 'my-cmp', 2, '#selfClosing'],
           [html.Text, 'there', 2, ['there']],
           [html.Block, 'case', 1],
           [html.BlockParameter, 'two'],
@@ -878,28 +879,28 @@ describe('HtmlParser', () => {
           `} <root-sibling-two/>`;
 
         expect(humanizeDom(parser.parse(markup, 'TestComp'))).toEqual([
-          [html.Element, 'root-sibling-one', 0],
+          [html.Element, 'root-sibling-one', 0, '#selfClosing'],
           [html.Block, 'root', 0],
-          [html.Element, 'outer-child-one', 1],
+          [html.Element, 'outer-child-one', 1, '#selfClosing'],
           [html.Element, 'outer-child-two', 1],
           [html.Block, 'child', 2],
           [html.BlockParameter, 'childParam === 1'],
           [html.Block, 'innerChild', 3],
           [html.BlockParameter, 'innerChild1 === foo'],
-          [html.Element, 'inner-child-one', 4],
+          [html.Element, 'inner-child-one', 4, '#selfClosing'],
           [html.Block, 'grandChild', 4],
           [html.Block, 'innerGrandChild', 5],
-          [html.Element, 'inner-grand-child-one', 6],
+          [html.Element, 'inner-grand-child-one', 6, '#selfClosing'],
           [html.Block, 'innerGrandChild', 5],
-          [html.Element, 'inner-grand-child-two', 6],
+          [html.Element, 'inner-grand-child-two', 6, '#selfClosing'],
           [html.Block, 'innerChild', 3],
-          [html.Element, 'inner-child-two', 4],
+          [html.Element, 'inner-child-two', 4, '#selfClosing'],
           [html.Block, 'outerChild', 1],
           [html.BlockParameter, 'outerChild1'],
           [html.BlockParameter, 'outerChild2'],
-          [html.Element, 'outer-child-three', 2],
+          [html.Element, 'outer-child-three', 2, '#selfClosing'],
           [html.Text, ' ', 0, [' ']],
-          [html.Element, 'root-sibling-two', 0],
+          [html.Element, 'root-sibling-two', 0, '#selfClosing'],
         ]);
       });
 
@@ -908,7 +909,7 @@ describe('HtmlParser', () => {
           [html.Element, ':svg:svg', 0],
           [html.Block, 'if', 1],
           [html.BlockParameter, 'cond'],
-          [html.Element, ':svg:circle', 2],
+          [html.Element, ':svg:circle', 2, '#selfClosing'],
         ]);
       });
 
@@ -1103,6 +1104,325 @@ describe('HtmlParser', () => {
       });
     });
 
+    describe('directive nodes', () => {
+      const options: TokenizeOptions = {
+        selectorlessEnabled: true,
+      };
+
+      it('should parse a directive with no attributes', () => {
+        const parsed = humanizeDom(parser.parse('<div @Dir></div>', '', options));
+
+        expect(parsed).toEqual([
+          [html.Element, 'div', 0],
+          [html.Directive, 'Dir'],
+        ]);
+      });
+
+      it('should parse a directive with attributes', () => {
+        const parsed = humanizeDom(
+          parser.parse('<div @Dir(a="1" [b]="two" (c)="c()")></div>', '', options),
+        );
+
+        expect(parsed).toEqual([
+          [html.Element, 'div', 0],
+          [html.Directive, 'Dir'],
+          [html.Attribute, 'a', '1', ['1']],
+          [html.Attribute, '[b]', 'two', ['two']],
+          [html.Attribute, '(c)', 'c()', ['c()']],
+        ]);
+      });
+
+      it('should parse directives on a component node', () => {
+        const parsed = humanizeDom(
+          parser.parse('<MyComp @Dir @OtherDir(a="1" [b]="two" (c)="c()")></MyComp>', '', options),
+        );
+
+        expect(parsed).toEqual([
+          [html.Component, 'MyComp', null, 'MyComp', 0],
+          [html.Directive, 'Dir'],
+          [html.Directive, 'OtherDir'],
+          [html.Attribute, 'a', '1', ['1']],
+          [html.Attribute, '[b]', 'two', ['two']],
+          [html.Attribute, '(c)', 'c()', ['c()']],
+        ]);
+      });
+
+      it('should report a missing directive closing paren', () => {
+        expect(
+          humanizeErrors(parser.parse('<div @Dir(a="1" (b)="2"></div>', '', options).errors),
+        ).toEqual([[null, 'Unterminated directive definition', '0:5']]);
+        expect(
+          humanizeErrors(parser.parse('<MyComp @Dir(a="1" (b)="2"/>', '', options).errors),
+        ).toEqual([[null, 'Unterminated directive definition', '0:8']]);
+      });
+
+      it('should parse a directive mixed with other attributes', () => {
+        const parsed = humanizeDom(
+          parser.parse(
+            '<div before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123"></div>',
+            '',
+            options,
+          ),
+        );
+
+        expect(parsed).toEqual([
+          [html.Element, 'div', 0],
+          [html.Attribute, 'before', 'foo', ['foo']],
+          [html.Attribute, 'middle', ''],
+          [html.Attribute, 'after', '123', ['123']],
+          [html.Directive, 'Dir'],
+          [html.Directive, 'OtherDir'],
+          [html.Attribute, '[a]', 'a', ['a']],
+          [html.Attribute, '(b)', 'b()', ['b()']],
+        ]);
+      });
+
+      it('should store the source locations of directives', () => {
+        const markup = '<div @Dir @OtherDir(a="1" [b]="two" (c)="c()")></div>';
+
+        expect(humanizeDomSourceSpans(parser.parse(markup, '', options))).toEqual([
+          [
+            html.Element,
+            'div',
+            0,
+            '<div @Dir @OtherDir(a="1" [b]="two" (c)="c()")></div>',
+            '<div @Dir @OtherDir(a="1" [b]="two" (c)="c()")>',
+            '</div>',
+          ],
+          [html.Directive, 'Dir', '@Dir', '@Dir', null],
+          [html.Directive, 'OtherDir', '@OtherDir(a="1" [b]="two" (c)="c()")', '@OtherDir(', ')'],
+          [html.Attribute, 'a', '1', ['1'], 'a="1"'],
+          [html.Attribute, '[b]', 'two', ['two'], '[b]="two"'],
+          [html.Attribute, '(c)', 'c()', ['c()'], '(c)="c()"'],
+        ]);
+      });
+    });
+
+    describe('component nodes', () => {
+      const options: TokenizeOptions = {
+        selectorlessEnabled: true,
+      };
+
+      it('should parse a simple component node', () => {
+        const parsed = humanizeDom(parser.parse('<MyComp>Hello</MyComp>', '', options));
+
+        expect(parsed).toEqual([
+          [html.Component, 'MyComp', null, 'MyComp', 0],
+          [html.Text, 'Hello', 1, ['Hello']],
+        ]);
+      });
+
+      it('should parse a self-closing component node', () => {
+        const parsed = humanizeDom(parser.parse('<MyComp/>Hello', '', options));
+
+        expect(parsed).toEqual([
+          [html.Component, 'MyComp', null, 'MyComp', 0, '#selfClosing'],
+          [html.Text, 'Hello', 0, ['Hello']],
+        ]);
+      });
+
+      it('should parse a component node with a tag name', () => {
+        const parsed = humanizeDom(
+          parser.parse('<MyComp:button>Hello</MyComp:button>', '', options),
+        );
+
+        expect(parsed).toEqual([
+          [html.Component, 'MyComp', 'button', 'MyComp:button', 0],
+          [html.Text, 'Hello', 1, ['Hello']],
+        ]);
+      });
+
+      it('should parse a component node with a tag name and namespace', () => {
+        const parsed = humanizeDom(
+          parser.parse('<MyComp:svg:title>Hello</MyComp:svg:title>', '', options),
+        );
+
+        expect(parsed).toEqual([
+          [html.Component, 'MyComp', ':svg:title', 'MyComp:svg:title', 0],
+          [html.Text, 'Hello', 1, ['Hello']],
+        ]);
+      });
+
+      it('should parse a component node with an inferred namespace and no tag name', () => {
+        const parsed = humanizeDom(parser.parse('<svg><MyComp>Hello</MyComp></svg>', '', options));
+
+        expect(parsed).toEqual([
+          [html.Element, ':svg:svg', 0],
+          [html.Component, 'MyComp', ':svg:ng-component', 'MyComp:svg:ng-component', 1],
+          [html.Text, 'Hello', 2, ['Hello']],
+        ]);
+      });
+
+      it('should parse a component node with an inferred namespace and a tag name', () => {
+        const parsed = humanizeDom(
+          parser.parse('<svg><MyComp:button>Hello</MyComp:button></svg>', '', options),
+        );
+
+        expect(parsed).toEqual([
+          [html.Element, ':svg:svg', 0],
+          [html.Component, 'MyComp', ':svg:button', 'MyComp:svg:button', 1],
+          [html.Text, 'Hello', 2, ['Hello']],
+        ]);
+      });
+
+      it('should parse a component node with an inferred namespace plus an explicit namespace and tag name', () => {
+        const parsed = humanizeDom(
+          parser.parse('<math><MyComp:svg:title>Hello</MyComp:svg:title></math>', '', options),
+        );
+
+        expect(parsed).toEqual([
+          [html.Element, ':math:math', 0],
+          [html.Component, 'MyComp', ':svg:title', 'MyComp:svg:title', 1],
+          [html.Text, 'Hello', 2, ['Hello']],
+        ]);
+      });
+
+      it('should distinguish components with tag names from ones without', () => {
+        const parsed = humanizeDom(
+          parser.parse('<MyComp:button><MyComp>Hello</MyComp></MyComp:button>', '', options),
+        );
+
+        expect(parsed).toEqual([
+          [html.Component, 'MyComp', 'button', 'MyComp:button', 0],
+          [html.Component, 'MyComp', null, 'MyComp', 1],
+          [html.Text, 'Hello', 2, ['Hello']],
+        ]);
+      });
+
+      it('should implicitly close a component', () => {
+        const parsed = humanizeDom(parser.parse('<MyComp>Hello', '', options));
+
+        expect(parsed).toEqual([
+          [html.Component, 'MyComp', null, 'MyComp', 0],
+          [html.Text, 'Hello', 1, ['Hello']],
+        ]);
+      });
+
+      it('should parse a component tag nested within other markup', () => {
+        const parsed = humanizeDom(
+          parser.parse(
+            '@if (expr) {<div>Hello: <MyComp><span><OtherComp/></span></MyComp></div>}',
+            '',
+            options,
+          ),
+        );
+
+        expect(parsed).toEqual([
+          [html.Block, 'if', 0],
+          [html.BlockParameter, 'expr'],
+          [html.Element, 'div', 1],
+          [html.Text, 'Hello: ', 2, ['Hello: ']],
+          [html.Component, 'MyComp', null, 'MyComp', 2],
+          [html.Element, 'span', 3],
+          [html.Component, 'OtherComp', null, 'OtherComp', 4, '#selfClosing'],
+        ]);
+      });
+
+      it('should report closing tag whose tag name does not match the opening tag', () => {
+        expect(
+          humanizeErrors(parser.parse('<MyComp:button>Hello</MyComp>', '', options).errors),
+        ).toEqual([
+          ['MyComp', 'Unexpected closing tag "MyComp", did you mean "MyComp:button"?', '0:20'],
+        ]);
+        expect(
+          humanizeErrors(parser.parse('<MyComp>Hello</MyComp:button>', '', options).errors),
+        ).toEqual([
+          [
+            'MyComp:button',
+            'Unexpected closing tag "MyComp:button", did you mean "MyComp"?',
+            '0:13',
+          ],
+        ]);
+      });
+
+      it('should parse a component node with attributes and directives', () => {
+        const parsed = humanizeDom(
+          parser.parse(
+            '<MyComp before="foo" @Dir middle @OtherDir([a]="a" (b)="b()") after="123">Hello</MyComp>',
+            '',
+            options,
+          ),
+        );
+
+        expect(parsed).toEqual([
+          [html.Component, 'MyComp', null, 'MyComp', 0],
+          [html.Attribute, 'before', 'foo', ['foo']],
+          [html.Attribute, 'middle', ''],
+          [html.Attribute, 'after', '123', ['123']],
+          [html.Directive, 'Dir'],
+          [html.Directive, 'OtherDir'],
+          [html.Attribute, '[a]', 'a', ['a']],
+          [html.Attribute, '(b)', 'b()', ['b()']],
+          [html.Text, 'Hello', 1, ['Hello']],
+        ]);
+      });
+
+      it('should store the source locations of a component with attributes and content', () => {
+        const markup = '<MyComp one="1" two [three]="3">Hello</MyComp>';
+
+        expect(humanizeDomSourceSpans(parser.parse(markup, '', options))).toEqual([
+          [
+            html.Component,
+            'MyComp',
+            null,
+            'MyComp',
+            0,
+            '<MyComp one="1" two [three]="3">Hello</MyComp>',
+            '<MyComp one="1" two [three]="3">',
+            '</MyComp>',
+          ],
+          [html.Attribute, 'one', '1', ['1'], 'one="1"'],
+          [html.Attribute, 'two', '', 'two'],
+          [html.Attribute, '[three]', '3', ['3'], '[three]="3"'],
+          [html.Text, 'Hello', 1, ['Hello'], 'Hello'],
+        ]);
+      });
+
+      it('should store the source locations of self-closing components', () => {
+        const markup = '<MyComp one="1" two [three]="3"/>Hello<MyOtherComp/><MyThirdComp:button/>';
+
+        expect(humanizeDomSourceSpans(parser.parse(markup, '', options))).toEqual([
+          [
+            html.Component,
+            'MyComp',
+            null,
+            'MyComp',
+            0,
+            '<MyComp one="1" two [three]="3"/>',
+            '#selfClosing',
+            '<MyComp one="1" two [three]="3"/>',
+            '<MyComp one="1" two [three]="3"/>',
+          ],
+          [html.Attribute, 'one', '1', ['1'], 'one="1"'],
+          [html.Attribute, 'two', '', 'two'],
+          [html.Attribute, '[three]', '3', ['3'], '[three]="3"'],
+          [html.Text, 'Hello', 0, ['Hello'], 'Hello'],
+          [
+            html.Component,
+            'MyOtherComp',
+            null,
+            'MyOtherComp',
+            0,
+            '<MyOtherComp/>',
+            '#selfClosing',
+            '<MyOtherComp/>',
+            '<MyOtherComp/>',
+          ],
+          [
+            html.Component,
+            'MyThirdComp',
+            'button',
+            'MyThirdComp:button',
+            0,
+            '<MyThirdComp:button/>',
+            '#selfClosing',
+            '<MyThirdComp:button/>',
+            '<MyThirdComp:button/>',
+          ],
+        ]);
+      });
+    });
+
     describe('source spans', () => {
       it('should store the location', () => {
         expect(
@@ -1229,14 +1549,14 @@ describe('HtmlParser', () => {
 
       it('should set the end source span for standalone self-closing elements', () => {
         expect(humanizeDomSourceSpans(parser.parse('<br/>', 'TestComp'))).toEqual([
-          [html.Element, 'br', 0, '<br/>', '<br/>', '<br/>'],
+          [html.Element, 'br', 0, '<br/>', '#selfClosing', '<br/>', '<br/>'],
         ]);
       });
 
       it('should set the end source span for self-closing elements', () => {
         expect(humanizeDomSourceSpans(parser.parse('<div><br/></div>', 'TestComp'))).toEqual([
           [html.Element, 'div', 0, '<div><br/></div>', '<div>', '</div>'],
-          [html.Element, 'br', 1, '<br/>', '<br/>', '<br/>'],
+          [html.Element, 'br', 1, '<br/>', '#selfClosing', '<br/>', '<br/>'],
         ]);
       });
 
@@ -1253,6 +1573,7 @@ describe('HtmlParser', () => {
             'input',
             0,
             '<input type="text" />',
+            '#selfClosing',
             '<input type="text" />',
             '<input type="text" />',
           ],
@@ -1339,6 +1660,7 @@ describe('HtmlParser', () => {
           }
           visitElement(element: html.Element, context: any): any {
             html.visitAll(this, element.attrs);
+            html.visitAll(this, element.directives);
             html.visitAll(this, element.children);
           }
           visitAttribute(attribute: html.Attribute, context: any): any {}
@@ -1354,6 +1676,14 @@ describe('HtmlParser', () => {
           }
           visitBlockParameter(parameter: html.BlockParameter, context: any) {}
           visitLetDeclaration(decl: html.LetDeclaration, context: any) {}
+          visitComponent(component: html.Component, context: any) {
+            html.visitAll(this, component.attrs);
+            html.visitAll(this, component.directives);
+            html.visitAll(this, component.children);
+          }
+          visitDirective(directive: html.Directive, context: any) {
+            html.visitAll(this, directive.attrs);
+          }
         })();
 
         html.visitAll(visitor, result.rootNodes);
@@ -1398,6 +1728,12 @@ describe('HtmlParser', () => {
             throw Error('Unexpected');
           }
           visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+            throw Error('Unexpected');
+          }
+          visitComponent(component: html.Component, context: any) {
+            throw Error('Unexpected');
+          }
+          visitDirective(directive: html.Directive, context: any) {
             throw Error('Unexpected');
           }
         })();

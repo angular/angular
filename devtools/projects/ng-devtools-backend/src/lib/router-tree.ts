@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Route} from 'protocol';
+import {Route} from '../../../protocol';
 
 // todo(aleksanderbodurri): type these properly
 type AngularRoute = any;

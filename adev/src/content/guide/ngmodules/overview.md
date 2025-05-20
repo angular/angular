@@ -107,7 +107,7 @@ export class CustomMenuModule { }
 
 ## `NgModule` providers
 
-Tip: See the [Dependency Injection guide](guides/di) for information on dependency injection and providers.
+TIP: See the [Dependency Injection guide](guide/di) for information on dependency injection and providers.
 
 An `NgModule` can specify `providers` for injected dependencies. These providers are available to:
 * Any standalone component, directive, or pipe that imports the NgModule, and
@@ -152,7 +152,7 @@ boorstrapApplication(MyApplicationRoot, {
 });
 ```
 
-Similarly, some NgModules may before a static `forChild` that indicates the providers are intended to be added to components within your application hierarchy.
+Similarly, some NgModules may define a static `forChild` that indicates the providers are intended to be added to components within your application hierarchy.
 
 ```typescript
 @Component({
@@ -178,7 +178,7 @@ import {platformBrowser} from '@angular/platform-browser';
 @NgModule({
   bootstrap: [MyApplication],
 })
-export class MyApplciationModule { }
+export class MyApplicationModule { }
 
 platformBrowser().bootstrapModule(MyApplicationModule);
 ```

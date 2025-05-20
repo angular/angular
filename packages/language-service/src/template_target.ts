@@ -21,15 +21,18 @@ import {
   TmplAstBoundDeferredTrigger,
   TmplAstBoundEvent,
   TmplAstBoundText,
+  TmplAstComponent,
   TmplAstContent,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
   TmplAstDeferredBlockPlaceholder,
   TmplAstDeferredTrigger,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstForLoopBlock,
   TmplAstForLoopBlockEmpty,
+  TmplAstHostElement,
   TmplAstIcu,
   TmplAstIfBlock,
   TmplAstIfBlockBranch,
@@ -55,7 +58,7 @@ import {
   isTemplateNodeWithKeyAndValue,
   isWithin,
   isWithinKeyValue,
-  TemplateInfo,
+  TypeCheckInfo,
 } from './utils';
 
 /**
@@ -102,7 +105,11 @@ export type SingleNodeTarget =
   | ElementInBodyContext
   | ElementInTagContext
   | AttributeInKeyContext
-  | AttributeInValueContext;
+  | AttributeInValueContext
+  | ComponentInBodyContext
+  | ComponentInTagContext
+  | DirectiveInNameContext
+  | DirectiveInBodyContext;
 
 /**
  * Contexts which logically target multiple nodes in the template AST, which cannot be
@@ -124,6 +131,10 @@ export enum TargetNodeKind {
   AttributeInKeyContext,
   AttributeInValueContext,
   TwoWayBindingContext,
+  ComponentInTagContext,
+  ComponentInBodyContext,
+  DirectiveInNameContext,
+  DirectiveInBodyContext,
 }
 
 /**
@@ -172,6 +183,42 @@ export interface ElementInTagContext {
 export interface ElementInBodyContext {
   kind: TargetNodeKind.ElementInBodyContext;
   node: TmplAstElement | TmplAstTemplate;
+}
+
+/**
+ * A `TmplAstComponent` element node that's targeted, where the given position is within the tag,
+ * e.g. `MyComp` in `<MyComp foo="bar"/>`.
+ */
+export interface ComponentInTagContext {
+  kind: TargetNodeKind.ComponentInTagContext;
+  node: TmplAstComponent;
+}
+
+/**
+ * A `TmplAstComponent` element node that's targeted, where the given position is within the body,
+ * e.g. `foo="bar"/>` in `<MyComp foo="bar"/>`.
+ */
+export interface ComponentInBodyContext {
+  kind: TargetNodeKind.ComponentInBodyContext;
+  node: TmplAstComponent;
+}
+
+/**
+ * A `TmplAstDirective` element node that's targeted, where the given position is within the
+ * directive's name (e.g. `MyDir` in `@MyDir`).
+ */
+export interface DirectiveInNameContext {
+  kind: TargetNodeKind.DirectiveInNameContext;
+  node: TmplAstDirective;
+}
+
+/**
+ * A `TmplAstDirective` element node that's targeted, where the given position is within the body,
+ * e.g. `(foo="bar")` in `@MyDir(foo="bar")`.
+ */
+export interface DirectiveInBodyContext {
+  kind: TargetNodeKind.DirectiveInBodyContext;
+  node: TmplAstDirective;
 }
 
 export interface AttributeInKeyContext {
@@ -264,22 +311,32 @@ export function getTargetAtPosition(
   } else if (candidate instanceof TmplAstElement) {
     // Elements have two contexts: the tag context (position is within the element tag) or the
     // element body context (position is outside of the tag name, but still in the element).
+    nodeInContext = {
+      kind: isWithinTagBody(position, candidate)
+        ? TargetNodeKind.ElementInBodyContext
+        : TargetNodeKind.ElementInTagContext,
+      node: candidate,
+    };
+  } else if (candidate instanceof TmplAstComponent) {
+    nodeInContext = {
+      kind: isWithinTagBody(position, candidate)
+        ? TargetNodeKind.ComponentInBodyContext
+        : TargetNodeKind.ComponentInTagContext,
+      node: candidate,
+    };
+  } else if (candidate instanceof TmplAstDirective) {
+    const startSpan = candidate.startSourceSpan;
 
-    // Calculate the end of the element tag name. Any position beyond this is in the element body.
-    const tagEndPos =
-      candidate.sourceSpan.start.offset + 1 /* '<' element open */ + candidate.name.length;
-    if (position > tagEndPos) {
-      // Position is within the element body
-      nodeInContext = {
-        kind: TargetNodeKind.ElementInBodyContext,
-        node: candidate,
-      };
-    } else {
-      nodeInContext = {
-        kind: TargetNodeKind.ElementInTagContext,
-        node: candidate,
-      };
-    }
+    // The start span includes the opening paren, if there is one which we have to account for.
+    const endOffset = startSpan.end.offset - (startSpan.toString().endsWith('(') ? 1 : 0);
+
+    nodeInContext = {
+      kind:
+        position >= startSpan.start.offset && position <= endOffset
+          ? TargetNodeKind.DirectiveInNameContext
+          : TargetNodeKind.DirectiveInBodyContext,
+      node: candidate,
+    };
   } else if (
     (candidate instanceof TmplAstBoundAttribute ||
       candidate instanceof TmplAstBoundEvent ||
@@ -349,16 +406,16 @@ interface TcbNodesInfoForTemplate {
  *
  */
 export function getTcbNodesOfTemplateAtPosition(
-  templateInfo: TemplateInfo,
+  typeCheckInfo: TypeCheckInfo,
   position: number,
   compiler: NgCompiler,
 ): TcbNodesInfoForTemplate | null {
-  const target = getTargetAtPosition(templateInfo.template, position);
+  const target = getTargetAtPosition(typeCheckInfo.nodes, position);
   if (target === null) {
     return null;
   }
 
-  const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(templateInfo.component);
+  const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(typeCheckInfo.declaration);
   if (tcb === null) {
     return null;
   }
@@ -430,8 +487,7 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   private constructor(private readonly position: number) {}
 
   visit(node: TmplAstNode) {
-    const {start, end} = getSpanIncludingEndTag(node);
-    if (end !== null && !isWithin(this.position, {start, end})) {
+    if (!isWithinNode(this.position, node)) {
       return;
     }
 
@@ -461,6 +517,10 @@ class TemplateTargetVisitor implements TmplAstVisitor {
       // If cursor is within source span but not within key span or value span,
       // do not return the node.
       this.path.push(OUTSIDE_K_V_MARKER);
+    } else if (node instanceof TmplAstHostElement) {
+      this.path.push(node);
+      this.visitAll(node.bindings);
+      this.visitAll(node.listeners);
     } else {
       this.path.push(node);
       node.visit(this);
@@ -468,16 +528,31 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   }
 
   visitElement(element: TmplAstElement) {
-    this.visitElementOrTemplate(element);
+    this.visitDirectiveHost(element);
   }
 
   visitTemplate(template: TmplAstTemplate) {
-    this.visitElementOrTemplate(template);
+    this.visitDirectiveHost(template);
   }
 
-  visitElementOrTemplate(element: TmplAstTemplate | TmplAstElement) {
-    this.visitAll(element.attributes);
-    this.visitAll(element.inputs);
+  visitComponent(component: TmplAstComponent) {
+    this.visitDirectiveHost(component);
+  }
+
+  visitDirective(directive: TmplAstDirective) {
+    this.visitDirectiveHost(directive);
+  }
+
+  private visitDirectiveHost(
+    node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
+  ) {
+    const isTemplate = node instanceof TmplAstTemplate;
+    const isDirective = node instanceof TmplAstDirective;
+    this.visitAll(node.attributes);
+    if (!isDirective) {
+      this.visitAll(node.directives);
+    }
+    this.visitAll(node.inputs);
     // We allow the path to contain both the `TmplAstBoundAttribute` and `TmplAstBoundEvent` for
     // two-way bindings but do not want the path to contain both the `TmplAstBoundAttribute` with
     // its children when the position is in the value span because we would then logically create a
@@ -485,27 +560,29 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     // condition ensures we target just `TmplAstBoundAttribute` for this case and exclude
     // `TmplAstBoundEvent` children.
     if (
-      this.path[this.path.length - 1] !== element &&
+      this.path[this.path.length - 1] !== node &&
       !(this.path[this.path.length - 1] instanceof TmplAstBoundAttribute)
     ) {
       return;
     }
-    this.visitAll(element.outputs);
-    if (element instanceof TmplAstTemplate) {
-      this.visitAll(element.templateAttrs);
+    this.visitAll(node.outputs);
+    if (isTemplate) {
+      this.visitAll(node.templateAttrs);
     }
-    this.visitAll(element.references);
-    if (element instanceof TmplAstTemplate) {
-      this.visitAll(element.variables);
+    this.visitAll(node.references);
+    if (isTemplate) {
+      this.visitAll(node.variables);
     }
 
     // If we get here and have not found a candidate node on the element itself, proceed with
     // looking for a more specific node on the element children.
-    if (this.path[this.path.length - 1] !== element) {
+    if (this.path[this.path.length - 1] !== node) {
       return;
     }
 
-    this.visitAll(element.children);
+    if (!isDirective) {
+      this.visitAll(node.children);
+    }
   }
 
   visitContent(content: TmplAstContent) {
@@ -672,4 +749,30 @@ function getSpanIncludingEndTag(ast: TmplAstNode) {
     }
   }
   return result;
+}
+
+/** Checks whether a position is within an AST node. */
+function isWithinNode(position: number, node: TmplAstNode): boolean {
+  if (!(node instanceof TmplAstHostElement)) {
+    return isWithin(position, getSpanIncludingEndTag(node));
+  }
+
+  // Host elements are special in that they don't have a contiguous source span. E.g. some bindings
+  // can be in the `host` literal in the decorator while others are on class members. That's why we
+  // need to check each binding, rather than the host element itself.
+  return (
+    (node.bindings.length > 0 &&
+      node.bindings.some((binding) => isWithin(position, binding.sourceSpan))) ||
+    (node.listeners.length > 0 &&
+      node.listeners.some((listener) => isWithin(position, listener.sourceSpan)))
+  );
+}
+
+/** Checks whether a position is within the body or the start syntax of a node. */
+function isWithinTagBody(position: number, node: TmplAstElement | TmplAstComponent): boolean {
+  // Calculate the end of the element tag name. Any position beyond this is in the body.
+  const name = node instanceof TmplAstComponent ? node.fullName : node.name;
+  const tagEndPos =
+    node.sourceSpan.start.offset + 1 /* '<' is the opening character */ + name.length;
+  return position > tagEndPos;
 }

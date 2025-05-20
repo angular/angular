@@ -62,7 +62,7 @@ For more details of what these look like and how to create them, see:
 An *add schematic* is typically supplied with a library, so that the library can be added to an existing project with `ng add`.
 The `add` command uses your package manager to download new dependencies, and invokes an installation script that is implemented as a schematic.
 
-For example, the [`@angular/material`](https://material.angular.io/guide/schematics) schematic tells the `add` command to install and set up Angular Material and theming, and register new starter components that can be created with `ng generate`.
+For example, the [`@angular/material`](https://material.angular.dev/guide/schematics) schematic tells the `add` command to install and set up Angular Material and theming, and register new starter components that can be created with `ng generate`.
 Look at this one as an example and model for your own add schematic.
 
 Partner and third party libraries also support the Angular CLI with add schematics.
@@ -103,12 +103,9 @@ We analyzed your package.json, there are some packages to update:
     @angular/material                  7.2.2 -> 7.3.1           ng update @angular/material
     rxjs                                      6.3.3 -> 6.4.0           ng update rxjs
 
-    There might be additional packages that are outdated.
-    Run "ng update --all" to try to update all at the same time.
-
 </docs-code>
 
-If you pass the command a set of libraries to update \(or the `--all` flag\), it updates those libraries, their peer dependencies, and the peer dependencies that depend on them.
+If you pass the command a set of libraries to update, it updates those libraries, their peer dependencies, and the peer dependencies that depend on them.
 
 HELPFUL: If there are inconsistencies \(for example, if peer dependencies cannot be matched by a simple [semver](https://semver.io) range\), the command generates an error and does not change anything in the workspace.
 

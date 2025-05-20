@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Component, NgModule} from '@angular/core';
+import {ApplicationRef, Component, NgModule} from '../../../src/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {TriggerComponent} from './trigger';

@@ -25,12 +25,19 @@ type Version = number & {__brand: 'Version'};
  */
 let epoch: Version = 1 as Version;
 
+export type ReactiveHookFn = (node: ReactiveNode) => void;
+
+/**
+ * If set, called after a producer `ReactiveNode` is created.
+ */
+let postProducerCreatedFn: ReactiveHookFn | null = null;
+
 /**
  * Symbol used to tell `Signal`s apart from other functions.
  *
  * This can be used to auto-unwrap signals in various cases, or to auto-wrap non-signal values.
  */
-export const SIGNAL = /* @__PURE__ */ Symbol('SIGNAL');
+export const SIGNAL: unique symbol = /* @__PURE__ */ Symbol('SIGNAL');
 
 export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null {
   const prev = activeConsumer;
@@ -526,4 +533,14 @@ function assertProducerNode(node: ReactiveNode): asserts node is ProducerNode {
 
 function isConsumerNode(node: ReactiveNode): node is ConsumerNode {
   return node.producerNode !== undefined;
+}
+
+export function runPostProducerCreatedFn(node: ReactiveNode): void {
+  postProducerCreatedFn?.(node);
+}
+
+export function setPostProducerCreatedFn(fn: ReactiveHookFn | null): ReactiveHookFn | null {
+  const prev = postProducerCreatedFn;
+  postProducerCreatedFn = fn;
+  return prev;
 }

@@ -18,7 +18,6 @@
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
     "@angular/router": "file:../../dist/packages-dist/router",
     "@angular/ssr": "file:../../node_modules/@angular/ssr",
@@ -37,6 +36,6 @@
     "jasmine-spec-reporter": "4.2.1",
     "protractor": "file:../../node_modules/protractor",
     "ts-node": "8.3.0",
-    "typescript": "5.5.2"
+    "typescript": "file:../../node_modules/typescript"
   }
 }

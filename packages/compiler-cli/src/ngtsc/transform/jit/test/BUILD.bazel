@@ -1,6 +1,7 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = [
@@ -8,13 +9,15 @@ ts_library(
         "initializer_api_transforms_spec.ts",
         "signal_queries_metadata_transform_spec.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/transform/jit",
         "//packages/compiler-cli/test:test_utils",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )
 

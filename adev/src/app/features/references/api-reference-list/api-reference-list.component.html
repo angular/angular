@@ -5,13 +5,17 @@
 <div class="adev-reference-list-filter">
   <div class="adev-reference-list-query-filter">
     <docs-text-field name="query" placeholder="Filter" [(ngModel)]="query" />
+  </div>
 
-    <docs-slide-toggle
-      buttonId="includeDeprecated"
-      label="Show @deprecated"
-      name="includeDeprecated"
-      [(ngModel)]="includeDeprecated"
-    />
+  <div class="adev-reference-list-status">
+    <mat-chip-listbox multiple="true" aria-label="Status selection">
+      <!-- null indicates to not re-order the object keys -->
+      @for (stat of statuses | keyvalue:null; track $index) {
+        <mat-chip-option [selected]="isStatusSelected(stat.value)" (click)="setStatus(stat.value)">
+          {{statusLabels[stat.value]}}
+        </mat-chip-option>
+      }
+    </mat-chip-listbox>
   </div>
 
   <p class="adev-reference-list-type-filter-label">Filter by Identifier type</p>
@@ -20,7 +24,7 @@
       <li
         class="adev-reference-list-type-filter-item"
         [class.adev-reference-list-type-filter-item-active]="type() === itemType"
-        (click)="filterByItemType(itemType)"
+        (click)="setItemType(itemType)"
       >
         <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />
         <span class="docs-api-item-label-full">{{ itemType | adevApiLabel : 'full' }}</span>

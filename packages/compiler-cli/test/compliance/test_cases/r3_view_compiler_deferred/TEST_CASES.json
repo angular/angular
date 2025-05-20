@@ -178,7 +178,7 @@
         {
           "files": [
             {
-              "expected": "deferred_when_with_pipe_template.pipeline.js",
+              "expected": "deferred_when_with_pipe_template.js",
               "generated": "deferred_when_with_pipe.js"
             }
           ],
@@ -285,6 +285,25 @@
             {
               "expected": "lazy_with_blocks_template.js",
               "generated": "lazy_with_blocks.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle a component with deferred blocks that share the same dependency",
+      "inputFiles": [
+        "deferred_with_duplicate_external_dep.ts",
+        "deferred_with_duplicate_external_dep_lazy.ts",
+        "deferred_with_duplicate_external_dep_other.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_duplicate_external_dep_template.js",
+              "generated": "deferred_with_duplicate_external_dep.js"
             }
           ],
           "failureMessage": "Incorrect template"

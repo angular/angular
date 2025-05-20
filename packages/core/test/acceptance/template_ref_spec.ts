@@ -6,8 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Injector, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {
+  Component,
+  Injector,
+  provideNgReflectAttributes,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {
@@ -78,7 +85,10 @@ describe('TemplateRef', () => {
         constructor(public viewContainerRef: ViewContainerRef) {}
       }
 
-      TestBed.configureTestingModule({declarations: [MenuContent, App]});
+      TestBed.configureTestingModule({
+        declarations: [MenuContent, App],
+        providers: [provideNgReflectAttributes()],
+      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 

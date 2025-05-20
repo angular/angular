@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, signal} from '@angular/core';
-import {createWatch} from '@angular/core/primitives/signals';
+import {computed, signal} from '../../src/core';
+import {createWatch} from '../../primitives/signals';
 
 import {flushEffects, resetEffects, testingEffect} from './effect_util';
 

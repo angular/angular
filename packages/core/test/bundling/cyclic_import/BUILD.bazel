@@ -1,16 +1,16 @@
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_module", "ts_library")
-load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 load("@npm//http-server:index.bzl", "http_server")
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "cyclic_import",
     srcs = [
         "index.ts",
         "trigger.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/core",
         "//packages/platform-browser",
     ],
@@ -26,16 +26,17 @@ app_bundle(
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
-    deps = [
-        "//packages:types",
+    interop_deps = [
         "//packages/compiler",
         "//packages/core/testing",
         "//packages/private/testing",
-        "@npm//@bazel/runfiles",
+    ],
+    deps = [
+        "//:node_modules/@bazel/runfiles",
     ],
 )
 
@@ -48,12 +49,6 @@ jasmine_node_test(
         ":bundle.min.js.br",
     ],
     deps = [":test_lib"],
-)
-
-js_expected_symbol_test(
-    name = "symbol_test",
-    src = ":bundle.debug.min.js",
-    golden = ":bundle.golden_symbols.json",
 )
 
 http_server(

@@ -58,7 +58,7 @@
     fill: var(--page-background) !important;
   }
 
-  .nodeLabel {
+  .nodeLabel:not(.node:has(polygon) .nodeLabel):not(.eventNode .nodeLabel) {
     fill: var(--primary-contrast) !important;
     color: var(--primary-contrast) !important;
   }
@@ -71,7 +71,6 @@
     }
 
     .nodeLabel p {
-      color: var(--page-background) !important;
       font-weight: 800 !important;
     }
   }

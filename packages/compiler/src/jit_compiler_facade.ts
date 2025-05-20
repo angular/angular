@@ -10,6 +10,7 @@ import {
   CompilerFacade,
   CoreEnvironment,
   ExportedCompilerFacade,
+  FactoryTarget,
   LegacyInputPartialMapping,
   OpaqueValue,
   R3ComponentMetadataFacade,
@@ -57,7 +58,7 @@ import {
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
 import {DeferredBlock} from './render3/r3_ast';
-import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata} from './render3/r3_factory';
+import {compileFactoryFunction, R3DependencyMetadata} from './render3/r3_factory';
 import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 import {R3JitReflector} from './render3/r3_jit';
 import {
@@ -82,7 +83,6 @@ import {
   R3ComponentMetadata,
   R3DirectiveDependencyMetadata,
   R3DirectiveMetadata,
-  R3HostDirectiveMetadata,
   R3HostMetadata,
   R3InputMetadata,
   R3PipeDependencyMetadata,
@@ -104,7 +104,6 @@ import {R3TargetBinder} from './render3/view/t2_binder';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
-import {SelectorMatcher} from './selector';
 import {getJitStandaloneDefaultForVersion} from './util';
 
 export class CompilerFacadeImpl implements CompilerFacade {
@@ -748,7 +747,7 @@ function parseJitTemplate(
     const errors = parsed.errors.map((err) => err.toString()).join(', ');
     throw new Error(`Errors during JIT compilation of template for ${typeName}: ${errors}`);
   }
-  const binder = new R3TargetBinder(new SelectorMatcher());
+  const binder = new R3TargetBinder(null);
   const boundTarget = binder.bind({template: parsed.nodes});
 
   return {

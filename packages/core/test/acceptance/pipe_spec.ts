@@ -27,9 +27,9 @@ import {
   ɵɵdefinePipe,
   ɵɵgetInheritedFactory,
   ɵɵinject,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+} from '../../src/core';
+import {TestBed} from '../../testing';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('pipe', () => {
   @Pipe({
@@ -354,7 +354,7 @@ describe('pipe', () => {
     }
 
     // The generated code corresponds to the following decorator:
-    // @Pipe({name: 'sayHello', pure: true, standalone: true})
+    // @Pipe({name: 'sayHello', pure: true})
     class SayHelloPipe extends ParentPipe implements PipeTransform {
       transform() {
         return this.sayHelloService.getHello();
@@ -369,7 +369,6 @@ describe('pipe', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'app',
       template: '{{ value | sayHello }}',
       imports: [SayHelloPipe],

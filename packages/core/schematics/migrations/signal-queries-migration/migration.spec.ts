@@ -55,6 +55,11 @@ const declarationTestCases: TestCase[] = [
     before: `@ViewChild('myBtn', {read: ElementRef}) buttonEl!: ElementRef;`,
     after: `readonly buttonEl = viewChild.required('myBtn', { read: ElementRef });`,
   },
+  {
+    id: 'viewChild retain accessibility modifier',
+    before: `@ViewChild('sidenav') public sidenav: HTMLElement;`,
+    after: `public readonly sidenav = viewChild<HTMLElement>('sidenav');`,
+  },
   // Content Child
   {
     id: 'contentChild with string locator and nullable',
@@ -136,6 +141,11 @@ const declarationTestCases: TestCase[] = [
     id: 'viewChildren with query list as initializer value, and descendants option but same as default',
     before: `@ViewChildren('myBtn', {descendants: true}) buttonEl = new QueryList<ElementRef>()`,
     after: `readonly buttonEl = viewChildren<ElementRef>('myBtn');`,
+  },
+  {
+    id: 'viewChildren retain accessibility modifier',
+    before: `@ViewChildren('sidenav') public sidenav: HTMLElement;`,
+    after: `public readonly sidenav = viewChildren('sidenav');`,
   },
   // ContentChildren
   {
@@ -1576,14 +1586,14 @@ describe('signal queries migration', () => {
       ],
     );
 
-    expect(await getStatistics()).toEqual({
-      counters: {
-        queriesCount: 3,
-        multiQueries: 2,
-        incompatibleQueries: 2,
-        'incompat-field-Accessor': 1,
-        'incompat-field-WriteAssignment': 1,
-      },
+    // Cast as we dynamically add fields to the stats. This can be improved in follow-ups
+    // when stats for this migration are leveraging more complex data structures.
+    expect((await getStatistics()) as object).toEqual({
+      queriesCount: 3,
+      multiQueries: 2,
+      incompatibleQueries: 2,
+      'incompat-field-Accessor': 1,
+      'incompat-field-WriteAssignment': 1,
     });
   });
 

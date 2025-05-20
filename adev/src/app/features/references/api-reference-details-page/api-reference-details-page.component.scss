@@ -1,424 +1,77 @@
 @use '@angular/docs/styles/media-queries' as mq;
+@use '@angular/docs/styles/reference' as ref;
 
 :host {
   display: flex;
-  gap: 1rem;
+  justify-content: center;
   width: 100%;
-  box-sizing: border-box;
-  flex-direction: column;
+
+  padding-top: var(--layout-padding);
+  padding-bottom: var(--layout-padding);
+
+
+  //applying styles when TOC position got translated to the top right 
+  @media only screen and (min-width: 1431px) {
+    // take the available space except a reserved area for TOC
+    width: calc(100% - 16rem);
+  }
+
+
+  docs-viewer {
+    display: block;
+    padding-inline: var(--layout-padding);
+    width: 100%;
+
+    //applying styles when TOC position got translated to the top right 
+    @media only screen and (min-width: 1431px) {
+      // take the available space except a reserved area for TOC
+      max-width: var(--page-width);
+    }
+
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--septenary-contrast);
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+
+  &>* {
+    padding-inline: 0px;
+
+    @include mq.for-big-desktop-up {
+      width: var(--page-width);
+    }
+  }
 
   h1 {
     font-size: 1.5rem;
   }
+
   h2 {
     font-size: 1.25rem;
   }
+
   h3 {
     font-size: 1rem;
   }
+
   h4 {
     font-size: 0.95rem;
   }
+
   h5 {
     font-size: 0.875rem;
   }
+
   h6 {
     font-size: 0.6rem;
   }
+
+
 }
 
-// stylelint-disable-next-line
 ::ng-deep {
-  .adev-header-and-tabs {
-    padding: var(--layout-padding) 0 1rem var(--layout-padding);
-    box-sizing: border-box;
-    width: 100%;
-    max-width: var(--page-width);
-
-    @include mq.for-desktop-down {
-      padding: var(--layout-padding);
-      max-width: none;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--septenary-contrast);
-      border-radius: 10px;
-      transition: background-color 0.3s ease;
-    }
-  }
-
-  .docs-code {
-    pre {
-      margin-block: 0;
-    }
-  }
-
-  .docs-reference-header {
-    > p {
-      color: var(--secondary-contrast);
-      margin-block-start: 0;
-      margin-block-end: 1.5rem;
-    }
-
-    .docs-code {
-      margin-block-end: 1.5rem;
-    }
-  }
-
-  .adev-reference-tab-body {
-    margin-block-start: 1.5rem;
-    docs-viewer > div {
-      :first-child {
-        margin-top: 0;
-      }
-    }
-  }
-
-  .docs-reference-api-tab {
-    display: flex;
-    gap: 1.81rem;
-    align-items: flex-start;
-    margin-bottom: 1px;
-
-    @include mq.for-desktop-down {
-      flex-direction: column;
-    }
-
-    & > .docs-code {
-      box-sizing: border-box;
-      width: 100%;
-      overflow: hidden;
-      padding: 0;
-
-      @include mq.for-desktop-down {
-        width: 100%;
-        position: static;
-      }
-
-      button {
-        transition: background-color 0.3s ease;
-        font-family: monospace;
-
-        &.line {
-          font-weight: 400;
-          text-align: left;
-          padding-block: 0.25rem;
-        }
-
-        &.shiki-ln-line-highlighted {
-          background-color: var(--senary-contrast);
-        }
-        &:hover {
-          background-color: var(--septenary-contrast);
-        }
-        &:focus {
-          background-color: var(--senary-contrast);
-        }
-      }
-
-      // Hide copy source code button
-      button[docs-copy-source-code] {
-        display: none;
-      }
-    }
-
-    code {
-      margin-block: 0;
-    }
-
-    pre {
-      white-space: pre;
-      overflow-x: auto;
-      margin: 0;
-    }
-  }
-
-  .docs-reference-cli-toc {
-    margin-bottom: 1rem;
-  }
-
-  .adev-reference-tab {
-    min-width: 50ch;
-    margin-block-start: 2.5rem;
-  }
-
-  .docs-reference-members-container {
-    width: 40%;
-    box-sizing: border-box;
-    width: 100%;
-    max-width: var(--page-width);
-    padding: 0 0 1rem var(--layout-padding);
-
-    @include mq.for-desktop-down {
-      padding: var(--layout-padding);
-      padding-top: 0;
-      max-width: none;
-    }
-  }
-
-  // Sidebar
-  .docs-reference-members {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-
-    @include mq.for-desktop-down {
-      width: 100%;
-    }
-  }
-
-  .docs-reference-title {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    padding-block-end: 0;
-    gap: 0.5rem;
-
-    > div {
-      margin-block: 0.67em;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.5rem;
-
-      h1 {
-        margin-block: 0;
-      }
-    }
-
-    a {
-      fill: var(--quinary-contrast);
-      transition: fill 0.3s ease;
-
-      &:hover {
-        fill: var(--primary-contrast);
-      }
-    }
-  }
-
-  .adev-reference-labels {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .docs-reference-category {
-    color: var(--gray-400);
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1.4rem;
-    letter-spacing: -0.00875rem;
-  }
-
-  .docs-reference-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-
-    padding: 0.7rem 1rem;
-
-    code:not(pre *) {
-      padding: 0 0.3rem;
-    }
-  }
-
-  .docs-reference-member-card {
-    border: 1px solid var(--senary-contrast);
-    border-radius: 0.25rem;
-    position: relative;
-    transition: border 0.3s ease;
-
-    &::before {
-      content: '';
-      inset: -1px;
-      position: absolute;
-      background: transparent;
-      border-radius: 0.35rem;
-      z-index: 0;
-    }
-
-    &:focus {
-      box-shadow: 10px 4px 40px 0 rgba(0, 0, 0, 0.01);
-
-      &::before {
-        background: var(--red-to-pink-to-purple-horizontal-gradient);
-      }
-    }
-
-    header {
-      display: flex;
-      flex-direction: column;
-      border-radius: 0.25rem 0.25rem 0 0;
-      background-color: var(--octonary-contrast);
-      position: relative;
-      z-index: 10;
-      cursor: pointer;
-      transition:
-        background-color 0.3s ease,
-        border 0.3s ease;
-
-      & > code {
-        max-width: 100%;
-      }
-
-      code:has(pre) {
-        padding: 0;
-      }
-
-      pre {
-        margin: 0;
-
-        /* Do we have a better alternative ? */
-        overflow: auto;
-      }
-    }
-
-    .docs-reference-card-header {
-      h3 {
-        display: inline-block;
-        font-family: var(--code-font);
-        font-size: 1rem;
-        letter-spacing: -0.025rem;
-        margin: 0;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      code,
-      span {
-        font-size: 0.875rem;
-      }
-    }
-
-    > p {
-      padding-inline: 1.25rem;
-      margin-block-end: 0;
-    }
-  }
-
-  .docs-reference-card-body {
-    padding: 0.25rem 1.25rem;
-    background: var(--septenary-contrast);
-    transition: background-color 0.3s ease;
-    color: var(--quaternary-contrast);
-    border-radius: 0 0 0.25rem 0.25rem;
-    position: relative;
-    z-index: 10;
-    hr {
-      margin-block: 2rem;
-    }
-    .docs-code {
-      margin-block-end: 1rem;
-    }
-
-    &:empty {
-      display: none;
-    }
-  }
-
-  // when it's not the only card...
-  .docs-reference-card-item:has(~ .docs-reference-card-item) {
-    border: 1px solid var(--senary-contrast);
-    margin-block: 1rem;
-    border-radius: 0.25rem;
-    padding-inline: 1rem;
-  }
-  // & the last card
-  .docs-reference-card-item:last-child {
-    &:not(:first-of-type) {
-      border: 1px solid var(--senary-contrast);
-      margin-block: 1rem;
-      border-radius: 0.25rem;
-      padding-inline: 1rem;
-    }
-  }
-
-  .docs-reference-card-item {
-    span {
-      display: inline-block;
-      font-size: 0.875rem;
-    }
-    code {
-      font-size: 0.875rem;
-    }
-  }
-
-  .docs-function-definition {
-    &:has(*) {
-      border-block-end: 1px solid var(--senary-contrast);
-    }
-  }
-
-  .docs-deprecation-message {
-    border-block-end: 1px solid var(--senary-contrast);
-  }
-
-  .docs-param-group {
-    margin-block-start: 1rem;
-  }
-
-  // If it's the only param group...
-  .docs-param-group:not(:has(~ .docs-param-group)) {
-    margin-block: 1rem;
-  }
-
-  .docs-return-type {
-    padding-block: 1rem;
-
-    // & does not follow a function definition
-    &:not(.docs-function-definition + .docs-return-type) {
-      border-block-start: 1px solid var(--senary-contrast);
-    }
-  }
-
-  .docs-param-keyword {
-    color: var(--primary-contrast);
-    font-family: var(--code-font);
-    margin-inline-end: 0.5rem;
-  }
-
-  .docs-param-name {
-    color: var(--vivid-pink);
-    font-family: var(--code-font);
-    margin-inline-end: 0.25rem;
-    &::after {
-      content: ':';
-    }
-  }
-
-  .docs-deprecated {
-    color: var(--page-background);
-    background-color: var(--quaternary-contrast);
-    width: max-content;
-    border-radius: 0.25rem;
-    padding: 0.1rem 0.25rem;
-    margin-block-start: 1rem;
-  }
-
-  // deprecated markers beside header
-  .docs-reference-header ~ .docs-deprecated {
-    margin-block-start: 0.5rem;
-  }
-
-  .docs-parameter-description {
-    p:first-child {
-      margin-block-start: 0;
-    }
-  }
-
-  .docs-ref-content {
-    padding: 1rem 0;
-
-    &:not(:first-child) {
-      border-block-start: 1px solid var(--senary-contrast);
-    }
-
-    .docs-param-keyword {
-      display: block;
-      margin: 0 0 0.5rem 0;
-    }
-  }
+  @include ref.reference-common();
+  @include ref.api-reference();
 }

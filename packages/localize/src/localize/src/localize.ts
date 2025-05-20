@@ -8,7 +8,7 @@
 
 import {findEndOfBlock} from '../../utils';
 
-/** @nodoc */
+/** @docs-private */
 export interface LocalizeFn {
   (messageParts: TemplateStringsArray, ...expressions: readonly any[]): string;
 
@@ -28,7 +28,7 @@ export interface LocalizeFn {
    *
    * The compile-time translation inliner is able to replace the following code:
    *
-   * ```
+   * ```ts
    * typeof $localize !== "undefined" && $localize.locale
    * ```
    *
@@ -41,7 +41,7 @@ export interface LocalizeFn {
   locale?: string;
 }
 
-/** @nodoc */
+/** @docs-private */
 export interface TranslateFn {
   (
     messageParts: TemplateStringsArray,

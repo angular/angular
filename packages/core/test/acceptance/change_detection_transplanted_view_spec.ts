@@ -27,10 +27,10 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {provideExperimentalCheckNoChangesForDebug} from '@angular/core/src/change_detection/scheduling/exhaustive_check_no_changes';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+} from '../../src/core';
+import {provideCheckNoChangesConfig} from '../../src/change_detection/provide_check_no_changes_config';
+import {ComponentFixture, TestBed} from '../../testing';
+import {expect} from '@angular/private/testing/matchers';
 import {of} from 'rxjs';
 
 describe('change detection for transplanted views', () => {
@@ -986,7 +986,6 @@ describe('change detection for transplanted views', () => {
 
     it('does not cause error if running change detection on detached view', () => {
       @Component({
-        standalone: true,
         selector: 'insertion',
         template: `<ng-container #vc></ng-container>`,
       })
@@ -999,7 +998,6 @@ describe('change detection for transplanted views', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
           <ng-template #transplantedTemplate></ng-template>
           <insertion [template]="transplantedTemplate"></insertion>
@@ -1017,7 +1015,6 @@ describe('change detection for transplanted views', () => {
 
     it('backwards reference still updated if detaching root during change detection', () => {
       @Component({
-        standalone: true,
         selector: 'insertion',
         template: `<ng-container #vc></ng-container>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
@@ -1033,7 +1030,6 @@ describe('change detection for transplanted views', () => {
       @Component({
         template: '<ng-template #template>{{value}}</ng-template>',
         selector: 'declaration',
-        standalone: true,
       })
       class Declaration {
         @ViewChild('template', {static: true}) transplantedTemplate!: TemplateRef<{}>;
@@ -1041,7 +1037,6 @@ describe('change detection for transplanted views', () => {
       }
 
       @Component({
-        standalone: true,
         template: `
           <insertion [template]="declaration?.transplantedTemplate"></insertion>
           <declaration [value]="value"></declaration>
@@ -1079,7 +1074,6 @@ describe('change detection for transplanted views', () => {
     @Component({
       selector: 'insertion',
       imports: [NgTemplateOutlet],
-      standalone: true,
       template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container>`,
     })
     class Insertion {
@@ -1090,7 +1084,6 @@ describe('change detection for transplanted views', () => {
     @Component({
       imports: [Insertion, AsyncPipe],
       template: `<ng-template #myTmpl> {{newObservable() | async}} </ng-template>`,
-      standalone: true,
       selector: 'declaration',
     })
     class Declaration {
@@ -1100,7 +1093,6 @@ describe('change detection for transplanted views', () => {
       }
     }
     @Component({
-      standalone: true,
       imports: [Declaration, Insertion],
       template: '<insertion [template]="declaration.template"/><declaration #declaration/>',
     })
@@ -1131,13 +1123,12 @@ describe('change detection for transplanted views', () => {
   });
   it('does not cause infinite loops with exhaustive checkNoChanges', async () => {
     TestBed.configureTestingModule({
-      providers: [provideExperimentalCheckNoChangesForDebug({interval: 1})],
+      providers: [provideCheckNoChangesConfig({interval: 1, exhaustive: true})],
     });
     const errorSpy = spyOn(console, 'error').and.callFake((...v) => {
       fail('console errored with ' + v);
     });
     @Component({
-      standalone: true,
       selector: 'insertion',
       template: `<ng-container #vc></ng-container>`,
       changeDetection: ChangeDetectionStrategy.OnPush,
@@ -1151,7 +1142,6 @@ describe('change detection for transplanted views', () => {
     }
 
     @Component({
-      standalone: true,
       template: `
           <ng-template #template>hello world</ng-template>
           <insertion [template]="transplantedTemplate"></insertion>

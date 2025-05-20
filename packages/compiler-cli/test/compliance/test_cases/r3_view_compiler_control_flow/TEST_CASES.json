@@ -54,7 +54,7 @@
           "files": [
             {
               "generated": "switch_with_pipe.js",
-              "expected": "switch_with_pipe_template.pipeline.js"
+              "expected": "switch_with_pipe_template.js"
             }
           ],
           "failureMessage": "Incorrect template"
@@ -144,7 +144,7 @@
           "files": [
             {
               "generated": "if_with_pipe.js",
-              "expected": "if_with_pipe_template.pipeline.js"
+              "expected": "if_with_pipe_template.js"
             }
           ],
           "failureMessage": "Incorrect template"
@@ -188,7 +188,7 @@
         {
           "files": [
             {
-              "expected": "if_nested_alias_listeners_template.pipeline.js",
+              "expected": "if_nested_alias_listeners_template.js",
               "generated": "if_nested_alias_listeners.js"
             }
           ],
@@ -278,7 +278,7 @@
         {
           "files": [
             {
-              "expected": "for_template_variables_template.pipeline.js",
+              "expected": "for_template_variables_template.js",
               "generated": "for_template_variables.js"
             }
           ],
@@ -293,7 +293,7 @@
         {
           "files": [
             {
-              "expected": "for_aliased_template_variables_template.pipeline.js",
+              "expected": "for_aliased_template_variables_template.js",
               "generated": "for_aliased_template_variables.js"
             }
           ],
@@ -338,7 +338,7 @@
         {
           "files": [
             {
-              "expected": "for_template_variables_listener_template.pipeline.js",
+              "expected": "for_template_variables_listener_template.js",
               "generated": "for_template_variables_listener.js"
             }
           ],
@@ -383,7 +383,7 @@
         {
           "files": [
             {
-              "expected": "for_template_variables_scope_template.pipeline.js",
+              "expected": "for_template_variables_scope_template.js",
               "generated": "for_template_variables_scope.js"
             }
           ],
@@ -686,6 +686,24 @@
             {
               "expected": "conditional_same_component_names.js",
               "generated": "conditional_same_component_names.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support expressions requiring temporary variables inside `track`",
+      "inputFiles": ["for_track_by_temporary_variables.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "for_track_by_temporary_variables_template.js",
+              "generated": "for_track_by_temporary_variables.js"
             }
           ]
         }

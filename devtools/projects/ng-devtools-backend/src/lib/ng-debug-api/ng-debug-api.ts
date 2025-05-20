@@ -6,43 +6,72 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {ɵGlobalDevModeUtils as GlobalDevModeUtils} from '@angular/core';
+import type {ɵFrameworkAgnosticGlobalUtils as GlobalUtils} from '@angular/core';
+import {getRoots} from '../component-tree/get-roots';
+import {Framework} from '../component-tree/core-enums';
 
-/**
- * Returns a handle to window.ng APIs (global angular debugging).
- *
- * @returns window.ng
- */
-export const ngDebugClient = () => (window as any as GlobalDevModeUtils).ng;
+/** Returns a handle to window.ng APIs (global angular debugging). */
+export const ngDebugClient = () => (window as any).ng as Partial<GlobalUtils>;
 
-/**
- * Checks whether a given debug API is supported within window.ng
- *
- * @returns boolean
- */
-export function ngDebugApiIsSupported(api: keyof GlobalDevModeUtils['ng']): boolean {
-  const ng = ngDebugClient();
+/** Type guard that checks whether a given debug API is supported within window.ng */
+export function ngDebugApiIsSupported<T extends Partial<GlobalUtils>, K extends keyof T>(
+  ng: T,
+  api: K,
+): ng is T & Record<K, NonNullable<T[K]>> {
   return typeof ng[api] === 'function';
 }
 
-/**
- * Checks whether Dependency Injection debug API is supported within window.ng
- *
- * @returns boolean
- */
+/** Checks whether Dependency Injection debug API is supported within window.ng */
 export function ngDebugDependencyInjectionApiIsSupported(): boolean {
-  if (!ngDebugApiIsSupported('ɵgetInjectorResolutionPath')) {
+  const ng = ngDebugClient();
+  if (!ngDebugApiIsSupported(ng, 'getInjector')) {
     return false;
   }
-  if (!ngDebugApiIsSupported('ɵgetDependenciesFromInjectable')) {
+  if (!ngDebugApiIsSupported(ng, 'ɵgetInjectorResolutionPath')) {
     return false;
   }
-  if (!ngDebugApiIsSupported('ɵgetInjectorProviders')) {
+  if (!ngDebugApiIsSupported(ng, 'ɵgetDependenciesFromInjectable')) {
     return false;
   }
-  if (!ngDebugApiIsSupported('ɵgetInjectorMetadata')) {
+  if (!ngDebugApiIsSupported(ng, 'ɵgetInjectorProviders')) {
+    return false;
+  }
+  if (!ngDebugApiIsSupported(ng, 'ɵgetInjectorMetadata')) {
     return false;
   }
 
   return true;
+}
+
+/** Checks whether Profiler API is supported within window.ng */
+export function ngDebugProfilerApiIsSupported(): boolean {
+  const ng = ngDebugClient();
+
+  // Temporary solution. Convert to an eligible API when available.
+  // https://github.com/angular/angular/pull/60585#discussion_r2017047132
+  // If there is a Wiz application, make Profiler API unavailable.
+  const roots = getRoots();
+  return (
+    !!roots.length &&
+    !roots.some((el) => {
+      const comp = ng.getComponent!(el)!;
+      return ng.getDirectiveMetadata?.(comp)?.framework === Framework.Wiz;
+    })
+  );
+}
+
+/** Checks whether Router API is supported within window.ng */
+export function ngDebugRoutesApiIsSupported(): boolean {
+  const ng = ngDebugClient();
+
+  // Temporary solution. Convert to `ɵgetLoadedRoutes` when available.
+  // If there is a Wiz application, make Routes API unavailable.
+  const roots = getRoots();
+  return (
+    !!roots.length &&
+    !roots.some((el) => {
+      const comp = ng.getComponent!(el)!;
+      return ng.getDirectiveMetadata?.(comp)?.framework === Framework.Wiz;
+    })
+  );
 }

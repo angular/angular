@@ -28,11 +28,9 @@ import type {
   DependencyTypeList,
   DirectiveDef,
   DirectiveDefFeature,
-  DirectiveDefListOrFactory,
   HostBindingsFunction,
   InputTransformFunction,
   PipeDef,
-  PipeDefListOrFactory,
   TypeOrFactory,
   ViewQueriesFunction,
 } from './interfaces/definition';
@@ -242,7 +240,7 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
    *
    * This function has following structure.
    *
-   * ```
+   * ```ts
    * function Template<T>(ctx:T, creationMode: boolean) {
    *   if (creationMode) {
    *     // Contains creation mode instructions.
@@ -286,7 +284,7 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
   features?: ComponentDefFeature[];
 
   /**
-   * Defines template and style encapsulation options available for Component's {@link Component}.
+   * Defines template and style encapsulation options available for Component's {@link /api/core/Component Component}.
    */
   encapsulation?: ViewEncapsulation;
 
@@ -382,8 +380,8 @@ export function ɵɵdefineComponent<T>(
 
     initFeatures(def);
     const dependencies = componentDefinition.dependencies;
-    def.directiveDefs = extractDefListOrFactory(dependencies, /* pipeDef */ false);
-    def.pipeDefs = extractDefListOrFactory(dependencies, /* pipeDef */ true);
+    def.directiveDefs = extractDefListOrFactory(dependencies, extractDirectiveDef);
+    def.pipeDefs = extractDefListOrFactory(dependencies, getPipeDef);
     def.id = getComponentId(def);
 
     return def;
@@ -392,10 +390,6 @@ export function ɵɵdefineComponent<T>(
 
 export function extractDirectiveDef(type: Type<any>): DirectiveDef<any> | ComponentDef<any> | null {
   return getComponentDef(type) || getDirectiveDef(type);
-}
-
-function nonNull<T>(value: T | null): value is T {
-  return value !== null;
 }
 
 /**
@@ -508,45 +502,50 @@ export function ɵɵdefineNgModule<T>(def: {
  *
 
  */
-function parseAndConvertBindingsForDefinition<T>(
-  obj: DirectiveDefinition<T>['outputs'] | undefined,
-): Record<keyof T, string>;
-function parseAndConvertBindingsForDefinition<T>(
-  obj: DirectiveInputs<T> | undefined,
+function parseAndConvertInputsForDefinition<T>(
+  obj: DirectiveDefinition<T>['inputs'],
   declaredInputs: Record<string, string>,
-): Record<keyof T, string | [minifiedName: string, flags: InputFlags]>;
-
-function parseAndConvertBindingsForDefinition<T>(
-  obj: undefined | DirectiveInputs<T> | DirectiveDefinition<T>['outputs'],
-  declaredInputs?: Record<string, string>,
-): Record<keyof T, string | [minifiedName: string, flags: InputFlags]> {
+) {
   if (obj == null) return EMPTY_OBJ as any;
-  const newLookup: any = {};
+  const newLookup: Record<
+    string,
+    [minifiedName: string, flags: InputFlags, transform: InputTransformFunction | null]
+  > = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {
       const value = obj[minifiedKey]!;
       let publicName: string;
       let declaredName: string;
-      let inputFlags = InputFlags.None;
+      let inputFlags: InputFlags;
+      let transform: InputTransformFunction | null;
 
       if (Array.isArray(value)) {
         inputFlags = value[0];
         publicName = value[1];
         declaredName = value[2] ?? publicName; // declared name might not be set to save bytes.
+        transform = value[3] || null;
       } else {
         publicName = value;
         declaredName = value;
+        inputFlags = InputFlags.None;
+        transform = null;
       }
 
-      // For inputs, capture the declared name, or if some flags are set.
-      if (declaredInputs) {
-        // Perf note: An array is only allocated for the input if there are flags.
-        newLookup[publicName] =
-          inputFlags !== InputFlags.None ? [minifiedKey, inputFlags] : minifiedKey;
-        declaredInputs[publicName] = declaredName as string;
-      } else {
-        newLookup[publicName] = minifiedKey;
-      }
+      newLookup[publicName] = [minifiedKey, inputFlags, transform];
+      declaredInputs[publicName] = declaredName as string;
+    }
+  }
+  return newLookup;
+}
+
+function parseAndConvertOutputsForDefinition<T>(
+  obj: DirectiveDefinition<T>['outputs'],
+): Record<keyof T, string> {
+  if (obj == null) return EMPTY_OBJ as any;
+  const newLookup: any = {};
+  for (const minifiedKey in obj) {
+    if (obj.hasOwnProperty(minifiedKey)) {
+      newLookup[obj[minifiedKey]!] = minifiedKey;
     }
   }
   return newLookup;
@@ -632,7 +631,6 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     hostAttrs: directiveDefinition.hostAttrs || null,
     contentQueries: directiveDefinition.contentQueries || null,
     declaredInputs: declaredInputs,
-    inputTransforms: null,
     inputConfig: directiveDefinition.inputs || EMPTY_OBJ,
     exportAs: directiveDefinition.exportAs || null,
     standalone: directiveDefinition.standalone ?? true,
@@ -641,10 +639,10 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     viewQuery: directiveDefinition.viewQuery || null,
     features: directiveDefinition.features || null,
     setInput: null,
-    findHostDirectiveDefs: null,
+    resolveHostDirectives: null,
     hostDirectives: null,
-    inputs: parseAndConvertBindingsForDefinition(directiveDefinition.inputs, declaredInputs),
-    outputs: parseAndConvertBindingsForDefinition(directiveDefinition.outputs),
+    inputs: parseAndConvertInputsForDefinition(directiveDefinition.inputs, declaredInputs),
+    outputs: parseAndConvertOutputsForDefinition(directiveDefinition.outputs),
     debugInfo: null,
   };
 }
@@ -653,28 +651,27 @@ function initFeatures<T>(definition: DirectiveDef<T> | ComponentDef<T>): void {
   definition.features?.forEach((fn) => fn(definition));
 }
 
-export function extractDefListOrFactory(
+export function extractDefListOrFactory<T>(
   dependencies: TypeOrFactory<DependencyTypeList> | undefined,
-  pipeDef: false,
-): DirectiveDefListOrFactory | null;
-export function extractDefListOrFactory(
-  dependencies: TypeOrFactory<DependencyTypeList> | undefined,
-  pipeDef: true,
-): PipeDefListOrFactory | null;
-export function extractDefListOrFactory(
-  dependencies: TypeOrFactory<DependencyTypeList> | undefined,
-  pipeDef: boolean,
-): unknown {
+  defExtractor: (type: Type<unknown>) => T | null,
+): (() => T[]) | T[] | null {
   if (!dependencies) {
     return null;
   }
 
-  const defExtractor = pipeDef ? getPipeDef : extractDirectiveDef;
+  return () => {
+    const resolvedDependencies = typeof dependencies === 'function' ? dependencies() : dependencies;
+    const result: T[] = [];
 
-  return () =>
-    (typeof dependencies === 'function' ? dependencies() : dependencies)
-      .map((dep) => defExtractor(dep))
-      .filter(nonNull);
+    for (const dep of resolvedDependencies) {
+      const definition = defExtractor(dep);
+      if (definition !== null) {
+        result.push(definition);
+      }
+    }
+
+    return result;
+  };
 }
 
 /**
@@ -750,7 +747,13 @@ function getComponentId<T>(componentDef: ComponentDef<T>): string {
 
   const compId = 'c' + hash;
 
-  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  if (
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    // Skip the check on the server since we can't guarantee the same component instance between
+    // requests. Note that we can't use DI to check if we're on the server, because the component
+    // hasn't been instantiated yet.
+    (typeof ngServerMode === 'undefined' || !ngServerMode)
+  ) {
     if (GENERATED_COMP_IDS.has(compId)) {
       const previousCompDefType = GENERATED_COMP_IDS.get(compId)!;
       if (previousCompDefType !== componentDef.type) {

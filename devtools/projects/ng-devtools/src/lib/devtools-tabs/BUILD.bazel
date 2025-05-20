@@ -1,16 +1,19 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
     name = "devtools_tabs_component_styles",
     src = "devtools-tabs.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
 )
 
-ng_module(
+ng_project(
     name = "devtools-tabs",
     srcs = [
         "devtools-tabs.component.ts",
@@ -19,42 +22,47 @@ ng_module(
         "devtools-tabs.component.html",
         ":devtools_tabs_component_styles",
     ],
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib:frame_manager",
-        "//devtools/projects/ng-devtools/src/lib:theme",
-        "//devtools/projects/ng-devtools/src/lib/application-environment",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree:injector_tree",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/common",
         "//packages/core",
         "//packages/core/src/util",
-        "@npm//@angular/material",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//:node_modules/@types/chrome",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer:directive-explorer_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree:injector_tree_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler:profiler_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree:router-tree_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update:tab-update_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
 ts_test_library(
     name = "devtools_tabs_test",
     srcs = ["devtools-tabs.spec.ts"],
-    deps = [
+    interop_deps = [
+        "//packages/core",
         ":devtools-tabs",
-        "//devtools/projects/ng-devtools/src/lib:frame_manager",
-        "//devtools/projects/ng-devtools/src/lib:theme",
-        "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
-        "//devtools/projects/protocol",
-        "//packages/common",
-        "//packages/core",
         "//packages/core/src/util",
         "//packages/core/testing",
-        "@npm//@angular/material",
-        "@npm//rxjs",
+        "//packages/common",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
+    ],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

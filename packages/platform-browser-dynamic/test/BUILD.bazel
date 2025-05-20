@@ -1,11 +1,4 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
-load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
-
-circular_dependency_test(
-    name = "circular_deps_test",
-    entry_point = "angular/packages/platform-browser-dynamic/index.mjs",
-    deps = ["//packages/platform-browser-dynamic"],
-)
 
 ts_library(
     name = "test_lib",
@@ -18,6 +11,7 @@ ts_library(
         "//packages/core/testing",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
     ],

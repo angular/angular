@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '@angular/core';
+import {Component} from '../../../src/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({

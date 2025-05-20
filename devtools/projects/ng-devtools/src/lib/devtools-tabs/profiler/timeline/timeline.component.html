@@ -1,3 +1,5 @@
+@let frame = this.frame();
+
 @if (!hasFrames() && !visualizing()) {
   <ng-recording-modal />
 }
@@ -7,7 +9,7 @@
 <div class="timeline-wrapper">
   <ng-timeline-controls
     [class.hidden]="!hasFrames()"
-    [record]="frame()"
+    [record]="frame!"
     [empty]="!hasFrames()"
     [estimatedFrameRate]="currentFrameRate()"
     [(visualizationMode)]="visualizationMode"
@@ -20,12 +22,12 @@
     [graphData]="graphData()"
     (selectFrames)="selectFrames.set($event.indexes)"
   />
-  @if (hasFrames() && !frame()) {
+  @if (hasFrames() && !frame) {
     <p class="info">Select a bar to preview a particular change detection cycle.</p>
-  } @else if (hasFrames() && frame()) {
+  } @else if (hasFrames() && frame) {
     <ng-timeline-visualizer
       [visualizationMode]="visualizationMode()"
-      [frame]="frame()"
+      [frame]="frame"
       [changeDetection]="changeDetection()"
     />
   }

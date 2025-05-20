@@ -25,12 +25,13 @@ import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '
 import {
   ChangeDetectionScheduler,
   NotificationSource,
-  ZONELESS_ENABLED,
   PROVIDED_ZONELESS,
-  ZONELESS_SCHEDULER_DISABLED,
   SCHEDULE_IN_ROOT_ZONE,
+  ZONELESS_ENABLED,
+  ZONELESS_SCHEDULER_DISABLED,
 } from './zoneless_scheduling';
 import {TracingService} from '../../application/tracing';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -57,6 +58,7 @@ function trackMicrotaskNotificationForDebugging() {
 
 @Injectable({providedIn: 'root'})
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
+  private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly appRef = inject(ApplicationRef);
   private readonly taskService = inject(PendingTasksInternal);
   private readonly ngZone = inject(NgZone);
@@ -138,13 +140,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       case NotificationSource.Listener:
       case NotificationSource.SetInput: {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeCheck;
-        break;
-      }
-      case NotificationSource.DeferredRenderHook: {
-        // Render hooks are "deferred" when they're triggered from other render hooks. Using the
-        // deferred dirty flags ensures that adding new hooks doesn't automatically trigger a loop
-        // inside tick().
-        this.appRef.deferredDirtyFlags |= ApplicationRefDirtyFlags.AfterRender;
         break;
       }
       case NotificationSource.CustomElement: {
@@ -299,7 +294,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       );
     } catch (e: unknown) {
       this.taskService.remove(task);
-      throw e;
+      this.applicationErrorHandler(e);
     } finally {
       this.cleanup();
     }
@@ -366,7 +361,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * @usageNotes
  * ```ts
  * bootstrapApplication(MyApp, {providers: [
- *   provideExperimentalZonelessChangeDetection(),
+ *   provideZonelessChangeDetection(),
  * ]});
  * ```
  *
@@ -374,11 +369,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * in patch versions. There are known feature gaps and API ergonomic considerations. We will iterate
  * on the exact API based on the feedback and our understanding of the problem and solution space.
  *
- * @publicApi
- * @experimental
- * @see [bootstrapApplication](/api/platform-browser/bootstrapApplication)
+ * @developerPreview 20.0
+ * @see {@link /api/platform-browser/bootstrapApplication bootstrapApplication}
  */
-export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders {
+export function provideZonelessChangeDetection(): EnvironmentProviders {
   performanceMarkFeature('NgZoneless');
 
   if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof Zone !== 'undefined' && Zone) {

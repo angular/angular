@@ -13,6 +13,17 @@ export const transitionAnimation = animation([
 ]);
 // #enddocregion animation-const
 
+// #docregion animation-example
+export const sharedAnimation = animation([
+  style({
+    height: 0,
+    opacity: 1,
+    backgroundColor: 'red',
+  }),
+  animate('1s'),
+]);
+// #enddocregion animation-example
+
 // #docregion trigger-const
 export const triggerAnimation = trigger('openClose', [
   transition('open => closed', [

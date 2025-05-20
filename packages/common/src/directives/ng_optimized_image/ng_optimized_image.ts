@@ -7,34 +7,32 @@
  */
 
 import {
+  ApplicationRef,
   booleanAttribute,
+  ChangeDetectorRef,
+  DestroyRef,
   Directive,
   ElementRef,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵIMAGE_CONFIG as IMAGE_CONFIG,
+  ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS,
+  ɵImageConfig as ImageConfig,
   inject,
   Injector,
   Input,
   NgZone,
   numberAttribute,
   OnChanges,
-  OnDestroy,
   OnInit,
-  PLATFORM_ID,
-  Renderer2,
-  SimpleChanges,
-  ɵformatRuntimeError as formatRuntimeError,
-  ɵIMAGE_CONFIG as IMAGE_CONFIG,
-  ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS,
-  ɵImageConfig as ImageConfig,
   ɵperformanceMarkFeature as performanceMarkFeature,
+  Renderer2,
   ɵRuntimeError as RuntimeError,
   ɵSafeValue as SafeValue,
+  SimpleChanges,
   ɵunwrapSafeValue as unwrapSafeValue,
-  ChangeDetectorRef,
-  ApplicationRef,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
-import {isPlatformServer} from '../../platform_id';
 
 import {imgDirectiveDetails} from './error_helper';
 import {cloudinaryLoaderInfo} from './image_loaders/cloudinary_loader';
@@ -112,11 +110,6 @@ const OVERSIZED_IMAGE_TOLERANCE = 1000;
  */
 const FIXED_SRCSET_WIDTH_LIMIT = 1920;
 const FIXED_SRCSET_HEIGHT_LIMIT = 1080;
-
-/**
- * Default blur radius of the CSS filter used on placeholder images, in pixels
- */
-export const PLACEHOLDER_BLUR_AMOUNT = 15;
 
 /**
  * Placeholder dimension (height or width) limit in pixels. Angular produces a warning
@@ -281,20 +274,20 @@ export interface ImagePlaceholderConfig {
     '[style.background-position]': 'placeholder ? "50% 50%" : null',
     '[style.background-repeat]': 'placeholder ? "no-repeat" : null',
     '[style.background-image]': 'placeholder ? generatePlaceholder(placeholder) : null',
-    '[style.filter]': `placeholder && shouldBlurPlaceholder(placeholderConfig) ? "blur(${PLACEHOLDER_BLUR_AMOUNT}px)" : null`,
+    '[style.filter]':
+      'placeholder && shouldBlurPlaceholder(placeholderConfig) ? "blur(15px)" : null',
   },
 })
-export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
+export class NgOptimizedImage implements OnInit, OnChanges {
   private imageLoader = inject(IMAGE_LOADER);
   private config: ImageConfig = processConfig(inject(IMAGE_CONFIG));
   private renderer = inject(Renderer2);
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
-  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
-  private readonly preloadLinkCreator = inject(PreloadLinkCreator);
 
-  // a LCP image observer - should be injected only in the dev mode
-  private lcpObserver = ngDevMode ? this.injector.get(LCPImageObserver) : null;
+  // An LCP image observer should be injected only in development mode.
+  // Do not assign it to `null` to avoid having a redundant property in the production bundle.
+  private lcpObserver?: LCPImageObserver;
 
   /**
    * Calculate the rewritten `src` once and store it.
@@ -317,7 +310,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * descriptors to generate the final `srcset` property of the image.
    *
    * Example:
-   * ```
+   * ```html
    * <img ngSrc="hello.jpg" ngSrcset="100w, 200w" />  =>
    * <img src="path/hello.jpg" srcset="path/hello.jpg?w=100 100w, path/hello.jpg?w=200 200w" />
    * ```
@@ -400,7 +393,22 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    */
   @Input() srcset?: string;
 
-  /** @nodoc */
+  constructor() {
+    if (ngDevMode) {
+      this.lcpObserver = this.injector.get(LCPImageObserver);
+
+      // Using `DestroyRef` to avoid having an empty `ngOnDestroy` method since this
+      // is only run in development mode.
+      const destroyRef = inject(DestroyRef);
+      destroyRef.onDestroy(() => {
+        if (!this.priority && this._renderedSrc !== null) {
+          this.lcpObserver!.unregisterImage(this._renderedSrc);
+        }
+      });
+    }
+  }
+
+  /** @docs-private */
   ngOnInit() {
     performanceMarkFeature('NgOptimizedImage');
 
@@ -444,18 +452,15 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
       assertNoLoaderParamsWithoutLoader(this, this.imageLoader);
 
-      if (this.lcpObserver !== null) {
-        const ngZone = this.injector.get(NgZone);
-        ngZone.runOutsideAngular(() => {
-          this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc, this.priority);
-        });
-      }
+      ngZone.runOutsideAngular(() => {
+        this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc, this.priority);
+      });
 
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
 
-        if (!this.isServer) {
+        if (typeof ngServerMode !== 'undefined' && !ngServerMode) {
           const applicationRef = this.injector.get(ApplicationRef);
           assetPriorityCountBelowThreshold(applicationRef);
         }
@@ -504,8 +509,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       }
     }
 
-    if (this.isServer && this.priority) {
-      this.preloadLinkCreator.createPreloadLinkTag(
+    if (typeof ngServerMode !== 'undefined' && ngServerMode && this.priority) {
+      const preloadLinkCreator = this.injector.get(PreloadLinkCreator);
+      preloadLinkCreator.createPreloadLinkTag(
         this.renderer,
         this.getRewrittenSrc(),
         rewrittenSrcset,
@@ -514,7 +520,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
     if (ngDevMode) {
       assertNoPostInitInputChange(this, changes, [
@@ -532,16 +538,24 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     if (changes['ngSrc'] && !changes['ngSrc'].isFirstChange()) {
       const oldSrc = this._renderedSrc;
       this.updateSrcAndSrcset(true);
-      const newSrc = this._renderedSrc;
-      if (this.lcpObserver !== null && oldSrc && newSrc && oldSrc !== newSrc) {
-        const ngZone = this.injector.get(NgZone);
-        ngZone.runOutsideAngular(() => {
-          this.lcpObserver?.updateImage(oldSrc, newSrc);
-        });
+
+      if (ngDevMode) {
+        const newSrc = this._renderedSrc;
+        if (oldSrc && newSrc && oldSrc !== newSrc) {
+          const ngZone = this.injector.get(NgZone);
+          ngZone.runOutsideAngular(() => {
+            this.lcpObserver!.updateImage(oldSrc, newSrc);
+          });
+        }
       }
     }
 
-    if (ngDevMode && changes['placeholder']?.currentValue && !this.isServer) {
+    if (
+      ngDevMode &&
+      changes['placeholder']?.currentValue &&
+      typeof ngServerMode !== 'undefined' &&
+      !ngServerMode
+    ) {
       assertPlaceholderDimensions(this, this.imgElement);
     }
   }
@@ -669,7 +683,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * * A base64 encoded image, which is wrapped and passed through.
    * * A boolean. If true, calls the image loader to generate a small placeholder url.
    */
-  private generatePlaceholder(placeholderInput: string | boolean): string | boolean | null {
+  protected generatePlaceholder(placeholderInput: string | boolean): string | boolean | null {
     const {placeholderResolution} = this.config;
     if (placeholderInput === true) {
       return `url(${this.callImageLoader({
@@ -687,7 +701,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * Determines if blur should be applied, based on an optional boolean
    * property `blur` within the optional configuration object `placeholderConfig`.
    */
-  private shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean {
+  protected shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean {
     if (!placeholderConfig || !placeholderConfig.hasOwnProperty('blur')) {
       return true;
     }
@@ -707,15 +721,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     const removeErrorListenerFn = this.renderer.listen(img, 'error', callback);
 
     callOnLoadIfImageIsLoaded(img, callback);
-  }
-
-  /** @nodoc */
-  ngOnDestroy() {
-    if (ngDevMode) {
-      if (!this.priority && this._renderedSrc !== null && this.lcpObserver !== null) {
-        this.lcpObserver.unregisterImage(this._renderedSrc);
-      }
-    }
   }
 
   private setHostAttribute(name: string, value: string): void {
@@ -971,7 +976,7 @@ function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} 
     `${imgDirectiveDetails(dir.ngSrc)} \`${inputName}\` was updated after initialization. ` +
       `The NgOptimizedImage directive will not react to this input change. ${reason} ` +
       `To fix this, either switch \`${inputName}\` to a static value ` +
-      `or wrap the image element in an *ngIf that is gated on the necessary value.`,
+      `or wrap the image element in an @if that is gated on the necessary value.`,
   );
 }
 

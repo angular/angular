@@ -130,6 +130,9 @@ export interface ParseTemplateOptions {
 
   /** Whether the `@let` syntax is enabled. */
   enableLetSyntax?: boolean;
+
+  /** Whether the selectorless syntax is enabled. */
+  enableSelectorless?: boolean;
 }
 
 /**
@@ -145,7 +148,8 @@ export function parseTemplate(
   options: ParseTemplateOptions = {},
 ): ParsedTemplate {
   const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
-  const bindingParser = makeBindingParser(interpolationConfig);
+  const selectorlessEnabled = options.enableSelectorless ?? false;
+  const bindingParser = makeBindingParser(interpolationConfig, selectorlessEnabled);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, {
     leadingTriviaChars: LEADING_TRIVIA_CHARS,
@@ -153,6 +157,7 @@ export function parseTemplate(
     tokenizeExpansionForms: true,
     tokenizeBlocks: options.enableBlockSyntax ?? true,
     tokenizeLet: options.enableLetSyntax ?? true,
+    selectorlessEnabled,
   });
 
   if (
@@ -289,8 +294,14 @@ const elementRegistry = new DomElementSchemaRegistry();
  */
 export function makeBindingParser(
   interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
+  selectorlessEnabled = false,
 ): BindingParser {
-  return new BindingParser(new Parser(new Lexer()), interpolationConfig, elementRegistry, []);
+  return new BindingParser(
+    new Parser(new Lexer(), selectorlessEnabled),
+    interpolationConfig,
+    elementRegistry,
+    [],
+  );
 }
 
 /**

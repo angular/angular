@@ -10,12 +10,11 @@ import {
   AnimationEvent,
   AnimationMetadata,
   AnimationTriggerMetadata,
-  NoopAnimationPlayer,
   state,
   style,
   transition,
   trigger,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 import {TriggerAst} from '../../src/dsl/animation_ast';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
@@ -30,6 +29,7 @@ import {
   TransitionAnimationPlayer,
 } from '../../src/render/transition_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
+import {isNode} from '@angular/private/testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 

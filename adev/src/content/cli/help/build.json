@@ -42,6 +42,11 @@
       "description": "Automatically clear the terminal screen during rebuilds."
     },
     {
+      "name": "conditions",
+      "type": "array",
+      "description": "Custom package resolution conditions used to resolve conditional exports/imports. Defaults to ['module', 'development'/'production']. The following special conditions are always present if the requirements are satisfied: 'default', 'import', 'require', 'browser', 'node'."
+    },
+    {
       "name": "configuration",
       "type": "string",
       "aliases": [
@@ -84,7 +89,7 @@
     {
       "name": "external-dependencies",
       "type": "array",
-      "description": "Exclude the listed external dependencies from being bundled into the bundle. Instead, the created bundle relies on these dependencies to be available during runtime."
+      "description": "Exclude the listed external dependencies from being bundled into the bundle. Instead, the created bundle relies on these dependencies to be available during runtime. Note: `@foo/bar` marks all paths within the `@foo/bar` package as external, including sub-paths like `@foo/bar/baz`."
     },
     {
       "name": "extract-licenses",

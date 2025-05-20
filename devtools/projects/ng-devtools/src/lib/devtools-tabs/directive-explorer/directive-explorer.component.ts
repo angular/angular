@@ -27,11 +27,11 @@ import {
   MessageBus,
   PropertyQuery,
   PropertyQueryTypes,
-} from 'protocol';
+} from '../../../../../protocol';
 
 import {SplitComponent} from '../../../lib/vendor/angular-split/public_api';
 import {ApplicationOperations} from '../../application-operations/index';
-import {FrameManager} from '../../frame_manager';
+import {FrameManager} from '../../application-services/frame_manager';
 
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {FlatNode} from './directive-forest/component-data-source';
@@ -46,6 +46,8 @@ import {PropertyTabComponent} from './property-tab/property-tab.component';
 import {SplitAreaDirective} from '../../vendor/angular-split/lib/component/splitArea.directive';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
+import {Platform} from '@angular/cdk/platform';
+import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -81,6 +83,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     PropertyTabComponent,
     MatSlideToggle,
     FormsModule,
+    MatSnackBarModule,
   ],
 })
 export class DirectiveExplorerComponent {
@@ -108,6 +111,10 @@ export class DirectiveExplorerComponent {
   private readonly _propResolver = inject(ElementPropertyResolver);
   private readonly _frameManager = inject(FrameManager);
 
+  private readonly platform = inject(Platform);
+
+  private readonly snackBar = inject(MatSnackBar);
+
   constructor() {
     afterRenderEffect((cleanup) => {
       const splitElement = this.splitElementRef().nativeElement;
@@ -132,6 +139,10 @@ export class DirectiveExplorerComponent {
 
     this.subscribeToBackendEvents();
     this.refresh();
+  }
+
+  private isNonTopLevelFirefoxFrame() {
+    return this.platform.FIREFOX && !this._frameManager.topLevelFrameIsActive();
   }
 
   handleNodeSelection(node: IndexedNode | null): void {
@@ -191,37 +202,43 @@ export class DirectiveExplorerComponent {
       (directive) => directive.name === directiveName,
     );
 
-    const selectedFrame = this._frameManager.selectedFrame;
-    if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
-      this._messageBus.emit('log', [
-        {
-          level: 'warn',
-          message: `The currently inspected frame does not have a unique url on this page. Cannot view source.`,
-        },
-      ]);
+    const selectedFrame = this._frameManager.selectedFrame();
+    if (!this._frameManager.activeFrameHasUniqueUrl()) {
+      const error = `The currently inspected frame does not have a unique url on this page. Cannot view source.`;
+      this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
-    this._appOperations.viewSource(
-      selectedEl.position,
-      directiveIndex !== -1 ? directiveIndex : undefined,
-      new URL(selectedFrame!.url),
-    );
+    if (this.isNonTopLevelFirefoxFrame()) {
+      const error = `Viewing source is not supported in Firefox when the inspected frame is not the top-level frame.`;
+      this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+    } else {
+      this._appOperations.viewSource(
+        selectedEl.position,
+        selectedFrame!,
+        directiveIndex !== -1 ? directiveIndex : undefined,
+      );
+    }
   }
 
   handleSelectDomElement(node: IndexedNode): void {
-    const selectedFrame = this._frameManager.selectedFrame;
-    if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
-      this._messageBus.emit('log', [
-        {
-          level: 'warn',
-          message: `The currently inspected frame does not have a unique url on this page. Cannot select DOM element.`,
-        },
-      ]);
+    const selectedFrame = this._frameManager.selectedFrame();
+    if (!this._frameManager.activeFrameHasUniqueUrl()) {
+      const error = `The currently inspected frame does not have a unique url on this page. Cannot select DOM element.`;
+      this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
-    this._appOperations.selectDomElement(node.position, new URL(selectedFrame!.url));
+    if (this.isNonTopLevelFirefoxFrame()) {
+      const error = `Inspecting a component's DOM element is not supported in Firefox when the inspected frame is not the top-level frame.`;
+      this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+    } else {
+      this._appOperations.selectDomElement(node.position, selectedFrame!);
+    }
   }
 
   highlight(node: FlatNode): void {
@@ -274,7 +291,7 @@ export class DirectiveExplorerComponent {
   }
 
   handleSelect(node: FlatNode): void {
-    this.directiveForest()?.handleSelect(node);
+    this.directiveForest()?.selectAndEnsureVisible(node);
   }
 
   handleSetParents(parents: FlatNode[] | null): void {
@@ -290,18 +307,22 @@ export class DirectiveExplorerComponent {
   }): void {
     const objectPath = constructPathOfKeysToPropertyValue(node.prop);
 
-    const selectedFrame = this._frameManager.selectedFrame;
-    if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
-      this._messageBus.emit('log', [
-        {
-          level: 'warn',
-          message: `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`,
-        },
-      ]);
+    const selectedFrame = this._frameManager.selectedFrame();
+
+    if (!this._frameManager.activeFrameHasUniqueUrl()) {
+      const error = `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`;
+      this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
-    this._appOperations.inspect(directivePosition, objectPath, new URL(selectedFrame!.url));
+    if (this.isNonTopLevelFirefoxFrame()) {
+      const error = `Inspecting object is not supported in Firefox when the inspected frame is not the top-level frame.`;
+      this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+    } else {
+      this._appOperations.inspect(directivePosition, objectPath, selectedFrame!);
+    }
   }
 
   hightlightHydrationNodes() {

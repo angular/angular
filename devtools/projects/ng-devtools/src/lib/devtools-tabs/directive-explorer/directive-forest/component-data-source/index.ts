@@ -10,7 +10,7 @@ import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DefaultIterableDiffer, TrackByFunction} from '@angular/core';
 import {MatTreeFlattener} from '@angular/material/tree';
-import {DevToolsNode, HydrationStatus} from 'protocol';
+import {DeferInfo, DevToolsNode, HydrationStatus} from '../../../../../../../protocol';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -22,12 +22,15 @@ export interface FlatNode {
   id: string;
   expandable: boolean;
   name: string;
-  directives: string;
+  directives: string[];
   position: number[];
   level: number;
   original: IndexedNode;
   newItem?: boolean;
   hydration: HydrationStatus;
+  defer: DeferInfo | null;
+  onPush?: boolean;
+  hasNativeElement: boolean;
 }
 
 const expandable = (node: IndexedNode) => !!node.children && node.children.length > 0;
@@ -36,6 +39,12 @@ const trackBy: TrackByFunction<FlatNode> = (_: number, item: FlatNode) =>
   `${item.id}#${item.expandable}`;
 
 const getId = (node: IndexedNode) => {
+  if (node.defer) {
+    return node.defer.id;
+  } else if (node.hydration?.status === 'dehydrated') {
+    return node.position.join('-');
+  }
+
   let prefix = '';
   if (node.component) {
     prefix = node.component.id.toString();
@@ -90,10 +99,13 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         // and the reference is preserved after transformation.
         position: node.position,
         name: node.component ? node.component.name : node.element,
-        directives: node.directives.map((d) => d.name).join(', '),
+        directives: node.directives.map((d) => d.name),
         original: node,
         level,
         hydration: node.hydration,
+        defer: node.defer,
+        onPush: node.onPush,
+        hasNativeElement: node.hasNativeElement,
       };
       this._nodeToFlat.set(node, flatNode);
       return flatNode;

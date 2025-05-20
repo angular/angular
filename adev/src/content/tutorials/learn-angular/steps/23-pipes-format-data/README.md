@@ -2,6 +2,8 @@
 
 You can take your use of pipes even further by configuring them. Pipes can be configured by passing options to them.
 
+Note: Learn more about [formatting data with pipes in the in-depth guide](/guide/templates/pipes).
+
 In this activity, you will work with some pipes and pipe parameters.
 
 <hr>
@@ -20,7 +22,7 @@ Time to customize some pipe output:
 
 <docs-step title="Format a number with `DecimalPipe`">
 
-In `app.component.ts`, update the template to include parameter for the `decimal` pipe.
+In `app.ts`, update the template to include parameter for the `decimal` pipe.
 
 <docs-code language="ts" highlight="[3]">
 template: `
@@ -29,7 +31,7 @@ template: `
 `
 </docs-code>
 
-Note: What's that format? The parameter for the `DecimalPipe` is called `digitsInfo`, this parameter uses the format: `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`
+NOTE: What's that format? The parameter for the `DecimalPipe` is called `digitsInfo`, this parameter uses the format: `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`
 
 </docs-step>
 

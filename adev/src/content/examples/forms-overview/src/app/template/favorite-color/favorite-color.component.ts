@@ -1,12 +1,13 @@
 import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-template-favorite-color',
   template: `
     Favorite Color: <input type="text" [(ngModel)]="favoriteColor">
   `,
-  standalone: false,
+  imports: [FormsModule],
 })
-export class FavoriteColorComponent {
+export class FavoriteColorTemplateComponent {
   favoriteColor = '';
 }

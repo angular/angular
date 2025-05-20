@@ -9,6 +9,7 @@
 // These tests mainly check the types of strongly typed form controls, which is generally enforced
 // at compile time.
 
+import {ɵRawValue} from '../index';
 import {FormBuilder, NonNullableFormBuilder, UntypedFormBuilder} from '../src/form_builder';
 import {
   AbstractControl,
@@ -727,6 +728,44 @@ describe('Typed Class', () => {
       c.patchValue({c: 42});
       c.reset({c: 42, d: 0});
       c.removeControl('c');
+    });
+
+    it('should only accept non-partial values', () => {
+      const fr = new FormRecord<FormGroup<{foo: FormControl<number>; bar: FormControl<number>}>>({
+        group1: new FormGroup({
+          foo: new FormControl(42, {nonNullable: true}),
+          bar: new FormControl(42, {nonNullable: true}),
+        }),
+      });
+
+      type ValueParam = Parameters<typeof fr.setValue>[0];
+
+      // This should error if the typing allows partial values
+      const value: ValueParam = {
+        // @ts-expect-error
+        group1: {
+          foo: 42,
+          // bar value is missing
+        },
+      };
+
+      type RecordRawValue = ɵRawValue<typeof fr>;
+      const rawValue: RecordRawValue = {
+        // @ts-expect-error
+        group1: {
+          foo: 42,
+          // bar value is missing
+        },
+      };
+
+      expect(() =>
+        fr.setValue({
+          // @ts-expect-error
+          group1: {
+            foo: 42,
+          },
+        }),
+      ).toThrowError(/NG01002: Must supply a value for form control/);
     });
   });
 

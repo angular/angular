@@ -44,19 +44,6 @@ function _extractId(valueString: string): string {
   return valueString.split(':')[0];
 }
 
-/** Mock interface for HTML Options */
-interface HTMLOption {
-  value: string;
-  selected: boolean;
-}
-
-/** Mock interface for HTMLCollection */
-abstract class HTMLCollection {
-  // TODO(issue/24571): remove '!'.
-  length!: number;
-  abstract item(_: number): HTMLOption;
-}
-
 /**
  * @description
  * The `ControlValueAccessor` for writing multi-select control values and listening to multi-select
@@ -105,7 +92,7 @@ export class SelectMultipleControlValueAccessor
 {
   /**
    * The current value.
-   * @nodoc
+   * @docs-private
    */
   value: any;
 
@@ -135,7 +122,7 @@ export class SelectMultipleControlValueAccessor
 
   /**
    * Sets the "value" property on one or of more of the select's options.
-   * @nodoc
+   * @docs-private
    */
   writeValue(value: any): void {
     this.value = value;
@@ -157,7 +144,7 @@ export class SelectMultipleControlValueAccessor
   /**
    * Registers a function called when the control value changes
    * and writes an array of the selected options.
-   * @nodoc
+   * @docs-private
    */
   override registerOnChange(fn: (value: any) => any): void {
     this.onChange = (element: HTMLSelectElement) => {
@@ -226,7 +213,6 @@ export class SelectMultipleControlValueAccessor
   standalone: false,
 })
 export class ɵNgSelectMultipleOption implements OnDestroy {
-  // TODO(issue/24571): remove '!'.
   id!: string;
   /** @internal */
   _value: any;
@@ -280,7 +266,7 @@ export class ɵNgSelectMultipleOption implements OnDestroy {
     this._renderer.setProperty(this._element.nativeElement, 'selected', selected);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);

@@ -1,17 +1,19 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "testing",
     srcs = glob([
         "**/*.ts",
     ]),
-    deps = [
+    interop_deps = [
         "//packages:types",
         "//packages/compiler-cli/src/ngtsc/file_system",
-        "@npm//@types/jasmine",
-        "@npm//@types/node",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
     ],
 )

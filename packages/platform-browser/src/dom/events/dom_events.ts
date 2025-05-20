@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, type ListenerOptions} from '@angular/core';
 
 import {EventManagerPlugin} from './event_manager';
 
@@ -23,12 +23,22 @@ export class DomEventsPlugin extends EventManagerPlugin {
     return true;
   }
 
-  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    element.addEventListener(eventName, handler as EventListener, false);
-    return () => this.removeEventListener(element, eventName, handler as EventListener);
+  override addEventListener(
+    element: HTMLElement,
+    eventName: string,
+    handler: Function,
+    options?: ListenerOptions,
+  ): Function {
+    element.addEventListener(eventName, handler as EventListener, options);
+    return () => this.removeEventListener(element, eventName, handler as EventListener, options);
   }
 
-  removeEventListener(target: any, eventName: string, callback: Function): void {
-    return target.removeEventListener(eventName, callback as EventListener);
+  removeEventListener(
+    target: any,
+    eventName: string,
+    callback: Function,
+    options?: ListenerOptions,
+  ): void {
+    return target.removeEventListener(eventName, callback as EventListener, options);
   }
 }

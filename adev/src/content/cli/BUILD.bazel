@@ -9,6 +9,6 @@ filegroup(
         ],
     ) + [
         "//adev/src/content/cli/help",
-        "//adev/src/content/cli/help:build-info.json",
+        "//adev/src/content/cli/help:_build-info.json",
     ],
 )

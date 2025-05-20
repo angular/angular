@@ -370,6 +370,8 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     isExplicitlyDeferred: false,
     deferredImports: null,
     inputFieldNamesFromMetadataArray: null,
+    selectorlessEnabled: false,
+    localReferencedSymbols: null,
   };
 }
 
@@ -383,6 +385,7 @@ function fakePipe(ref: Reference<ClassDeclaration>): PipeMeta {
     isStandalone: false,
     decorator: null,
     isExplicitlyDeferred: false,
+    isPure: false,
   };
 }
 

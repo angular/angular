@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {SIGNAL as ɵSIGNAL} from '@angular/core/primitives/signals';
+export {SIGNAL as ɵSIGNAL} from '../primitives/signals';
 
 export {isSignal, Signal, ValueEqualityFn} from './render3/reactivity/api';
 export {computed, CreateComputedOptions} from './render3/reactivity/computed';
@@ -25,10 +25,6 @@ export {
   EffectCleanupFn,
   EffectCleanupRegisterFn,
 } from './render3/reactivity/effect';
-export {
-  MicrotaskEffectScheduler as ɵMicrotaskEffectScheduler,
-  microtaskEffect as ɵmicrotaskEffect,
-} from './render3/reactivity/microtask_effect';
 export {EffectScheduler as ɵEffectScheduler} from './render3/reactivity/root_effect_scheduler';
 export {afterRenderEffect, ɵFirstAvailableSignal} from './render3/reactivity/after_render_effect';
 export {assertNotInReactiveContext} from './render3/reactivity/asserts';

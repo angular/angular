@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, Input, inject, signal} from '@angular/core';
 import {Highlightable} from '@angular/cdk/a11y';
-import {SearchResult} from '../../interfaces/search-results';
+import {SearchResultItem} from '../../interfaces';
 
 @Directive({
   selector: '[docsSearchItem]',
@@ -17,7 +17,9 @@ import {SearchResult} from '../../interfaces/search-results';
   },
 })
 export class SearchItem implements Highlightable {
-  @Input() item?: SearchResult;
+  // Those inputs are required by the Highlightable interface
+  // We can't migrate them to signals yet
+  @Input() item?: SearchResultItem;
   @Input() disabled = false;
 
   private readonly elementRef = inject(ElementRef<HTMLLIElement>);
@@ -34,14 +36,6 @@ export class SearchItem implements Highlightable {
 
   setInactiveStyles(): void {
     this._isActive.set(false);
-  }
-
-  getLabel(): string {
-    if (!this.item?.hierarchy) {
-      return '';
-    }
-    const {hierarchy} = this.item;
-    return `${hierarchy.lvl0}${hierarchy.lvl1}${hierarchy.lvl2}`;
   }
 
   scrollIntoView(): void {

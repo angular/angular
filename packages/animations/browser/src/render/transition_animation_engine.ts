@@ -13,7 +13,7 @@ import {
   ɵAnimationGroupPlayer as AnimationGroupPlayer,
   ɵPRE_STYLE as PRE_STYLE,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../../src/animations';
 import {ɵWritable as Writable} from '@angular/core';
 
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
@@ -141,7 +141,7 @@ class StateValue {
 }
 
 const VOID_VALUE = 'void';
-const DEFAULT_STATE_VALUE = new StateValue(VOID_VALUE);
+const DEFAULT_STATE_VALUE = /* @__PURE__ */ new StateValue(VOID_VALUE);
 
 class AnimationTransitionNamespace {
   public players: TransitionAnimationPlayer[] = [];

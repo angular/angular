@@ -45,4 +45,4 @@ The `@let` syntax is formally defined as:
 - Followed by an Angular expression which can be multi-line.
 - Terminated by the `;` symbol.
 
-HELPFUL: A comprehensive description of the feature is availble on [the templates guide](guide/templates/variables#local-template-variables-with-let)
+HELPFUL: A comprehensive description of the feature is available on [the templates guide](guide/templates/variables#local-template-variables-with-let)

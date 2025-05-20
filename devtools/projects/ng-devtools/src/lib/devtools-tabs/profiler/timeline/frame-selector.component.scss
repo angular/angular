@@ -1,3 +1,5 @@
+@use '../../../../styles/typography';
+
 .bar-graph-container {
   padding: 2px;
   height: 54px;
@@ -9,8 +11,7 @@
   margin-bottom: 10px;
 
   .txt-frames {
-    font-weight: 500;
-    line-height: 50px;
+    @extend %body-bold-01;
     padding: 0px;
     margin: 0px 10px;
     width: 150px;
@@ -41,7 +42,7 @@
       margin-top: 2px;
 
       &:hover {
-        background-color: #ebf1fb;
+        background-color: var(--septenary-contrast);
       }
 
       &.selected {
@@ -51,27 +52,14 @@
         padding-left: 0.5px;
         padding-right: 0.5px;
 
-        background-color: #cfe8fc;
-        border: 2px solid #cfe8fc;
+        background-color: var(--dynamic-blue-01);
+        border: 2px solid var(--dynamic-blue-01);
       }
     }
   }
 
   button {
     margin-bottom: 5px;
-  }
-}
-
-:host-context(.dark-theme) {
-  .bar-graph-container .bar-container .frame-bar {
-    &:hover {
-      background-color: #262d36;
-    }
-
-    &.selected {
-      background-color: #073d69;
-      border: 2px solid #073d69;
-    }
   }
 }
 

@@ -1,11 +1,9 @@
-@if (currentSelectedElement()) {
-  @for (directive of currentDirectives(); track $index) {
-    <div class="explorer-panel">
-      <ng-property-view
-        (inspect)="inspect.emit($event)"
-        (viewSource)="viewSource.emit(directive)"
-        [directive]="directive"
-      />
-    </div>
-  }
+@for (directive of currentDirectives(); track $index) {
+  <div class="explorer-panel">
+    <ng-property-view
+      (inspect)="inspect.emit($event)"
+      (viewSource)="viewSource.emit(directive.name)"
+      [directive]="directive"
+    />
+  </div>
 }

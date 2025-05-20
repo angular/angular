@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/// <reference path="../../../goog.d.ts" />
+
 import {InjectionToken} from '../di/injection_token';
 import {inject} from '../di/injector_compatibility';
-import {InjectFlags} from '../di/interface/injector';
 
 import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './localization';
 
@@ -54,13 +55,23 @@ export function getGlobalLocale(): string {
  *
  * @usageNotes
  * ### Example
- *
+ * In standalone apps:
  * ```ts
- * import { LOCALE_ID } from '@angular/core';
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { LOCALE_ID, ApplicationConfig } from '@angular/core';
  * import { AppModule } from './app/app.module';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * const appConfig: ApplicationConfig = {
+ *   providers: [{provide: LOCALE_ID, useValue: 'en-US' }]
+ * };
+ * ```
+ *
+ * In module based apps:
+ * ```ts
+ * import { LOCALE_ID } from '@angular/core';
+ * import { platformBrowser } from '@angular/platform-browser';
+ * import { AppModule } from './app/app.module';
+ *
+ * platformBrowser().bootstrapModule(AppModule, {
  *   providers: [{provide: LOCALE_ID, useValue: 'en-US' }]
  * });
  * ```
@@ -69,8 +80,7 @@ export function getGlobalLocale(): string {
  */
 export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 'LocaleId' : '', {
   providedIn: 'root',
-  factory: () =>
-    inject(LOCALE_ID, InjectFlags.Optional | InjectFlags.SkipSelf) || getGlobalLocale(),
+  factory: () => inject(LOCALE_ID, {optional: true, skipSelf: true}) || getGlobalLocale(),
 });
 
 /**
@@ -82,11 +92,7 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  *
  * <div class="docs-alert docs-alert-helpful">
  *
- * **Deprecation notice:**
- *
- * The default currency code is currently always `USD` but this is deprecated from v9.
- *
- * **In v10 the default currency code will be taken from the current locale.**
+ * The default currency code is currently always `USD`.
  *
  * If you need the previous behavior then set it by creating a `DEFAULT_CURRENCY_CODE` provider in
  * your application `NgModule`:
@@ -99,12 +105,22 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  *
  * @usageNotes
  * ### Example
- *
+ * In standalone apps:
  * ```ts
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { LOCALE_ID, ApplicationConfig } from '@angular/core';
  * import { AppModule } from './app/app.module';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * const appConfig: ApplicationConfig = {
+ *   providers: [{provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' }]
+ * };
+ * ```
+ *
+ * In module based apps:
+ * ```ts
+ * import { platformBrowser } from '@angular/platform-browser';
+ * import { AppModule } from './app/app.module';
+ *
+ * platformBrowser().bootstrapModule(AppModule, {
  *   providers: [{provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' }]
  * });
  * ```
@@ -127,16 +143,26 @@ export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
  *
  * @usageNotes
  * ### Example
+ * In standalone apps:
+ * ```ts
+ * import { LOCALE_ID, ApplicationConfig } from '@angular/core';
+ * import { AppModule } from './app/app.module';
  *
+ * const appConfig: ApplicationConfig = {
+ *   providers: [{provide: TRANSLATIONS, useValue: translations }]
+ * };
+ * ```
+ *
+ * In module based apps:
  * ```ts
  * import { TRANSLATIONS } from '@angular/core';
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { platformBrowser } from '@angular/platform-browser';
  * import { AppModule } from './app/app.module';
  *
  * // content of your translation file
  * const translations = '....';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * platformBrowser().bootstrapModule(AppModule, {
  *   providers: [{provide: TRANSLATIONS, useValue: translations }]
  * });
  * ```
@@ -153,13 +179,23 @@ export const TRANSLATIONS = new InjectionToken<string>(ngDevMode ? 'Translations
  *
  * @usageNotes
  * ### Example
- *
+ * In standalone apps:
  * ```ts
- * import { TRANSLATIONS_FORMAT } from '@angular/core';
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { LOCALE_ID, ApplicationConfig } from '@angular/core';
  * import { AppModule } from './app/app.module';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * const appConfig: ApplicationConfig = {
+ *   providers: [{provide: TRANSLATIONS_FORMAT, useValue: 'xlf' }]
+ * };
+ * ```
+ *
+ * In module based apps: *
+ * ```ts
+ * import { TRANSLATIONS_FORMAT } from '@angular/core';
+ * import { platformBrowser } from '@angular/platform-browser';
+ * import { AppModule } from './app/app.module';
+ *
+ * platformBrowser().bootstrapModule(AppModule, {
  *   providers: [{provide: TRANSLATIONS_FORMAT, useValue: 'xlf' }]
  * });
  * ```
@@ -183,10 +219,10 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>(
  * ### Example
  * ```ts
  * import { MissingTranslationStrategy } from '@angular/core';
- * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { platformBrowser } from '@angular/platform-browser';
  * import { AppModule } from './app/app.module';
  *
- * platformBrowserDynamic().bootstrapModule(AppModule, {
+ * platformBrowser().bootstrapModule(AppModule, {
  *   missingTranslation: MissingTranslationStrategy.Error
  * });
  * ```

@@ -1,16 +1,13 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ts_library(
+ts_project(
     name = "components",
     srcs = [
         "index.ts",
     ],
-    visibility = [
-        "//adev/shared-docs:__pkg__",
-    ],
-    deps = [
+    interop_deps = [
         "//adev/shared-docs/components/algolia-icon",
         "//adev/shared-docs/components/breadcrumb",
         "//adev/shared-docs/components/cookie-popup",
@@ -24,5 +21,8 @@ ts_library(
         "//adev/shared-docs/components/text-field",
         "//adev/shared-docs/components/top-level-banner",
         "//adev/shared-docs/components/viewers",
+    ],
+    visibility = [
+        "//adev/shared-docs:__pkg__",
     ],
 )

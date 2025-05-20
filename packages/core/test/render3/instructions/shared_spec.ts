@@ -6,23 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createLView, createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
-import {TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {
-  HEADER_OFFSET,
-  LViewFlags,
-  TVIEW,
-  TViewType,
-} from '@angular/core/src/render3/interfaces/view';
+import {TNodeType} from '../../../src/render3/interfaces/node';
+import {HEADER_OFFSET, LViewFlags, TVIEW, TViewType} from '../../../src/render3/interfaces/view';
 import {
   enterView,
   getBindingRoot,
   getLView,
   setBindingIndex,
   setSelectedIndex,
-} from '@angular/core/src/render3/state';
+} from '../../../src/render3/state';
 
 import {MockRendererFactory} from './mock_renderer_factory';
+import {createTNode} from '../../../src/render3/tnode_manipulation';
+import {createLView, createTView} from '../../../src/render3/view/construction';
 
 /**
  * Setups a simple `LView` so that it is possible to do unit tests on instructions.
@@ -73,6 +69,7 @@ export function enterViewWithOneDiv() {
       rendererFactory,
       sanitizer: null,
       changeDetectionScheduler: null,
+      ngReflect: false,
     },
     renderer,
     null,

@@ -33,7 +33,7 @@ describe('@angular/common ng_package', () => {
   });
 
   it('should have right fesm files', () => {
-    const expected = [
+    const expectedFiles = [
       'common.mjs',
       'common.mjs.map',
       'http',
@@ -46,13 +46,18 @@ describe('@angular/common ng_package', () => {
       'upgrade.mjs',
       'upgrade.mjs.map',
     ];
-    expect(
-      shx
-        .ls('-R', 'fesm2022')
-        .stdout.split('\n')
-        .filter((n) => !!n)
-        .sort(),
-    ).toEqual(expected);
+    const allFiles = shx
+      .ls('-R', 'fesm2022')
+      .stdout.split('\n')
+      .filter((n) => !!n)
+      .sort();
+    // The list of files would contain some shared chunks too (e.g. `location-CprIx2Bv.mjs`),
+    // so we make sure that the actual list of files properly represent main entrypoints
+    // (ignoring extra chunks info).
+    const allFilesAsSet = new Set(allFiles);
+    for (const expectedFile of expectedFiles) {
+      expect(allFilesAsSet.has(expectedFile)).toBe(true);
+    }
   });
 
   it('should have the correct source map paths', () => {

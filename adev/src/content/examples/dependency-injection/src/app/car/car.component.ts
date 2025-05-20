@@ -1,5 +1,5 @@
 // #docregion
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 
 import {Car, Engine, Tires} from './car';
 import {Car as CarNoDi} from './car-no-di';
@@ -31,5 +31,5 @@ export class CarComponent {
   superCar = superCar();
   testCar = testCar();
 
-  constructor(public car: Car) {}
+  public car = inject(Car);
 }

@@ -18,7 +18,7 @@
         {
           "failureMessage": "Incorrect template",
           "files": [{
-            "expected": "pipe_bindings.pipeline.js",
+            "expected": "pipe_bindings.js",
             "generated": "pipe_bindings.js"
           }]
         }

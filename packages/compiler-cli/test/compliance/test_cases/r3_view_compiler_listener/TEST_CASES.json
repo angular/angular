@@ -61,7 +61,7 @@
         {
           "files": [
             {
-              "expected": "local_ref_before_listener.pipeline.js",
+              "expected": "local_ref_before_listener.js",
               "generated": "local_ref_before_listener.js"
             }
           ],
@@ -290,7 +290,7 @@
         {
           "files": [
             {
-              "expected": "embedded_view_listener_context_template.pipeline.js",
+              "expected": "embedded_view_listener_context_template.js",
               "generated": "embedded_view_listener_context.js"
             }
           ],
@@ -365,6 +365,23 @@
             {
               "expected": "two_way_binding_to_signal_loop_variable_template.js",
               "generated": "two_way_binding_to_signal_loop_variable.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a two-way binding to a $any expression",
+      "inputFiles": [
+        "two_way_to_any.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "two_way_to_any_template.js",
+              "generated": "two_way_to_any.js"
             }
           ],
           "failureMessage": "Incorrect template"

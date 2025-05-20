@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveProfile, ElementProfile, ProfilerFrame} from 'protocol';
+import {DirectiveProfile, ElementProfile, ProfilerFrame} from '../../../../../../../protocol';
 
 import {RecordFormatter} from './record-formatter';
 
@@ -106,6 +106,7 @@ describe('getLabel cases', () => {
           name: 'AppComponent',
         },
       ],
+      type: 'element',
     };
     expect(formatter.getLabel(element)).toBe('AppComponent');
   });
@@ -123,6 +124,7 @@ describe('getLabel cases', () => {
           changeDetection: 0,
         },
       ],
+      type: 'element',
     };
     expect(formatter.getLabel(element)).toBe('[RouterOutlet]');
   });
@@ -148,6 +150,7 @@ describe('getLabel cases', () => {
           name: 'TodoComponent',
         },
       ],
+      type: 'element',
     };
     expect(formatter.getLabel(element)).toBe('TodoComponent[TooltipDirective]');
   });
@@ -181,6 +184,7 @@ describe('getLabel cases', () => {
           name: 'TodoComponent',
         },
       ],
+      type: 'element',
     };
     expect(formatter.getLabel(element)).toBe('TodoComponent[TooltipDirective, RandomDirective]');
   });

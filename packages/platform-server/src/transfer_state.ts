@@ -9,6 +9,9 @@
 import {DOCUMENT} from '@angular/common';
 import {
   APP_ID,
+  inject,
+  InjectionToken,
+  Injector,
   Provider,
   TransferState,
   ɵstartMeasuring as startMeasuring,
@@ -17,11 +20,19 @@ import {
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
 
+// Tracks whether the server-side application state for a given app ID has been serialized already.
+export const TRANSFER_STATE_SERIALIZED_FOR_APPID = new InjectionToken<Set<string>>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'TRANSFER_STATE_SERIALIZED_FOR_APPID' : '',
+  {
+    providedIn: 'platform',
+    factory: () => new Set(),
+  },
+);
+
 export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [
   {
     provide: BEFORE_APP_SERIALIZED,
     useFactory: serializeTransferStateFactory,
-    deps: [DOCUMENT, APP_ID, TransferState],
     multi: true,
   },
 ];
@@ -41,7 +52,28 @@ export function createScript(
   return script;
 }
 
-function serializeTransferStateFactory(doc: Document, appId: string, transferStore: TransferState) {
+export function warnIfStateTransferHappened(injector: Injector): void {
+  const appId = injector.get(APP_ID);
+  const appIdsWithTransferStateSerialized = injector.get(TRANSFER_STATE_SERIALIZED_FOR_APPID);
+
+  if (appIdsWithTransferStateSerialized.has(appId)) {
+    console.warn(
+      `Angular detected an incompatible configuration, which causes duplicate serialization of the server-side application state.\n\n` +
+        `This can happen if the server providers have been provided more than once using different mechanisms. For example:\n\n` +
+        `  imports: [ServerModule], // Registers server providers\n` +
+        `  providers: [provideServerRendering()] // Also registers server providers\n\n` +
+        `To fix this, ensure that the \`provideServerRendering()\` function is the only provider used and remove the other(s).`,
+    );
+  }
+  appIdsWithTransferStateSerialized.add(appId);
+}
+
+function serializeTransferStateFactory() {
+  const doc = inject(DOCUMENT);
+  const appId = inject(APP_ID);
+  const transferStore = inject(TransferState);
+  const injector = inject(Injector);
+
   return () => {
     const measuringLabel = 'serializeTransferStateFactory';
     startMeasuring(measuringLabel);
@@ -53,6 +85,10 @@ function serializeTransferStateFactory(doc: Document, appId: string, transferSto
       // The state is empty, nothing to transfer,
       // avoid creating an extra `<script>` tag in this case.
       return;
+    }
+
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      warnIfStateTransferHappened(injector);
     }
 
     const script = createScript(
@@ -68,7 +104,7 @@ function serializeTransferStateFactory(doc: Document, appId: string, transferSto
     script.setAttribute('type', 'application/json');
 
     // It is intentional that we add the script at the very bottom. Angular CLI script tags for
-    // bundles are always `type="module"`. These are deferred by default and cause the transfer
+    // bundles are always `type="module"`. These are deferred by default and cause the
     // transfer data to be queried only after the browser has finished parsing the DOM.
     doc.body.appendChild(script);
     stopMeasuring(measuringLabel);

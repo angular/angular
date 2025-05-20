@@ -18,6 +18,8 @@ import {
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵNotificationSource as NotificationSource,
   ɵViewRef as ViewRef,
+  ɵisViewDirty as isViewDirty,
+  ɵmarkForRefresh as markForRefresh,
   OutputRef,
 } from '@angular/core';
 import {merge, Observable, ReplaySubject} from 'rxjs';
@@ -174,12 +176,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       this.componentRef!.setInput(this.inputMap.get(property) ?? property, value);
 
       // `setInput` won't mark the view dirty if the input didn't change from its previous value.
-      if ((this.componentRef!.hostView as ViewRef<unknown>).dirty) {
+      if (isViewDirty(this.componentRef!.hostView as ViewRef<unknown>)) {
         // `setInput` will have marked the view dirty already, but also mark it for refresh. This
         // guarantees the view will be checked even if the input is being set from within change
         // detection. This provides backwards compatibility, since we used to unconditionally
         // schedule change detection in addition to the current zone run.
-        (this.componentRef!.changeDetectorRef as ViewRef<unknown>).markForRefresh();
+        markForRefresh(this.componentRef!.changeDetectorRef as ViewRef<unknown>);
 
         // Notifying the scheduler with `NotificationSource.CustomElement` causes a `tick()` to be
         // scheduled unconditionally, even if the scheduler is otherwise disabled.

@@ -11,36 +11,33 @@
 // this statement only.
 
 import {
+  ApplicationRef,
   Component,
+  ɵRender3ComponentFactory as ComponentFactory,
   ComponentRef,
+  ɵDeferBlockBehavior as DeferBlockBehavior,
   Directive,
   EnvironmentInjector,
-  InjectFlags,
-  InjectOptions,
-  Injector,
-  NgModule,
-  NgZone,
-  Pipe,
-  PlatformRef,
-  ProviderToken,
-  runInInjectionContext,
-  Type,
-  ɵconvertToBitFlags as convertToBitFlags,
-  ɵDeferBlockBehavior as DeferBlockBehavior,
-  ɵEffectScheduler as EffectScheduler,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
-  ɵRender3ComponentFactory as ComponentFactory,
+  InjectOptions,
+  Injector,
+  NgModule,
   ɵRender3NgModuleRef as NgModuleRef,
+  NgZone,
+  Pipe,
+  PlatformRef,
+  ProviderToken,
   ɵresetCompiledComponents as resetCompiledComponents,
+  runInInjectionContext,
   ɵsetAllowDuplicateNgModuleIdsForTest as setAllowDuplicateNgModuleIdsForTest,
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-  ɵMicrotaskEffectScheduler as MicrotaskEffectScheduler,
-} from '@angular/core';
+  Type,
+} from '../../src/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -117,20 +114,11 @@ export interface TestBed {
     options: InjectOptions,
   ): T | null;
   inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
-  /** @deprecated use object-based flags (`InjectOptions`) instead. */
-  inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  /** @deprecated use object-based flags (`InjectOptions`) instead. */
-  inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
-
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  get(token: any, notFoundValue?: any): any;
 
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
-   * @see {@link EnvironmentInjector#runInContext}
+   * @see {@link https://angular.dev/api/core/EnvironmentInjector#runInContext}
    */
   runInInjectionContext<T>(fn: () => T): T;
 
@@ -166,9 +154,16 @@ export interface TestBed {
   /**
    * Execute any pending effects.
    *
-   * @developerPreview
+   * @deprecated use `TestBed.tick()` instead
    */
   flushEffects(): void;
+
+  /**
+   * Execute any pending work required to synchronize model to the UI.
+   *
+   * @publicApi 20.0
+   */
+  tick(): void;
 }
 
 let _nextRootElementId = 0;
@@ -365,35 +360,18 @@ export class TestBedImpl implements TestBed {
     options: InjectOptions,
   ): T | null;
   static inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
-  /** @deprecated use object-based flags (`InjectOptions`) instead. */
-  static inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  /** @deprecated use object-based flags (`InjectOptions`) instead. */
-  static inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
   static inject<T>(
     token: ProviderToken<T>,
     notFoundValue?: T | null,
-    flags?: InjectFlags | InjectOptions,
+    options?: InjectOptions,
   ): T | null {
-    return TestBedImpl.INSTANCE.inject(token, notFoundValue, convertToBitFlags(flags));
-  }
-
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  static get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  static get(token: any, notFoundValue?: any): any;
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  static get(
-    token: any,
-    notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-    flags: InjectFlags = InjectFlags.Default,
-  ): any {
-    return TestBedImpl.INSTANCE.inject(token, notFoundValue, flags);
+    return TestBedImpl.INSTANCE.inject(token, notFoundValue, options);
   }
 
   /**
    * Runs the given function in the `EnvironmentInjector` context of `TestBed`.
    *
-   * @see {@link EnvironmentInjector#runInContext}
+   * @see {@link https://angular.dev/api/core/EnvironmentInjector#runInContext}
    */
   static runInInjectionContext<T>(fn: () => T): T {
     return TestBedImpl.INSTANCE.runInInjectionContext(fn);
@@ -420,7 +398,11 @@ export class TestBedImpl implements TestBed {
   }
 
   static flushEffects(): void {
-    return TestBedImpl.INSTANCE.flushEffects();
+    return TestBedImpl.INSTANCE.tick();
+  }
+
+  static tick(): void {
+    return TestBedImpl.INSTANCE.tick();
   }
 
   // Properties
@@ -436,7 +418,7 @@ export class TestBedImpl implements TestBed {
   /**
    * Internal-only flag to indicate whether a module
    * scoping queue has been checked and flushed already.
-   * @nodoc
+   * @docs-private
    */
   globalCompilationChecked = false;
 
@@ -579,36 +561,15 @@ export class TestBedImpl implements TestBed {
   ): T | null;
   inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
   inject<T>(token: ProviderToken<T>, notFoundValue: null, options?: InjectOptions): T | null;
-  /** @deprecated use object-based flags (`InjectOptions`) instead. */
-  inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  /** @deprecated use object-based flags (`InjectOptions`) instead. */
-  inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
-  inject<T>(
-    token: ProviderToken<T>,
-    notFoundValue?: T | null,
-    flags?: InjectFlags | InjectOptions,
-  ): T | null {
+  inject<T>(token: ProviderToken<T>, notFoundValue?: T | null, options?: InjectOptions): T | null {
     if ((token as unknown) === TestBed) {
       return this as any;
     }
     const UNDEFINED = {} as unknown as T;
-    const result = this.testModuleRef.injector.get(token, UNDEFINED, convertToBitFlags(flags));
+    const result = this.testModuleRef.injector.get(token, UNDEFINED, options);
     return result === UNDEFINED
-      ? (this.compiler.injector.get(token, notFoundValue, flags) as any)
+      ? (this.compiler.injector.get(token, notFoundValue, options) as any)
       : result;
-  }
-
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  get(token: any, notFoundValue?: any): any;
-  /** @deprecated from v9.0.0 use TestBed.inject */
-  get(
-    token: any,
-    notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-    flags: InjectFlags = InjectFlags.Default,
-  ): any {
-    return this.inject(token, notFoundValue, flags);
   }
 
   runInInjectionContext<T>(fn: () => T): T {
@@ -851,13 +812,21 @@ export class TestBedImpl implements TestBed {
   }
 
   /**
-   * Execute any pending effects.
+   * Execute any pending effects by executing any pending work required to synchronize model to the UI.
    *
-   * @developerPreview
+   * @deprecated use `TestBed.tick()` instead
    */
   flushEffects(): void {
-    this.inject(MicrotaskEffectScheduler).flush();
-    this.inject(EffectScheduler).flush();
+    this.tick();
+  }
+
+  /**
+   * Execute any pending work required to synchronize model to the UI.
+   *
+   * @publicApi
+   */
+  tick(): void {
+    this.inject(ApplicationRef).tick();
   }
 }
 

@@ -7,7 +7,7 @@
  */
 
 import {Component, computed, inject, input, output} from '@angular/core';
-import {DirectivePosition} from 'protocol';
+import {DirectivePosition} from '../../../../../../../protocol';
 
 import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyViewBodyComponent} from './property-view-body.component';
@@ -20,17 +20,26 @@ import {PropertyViewHeaderComponent} from './property-view-header.component';
   imports: [PropertyViewHeaderComponent, PropertyViewBodyComponent],
 })
 export class PropertyViewComponent {
-  readonly directive = input.required<string>();
+  readonly directive = input.required<{name: string}>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<void>();
 
   private _nestedProps = inject(ElementPropertyResolver);
 
-  readonly controller = computed(() => this._nestedProps.getDirectiveController(this.directive()));
+  protected readonly controller = computed(() =>
+    this._nestedProps.getDirectiveController(this.directive().name),
+  );
 
-  readonly directiveInputControls = computed(() => this.controller()?.directiveInputControls);
-
-  readonly directiveOutputControls = computed(() => this.controller()?.directiveOutputControls);
-
-  readonly directiveStateControls = computed(() => this.controller()?.directiveStateControls);
+  protected readonly directiveInputControls = computed(
+    () => this.controller()?.directiveInputControls,
+  );
+  protected readonly directivePropControls = computed(
+    () => this.controller()?.directivePropControls,
+  );
+  protected readonly directiveOutputControls = computed(
+    () => this.controller()?.directiveOutputControls,
+  );
+  protected readonly directiveStateControls = computed(
+    () => this.controller()?.directiveStateControls,
+  );
 }

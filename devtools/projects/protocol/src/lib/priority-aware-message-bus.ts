@@ -83,7 +83,6 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
     if (blockedBy) {
       // The source code here is safe.
       // TypeScript type inference ignores the null check here.
-      // tslint:disable-next-line: no-non-null-assertion
       for (const blocker of blockedBy!) {
         if (this._inProgress[blocker]) {
           return false;

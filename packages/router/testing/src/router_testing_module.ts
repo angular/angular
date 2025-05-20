@@ -6,41 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Location} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
-import {Compiler, inject, Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {ModuleWithProviders, NgModule} from '@angular/core';
 import {
-  ChildrenOutletContexts,
   ExtraOptions,
   NoPreloading,
-  Route,
-  Router,
   ROUTER_CONFIGURATION,
-  RouteReuseStrategy,
   RouterModule,
   ROUTES,
   Routes,
-  TitleStrategy,
-  UrlHandlingStrategy,
-  UrlSerializer,
   withPreloading,
   ɵROUTER_PROVIDERS as ROUTER_PROVIDERS,
-} from '@angular/router';
-
-function isUrlHandlingStrategy(
-  opts: ExtraOptions | UrlHandlingStrategy,
-): opts is UrlHandlingStrategy {
-  // This property check is needed because UrlHandlingStrategy is an interface and doesn't exist at
-  // runtime.
-  return 'shouldProcessUrl' in opts;
-}
-
-function throwInvalidConfigError(parameter: string): never {
-  throw new Error(
-    `Parameter ${parameter} does not match the one available in the injector. ` +
-      '`setupTestingRouter` is meant to be used as a factory function with dependencies coming from DI.',
-  );
-}
+} from '../../index';
 
 /**
  * @description

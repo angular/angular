@@ -35,6 +35,10 @@ describe('serializer', () => {
       expect(serialize(parse(' 1234   +   4321 '))).toBe('1234 + 4321');
     });
 
+    it('serializes exponentiation', () => {
+      expect(serialize(parse(' 1  *  2  **  3 '))).toBe('1 * 2 ** 3');
+    });
+
     it('serializes chains', () => {
       expect(serialize(parseAction(' 1234;   4321 '))).toBe('1234; 4321');
     });
@@ -118,6 +122,14 @@ describe('serializer', () => {
       expect(serialize(parse(' foo   ?.   (   bar   ) '))).toBe('foo?.(bar)');
       expect(serialize(parse(' foo   ?.   (   bar   ,   ) '))).toBe('foo?.(bar, )');
       expect(serialize(parse(' foo   ?.   (   bar   ,   baz   ) '))).toBe('foo?.(bar, baz)');
+    });
+
+    it('serializes void expressions', () => {
+      expect(serialize(parse(' void   0 '))).toBe('void 0');
+    });
+
+    it('serializes in expressions', () => {
+      expect(serialize(parse(' foo   in   bar '))).toBe('foo in bar');
     });
   });
 });

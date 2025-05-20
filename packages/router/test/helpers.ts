@@ -23,14 +23,6 @@ export class Logger {
   }
 }
 
-export function provideTokenLogger(token: string, returnValue = true as boolean | UrlTree) {
-  return {
-    provide: token,
-    useFactory: (logger: Logger) => () => (logger.add(token), returnValue),
-    deps: [Logger],
-  };
-}
-
 export declare type ARSArgs = {
   url?: UrlSegment[];
   params?: Params;
@@ -55,4 +47,10 @@ export function createActivatedRouteSnapshot(args: ARSArgs): ActivatedRouteSnaps
     args.routeConfig || {},
     args.resolve || {},
   );
+}
+
+export async function timeout(ms?: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }

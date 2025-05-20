@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {I18nSelectPipe} from '@angular/common';
+import {I18nSelectPipe} from '../../index';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

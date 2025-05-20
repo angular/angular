@@ -1,8 +1,19 @@
-load("//tools:defaults.bzl", "ng_package", "ts_library")
+load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
+load("//tools:defaults.bzl", "ng_package")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+rules_js_tsconfig(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_project(
     name = "benchpress",
     srcs = glob(
         [
@@ -10,14 +21,12 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
-    # TODO(alanagius) fix benchpress to compile with es2022
-    devmode_target = "es2020",
-    prodmode_target = "es2020",
-    deps = [
+    interop_deps = [
         "//packages:types",
-        "//packages/core",
-        "@npm//@types/node",
-        "@npm//reflect-metadata",
+    ],
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//packages/core:core_rjs",
     ],
 )
 

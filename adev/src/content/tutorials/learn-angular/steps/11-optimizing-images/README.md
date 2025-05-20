@@ -2,7 +2,11 @@
 
 Images are a big part of many applications, and can be a major contributor to application performance problems, including low [Core Web Vitals](https://web.dev/explore/learn-core-web-vitals) scores.
 
-Image optimization can be a complex topic, but Angular handles most of it for you, with the `NgOptimizedImage` directive. In this activity, you'll learn how to use `NgOptimizedImage` to ensure your images are loaded efficiently.
+Image optimization can be a complex topic, but Angular handles most of it for you, with the `NgOptimizedImage` directive.
+
+Note: Learn more about [image optimization with NgOptimizedImage in the in-depth guide](/guide/image-optimization).
+
+In this activity, you'll learn how to use `NgOptimizedImage` to ensure your images are loaded efficiently.
 
 <hr>
 
@@ -31,8 +35,7 @@ To enable the `NgOptimizedImage` directive, swap out the `src` attribute for `ng
 import { NgOptimizedImage } from '@angular/common';
 
 @Component({
-  template: `
-    ...
+template: `     ...
     <li>
       Static Image:
       <img ngSrc="/assets/logo.svg" alt="Angular logo" width="32" height="32" />
@@ -43,7 +46,7 @@ import { NgOptimizedImage } from '@angular/common';
     </li>
     ...
   `,
-  imports: [NgOptimizedImage],
+imports: [NgOptimizedImage],
 })
 </docs-code>
 
@@ -61,7 +64,7 @@ In situations where you can't or don't want to specify a static `height` and `wi
 </div>
 ```
 
-Note: For the `fill` image to render properly, its parent element must be styled with `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
+NOTE: For the `fill` image to render properly, its parent element must be styled with `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
 
 </docs-step>
 
@@ -86,6 +89,7 @@ providers: [
 ```
 
 Final URL will be 'https://my.base.url/image.png'
+
 ```angular-html
 <img ngSrc="image.png" height="600" width="800" />
 ```

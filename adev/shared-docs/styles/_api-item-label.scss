@@ -1,35 +1,61 @@
 @mixin api-item-label() {
   .docs-api-item-label {
+    display: flex;
     --label-theme: var(--symbolic-purple);
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-weight: 500;
     color: var(--label-theme);
     background: color-mix(in srgb, var(--label-theme) 10%, white);
     border-radius: 0.25rem;
-    transition:
-      color 0.3s ease,
-      background-color 0.3s ease;
-    text-transform: capitalize;
 
-    &[data-mode='short'] {
-      height: 22px;
-      width: 22px;
+    cursor: default;
+
+    &:first-letter {
+      text-transform: uppercase;
     }
 
-    &[data-mode='full'] {
+    &:not(.full) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      height: 22px;
+      width: 22px;
+      flex: 0 0 22px;
+    }
+
+    &.full {
       font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
+      &:not(:has(*)), &:not(:has(a span, span)) {
+        // if no children, just a text node, or
+        // no children with span
+        padding: 0.25rem 0.5rem;
+      }
     }
 
     a {
+      display: flex;
       color: var(--label-theme);
 
       &:hover {
-        text-decoration: underline;
+        .status-label {
+          text-decoration: underline;
+        }
       }
+    }
+
+    .status-version,
+    .status-label {
+      padding: 0.25rem 0.5rem;
+    }
+
+    .status-version {
+      position: relative;
+      background-color: var(--septenary-contrast);
+      color: var(--secondary-contrast);
+      border-bottom-right-radius: 0.25rem;
+      border-top-right-radius: 0.25rem;
+      text-align: right;
     }
 
     @media screen and (prefers-color-scheme: dark) {
@@ -44,58 +70,62 @@
       background: color-mix(in srgb, var(--label-theme) 10%, white);
     }
 
-    &[data-type='undecorated_class'],
-    &[data-type='class'] {
+    &.type-undecorated_class,
+    &.type-class {
       --label-theme: var(--symbolic-purple);
     }
 
-    &[data-type='constant'],
-    &[data-type='const'] {
+    &.type-constant,
+    &.type-const {
       --label-theme: var(--symbolic-gray);
     }
 
-    &[data-type='decorator'] {
+    &.type-decorator {
       --label-theme: var(--symbolic-blue);
     }
 
-    &[data-type='directive'] {
+    &.type-directive {
       --label-theme: var(--symbolic-pink);
     }
 
-    &[data-type='element'] {
+    &.type-element {
       --label-theme: var(--symbolic-orange);
     }
 
-    &[data-type='enum'] {
+    &.type-enum {
       --label-theme: var(--symbolic-yellow);
     }
 
-    &[data-type='function'] {
+    &.type-function {
       --label-theme: var(--symbolic-green);
     }
 
-    &[data-type='interface'] {
+    &.type-interface {
       --label-theme: var(--symbolic-cyan);
     }
 
-    &[data-type='pipe'] {
+    &.type-pipe {
       --label-theme: var(--symbolic-teal);
     }
 
-    &[data-type='ng_module'] {
+    &.type-impure-pipe {
+      --label-theme: var(--symbolic-pink);
+    }
+
+    &.type-ng_module {
       --label-theme: var(--symbolic-brown);
     }
 
-    &[data-type='type_alias'] {
+    &.type-type_alias {
       --label-theme: var(--symbolic-lime);
     }
 
-    &[data-type='block'] {
+    &.type-block {
       --label-theme: var(--vivid-pink);
     }
 
-    &[data-type='developer_preview'],
-    &[data-type='deprecated'] {
+    &.type-developer_preview,
+    &.type-deprecated {
       --label-theme: var(--hot-red);
     }
   }

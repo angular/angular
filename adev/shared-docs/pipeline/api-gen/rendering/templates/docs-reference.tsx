@@ -7,16 +7,17 @@
  */
 
 import {h} from 'preact';
-import {DocEntryRenderable} from '../entities/renderables';
+import {DocEntryRenderable} from '../entities/renderables.mjs';
 import {HeaderApi} from './header-api';
-import {TabDescription} from './tab-description';
+import {SectionDescription} from './section-description';
+import {API_REFERENCE_CONTAINER} from '../styling/css-classes.mjs';
 
 /** Component to render a block or element API reference document. */
 export function DocsReference(entry: DocEntryRenderable) {
   return (
-    <div class="api">
+    <div className={API_REFERENCE_CONTAINER}>
       <HeaderApi entry={entry} />
-      <TabDescription entry={entry} />
+      <SectionDescription entry={entry} />
     </div>
   );
 }

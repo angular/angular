@@ -13,15 +13,16 @@ If you just want to play around with Angular in your browser without setting up 
   </docs-card>
 </docs-card-container>
 
-## Setup a new project locally
+## Set up a new project locally
 
 If you're starting a new project, you'll most likely want to create a local project so that you can use tooling such as Git.
 
 ### Prerequisites
 
-- **Node.js** - v[^18.19.1 or newer](/reference/versions)
+- **Node.js** - [v20.11.1 or newer](/reference/versions)
 - **Text editor** - We recommend [Visual Studio Code](https://code.visualstudio.com/)
 - **Terminal** - Required for running Angular CLI commands
+- **Development Tool** - To improve your development workflow, we recommend the [Angular Language Service](/tools/language-service)
 
 ### Instructions
 
@@ -31,11 +32,29 @@ The following guide will walk you through setting up a local Angular project.
 
 Open a terminal (if you're using [Visual Studio Code](https://code.visualstudio.com/), you can open an [integrated terminal](https://code.visualstudio.com/docs/editor/integrated-terminal)) and run the following command:
 
-<docs-code language="shell">
+<docs-code-multifile>
+  <docs-code
+    header="npm"
+    >
+    npm install -g @angular/cli
+    </docs-code>
+  <docs-code
+    header="pnpm"
+    >
+    pnpm install -g @angular/cli
+    </docs-code>
+  <docs-code
+    header="yarn"
+    >
+    yarn global add @angular/cli
+    </docs-code>
+  <docs-code
+    header="bun"
+    >
+    bun install -g @angular/cli
+    </docs-code>
 
-npm install -g @angular/cli
-
-</docs-code>
+</docs-code-multifile>
 
 If you are having issues running this command in Windows or Unix, check out the [CLI docs](/tools/cli/setup-local#install-the-angular-cli) for more info.
 

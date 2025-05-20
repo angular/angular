@@ -8,20 +8,22 @@
 
 import {TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
-import {provideRouter} from '@angular/router';
+import {provideRouter, withComponentInputBinding} from '@angular/router';
 import {routes} from './routes';
 import {Search, WINDOW} from '@angular/docs';
-import {CURRENT_MAJOR_VERSION} from './core/providers/current-version';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 describe('AppComponent', () => {
   const fakeSearch = {};
   const fakeWindow = {location: {hostname: 'angular.dev'}};
-  const fakeCurrentMajorVersion = 19;
 
   it('should create the app', () => {
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(routes),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter(routes, withComponentInputBinding()),
         {
           provide: WINDOW,
           useValue: fakeWindow,
@@ -29,10 +31,6 @@ describe('AppComponent', () => {
         {
           provide: Search,
           useValue: fakeSearch,
-        },
-        {
-          provide: CURRENT_MAJOR_VERSION,
-          useValue: fakeCurrentMajorVersion,
         },
       ],
     });

@@ -1,10 +1,10 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "flamegraph-formatter",
     srcs = glob(
         include = [
@@ -12,14 +12,15 @@ ng_module(
         ],
         exclude = ["flamegraph-formatter.spec.ts"],
     ),
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib:theme",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
-        "@npm//memo-decorator",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/memo-decorator",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
@@ -28,11 +29,13 @@ ts_test_library(
     srcs = [
         "flamegraph-formatter.spec.ts",
     ],
-    deps = [
+    interop_deps = [
         ":flamegraph-formatter",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants",
-        "//devtools/projects/protocol",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record_formatter_spec_constants_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

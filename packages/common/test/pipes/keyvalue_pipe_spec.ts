@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {KeyValuePipe} from '@angular/common';
-import {JsonPipe} from '@angular/common/public_api';
-import {defaultComparator} from '@angular/common/src/pipes/keyvalue_pipe';
+import {KeyValuePipe} from '../../index';
+import {JsonPipe} from '../../public_api';
+import {defaultComparator} from '../../src/pipes/keyvalue_pipe';
 import {Component, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

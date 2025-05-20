@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as d3 from 'd3';
-import {Route} from 'protocol';
+import {Route} from '../../../../../protocol';
 
 let arrowDefId = 0;
 
@@ -95,14 +95,18 @@ export class RouterTreeVisualizer {
 
     const size = 20;
 
+    svg.selectAll('text').remove();
+    svg.selectAll('rect').remove();
+    svg.selectAll('defs').remove();
+
     svg
       .append('rect')
       .attr('x', 10)
       .attr('y', 10)
       .attr('width', size)
       .attr('height', size)
-      .style('stroke', '#ff7a7e')
-      .style('fill', '#f9c2c5');
+      .style('stroke', 'var(--red-05)')
+      .style('fill', 'var(--red-06)');
 
     svg
       .append('rect')
@@ -110,8 +114,8 @@ export class RouterTreeVisualizer {
       .attr('y', 45)
       .attr('width', size)
       .attr('height', size)
-      .style('stroke', 'oklch(0.65 0.25 266/1)')
-      .style('fill', '#8bc1ff');
+      .style('stroke', 'var(--blue-02)')
+      .style('fill', 'var(--blue-03)');
 
     svg
       .append('rect')
@@ -119,32 +123,31 @@ export class RouterTreeVisualizer {
       .attr('y', 80)
       .attr('width', size)
       .attr('height', size)
-      .style('stroke', '#28ab2c')
-      .style('fill', '#a7d5a9');
+      .style('stroke', 'var(--green-02)')
+      .style('fill', 'var(--green-03)');
 
     svg
       .append('text')
       .attr('x', 37)
       .attr('y', 21)
+      .attr('class', 'legend-router-tree')
       .text('Eager loaded routes')
-
-      .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
 
     svg
       .append('text')
       .attr('x', 37)
       .attr('y', 56)
+      .attr('class', 'legend-router-tree')
       .text('Lazy Loaded Route')
-      .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
 
     svg
       .append('text')
       .attr('x', 37)
       .attr('y', 92)
+      .attr('class', 'legend-router-tree')
       .text('Active Route')
-      .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
 
     this.zoomController = this.d3.zoom<HTMLElement, unknown>().scaleExtent([0.1, 2]);

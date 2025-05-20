@@ -37,7 +37,7 @@ In this activity, you'll learn how to use the `@loading`, `@error` and `@placeho
 <docs-workflow>
 
 <docs-step title="Add `@placeholder` block">
-In your `app.component.ts`, add a `@placeholder` block to the `@defer` block.
+In your `app.ts`, add a `@placeholder` block to the `@defer` block.
 
 <docs-code language="angular-html" highlight="[3,4,5]">
 @defer {
@@ -70,7 +70,7 @@ The `@loading` block accepts two optional parameters:
 
 Both parameters are specified in time increments of milliseconds (ms) or seconds (s).
 
-Update `app.component.ts` to include a `@loading` block with a minimum parameter of `1s` as well as an after parameter with the value 500ms  to the @loading block.
+Update `app.ts` to include a `@loading` block with a minimum parameter of `1s` as well as an after parameter with the value 500ms  to the @loading block.
 
 <docs-code language="angular-html" highlight="[5,6,7]">
 @defer {
@@ -82,7 +82,7 @@ Update `app.component.ts` to include a `@loading` block with a minimum parameter
 }
 </docs-code>
 
-Note: this example uses two parameters, separated by the ; character.
+NOTE: this example uses two parameters, separated by the ; character.
 
 </docs-step>
 

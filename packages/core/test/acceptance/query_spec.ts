@@ -25,8 +25,8 @@ import {
   ViewChildren,
   ViewContainerRef,
   ViewRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('query logic', () => {
@@ -886,14 +886,12 @@ describe('query logic', () => {
     it('should not match directive host with content queries', () => {
       @Directive({
         selector: '[content-query]',
-        standalone: true,
       })
       class ContentQueryDirective {
         @ContentChildren('foo', {descendants: true}) foos!: QueryList<ElementRef>;
       }
 
       @Component({
-        standalone: true,
         imports: [ContentQueryDirective],
         template: `<div content-query #foo></div>`,
       })
@@ -910,13 +908,12 @@ describe('query logic', () => {
     });
 
     it('should report results to appropriate queries where deep content queries are nested', () => {
-      @Directive({selector: '[content-query]', standalone: true, exportAs: 'query'})
+      @Directive({selector: '[content-query]', exportAs: 'query'})
       class ContentQueryDirective {
         @ContentChildren('foo, bar, baz', {descendants: true}) qlist!: QueryList<ElementRef>;
       }
 
       @Component({
-        standalone: true,
         imports: [ContentQueryDirective],
         template: `
           <div content-query #out="query">
@@ -944,13 +941,12 @@ describe('query logic', () => {
     });
 
     it('should support nested shallow content queries', () => {
-      @Directive({selector: '[content-query]', standalone: true, exportAs: 'query'})
+      @Directive({selector: '[content-query]', exportAs: 'query'})
       class ContentQueryDirective {
         @ContentChildren('foo') qlist!: QueryList<ElementRef>;
       }
 
       @Component({
-        standalone: true,
         imports: [ContentQueryDirective],
         template: `
           <div content-query #out="query">
@@ -976,18 +972,17 @@ describe('query logic', () => {
     });
 
     it('should respect shallow flag on content queries when mixing deep and shallow queries', () => {
-      @Directive({selector: '[shallow-content-query]', standalone: true, exportAs: 'shallow-query'})
+      @Directive({selector: '[shallow-content-query]', exportAs: 'shallow-query'})
       class ShallowContentQueryDirective {
         @ContentChildren('foo') qlist!: QueryList<ElementRef>;
       }
 
-      @Directive({selector: '[deep-content-query]', standalone: true, exportAs: 'deep-query'})
+      @Directive({selector: '[deep-content-query]', exportAs: 'deep-query'})
       class DeepContentQueryDirective {
         @ContentChildren('foo', {descendants: true}) qlist!: QueryList<ElementRef>;
       }
 
       @Component({
-        standalone: true,
         imports: [ShallowContentQueryDirective, DeepContentQueryDirective],
         template: `
           <div shallow-content-query #shallow="shallow-query" deep-content-query #deep="deep-query">
@@ -1014,7 +1009,7 @@ describe('query logic', () => {
     });
 
     it('should support shallow ContentChild queries', () => {
-      @Directive({selector: '[query-dir]', standalone: true})
+      @Directive({selector: '[query-dir]'})
       class ContentQueryDirective {
         @ContentChild('foo', {descendants: false}) shallow: ElementRef | undefined;
         // ContentChild queries have {descendants: true} option by default
@@ -1022,7 +1017,6 @@ describe('query logic', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [ContentQueryDirective],
         template: `
           <div query-dir>
@@ -1046,14 +1040,12 @@ describe('query logic', () => {
     it('should support view and content queries matching the same element', () => {
       @Directive({
         selector: '[content-query]',
-        standalone: true,
       })
       class ContentQueryDirective {
         @ContentChildren('foo') foos!: QueryList<ElementRef>;
       }
 
       @Component({
-        standalone: true,
         imports: [ContentQueryDirective],
         template: `
           <div content-query>
@@ -1082,14 +1074,13 @@ describe('query logic', () => {
   });
 
   describe('query order', () => {
-    @Directive({selector: '[text]', standalone: true})
+    @Directive({selector: '[text]'})
     class TextDirective {
       @Input() text: string | undefined;
     }
 
     it('should register view query matches from top to bottom', () => {
       @Component({
-        standalone: true,
         imports: [TextDirective],
         template: `
           <span text="A"></span>
@@ -1119,14 +1110,12 @@ describe('query logic', () => {
     it('should register content query matches from top to bottom', () => {
       @Directive({
         selector: '[content-query]',
-        standalone: true,
       })
       class ContentQueryDirective {
         @ContentChildren(TextDirective, {descendants: true}) texts!: QueryList<TextDirective>;
       }
 
       @Component({
-        standalone: true,
         imports: [TextDirective, ContentQueryDirective],
         template: `
           <div content-query>
@@ -1475,15 +1464,14 @@ describe('query logic', () => {
   });
 
   describe('read option', () => {
-    @Directive({selector: '[child]', standalone: true})
+    @Directive({selector: '[child]'})
     class Child {}
 
-    @Directive({selector: '[otherChild]', standalone: true})
+    @Directive({selector: '[otherChild]'})
     class OtherChild {}
 
     it('should query using type predicate and read ElementRef', () => {
       @Component({
-        standalone: true,
         imports: [Child],
         template: `<div child></div>`,
       })
@@ -1503,7 +1491,6 @@ describe('query logic', () => {
 
     it('should query using type predicate and read another directive type', () => {
       @Component({
-        standalone: true,
         imports: [Child, OtherChild],
         template: `<div child otherChild></div>`,
       })
@@ -1521,7 +1508,6 @@ describe('query logic', () => {
 
     it('should not add results to query if a requested token cant be read', () => {
       @Component({
-        standalone: true,
         imports: [Child],
         template: `<div child></div>`,
       })
@@ -1538,7 +1524,6 @@ describe('query logic', () => {
 
     it('should query using local ref and read ElementRef by default', () => {
       @Component({
-        standalone: true,
         template: `
           <div #foo></div>
           <div></div>
@@ -1560,7 +1545,6 @@ describe('query logic', () => {
 
     it('should query for multiple elements and read ElementRef by default', () => {
       @Component({
-        standalone: true,
         template: `
           <div #foo></div>
           <div></div>
@@ -1584,7 +1568,6 @@ describe('query logic', () => {
 
     it('should read ElementRef from an element when explicitly asked for', () => {
       @Component({
-        standalone: true,
         template: `
           <div #foo></div>
           <div></div>
@@ -1606,7 +1589,6 @@ describe('query logic', () => {
 
     it('should query for <ng-container> and read ElementRef with a native element pointing to comment node', () => {
       @Component({
-        standalone: true,
         template: `<ng-container #foo></ng-container>`,
       })
       class TestCmp {
@@ -1623,7 +1605,6 @@ describe('query logic', () => {
 
     it('should query for <ng-container> and read ElementRef without explicit read option', () => {
       @Component({
-        standalone: true,
         template: `<ng-container #foo></ng-container>`,
       })
       class TestCmp {
@@ -1640,7 +1621,6 @@ describe('query logic', () => {
 
     it('should read ViewContainerRef from element nodes when explicitly asked for', () => {
       @Component({
-        standalone: true,
         template: `<div #foo></div>`,
       })
       class TestCmp {
@@ -1657,7 +1637,6 @@ describe('query logic', () => {
 
     it('should read ViewContainerRef from ng-template nodes when explicitly asked for', () => {
       @Component({
-        standalone: true,
         template: `<ng-template #foo></ng-template>`,
       })
       class TestCmp {
@@ -1674,7 +1653,6 @@ describe('query logic', () => {
 
     it('should read ElementRef with a native element pointing to comment DOM node from ng-template', () => {
       @Component({
-        standalone: true,
         template: `<ng-template #foo></ng-template>`,
       })
       class TestCmp {
@@ -1691,7 +1669,6 @@ describe('query logic', () => {
 
     it('should read TemplateRef from ng-template by default', () => {
       @Component({
-        standalone: true,
         template: `<ng-template #foo></ng-template>`,
       })
       class TestCmp {
@@ -1708,7 +1685,6 @@ describe('query logic', () => {
 
     it('should read TemplateRef from ng-template when explicitly asked for', () => {
       @Component({
-        standalone: true,
         template: `<ng-template #foo></ng-template>`,
       })
       class TestCmp {
@@ -1724,11 +1700,10 @@ describe('query logic', () => {
     });
 
     it('should read component instance if element queried for is a component host', () => {
-      @Component({selector: 'child-cmp', standalone: true, template: ''})
+      @Component({selector: 'child-cmp', template: ''})
       class ChildCmp {}
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `<child-cmp #foo></child-cmp>`,
       })
@@ -1748,13 +1723,11 @@ describe('query logic', () => {
       @Component({
         selector: 'child-cmp',
         exportAs: 'child',
-        standalone: true,
         template: '',
       })
       class ChildCmp {}
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `<child-cmp #foo="child"></child-cmp>`,
       })
@@ -1771,11 +1744,10 @@ describe('query logic', () => {
     });
 
     it('should read directive instance if element queried for has an exported directive with a matching name', () => {
-      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      @Directive({selector: '[child]', exportAs: 'child'})
       class ChildDirective {}
 
       @Component({
-        standalone: true,
         imports: [ChildDirective],
         template: `<div #foo="child" child></div>`,
       })
@@ -1792,14 +1764,13 @@ describe('query logic', () => {
     });
 
     it('should read all matching directive instances from a given element', () => {
-      @Directive({selector: '[child1]', exportAs: 'child1', standalone: true})
+      @Directive({selector: '[child1]', exportAs: 'child1'})
       class Child1Dir {}
 
-      @Directive({selector: '[child2]', exportAs: 'child2', standalone: true})
+      @Directive({selector: '[child2]', exportAs: 'child2'})
       class Child2Dir {}
 
       @Component({
-        standalone: true,
         imports: [Child1Dir, Child2Dir],
         template: `<div #foo="child1" child1 #bar="child2" child2></div>`,
       })
@@ -1817,11 +1788,10 @@ describe('query logic', () => {
     });
 
     it('should read multiple locals exporting the same directive from a given element', () => {
-      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      @Directive({selector: '[child]', exportAs: 'child'})
       class ChildDir {}
 
       @Component({
-        standalone: true,
         imports: [ChildDir],
         template: `<div child #foo="child" #bar="child"></div>`,
       })
@@ -1869,11 +1839,10 @@ describe('query logic', () => {
     });
 
     it('should match on exported directive name and read a requested token', () => {
-      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      @Directive({selector: '[child]', exportAs: 'child'})
       class ChildDir {}
 
       @Component({
-        standalone: true,
         imports: [ChildDir],
         template: `<div child #foo="child"></div>`,
       })
@@ -1890,11 +1859,10 @@ describe('query logic', () => {
     });
 
     it('should support reading a mix of ElementRef and directive instances', () => {
-      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      @Directive({selector: '[child]', exportAs: 'child'})
       class ChildDir {}
 
       @Component({
-        standalone: true,
         imports: [ChildDir],
         template: `<div #foo #bar="child" child></div>`,
       })
@@ -1912,11 +1880,10 @@ describe('query logic', () => {
     });
 
     it('should not add results to selector-based query if a requested token cant be read', () => {
-      @Directive({selector: '[child]', standalone: true})
+      @Directive({selector: '[child]'})
       class ChildDir {}
 
       @Component({
-        standalone: true,
         imports: [],
         template: `<div #foo></div>`,
       })
@@ -1932,14 +1899,13 @@ describe('query logic', () => {
     });
 
     it('should not add results to directive-based query if only read token matches', () => {
-      @Directive({selector: '[child]', standalone: true})
+      @Directive({selector: '[child]'})
       class ChildDir {}
 
-      @Directive({selector: '[otherChild]', standalone: true})
+      @Directive({selector: '[otherChild]'})
       class OtherChildDir {}
 
       @Component({
-        standalone: true,
         imports: [Child],
         template: `<div child></div>`,
       })
@@ -1956,7 +1922,6 @@ describe('query logic', () => {
 
     it('should not add results to TemplateRef-based query if only read token matches', () => {
       @Component({
-        standalone: true,
         template: `<div></div>`,
       })
       class TestCmp {
@@ -1972,7 +1937,6 @@ describe('query logic', () => {
 
     it('should not add results to the query in case no match found (via TemplateRef)', () => {
       @Component({
-        standalone: true,
         template: `<div></div>`,
       })
       class TestCmp {
@@ -1988,7 +1952,6 @@ describe('query logic', () => {
 
     it('should query templates if the type is TemplateRef (and respect "read" option)', () => {
       @Component({
-        standalone: true,
         template: `
           <ng-template #foo><div>Test</div></ng-template>
           <ng-template #bar><div>Test</div></ng-template>
@@ -2015,7 +1978,6 @@ describe('query logic', () => {
 
     it('should match using string selector and directive as a read argument', () => {
       @Component({
-        standalone: true,
         imports: [Child],
         template: `<div child #foo></div>`,
       })

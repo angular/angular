@@ -105,11 +105,13 @@ export function findExpression(tmpl: a.Node[], expr: string): e.AST | null {
 }
 
 function findExpressionInNode(node: a.Node, expr: string): e.AST | null {
-  if (node instanceof a.Element || node instanceof a.Template) {
+  if (node instanceof a.Element || node instanceof a.Template || node instanceof a.Component) {
     return findExpression([...node.inputs, ...node.outputs, ...node.children], expr);
+  } else if (node instanceof a.Directive) {
+    return findExpression([...node.inputs, ...node.outputs], expr);
   } else if (node instanceof a.BoundAttribute || node instanceof a.BoundText) {
     const ts = toStringExpression(node.value);
-    return toStringExpression(node.value) === expr ? node.value : null;
+    return ts === expr ? node.value : null;
   } else if (node instanceof a.BoundEvent) {
     return toStringExpression(node.handler) === expr ? node.handler : null;
   } else {
@@ -148,12 +150,14 @@ export function parseR3(
     preserveWhitespaces?: boolean;
     leadingTriviaChars?: string[];
     ignoreError?: boolean;
+    selectorlessEnabled?: boolean;
   } = {},
 ): Render3ParseResult {
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(input, 'path:://to/template', {
     tokenizeExpansionForms: true,
     leadingTriviaChars: options.leadingTriviaChars ?? LEADING_TRIVIA_CHARS,
+    selectorlessEnabled: options.selectorlessEnabled,
   });
 
   if (parseResult.errors.length > 0 && !options.ignoreError) {

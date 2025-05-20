@@ -156,13 +156,13 @@ export function createCustomElement<P>(
         // Re-apply pre-existing input values (set as properties on the element) through the
         // strategy.
         // TODO(alxhub): why are we doing this? this makes no sense.
-        inputs.forEach(({propName, transform, isSignal}) => {
-          if (!this.hasOwnProperty(propName) || isSignal) {
-            // No pre-existing value for `propName`, or a signal input.
+        inputs.forEach(({propName, transform}) => {
+          if (!this.hasOwnProperty(propName)) {
+            // No pre-existing value for `propName`.
             return;
           }
 
-          // Delete the property from the instance and re-apply it through the strategy.
+          // Delete the property from the DOM node and re-apply it through the strategy.
           const value = (this as any)[propName];
           delete (this as any)[propName];
           strategy.setInputValue(propName, value, transform);

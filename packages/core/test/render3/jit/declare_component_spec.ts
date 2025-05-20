@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InputFlags} from '@angular/compiler/src/core';
+import {core} from '@angular/compiler';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,13 +17,12 @@ import {
   Type,
   ViewEncapsulation,
   ɵɵngDeclareComponent,
-} from '@angular/core';
+} from '../../../src/core';
 
 import {
   AttributeMarker,
   ComponentDef,
   ɵɵInheritDefinitionFeature,
-  ɵɵInputTransformsFeature,
   ɵɵNgOnChangesFeature,
 } from '../../../src/render3';
 
@@ -71,8 +70,8 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       inputs: {
-        'property': 'minifiedProperty',
-        'bindingName': 'minifiedClassProperty',
+        'property': ['minifiedProperty', core.InputFlags.None, null],
+        'bindingName': ['minifiedClassProperty', core.InputFlags.None, null],
       },
       declaredInputs: {
         'property': 'property',
@@ -97,15 +96,15 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       inputs: {
-        'bindingName': ['minifiedClassProperty', InputFlags.HasDecoratorInputTransform],
-      },
-      inputTransforms: {
-        'minifiedClassProperty': transformFn,
+        'bindingName': [
+          'minifiedClassProperty',
+          core.InputFlags.HasDecoratorInputTransform,
+          transformFn,
+        ],
       },
       declaredInputs: {
         'bindingName': 'classProperty',
       },
-      features: [ɵɵInputTransformsFeature],
     });
   });
 
@@ -260,7 +259,7 @@ describe('component declaration jit compilation', () => {
       ],
       hostBindings: functionContaining([
         'return ctx.handleEvent($event)',
-        /hostProperty[^(]*\('foo',ctx\.foo\.prop\)/,
+        /domProperty[^(]*\('foo',ctx\.foo\.prop\)/,
         /attribute[^(]*\('bar',ctx\.bar\.prop\)/,
       ]),
       hostVars: 2,
@@ -587,7 +586,6 @@ type ComponentDefExpectations = jasmine.Expected<
     | 'onPush'
     | 'styles'
     | 'data'
-    | 'inputTransforms'
   >
 > & {
   directives: Type<unknown>[] | null;
@@ -608,7 +606,6 @@ function expectComponentDef(
     template: jasmine.any(Function),
     inputs: {},
     declaredInputs: {},
-    inputTransforms: null,
     outputs: {},
     features: null,
     hostAttrs: null,
@@ -634,9 +631,6 @@ function expectComponentDef(
   expect(actual.template).withContext('template').toEqual(expectation.template);
   expect(actual.inputs).withContext('inputs').toEqual(expectation.inputs);
   expect(actual.declaredInputs).withContext('declaredInputs').toEqual(expectation.declaredInputs);
-  expect(actual.inputTransforms)
-    .withContext('inputTransforms')
-    .toEqual(expectation.inputTransforms);
   expect(actual.outputs).withContext('outputs').toEqual(expectation.outputs);
   expect(actual.features).withContext('features').toEqual(expectation.features);
   expect(actual.hostAttrs).withContext('hostAttrs').toEqual(expectation.hostAttrs);

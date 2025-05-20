@@ -17,7 +17,7 @@ import type {
   RawScopeInfoFromDecorator,
 } from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
-import {getComponentDef, getNgModuleDef, isStandalone} from '../def_getters';
+import {getComponentDef, getNgModuleDef, getNgModuleDefOrThrow, isStandalone} from '../def_getters';
 import {maybeUnwrapFn} from '../util/misc_utils';
 
 import {
@@ -26,15 +26,6 @@ import {
   NgModuleScope,
   StandaloneComponentScope,
 } from './api';
-
-/**
- * Indicates whether to use the runtime dependency tracker for scope calculation in JIT compilation.
- * The value "false" means the old code path based on patching scope info into the types will be
- * used.
- *
- * @deprecated For migration purposes only, to be removed soon.
- */
-export const USE_RUNTIME_DEPS_TRACKER_FOR_JIT = true;
 
 /**
  * An implementation of DepsTrackerApi which will be used for JIT and local compilation.
@@ -150,7 +141,7 @@ class DepsTracker implements DepsTrackerApi {
 
   /** Compute NgModule scope afresh. */
   private computeNgModuleScope(type: NgModuleType<any>): NgModuleScope {
-    const def = getNgModuleDef(type, true);
+    const def = getNgModuleDefOrThrow(type);
     const scope: NgModuleScope = {
       exported: {directives: new Set(), pipes: new Set()},
       compilation: {directives: new Set(), pipes: new Set()},

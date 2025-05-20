@@ -25,9 +25,9 @@ import {
   ɵɵdefineNgModule as defineNgModule,
   ɵɵelement as element,
   ɵɵproperty as property,
-} from '@angular/core';
-import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '@angular/core/src/render3/instructions/element_validation';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '../../src/render3/instructions/element_validation';
+import {TestBed} from '../../testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {withBody} from '@angular/private/testing';
@@ -98,7 +98,6 @@ describe('NgModule', () => {
     it('should throw when a standalone component is added to NgModule declarations', () => {
       @Component({
         selector: 'my-comp',
-        standalone: true,
         template: '',
       })
       class MyComp {}
@@ -120,7 +119,6 @@ describe('NgModule', () => {
     it('should throw when a standalone directive is added to NgModule declarations', () => {
       @Directive({
         selector: '[my-dir]',
-        standalone: true,
       })
       class MyDir {}
 
@@ -148,7 +146,6 @@ describe('NgModule', () => {
     it('should throw when a standalone pipe is added to NgModule declarations', () => {
       @Pipe({
         name: 'my-pipe',
-        standalone: true,
       })
       class MyPipe {}
 
@@ -177,7 +174,6 @@ describe('NgModule', () => {
       @Component({
         selector: 'my-comp',
         template: '',
-        standalone: true,
       })
       class MyComp {}
 
@@ -443,7 +439,6 @@ describe('NgModule', () => {
     it('should log an error about unknown element for a standalone component without CUSTOM_ELEMENTS_SCHEMA', () => {
       @Component({
         template: `<custom-el></custom-el>`,
-        standalone: true,
       })
       class MyComp {}
 
@@ -457,7 +452,6 @@ describe('NgModule', () => {
     it('should not log an error about unknown element for a standalone component with CUSTOM_ELEMENTS_SCHEMA', () => {
       @Component({
         template: `<custom-el></custom-el>`,
-        standalone: true,
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
       })
       class MyComp {}
@@ -657,7 +651,6 @@ describe('NgModule', () => {
           `is used in a template, but not imported in a standalone component`,
         () => {
           @Component({
-            standalone: true,
             template: `<div *${directive}="expr"></div>`,
           })
           class App {

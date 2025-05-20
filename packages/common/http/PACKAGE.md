@@ -3,4 +3,4 @@ Implements an HTTP client API for Angular apps that relies on the `XMLHttpReques
 Includes testability features, typed request and response objects, request and response interception,
 observable APIs, and streamlined error handling.
 
-For usage information, see the [HTTP Client](guide/http) guide.
+For usage information, see the [HTTP Client](https://angular.dev/guide/http) guide.

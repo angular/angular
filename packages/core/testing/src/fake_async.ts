@@ -5,6 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+
+// Needed for the global `Zone` ambient types to be available.
+import type {} from 'zone.js';
+
 const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
 const fakeAsyncTestModule = _Zone && _Zone[_Zone.__symbol__('fakeAsyncTest')];
 
@@ -25,7 +29,7 @@ export function resetFakeAsyncZone(): void {
 }
 
 export function resetFakeAsyncZoneIfExists(): void {
-  if (fakeAsyncTestModule) {
+  if (fakeAsyncTestModule && (Zone as any)['ProxyZoneSpec']?.isLoaded()) {
     fakeAsyncTestModule.resetFakeAsyncZone();
   }
 }

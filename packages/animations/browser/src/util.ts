@@ -13,7 +13,7 @@ import {
   sequence,
   ɵStyleData,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../src/animations';
 
 import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
 import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
@@ -174,7 +174,7 @@ export function validateStyleParams(
   }
 }
 
-const PARAM_REGEX = new RegExp(
+const PARAM_REGEX = /* @__PURE__ */ new RegExp(
   `${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`,
   'g',
 );

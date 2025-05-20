@@ -1,43 +1,56 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "nodejs_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "nodejs_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "signal_authoring_signature_test_lib",
     testonly = True,
     srcs = [
+        "linked_signal_signature_test.ts",
         "signal_input_signature_test.ts",
         "signal_model_signature_test.ts",
         "signal_queries_signature_test.ts",
         "unwrap_writable_signal_signature_test.ts",
     ],
-    deps = ["//packages/core"],
+    interop_deps = ["//packages/core"],
 )
 
-ts_library(
+ts_project(
     name = "type_tester_lib",
     testonly = True,
     srcs = ["type_tester.ts"],
     deps = [
-        "@npm//typescript",
+        "//:node_modules/typescript",
     ],
+)
+
+filegroup(
+    name = "types",
+    testonly = True,
+    srcs = [
+        ":signal_authoring_signature_test_lib_rjs",
+        ":type_tester_lib_rjs",
+    ],
+    output_group = "types",
 )
 
 nodejs_test(
     name = "type_test",
     data = [
-        ":signal_authoring_signature_test_lib",
         ":type_tester_lib",
+        ":types",
+        "//packages:package_json",
     ],
-    entry_point = ":type_tester.ts",
+    entry_point = ":type_tester.js",
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = [
         "input_signal_spec.ts",
         "model_input_spec.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/core",
         "//packages/core/primitives/signals",
         "//packages/core/testing",

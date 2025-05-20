@@ -7,12 +7,11 @@
  */
 
 import {MockFileSystem} from '../../../../../compiler-cli/src/ngtsc/file_system/testing';
-import {MigrationStats} from '../base_migration';
 
 /** Type describing results of a Tsurge migration test run. */
-export interface TestRun {
+export interface TestRun<Stats> {
   /** File system that can be used to read migrated file contents. */
   fs: MockFileSystem;
   /** Function that can be invoked to compute migration statistics. */
-  getStatistics: () => Promise<MigrationStats>;
+  getStatistics: () => Promise<Stats>;
 }

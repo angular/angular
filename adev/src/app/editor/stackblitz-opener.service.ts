@@ -8,7 +8,8 @@
 
 import {EnvironmentInjector, Injectable, inject} from '@angular/core';
 import sdk, {Project, ProjectFiles} from '@stackblitz/sdk';
-import {injectAsync} from '../core/services/inject-async';
+
+import {injectNodeRuntimeSandbox} from './inject-node-runtime-sandbox';
 
 @Injectable({
   providedIn: 'root',
@@ -22,9 +23,7 @@ export class StackBlitzOpener {
   async openCurrentSolutionInStackBlitz(
     projectMetadata: Pick<Project, 'title' | 'description'>,
   ): Promise<void> {
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('./node-runtime-sandbox.service').then((c) => c.NodeRuntimeSandbox),
-    );
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     const runtimeFiles = await nodeRuntimeSandbox.getSolutionFiles();
 

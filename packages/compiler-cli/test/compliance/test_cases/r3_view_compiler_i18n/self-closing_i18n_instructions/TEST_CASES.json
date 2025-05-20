@@ -53,7 +53,7 @@
           "files": [
             {
               "generated": "styles.js",
-              "expected": "styles.pipeline.js"
+              "expected": "styles.js"
             }
           ],
           "extraChecks": [

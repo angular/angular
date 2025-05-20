@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LifecycleProfile} from 'protocol';
+import {LifecycleProfile} from '../../../../protocol';
 
 import {getDirectiveName} from '../highlighter';
 

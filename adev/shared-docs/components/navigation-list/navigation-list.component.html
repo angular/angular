@@ -7,8 +7,15 @@
       <li class="docs-faceted-list-item">
         @if (item.path) {
           @if (item.isExternal) {
-            <a [href]="item.path" target="_blank">
-              <span [class.docs-external-link]="item.isExternal">{{ item.label }}</span>
+            <a 
+              [href]="item.path" target="_blank"
+              [matTooltip]="item.label"
+              [matTooltipDisabled]="item.label.length < 27"
+              matTooltipPosition="after"
+              [attr.aria-label]="item.label"
+              [matTooltipClass]="'API-tooltip'"
+            >
+              <span [class.docs-external-link]="item.isExternal" class="docs-faceted-list-item-text">{{ item.label }}</span>
               @if (item.children && item.level! > 1 && !item.isExpanded) {
                 <docs-icon>chevron_right</docs-icon>
               }
@@ -16,17 +23,22 @@
           } @else {
             <a
               [routerLink]="'/' + item.path"
-              [routerLinkActiveOptions]="{
-                queryParams: 'ignored',
-                fragment: 'ignored',
-                matrixParams: 'exact',
-                paths: 'exact',
-                exact: false
-              }"
+              
+              
+              
+              
+              
+              
+              
               routerLinkActive="docs-faceted-list-item-active"
               (click)="emitClickOnLink()"
+              [matTooltip]="item.label"
+              [matTooltipDisabled]="item.label.length < 27"
+              matTooltipPosition="after"
+              [attr.aria-label]="item.label"
+              [matTooltipClass]="'API-tooltip'"
             >
-              <span>{{item.label}}</span>
+              <span class="docs-faceted-list-item-text">{{item.label}}</span>
               @if (item.children && !item.isExpanded) {
                 <docs-icon>chevron_right</docs-icon>
               }
@@ -35,8 +47,14 @@
         } @else {
           <!-- Nav Section Header -->
           @if (item.level !== collapsableLevel() && item.level !== expandableLevel()) {
-            <div class="docs-secondary-nav-header">
-              <span>{{item.label}}</span>
+            <div class="docs-secondary-nav-header"
+              [matTooltip]="item.label"
+              [matTooltipDisabled]="item.label.length < 27"
+              matTooltipPosition="after"
+              [attr.aria-label]="item.label"
+              [matTooltipClass]="'API-tooltip'"
+            >
+              <span class="docs-faceted-list-item-text">{{item.label}}</span>
             </div>
           }
 
@@ -54,13 +72,17 @@
               [class.docs-expanded-button]="item.children && item.level == collapsableLevel()"
               [class.docs-not-expanded-button]="item.children && item.level === expandableLevel()"
               [class.docs-nav-item-has-icon]="
-              item.children && item.level === expandableLevel() && !item.isExpanded
-            "
+              item.children && item.level === expandableLevel() && !item.isExpanded"
+              [matTooltip]="item.label"
+              [matTooltipDisabled]="item.label.length < 27"
+              matTooltipPosition="after"
+              [attr.aria-label]="item.label"
+              [matTooltipClass]="'API-tooltip'"
             >
               @if (item.children && item.level === collapsableLevel()) {
                 <docs-icon>arrow_back</docs-icon>
               }
-              <span>{{ item.label }}</span>
+              <span class="docs-faceted-list-item-text">{{ item.label }}</span>
             </button>
           }
         }

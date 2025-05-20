@@ -49,7 +49,7 @@ describe('Navigation', () => {
           useValue: fakeSearch,
         },
       ],
-    }).compileComponents();
+    });
 
     TestBed.overrideProvider(ThemeManager, {useValue: fakeThemeManager});
     TestBed.overrideProvider(VersionManager, {useValue: fakeVersionManager});

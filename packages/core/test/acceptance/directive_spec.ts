@@ -21,8 +21,8 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('directives', () => {
@@ -864,7 +864,7 @@ describe('directives', () => {
     });
 
     it('should transform aliased inputs coming from host directives', () => {
-      @Directive({standalone: true})
+      @Directive()
       class HostDir {
         @Input({transform: (value: string) => (value ? 1 : 0)}) value = -1;
       }

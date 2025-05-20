@@ -12,7 +12,6 @@ pkg_npm(
         "//packages/bazel/src/ng_module:package_assets",
         "//packages/bazel/src/ng_package:package_assets",
         "//packages/bazel/src/ngc-wrapped:package_assets",
-        "//packages/bazel/src/types_bundle:package_assets",
         "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:package_assets",
     ],
     substitutions = {
@@ -23,7 +22,6 @@ pkg_npm(
         "//packages/bazel/src:partial_compilation": "@npm//@angular/bazel/src:partial_compilation",
         # Substitutions to account for label changes when `@angular/bazel` is consumed externally.
         # NodeJS binaries are pre-built and should be consumed through the NPM bin scripts of the package.
-        "//packages/bazel/src/types_bundle:types_bundler": "@npm//@angular/bazel/bin:types_bundler",
         "//packages/bazel/": "//@angular/bazel/",
         "@npm//@bazel/concatjs/internal:": "//@bazel/concatjs/internal:",
     },
@@ -35,7 +33,6 @@ pkg_npm(
     deps = [
         "//packages/bazel/src/ng_package:lib",
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
-        "//packages/bazel/src/types_bundle:lib",
     ],
 )
 # END-DEV-ONLY

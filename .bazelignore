@@ -26,6 +26,7 @@ integration/ng_update_migrations/node_modules
 integration/ng-add-localize/node_modules
 integration/nodenext_resolution/node_modules
 integration/platform-server/node_modules
+integration/platform-server-zoneless/node_modules
 integration/platform-server-hydration/node_modules
 integration/service-worker-schema/node_modules
 integration/side-effects/node_modules
@@ -33,7 +34,11 @@ integration/standalone-bootstrap/node_modules
 integration/terser/node_modules
 integration/trusted-types/node_modules
 integration/typings_test_rxjs7/node_modules
-integration/typings_test_ts55/node_modules
-integration/typings_test_ts56/node_modules
-integration/typings_test_ts57/node_modules
+integration/typings_test_ts58/node_modules
 modules/ssr-benchmarks/node_modules
+
+
+# For rules_js
+packages/compiler/node_modules
+packages/compiler-cli/node_modules
+tools/bazel/rules_angular_store/node_modules

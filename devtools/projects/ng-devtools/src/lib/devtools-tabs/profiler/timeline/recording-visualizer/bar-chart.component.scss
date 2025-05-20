@@ -20,6 +20,7 @@
   text-overflow: ellipsis;
   overflow: hidden;
   opacity: 1;
+  color: var(--color-text);
 }
 
 .bar:hover {
@@ -31,10 +32,4 @@
   width: calc(100% - 5px);
   height: 100%;
   display: block;
-}
-
-:host-context(.dark-theme) {
-  .bar span {
-    color: #bcc5ce;
-  }
 }

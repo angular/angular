@@ -16,21 +16,24 @@ import {
   SafePropertyRead,
   ThisReceiver,
 } from '../../expression_parser/ast';
-import {CssSelector, SelectorMatcher} from '../../selector';
+import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../directive_matching';
 import {
   BoundAttribute,
   BoundEvent,
   BoundText,
   Comment,
+  Component,
   Content,
   DeferredBlock,
   DeferredBlockError,
   DeferredBlockLoading,
   DeferredBlockPlaceholder,
   DeferredTrigger,
+  Directive,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
+  HostElement,
   HoverDeferredTrigger,
   Icu,
   IfBlock,
@@ -53,6 +56,7 @@ import {
 import {
   BoundTarget,
   DirectiveMeta,
+  DirectiveOwner,
   ReferenceTarget,
   ScopedNode,
   Target,
@@ -61,6 +65,7 @@ import {
 } from './t2_api';
 import {parseTemplate} from './template';
 import {createCssSelectorFromNode} from './util';
+import {CombinedRecursiveAstVisitor} from '../../combined_visitor';
 
 /**
  * Computes a difference between full list (first argument) and
@@ -71,6 +76,30 @@ function diff(fullList: string[], itemsToExclude: string[]): string[] {
   const exclude = new Set(itemsToExclude);
   return fullList.filter((item) => !exclude.has(item));
 }
+
+/** Shorthand for a map between a binding AST node and the entity it's targeting. */
+type BindingsMap<DirectiveT> = Map<
+  BoundAttribute | BoundEvent | TextAttribute,
+  DirectiveT | Template | Element
+>;
+
+/** Shorthand for a map between a reference AST node and the entity it's targeting. */
+type ReferenceMap<DirectiveT> = Map<
+  Reference,
+  Template | Element | {directive: DirectiveT; node: DirectiveOwner}
+>;
+
+/** Mapping between AST nodes and the directives that have been matched on them. */
+type MatchedDirectives<DirectiveT> = Map<DirectiveOwner, DirectiveT[]>;
+
+/**
+ * Mapping between a scoped not and the template entities that exist in it.
+ * `null` represents the root scope.
+ */
+type ScopedNodeEntities = Map<ScopedNode | null, Set<TemplateEntity>>;
+
+/** Shorthand tuple type where a defer block is paired with its corresponding scope. */
+type DeferBlockScopes = [DeferredBlock, Scope][];
 
 /**
  * Given a template string and a set of available directive selectors,
@@ -87,7 +116,7 @@ function diff(fullList: string[], itemsToExclude: string[]): string[] {
  *    where a host component (that owns the template) is located
  */
 export function findMatchingDirectivesAndPipes(template: string, directiveSelectors: string[]) {
-  const matcher = new SelectorMatcher<unknown[]>();
+  const matcher = new SelectorMatcher<DirectiveMeta[]>();
   for (const selector of directiveSelectors) {
     // Create a fake directive instance to account for the logic inside
     // of the `R3TargetBinder` class (which invokes the `hasBindingPropertyName`
@@ -105,11 +134,11 @@ export function findMatchingDirectivesAndPipes(template: string, directiveSelect
           return false;
         },
       },
-    };
+    } as unknown as DirectiveMeta;
     matcher.addSelectables(CssSelector.parse(selector), [fakeDirective]);
   }
   const parsedTemplate = parseTemplate(template, '' /* templateUrl */);
-  const binder = new R3TargetBinder(matcher as any);
+  const binder = new R3TargetBinder(matcher);
   const bound = binder.bind({template: parsedTemplate.nodes});
 
   const eagerDirectiveSelectors = bound.getEagerlyUsedDirectives().map((dir) => dir.selector!);
@@ -127,48 +156,98 @@ export function findMatchingDirectivesAndPipes(template: string, directiveSelect
   };
 }
 
+/** Object used to match template nodes to directives. */
+export type DirectiveMatcher<DirectiveT extends DirectiveMeta> =
+  | SelectorMatcher<DirectiveT[]>
+  | SelectorlessMatcher<DirectiveT>;
+
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
  * returns an object similar to TypeScript's `ts.TypeChecker` that contains knowledge about the
  * target.
  */
 export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetBinder<DirectiveT> {
-  constructor(private directiveMatcher: SelectorMatcher<DirectiveT[]>) {}
+  constructor(private directiveMatcher: DirectiveMatcher<DirectiveT> | null) {}
 
   /**
    * Perform a binding operation on the given `Target` and return a `BoundTarget` which contains
    * metadata about the types referenced in the template.
    */
   bind(target: Target): BoundTarget<DirectiveT> {
-    if (!target.template) {
-      // TODO(alxhub): handle targets which contain things like HostBindings, etc.
-      throw new Error('Binding without a template not yet supported');
+    if (!target.template && !target.host) {
+      throw new Error('Empty bound targets are not supported');
     }
 
-    // First, parse the template into a `Scope` structure. This operation captures the syntactic
-    // scopes in the template and makes them available for later use.
-    const scope = Scope.apply(target.template);
+    const directives: MatchedDirectives<DirectiveT> = new Map();
+    const eagerDirectives: DirectiveT[] = [];
+    const missingDirectives = new Set<string>();
+    const bindings: BindingsMap<DirectiveT> = new Map();
+    const references: ReferenceMap<DirectiveT> = new Map();
+    const scopedNodeEntities: ScopedNodeEntities = new Map();
+    const expressions = new Map<AST, TemplateEntity>();
+    const symbols = new Map<TemplateEntity, Template>();
+    const nestingLevel = new Map<ScopedNode, number>();
+    const usedPipes = new Set<string>();
+    const eagerPipes = new Set<string>();
+    const deferBlocks: DeferBlockScopes = [];
 
-    // Use the `Scope` to extract the entities present at every level of the template.
-    const scopedNodeEntities = extractScopedNodeEntities(scope);
+    if (target.template) {
+      // First, parse the template into a `Scope` structure. This operation captures the syntactic
+      // scopes in the template and makes them available for later use.
+      const scope = Scope.apply(target.template);
 
-    // Next, perform directive matching on the template using the `DirectiveBinder`. This returns:
-    //   - directives: Map of nodes (elements & ng-templates) to the directives on them.
-    //   - bindings: Map of inputs, outputs, and attributes to the directive/element that claims
-    //     them. TODO(alxhub): handle multiple directives claiming an input/output/etc.
-    //   - references: Map of #references to their targets.
-    const {directives, eagerDirectives, bindings, references} = DirectiveBinder.apply(
-      target.template,
-      this.directiveMatcher,
-    );
-    // Finally, run the TemplateBinder to bind references, variables, and other entities within the
-    // template. This extracts all the metadata that doesn't depend on directive matching.
-    const {expressions, symbols, nestingLevel, usedPipes, eagerPipes, deferBlocks} =
-      TemplateBinder.applyWithScope(target.template, scope);
+      // Use the `Scope` to extract the entities present at every level of the template.
+      extractScopedNodeEntities(scope, scopedNodeEntities);
+
+      // Next, perform directive matching on the template using the `DirectiveBinder`. This returns:
+      //   - directives: Map of nodes (elements & ng-templates) to the directives on them.
+      //   - bindings: Map of inputs, outputs, and attributes to the directive/element that claims
+      //     them. TODO(alxhub): handle multiple directives claiming an input/output/etc.
+      //   - references: Map of #references to their targets.
+      DirectiveBinder.apply(
+        target.template,
+        this.directiveMatcher,
+        directives,
+        eagerDirectives,
+        missingDirectives,
+        bindings,
+        references,
+      );
+
+      // Finally, run the TemplateBinder to bind references, variables, and other entities within the
+      // template. This extracts all the metadata that doesn't depend on directive matching.
+      TemplateBinder.applyWithScope(
+        target.template,
+        scope,
+        expressions,
+        symbols,
+        nestingLevel,
+        usedPipes,
+        eagerPipes,
+        deferBlocks,
+      );
+    }
+
+    // Bind the host element in a separate scope. Note that it only uses the
+    // `TemplateBinder` since directives don't apply inside a host context.
+    if (target.host) {
+      TemplateBinder.applyWithScope(
+        target.host,
+        Scope.apply(target.host),
+        expressions,
+        symbols,
+        nestingLevel,
+        usedPipes,
+        eagerPipes,
+        deferBlocks,
+      );
+    }
+
     return new R3BoundTarget(
       target,
       directives,
       eagerDirectives,
+      missingDirectives,
       bindings,
       references,
       expressions,
@@ -196,9 +275,9 @@ class Scope implements Visitor {
   readonly namedEntities = new Map<string, TemplateEntity>();
 
   /**
-   * Set of elements that belong to this scope.
+   * Set of element-like nodes that belong to this scope.
    */
-  readonly elementsInScope = new Set<Element>();
+  readonly elementLikeInScope = new Set<Element | Component>();
 
   /**
    * Child `Scope`s for immediately nested `ScopedNode`s.
@@ -224,7 +303,7 @@ class Scope implements Visitor {
    * Process a template (either as a `Template` sub-template with variables, or a plain array of
    * template `Node`s) and construct its `Scope`.
    */
-  static apply(template: Node[]): Scope {
+  static apply(template: ScopedNode | Node[]): Scope {
     const scope = Scope.newRootScope();
     scope.ingest(template);
     return scope;
@@ -259,23 +338,19 @@ class Scope implements Visitor {
       nodeOrNodes instanceof Content
     ) {
       nodeOrNodes.children.forEach((node) => node.visit(this));
-    } else {
+    } else if (!(nodeOrNodes instanceof HostElement)) {
       // No overarching `Template` instance, so process the nodes directly.
       nodeOrNodes.forEach((node) => node.visit(this));
     }
   }
 
   visitElement(element: Element) {
-    // `Element`s in the template may have `Reference`s which are captured in the scope.
-    element.references.forEach((node) => this.visitReference(node));
-
-    // Recurse into the `Element`'s children.
-    element.children.forEach((node) => node.visit(this));
-
-    this.elementsInScope.add(element);
+    this.visitElementLike(element);
   }
 
   visitTemplate(template: Template) {
+    template.directives.forEach((node) => node.visit(this));
+
     // References on a <ng-template> are defined in the outer scope, so capture them before
     // processing the template's child scope.
     template.references.forEach((node) => this.visitReference(node));
@@ -346,6 +421,14 @@ class Scope implements Visitor {
     this.maybeDeclare(decl);
   }
 
+  visitComponent(component: Component) {
+    this.visitElementLike(component);
+  }
+
+  visitDirective(directive: Directive) {
+    directive.references.forEach((current) => this.visitReference(current));
+  }
+
   // Unused visitors.
   visitBoundAttribute(attr: BoundAttribute) {}
   visitBoundEvent(event: BoundEvent) {}
@@ -355,6 +438,13 @@ class Scope implements Visitor {
   visitIcu(icu: Icu) {}
   visitDeferredTrigger(trigger: DeferredTrigger) {}
   visitUnknownBlock(block: UnknownBlock) {}
+
+  private visitElementLike(node: Element | Component) {
+    node.directives.forEach((current) => current.visit(this));
+    node.references.forEach((current) => this.visitReference(current));
+    node.children.forEach((current) => current.visit(this));
+    this.elementLikeInScope.add(node);
+  }
 
   private maybeDeclare(thing: TemplateEntity) {
     // Declare something with a name, as long as that name isn't taken.
@@ -411,17 +501,12 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   private isInDeferBlock = false;
 
   private constructor(
-    private matcher: SelectorMatcher<DirectiveT[]>,
-    private directives: Map<Element | Template, DirectiveT[]>,
+    private directiveMatcher: DirectiveMatcher<DirectiveT> | null,
+    private directives: MatchedDirectives<DirectiveT>,
     private eagerDirectives: DirectiveT[],
-    private bindings: Map<
-      BoundAttribute | BoundEvent | TextAttribute,
-      DirectiveT | Element | Template
-    >,
-    private references: Map<
-      Reference,
-      {directive: DirectiveT; node: Element | Template} | Element | Template
-    >,
+    private missingDirectives: Set<string>,
+    private bindings: BindingsMap<DirectiveT>,
+    private references: ReferenceMap<DirectiveT>,
   ) {}
 
   /**
@@ -438,35 +523,22 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
    */
   static apply<DirectiveT extends DirectiveMeta>(
     template: Node[],
-    selectorMatcher: SelectorMatcher<DirectiveT[]>,
-  ): {
-    directives: Map<Element | Template, DirectiveT[]>;
-    eagerDirectives: DirectiveT[];
-    bindings: Map<BoundAttribute | BoundEvent | TextAttribute, DirectiveT | Element | Template>;
-    references: Map<
-      Reference,
-      {directive: DirectiveT; node: Element | Template} | Element | Template
-    >;
-  } {
-    const directives = new Map<Element | Template, DirectiveT[]>();
-    const bindings = new Map<
-      BoundAttribute | BoundEvent | TextAttribute,
-      DirectiveT | Element | Template
-    >();
-    const references = new Map<
-      Reference,
-      {directive: DirectiveT; node: Element | Template} | Element | Template
-    >();
-    const eagerDirectives: DirectiveT[] = [];
+    directiveMatcher: DirectiveMatcher<DirectiveT> | null,
+    directives: MatchedDirectives<DirectiveT>,
+    eagerDirectives: DirectiveT[],
+    missingDirectives: Set<string>,
+    bindings: BindingsMap<DirectiveT>,
+    references: ReferenceMap<DirectiveT>,
+  ): void {
     const matcher = new DirectiveBinder(
-      selectorMatcher,
+      directiveMatcher,
       directives,
       eagerDirectives,
+      missingDirectives,
       bindings,
       references,
     );
     matcher.ingest(template);
-    return {directives, eagerDirectives, bindings, references};
   }
 
   private ingest(template: Node[]): void {
@@ -479,79 +551,6 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 
   visitTemplate(template: Template): void {
     this.visitElementOrTemplate(template);
-  }
-
-  visitElementOrTemplate(node: Element | Template): void {
-    // First, determine the HTML shape of the node for the purpose of directive matching.
-    // Do this by building up a `CssSelector` for the node.
-    const cssSelector = createCssSelectorFromNode(node);
-
-    // Next, use the `SelectorMatcher` to get the list of directives on the node.
-    const directives: DirectiveT[] = [];
-    this.matcher.match(cssSelector, (_selector, results) => directives.push(...results));
-    if (directives.length > 0) {
-      this.directives.set(node, directives);
-      if (!this.isInDeferBlock) {
-        this.eagerDirectives.push(...directives);
-      }
-    }
-
-    // Resolve any references that are created on this node.
-    node.references.forEach((ref) => {
-      let dirTarget: DirectiveT | null = null;
-
-      // If the reference expression is empty, then it matches the "primary" directive on the node
-      // (if there is one). Otherwise it matches the host node itself (either an element or
-      // <ng-template> node).
-      if (ref.value.trim() === '') {
-        // This could be a reference to a component if there is one.
-        dirTarget = directives.find((dir) => dir.isComponent) || null;
-      } else {
-        // This should be a reference to a directive exported via exportAs.
-        dirTarget =
-          directives.find(
-            (dir) => dir.exportAs !== null && dir.exportAs.some((value) => value === ref.value),
-          ) || null;
-        // Check if a matching directive was found.
-        if (dirTarget === null) {
-          // No matching directive was found - this reference points to an unknown target. Leave it
-          // unmapped.
-          return;
-        }
-      }
-
-      if (dirTarget !== null) {
-        // This reference points to a directive.
-        this.references.set(ref, {directive: dirTarget, node});
-      } else {
-        // This reference points to the node itself.
-        this.references.set(ref, node);
-      }
-    });
-
-    // Associate attributes/bindings on the node with directives or with the node itself.
-    type BoundNode = BoundAttribute | BoundEvent | TextAttribute;
-    const setAttributeBinding = (
-      attribute: BoundNode,
-      ioType: keyof Pick<DirectiveMeta, 'inputs' | 'outputs'>,
-    ) => {
-      const dir = directives.find((dir) => dir[ioType].hasBindingPropertyName(attribute.name));
-      const binding = dir !== undefined ? dir : node;
-      this.bindings.set(attribute, binding);
-    };
-
-    // Node inputs (bound attributes) and text attributes can be bound to an
-    // input on a directive.
-    node.inputs.forEach((input) => setAttributeBinding(input, 'inputs'));
-    node.attributes.forEach((attr) => setAttributeBinding(attr, 'inputs'));
-    if (node instanceof Template) {
-      node.templateAttrs.forEach((attr) => setAttributeBinding(attr, 'inputs'));
-    }
-    // Node outputs (bound events) can be bound to an output on a directive.
-    node.outputs.forEach((output) => setAttributeBinding(output, 'outputs'));
-
-    // Recurse into the node's children.
-    node.children.forEach((child) => child.visit(this));
   }
 
   visitDeferredBlock(deferred: DeferredBlock): void {
@@ -609,6 +608,154 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     content.children.forEach((child) => child.visit(this));
   }
 
+  visitComponent(node: Component): void {
+    if (this.directiveMatcher instanceof SelectorlessMatcher) {
+      const componentMatches = this.directiveMatcher.match(node.componentName);
+
+      if (componentMatches.length > 0) {
+        this.trackSelectorlessMatchesAndDirectives(node, componentMatches);
+      } else {
+        this.missingDirectives.add(node.componentName);
+      }
+    }
+
+    node.directives.forEach((directive) => directive.visit(this));
+    node.children.forEach((child) => child.visit(this));
+  }
+
+  visitDirective(node: Directive): void {
+    if (this.directiveMatcher instanceof SelectorlessMatcher) {
+      const directives = this.directiveMatcher.match(node.name);
+
+      if (directives.length > 0) {
+        this.trackSelectorlessMatchesAndDirectives(node, directives);
+      } else {
+        this.missingDirectives.add(node.name);
+      }
+    }
+  }
+
+  private visitElementOrTemplate(node: Element | Template): void {
+    if (this.directiveMatcher instanceof SelectorMatcher) {
+      const directives: DirectiveT[] = [];
+      const cssSelector = createCssSelectorFromNode(node);
+      this.directiveMatcher.match(cssSelector, (_, results) => directives.push(...results));
+      this.trackSelectorBasedBindingsAndDirectives(node, directives);
+    } else {
+      node.references.forEach((ref) => {
+        if (ref.value.trim() === '') {
+          this.references.set(ref, node);
+        }
+      });
+    }
+
+    node.directives.forEach((directive) => directive.visit(this));
+    node.children.forEach((child) => child.visit(this));
+  }
+
+  private trackMatchedDirectives(node: DirectiveOwner, directives: DirectiveT[]): void {
+    if (directives.length > 0) {
+      this.directives.set(node, directives);
+      if (!this.isInDeferBlock) {
+        this.eagerDirectives.push(...directives);
+      }
+    }
+  }
+
+  private trackSelectorlessMatchesAndDirectives(
+    node: Component | Directive,
+    directives: DirectiveT[],
+  ): void {
+    if (directives.length === 0) {
+      return;
+    }
+
+    this.trackMatchedDirectives(node, directives);
+
+    const setBinding = (
+      meta: DirectiveT,
+      attribute: BoundAttribute | BoundEvent | TextAttribute,
+      ioType: keyof Pick<DirectiveMeta, 'inputs' | 'outputs'>,
+    ) => {
+      if (meta[ioType].hasBindingPropertyName(attribute.name)) {
+        this.bindings.set(attribute, meta);
+      }
+    };
+
+    for (const directive of directives) {
+      node.inputs.forEach((input) => setBinding(directive, input, 'inputs'));
+      node.attributes.forEach((attr) => setBinding(directive, attr, 'inputs'));
+      node.outputs.forEach((output) => setBinding(directive, output, 'outputs'));
+    }
+
+    // TODO(crisbeto): currently it's unclear how references should behave under selectorless,
+    // given that there's one named class which can bring in multiple host directives.
+    // For the time being only register the first directive as the reference target.
+    node.references.forEach((ref) =>
+      this.references.set(ref, {directive: directives[0], node: node}),
+    );
+  }
+
+  private trackSelectorBasedBindingsAndDirectives(
+    node: Element | Template,
+    directives: DirectiveT[],
+  ): void {
+    this.trackMatchedDirectives(node, directives);
+
+    // Resolve any references that are created on this node.
+    node.references.forEach((ref) => {
+      let dirTarget: DirectiveT | null = null;
+
+      // If the reference expression is empty, then it matches the "primary" directive on the node
+      // (if there is one). Otherwise it matches the host node itself (either an element or
+      // <ng-template> node).
+      if (ref.value.trim() === '') {
+        // This could be a reference to a component if there is one.
+        dirTarget = directives.find((dir) => dir.isComponent) || null;
+      } else {
+        // This should be a reference to a directive exported via exportAs.
+        dirTarget =
+          directives.find(
+            (dir) => dir.exportAs !== null && dir.exportAs.some((value) => value === ref.value),
+          ) || null;
+        // Check if a matching directive was found.
+        if (dirTarget === null) {
+          // No matching directive was found - this reference points to an unknown target. Leave it
+          // unmapped.
+          return;
+        }
+      }
+
+      if (dirTarget !== null) {
+        // This reference points to a directive.
+        this.references.set(ref, {directive: dirTarget, node});
+      } else {
+        // This reference points to the node itself.
+        this.references.set(ref, node);
+      }
+    });
+
+    // Associate attributes/bindings on the node with directives or with the node itself.
+    const setAttributeBinding = (
+      attribute: BoundAttribute | BoundEvent | TextAttribute,
+      ioType: keyof Pick<DirectiveMeta, 'inputs' | 'outputs'>,
+    ) => {
+      const dir = directives.find((dir) => dir[ioType].hasBindingPropertyName(attribute.name));
+      const binding = dir !== undefined ? dir : node;
+      this.bindings.set(attribute, binding);
+    };
+
+    // Node inputs (bound attributes) and text attributes can be bound to an
+    // input on a directive.
+    node.inputs.forEach((input) => setAttributeBinding(input, 'inputs'));
+    node.attributes.forEach((attr) => setAttributeBinding(attr, 'inputs'));
+    if (node instanceof Template) {
+      node.templateAttrs.forEach((attr) => setAttributeBinding(attr, 'inputs'));
+    }
+    // Node outputs (bound events) can be bound to an output on a directive.
+    node.outputs.forEach((output) => setAttributeBinding(output, 'outputs'));
+  }
+
   // Unused visitors.
   visitVariable(variable: Variable): void {}
   visitReference(reference: Reference): void {}
@@ -633,41 +780,27 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
  * Expressions are visited by the superclass `RecursiveAstVisitor`, with custom logic provided
  * by overridden methods from that visitor.
  */
-class TemplateBinder extends RecursiveAstVisitor implements Visitor {
-  private visitNode: (node: Node) => void;
+class TemplateBinder extends CombinedRecursiveAstVisitor {
+  private visitNode = (node: Node) => node.visit(this);
 
   private constructor(
     private bindings: Map<AST, TemplateEntity>,
     private symbols: Map<TemplateEntity, ScopedNode>,
     private usedPipes: Set<string>,
     private eagerPipes: Set<string>,
-    private deferBlocks: [DeferredBlock, Scope][],
+    private deferBlocks: DeferBlockScopes,
     private nestingLevel: Map<ScopedNode, number>,
     private scope: Scope,
     private rootNode: ScopedNode | null,
     private level: number,
   ) {
     super();
-
-    // Save a bit of processing time by constructing this closure in advance.
-    this.visitNode = (node: Node) => node.visit(this);
-  }
-
-  // This method is defined to reconcile the type of TemplateBinder since both
-  // RecursiveAstVisitor and Visitor define the visit() method in their
-  // interfaces.
-  override visit(node: AST | Node, context?: any) {
-    if (node instanceof AST) {
-      node.visit(this, context);
-    } else {
-      node.visit(this);
-    }
   }
 
   /**
    * Process a template and extract metadata about expressions and symbols within.
    *
-   * @param nodes the nodes of the template to process
+   * @param nodeOrNodes the nodes of the template to process
    * @param scope the `Scope` of the template being processed.
    * @returns three maps which contain metadata about the template: `expressions` which interprets
    * special `AST` nodes in expressions as pointing to references or variables declared within the
@@ -677,23 +810,16 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
    * at 1.
    */
   static applyWithScope(
-    nodes: Node[],
+    nodeOrNodes: ScopedNode | Node[],
     scope: Scope,
-  ): {
-    expressions: Map<AST, TemplateEntity>;
-    symbols: Map<TemplateEntity, Template>;
-    nestingLevel: Map<ScopedNode, number>;
-    usedPipes: Set<string>;
-    eagerPipes: Set<string>;
-    deferBlocks: [DeferredBlock, Scope][];
-  } {
-    const expressions = new Map<AST, TemplateEntity>();
-    const symbols = new Map<TemplateEntity, Template>();
-    const nestingLevel = new Map<ScopedNode, number>();
-    const usedPipes = new Set<string>();
-    const eagerPipes = new Set<string>();
-    const template = nodes instanceof Template ? nodes : null;
-    const deferBlocks: [DeferredBlock, Scope][] = [];
+    expressions: Map<AST, TemplateEntity>,
+    symbols: Map<TemplateEntity, Template>,
+    nestingLevel: Map<ScopedNode, number>,
+    usedPipes: Set<string>,
+    eagerPipes: Set<string>,
+    deferBlocks: DeferBlockScopes,
+  ): void {
+    const template = nodeOrNodes instanceof Template ? nodeOrNodes : null;
     // The top-level template has nesting level 0.
     const binder = new TemplateBinder(
       expressions,
@@ -706,8 +832,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
       template,
       0,
     );
-    binder.ingest(nodes);
-    return {expressions, symbols, nestingLevel, usedPipes, eagerPipes, deferBlocks};
+    binder.ingest(nodeOrNodes);
   }
 
   private ingest(nodeOrNodes: ScopedNode | Node[]): void {
@@ -750,24 +875,20 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     ) {
       nodeOrNodes.children.forEach((node) => node.visit(this));
       this.nestingLevel.set(nodeOrNodes, this.level);
+    } else if (nodeOrNodes instanceof HostElement) {
+      // Host elements are always at the top level.
+      this.nestingLevel.set(nodeOrNodes, 0);
     } else {
       // Visit each node from the top-level template.
       nodeOrNodes.forEach(this.visitNode);
     }
   }
 
-  visitElement(element: Element) {
-    // Visit the inputs, outputs, and children of the element.
-    element.inputs.forEach(this.visitNode);
-    element.outputs.forEach(this.visitNode);
-    element.children.forEach(this.visitNode);
-    element.references.forEach(this.visitNode);
-  }
-
-  visitTemplate(template: Template) {
+  override visitTemplate(template: Template) {
     // First, visit inputs, outputs and template attributes of the template node.
     template.inputs.forEach(this.visitNode);
     template.outputs.forEach(this.visitNode);
+    template.directives.forEach(this.visitNode);
     template.templateAttrs.forEach(this.visitNode);
     template.references.forEach(this.visitNode);
 
@@ -775,41 +896,21 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     this.ingestScopedNode(template);
   }
 
-  visitVariable(variable: Variable) {
+  override visitVariable(variable: Variable) {
     // Register the `Variable` as a symbol in the current `Template`.
     if (this.rootNode !== null) {
       this.symbols.set(variable, this.rootNode);
     }
   }
 
-  visitReference(reference: Reference) {
+  override visitReference(reference: Reference) {
     // Register the `Reference` as a symbol in the current `Template`.
     if (this.rootNode !== null) {
       this.symbols.set(reference, this.rootNode);
     }
   }
 
-  // Unused template visitors
-  visitText(text: Text) {}
-  visitTextAttribute(attribute: TextAttribute) {}
-  visitUnknownBlock(block: UnknownBlock) {}
-  visitDeferredTrigger(): void {}
-  visitIcu(icu: Icu): void {
-    Object.keys(icu.vars).forEach((key) => icu.vars[key].visit(this));
-    Object.keys(icu.placeholders).forEach((key) => icu.placeholders[key].visit(this));
-  }
-
-  // The remaining visitors are concerned with processing AST expressions within template bindings
-
-  visitBoundAttribute(attribute: BoundAttribute) {
-    attribute.value.visit(this);
-  }
-
-  visitBoundEvent(event: BoundEvent) {
-    event.handler.visit(this);
-  }
-
-  visitDeferredBlock(deferred: DeferredBlock) {
+  override visitDeferredBlock(deferred: DeferredBlock) {
     this.ingestScopedNode(deferred);
     deferred.triggers.when?.value.visit(this);
     deferred.prefetchTriggers.when?.value.visit(this);
@@ -820,57 +921,44 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     deferred.error && this.visitNode(deferred.error);
   }
 
-  visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder) {
+  override visitDeferredBlockPlaceholder(block: DeferredBlockPlaceholder) {
     this.ingestScopedNode(block);
   }
 
-  visitDeferredBlockError(block: DeferredBlockError) {
+  override visitDeferredBlockError(block: DeferredBlockError) {
     this.ingestScopedNode(block);
   }
 
-  visitDeferredBlockLoading(block: DeferredBlockLoading) {
+  override visitDeferredBlockLoading(block: DeferredBlockLoading) {
     this.ingestScopedNode(block);
   }
 
-  visitSwitchBlock(block: SwitchBlock) {
-    block.expression.visit(this);
-    block.cases.forEach(this.visitNode);
-  }
-
-  visitSwitchBlockCase(block: SwitchBlockCase) {
+  override visitSwitchBlockCase(block: SwitchBlockCase) {
     block.expression?.visit(this);
     this.ingestScopedNode(block);
   }
 
-  visitForLoopBlock(block: ForLoopBlock) {
+  override visitForLoopBlock(block: ForLoopBlock) {
     block.expression.visit(this);
     this.ingestScopedNode(block);
     block.empty?.visit(this);
   }
 
-  visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
+  override visitForLoopBlockEmpty(block: ForLoopBlockEmpty) {
     this.ingestScopedNode(block);
   }
 
-  visitIfBlock(block: IfBlock) {
-    block.branches.forEach((node) => node.visit(this));
-  }
-
-  visitIfBlockBranch(block: IfBlockBranch) {
+  override visitIfBlockBranch(block: IfBlockBranch) {
     block.expression?.visit(this);
     this.ingestScopedNode(block);
   }
 
-  visitContent(content: Content) {
+  override visitContent(content: Content) {
     this.ingestScopedNode(content);
   }
 
-  visitBoundText(text: BoundText) {
-    text.value.visit(this);
-  }
-
-  visitLetDeclaration(decl: LetDeclaration) {
-    decl.value.visit(this);
+  override visitLetDeclaration(decl: LetDeclaration) {
+    super.visitLetDeclaration(decl);
 
     if (this.rootNode !== null) {
       this.symbols.set(decl, this.rootNode);
@@ -940,7 +1028,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
  *
  * See `BoundTarget` for documentation on the individual methods.
  */
-export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<DirectiveT> {
+class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<DirectiveT> {
   /** Deferred blocks, ordered as they appear in the template. */
   private deferredBlocks: DeferredBlock[];
 
@@ -949,23 +1037,18 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
 
   constructor(
     readonly target: Target,
-    private directives: Map<Element | Template, DirectiveT[]>,
+    private directives: MatchedDirectives<DirectiveT>,
     private eagerDirectives: DirectiveT[],
-    private bindings: Map<
-      BoundAttribute | BoundEvent | TextAttribute,
-      DirectiveT | Element | Template
-    >,
-    private references: Map<
-      BoundAttribute | BoundEvent | Reference | TextAttribute,
-      {directive: DirectiveT; node: Element | Template} | Element | Template
-    >,
+    private missingDirectives: Set<string>,
+    private bindings: BindingsMap<DirectiveT>,
+    private references: ReferenceMap<DirectiveT>,
     private exprTargets: Map<AST, TemplateEntity>,
     private symbols: Map<TemplateEntity, Template>,
     private nestingLevel: Map<ScopedNode, number>,
-    private scopedNodeEntities: Map<ScopedNode | null, ReadonlySet<TemplateEntity>>,
+    private scopedNodeEntities: ScopedNodeEntities,
     private usedPipes: Set<string>,
     private eagerPipes: Set<string>,
-    rawDeferred: [DeferredBlock, Scope][],
+    rawDeferred: DeferBlockScopes,
   ) {
     this.deferredBlocks = rawDeferred.map((current) => current[0]);
     this.deferredScopes = new Map(rawDeferred);
@@ -975,7 +1058,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
     return this.scopedNodeEntities.get(node) ?? new Set();
   }
 
-  getDirectivesOfNode(node: Element | Template): DirectiveT[] | null {
+  getDirectivesOfNode(node: DirectiveOwner): DirectiveT[] | null {
     return this.directives.get(node) || null;
   }
 
@@ -1100,7 +1183,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
       while (stack.length > 0) {
         const current = stack.pop()!;
 
-        if (current.elementsInScope.has(element)) {
+        if (current.elementLikeInScope.has(element)) {
           return true;
         }
 
@@ -1109,6 +1192,10 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
     }
 
     return false;
+  }
+
+  referencedDirectiveExists(name: string): boolean {
+    return !this.missingDirectives.has(name);
   }
 
   /**
@@ -1134,7 +1221,11 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
       return target;
     }
 
-    if (target instanceof Template) {
+    if (
+      target instanceof Template ||
+      target.node instanceof Component ||
+      target.node instanceof Directive
+    ) {
       return null;
     }
 
@@ -1142,7 +1233,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   }
 }
 
-function extractScopedNodeEntities(rootScope: Scope): Map<ScopedNode | null, Set<TemplateEntity>> {
+function extractScopedNodeEntities(rootScope: Scope, templateEntities: ScopedNodeEntities): void {
   const entityMap = new Map<ScopedNode | null, Map<string, TemplateEntity>>();
 
   function extractScopeEntities(scope: Scope): Map<string, TemplateEntity> {
@@ -1172,9 +1263,7 @@ function extractScopedNodeEntities(rootScope: Scope): Map<ScopedNode | null, Set
     extractScopeEntities(scope);
   }
 
-  const templateEntities = new Map<ScopedNode | null, Set<TemplateEntity>>();
   for (const [template, entities] of entityMap) {
     templateEntities.set(template, new Set(entities.values()));
   }
-  return templateEntities;
 }

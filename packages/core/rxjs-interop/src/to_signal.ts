@@ -18,14 +18,14 @@ import {
   WritableSignal,
   ɵRuntimeError,
   ɵRuntimeErrorCode,
-} from '@angular/core';
-import {ValueEqualityFn} from '@angular/core/primitives/signals';
+} from '../../src/core';
+import {ValueEqualityFn} from '../../primitives/signals';
 import {Observable, Subscribable} from 'rxjs';
 
 /**
  * Options for `toSignal`.
  *
- * @publicApi
+ * @publicApi 20.0
  */
 export interface ToSignalOptions<T> {
   /**
@@ -61,16 +61,6 @@ export interface ToSignalOptions<T> {
    * until the `Observable` itself completes.
    */
   manualCleanup?: boolean;
-
-  /**
-   * Whether `toSignal` should throw errors from the Observable error channel back to RxJS, where
-   * they'll be processed as uncaught exceptions.
-   *
-   * In practice, this means that the signal returned by `toSignal` will keep returning the last
-   * good value forever, as Observables which error produce no further values. This option emulates
-   * the behavior of the `async` pipe.
-   */
-  rejectErrors?: boolean;
 
   /**
    * A comparison function which defines equality for values emitted by the observable.
@@ -127,14 +117,13 @@ export function toSignal<T, const U extends T>(
  * If the subscription should persist until the `Observable` itself completes, the `manualCleanup`
  * option can be specified instead, which disables the automatic subscription teardown. No injection
  * context is needed in this configuration as well.
- *
- * @developerPreview
  */
 export function toSignal<T, U = undefined>(
   source: Observable<T> | Subscribable<T>,
   options?: ToSignalOptions<T | U> & {initialValue?: U},
 ): Signal<T | U> {
-  ngDevMode &&
+  typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
     assertNotInReactiveContext(
       toSignal,
       'Invoking `toSignal` causes new subscriptions every time. ' +
@@ -163,6 +152,8 @@ export function toSignal<T, U = undefined>(
     );
   }
 
+  let destroyUnregisterFn: (() => void) | undefined;
+
   // Note: This code cannot run inside a reactive context (see assertion above). If we'd support
   // this, we would subscribe to the observable outside of the current reactive context, avoiding
   // that side-effect signal reads/writes are attribute to the current consumer. The current
@@ -172,12 +163,10 @@ export function toSignal<T, U = undefined>(
   const sub = source.subscribe({
     next: (value) => state.set({kind: StateKind.Value, value}),
     error: (error) => {
-      if (options?.rejectErrors) {
-        // Kick the error back to RxJS. It will be caught and rethrown in a macrotask, which causes
-        // the error to end up as an uncaught exception.
-        throw error;
-      }
       state.set({kind: StateKind.Error, error});
+    },
+    complete: () => {
+      destroyUnregisterFn?.();
     },
     // Completion of the Observable is meaningless to the signal. Signals don't have a concept of
     // "complete".
@@ -192,7 +181,7 @@ export function toSignal<T, U = undefined>(
   }
 
   // Unsubscribe when the current context is destroyed, if requested.
-  cleanupRef?.onDestroy(sub.unsubscribe.bind(sub));
+  destroyUnregisterFn = cleanupRef?.onDestroy(sub.unsubscribe.bind(sub));
 
   // The actual returned signal is a `computed` of the `State` signal, which maps the various states
   // to either values or errors.

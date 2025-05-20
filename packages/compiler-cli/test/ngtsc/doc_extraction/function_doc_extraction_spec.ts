@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {EntryType, FunctionEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
+import {DocEntry} from '../../../src/ngtsc/docs';
+import {EntryType, FunctionEntry} from '../../../src/ngtsc/docs/src/entities';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {loadStandardTestFiles} from '../../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
@@ -144,6 +144,20 @@ runInEachFileSystem(() => {
       expect(genericEntry.name).toBe('T');
       expect(genericEntry.constraint).toBeUndefined();
       expect(genericEntry.default).toBeUndefined();
+    });
+
+    it('should extract type predicates as return type of type guards', () => {
+      env.write(
+        'index.ts',
+        `export function isSignal(value: unknown): value is Signal<unknown> {}`,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const [functionEntry] = docs as FunctionEntry[];
+      expect(functionEntry.implementation.returnType).toBe('value is Signal<unknown>');
+      expect(functionEntry.signatures[0].returnType).toBe('value is Signal<unknown>');
     });
   });
 });

@@ -2,7 +2,7 @@
 
 `HttpClient` has methods corresponding to the different HTTP verbs used to make requests, both to load data and to apply mutations on the server. Each method returns an [RxJS `Observable`](https://rxjs.dev/guide/observable) which, when subscribed, sends the request and then emits the results when the server responds.
 
-Note: `Observable`s created by `HttpClient` may be subscribed any number of times and will make a new backend request for each subscription.
+NOTE: `Observable`s created by `HttpClient` may be subscribed any number of times and will make a new backend request for each subscription.
 
 Through an options object passed to the request method, various properties of the request and the returned response type can be adjusted.
 
@@ -20,7 +20,7 @@ http.get<Config>('/api/config').subscribe(config => {
 
 Note the generic type argument which specifies that the data returned by the server will be of type `Config`. This argument is optional, and if you omit it then the returned data will have type `Object`.
 
-Tip: When dealing with data of uncertain structure and potential `undefined` or `null` values, consider using the `unknown` type instead of `Object` as the response type.
+TIP: When dealing with data of uncertain structure and potential `undefined` or `null` values, consider using the `unknown` type instead of `Object` as the response type.
 
 CRITICAL: The generic type of request methods is a type **assertion** about the data returned by the server. `HttpClient` does not verify that the actual return data matches this type.
 
@@ -159,7 +159,7 @@ In addition to the response body or response object, `HttpClient` can also retur
 
 Progress events are disabled by default (as they have a performance cost) but can be enabled with the `reportProgress` option.
 
-Note: The optional `fetch` implementation of `HttpClient` does not report _upload_ progress events.
+NOTE: The optional `fetch` implementation of `HttpClient` does not report _upload_ progress events.
 
 To observe the event stream, set the `observe` option to `'events'`:
 
@@ -234,7 +234,7 @@ While `HttpClient` can be injected and used directly from components, generally 
 <docs-code language="ts">
 @Injectable({providedIn: 'root'})
 export class UserService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getUser(id: string): Observable<User> {
     return this.http.get<User>(`/api/user/${id}`);
@@ -259,9 +259,9 @@ export class UserProfileComponent {
   @Input() userId!: string;
   user$!: Observable<User>;
 
-  constructor(private userService: UserService) {}
+  private userService = inject(UserService);
 
-  ngOnInit(): void {
+  constructor(): void {
     this.user$ = this.userService.getUser(this.userId);
   }
 }

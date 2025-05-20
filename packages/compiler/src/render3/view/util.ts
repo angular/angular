@@ -10,7 +10,7 @@ import {InputFlags} from '../../core';
 import {BindingType} from '../../expression_parser/ast';
 import {splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
-import {CssSelector} from '../../selector';
+import {CssSelector} from '../../directive_matching';
 import * as t from '../r3_ast';
 
 import {isI18nAttribute} from './i18n/util';

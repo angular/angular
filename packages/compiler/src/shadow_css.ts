@@ -214,7 +214,7 @@ export class ShadowCss {
    *
    * For example, we convert this css:
    *
-   * ```
+   * ```scss
    * .box {
    *   animation: box-animation 1s forwards;
    * }
@@ -228,7 +228,7 @@ export class ShadowCss {
    *
    * to this:
    *
-   * ```
+   * ```scss
    * .box {
    *   animation: scopeName_box-animation 1s forwards;
    * }
@@ -262,7 +262,7 @@ export class ShadowCss {
    *
    * For example, it takes a rule such as:
    *
-   * ```
+   * ```scss
    * @keyframes box-animation {
    *   to {
    *     background-color: green;
@@ -272,7 +272,7 @@ export class ShadowCss {
    *
    * and returns:
    *
-   * ```
+   * ```scss
    * @keyframes scopeName_box-animation {
    *   to {
    *     background-color: green;
@@ -541,6 +541,41 @@ export class ShadowCss {
    * .foo<scopeName> .bar { ... }
    */
   private _convertColonHostContext(cssText: string): string {
+    const length = cssText.length;
+    let parens = 0;
+    let prev = 0;
+    let result = '';
+
+    // Splits up the selectors on their top-level commas, processes the :host-context in them
+    // individually and stitches them back together. This ensures that individual selectors don't
+    // affect each other.
+    for (let i = 0; i < length; i++) {
+      const char = cssText[i];
+
+      // If we hit a comma and there are no open parentheses, take the current chunk and process it.
+      if (char === ',' && parens === 0) {
+        result += this._convertColonHostContextInSelectorPart(cssText.slice(prev, i)) + ',';
+        prev = i + 1;
+        continue;
+      }
+
+      // We've hit the end. Take everything since the last comma.
+      if (i === length - 1) {
+        result += this._convertColonHostContextInSelectorPart(cssText.slice(prev));
+        break;
+      }
+
+      if (char === '(') {
+        parens++;
+      } else if (char === ')') {
+        parens--;
+      }
+    }
+
+    return result;
+  }
+
+  private _convertColonHostContextInSelectorPart(cssText: string): string {
     return cssText.replace(_cssColonHostContextReGlobal, (selectorText, pseudoPrefix) => {
       // We have captured a selector that contains a `:host-context` rule.
 
@@ -1010,13 +1045,16 @@ const _cssContentUnscopedRuleRe =
 const _polyfillHost = '-shadowcsshost';
 // note: :host-context pre-processed to -shadowcsshostcontext.
 const _polyfillHostContext = '-shadowcsscontext';
-const _parenSuffix = '(?:\\((' + '(?:\\([^)(]*\\)|[^)(]*)+?' + ')\\))?([^,{]*)';
-const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix, 'gim');
+const _parenSuffix = '(?:\\((' + '(?:\\([^)(]*\\)|[^)(]*)+?' + ')\\))';
+const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix + '?([^,{]*)', 'gim');
+// note: :host-context patterns are terminated with `{`, as opposed to :host which
+// is both `{` and `,` because :host-context handles top-level commas differently.
+const _hostContextPattern = _polyfillHostContext + _parenSuffix + '?([^{]*)';
 const _cssColonHostContextReGlobal = new RegExp(
-  _cssScopedPseudoFunctionPrefix + '(' + _polyfillHostContext + _parenSuffix + ')',
+  `${_cssScopedPseudoFunctionPrefix}(${_hostContextPattern})`,
   'gim',
 );
-const _cssColonHostContextRe = new RegExp(_polyfillHostContext + _parenSuffix, 'im');
+const _cssColonHostContextRe = new RegExp(_hostContextPattern, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 const _polyfillHostNoCombinatorOutsidePseudoFunction = new RegExp(
   `${_polyfillHostNoCombinator}(?![^(]*\\))`,

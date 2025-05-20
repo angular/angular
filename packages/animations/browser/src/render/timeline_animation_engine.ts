@@ -12,7 +12,7 @@ import {
   AnimationPlayer,
   AUTO_STYLE,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 import {Ast} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
@@ -38,7 +38,7 @@ import {
   optimizeGroupPlayer,
 } from './shared';
 
-const EMPTY_INSTRUCTION_MAP = new ElementInstructionMap();
+const EMPTY_INSTRUCTION_MAP = /* @__PURE__ */ new ElementInstructionMap();
 
 export class TimelineAnimationEngine {
   private _animations = new Map<string, Ast<AnimationMetadataType>>();
@@ -58,8 +58,10 @@ export class TimelineAnimationEngine {
     if (errors.length) {
       throw registerFailed(errors);
     } else {
-      if (warnings.length) {
-        warnRegister(warnings);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        if (warnings.length) {
+          warnRegister(warnings);
+        }
       }
       this._animations.set(id, ast);
     }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isPlatformServer} from '@angular/common';
+import {isPlatformServer} from '../../index';
 import {
   EnvironmentInjector,
   inject,
@@ -16,7 +16,7 @@ import {
   runInInjectionContext,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
-  ɵPendingTasks as PendingTasks,
+  PendingTasks,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
@@ -244,8 +244,8 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
     const pendingTasks = inject(PendingTasks);
     const contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
     if (contributeToStability) {
-      const taskId = pendingTasks.add();
-      return chain(req, handler).pipe(finalize(() => pendingTasks.remove(taskId)));
+      const removeTask = pendingTasks.add();
+      return chain(req, handler).pipe(finalize(removeTask));
     } else {
       return chain(req, handler);
     }
@@ -323,10 +323,10 @@ export class HttpInterceptorHandler extends HttpHandler {
     }
 
     if (this.contributeToStability) {
-      const taskId = this.pendingTasks.add();
+      const removeTask = this.pendingTasks.add();
       return this.chain(initialRequest, (downstreamRequest) =>
         this.backend.handle(downstreamRequest),
-      ).pipe(finalize(() => this.pendingTasks.remove(taskId)));
+      ).pipe(finalize(removeTask));
     } else {
       return this.chain(initialRequest, (downstreamRequest) =>
         this.backend.handle(downstreamRequest),

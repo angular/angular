@@ -1,4 +1,4 @@
-<div class="devtools mat-typography mat-app-background" style="height: 100%;">
+<div class="devtools mat-app-background" style="height: 100%;">
   @switch (angularStatus()) {
     @case (AngularStatus.EXISTS) {
       @if (angularIsInDevMode()) {
@@ -8,6 +8,7 @@
               (frameSelected)="inspectFrame($event)"
               [isHydrationEnabled]="hydration()"
               [angularVersion]="angularVersion()"
+              [supportedApis]="supportedApis()"
             ></ng-devtools-tabs>
           </div>
         } @else {

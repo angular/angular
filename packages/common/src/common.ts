@@ -66,7 +66,6 @@ export {
   NgTemplateOutlet,
   NgComponentOutlet,
 } from './directives/index';
-export {DOCUMENT} from './dom_tokens';
 export {
   AsyncPipe,
   DatePipe,
@@ -111,3 +110,6 @@ export {
   provideNetlifyLoader,
 } from './directives/ng_optimized_image';
 export {normalizeQueryParams as ɵnormalizeQueryParams} from './location/util';
+
+// Backwards compatibility re-export.
+export {DOCUMENT} from '@angular/core';

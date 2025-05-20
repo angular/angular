@@ -1,4 +1,5 @@
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
 
 package(default_visibility = ["//adev:__subpackages__"])
 
@@ -8,6 +9,7 @@ copy_to_directory(
         "//adev/src/content",
         "//adev/src/content/best-practices",
         "//adev/src/content/best-practices/runtime-performance",
+        "//adev/src/content/cdk:cdk_docs",
         "//adev/src/content/cli/help:cli_docs",
         "//adev/src/content/ecosystem",
         "//adev/src/content/ecosystem/rxjs-interop",
@@ -32,7 +34,9 @@ copy_to_directory(
         "//adev/src/content/reference/concepts",
         "//adev/src/content/reference/configs",
         "//adev/src/content/reference/errors",
+        "//adev/src/content/reference/errors:route-nav-items",
         "//adev/src/content/reference/extended-diagnostics",
+        "//adev/src/content/reference/extended-diagnostics:route-nav-items",
         "//adev/src/content/reference/migrations",
         "//adev/src/content/tools",
         "//adev/src/content/tools/cli",
@@ -79,6 +83,7 @@ copy_to_directory(
     ],
     replace_prefixes = {
         "adev/src/content/cli/help/cli_docs_html": "cli/",
+        "adev/src/content/cdk/cdk_docs_html": "api/",
         "adev/src/content": "",
         "packages/**/": "api/",
         "tools/**/": "api/",
@@ -99,10 +104,18 @@ copy_to_directory(
     },
 )
 
+generate_api_manifest(
+    name = "docs_api_manifest",
+    srcs = [
+        "//adev/src/content/cdk:cdk_extracted_apis",
+        "//packages:docs_extracted_apis",
+    ],
+)
+
 copy_to_directory(
     name = "api",
     srcs = [
-        "//packages:docs_api_manifest",
+        ":docs_api_manifest",
     ],
     replace_prefixes = {
         "**/": "",

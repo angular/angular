@@ -2,6 +2,8 @@ dialog {
   background-color: transparent;
   border: none;
   padding-block-end: 3rem;
+  margin: 0 auto;
+  top: 15vh;
 
   &::backdrop {
     backdrop-filter: blur(5px);
@@ -23,23 +25,16 @@ dialog {
     height: 2.6875rem; // 43px;
     padding-inline-start: 1rem;
     position: relative;
-
-    &::after {
-      content: 'Esc';
-      position: absolute;
-      right: 1rem;
-      color: var(--gray-400);
-      font-size: 0.875rem;
-    }
   }
 
-  ul {
+  .docs-search-results {
     max-height: 50vh;
     overflow-y: auto;
     overscroll-behavior: contain;
     list-style-type: none;
     padding-inline: 0;
     padding-block-start: 1rem;
+    padding-block-end: 1rem;
     margin: 0;
     border-block-end: 1px solid var(--senary-contrast);
 
@@ -49,12 +44,17 @@ dialog {
       padding-inline-end: 1rem;
       padding-block: 0.25rem;
 
-      mark {
-        background: #e62600;
-        background: var(--red-to-orange-horizontal-gradient);
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
+      /**
+      * This rule needs ng-deep to be applied to elements that are created via a [innerHTML] binding
+      */
+      ::ng-deep {
+        mark {
+          background: #e62600;
+          background: var(--red-to-orange-horizontal-gradient);
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+        }
       }
 
       a {
@@ -135,21 +135,52 @@ dialog {
   }
 }
 
-.docs-algolia {
+.docs-search-footer {
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: space-between;
   color: var(--gray-400);
   padding: 1rem;
   font-size: 0.75rem;
   font-weight: 500;
-  gap: 0.25rem;
   background-color: var(--page-background);
   border-radius: 0 0 0.25rem 0.25rem;
+  container-type: inline-size;
+  container-name: footer;
+
+  .docs-search-commands {
+    display: flex;
+    list-style: none;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .docs-search-commands-key {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  @container footer (max-width: 600px) {
+    .docs-search-commands li {
+      display: none;
+    }
+  }
+
+  .docs-algolia {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
 
   docs-algolia-icon {
-    display: inline-flex;
-    margin-block-start: 0.12rem;
+    display: block;
+    margin-block-start: 5px;
     margin-inline-start: 0.15rem;
     width: 4rem;
   }

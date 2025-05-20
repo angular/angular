@@ -19,7 +19,7 @@
     "moduleResolution": "node",
     "module": "esnext",
     "target": "es2022",
-    "lib": ["es2020", "dom", "dom.iterable"],
+    "lib": ["es2020", "es2022", "dom", "dom.iterable"],
     "skipLibCheck": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": [],
@@ -29,9 +29,18 @@
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "inlineSources": true,
-    "importHelpers": true
+    "importHelpers": true,
+    "paths": {
+      "zone.js": ["./zone.js/lib/zone"],
+      "@angular/*": ["./*/index"],
+      "@angular/common/locales/*": ["./common/locales/*"]
+    }
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "typeCheckHostBindings": true
   }
 }

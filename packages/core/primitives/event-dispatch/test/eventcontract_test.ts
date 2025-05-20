@@ -129,7 +129,6 @@ function dispatchMouseEvent(
   } = {},
 ) {
   // createEvent/initMouseEvent is used to support IE11
-  // tslint:disable:deprecation
   const event = document.createEvent('MouseEvent');
   event.initMouseEvent(
     type,
@@ -301,7 +300,6 @@ describe('EventContract', () => {
     });
 
     // createEvent/initEvent is used to support IE11
-    // tslint:disable:deprecation
     const animationEndEvent = document.createEvent('AnimationEvent');
     animationEndEvent.initEvent('webkitanimationend', true, true);
     // tslint:enable:deprecation

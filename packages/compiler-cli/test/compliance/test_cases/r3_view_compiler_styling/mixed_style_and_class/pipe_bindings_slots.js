@@ -14,6 +14,6 @@ template: function MyComponent_Template(rf, $ctx$) {
     $r3$.ɵɵstyleProp("bar", $r3$.ɵɵpipeBind2(2, 14, $ctx$.barExp, 3000))("baz", $r3$.ɵɵpipeBind2(3, 17, $ctx$.bazExp, 4000));
     $r3$.ɵɵclassProp("foo", $r3$.ɵɵpipeBind2(4, 20, $ctx$.fooExp, 2000));
     $r3$.ɵɵadvance(5);
-   $r3$.ɵɵtextInterpolate1(" ", $ctx$.item, "");
+   $r3$.ɵɵtextInterpolate1(" ", $ctx$.item);
   }
 }

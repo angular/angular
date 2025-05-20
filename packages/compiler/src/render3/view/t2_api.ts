@@ -10,15 +10,18 @@ import {AST} from '../../expression_parser/ast';
 import {
   BoundAttribute,
   BoundEvent,
+  Component,
   Content,
   DeferredBlock,
   DeferredBlockError,
   DeferredBlockLoading,
   DeferredBlockPlaceholder,
   DeferredTrigger,
+  Directive,
   Element,
   ForLoopBlock,
   ForLoopBlockEmpty,
+  HostElement,
   IfBlockBranch,
   LetDeclaration,
   Node,
@@ -40,19 +43,20 @@ export type ScopedNode =
   | DeferredBlockError
   | DeferredBlockLoading
   | DeferredBlockPlaceholder
-  | Content;
+  | Content
+  | HostElement;
 
 /** Possible values that a reference can be resolved to. */
 export type ReferenceTarget<DirectiveT> =
-  | {
-      directive: DirectiveT;
-      node: Element | Template;
-    }
+  | {directive: DirectiveT; node: DirectiveOwner}
   | Element
   | Template;
 
 /** Entity that is local to the template and defined within the template. */
 export type TemplateEntity = Reference | Variable | LetDeclaration;
+
+/** Nodes that can have directives applied to them. */
+export type DirectiveOwner = Element | Template | Component | Directive;
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
@@ -68,6 +72,7 @@ export type TemplateEntity = Reference | Variable | LetDeclaration;
  */
 export interface Target {
   template?: Node[];
+  host?: HostElement;
 }
 
 /**
@@ -178,7 +183,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * For a given template node (either an `Element` or a `Template`), get the set of directives
    * which matched the node, if any.
    */
-  getDirectivesOfNode(node: Element | Template): DirectiveT[] | null;
+  getDirectivesOfNode(node: DirectiveOwner): DirectiveT[] | null;
 
   /**
    * For a given `Reference`, get the reference's target - either an `Element`, a `Template`, or
@@ -268,4 +273,10 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * Whether a given node is located in a `@defer` block.
    */
   isDeferred(node: Element): boolean;
+
+  /**
+   * Checks whether a component/directive that was referenced directly in the template exists.
+   * @param name Name of the component/directive.
+   */
+  referencedDirectiveExists(name: string): boolean;
 }

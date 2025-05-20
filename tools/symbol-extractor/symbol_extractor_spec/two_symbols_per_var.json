@@ -1,11 +1,5 @@
 [
-  {
-    "name": "A"
-  },
-  {
-    "name": "B"
-  },
-  {
-    "name": "no_initializer"
-  }
+  "A",
+  "B",
+  "no_initializer"
 ]

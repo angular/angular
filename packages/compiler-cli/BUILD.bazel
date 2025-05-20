@@ -1,16 +1,38 @@
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("@npm2//:defs.bzl", "npm_link_all_packages")
 load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
-load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_config", "ts_library")
+load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_library")
+load("//tools:defaults2.bzl", "npm_package", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
 PUBLIC_TARGETS = [
     ":compiler-cli",
     "//packages/compiler-cli/private",
-    "//packages/compiler-cli/ngcc",
     "//packages/compiler-cli/linker",
     "//packages/compiler-cli/linker/babel",
 ]
+
+npm_link_all_packages()
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    testonly = True,
+    src = "tsconfig-test.json",
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+    ],
+)
 
 esbuild_config(
     name = "esbuild_config",
@@ -23,7 +45,6 @@ esbuild(
     entry_points = [
         ":index.ts",
         "//packages/compiler-cli:src/bin/ngc.ts",
-        "//packages/compiler-cli/ngcc:index.ts",
         "//packages/compiler-cli:src/bin/ng_xi18n.ts",
         "//packages/compiler-cli/linker:index.ts",
         "//packages/compiler-cli/linker/babel:index.ts",
@@ -51,12 +72,6 @@ esbuild(
     deps = PUBLIC_TARGETS,
 )
 
-ts_config(
-    name = "tsconfig",
-    src = "tsconfig-build.json",
-    deps = ["//packages:tsconfig-build.json"],
-)
-
 ts_library(
     name = "compiler-cli",
     srcs = glob(
@@ -68,7 +83,6 @@ ts_library(
             "src/integrationtest/**/*.ts",
         ],
     ),
-    tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/private",
@@ -112,18 +126,37 @@ pkg_npm(
     tags = [
         "release-with-framework",
     ],
-    # Do not add more to this list.
-    # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//adev:__pkg__",
+        "//adev/shared-docs/pipeline/api-gen:__subpackages__",
         "//integration:__subpackages__",
+        "//modules/benchmarks:__subpackages__",
+        "//modules/playground:__subpackages__",
         "//modules/ssr-benchmarks:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/core/test/bundling:__subpackages__",
+        "//packages/core/test/playground/zone-signal-input:__pkg__",
+        "@npm//@angular/build-tooling/shared-scripts:__subpackages__",
     ],
     deps = [
         ":api_type_definitions",
         ":bundles",
     ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making compiler-cli usable in `rules_angular`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package_nosub"],
+    data = [
+        # Needed because compiler is a dev dependency (to satisfy the peer dependency)
+        # and `rules_js` only makes transitive production dependencies available.
+        ":node_modules/@angular/compiler",
+    ],
+    replace_prefixes = {
+        "npm_package_nosub/": "",
+    },
 )
 
 api_golden_test(

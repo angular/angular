@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EmptyExpr, ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
+import {
+  BindingType,
+  EmptyExpr,
+  ParsedEvent,
+  ParsedProperty,
+  ParsedVariable,
+} from '../expression_parser/ast';
 import * as i18n from '../i18n/i18n_ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
@@ -53,6 +59,19 @@ const BINDING_DELIMS = {
 };
 
 const TEMPLATE_ATTR_PREFIX = '*';
+
+// TODO(crisbeto): any other tag names that shouldn't be allowed here?
+const UNSUPPORTED_SELECTORLESS_TAGS = new Set([
+  'link',
+  'style',
+  'script',
+  'ng-template',
+  'ng-container',
+  'ng-content',
+]);
+
+// TODO(crisbeto): any other attributes that should not be allowed here?
+const UNSUPPORTED_SELECTORLESS_DIRECTIVE_ATTRS = new Set(['ngProjectAs', 'ngNonBindable']);
 
 // Result of the html AST to Ivy AST transformation
 export interface Render3ParseResult {
@@ -144,86 +163,19 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     // Whether the element is a `<ng-template>`
     const isTemplateElement = isNgTemplate(element.name);
+    const {
+      attributes,
+      boundEvents,
+      references,
+      variables,
+      templateVariables,
+      elementHasInlineTemplate,
+      parsedProperties,
+      templateParsedProperties,
+      i18nAttrsMeta,
+    } = this.prepareAttributes(element.attrs, isTemplateElement);
 
-    const parsedProperties: ParsedProperty[] = [];
-    const boundEvents: t.BoundEvent[] = [];
-    const variables: t.Variable[] = [];
-    const references: t.Reference[] = [];
-    const attributes: t.TextAttribute[] = [];
-    const i18nAttrsMeta: {[key: string]: i18n.I18nMeta} = {};
-
-    const templateParsedProperties: ParsedProperty[] = [];
-    const templateVariables: t.Variable[] = [];
-
-    // Whether the element has any *-attribute
-    let elementHasInlineTemplate = false;
-
-    for (const attribute of element.attrs) {
-      let hasBinding = false;
-      const normalizedName = normalizeAttributeName(attribute.name);
-
-      // `*attr` defines template bindings
-      let isTemplateBinding = false;
-
-      if (attribute.i18n) {
-        i18nAttrsMeta[attribute.name] = attribute.i18n;
-      }
-
-      if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
-        // *-attributes
-        if (elementHasInlineTemplate) {
-          this.reportError(
-            `Can't have multiple template bindings on one element. Use only one attribute prefixed with *`,
-            attribute.sourceSpan,
-          );
-        }
-        isTemplateBinding = true;
-        elementHasInlineTemplate = true;
-        const templateValue = attribute.value;
-        const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
-
-        const parsedVariables: ParsedVariable[] = [];
-        const absoluteValueOffset = attribute.valueSpan
-          ? attribute.valueSpan.start.offset
-          : // If there is no value span the attribute does not have a value, like `attr` in
-            //`<div attr></div>`. In this case, point to one character beyond the last character of
-            // the attribute name.
-            attribute.sourceSpan.start.offset + attribute.name.length;
-
-        this.bindingParser.parseInlineTemplateBinding(
-          templateKey,
-          templateValue,
-          attribute.sourceSpan,
-          absoluteValueOffset,
-          [],
-          templateParsedProperties,
-          parsedVariables,
-          true /* isIvyAst */,
-        );
-        templateVariables.push(
-          ...parsedVariables.map(
-            (v) => new t.Variable(v.name, v.value, v.sourceSpan, v.keySpan, v.valueSpan),
-          ),
-        );
-      } else {
-        // Check for variables, events, property bindings, interpolation
-        hasBinding = this.parseAttribute(
-          isTemplateElement,
-          attribute,
-          [],
-          parsedProperties,
-          boundEvents,
-          variables,
-          references,
-        );
-      }
-
-      if (!hasBinding && !isTemplateBinding) {
-        // don't include the bindings as attributes as well in the AST
-        attributes.push(this.visitAttribute(attribute));
-      }
-    }
-
+    const directives = this.extractDirectives(element);
     let children: t.Node[];
 
     if (preparsedElement.nonBindable) {
@@ -239,37 +191,58 @@ class HtmlAstToIvyAst implements html.Visitor {
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       const selector = preparsedElement.selectAttr;
       const attrs: t.TextAttribute[] = element.attrs.map((attr) => this.visitAttribute(attr));
-      parsedElement = new t.Content(selector, attrs, children, element.sourceSpan, element.i18n);
+      parsedElement = new t.Content(
+        selector,
+        attrs,
+        children,
+        element.isSelfClosing,
+        element.sourceSpan,
+        element.startSourceSpan,
+        element.endSourceSpan,
+        element.i18n,
+      );
       this.ngContentSelectors.push(selector);
     } else if (isTemplateElement) {
       // `<ng-template>`
-      const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
+      const attrs = this.categorizePropertyAttributes(
+        element.name,
+        parsedProperties,
+        i18nAttrsMeta,
+      );
 
       parsedElement = new t.Template(
         element.name,
         attributes,
         attrs.bound,
         boundEvents,
+        directives,
         [
           /* no template attributes */
         ],
         children,
         references,
         variables,
+        element.isSelfClosing,
         element.sourceSpan,
         element.startSourceSpan,
         element.endSourceSpan,
         element.i18n,
       );
     } else {
-      const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
+      const attrs = this.categorizePropertyAttributes(
+        element.name,
+        parsedProperties,
+        i18nAttrsMeta,
+      );
       parsedElement = new t.Element(
         element.name,
         attributes,
         attrs.bound,
         boundEvents,
+        directives,
         children,
         references,
+        element.isSelfClosing,
         element.sourceSpan,
         element.startSourceSpan,
         element.endSourceSpan,
@@ -280,42 +253,13 @@ class HtmlAstToIvyAst implements html.Visitor {
     if (elementHasInlineTemplate) {
       // If this node is an inline-template (e.g. has *ngFor) then we need to create a template
       // node that contains this node.
-      // Moreover, if the node is an element, then we need to hoist its attributes to the template
-      // node for matching against content projection selectors.
-      const attrs = this.extractAttributes('ng-template', templateParsedProperties, i18nAttrsMeta);
-      const templateAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
-      attrs.literal.forEach((attr) => templateAttrs.push(attr));
-      attrs.bound.forEach((attr) => templateAttrs.push(attr));
-      const hoistedAttrs =
-        parsedElement instanceof t.Element
-          ? {
-              attributes: parsedElement.attributes,
-              inputs: parsedElement.inputs,
-              outputs: parsedElement.outputs,
-            }
-          : {attributes: [], inputs: [], outputs: []};
-
-      // For <ng-template>s with structural directives on them, avoid passing i18n information to
-      // the wrapping template to prevent unnecessary i18n instructions from being generated. The
-      // necessary i18n meta information will be extracted from child elements.
-      const i18n = isTemplateElement && isI18nRootElement ? undefined : element.i18n;
-      const name = parsedElement instanceof t.Template ? null : parsedElement.name;
-
-      parsedElement = new t.Template(
-        name,
-        hoistedAttrs.attributes,
-        hoistedAttrs.inputs,
-        hoistedAttrs.outputs,
-        templateAttrs,
-        [parsedElement],
-        [
-          /* no references */
-        ],
+      parsedElement = this.wrapInTemplate(
+        parsedElement,
+        templateParsedProperties,
         templateVariables,
-        element.sourceSpan,
-        element.startSourceSpan,
-        element.endSourceSpan,
-        i18n,
+        i18nAttrsMeta,
+        isTemplateElement,
+        isI18nRootElement,
       );
     }
     if (isI18nRootElement) {
@@ -404,6 +348,94 @@ class HtmlAstToIvyAst implements html.Visitor {
     }
 
     return new t.LetDeclaration(decl.name, value, decl.sourceSpan, decl.nameSpan, decl.valueSpan);
+  }
+
+  visitComponent(component: html.Component) {
+    const isI18nRootElement = isI18nRootNode(component.i18n);
+    if (isI18nRootElement) {
+      if (this.inI18nBlock) {
+        this.reportError(
+          'Cannot mark a component as translatable inside of a translatable section. Please remove the nested i18n marker.',
+          component.sourceSpan,
+        );
+      }
+      this.inI18nBlock = true;
+    }
+
+    if (component.tagName !== null && UNSUPPORTED_SELECTORLESS_TAGS.has(component.tagName)) {
+      this.reportError(
+        `Tag name "${component.tagName}" cannot be used as a component tag`,
+        component.startSourceSpan,
+      );
+      return null;
+    }
+
+    const {
+      attributes,
+      boundEvents,
+      references,
+      templateVariables,
+      elementHasInlineTemplate,
+      parsedProperties,
+      templateParsedProperties,
+      i18nAttrsMeta,
+    } = this.prepareAttributes(component.attrs, false);
+
+    this.validateSelectorlessReferences(references);
+
+    const directives = this.extractDirectives(component);
+    let children: t.Node[];
+
+    if (component.attrs.find((attr) => attr.name === 'ngNonBindable')) {
+      // The `NonBindableVisitor` may need to return an array of nodes for blocks so we need
+      // to flatten the array here. Avoid doing this for the `HtmlAstToIvyAst` since `flat` creates
+      // a new array.
+      children = html.visitAll(NON_BINDABLE_VISITOR, component.children).flat(Infinity);
+    } else {
+      children = html.visitAll(this, component.children, component.children);
+    }
+
+    const attrs = this.categorizePropertyAttributes(
+      component.tagName,
+      parsedProperties,
+      i18nAttrsMeta,
+    );
+
+    let node: t.Component | t.Template = new t.Component(
+      component.componentName,
+      component.tagName,
+      component.fullName,
+      attributes,
+      attrs.bound,
+      boundEvents,
+      directives,
+      children,
+      references,
+      component.isSelfClosing,
+      component.sourceSpan,
+      component.startSourceSpan,
+      component.endSourceSpan,
+      component.i18n,
+    );
+
+    if (elementHasInlineTemplate) {
+      node = this.wrapInTemplate(
+        node,
+        templateParsedProperties,
+        templateVariables,
+        i18nAttrsMeta,
+        false,
+        isI18nRootElement,
+      );
+    }
+    if (isI18nRootElement) {
+      this.inI18nBlock = false;
+    }
+    return node;
+  }
+
+  visitDirective() {
+    return null;
   }
 
   visitBlockParameter() {
@@ -520,9 +552,9 @@ class HtmlAstToIvyAst implements html.Visitor {
     return relatedBlocks;
   }
 
-  // convert view engine `ParsedProperty` to a format suitable for IVY
-  private extractAttributes(
-    elementName: string,
+  /** Splits up the property attributes depending on whether they're static or bound. */
+  private categorizePropertyAttributes(
+    elementName: string | null,
     properties: ParsedProperty[],
     i18nPropsMeta: {[key: string]: i18n.I18nMeta},
   ): {bound: t.BoundAttribute[]; literal: t.TextAttribute[]} {
@@ -557,6 +589,98 @@ class HtmlAstToIvyAst implements html.Visitor {
     });
 
     return {bound, literal};
+  }
+
+  private prepareAttributes(attrs: html.Attribute[], isTemplateElement: boolean) {
+    const parsedProperties: ParsedProperty[] = [];
+    const boundEvents: t.BoundEvent[] = [];
+    const variables: t.Variable[] = [];
+    const references: t.Reference[] = [];
+    const attributes: t.TextAttribute[] = [];
+    const i18nAttrsMeta: Record<string, i18n.I18nMeta> = {};
+    const templateParsedProperties: ParsedProperty[] = [];
+    const templateVariables: t.Variable[] = [];
+
+    // Whether the element has any *-attribute
+    let elementHasInlineTemplate = false;
+
+    for (const attribute of attrs) {
+      let hasBinding = false;
+      const normalizedName = normalizeAttributeName(attribute.name);
+
+      // `*attr` defines template bindings
+      let isTemplateBinding = false;
+
+      if (attribute.i18n) {
+        i18nAttrsMeta[attribute.name] = attribute.i18n;
+      }
+
+      if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
+        // *-attributes
+        if (elementHasInlineTemplate) {
+          this.reportError(
+            `Can't have multiple template bindings on one element. Use only one attribute prefixed with *`,
+            attribute.sourceSpan,
+          );
+        }
+        isTemplateBinding = true;
+        elementHasInlineTemplate = true;
+        const templateValue = attribute.value;
+        const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
+
+        const parsedVariables: ParsedVariable[] = [];
+        const absoluteValueOffset = attribute.valueSpan
+          ? attribute.valueSpan.start.offset
+          : // If there is no value span the attribute does not have a value, like `attr` in
+            //`<div attr></div>`. In this case, point to one character beyond the last character of
+            // the attribute name.
+            attribute.sourceSpan.start.offset + attribute.name.length;
+
+        this.bindingParser.parseInlineTemplateBinding(
+          templateKey,
+          templateValue,
+          attribute.sourceSpan,
+          absoluteValueOffset,
+          [],
+          templateParsedProperties,
+          parsedVariables,
+          true /* isIvyAst */,
+        );
+        templateVariables.push(
+          ...parsedVariables.map(
+            (v) => new t.Variable(v.name, v.value, v.sourceSpan, v.keySpan, v.valueSpan),
+          ),
+        );
+      } else {
+        // Check for variables, events, property bindings, interpolation
+        hasBinding = this.parseAttribute(
+          isTemplateElement,
+          attribute,
+          [],
+          parsedProperties,
+          boundEvents,
+          variables,
+          references,
+        );
+      }
+
+      if (!hasBinding && !isTemplateBinding) {
+        // don't include the bindings as attributes as well in the AST
+        attributes.push(this.visitAttribute(attribute));
+      }
+    }
+
+    return {
+      attributes,
+      boundEvents,
+      references,
+      variables,
+      templateVariables,
+      elementHasInlineTemplate,
+      parsedProperties,
+      templateParsedProperties,
+      i18nAttrsMeta,
+    };
   }
 
   private parseAttribute(
@@ -758,6 +882,148 @@ class HtmlAstToIvyAst implements html.Visitor {
     return hasBinding;
   }
 
+  private extractDirectives(node: html.Element | html.Component): t.Directive[] {
+    const elementName = node instanceof html.Component ? node.tagName : node.name;
+    const directives: t.Directive[] = [];
+    const seenDirectives = new Set<string>();
+
+    for (const directive of node.directives) {
+      let invalid = false;
+
+      for (const attr of directive.attrs) {
+        if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+          invalid = true;
+          this.reportError(
+            `Shorthand template syntax "${attr.name}" is not supported inside a directive context`,
+            attr.sourceSpan,
+          );
+        } else if (UNSUPPORTED_SELECTORLESS_DIRECTIVE_ATTRS.has(attr.name)) {
+          invalid = true;
+          this.reportError(
+            `Attribute "${attr.name}" is not supported in a directive context`,
+            attr.sourceSpan,
+          );
+        }
+      }
+
+      if (!invalid && seenDirectives.has(directive.name)) {
+        invalid = true;
+        this.reportError(
+          `Cannot apply directive "${directive.name}" multiple times on the same element`,
+          directive.sourceSpan,
+        );
+      }
+
+      if (invalid) {
+        continue;
+      }
+
+      const {attributes, parsedProperties, boundEvents, references, i18nAttrsMeta} =
+        this.prepareAttributes(directive.attrs, false);
+      this.validateSelectorlessReferences(references);
+
+      const {bound: inputs} = this.categorizePropertyAttributes(
+        elementName,
+        parsedProperties,
+        i18nAttrsMeta,
+      );
+
+      for (const input of inputs) {
+        if (input.type !== BindingType.Property && input.type !== BindingType.TwoWay) {
+          invalid = true;
+          this.reportError('Binding is not supported in a directive context', input.sourceSpan);
+        }
+      }
+
+      if (invalid) {
+        continue;
+      }
+
+      seenDirectives.add(directive.name);
+      directives.push(
+        new t.Directive(
+          directive.name,
+          attributes,
+          inputs,
+          boundEvents,
+          references,
+          directive.sourceSpan,
+          directive.startSourceSpan,
+          directive.endSourceSpan,
+          undefined,
+        ),
+      );
+    }
+
+    return directives;
+  }
+
+  private wrapInTemplate(
+    node: t.Element | t.Component | t.Content | t.Template,
+    templateProperties: ParsedProperty[],
+    templateVariables: t.Variable[],
+    i18nAttrsMeta: Record<string, i18n.I18nMeta>,
+    isTemplateElement: boolean,
+    isI18nRootElement: boolean,
+  ) {
+    // We need to hoist the attributes of the node to the template for content projection purposes.
+    const attrs = this.categorizePropertyAttributes(
+      'ng-template',
+      templateProperties,
+      i18nAttrsMeta,
+    );
+    const templateAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
+    attrs.literal.forEach((attr) => templateAttrs.push(attr));
+    attrs.bound.forEach((attr) => templateAttrs.push(attr));
+
+    const hoistedAttrs = {
+      attributes: [] as t.TextAttribute[],
+      inputs: [] as t.BoundAttribute[],
+      outputs: [] as t.BoundEvent[],
+    };
+
+    if (node instanceof t.Element || node instanceof t.Component) {
+      hoistedAttrs.attributes.push(...node.attributes);
+      hoistedAttrs.inputs.push(...node.inputs);
+      hoistedAttrs.outputs.push(...node.outputs);
+    }
+
+    // For <ng-template>s with structural directives on them, avoid passing i18n information to
+    // the wrapping template to prevent unnecessary i18n instructions from being generated. The
+    // necessary i18n meta information will be extracted from child elements.
+    const i18n = isTemplateElement && isI18nRootElement ? undefined : node.i18n;
+    let name: string | null;
+
+    if (node instanceof t.Component) {
+      name = node.tagName;
+    } else if (node instanceof t.Template) {
+      name = null;
+    } else {
+      name = node.name;
+    }
+
+    return new t.Template(
+      name,
+      hoistedAttrs.attributes,
+      hoistedAttrs.inputs,
+      hoistedAttrs.outputs,
+      [
+        // Do not copy over the directives.
+      ],
+      templateAttrs,
+      [node],
+      [
+        // Do not copy over the references.
+      ],
+      templateVariables,
+      false,
+      node.sourceSpan,
+      node.startSourceSpan,
+      node.endSourceSpan,
+      i18n,
+    );
+  }
+
   private _visitTextWithInterpolation(
     value: string,
     sourceSpan: ParseSourceSpan,
@@ -828,6 +1094,27 @@ class HtmlAstToIvyAst implements html.Visitor {
     addEvents(events, boundEvents);
   }
 
+  private validateSelectorlessReferences(references: t.Reference[]): void {
+    if (references.length === 0) {
+      return;
+    }
+
+    const seenNames = new Set<string>();
+
+    for (const ref of references) {
+      if (ref.value.length > 0) {
+        this.reportError(
+          'Cannot specify a value for a local reference in this context',
+          ref.valueSpan || ref.sourceSpan,
+        );
+      } else if (seenNames.has(ref.name)) {
+        this.reportError('Duplicate reference names are not allowed', ref.sourceSpan);
+      } else {
+        seenNames.add(ref.name);
+      }
+    }
+  }
+
   private reportError(
     message: string,
     sourceSpan: ParseSourceSpan,
@@ -857,8 +1144,10 @@ class NonBindableVisitor implements html.Visitor {
       html.visitAll(this, ast.attrs) as t.TextAttribute[],
       /* inputs */ [],
       /* outputs */ [],
+      /* directives */ [],
       children,
       /* references */ [],
+      ast.isSelfClosing,
       ast.sourceSpan,
       ast.startSourceSpan,
       ast.endSourceSpan,
@@ -913,6 +1202,27 @@ class NonBindableVisitor implements html.Visitor {
 
   visitLetDeclaration(decl: html.LetDeclaration, context: any) {
     return new t.Text(`@let ${decl.name} = ${decl.value};`, decl.sourceSpan);
+  }
+
+  visitComponent(ast: html.Component, context: any) {
+    const children: t.Node[] = html.visitAll(this, ast.children, null);
+    return new t.Element(
+      ast.fullName,
+      html.visitAll(this, ast.attrs) as t.TextAttribute[],
+      /* inputs */ [],
+      /* outputs */ [],
+      /* directives */ [],
+      children,
+      /* references */ [],
+      ast.isSelfClosing,
+      ast.sourceSpan,
+      ast.startSourceSpan,
+      ast.endSourceSpan,
+    );
+  }
+
+  visitDirective(directive: html.Directive, context: any) {
+    return null;
   }
 }
 

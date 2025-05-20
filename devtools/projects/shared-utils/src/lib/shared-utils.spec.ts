@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {arrayEquals} from 'shared-utils';
+import {arrayEquals} from '../../../shared-utils';
 
 describe('arrayEquals', () => {
   let a: any;

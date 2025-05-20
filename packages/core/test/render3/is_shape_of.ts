@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TI18n, TIcu} from '@angular/core/src/render3/interfaces/i18n';
-import {TNode} from '@angular/core/src/render3/interfaces/node';
-import {TView} from '@angular/core/src/render3/interfaces/view';
+import {TI18n, TIcu} from '../../src/render3/interfaces/i18n';
+import {TNode} from '../../src/render3/interfaces/node';
+import {TView} from '../../src/render3/interfaces/view';
 
 /**
  * A type used to create a runtime representation of a shape of object which matches the declared
@@ -163,7 +163,10 @@ const ShapeOfTNode: ShapeOf<TNode> = {
   localNames: true,
   initialInputs: true,
   inputs: true,
+  hostDirectiveInputs: true,
   outputs: true,
+  hostDirectiveOutputs: true,
+  directiveToIndex: true,
   tView: true,
   next: true,
   prev: true,

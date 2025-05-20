@@ -67,7 +67,7 @@
       "shortDescription": "Generates a new basic application definition in the \"projects\" subfolder of the workspace.",
       "options": [
         {
-          "name": "experimental-zoneless",
+          "name": "zoneless",
           "type": "boolean",
           "default": false,
           "description": "Create an application that does not utilize zone.js."

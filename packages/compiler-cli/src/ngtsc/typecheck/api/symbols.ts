@@ -7,6 +7,8 @@
  */
 
 import {
+  TmplAstComponent,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstReference,
@@ -33,6 +35,8 @@ export enum SymbolKind {
   DomBinding,
   Pipe,
   LetDeclaration,
+  SelectorlessComponent,
+  SelectorlessDirective,
 }
 
 /**
@@ -49,7 +53,9 @@ export type Symbol =
   | TemplateSymbol
   | DomBindingSymbol
   | PipeSymbol
-  | LetDeclarationSymbol;
+  | LetDeclarationSymbol
+  | SelectorlessComponentSymbol
+  | SelectorlessDirectiveSymbol;
 
 /**
  * A `Symbol` which declares a new named entity in the template scope.
@@ -190,7 +196,7 @@ export interface ReferenceSymbol {
   /**
    * The location in the shim file of a variable that holds the type of the local ref.
    * For example, a reference declaration like the following:
-   * ```
+   * ```ts
    * var _t1 = document.createElement('div');
    * var _t2 = _t1; // This is the reference declaration
    * ```
@@ -303,6 +309,52 @@ export interface TemplateSymbol {
   directives: DirectiveSymbol[];
 
   templateNode: TmplAstTemplate;
+}
+
+/** A representation of a selectorless component reference in a template. */
+export interface SelectorlessComponentSymbol {
+  kind: SymbolKind.SelectorlessComponent;
+
+  /** The `ts.Type` for the component class. */
+  tsType: ts.Type;
+
+  /** The `ts.Symbol` for the component class. */
+  tsSymbol: ts.Symbol | null;
+
+  /**
+   * Includes the component class itself and any host directives
+   * that may have been applied as a side-effect of it.
+   */
+  directives: DirectiveSymbol[];
+
+  /** The location in the shim file for the variable that holds the type of the component. */
+  tcbLocation: TcbLocation;
+
+  /** Template AST node defining the component. */
+  templateNode: TmplAstComponent;
+}
+
+/** A representation of a selectorless directive reference in a template. */
+export interface SelectorlessDirectiveSymbol {
+  kind: SymbolKind.SelectorlessDirective;
+
+  /** The `ts.Type` for the directive class. */
+  tsType: ts.Type;
+
+  /** The `ts.Symbol` for the directive class. */
+  tsSymbol: ts.Symbol | null;
+
+  /**
+   * Includes the directive class itself and any host directives
+   * that may have been applied as a side-effect of it.
+   */
+  directives: DirectiveSymbol[];
+
+  /** The location in the shim file for the variable that holds the type of the directive. */
+  tcbLocation: TcbLocation;
+
+  /** Template AST node defining the directive. */
+  templateNode: TmplAstDirective;
 }
 
 /** Interface shared between host and non-host directives. */

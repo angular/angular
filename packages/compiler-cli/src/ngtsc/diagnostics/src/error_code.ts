@@ -23,6 +23,8 @@ export enum ErrorCode {
   VALUE_HAS_WRONG_TYPE = 1010,
   VALUE_NOT_LITERAL = 1011,
 
+  DUPLICATE_DECORATED_PROPERTIES = 1012,
+
   /**
    * Raised when an initializer API is annotated with an unexpected decorator.
    *
@@ -160,6 +162,22 @@ export enum ErrorCode {
    */
   NON_STANDALONE_NOT_ALLOWED = 2023,
 
+  /**
+   * Raised when a named template dependency isn't defined in the component's source file.
+   */
+  MISSING_NAMED_TEMPLATE_DEPENDENCY = 2024,
+
+  /**
+   * Raised if an incorrect type is used for a named template dependency (e.g. directive
+   * class used as a component).
+   */
+  INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE = 2025,
+
+  /**
+   * Raised for `@Component` fields that aren't supported in a selectorless context.
+   */
+  UNSUPPORTED_SELECTORLESS_COMPONENT_FIELD = 2026,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
@@ -273,7 +291,7 @@ export enum ErrorCode {
    * The left-hand side of an assignment expression was a template variable. Effectively, the
    * template looked like:
    *
-   * ```
+   * ```html
    * <ng-template let-something>
    *   <button (click)="something = ...">...</button>
    * </ng-template>
@@ -371,6 +389,12 @@ export enum ErrorCode {
 
   /** A `@let` declaration conflicts with another symbol in the same scope. */
   CONFLICTING_LET_DECLARATION = 8017,
+
+  /**
+   * A binding inside selectorless directive syntax did
+   * not match any inputs/outputs of the directive.
+   */
+  UNCLAIMED_DIRECTIVE_BINDING = 8018,
 
   /**
    * A two way binding in a template has an incorrect syntax,
@@ -517,6 +541,33 @@ export enum ErrorCode {
    * A symbol referenced in `@Component.imports` isn't being used within the template.
    */
   UNUSED_STANDALONE_IMPORTS = 8113,
+
+  /**
+   * An expression mixes nullish coalescing and logical and/or without parentheses.
+   */
+  UNPARENTHESIZED_NULLISH_COALESCING = 8114,
+
+  /**
+   * The function passed to `@for` track is not invoked.
+   *
+   * For example:
+   * ```angular-html
+   * @for (item of items; track trackByName) {}
+   * ```
+   *
+   * For the track function to work properly, it must be invoked.
+   *
+   * For example:
+   * ```angular-html
+   * @for (item of items; track trackByName(item)) {}
+   * ```
+   */
+  UNINVOKED_TRACK_FUNCTION = 8115,
+
+  /**
+   * A structural directive is used in a template, but the directive is not imported.
+   */
+  MISSING_STRUCTURAL_DIRECTIVE = 8116,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {FactoryProvider} from '../../di';
+import type {FactoryProvider, ProviderToken} from '../../di';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {InjectionToken} from '../../di/injection_token';
 import type {Injector} from '../../di/injector';
-import {InjectFlags, InjectOptions, InternalInjectFlags} from '../../di/interface/injector';
+import {InjectOptions, InternalInjectFlags} from '../../di/interface/injector';
 import type {SingleProvider} from '../../di/provider_collection';
 import {Type} from '../../interface/type';
 import {throwError} from '../../util/assert';
 import type {TNode} from '../interfaces/node';
 import type {LView} from '../interfaces/view';
+import type {EffectRef} from '../reactivity/effect';
 
 /**
  * An enum describing the types of events that can be emitted from the injector profiler
@@ -35,6 +36,16 @@ export const enum InjectorProfilerEventType {
    * Emits when an injector configures a provider.
    */
   ProviderConfigured,
+
+  /**
+   * Emits when an effect is created.
+   */
+  EffectCreated,
+
+  /**
+   * Emits when an Angular DI system is about to create an instance corresponding to a given token.
+   */
+  InjectorToCreateInstanceEvent,
 }
 
 /**
@@ -62,6 +73,12 @@ export interface InjectedServiceEvent {
   service: InjectedService;
 }
 
+export interface InjectorToCreateInstanceEvent {
+  type: InjectorProfilerEventType.InjectorToCreateInstanceEvent;
+  context: InjectorProfilerContext;
+  token: ProviderToken<unknown>;
+}
+
 export interface InjectorCreatedInstanceEvent {
   type: InjectorProfilerEventType.InstanceCreatedByInjector;
   context: InjectorProfilerContext;
@@ -74,14 +91,22 @@ export interface ProviderConfiguredEvent {
   providerRecord: ProviderRecord;
 }
 
+export interface EffectCreatedEvent {
+  type: InjectorProfilerEventType.EffectCreated;
+  context: InjectorProfilerContext;
+  effect: EffectRef;
+}
+
 /**
  * An object representing an event that is emitted through the injector profiler
  */
 
 export type InjectorProfilerEvent =
   | InjectedServiceEvent
+  | InjectorToCreateInstanceEvent
   | InjectorCreatedInstanceEvent
-  | ProviderConfiguredEvent;
+  | ProviderConfiguredEvent
+  | EffectCreatedEvent;
 
 /**
  * An object that contains information about a provider that has been configured
@@ -138,7 +163,7 @@ export interface InjectedService {
   /**
    * Flags that this service was injected with
    */
-  flags?: InternalInjectFlags | InjectFlags | InjectOptions;
+  flags?: InternalInjectFlags | InjectOptions;
 
   /**
    * Injector that this service was provided in.
@@ -169,33 +194,55 @@ export function setInjectorProfilerContext(context: InjectorProfilerContext) {
   return previous;
 }
 
-let injectorProfilerCallback: InjectorProfiler | null = null;
+const injectorProfilerCallbacks: InjectorProfiler[] = [];
+
+const NOOP_PROFILER_REMOVAL = () => {};
+
+function removeProfiler(profiler: InjectorProfiler) {
+  const profilerIdx = injectorProfilerCallbacks.indexOf(profiler);
+  if (profilerIdx !== -1) {
+    injectorProfilerCallbacks.splice(profilerIdx, 1);
+  }
+}
 
 /**
- * Sets the callback function which will be invoked during certain DI events within the
- * runtime (for example: injecting services, creating injectable instances, configuring providers)
+ * Adds a callback function which will be invoked during certain DI events within the
+ * runtime (for example: injecting services, creating injectable instances, configuring providers).
+ * Multiple profiler callbacks can be set: in this case profiling events are
+ * reported to every registered callback.
  *
  * Warning: this function is *INTERNAL* and should not be relied upon in application's code.
  * The contract of the function might be changed in any release and/or the function can be removed
  * completely.
  *
  * @param profiler function provided by the caller or null value to disable profiling.
+ * @returns a cleanup function that, when invoked, removes a given profiler callback.
  */
-export const setInjectorProfiler = (injectorProfiler: InjectorProfiler | null) => {
+export function setInjectorProfiler(injectorProfiler: InjectorProfiler | null): () => void {
   !ngDevMode && throwError('setInjectorProfiler should never be called in production mode');
-  injectorProfilerCallback = injectorProfiler;
-};
+
+  if (injectorProfiler !== null) {
+    if (!injectorProfilerCallbacks.includes(injectorProfiler)) {
+      injectorProfilerCallbacks.push(injectorProfiler);
+    }
+    return () => removeProfiler(injectorProfiler);
+  } else {
+    injectorProfilerCallbacks.length = 0;
+    return NOOP_PROFILER_REMOVAL;
+  }
+}
 
 /**
  * Injector profiler function which emits on DI events executed by the runtime.
  *
  * @param event InjectorProfilerEvent corresponding to the DI event being emitted
  */
-function injectorProfiler(event: InjectorProfilerEvent): void {
+export function injectorProfiler(event: InjectorProfilerEvent): void {
   !ngDevMode && throwError('Injector profiler should never be called in production mode');
 
-  if (injectorProfilerCallback != null /* both `null` and `undefined` */) {
-    injectorProfilerCallback!(event);
+  for (let i = 0; i < injectorProfilerCallbacks.length; i++) {
+    const injectorProfilerCallback = injectorProfilerCallbacks[i];
+    injectorProfilerCallback(event);
   }
 }
 
@@ -242,6 +289,22 @@ export function emitProviderConfiguredEvent(
 }
 
 /**
+ * Emits an event to the injector profiler when an instance corresponding to a given token is about to be created be an injector. Note that
+ * the injector associated with this emission can be accessed by using getDebugInjectContext()
+ *
+ * @param instance an object created by an injector
+ */
+export function emitInjectorToCreateInstanceEvent(token: ProviderToken<unknown>): void {
+  !ngDevMode && throwError('Injector profiler should never be called in production mode');
+
+  injectorProfiler({
+    type: InjectorProfilerEventType.InjectorToCreateInstanceEvent,
+    context: getInjectorProfilerContext(),
+    token: token,
+  });
+}
+
+/**
  * Emits an event to the injector profiler with the instance that was created. Note that
  * the injector associated with this emission can be accessed by using getDebugInjectContext()
  *
@@ -262,13 +325,27 @@ export function emitInstanceCreatedByInjectorEvent(instance: unknown): void {
  * @param value the instance of the injected service (i.e the result of `inject(token)`)
  * @param flags the flags that the token was injected with
  */
-export function emitInjectEvent(token: Type<unknown>, value: unknown, flags: InjectFlags): void {
+export function emitInjectEvent(
+  token: Type<unknown>,
+  value: unknown,
+  flags: InternalInjectFlags,
+): void {
   !ngDevMode && throwError('Injector profiler should never be called in production mode');
 
   injectorProfiler({
     type: InjectorProfilerEventType.Inject,
     context: getInjectorProfilerContext(),
     service: {token, value, flags},
+  });
+}
+
+export function emitEffectCreatedEvent(effect: EffectRef): void {
+  !ngDevMode && throwError('Injector profiler should never be called in production mode');
+
+  injectorProfiler({
+    type: InjectorProfilerEventType.EffectCreated,
+    context: getInjectorProfilerContext(),
+    effect,
   });
 }
 

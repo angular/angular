@@ -6,7 +6,7 @@ This tutorial lesson demonstrates how to add interpolation to Angular templates 
 
 ## What you'll learn
 
-- Your app will display interpolated values in the `HousingLocationComponent` template.
+- Your app will display interpolated values in the `HousingLocation` template.
 - Your app will render a housing location data to the browser.
 
 ## Conceptual preview of interpolation
@@ -19,21 +19,21 @@ For a more in depth explanation, please refer to the [Displaying values with int
 
 <docs-workflow>
 
-<docs-step title="Update `HousingLocationComponent` template to include interpolated values">
-This step adds new HTML structure and interpolated values in the `HousingLocationComponent` template.
+<docs-step title="Update `HousingLocation` template to include interpolated values">
+This step adds new HTML structure and interpolated values in the `HousingLocation` template.
 
 In the code editor:
 
-1.  Navigate to `src/app/housing-location/housing-location.component.ts`
+1.  Navigate to `src/app/housing-location/housing-location.ts`
 1.  In the template property of the `@Component` decorator, replace the existing HTML markup with the following code:
 
-        <docs-code header="Update HousingLocationComponent template" path="adev/src/content/tutorials/first-app/steps/08-ngFor/src/app/housing-location/housing-location.component.ts" visibleLines="[9,20]"/>
+<docs-code header="Update HousingLocation template" path="adev/src/content/tutorials/first-app/steps/08-ngFor/src/app/housing-location/housing-location.ts" visibleLines="[9,20]"/>
 
-        In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpolation to give more context to the alt text of the image.
+  In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpolation to give more context to the alt text of the image.
 
-        You use interpolation to include the values for `name`, `city` and `state` of the `housingLocation` property.
+  You use interpolation to include the values for `name`, `city` and `state` of the `housingLocation` property.
 
-    </docs-step>
+</docs-step>
 
 <docs-step title="Confirm the changes render in the browser">
 1.  Save all changes.
@@ -43,7 +43,7 @@ In the code editor:
 
 </docs-workflow>
 
-Summary: In this lesson, you added a new HTML structure and used Angular template syntax to render values in the `HousingLocation` template.
+SUMMARY: In this lesson, you added a new HTML structure and used Angular template syntax to render values in the `HousingLocation` template.
 
 Now, you have two important skills:
 

@@ -7,7 +7,7 @@
  */
 
 /**
- * A schema definition associated with an NgModule.
+ * A schema definition associated with a component or an NgModule.
  *
  * @see {@link NgModule}
  * @see {@link CUSTOM_ELEMENTS_SCHEMA}

@@ -1,5 +1,5 @@
 // #docplaster
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 // #docregion sw-replicate-available
 import {filter, map} from 'rxjs/operators';
 // #enddocregion sw-replicate-available
@@ -12,7 +12,8 @@ function promptUser(event: VersionReadyEvent): boolean {
 // #docregion sw-version-ready
 @Injectable({providedIn: 'root'})
 export class PromptUpdateService {
-  constructor(swUpdate: SwUpdate) {
+  constructor() {
+    const swUpdate = inject(SwUpdate);
     swUpdate.versionUpdates
       .pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
       .subscribe((evt) => {

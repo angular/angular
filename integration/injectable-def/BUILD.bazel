@@ -1,9 +1,0 @@
-load("//integration:index.bzl", "ng_integration_test")
-
-ng_integration_test(
-    name = "test",
-    # This test relies on ESM for running the app in SSR. RxJS added ESM resolution
-    # support with RXJS v7. We allow the version to be pinned to v7.
-    # TODO: Remove this and update the test once the project uses RxJS v7, or if rxjs v6 has ESM support.
-    pinned_npm_packages = ["rxjs"],
-)

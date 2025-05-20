@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {SourceMap} from '@angular/compiler';
+import {SourceMap} from '../../index';
 import {SourceMapConsumer} from 'source-map';
 
 export interface SourceLocation {

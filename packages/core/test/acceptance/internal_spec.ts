@@ -14,14 +14,13 @@ import {
   ɵgetClosestComponentName as getClosestComponentName,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('internal utilities', () => {
   describe('getClosestComponentName', () => {
     it('should get the name from a node placed inside a root component', () => {
       @Component({
-        standalone: true,
         template: `<section><div class="target"></div></section>`,
       })
       class App {}
@@ -36,12 +35,10 @@ describe('internal utilities', () => {
       @Component({
         selector: 'comp',
         template: `<section><div class="target"></div></section>`,
-        standalone: true,
       })
       class Comp {}
 
       @Component({
-        standalone: true,
         template: `<comp/>`,
         imports: [Comp],
       })
@@ -57,12 +54,10 @@ describe('internal utilities', () => {
       @Component({
         selector: 'comp',
         template: `<section><div class="target"></div></section>`,
-        standalone: true,
       })
       class Comp {}
 
       @Component({
-        standalone: true,
         template: `
           @for (current of [1]; track $index) {
             <comp/>
@@ -81,12 +76,10 @@ describe('internal utilities', () => {
     it('should get the name from a node that has a directive', () => {
       @Directive({
         selector: 'dir',
-        standalone: true,
       })
       class Dir {}
 
       @Component({
-        standalone: true,
         template: `<section><dir class="target"></dir></section>`,
         imports: [Dir],
       })
@@ -100,7 +93,6 @@ describe('internal utilities', () => {
 
     it('should return null when not placed in a component', () => {
       @Component({
-        standalone: true,
         template: '',
       })
       class App {}
@@ -114,12 +106,10 @@ describe('internal utilities', () => {
       @Component({
         selector: 'comp',
         template: `<section><div class="target"></div></section>`,
-        standalone: true,
       })
       class Comp {}
 
       @Component({
-        standalone: true,
         template: `<ng-container #insertionPoint/>`,
       })
       class App {
@@ -141,7 +131,6 @@ describe('internal utilities', () => {
       @Component({
         selector: 'comp',
         template: `<section><div class="target"></div></section>`,
-        standalone: true,
       })
       class Comp {}
 

@@ -7,6 +7,11 @@
  */
 
 import {
+  ɵRuntimeError as RuntimeError,
+  ɵformatRuntimeError as formatRuntimeError,
+} from '@angular/core';
+
+import {
   FormatWidth,
   FormStyle,
   getLocaleDateFormat,
@@ -21,9 +26,9 @@ import {
   getLocaleNumberSymbol,
   getLocaleTimeFormat,
   NumberSymbol,
-  Time,
   TranslationWidth,
 } from './locale_data_api';
+import {RuntimeErrorCode} from '../errors';
 
 export const ISO8601_DATE_REGEX =
   /^(\d{4,})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
@@ -32,14 +37,14 @@ const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
 const DATE_FORMATS_SPLIT =
   /((?:[^BEGHLMOSWYZabcdhmswyz']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|Y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|c{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
 
-enum ZoneWidth {
+const enum ZoneWidth {
   Short,
   ShortGMT,
   Long,
   Extended,
 }
 
-enum DateType {
+const enum DateType {
   FullYear,
   Month,
   Date,
@@ -50,7 +55,7 @@ enum DateType {
   Day,
 }
 
-enum TranslationType {
+const enum TranslationType {
   DayPeriods,
   Days,
   Months,
@@ -104,6 +109,10 @@ export function formatDate(
     }
   }
 
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    assertValidDateFormat(parts);
+  }
+
   let dateTimezoneOffset = date.getTimezoneOffset();
   if (timezone) {
     dateTimezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
@@ -121,6 +130,29 @@ export function formatDate(
   });
 
   return text;
+}
+
+/**
+ * Asserts that the given date format is free from common mistakes.  Throws an
+ * error if one is found (except for the case of all "Y", in which case we just
+ * log a warning).  This should only be called in development mode.
+ */
+function assertValidDateFormat(parts: string[]) {
+  if (parts.some((part) => /^Y+$/.test(part)) && !parts.some((part) => /^w+$/.test(part))) {
+    // "Y" indicates "week-based year", which differs from the actual calendar
+    // year for a few days around Jan 1 most years.  Unless "w" is also
+    // present (e.g. a date like "2024-W52") this is likely a mistake.  Users
+    // probably meant "y" instead.
+    const message = `Suspicious use of week-based year "Y" in date pattern "${parts.join(
+      '',
+    )}". Did you mean to use calendar year "y" instead?`;
+    if (parts.length === 1) {
+      // NOTE: allow "YYYY" with just a warning, since it's used in tests.
+      console.error(formatRuntimeError(RuntimeErrorCode.SUSPICIOUS_DATE_FORMAT, message));
+    } else {
+      throw new RuntimeError(RuntimeErrorCode.SUSPICIOUS_DATE_FORMAT, message);
+    }
+  }
 }
 
 /**
@@ -316,7 +348,10 @@ function getDatePart(part: DateType, date: Date): number {
     case DateType.Day:
       return date.getDay();
     default:
-      throw new Error(`Unknown DateType value "${part}".`);
+      throw new RuntimeError(
+        RuntimeErrorCode.UNKNOWN_DATE_TYPE_VALUE,
+        ngDevMode && `Unknown DateType value "${part}".`,
+      );
   }
 }
 
@@ -402,7 +437,10 @@ function getDateTranslation(
       // The `throw new Error` below works around the problem, and the unexpected: never variable
       // makes sure tsc still checks this code is unreachable.
       const unexpected: never = name;
-      throw new Error(`unexpected translation type ${unexpected}`);
+      throw new RuntimeError(
+        RuntimeErrorCode.UNEXPECTED_TRANSLATION_TYPE,
+        ngDevMode && `unexpected translation type ${unexpected}`,
+      );
   }
 }
 
@@ -445,7 +483,10 @@ function timeZoneGetter(width: ZoneWidth): DateFormatter {
           );
         }
       default:
-        throw new Error(`Unknown zone width "${width}"`);
+        throw new RuntimeError(
+          RuntimeErrorCode.UNKNOWN_ZONE_WIDTH,
+          ngDevMode && `Unknown zone width "${width}"`,
+        );
     }
   };
 }
@@ -905,7 +946,10 @@ export function toDate(value: string | number | Date): Date {
 
   const date = new Date(value as any);
   if (!isDate(date)) {
-    throw new Error(`Unable to convert "${value}" into a date`);
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_TO_DATE_CONVERSION,
+      ngDevMode && `Unable to convert "${value}" into a date`,
+    );
   }
   return date;
 }

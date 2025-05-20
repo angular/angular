@@ -34,25 +34,25 @@ In the **Edit** pane of your IDE:
 <docs-step title="Add the form functions to the details page">
 This step adds the code to the details page that handles the form's interactions.
 
-In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
+In the **Edit** pane of your IDE, in `src/app/details/details.ts`:
 
 1. After the `import` statements at the top of the file, add the following code to import the Angular form classes.
 
-<docs-code header="Forms imports in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[6]"/>
+<docs-code header="Forms imports in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[6]"/>
 
-1. In the `DetailsComponent` decorator metadata, update the `imports` property with the following code:
+1. In the `Details` decorator metadata, update the `imports` property with the following code:
 
-<docs-code header="imports directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[10]"/>
+<docs-code header="imports directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[10]"/>
 
-1. In the `DetailsComponent` class, before the `constructor()` method, add the following code to create the form object.
+1. In the `Details` class, before the `constructor()` method, add the following code to create the form object.
 
-   <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[53,57]"/>
+   <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[53,57]"/>
 
    In Angular, `FormGroup` and `FormControl` are types that enable you to build forms. The `FormControl` type can provide a default value and shape the form data. In this example `firstName` is a `string` and the default value is empty string.
 
-1. In the `DetailsComponent` class, after the `constructor()` method, add the following code to handle the **Apply now** click.
+1. In the `Details` class, after the `constructor()` method, add the following code to handle the **Apply now** click.
 
-   <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[63,69]"/>
+   <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[63,69]"/>
 
    This button does not exist yet - you will add it in the next step. In the above code, the `FormControl`s may return `null`. This code uses the nullish coalescing operator to default to empty string if the value is `null`.
 
@@ -63,11 +63,11 @@ In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 <docs-step title="Add the form's markup to the details page">
 This step adds the markup to the details page that displays the form.
 
-In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
+In the **Edit** pane of your IDE, in `src/app/details/details.ts`:
 
-1. In the `DetailsComponent` decorator metadata, update the `template` HTML to match the following code to add the form's markup.
+1. In the `Details` decorator metadata, update the `template` HTML to match the following code to add the form's markup.
 
-   <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[11,46]"/>
+   <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[11,46]"/>
 
    The template now includes an event handler `(submit)="submitApplication()"`. Angular uses parentheses syntax around the event name to define events in the template code. The code on the right hand side of the equals sign is the code that should be executed when this event is triggered. You can bind to browser events and custom events.
 
@@ -96,7 +96,7 @@ This step tests the new form to see that when the form data is submitted to the 
 
 </docs-workflow>
 
-Summary: In this lesson, you updated your app to add a form using Angular's forms feature, and connect the data captured in the form to a component using an event handler.
+SUMMARY: In this lesson, you updated your app to add a form using Angular's forms feature, and connect the data captured in the form to a component using an event handler.
 
 For more information about the topics covered in this lesson, visit:
 

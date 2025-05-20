@@ -1,15 +1,15 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "shared",
     srcs = glob(
         [
-            "*.ts",
+            "*.mts",
         ],
     ),
     deps = [
-        "@npm//@types/node",
+        "//:node_modules/@types/node",
     ],
 )

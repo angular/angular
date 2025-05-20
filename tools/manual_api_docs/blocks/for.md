@@ -19,6 +19,8 @@ but there are performance advantages of using a regular `Array`.
 You can optionally include an `@empty` section immediately after the `@for` block content. The
 content of the `@empty` block displays when there are no items.
 
+Angular's `@for` block does not support flow-modifying statements like JavaScript's `continue` or `break`.
+
 ### `track` and objects identity
 
 The value of the `track` expression determines a key used to associate array items with the views in
@@ -32,6 +34,8 @@ is required for the `@for` loops.
 For collections that remain static , `track $index` provides a straightforward tracking mechanism. For dynamic
 collections experiencing additions, deletions, or reordering, opt for a
 unique property of each item as the tracking key.
+
+Track expressions can only reference `$index`, the item, and fields from the component class. If the `let` segment of the `@for` block introduced an alias for `$index`, that alias may also be referenced.
 
 ### `$index` and other contextual variables
 

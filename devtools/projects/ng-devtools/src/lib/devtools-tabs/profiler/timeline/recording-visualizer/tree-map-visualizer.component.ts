@@ -19,7 +19,7 @@ import {
   OnDestroy,
   viewChild,
 } from '@angular/core';
-import {ProfilerFrame} from 'protocol';
+import {ProfilerFrame} from '../../../../../../../protocol';
 import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 

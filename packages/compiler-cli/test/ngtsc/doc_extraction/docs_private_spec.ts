@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {DocEntry} from '../../../src/ngtsc/docs/src/entities';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 
 import {NgtscTestEnvironment} from '../env';
 

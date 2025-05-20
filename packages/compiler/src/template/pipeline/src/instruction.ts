@@ -158,7 +158,6 @@ export function listener(
 ): ir.CreateOp {
   const args = [o.literal(name), handlerFn];
   if (eventTargetResolver !== null) {
-    args.push(o.literal(false)); // `useCapture` flag, defaults to `false`
     args.push(o.importExpr(eventTargetResolver));
   }
   return call(
@@ -388,6 +387,62 @@ export function i18nStart(
   return call(Identifiers.i18nStart, args, sourceSpan);
 }
 
+export function conditionalCreate(
+  slot: number,
+  templateFnRef: o.Expression,
+  decls: number,
+  vars: number,
+  tag: string | null,
+  constIndex: number | null,
+  localRefs: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  const args = [
+    o.literal(slot),
+    templateFnRef,
+    o.literal(decls),
+    o.literal(vars),
+    o.literal(tag),
+    o.literal(constIndex),
+  ];
+  if (localRefs !== null) {
+    args.push(o.literal(localRefs));
+    args.push(o.importExpr(Identifiers.templateRefExtractor));
+  }
+  while (args[args.length - 1].isEquivalent(o.NULL_EXPR)) {
+    args.pop();
+  }
+  return call(Identifiers.conditionalCreate, args, sourceSpan);
+}
+
+export function conditionalBranchCreate(
+  slot: number,
+  templateFnRef: o.Expression,
+  decls: number,
+  vars: number,
+  tag: string | null,
+  constIndex: number | null,
+  localRefs: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  const args = [
+    o.literal(slot),
+    templateFnRef,
+    o.literal(decls),
+    o.literal(vars),
+    o.literal(tag),
+    o.literal(constIndex),
+  ];
+  if (localRefs !== null) {
+    args.push(o.literal(localRefs));
+    args.push(o.importExpr(Identifiers.templateRefExtractor));
+  }
+  while (args[args.length - 1].isEquivalent(o.NULL_EXPR)) {
+    args.pop();
+  }
+  return call(Identifiers.conditionalBranchCreate, args, sourceSpan);
+}
+
 export function repeaterCreate(
   slot: number,
   viewFnName: string,
@@ -579,6 +634,7 @@ export function textInterpolate(
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
   return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan);
 }
 
@@ -598,6 +654,7 @@ export function propertyInterpolate(
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
   const extraArgs = [];
   if (sanitizer !== null) {
     extraArgs.push(sanitizer);
@@ -620,6 +677,7 @@ export function attributeInterpolate(
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
   const extraArgs = [];
   if (sanitizer !== null) {
     extraArgs.push(sanitizer);
@@ -642,6 +700,7 @@ export function stylePropInterpolate(
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
+
   const extraArgs: o.Expression[] = [];
   if (unit !== null) {
     extraArgs.push(o.literal(unit));
@@ -688,7 +747,7 @@ export function classMapInterpolate(
   );
 }
 
-export function hostProperty(
+export function domProperty(
   name: string,
   expression: o.Expression,
   sanitizer: o.Expression | null,
@@ -698,7 +757,7 @@ export function hostProperty(
   if (sanitizer !== null) {
     args.push(sanitizer);
   }
-  return call(Identifiers.hostProperty, args, sourceSpan);
+  return call(Identifiers.domProperty, args, sourceSpan);
 }
 
 export function syntheticHostProperty(
@@ -748,6 +807,7 @@ function collateInterpolationArgs(strings: string[], expressions: o.Expression[]
     for (idx = 0; idx < expressions.length; idx++) {
       interpolationArgs.push(o.literal(strings[idx]), expressions[idx]);
     }
+
     // idx points at the last string.
     interpolationArgs.push(o.literal(strings[idx]));
   }
@@ -953,7 +1013,21 @@ function callVariadicInstructionExpr(
   extraArgs: o.Expression[],
   sourceSpan: ParseSourceSpan | null,
 ): o.Expression {
+  // mapping need to be done before potentially dropping the last interpolation argument
   const n = config.mapping(interpolationArgs.length);
+
+  // In the case the interpolation instruction ends with a empty string we drop it
+  // And the runtime will take care of it.
+  const lastInterpolationArg = interpolationArgs.at(-1);
+  if (
+    extraArgs.length === 0 &&
+    interpolationArgs.length > 1 &&
+    lastInterpolationArg instanceof o.LiteralExpr &&
+    lastInterpolationArg.value === ''
+  ) {
+    interpolationArgs.pop();
+  }
+
   if (n < config.constant.length) {
     // Constant calling pattern.
     return o

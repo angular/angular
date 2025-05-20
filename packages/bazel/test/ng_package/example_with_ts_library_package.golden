@@ -17,7 +17,7 @@ utils
 
 The MIT License
 
-Copyright (c) 2010-2024 Google LLC. https://angular.dev/license
+Copyright (c) 2010-2025 Google LLC. https://angular.dev/license
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ License: MIT
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -68,7 +68,7 @@ export { VERSION };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -86,10 +86,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
         }] });
 const a = 1;
 
-/**
- * Generated bundle index. Do not edit.
- */
-
 export { PortalModule, a };
 //# sourceMappingURL=portal.mjs.map
 
@@ -98,7 +94,7 @@ export { PortalModule, a };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -114,15 +110,13 @@ export { dispatchFakeEvent };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
+declare const VERSION = "0.0.0";
 
-
-export declare const VERSION = "0.0.0";
-
-export { }
+export { VERSION };
 
 
 --- package.json ---
@@ -157,35 +151,31 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
-
 import * as i0 from '@angular/core';
 
-export declare const a = 1;
-
-export declare class PortalModule {
+declare class PortalModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<PortalModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<PortalModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<PortalModule>;
 }
+declare const a = 1;
 
-export { }
+export { PortalModule, a };
 
 
 --- utils/index.d.ts ---
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
+declare function dispatchFakeEvent(el: HTMLElement, ev: Event): void;
 
-
-export declare function dispatchFakeEvent(el: HTMLElement, ev: Event): void;
-
-export { }
+export { dispatchFakeEvent };
 

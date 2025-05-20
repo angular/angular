@@ -10,7 +10,7 @@ import {
   AnimationMetadataType,
   AnimationOptions,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 import {buildingFailed, validationFailed} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
@@ -35,8 +35,10 @@ export class Animation {
     if (errors.length) {
       throw validationFailed(errors);
     }
-    if (warnings.length) {
-      warnValidation(warnings);
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (warnings.length) {
+        warnValidation(warnings);
+      }
     }
     this._animationAst = ast;
   }

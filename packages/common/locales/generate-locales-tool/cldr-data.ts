@@ -9,7 +9,7 @@
 import {runfiles} from '@bazel/runfiles';
 import cldrjs, {type CldrStatic} from 'cldrjs';
 import fs from 'fs';
-import glob from 'fast-glob';
+import {globSync} from 'tinyglobby';
 
 /**
  * Globs that match CLDR JSON data files that should be fetched. We limit these intentionally
@@ -134,9 +134,7 @@ export class CldrData {
    * @returns a list of read JSON objects representing the CLDR data.
    */
   private _readCldrDataFromRepository(): object[] {
-    const jsonFiles = CLDR_DATA_GLOBS.map((pattern) =>
-      glob.sync(pattern, {cwd: this.cldrDataDir, absolute: true}),
-    ).reduce((acc, dataFiles) => [...acc, ...dataFiles], []);
+    const jsonFiles = globSync(CLDR_DATA_GLOBS, {cwd: this.cldrDataDir, absolute: true});
 
     // Read the JSON for all determined CLDR json files.
     return jsonFiles.map((filePath) => {

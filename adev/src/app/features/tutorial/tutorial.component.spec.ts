@@ -10,16 +10,11 @@ import {DOCS_VIEWER_SELECTOR, DocViewer, WINDOW, TutorialConfig, TutorialType} f
 
 import {Component, Input, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {provideRouter} from '@angular/router';
 import {of} from 'rxjs';
 
-import {
-  EMBEDDED_EDITOR_SELECTOR,
-  EmbeddedEditor,
-  EmbeddedTutorialManager,
-  NodeRuntimeSandbox,
-} from '../../editor';
+import {EMBEDDED_EDITOR_SELECTOR, EmbeddedEditor, EmbeddedTutorialManager} from '../../editor';
+import {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
 
 import {mockAsyncProvider} from '../../core/services/inject-async';
 import Tutorial from './tutorial.component';
@@ -95,7 +90,6 @@ describe('Tutorial', () => {
     TestBed.configureTestingModule({
       imports: [Tutorial, EmbeddedEditor, DocViewer],
       providers: [
-        provideNoopAnimations(),
         provideRouter([]),
         {
           provide: WINDOW,
@@ -117,7 +111,7 @@ describe('Tutorial', () => {
       },
     });
 
-    await TestBed.compileComponents();
+    await TestBed;
 
     fixture = TestBed.createComponent(Tutorial);
     component = fixture.componentInstance;
@@ -141,12 +135,13 @@ describe('Tutorial', () => {
     setupResetRevealAnswerValues();
     fixture.detectChanges();
 
-    if (!component.revealAnswerButton) throw new Error('revealAnswerButton is undefined');
+    const revealAnswerButton = component.revealAnswerButton();
+    if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
 
     const revealAnswerSpy = spyOn(component['embeddedTutorialManager'], 'revealAnswer');
     const resetRevealAnswerSpy = spyOn(component['embeddedTutorialManager'], 'resetRevealAnswer');
 
-    component.revealAnswerButton.nativeElement.click();
+    revealAnswerButton.nativeElement.click();
 
     expect(revealAnswerSpy).not.toHaveBeenCalled();
     expect(resetRevealAnswerSpy).toHaveBeenCalled();
@@ -156,35 +151,37 @@ describe('Tutorial', () => {
     setupRevealAnswerValues();
     fixture.detectChanges();
 
-    if (!component.revealAnswerButton) throw new Error('revealAnswerButton is undefined');
+    const revealAnswerButton = component.revealAnswerButton();
+    if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
 
     const embeddedTutorialManagerRevealAnswerSpy = spyOn(
       component['embeddedTutorialManager'],
       'revealAnswer',
     );
-    component.revealAnswerButton.nativeElement.click();
+    revealAnswerButton.nativeElement.click();
 
     expect(embeddedTutorialManagerRevealAnswerSpy).toHaveBeenCalled();
 
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(component.revealAnswerButton.nativeElement.textContent?.trim()).toBe('Reset');
+    expect(revealAnswerButton.nativeElement.textContent?.trim()).toBe('Reset');
   });
 
   it('should not reveal the answer when button is disabled', async () => {
     setupDisabledRevealAnswerValues();
     fixture.detectChanges();
 
-    if (!component.revealAnswerButton) throw new Error('revealAnswerButton is undefined');
+    const revealAnswerButton = component.revealAnswerButton();
+    if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
 
     spyOn(component, 'canRevealAnswer').and.returnValue(false);
 
     const handleRevealAnswerSpy = spyOn(component, 'handleRevealAnswer');
 
-    component.revealAnswerButton.nativeElement.click();
+    revealAnswerButton.nativeElement.click();
 
-    expect(component.revealAnswerButton.nativeElement.getAttribute('disabled')).toBeDefined();
+    expect(revealAnswerButton.nativeElement.getAttribute('disabled')).toBeDefined();
     expect(handleRevealAnswerSpy).not.toHaveBeenCalled();
   });
 
@@ -192,6 +189,6 @@ describe('Tutorial', () => {
     setupNoRevealAnswerValues();
     fixture.detectChanges();
 
-    expect(component.revealAnswerButton).toBe(undefined);
+    expect(component.revealAnswerButton()).toBe(undefined);
   });
 });

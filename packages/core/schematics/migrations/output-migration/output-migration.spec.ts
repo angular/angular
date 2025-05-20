@@ -33,6 +33,28 @@ describe('outputs', () => {
         });
       });
 
+      it('should keep type without initializer', async () => {
+        await verifyDeclaration({
+          before: '@Output() eventMovement: EventEmitter<IResponse> = new EventEmitter();',
+          after: 'readonly eventMovement = output<IResponse>();',
+        });
+      });
+
+      it('should keep type with initializer', async () => {
+        await verifyDeclaration({
+          before: '@Output() eventMovement: EventEmitter = new EventEmitter<IResponse>();',
+          after: 'readonly eventMovement = output<IResponse>();',
+        });
+      });
+
+      it('should keep type without initializer and with alias', async () => {
+        await verifyDeclaration({
+          before:
+            "@Output('customEvent') eventMovement: EventEmitter<IResponse> = new EventEmitter();",
+          after: "readonly eventMovement = output<IResponse>({ alias: 'customEvent' });",
+        });
+      });
+
       it('should migrate declaration without type hint', async () => {
         await verifyDeclaration({
           before: '@Output() readonly someChange = new EventEmitter();',
@@ -142,6 +164,65 @@ describe('outputs', () => {
               export class TestDir {
                 /* Whenever there is change,emits an event. */
                 readonly someChange = output();
+              }
+            `,
+        });
+      });
+
+      it('should not insert a TODO comment for emit function with no type', async () => {
+        await verify({
+          before: `
+              import {Directive, Output, EventEmitter} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                @Output() someChange = new EventEmitter();
+
+                someMethod(): void {
+                  this.someChange.emit();
+                }
+              }
+            `,
+          after: `
+              import {Directive, output} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                readonly someChange = output();
+
+                someMethod(): void {
+                  this.someChange.emit();
+                }
+              }
+            `,
+        });
+      });
+
+      it('should insert a TODO comment for emit function with type', async () => {
+        await verify({
+          before: `
+              import {Directive, Output, EventEmitter} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                @Output() someChange = new EventEmitter<string>();
+
+                someMethod(): void {
+                  this.someChange.emit();
+                }
+              }
+            `,
+          after: `
+              import {Directive, output} from '@angular/core';
+
+              @Directive()
+              export class TestDir {
+                readonly someChange = output<string>();
+
+                someMethod(): void {
+                  // TODO: The 'emit' function requires a mandatory string argument
+                  this.someChange.emit();
+                }
               }
             `,
         });
@@ -597,9 +678,9 @@ describe('outputs', () => {
       ]);
 
       const stats = await runResults.getStatistics();
-      expect(stats.counters['detectedOutputs']).toBe(4);
-      expect(stats.counters['problematicOutputs']).toBe(2);
-      expect(stats.counters['successRate']).toBe(0.5);
+      expect(stats['detectedOutputs']).toBe(4);
+      expect(stats['problematicOutputs']).toBe(2);
+      expect(stats['successRate']).toBe(0.5);
     });
 
     it('should capture migration statistics without problematic usages', async () => {
@@ -615,9 +696,9 @@ describe('outputs', () => {
       ]);
 
       const stats = await runResults.getStatistics();
-      expect(stats.counters['detectedOutputs']).toBe(2);
-      expect(stats.counters['problematicOutputs']).toBe(0);
-      expect(stats.counters['successRate']).toBe(1);
+      expect(stats['detectedOutputs']).toBe(2);
+      expect(stats['problematicOutputs']).toBe(0);
+      expect(stats['successRate']).toBe(1);
     });
   });
 

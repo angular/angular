@@ -1,5 +1,5 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -21,11 +21,14 @@ _STYLE_LABELS = [
     sass_binary(
         name = label,
         src = src,
+        deps = [
+            "//devtools/projects/ng-devtools/src/styles:typography",
+        ],
     )
     for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
 ]
 
-ng_module(
+ng_project(
     name = "recording-visualizer",
     srcs = [
         "bar-chart.component.ts",
@@ -44,22 +47,23 @@ ng_module(
         "bar-chart.component.html",
         "execution-details.component.html",
     ] + _STYLE_LABELS,
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib:theme",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/bargraph-formatter",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/visualization-mode",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
-        "//devtools/projects/ng-devtools/src/lib/vendor/webtreemap",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/animations",
         "//packages/common",
         "//packages/core",
         "//packages/core/rxjs-interop",
-        "@npm//@angular/material",
-        "@npm//@types",
-        "@npm//ngx-flamegraph",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//:node_modules/ngx-flamegraph",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/bargraph-formatter:bargraph-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/flamegraph-formatter:flamegraph-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter/tree-map-formatter:tree-map-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/visualization-mode:visualization-mode_rjs",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/vendor/webtreemap:webtreemap_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )

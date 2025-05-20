@@ -10,14 +10,17 @@ extra-styles.css
 fesm2022
   fesm2022/a11y.mjs
   fesm2022/a11y.mjs.map
+  fesm2022/example.mjs
+  fesm2022/example.mjs.map
   fesm2022/imports.mjs
   fesm2022/imports.mjs.map
+  fesm2022/index-BPo6wTZX.mjs
+  fesm2022/index-BPo6wTZX.mjs.map
   fesm2022/secondary.mjs
   fesm2022/secondary.mjs.map
-  fesm2022/waffels.mjs
-  fesm2022/waffels.mjs.map
 imports
   imports/index.d.ts
+index.d-Da_sa5Sg.d.ts
 index.d.ts
 logo.png
 package.json
@@ -28,7 +31,7 @@ some-file.txt
 
 The MIT License
 
-Copyright (c) 2010-2024 Google LLC. https://angular.dev/license
+Copyright (c) 2010-2025 Google LLC. https://angular.dev/license
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -70,20 +73,19 @@ License: MIT
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
-
 import * as i0 from '@angular/core';
 
-export declare class A11yModule {
+declare class A11yModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<A11yModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<A11yModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<A11yModule>;
 }
 
-export { }
+export { A11yModule };
 
 
 --- arbitrary-npm-package-main.js ---
@@ -120,7 +122,7 @@ Hello
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -137,22 +139,44 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
             args: [{}]
         }] });
 
-/**
- * Generated bundle index. Do not edit.
- */
-
 export { A11yModule };
 //# sourceMappingURL=a11y.mjs.map
+
+
+--- fesm2022/example.mjs ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+import * as i0 from '@angular/core';
+import { NgModule } from '@angular/core';
+
+class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{}]
+        }] });
+
+export { MyModule };
+//# sourceMappingURL=example.mjs.map
 
 
 --- fesm2022/imports.mjs ---
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
+export { sharedBetweenEntryPoints } from './index-BPo6wTZX.mjs';
 import * as i0 from '@angular/core';
 import { Injectable } from '@angular/core';
 
@@ -178,22 +202,33 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
             args: [{ providedIn: 'root' }]
         }], ctorParameters: () => [{ type: MySecondService }] });
 
-/**
- * Generated bundle index. Do not edit.
- */
-
 export { MyService };
 //# sourceMappingURL=imports.mjs.map
+
+
+--- fesm2022/index-BPo6wTZX.mjs ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+const sharedBetweenEntryPoints = 'This export is shared between entry-points';
+
+export { sharedBetweenEntryPoints };
+//# sourceMappingURL=index-BPo6wTZX.mjs.map
 
 
 --- fesm2022/secondary.mjs ---
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
+export { sharedBetweenEntryPoints } from './index-BPo6wTZX.mjs';
 import * as i0 from '@angular/core';
 import { NgModule } from '@angular/core';
 
@@ -208,87 +243,66 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport
         }] });
 const a = 1;
 
-/**
- * Generated bundle index. Do not edit.
- */
-
 export { SecondaryModule, a };
 //# sourceMappingURL=secondary.mjs.map
-
-
---- fesm2022/waffels.mjs ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
- * License: MIT
- */
-
-import * as i0 from '@angular/core';
-import { NgModule } from '@angular/core';
-
-class MyModule {
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
-    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
-    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule });
-}
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0", ngImport: i0, type: MyModule, decorators: [{
-            type: NgModule,
-            args: [{}]
-        }] });
-
-/**
- * Generated bundle index. Do not edit.
- */
-
-export { MyModule };
-//# sourceMappingURL=waffels.mjs.map
 
 
 --- imports/index.d.ts ---
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
-
 import * as i0 from '@angular/core';
+export { sharedBetweenEntryPoints } from '../index.d-Da_sa5Sg.js';
 
 declare class MySecondService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MySecondService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<MySecondService>;
 }
 
-export declare class MyService {
+declare class MyService {
     secondService: MySecondService;
     constructor(secondService: MySecondService);
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 
-export { }
+export { MyService };
+
+
+--- index.d-Da_sa5Sg.d.ts ---
+
+/**
+ * @license Angular v0.0.0
+ * (c) 2010-2025 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+declare const sharedBetweenEntryPoints = "This export is shared between entry-points";
+
+export { sharedBetweenEntryPoints };
 
 
 --- index.d.ts ---
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
-
 import * as i0 from '@angular/core';
 
-export declare class MyModule {
+declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
-export { }
+export { MyModule };
 
 
 --- logo.png ---
@@ -304,7 +318,7 @@ export { }
     ".": {
       "sass": "./_index.scss",
       "types": "./index.d.ts",
-      "default": "./fesm2022/waffels.mjs"
+      "default": "./fesm2022/example.mjs"
     },
     "./package.json": {
       "default": "./package.json"
@@ -322,7 +336,7 @@ export { }
       "default": "./fesm2022/secondary.mjs"
     }
   },
-  "module": "./fesm2022/waffels.mjs",
+  "module": "./fesm2022/example.mjs",
   "typings": "./index.d.ts",
   "type": "module"
 }
@@ -331,22 +345,21 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */
 
-
+export { sharedBetweenEntryPoints } from '../index.d-Da_sa5Sg.js';
 import * as i0 from '@angular/core';
 
-export declare const a = 1;
-
-export declare class SecondaryModule {
+declare class SecondaryModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<SecondaryModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<SecondaryModule, never, never, never>;
     static ɵinj: i0.ɵɵInjectorDeclaration<SecondaryModule>;
 }
+declare const a = 1;
 
-export { }
+export { SecondaryModule, a };
 
 
 --- some-file.txt ---

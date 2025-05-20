@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createTNode} from '@angular/core/src/render3/instructions/shared';
-import {TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
+import {TNode, TNodeType} from '../../../src/render3/interfaces/node';
 import {
   getTStylingRangeNext,
   getTStylingRangeNextDuplicate,
@@ -15,11 +14,12 @@ import {
   getTStylingRangePrevDuplicate,
   TStylingKey,
   TStylingRange,
-} from '@angular/core/src/render3/interfaces/styling';
-import {LView, TData} from '@angular/core/src/render3/interfaces/view';
-import {enterView, leaveView} from '@angular/core/src/render3/state';
-import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
-import {newArray} from '@angular/core/src/util/array_utils';
+} from '../../../src/render3/interfaces/styling';
+import {LView, TData} from '../../../src/render3/interfaces/view';
+import {enterView, leaveView} from '../../../src/render3/state';
+import {insertTStylingBinding} from '../../../src/render3/styling/style_binding_list';
+import {createTNode} from '../../../src/render3/tnode_manipulation';
+import {newArray} from '../../../src/util/array_utils';
 
 describe('TNode styling linked list', () => {
   const mockFirstUpdatePassLView: LView = [null, {firstUpdatePass: true}] as any;

@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 // Colors
 // Using OKLCH color space for better color reproduction on P3 displays,
 // as well as better human-readability
@@ -186,9 +188,6 @@
   // for the "unfilled" portion of the word that hasn't
   // been highlighted by the gradient
   --gray-unfilled: var(--gray-400);
-  // TODO: convert oklch to hex at build time
-  --webgl-page-background: #ffffff;
-  --webgl-gray-unfilled: #a39fa9;
 }
 
 @mixin dark-mode-definitions() {
@@ -254,9 +253,6 @@
 
   // Home page - dark mode
   --gray-unfilled: var(--gray-700);
-  // TODO: convert oklch to hex at build time
-  --webgl-page-background: #0f0f11;
-  --webgl-gray-unfilled: #413e46;
 
   .docs-toggle {
     input {
@@ -267,31 +263,47 @@
   }
 }
 
-@mixin mdc-definitions() {
-  --mdc-snackbar-container-shape: 0.25rem;
-  --mdc-snackbar-container-color: var(--page-background);
-  --mdc-snackbar-supporting-text-color: var(--primary-contrast);
-}
+@include mat.snack-bar-overrides(
+  (
+    container-shape: 0.25rem,
+    container-color: var(--page-background),
+    supporting-text-color: var(--primary-contrast),
+  )
+);
+
+@include mat.chips-overrides(
+  (
+    outline-color: var(--quinary-contrast),
+    disabled-outline-color: var(--quinary-contrast),
+    flat-selected-outline-width: 1px,
+    label-text-color: var(--tertiary-contrast),
+    label-text-size: 14px,
+    label-text-line-height: 20px,
+
+    with-icon-icon-color: var(--french-violet),
+    with-icon-selected-icon-color: var(--french-violet),
+    selected-label-text-color: var(--french-violet),
+    focus-outline-color: var(--french-violet),
+  )
+);
 
 // LIGHT MODE (Explicit)
 .docs-light-mode {
   background-color: #ffffff;
+  color-scheme: light;
   @include root-definitions();
-  @include mdc-definitions();
   .docs-invert-mode {
     @include dark-mode-definitions();
-    @include mdc-definitions();
   }
 }
 
 // DARK MODE (Explicit)
 .docs-dark-mode {
   background-color: oklch(16.93% 0.004 285.95);
+  color-scheme: dark;
   @include root-definitions();
   @include dark-mode-definitions();
-  @include mdc-definitions();
   .docs-invert-mode {
     @include root-definitions();
-    @include mdc-definitions();
   }
 }

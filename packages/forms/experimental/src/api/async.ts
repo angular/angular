@@ -14,8 +14,8 @@ import {defineResource} from './data';
 import {FieldNode} from '../field_node';
 
 export interface AsyncValidatorOptions<TValue, TRequest, TData> {
-  readonly request: (ctx: FieldContext<TValue>) => TRequest;
-  readonly factory: (req: Signal<TRequest | undefined>) => ResourceRef<TData>;
+  readonly params: (ctx: FieldContext<TValue>) => TRequest;
+  readonly factory: (req: Signal<TRequest | undefined>) => ResourceRef<TData | undefined>;
   readonly error: (
     data: TData,
     ctx: FieldContext<TValue>,
@@ -30,12 +30,12 @@ export function validateAsync<TValue, TRequest, TData>(
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
   const dataKey = defineResource(path, {
-    request: (ctx) => {
+    params: (ctx) => {
       const node = ctx.resolve(path).$state as FieldNode;
       if (node.shouldSkipValidation() || !node.syncValid()) {
         return undefined;
       }
-      return opts.request(ctx);
+      return opts.params(ctx);
     },
     factory: opts.factory,
   });
@@ -43,18 +43,18 @@ export function validateAsync<TValue, TRequest, TData>(
   pathNode.logic.asyncErrors.push((ctx) => {
     const res = ctx.data(dataKey);
     switch (res.status()) {
-      case ResourceStatus.Idle:
+      case 'idle':
         return undefined;
-      case ResourceStatus.Loading:
-      case ResourceStatus.Reloading:
+      case 'loading':
+      case 'reloading':
         return 'pending';
-      case ResourceStatus.Resolved:
-      case ResourceStatus.Local:
+      case 'resolved':
+      case 'local':
         if (!res.hasValue()) {
           return undefined;
         }
         return opts.error(res.value()!, ctx);
-      case ResourceStatus.Error:
+      case 'error':
         // Throw the resource's error:
         throw res.error();
     }

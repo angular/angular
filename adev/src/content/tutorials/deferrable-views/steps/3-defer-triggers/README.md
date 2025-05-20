@@ -39,7 +39,7 @@ In this activity, you'll learn how to use triggers to specify the condition to l
 <docs-workflow>
 
 <docs-step title="Add `on hover` trigger">
-In your `app.component.ts`,  add an `on hover` trigger to the `@defer` block.
+In your `app.ts`,  add an `on hover` trigger to the `@defer` block.
 
 <docs-code language="angular-html" hightlight="[1]">
 @defer (on hover) {
@@ -73,7 +73,7 @@ Next, update the template to include a button with the label "Show all comments"
 }
 </docs-code>
 
-Note: for more information on [template variables check the documentation](https://angular.dev/guide/templates/reference-variables#).
+NOTE: for more information on [template variables check the documentation](https://angular.dev/guide/templates/reference-variables#).
 
 </docs-step>
 

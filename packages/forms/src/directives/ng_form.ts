@@ -22,7 +22,12 @@ import {
   ɵWritable as Writable,
 } from '@angular/core';
 
-import {AbstractControl, FormHooks} from '../model/abstract_model';
+import {
+  AbstractControl,
+  FormHooks,
+  FormResetEvent,
+  FormSubmittedEvent,
+} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
 import {FormGroup} from '../model/form_group';
 import {
@@ -160,7 +165,6 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    * Possible values: `'change'` | `'blur'` | `'submit'`.
    *
    */
-  // TODO(issue/24571): remove '!'.
   @Input('ngFormOptions') options!: {updateOn?: FormHooks};
 
   constructor(
@@ -181,7 +185,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     );
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngAfterViewInit() {
     this._setUpdateStrategy();
   }
@@ -339,6 +343,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     this.submittedReactive.set(true);
     syncPendingControls(this.form, this._directives);
     this.ngSubmit.emit($event);
+    this.form._events.next(new FormSubmittedEvent(this.control));
     // Forms with `method="dialog"` have some special behavior
     // that won't reload the page and that shouldn't be prevented.
     return ($event?.target as HTMLFormElement | null)?.method === 'dialog';
@@ -361,6 +366,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   resetForm(value: any = undefined): void {
     this.form.reset(value);
     this.submittedReactive.set(false);
+    this.form._events.next(new FormResetEvent(this.form));
   }
 
   private _setUpdateStrategy() {

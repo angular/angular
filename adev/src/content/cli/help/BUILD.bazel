@@ -2,16 +2,15 @@ load("//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html.bzl", "re
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["build-info.json"])
+exports_files(["_build-info.json"])
 
 filegroup(
     name = "help",
     srcs = glob(
-        ["*"],
+        ["*.json"],
         exclude = [
-            # Exlucde build-info.json as it is not a help entry.
-            "build-info.json",
-            "BUILD.bazel",
+            # Exlucde _build-info.json as it is not a help entry.
+            "_*.json",
         ],
     ),
 )

@@ -35,7 +35,7 @@ Angular's compiler produces a [dynamic import](https://developer.mozilla.org/en-
 
 This is the primary block that defines the section of content that is lazily loaded. It is not rendered initially– deferred content loads and renders once the specified [trigger](/guide/defer#triggers) occurs or the `when` condition is met.
 
-By default, a @defer block is triggered when the browser state becomes [idle](/guide/defer#on-idle).
+By default, a @defer block is triggered when the browser state becomes [idle](/guide/defer#idle).
 
 ```angular-html
 @defer {
@@ -191,7 +191,7 @@ By default, the placeholder acts as the interaction element. Placeholders used t
 }
 ```
 
-Alternatively, you can specify a [template reference variable](/guide/templates/variables) in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.Z
+Alternatively, you can specify a [template reference variable](/guide/templates/variables) in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
 
 ```angular-html
 <div #greeting>Hello!</div>
@@ -323,9 +323,9 @@ it('should render a defer block in different states', async () => {
 
 ## How does `@defer` work with server-side rendering (SSR) and static-site generation (SSG)?
 
-When rendering an application on the server (either using SSR or SSG), defer blocks always render their `@placeholder` (or nothing if a placeholder is not specified).
+By default, when rendering an application on the server (either using SSR or SSG), defer blocks always render their `@placeholder` (or nothing if a placeholder is not specified) and triggers are not invoked. On the client, the content of the `@placeholder` is hydrated and triggers are activated.
 
-Triggers are ignored on the server.
+To render the main content of `@defer` blocks on the server (both SSR and SSG), you can enable [the Incremental Hydration feature](/guide/incremental-hydration) and configure `hydrate` triggers for the necessary blocks.
 
 ## Best practices for deferring views
 

@@ -22,7 +22,6 @@ import {assertNodeInjector} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {getComponentDef} from '../render3/def_getters';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
-import {addToEndOfViewTree, createLContainer} from '../render3/instructions/shared';
 import {
   CONTAINER_HEADER_OFFSET,
   DEHYDRATED_VIEWS,
@@ -51,13 +50,8 @@ import {
   TVIEW,
 } from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
-import {
-  destroyLView,
-  detachView,
-  nativeInsertBefore,
-  nativeNextSibling,
-  nativeParentNode,
-} from '../render3/node_manipulation';
+import {destroyLView} from '../render3/node_manipulation';
+import {nativeInsertBefore} from '../render3/dom_node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {
   getParentInjectorIndex,
@@ -65,7 +59,7 @@ import {
   hasParentInjector,
 } from '../render3/util/injector_utils';
 import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';
-import {addLViewToLContainer, shouldAddViewToDom} from '../render3/view_manipulation';
+import {shouldAddViewToDom} from '../render3/view_manipulation';
 import {ViewRef as R3ViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {
@@ -81,6 +75,9 @@ import {createElementRef, ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
+import {addLViewToLContainer, createLContainer, detachView} from '../render3/view/container';
+import {addToEndOfViewTree} from '../render3/view/construction';
+import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 
 /**
  * Represents a container where one or more views can be attached to a component.
@@ -213,7 +210,7 @@ export abstract class ViewContainerRef {
   ): EmbeddedViewRef<C>;
 
   /**
-   * Instantiates a single component and inserts its host view into this container.
+   * Instantiates a component and inserts its host view into this view container.
    *
    * @param componentType Component Type to use.
    * @param options An object that contains extra parameters:
@@ -229,6 +226,8 @@ export abstract class ViewContainerRef {
    *                 replace the `ngModuleRef` parameter.
    *  * projectableNodes: list of DOM nodes that should be projected through
    *                      [`<ng-content>`](api/core/ng-content) of the new component instance.
+   *  * directives: Directives that should be applied to the component.
+   *  * bindings: Bindings that should be applied to the component.
    *
    * @returns The new `ComponentRef` which contains the component instance and the host view.
    */
@@ -240,6 +239,8 @@ export abstract class ViewContainerRef {
       ngModuleRef?: NgModuleRef<unknown>;
       environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
       projectableNodes?: Node[][];
+      directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+      bindings?: Binding[];
     },
   ): ComponentRef<C>;
 
@@ -254,6 +255,8 @@ export abstract class ViewContainerRef {
    *     [`<ng-content>`](api/core/ng-content) of the new component instance.
    * @param ngModuleRef An instance of the NgModuleRef that represent an NgModule.
    * This information is used to retrieve corresponding NgModule injector.
+   * @param directives Directives that should be applied to the component.
+   * @param bindings Bindings that should be applied to the component.
    *
    * @returns The new `ComponentRef` which contains the component instance and the host view.
    *
@@ -267,6 +270,8 @@ export abstract class ViewContainerRef {
     injector?: Injector,
     projectableNodes?: any[][],
     environmentInjector?: EnvironmentInjector | NgModuleRef<any>,
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
+    bindings?: Binding[],
   ): ComponentRef<C>;
 
   /**
@@ -430,6 +435,8 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       injector?: Injector;
       projectableNodes?: Node[][];
       ngModuleRef?: NgModuleRef<unknown>;
+      directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+      bindings?: Binding[];
     },
   ): ComponentRef<C>;
   /**
@@ -443,6 +450,8 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     injector?: Injector | undefined,
     projectableNodes?: any[][] | undefined,
     environmentInjector?: EnvironmentInjector | NgModuleRef<any> | undefined,
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
+    bindings?: Binding[],
   ): ComponentRef<C>;
   override createComponent<C>(
     componentFactoryOrType: ComponentFactory<C> | Type<C>,
@@ -455,10 +464,14 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
           ngModuleRef?: NgModuleRef<unknown>;
           environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
           projectableNodes?: Node[][];
+          directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+          bindings?: Binding[];
         },
     injector?: Injector | undefined,
     projectableNodes?: any[][] | undefined,
     environmentInjector?: EnvironmentInjector | NgModuleRef<any> | undefined,
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
+    bindings?: Binding[],
   ): ComponentRef<C> {
     const isComponentFactory = componentFactoryOrType && !isType(componentFactoryOrType);
     let index: number | undefined;
@@ -503,6 +516,8 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
         ngModuleRef?: NgModuleRef<unknown>;
         environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
         projectableNodes?: Node[][];
+        directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+        bindings?: Binding[];
       };
       if (ngDevMode && options.environmentInjector && options.ngModuleRef) {
         throwError(
@@ -513,6 +528,8 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       injector = options.injector;
       projectableNodes = options.projectableNodes;
       environmentInjector = options.environmentInjector || options.ngModuleRef;
+      directives = options.directives;
+      bindings = options.bindings;
     }
 
     const componentFactory: ComponentFactory<C> = isComponentFactory
@@ -557,6 +574,8 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       projectableNodes,
       rNode,
       environmentInjector,
+      directives,
+      bindings,
     );
     this.insertImpl(
       componentRef.hostView,
@@ -719,16 +738,15 @@ export function createContainerRef(
  */
 function insertAnchorNode(hostLView: LView, hostTNode: TNode): RComment {
   const renderer = hostLView[RENDERER];
-  ngDevMode && ngDevMode.rendererCreateComment++;
   const commentNode = renderer.createComment(ngDevMode ? 'container' : '');
 
   const hostNative = getNativeByTNode(hostTNode, hostLView)!;
-  const parentOfHostNative = nativeParentNode(renderer, hostNative);
+  const parentOfHostNative = renderer.parentNode(hostNative);
   nativeInsertBefore(
     renderer,
     parentOfHostNative!,
     commentNode,
-    nativeNextSibling(renderer, hostNative),
+    renderer.nextSibling(hostNative),
     false,
   );
   return commentNode;

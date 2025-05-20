@@ -9,8 +9,8 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/core",
+        "//packages/platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",
-        "//packages/platform-browser/animations",
         "//packages/platform-server",
     ],
 )

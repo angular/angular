@@ -904,6 +904,13 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       // Nothing to do without an element to process.
       return undefined;
     }
+    if (
+      !element.isSelfClosing &&
+      element.endSourceSpan !== null &&
+      isWithin(this.position, element.endSourceSpan)
+    ) {
+      return undefined;
+    }
 
     let replacementSpan: ts.TextSpan | undefined = undefined;
     if (
@@ -1172,13 +1179,19 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     }
 
     const replacementSpan = makeReplacementSpanFromAst(this.node);
+    const entries: ts.CompletionEntry[] = [];
 
-    const entries: ts.CompletionEntry[] = pipes.map((pipe) => ({
-      name: pipe.name,
-      sortText: pipe.name,
-      kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
-      replacementSpan,
-    }));
+    for (const pipe of pipes) {
+      if (pipe.name !== null) {
+        entries.push({
+          name: pipe.name,
+          sortText: pipe.name,
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
+          replacementSpan,
+        });
+      }
+    }
+
     return {
       entries,
       isGlobalCompletion: false,

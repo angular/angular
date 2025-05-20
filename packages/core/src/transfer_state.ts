@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID, PLATFORM_ID} from './application/application_tokens';
+import {APP_ID} from './application/application_tokens';
 import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
 import {getDocument} from './render3/interfaces/document';
@@ -50,7 +50,7 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
 
 function initTransferState(): TransferState {
   const transferState = new TransferState();
-  if (inject(PLATFORM_ID) === 'browser') {
+  if (typeof ngServerMode === 'undefined' || !ngServerMode) {
     transferState.store = retrieveTransferredState(getDocument(), inject(APP_ID));
   }
 

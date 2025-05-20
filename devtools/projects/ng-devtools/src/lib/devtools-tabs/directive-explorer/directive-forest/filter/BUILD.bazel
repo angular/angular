@@ -1,5 +1,7 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,7 +10,7 @@ sass_binary(
     src = "filter.component.scss",
 )
 
-ng_module(
+ng_project(
     name = "filter",
     srcs = [
         "filter.component.ts",
@@ -17,11 +19,29 @@ ng_module(
         "filter.component.html",
         ":filter_component_styles",
     ],
-    deps = [
+    interop_deps = [
         "//packages/common",
         "//packages/core",
-        "@npm//@angular/material",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//:node_modules/rxjs",
+    ],
+)
+
+ts_test_library(
+    name = "filter_test",
+    srcs = ["filter.component.spec.ts"],
+    interop_deps = [
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        ":filter",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":filter_test",
     ],
 )

@@ -50,6 +50,10 @@
           ],
           "failureMessage": "Incorrect directive definition"
         }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "linked compile"
       ]
     }
   ]

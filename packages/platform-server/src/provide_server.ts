@@ -7,7 +7,6 @@
  */
 
 import {EnvironmentProviders, makeEnvironmentProviders} from '@angular/core';
-import {provideNoopAnimations} from '@angular/platform-browser/animations';
 
 import {PLATFORM_SERVER_PROVIDERS} from './server';
 
@@ -31,5 +30,5 @@ export function provideServerRendering(): EnvironmentProviders {
     globalThis['ngServerMode'] = true;
   }
 
-  return makeEnvironmentProviders([provideNoopAnimations(), ...PLATFORM_SERVER_PROVIDERS]);
+  return makeEnvironmentProviders([...PLATFORM_SERVER_PROVIDERS]);
 }

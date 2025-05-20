@@ -31,10 +31,11 @@ import {
   getComponentDef,
   getDirectiveDef,
   getNgModuleDef,
+  getNgModuleDefOrThrow,
   getPipeDef,
   isStandalone,
 } from '../def_getters';
-import {depsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT} from '../deps_tracker/deps_tracker';
+import {depsTracker} from '../deps_tracker/deps_tracker';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import type {ComponentDef} from '../interfaces/definition';
 import {maybeUnwrapFn} from '../util/misc_utils';
@@ -253,7 +254,7 @@ function verifySemanticsOfNgModuleDef(
       );
     }
   } else {
-    ngModuleDef = getNgModuleDef(moduleType, true);
+    ngModuleDef = getNgModuleDefOrThrow(moduleType);
   }
   const errors: string[] = [];
   const declarations = maybeUnwrapFn(ngModuleDef.declarations);
@@ -551,16 +552,12 @@ export function patchComponentDefWithScope<C>(
  */
 export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes {
   if (isNgModule(type)) {
-    if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
-      const scope = depsTracker.getNgModuleScope(type);
-      const def = getNgModuleDef(type, true);
-      return {
-        schemas: def.schemas || null,
-        ...scope,
-      };
-    } else {
-      return transitiveScopesForNgModule(type);
-    }
+    const scope = depsTracker.getNgModuleScope(type);
+    const def = getNgModuleDefOrThrow(type);
+    return {
+      schemas: def.schemas || null,
+      ...scope,
+    };
   } else if (isStandalone(type)) {
     const directiveDef = getComponentDef(type) || getDirectiveDef(type);
     if (directiveDef !== null) {
@@ -607,7 +604,7 @@ export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes 
  * @param moduleType module that transitive scope should be calculated for.
  */
 export function transitiveScopesForNgModule<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
-  const def = getNgModuleDef(moduleType, true);
+  const def = getNgModuleDefOrThrow(moduleType);
 
   if (def.transitiveCompileScopes !== null) {
     return def.transitiveCompileScopes;

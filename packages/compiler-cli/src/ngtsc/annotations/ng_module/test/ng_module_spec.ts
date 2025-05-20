@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {R3NgModuleMetadataGlobal, WrappedNodeExpr} from '@angular/compiler';
-import {R3Reference} from '@angular/compiler/src/compiler';
+import {R3NgModuleMetadataGlobal, WrappedNodeExpr, R3Reference} from '@angular/compiler';
 import ts from 'typescript';
 
 import {absoluteFrom} from '../../../file_system';
@@ -78,6 +77,7 @@ function setup(program: ts.Program, compilationMode = CompilationMode.FULL) {
     compilationMode,
     /* localCompilationExtraImportsTracker */ null,
     jitDeclarationRegistry,
+    /* emitDeclarationOnly */ false,
   );
 
   return {handler, reflectionHost};

@@ -14,32 +14,34 @@ import {
   SIGNAL,
   SIGNAL_NODE,
   type SignalNode,
-} from '@angular/core/primitives/signals';
+} from '../../../primitives/signals';
 
 import {type Signal} from '../reactivity/api';
 import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
 
+import {TracingService, TracingSnapshot} from '../../application/tracing';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
 } from '../../change_detection/scheduling/zoneless_scheduling';
+import {assertInInjectionContext} from '../../di/contextual';
 import {Injector} from '../../di/injector';
 import {inject} from '../../di/injector_compatibility';
+import {DestroyRef} from '../../linker/destroy_ref';
+import {AfterRenderPhase, type AfterRenderRef} from '../after_render/api';
+import {NOOP_AFTER_RENDER_REF, type AfterRenderOptions} from '../after_render/hooks';
 import {
   AFTER_RENDER_PHASES,
   AfterRenderImpl,
   AfterRenderManager,
   AfterRenderSequence,
 } from '../after_render/manager';
-import {AfterRenderPhase, type AfterRenderRef} from '../after_render/api';
-import {NOOP_AFTER_RENDER_REF, type AfterRenderOptions} from '../after_render/hooks';
-import {DestroyRef} from '../../linker/destroy_ref';
+import {LView} from '../interfaces/view';
+import {ViewContext} from '../view_context';
 import {assertNotInReactiveContext} from './asserts';
-import {assertInInjectionContext} from '../../di/contextual';
-import {TracingService, TracingSnapshot} from '../../application/tracing';
 
-const NOT_SET = Symbol('NOT_SET');
-const EMPTY_CLEANUP_SET = new Set<() => void>();
+const NOT_SET = /* @__PURE__ */ Symbol('NOT_SET');
+const EMPTY_CLEANUP_SET = /* @__PURE__ */ new Set<() => void>();
 
 /** Callback type for an `afterRenderEffect` phase effect */
 type AfterRenderPhaseEffectHook = (
@@ -174,13 +176,14 @@ class AfterRenderEffectSequence extends AfterRenderSequence {
   constructor(
     impl: AfterRenderImpl,
     effectHooks: Array<AfterRenderPhaseEffectHook | undefined>,
+    view: LView | undefined,
     readonly scheduler: ChangeDetectionScheduler,
     destroyRef: DestroyRef,
     snapshot: TracingSnapshot | null = null,
   ) {
     // Note that we also initialize the underlying `AfterRenderSequence` hooks to `undefined` and
     // populate them as we create reactive nodes below.
-    super(impl, [undefined, undefined, undefined, undefined], false, destroyRef, snapshot);
+    super(impl, [undefined, undefined, undefined, undefined], view, false, destroyRef, snapshot);
 
     // Setup a reactive node for each phase.
     for (const phase of AFTER_RENDER_PHASES) {
@@ -264,11 +267,11 @@ export type ɵFirstAvailableSignal<T extends unknown[]> = T extends [infer H, ..
  * @param callback An effect callback function to register
  * @param options Options to control the behavior of the callback
  *
- * @experimental
+ * @publicApi
  */
 export function afterRenderEffect(
   callback: (onCleanup: EffectCleanupRegisterFn) => void,
-  options?: Omit<AfterRenderOptions, 'phase'>,
+  options?: AfterRenderOptions,
 ): AfterRenderRef;
 /**
  * Register effects that, when triggered, are invoked when the application finishes rendering,
@@ -328,7 +331,7 @@ export function afterRenderEffect(
  * Use `afterRenderEffect` to create effects that will read or write from the DOM and thus should
  * run after rendering.
  *
- * @experimental
+ * @publicApi
  */
 export function afterRenderEffect<E = never, W = never, M = never>(
   spec: {
@@ -337,11 +340,11 @@ export function afterRenderEffect<E = never, W = never, M = never>(
     mixedReadWrite?: (...args: [...ɵFirstAvailableSignal<[W, E]>, EffectCleanupRegisterFn]) => M;
     read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
   },
-  options?: Omit<AfterRenderOptions, 'phase'>,
+  options?: AfterRenderOptions,
 ): AfterRenderRef;
 
 /**
- * @experimental
+ * @publicApi
  */
 export function afterRenderEffect<E = never, W = never, M = never>(
   callbackOrSpec:
@@ -354,7 +357,7 @@ export function afterRenderEffect<E = never, W = never, M = never>(
         ) => M;
         read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
       },
-  options?: Omit<AfterRenderOptions, 'phase'>,
+  options?: AfterRenderOptions,
 ): AfterRenderRef {
   ngDevMode &&
     assertNotInReactiveContext(
@@ -380,9 +383,12 @@ export function afterRenderEffect<E = never, W = never, M = never>(
     spec = {mixedReadWrite: callbackOrSpec as any};
   }
 
+  const viewContext = injector.get(ViewContext, null, {optional: true});
+
   const sequence = new AfterRenderEffectSequence(
     manager.impl,
     [spec.earlyRead, spec.write, spec.mixedReadWrite, spec.read] as AfterRenderPhaseEffectHook[],
+    viewContext?.view,
     scheduler,
     injector.get(DestroyRef),
     tracing?.snapshot(null),

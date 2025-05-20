@@ -1,0 +1,142 @@
+<div class="animation" [class.reduced-motion]="reducedMotion()">
+  <!-- Banners and buttons  -->
+  <div adevAnimationLayer layerId="banners" class="banners-layer layer">
+    <a
+      href="https://blog.angular.dev/meet-angular-v19-7b29dfd05b84"
+      class="adev-banner"
+      target="_blank"
+    >
+      <h1 tabindex="-1">Angular v19 is here!</h1>
+      <p class="adev-banner-cta">Read about our newest release.</p>
+    </a>
+    <div class="learn-angular">
+      <a [routerLink]="ctaLink" class="adev-cta">
+        <button class="docs-primary-btn" [attr.text]="'Learn Angular'" aria-label="Learn Angular">
+          Learn Angular
+        </button>
+      </a>
+      <div class="adev-arrow"></div>
+    </div>
+  </div>
+
+  @if (!isUwu()) {
+    <!-- Angular logo -->
+    <div adevAnimationLayer layerId="logo" class="logo-layer layer">
+      <svg class="svg" viewBox="0 0 1280 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Do not remove `gradientTransform` attribute. Safari needs it in order to start the animation. -->
+          <linearGradient
+            id="gradient"
+            gradientUnits="userSpaceOnUse"
+            gradientTransform="rotate(0 640 125)"
+          >
+            <stop offset="0" stop-color="#ed0100" />
+            <stop offset="0.25" stop-color="#e449b4" />
+            <stop offset="0.5" stop-color="#ae3bfc" />
+            <stop offset="1" stop-color="#7f15fd" />
+            <animateTransform
+              attributeName="gradientTransform"
+              type="rotate"
+              from="0 640 125"
+              to="360 640 125"
+              dur="6.5s"
+              repeatCount="indefinite"
+            />
+          </linearGradient>
+        </defs>
+        <g class="wrapper" fill="url(#gradient)">
+          <g class="logo">
+            <g class="shield">
+              <path
+                class="shield-base"
+                d="M311.8,101.7L302,255.6L208.3,53.8L311.8,101.7ZM246.9,300.7L176.1,341.1L105.3,300.7L246.9,300.7ZM50.1,255.6L40.4,101.7L143.9,53.8L50.1,255.6Z"
+              />
+              <path class="shield-middle" d="M176.1,130.4L213.2,220.6L139,220.6L176.1,130.4Z" />
+              <path
+                class="shield-bottom-a-arc"
+                d="M106.419,301.339L105.3,300.7L119.7,265.8L232.5,265.8L246.9,300.7L245.781,301.339L106.419,301.339Z"
+              />
+              <path
+                class="shield-bottom-extension"
+                d="M245.78,301.339L106.42,301.339L68.889,279.923L283.311,279.923L245.78,301.339Z"
+              />
+            </g>
+            <path
+              class="capt-a-letter letter"
+              d="M515.4,288L553.1,288L484.4,92.7L440.7,92.7L372,288L409.7,288L425.8,239.9L499.2,239.9L515.4,288ZM435.4,211.4L461.8,132.8L463.3,132.8L489.7,211.4L435.4,211.4Z"
+            />
+            <path
+              class="n-letter letter"
+              d="M590.4,202.2L590.4,288L555.9,288L555.9,141.6L588.9,141.6L588.9,166.5L590.6,166.5C594,158.3 599.4,151.8 606.8,147C614.2,142.2 623.4,139.8 634.3,139.8C644.4,139.8 653.2,142 660.8,146.3C668.3,150.6 674.2,156.9 678.3,165.1C682.5,173.3 684.5,183.2 684.4,194.9L684.4,288L649.9,288L649.9,200.1C649.9,190.3 647.4,182.7 642.3,177.1C637.2,171.6 630.3,168.8 621.4,168.8C615.4,168.8 610,170.1 605.3,172.8C600.6,175.4 597,179.2 594.3,184.2C591.8,189.1 590.4,195.1 590.4,202.2Z"
+            />
+            <path
+              class="g-letter letter"
+              d="M760.5,345.9C748.1,345.9 737.5,344.2 728.6,340.9C719.7,337.6 712.6,333.1 707.2,327.5C701.8,321.9 698,315.7 696,308.9L727.1,301.4C728.5,304.3 730.5,307.1 733.2,309.9C735.9,312.7 739.5,315.1 744,317C748.5,318.9 754.3,319.8 761.2,319.8C771,319.8 779.1,317.4 785.5,312.7C791.9,308 795.1,300.2 795.1,289.4L795.1,261.7L793.4,261.7C791.6,265.3 789,268.9 785.6,272.7C782.2,276.5 777.7,279.6 772.2,282.1C766.6,284.6 759.7,285.9 751.3,285.9C740.1,285.9 729.9,283.2 720.7,277.9C711.6,272.6 704.3,264.6 699,254.1C693.6,243.5 690.9,230.3 690.9,214.3C690.9,198.2 693.6,184.6 699,173.5C704.4,162.4 711.6,154 720.8,148.2C730,142.4 740.2,139.6 751.4,139.6C760,139.6 767.1,141 772.6,143.9C778.2,146.8 782.6,150.3 785.9,154.3C789.2,158.3 791.7,162.1 793.4,165.7L795.3,165.7L795.3,141.5L829.3,141.5L829.3,290.3C829.3,302.8 826.3,313.2 820.3,321.4C814.3,329.6 806.2,335.7 795.8,339.8C785.4,343.9 773.6,345.9 760.5,345.9ZM760.8,258.8C768.1,258.8 774.3,257 779.5,253.5C784.6,249.9 788.6,244.8 791.2,238.2C793.9,231.5 795.2,223.5 795.2,214.2C795.2,205 793.9,196.9 791.2,190C788.6,183.1 784.7,177.7 779.6,173.8C774.5,170 768.2,168 760.8,168C753.1,168 746.7,170 741.5,174C736.4,178 732.5,183.5 729.9,190.4C727.3,197.4 726,205.3 726,214.1C726,223.1 727.3,230.9 730,237.6C732.6,244.3 736.5,249.5 741.7,253.2C746.8,256.9 753.2,258.8 760.8,258.8Z"
+            />
+            <path
+              class="u-letter letter"
+              d="M933.8,226.4L933.8,141.6L968.3,141.6L968.3,288L934.8,288L934.8,262L933.3,262C930,270.2 924.6,276.9 917,282.1C909.5,287.3 900.2,289.9 889.2,289.9C879.6,289.9 871.1,287.8 863.8,283.5C856.5,279.2 850.7,273 846.6,264.7C842.5,256.5 840.4,246.5 840.4,234.8L840.4,141.6L875,141.6L875,229.5C875,238.8 877.5,246.2 882.6,251.6C887.7,257.1 894.4,259.8 902.6,259.8C907.7,259.8 912.6,258.6 917.4,256.1C922.2,253.6 926.1,249.9 929.2,245C932.3,240 933.8,233.8 933.8,226.4Z"
+            />
+            <rect class="l-letter letter" x="979.6" y="92.7" width="34.5" height="195.3" />
+            <path
+              class="a-letter letter"
+              d="M1068.9,290.9C1059.6,290.9 1051.3,289.2 1043.9,285.9C1036.5,282.6 1030.6,277.6 1026.4,271.1C1022.1,264.6 1020,256.5 1020,246.9C1020,238.6 1021.5,231.8 1024.6,226.4C1027.7,221 1031.8,216.7 1037.1,213.4C1042.4,210.2 1048.3,207.7 1055,206C1061.6,204.3 1068.5,203.1 1075.6,202.3C1084.2,201.4 1091.1,200.6 1096.5,199.9C1101.8,199.2 1105.7,198 1108.2,196.5C1110.6,194.9 1111.9,192.5 1111.9,189.2L1111.9,188.6C1111.9,181.4 1109.8,175.9 1105.5,171.9C1101.2,168 1095.1,166 1087.1,166C1078.6,166 1072,167.8 1067,171.5C1062.1,175.2 1058.8,179.5 1057,184.6L1024.8,180C1027.3,171.1 1031.5,163.7 1037.4,157.6C1043.2,151.6 1050.4,147.1 1058.8,144.1C1067.3,141.1 1076.6,139.6 1086.8,139.6C1093.9,139.6 1100.9,140.4 1107.9,142.1C1114.9,143.8 1121.3,146.5 1127.1,150.3C1132.9,154.1 1137.5,159.2 1141.1,165.7C1144.6,172.2 1146.4,180.3 1146.4,190L1146.4,288L1113.2,288L1113.2,267.9L1112.1,267.9C1110,272 1107.1,275.8 1103.3,279.3C1099.5,282.8 1094.8,285.7 1089.1,287.8C1083.2,289.9 1076.6,290.9 1068.9,290.9ZM1077.9,265.6C1084.8,265.6 1090.8,264.2 1095.9,261.5C1101,258.7 1104.9,255.1 1107.7,250.5C1110.5,245.9 1111.8,240.9 1111.8,235.5L1111.8,218.2C1110.7,219.1 1108.9,219.9 1106.3,220.7C1103.7,221.5 1100.9,222.1 1097.7,222.7C1094.5,223.3 1091.4,223.8 1088.3,224.2C1085.2,224.6 1082.5,225 1080.2,225.3C1075.1,226 1070.4,227.1 1066.4,228.7C1062.3,230.3 1059.1,232.5 1056.8,235.3C1054.4,238.1 1053.3,241.8 1053.3,246.2C1053.3,252.6 1055.6,257.4 1060.3,260.6C1064.8,264 1070.7,265.6 1077.9,265.6Z"
+            />
+            <path
+              class="r-letter letter"
+              d="M1156.9,288L1156.9,141.6L1190.4,141.6L1190.4,166L1191.9,166C1194.6,157.5 1199.2,151 1205.7,146.4C1212.2,141.8 1219.7,139.5 1228.1,139.5C1230,139.5 1232.2,139.6 1234.5,139.7C1236.9,139.9 1238.9,140.1 1240.5,140.4L1240.5,172.1C1239,171.6 1236.7,171.1 1233.6,170.7C1230.5,170.3 1227.4,170.1 1224.5,170.1C1218.2,170.1 1212.6,171.5 1207.6,174.2C1202.6,176.9 1198.7,180.6 1195.8,185.4C1192.9,190.2 1191.5,195.7 1191.5,201.9L1191.5,288L1156.9,288Z"
+            />
+          </g>
+        </g>
+      </svg>
+    </div>
+  } @else {
+    <!-- UwU logo -->
+    <div adevAnimationLayer layerId="uwu" class="uwu-layer layer">
+      <img src="assets/images/uwu.png" alt="Angular logo" />
+    </div>
+  }
+
+  <!-- Works at any scale -->
+  <div adevAnimationLayer layerId="works-at-any-scale" class="works-at-any-scale-layer layer">
+    <h2>Works at any scale</h2>
+    <p>
+      Angular lets you start small on a well-lit path and supports you as your team and apps grow.
+    </p>
+  </div>
+
+  <!-- Meteor field -->
+  @if (meteorFieldData(); as meteorFieldData) {
+    <div adevAnimationLayer layerId="meteor-field" class="meteor-field-layer layer">
+      <div
+        class="field"
+        [style.width]="meteorFieldData.width + 'px'"
+        [style.height]="meteorFieldData.height + 'px'"
+        [style.marginLeft]="meteorFieldData.marginLeft + 'px'"
+        [style.marginTop]="meteorFieldData.marginTop + 'px'"
+      >
+        @for (type of meteors(); track $index) {
+          <div [class]="['meteor', 'type-' + type, 'mt-' + ($index + 1)]"></div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Loved by millions -->
+  <div adevAnimationLayer layerId="loved-by-millions" class="loved-by-millions-layer layer">
+    <h2>Loved by millions</h2>
+    <p>
+      Join the millions of developers all over the world building with Angular in a thriving and
+      friendly community.
+    </p>
+  </div>
+
+  <!-- Build for everyone -->
+  <div adevAnimationLayer layerId="build-for-everyone" class="build-for-everyone-layer layer">
+    <h2 class="title">Build for everyone</h2>
+    <p>
+      Rely on Angular's built-in hydration, internationalization, security, and accessibility
+      support to build for everyone around the world.
+    </p>
+  </div>
+</div>

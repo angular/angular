@@ -10,4 +10,5 @@ import {fs} from '../test_helpers/get_compliance_tests';
 
 import {generateGoldenPartial} from './generate_golden_partial';
 
-generateGoldenPartial(fs.resolve(process.argv[2]));
+const [testTsconfigPath, outputPath] = process.argv.slice(2);
+generateGoldenPartial(fs.resolve(testTsconfigPath), fs.resolve(outputPath));

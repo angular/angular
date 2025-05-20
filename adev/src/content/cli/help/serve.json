@@ -10,8 +10,8 @@
   "options": [
     {
       "name": "allowed-hosts",
-      "type": "array",
-      "description": "List of hosts that are allowed to access the dev server. This option has no effect when using the 'application' or other esbuild-based builders."
+      "type": "boolean",
+      "description": "The hosts that the development server will respond to. This option sets the Vite option of the same name. For further details: https://vite.dev/config/server-options.html#server-allowedhosts"
     },
     {
       "name": "build-target",
@@ -25,18 +25,6 @@
         "c"
       ],
       "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.dev/reference/configs/workspace-config#alternate-build-configurations."
-    },
-    {
-      "name": "disable-host-check",
-      "type": "boolean",
-      "default": false,
-      "description": "Don't verify connected clients are part of allowed hosts. This option has no effect when using the 'application' or other esbuild-based builders."
-    },
-    {
-      "name": "force-esbuild",
-      "type": "boolean",
-      "default": false,
-      "description": "Force the development server to use the 'browser-esbuild' builder when building. This is a developer preview option for the esbuild-based build system."
     },
     {
       "name": "headers",
@@ -56,7 +44,7 @@
     {
       "name": "hmr",
       "type": "boolean",
-      "description": "Enable hot module replacement."
+      "description": "Enable hot module replacement. Defaults to the value of 'liveReload'. Currently, only global and component stylesheets are supported."
     },
     {
       "name": "host",
@@ -98,7 +86,8 @@
     {
       "name": "prebundle",
       "type": "boolean",
-      "description": "Enable and control the Vite-based development server's prebundling capabilities. To enable prebundling, the Angular CLI cache must also be enabled. This option has no effect when using the 'browser' or other webpack-based builders."
+      "default": true,
+      "description": "Enable and control the Vite-based development server's prebundling capabilities. To enable prebundling, the Angular CLI cache must also be enabled."
     },
     {
       "name": "project",
@@ -110,11 +99,6 @@
       "name": "proxy-config",
       "type": "string",
       "description": "Proxy configuration file. For more information, see https://angular.dev/tools/cli/serve#proxying-to-a-backend-server."
-    },
-    {
-      "name": "public-host",
-      "type": "string",
-      "description": "The URL that the browser client (or live-reload client, if enabled) should use to connect to the development server. Use for a complex dev server setup, such as one with reverse proxies. This option has no effect when using the 'application' or other esbuild-based builders."
     },
     {
       "name": "serve-path",

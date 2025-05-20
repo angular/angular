@@ -14,7 +14,7 @@ import {
   AUTO_STYLE,
   ɵPRE_STYLE as PRE_STYLE,
   ɵStyleDataMap,
-} from '@angular/animations';
+} from '../../../src/animations';
 
 import {invalidQuery} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
@@ -47,9 +47,9 @@ import {ElementInstructionMap} from './element_instruction_map';
 
 const ONE_FRAME_IN_MILLISECONDS = 1;
 const ENTER_TOKEN = ':enter';
-const ENTER_TOKEN_REGEX = new RegExp(ENTER_TOKEN, 'g');
+const ENTER_TOKEN_REGEX = /* @__PURE__ */ new RegExp(ENTER_TOKEN, 'g');
 const LEAVE_TOKEN = ':leave';
-const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
+const LEAVE_TOKEN_REGEX = /* @__PURE__ */ new RegExp(LEAVE_TOKEN, 'g');
 
 /*
  * The code within this file aims to generate web-animations-compatible keyframes from Angular's

@@ -11,7 +11,7 @@ import {
   ChangeDetectorRef,
   ComponentFactory,
   ComponentRef,
-  EventEmitter,
+  type EventEmitter,
   Injector,
   OnChanges,
   SimpleChange,
@@ -19,6 +19,7 @@ import {
   StaticProvider,
   Testability,
   TestabilityRegistry,
+  type OutputEmitterRef,
   type ɵInputSignalNode as InputSignalNode,
   ɵSIGNAL as SIGNAL,
 } from '@angular/core';
@@ -258,13 +259,13 @@ export class DowngradeComponentAdapter {
     if (isAssignment && !setter) {
       throw new Error(`Expression '${expr}' is not assignable!`);
     }
-    const emitter = componentRef.instance[output.prop] as EventEmitter<any>;
+    const emitter = componentRef.instance[output.prop] as EventEmitter<any> | OutputEmitterRef<any>;
     if (emitter) {
-      const subscription = emitter.subscribe({
-        next: isAssignment
+      const subscription = emitter.subscribe(
+        isAssignment
           ? (v: any) => setter!(this.scope, v)
           : (v: any) => getter(this.scope, {'$event': v}),
-      });
+      );
       componentRef.onDestroy(() => subscription.unsubscribe());
     } else {
       throw new Error(

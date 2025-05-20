@@ -6,6 +6,7 @@
 
 import { ChangeDetectorRef } from '@angular/core';
 import { DoCheck } from '@angular/core';
+import { DOCUMENT } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import * as i0 from '@angular/core';
 import { ɵIMAGE_CONFIG as IMAGE_CONFIG } from '@angular/core';
@@ -41,11 +42,11 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T>): T | null;
+    transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T>): T | null;
     // (undocumented)
     transform<T>(obj: null | undefined): null;
     // (undocumented)
-    transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T> | null | undefined): T | null;
+    transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T> | null | undefined): T | null;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<AsyncPipe, never>;
     // (undocumented)
@@ -101,7 +102,7 @@ export class CommonModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<CommonModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<CommonModule, never, [typeof i1.NgClass, typeof i2.NgComponentOutlet, typeof i3.NgForOf, typeof i4.NgIf, typeof i5.NgTemplateOutlet, typeof i6.NgStyle, typeof i7.NgSwitch, typeof i7.NgSwitchCase, typeof i7.NgSwitchDefault, typeof i8.NgPlural, typeof i8.NgPluralCase, typeof i9.AsyncPipe, typeof i10.UpperCasePipe, typeof i10.LowerCasePipe, typeof i11.JsonPipe, typeof i12.SlicePipe, typeof i13.DecimalPipe, typeof i13.PercentPipe, typeof i10.TitleCasePipe, typeof i13.CurrencyPipe, typeof i14.DatePipe, typeof i15.I18nPluralPipe, typeof i16.I18nSelectPipe, typeof i17.KeyValuePipe], [typeof i1.NgClass, typeof i2.NgComponentOutlet, typeof i3.NgForOf, typeof i4.NgIf, typeof i5.NgTemplateOutlet, typeof i6.NgStyle, typeof i7.NgSwitch, typeof i7.NgSwitchCase, typeof i7.NgSwitchDefault, typeof i8.NgPlural, typeof i8.NgPluralCase, typeof i9.AsyncPipe, typeof i10.UpperCasePipe, typeof i10.LowerCasePipe, typeof i11.JsonPipe, typeof i12.SlicePipe, typeof i13.DecimalPipe, typeof i13.PercentPipe, typeof i10.TitleCasePipe, typeof i13.CurrencyPipe, typeof i14.DatePipe, typeof i15.I18nPluralPipe, typeof i16.I18nSelectPipe, typeof i17.KeyValuePipe]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<CommonModule, never, [typeof NgClass, typeof NgComponentOutlet, typeof NgForOf, typeof NgIf, typeof NgTemplateOutlet, typeof NgStyle, typeof NgSwitch, typeof NgSwitchCase, typeof NgSwitchDefault, typeof NgPlural, typeof NgPluralCase, typeof AsyncPipe, typeof UpperCasePipe, typeof LowerCasePipe, typeof JsonPipe, typeof SlicePipe, typeof DecimalPipe, typeof PercentPipe, typeof TitleCasePipe, typeof CurrencyPipe, typeof DatePipe, typeof I18nPluralPipe, typeof I18nSelectPipe, typeof KeyValuePipe], [typeof NgClass, typeof NgComponentOutlet, typeof NgForOf, typeof NgIf, typeof NgTemplateOutlet, typeof NgStyle, typeof NgSwitch, typeof NgSwitchCase, typeof NgSwitchDefault, typeof NgPlural, typeof NgPluralCase, typeof AsyncPipe, typeof UpperCasePipe, typeof LowerCasePipe, typeof JsonPipe, typeof SlicePipe, typeof DecimalPipe, typeof PercentPipe, typeof TitleCasePipe, typeof CurrencyPipe, typeof DatePipe, typeof I18nPluralPipe, typeof I18nSelectPipe, typeof KeyValuePipe]>;
 }
 
 // @public
@@ -163,8 +164,7 @@ export class DecimalPipe implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDeclaration<DecimalPipe, "number", true>;
 }
 
-// @public
-export const DOCUMENT: InjectionToken<Document>;
+export { DOCUMENT }
 
 // @public
 export function formatCurrency(value: number, locale: string, currency: string, currencyCode?: string, digitsInfo?: string): string;
@@ -270,7 +270,6 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     getState(): unknown;
     // (undocumented)
     historyGo(relativePosition?: number): void;
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     onPopState(fn: LocationChangeListener): void;
@@ -396,7 +395,6 @@ class Location_2 implements OnDestroy {
     historyGo(relativePosition?: number): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     static joinWithSlash: (start: string, end: string) => string;
-    // (undocumented)
     ngOnDestroy(): void;
     normalize(url: string): string;
     static normalizeQueryParams: (params: string) => string;
@@ -504,11 +502,8 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     ngComponentOutletNgModule?: Type<any>;
     // @deprecated (undocumented)
     ngComponentOutletNgModuleFactory?: NgModuleFactory<any>;
-    // (undocumented)
     ngDoCheck(): void;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet<any>, "[ngComponentOutlet]", ["ngComponentOutlet"], { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
@@ -516,11 +511,13 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet<any>, never>;
 }
 
-// @public
+// @public @deprecated
 class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
     ngDoCheck(): void;
+    // @deprecated
     set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null);
+    // @deprecated
     set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>);
     set ngForTrackBy(fn: TrackByFunction<T>);
     // (undocumented)
@@ -534,7 +531,7 @@ class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
 export { NgForOf as NgFor }
 export { NgForOf }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
     $implicit: T;
     constructor(
@@ -555,11 +552,14 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
     get odd(): boolean;
 }
 
-// @public
+// @public @deprecated
 export class NgIf<T = unknown> {
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
+    // @deprecated
     set ngIf(condition: T);
+    // @deprecated
     set ngIfElse(templateRef: TemplateRef<NgIfContext<T>> | null);
+    // @deprecated
     set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null);
     static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false | 0 | '' | null | undefined>>;
     static ngTemplateGuard_ngIf: 'binding';
@@ -569,7 +569,7 @@ export class NgIf<T = unknown> {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgIf<any>, never>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class NgIfContext<T = unknown> {
     // (undocumented)
     $implicit: T;
@@ -601,9 +601,11 @@ export abstract class NgLocalization {
 }
 
 // @public
-export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
+export class NgOptimizedImage implements OnInit, OnChanges {
+    constructor();
     disableOptimizedSrcset: boolean;
     fill: boolean;
+    protected generatePlaceholder(placeholderInput: string | boolean): string | boolean | null;
     height: number | undefined;
     loaderParams?: {
         [key: string]: any;
@@ -623,17 +625,14 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     static ngAcceptInputType_priority: unknown;
     // (undocumented)
     static ngAcceptInputType_width: unknown;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
-    ngOnDestroy(): void;
-    // (undocumented)
     ngOnInit(): void;
     ngSrc: string;
     ngSrcset: string;
     placeholder?: string | boolean;
     placeholderConfig?: ImagePlaceholderConfig;
     priority: boolean;
+    protected shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean;
     sizes?: string;
     width: number | undefined;
     // (undocumented)
@@ -681,9 +680,9 @@ export class NgStyle implements DoCheck {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgStyle, never>;
 }
 
-// @public
+// @public @deprecated
 export class NgSwitch {
-    // (undocumented)
+    // @deprecated (undocumented)
     set ngSwitch(newValue: any);
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitch, "[ngSwitch]", never, { "ngSwitch": { "alias": "ngSwitch"; "required": false; }; }, {}, never, never, true, never>;
@@ -691,10 +690,11 @@ export class NgSwitch {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitch, never>;
 }
 
-// @public
+// @public @deprecated
 export class NgSwitchCase implements DoCheck {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
     ngDoCheck(): void;
+    // @deprecated
     ngSwitchCase: any;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgSwitchCase, "[ngSwitchCase]", never, { "ngSwitchCase": { "alias": "ngSwitchCase"; "required": false; }; }, {}, never, never, true, never>;
@@ -702,7 +702,7 @@ export class NgSwitchCase implements DoCheck {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgSwitchCase, [null, null, { optional: true; host: true; }]>;
 }
 
-// @public
+// @public @deprecated
 export class NgSwitchDefault {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
     // (undocumented)
@@ -771,7 +771,6 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
     getState(): unknown;
     // (undocumented)
     historyGo(relativePosition?: number): void;
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     onPopState(fn: LocationChangeListener): void;
@@ -958,8 +957,8 @@ export const VERSION: Version;
 // @public
 export abstract class ViewportScroller {
     abstract getScrollPosition(): [number, number];
-    abstract scrollToAnchor(anchor: string): void;
-    abstract scrollToPosition(position: [number, number]): void;
+    abstract scrollToAnchor(anchor: string, options?: ScrollOptions): void;
+    abstract scrollToPosition(position: [number, number], options?: ScrollOptions): void;
     abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
     abstract setOffset(offset: [number, number] | (() => [number, number])): void;
     // (undocumented)

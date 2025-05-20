@@ -13,7 +13,8 @@ import {inject} from '../../di/injector_compatibility';
 import {DestroyRef} from '../../linker/destroy_ref';
 import {performanceMarkFeature} from '../../util/performance';
 import {assertNotInReactiveContext} from '../reactivity/asserts';
-import {AfterRenderPhase, AfterRenderRef} from './api';
+import {ViewContext} from '../view_context';
+import {AfterRenderRef} from './api';
 import {
   AfterRenderHooks,
   AfterRenderImpl,
@@ -32,9 +33,9 @@ export type ɵFirstAvailable<T extends unknown[]> = T extends [infer H, ...infer
   : [];
 
 /**
- * Options passed to `afterRender` and `afterNextRender`.
+ * Options passed to `afterEveryRender` and `afterNextRender`.
  *
- * @developerPreview
+ * @publicApi 20.0
  */
 export interface AfterRenderOptions {
   /**
@@ -51,21 +52,6 @@ export interface AfterRenderOptions {
    * with the current `DestroyRef`.
    */
   manualCleanup?: boolean;
-
-  /**
-   * The phase the callback should be invoked in.
-   *
-   * <div class="docs-alert docs-alert-critical">
-   *
-   * Defaults to `AfterRenderPhase.MixedReadWrite`. You should choose a more specific
-   * phase instead. See `AfterRenderPhase` for more information.
-   *
-   * </div>
-   *
-   * @deprecated Specify the phase for your callback to run in by passing a spec-object as the first
-   *   parameter to `afterRender` or `afterNextRender` instead of a function.
-   */
-  phase?: AfterRenderPhase;
 }
 
 /**
@@ -122,7 +108,7 @@ export interface AfterRenderOptions {
  *
  * @usageNotes
  *
- * Use `afterRender` to read or write the DOM after each render.
+ * Use `afterEveryRender` to read or write the DOM after each render.
  *
  * ### Example
  * ```angular-ts
@@ -134,7 +120,7 @@ export interface AfterRenderOptions {
  *   @ViewChild('content') contentRef: ElementRef;
  *
  *   constructor() {
- *     afterRender({
+ *     afterEveryRender({
  *       read: () => {
  *         console.log('content height: ' + this.contentRef.nativeElement.scrollHeight);
  *       }
@@ -145,14 +131,14 @@ export interface AfterRenderOptions {
  *
  * @developerPreview
  */
-export function afterRender<E = never, W = never, M = never>(
+export function afterEveryRender<E = never, W = never, M = never>(
   spec: {
     earlyRead?: () => E;
     write?: (...args: ɵFirstAvailable<[E]>) => W;
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
   },
-  options?: Omit<AfterRenderOptions, 'phase'>,
+  options?: AfterRenderOptions,
 ): AfterRenderRef;
 
 /**
@@ -184,7 +170,7 @@ export function afterRender<E = never, W = never, M = never>(
  *
  * @usageNotes
  *
- * Use `afterRender` to read or write the DOM after each render.
+ * Use `afterEveryRender` to read or write the DOM after each render.
  *
  * ### Example
  * ```angular-ts
@@ -196,7 +182,7 @@ export function afterRender<E = never, W = never, M = never>(
  *   @ViewChild('content') contentRef: ElementRef;
  *
  *   constructor() {
- *     afterRender({
+ *     afterEveryRender({
  *       read: () => {
  *         console.log('content height: ' + this.contentRef.nativeElement.scrollHeight);
  *       }
@@ -205,11 +191,14 @@ export function afterRender<E = never, W = never, M = never>(
  * }
  * ```
  *
- * @developerPreview
+ * @publicApi
  */
-export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
+export function afterEveryRender(
+  callback: VoidFunction,
+  options?: AfterRenderOptions,
+): AfterRenderRef;
 
-export function afterRender(
+export function afterEveryRender(
   callbackOrSpec:
     | VoidFunction
     | {
@@ -222,12 +211,12 @@ export function afterRender(
 ): AfterRenderRef {
   ngDevMode &&
     assertNotInReactiveContext(
-      afterRender,
-      'Call `afterRender` outside of a reactive context. For example, schedule the render ' +
+      afterEveryRender,
+      'Call `afterEveryRender` outside of a reactive context. For example, schedule the render ' +
         'callback inside the component constructor`.',
     );
 
-  !options?.injector && assertInInjectionContext(afterRender);
+  !options?.injector && assertInInjectionContext(afterEveryRender);
   const injector = options?.injector ?? inject(Injector);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
@@ -236,7 +225,7 @@ export function afterRender(
 
   performanceMarkFeature('NgAfterRender');
 
-  return afterRenderImpl(callbackOrSpec, injector, options, /* once */ false);
+  return afterEveryRenderImpl(callbackOrSpec, injector, options, /* once */ false);
 }
 
 /**
@@ -325,7 +314,7 @@ export function afterNextRender<E = never, W = never, M = never>(
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
   },
-  options?: Omit<AfterRenderOptions, 'phase'>,
+  options?: AfterRenderOptions,
 ): AfterRenderRef;
 
 /**
@@ -379,7 +368,7 @@ export function afterNextRender<E = never, W = never, M = never>(
  * }
  * ```
  *
- * @developerPreview
+ * @publicApi 20.0
  */
 export function afterNextRender(
   callback: VoidFunction,
@@ -406,7 +395,7 @@ export function afterNextRender(
 
   performanceMarkFeature('NgAfterNextRender');
 
-  return afterRenderImpl(callbackOrSpec, injector, options, /* once */ true);
+  return afterEveryRenderImpl(callbackOrSpec, injector, options, /* once */ true);
 }
 
 function getHooks(
@@ -418,12 +407,9 @@ function getHooks(
         mixedReadWrite?: (r?: unknown) => unknown;
         read?: (r?: unknown) => void;
       },
-  phase: AfterRenderPhase,
 ): AfterRenderHooks {
   if (callbackOrSpec instanceof Function) {
-    const hooks: AfterRenderHooks = [undefined, undefined, undefined, undefined];
-    hooks[phase] = callbackOrSpec;
-    return hooks;
+    return [undefined, undefined, /* MixedReadWrite */ callbackOrSpec, undefined];
   } else {
     return [
       callbackOrSpec.earlyRead,
@@ -435,9 +421,9 @@ function getHooks(
 }
 
 /**
- * Shared implementation for `afterRender` and `afterNextRender`.
+ * Shared implementation for `afterEveryRender` and `afterNextRender`.
  */
-function afterRenderImpl(
+function afterEveryRenderImpl(
   callbackOrSpec:
     | VoidFunction
     | {
@@ -452,16 +438,17 @@ function afterRenderImpl(
 ): AfterRenderRef {
   const manager = injector.get(AfterRenderManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
-  // tree-shaken if `afterRender` and `afterNextRender` aren't used.
+  // tree-shaken if `afterEveryRender` and `afterNextRender` aren't used.
   manager.impl ??= injector.get(AfterRenderImpl);
 
   const tracing = injector.get(TracingService, null, {optional: true});
 
-  const hooks = options?.phase ?? AfterRenderPhase.MixedReadWrite;
   const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
+  const viewContext = injector.get(ViewContext, null, {optional: true});
   const sequence = new AfterRenderSequence(
     manager.impl,
-    getHooks(callbackOrSpec, hooks),
+    getHooks(callbackOrSpec),
+    viewContext?.view,
     once,
     destroyRef,
     tracing?.snapshot(null),

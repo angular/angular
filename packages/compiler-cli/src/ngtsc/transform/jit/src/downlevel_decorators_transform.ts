@@ -378,7 +378,7 @@ export function getDownlevelDecoratorsTransform(
       // ensure that the alias declaration is not elided by TypeScript, and use its
       // name identifier to reference it at runtime.
       if (isAliasImportDeclaration(decl)) {
-        referencedParameterTypes.add(decl);
+        referencedParameterTypes?.add(decl);
         // If the entity name resolves to an alias import declaration, we reference the
         // entity based on the alias import name. This ensures that TypeScript properly
         // resolves the link to the import. Cloning the original entity name identifier

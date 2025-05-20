@@ -9,7 +9,8 @@
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {EnvironmentInjector, Injectable, PLATFORM_ID, inject} from '@angular/core';
 import {generateZip} from '@angular/docs';
-import {injectAsync} from '../core/services/inject-async';
+
+import {injectNodeRuntimeSandbox} from './inject-node-runtime-sandbox';
 
 @Injectable({
   providedIn: 'root',
@@ -23,9 +24,7 @@ export class DownloadManager {
    * Generate ZIP with the current state of the solution in the EmbeddedEditor
    */
   async downloadCurrentStateOfTheSolution(name: string) {
-    const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('./node-runtime-sandbox.service').then((c) => c.NodeRuntimeSandbox),
-    );
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     const files = await nodeRuntimeSandbox.getSolutionFiles();
     const content = await generateZip(files);

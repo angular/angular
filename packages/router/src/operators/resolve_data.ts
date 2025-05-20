@@ -7,8 +7,8 @@
  */
 
 import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
-import {EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
-import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
+import {defer, EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
+import {catchError, concatMap, first, map, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {RedirectCommand, ResolveData} from '../models';
 import type {NavigationTransition} from '../navigation_transition';
@@ -89,13 +89,16 @@ function runResolve(
   if (config?.title !== undefined && !hasStaticTitle(config)) {
     resolve[RouteTitleKey] = config.title;
   }
-  return resolveNode(resolve, futureARS, futureRSS, injector).pipe(
-    map((resolvedData: any) => {
-      futureARS._resolvedData = resolvedData;
-      futureARS.data = getInherited(futureARS, futureARS.parent, paramsInheritanceStrategy).resolve;
-      return null;
-    }),
-  );
+  return defer(() => {
+    futureARS.data = getInherited(futureARS, futureARS.parent, paramsInheritanceStrategy).resolve;
+    return resolveNode(resolve, futureARS, futureRSS, injector).pipe(
+      map((resolvedData: any) => {
+        futureARS._resolvedData = resolvedData;
+        futureARS.data = {...futureARS.data, ...resolvedData};
+        return null;
+      }),
+    );
+  });
 }
 
 function resolveNode(
@@ -122,7 +125,7 @@ function resolveNode(
       ),
     ),
     takeLast(1),
-    mapTo(data),
+    map(() => data),
     catchError((e: unknown) => (isEmptyError(e as Error) ? EMPTY : throwError(e))),
   );
 }

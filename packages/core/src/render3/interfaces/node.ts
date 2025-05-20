@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {Type} from '../../interface/type';
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 import {AttributeMarker} from './attribute_marker';
 
-import {InputFlags} from './input_flags';
 import {TIcu} from './i18n';
 import {CssSelector} from './projection';
 import {RNode} from './renderer_dom';
@@ -160,6 +160,16 @@ export const enum TNodeFlags {
    * Bit #8 - This bit is set if the node is a located inside skip hydration block.
    */
   inSkipHydrationBlock = 0x80,
+
+  /**
+   * Bit #9 - This bit is set if the node is a start of a set of control flow blocks.
+   */
+  isControlFlowStart = 0x100,
+
+  /**
+   * Bit #10 - This bit is set if the node is within a set of control flow blocks.
+   */
+  isInControlFlow = 0x200,
 }
 
 /**
@@ -244,7 +254,7 @@ export interface TNode {
    * such a case the value stores an array of text nodes to insert.
    *
    * Example:
-   * ```
+   * ```html
    * <div i18n>
    *   Hello <span>World</span>!
    * </div>
@@ -257,7 +267,7 @@ export interface TNode {
    * `<span>` itself.
    *
    * Pseudo code:
-   * ```
+   * ```ts
    *   if (insertBeforeIndex === null) {
    *     // append as normal
    *   } else if (Array.isArray(insertBeforeIndex)) {
@@ -417,7 +427,7 @@ export interface TNode {
   localNames: (string | number)[] | null;
 
   /** Information about input properties that need to be set once from attribute data. */
-  initialInputs: InitialInputData | null | undefined;
+  initialInputs: InitialInputData | null;
 
   /**
    * Input data for all directives on this node. `null` means that there are no directives with
@@ -426,10 +436,25 @@ export interface TNode {
   inputs: NodeInputBindings | null;
 
   /**
+   * Input data for host directives applied to the node.
+   */
+  hostDirectiveInputs: HostDirectiveInputs | null;
+
+  /**
    * Output data for all directives on this node. `null` means that there are no directives with
    * outputs on this node.
    */
   outputs: NodeOutputBindings | null;
+
+  /**
+   * Input data for host directives applied to the node.
+   */
+  hostDirectiveOutputs: HostDirectiveOutputs | null;
+
+  /**
+   * Mapping between directive classes applied to the node and their indexes.
+   */
+  directiveToIndex: DirectiveIndexMap | null;
 
   /**
    * The TView attached to this node.
@@ -490,12 +515,12 @@ export interface TNode {
    *
    * For easier discussion assume this example:
    * `<parent>`'s view definition:
-   * ```
+   * ```html
    * <child id="c1">content1</child>
    * <child id="c2"><span>content2</span></child>
    * ```
    * `<child>`'s view definition:
-   * ```
+   * ```html
    * <ng-content id="cont1"></ng-content>
    * ```
    *
@@ -558,7 +583,7 @@ export interface TNode {
    * styling than the instruction.
    *
    * Imagine:
-   * ```
+   * ```angular-ts
    * <div style="color: highest;" my-dir>
    *
    * @Directive({
@@ -772,37 +797,28 @@ export interface TLetDeclarationNode extends TNode {
 export type TDirectiveHostNode = TElementNode | TContainerNode | TElementContainerNode;
 
 /**
- * Store the runtime output names for all the directives.
+ * Maps the public names of outputs available on a specific node to the index
+ * of the directive instance that defines the output, for example:
  *
- * i+0: directive instance index
- * i+1: privateName
- *
- * e.g.
  * ```
  * {
- *   "publicName": [0, 'change-minified']
+ *   "publicName": [0, 5]
  * }
+ * ```
  */
-export type NodeOutputBindings = Record<string, (number | string)[]>;
+export type NodeOutputBindings = Record<string, number[]>;
 
 /**
- * Store the runtime input for all directives applied to a node.
+ * Maps the public names of inputs applied to a specific node to the index of the
+ * directive instance to which the input value should be written, for example:
  *
- * This allows efficiently setting the same input on a directive that
- * might apply to multiple directives.
- *
- * i+0: directive instance index
- * i+1: privateName
- * i+2: input flags
- *
- * e.g.
  * ```
  * {
- *   "publicName": [0, 'change-minified', <bit-input-flags>]
+ *   "publicName": [0, 5]
  * }
  * ```
  */
-export type NodeInputBindings = Record<string, (number | string | InputFlags)[]>;
+export type NodeInputBindings = Record<string, number[]>;
 
 /**
  * This array contains information about input properties that
@@ -812,9 +828,8 @@ export type NodeInputBindings = Record<string, (number | string | InputFlags)[]>
  *
  * Within each sub-array:
  *
- * i+0: attribute name
- * i+1: minified/internal input name
- * i+2: initial value
+ * i+0: public name
+ * i+1: initial value
  *
  * If a directive on a node does not have any input properties
  * that should be set from attributes, its index is set to null
@@ -835,7 +850,51 @@ export type InitialInputData = (InitialInputs | null)[];
  *
  * e.g. ['role-min', 'minified-input', 'button']
  */
-export type InitialInputs = (string | InputFlags)[];
+export type InitialInputs = string[];
+
+/**
+ * Represents inputs coming from a host directive and exposed on a TNode.
+ *
+ * - The key is the public name of an input as it is exposed on the specific node.
+ * - The value is an array where:
+ *   - i+0: Index of the host directive that should be written to.
+ *   - i+1: Public name of the input as it was defined on the host directive before aliasing.
+ */
+export type HostDirectiveInputs = Record<string, (number | string)[]>;
+
+/**
+ * Represents outputs coming from a host directive and exposed on a TNode.
+ *
+ * - The key is the public name of an output as it is exposed on the specific node.
+ * - The value is an array where:
+ *   - i+0: Index of the host directive on which the output is defined..
+ *   - i+1: Public name of the output as it was defined on the host directive before aliasing.
+ */
+export type HostDirectiveOutputs = Record<string, (number | string)[]>;
+
+/**
+ * Represents a map between a class reference and the index at which its directive is available on
+ * a specific TNode. The value can be either:
+ *   1. A number means that there's only one selector-matched directive on the node and it
+ *      doesn't have any host directives.
+ *   2. An array means that there's a selector-matched directive and it has host directives.
+ *      The array is structured as follows:
+ *        - 0: Index of the selector-matched directive.
+ *        - 1: Start index of the range within which the host directives are defined.
+ *        - 2: End of the host directive range.
+ *
+ * Example:
+ * ```
+ * Map {
+ *   [NoHostDirectives]: 5,
+ *   [HasHostDirectives]: [10, 6, 8],
+ * }
+ * ```
+ */
+export type DirectiveIndexMap = Map<
+  Type<unknown>,
+  number | [directiveIndex: number, hostDirectivesStart: number, hostDirectivesEnd: number]
+>;
 
 /**
  * Type representing a set of TNodes that can have local refs (`#foo`) placed on them.

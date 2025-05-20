@@ -24,6 +24,7 @@ import {
   afterNextRender,
   ANIMATION_MODULE_TYPE,
   Component,
+  ErrorHandler,
   inject,
   Injectable,
   Injector,
@@ -34,9 +35,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
-import {InjectableAnimationEngine} from '@angular/platform-browser/animations/src/providers';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../../index';
+import {InjectableAnimationEngine} from '../../../animations/src/providers';
+import {el, isNode} from '@angular/private/testing';
 
 import {
   AsyncAnimationRendererFactory,
@@ -446,6 +447,26 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
           expect((err as Error).message).toBe('SchedulingError');
         }
       });
+    });
+
+    it('should be able to inject the renderer factory in an ErrorHandler', async () => {
+      @Injectable({providedIn: 'root'})
+      class CustomErrorHandler {
+        renderer = inject(RendererFactory2).createRenderer(null, null);
+      }
+
+      @Component({template: ''})
+      class App {}
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideAnimationsAsync(),
+          {provide: ErrorHandler, useClass: CustomErrorHandler},
+        ],
+      });
+
+      expect(() => TestBed.createComponent(App)).not.toThrow();
     });
   });
 })();

@@ -83,7 +83,12 @@ export function countVariables(job: CompilationJob): void {
     // an embedded view).
     for (const unit of job.units) {
       for (const op of unit.create) {
-        if (op.kind !== ir.OpKind.Template && op.kind !== ir.OpKind.RepeaterCreate) {
+        if (
+          op.kind !== ir.OpKind.Template &&
+          op.kind !== ir.OpKind.RepeaterCreate &&
+          op.kind !== ir.OpKind.ConditionalCreate &&
+          op.kind !== ir.OpKind.ConditionalBranchCreate
+        ) {
           continue;
         }
 
@@ -105,7 +110,7 @@ function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): n
   let slots: number;
   switch (op.kind) {
     case ir.OpKind.Property:
-    case ir.OpKind.HostProperty:
+    case ir.OpKind.DomProperty:
     case ir.OpKind.Attribute:
       // All of these bindings use 1 variable slot, plus 1 slot for every interpolated expression,
       // if any.

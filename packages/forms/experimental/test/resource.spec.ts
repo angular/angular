@@ -17,8 +17,8 @@ describe('resources', () => {
     const s: Schema<Cat> = function (p) {
       const res = define(p.name, ({value}) => {
         return resource({
-          request: () => ({x: value()}),
-          loader: async ({request}) => `got: ${request.x}`,
+          params: () => ({x: value()}),
+          loader: async ({params}) => `got: ${params.x}`,
         });
       });
 
@@ -51,8 +51,8 @@ describe('resources', () => {
       applyEach(p, (p) => {
         const res = define(p.name, ({value}) => {
           return resource({
-            request: () => ({x: value()}),
-            loader: async ({request}) => `got: ${request.x}`,
+            params: () => ({x: value()}),
+            loader: async ({params}) => `got: ${params.x}`,
           });
         });
 
@@ -86,12 +86,12 @@ describe('resources', () => {
 
     const s: Schema<Cat[]> = function (p) {
       validateAsync(p, {
-        request: ({value}) => value(),
-        factory: (request) =>
+        params: ({value}) => value(),
+        factory: (params) =>
           resource({
-            request,
-            loader: async ({request}) => {
-              return request as Cat[];
+            params,
+            loader: async ({params}) => {
+              return params as Cat[];
             },
           }),
         error: (cats, {resolve}) => {
@@ -121,12 +121,12 @@ describe('resources', () => {
 
     const s: Schema<Cat[]> = function (p) {
       validateAsync(p, {
-        request: ({value}) => value(),
-        factory: (request) =>
+        params: ({value}) => value(),
+        factory: (params) =>
           resource({
-            request,
-            loader: async ({request}) => {
-              return request as Cat[];
+            params,
+            loader: async ({params}) => {
+              return params as Cat[];
             },
           }),
         error: (cats, {resolve}) => {

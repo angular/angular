@@ -638,6 +638,7 @@ runInEachFileSystem(() => {
       }
       expect((result.enumRef.node as ts.EnumDeclaration).name.text).toBe('Foo');
       expect(result.name).toBe('B');
+      expect(result.resolved).toBe(1);
     });
 
     it('variable declaration resolution works', () => {

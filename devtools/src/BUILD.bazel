@@ -1,8 +1,9 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("//tools:defaults.bzl", "esbuild", "http_server")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
+load("//tools:defaults.bzl", "esbuild", "http_server")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,31 +12,45 @@ sass_binary(
     src = "styles.scss",
     include_paths = ["external/npm/node_modules"],
     sourcemap = False,
-    deps = ["//devtools:global_styles"],
+    deps = ["//devtools/projects/ng-devtools/src/styles:global"],
 )
 
-sass_binary(
-    name = "firefox_styles",
-    src = "styles/firefox_styles.scss",
+copy_to_directory(
+    name = "browser_specific_styles",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/styles:chrome",
+        "//devtools/projects/ng-devtools/src/styles:firefox",
+    ],
+    out = "styles",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/styles": "",
+    },
 )
 
-sass_binary(
-    name = "chrome_styles",
-    src = "styles/chrome_styles.scss",
+copy_to_directory(
+    name = "assets",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/assets",
+    ],
+    out = "assets",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/assets": "",
+    },
 )
 
-ng_module(
+ng_project(
     name = "demo",
     srcs = ["main.ts"],
-    deps = [
-        "//devtools/src/app",
+    interop_deps = [
         "//packages/common",
         "//packages/common/http",
         "//packages/core",
         "//packages/core/src/util",
         "//packages/platform-browser",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//devtools/src/app:app_rjs",
     ],
 )
 
@@ -59,10 +74,11 @@ exports_files(["index.html"])
 filegroup(
     name = "dev_app_static_files",
     srcs = [
-        ":chrome_styles",
+        ":assets",
+        ":browser_specific_styles",
         ":demo_styles",
-        ":firefox_styles",
         ":index.html",
+        "//devtools/src/assets",
         "//packages/zone.js/bundles:zone.umd.js",
     ],
 )
@@ -85,37 +101,37 @@ http_server(
     ],
 )
 
-ng_module(
+ng_project(
     name = "demo_application_environment",
     srcs = ["demo-application-environment.ts"],
     deps = [
-        "//devtools/projects/ng-devtools",
-        "//devtools/src/environments",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
+        "//devtools/src/environments:environments_rjs",
     ],
 )
 
-ng_module(
+ng_project(
     name = "demo_application_operations",
     srcs = ["demo-application-operations.ts"],
     deps = [
-        "//devtools/projects/ng-devtools",
-        "//devtools/projects/protocol",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ng_module(
+ng_project(
     name = "iframe_message_bus",
     srcs = ["iframe-message-bus.ts"],
     deps = [
-        "//devtools/projects/protocol",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ng_module(
+ng_project(
     name = "zone-unaware-iframe_message_bus",
     srcs = ["zone-unaware-iframe-message-bus.ts"],
     deps = [
-        ":iframe_message_bus",
-        "//devtools/projects/protocol",
+        ":iframe_message_bus_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )

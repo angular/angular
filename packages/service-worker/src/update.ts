@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {NEVER, Observable} from 'rxjs';
 
+import {RuntimeErrorCode} from './errors';
 import {
   ERR_SW_NOT_SUPPORTED,
   NgswCommChannel,
@@ -20,7 +21,7 @@ import {
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @see {@link ecosystem/service-workers/communications Service worker communication guide}
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
  *
  * @publicApi
  */
@@ -110,7 +111,12 @@ export class SwUpdate {
    */
   activateUpdate(): Promise<boolean> {
     if (!this.sw.isEnabled) {
-      return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+      return Promise.reject(
+        new RuntimeError(
+          RuntimeErrorCode.SERVICE_WORKER_DISABLED_OR_NOT_SUPPORTED_BY_THIS_BROWSER,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && ERR_SW_NOT_SUPPORTED,
+        ),
+      );
     }
     const nonce = this.sw.generateNonce();
     return this.sw.postMessageWithOperation('ACTIVATE_UPDATE', {nonce}, nonce);

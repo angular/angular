@@ -14,9 +14,8 @@ import {
   NgZone,
   RendererFactory2,
   ɵperformanceMarkFeature as performanceMarkFeature,
-  InjectionToken,
 } from '@angular/core';
-import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../../index';
 
 import {AsyncAnimationRendererFactory} from './async_animation_renderer';
 
@@ -51,6 +50,12 @@ export function provideAnimationsAsync(
   type: 'animations' | 'noop' = 'animations',
 ): EnvironmentProviders {
   performanceMarkFeature('NgAsyncAnimations');
+
+  // Animations don't work on the server so we switch them over to no-op automatically.
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    type = 'noop';
+  }
+
   return makeEnvironmentProviders([
     {
       provide: RendererFactory2,

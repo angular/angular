@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// Needed for the global `Zone` ambient types to be available.
+import type {} from 'zone.js';
+
 import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from '../change_detection/scheduling/flags';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
@@ -233,7 +236,7 @@ export class NgZone {
    * Executes the `fn` function synchronously within the Angular zone as a task and returns value
    * returned by the function.
    *
-   * Running functions via `run` allows you to reenter Angular zone from a task that was executed
+   * Running functions via `runTask` allows you to reenter Angular zone from a task that was executed
    * outside of the Angular zone (typically started via {@link #runOutsideAngular}).
    *
    * Any future tasks or microtasks scheduled from within this function will continue executing from

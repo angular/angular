@@ -1,6 +1,7 @@
 import {Routes} from '@angular/router';
 import {HelloWorldComponent} from './helloworld/hello-world.component';
 import {TransferStateComponent} from './transferstate/transfer-state.component';
+import {DeferComponent} from './defer/defer.component';
 
 export const routes: Routes = [
   {
@@ -33,5 +34,9 @@ export const routes: Routes = [
         throw new Error('Error in resolver.');
       },
     },
+  },
+  {
+    path: 'defer',
+    component: DeferComponent,
   },
 ];

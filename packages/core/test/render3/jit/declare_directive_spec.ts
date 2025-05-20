@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementRef, forwardRef, ɵɵngDeclareDirective} from '@angular/core';
+import {ElementRef, forwardRef, ɵɵngDeclareDirective} from '../../../src/core';
 
 import {
   AttributeMarker,
@@ -16,6 +16,7 @@ import {
 } from '../../../src/render3';
 
 import {functionContaining} from './matcher';
+import {InputFlags} from '../../../src/render3/interfaces/input_flags';
 
 describe('directive declaration jit compilation', () => {
   it('should compile a minimal directive declaration', () => {
@@ -54,8 +55,8 @@ describe('directive declaration jit compilation', () => {
 
     expectDirectiveDef(def, {
       inputs: {
-        'property': 'minifiedProperty',
-        'bindingName': 'minifiedClassProperty',
+        'property': ['minifiedProperty', InputFlags.None, null],
+        'bindingName': ['minifiedClassProperty', InputFlags.None, null],
       },
       declaredInputs: {
         'property': 'property',
@@ -243,7 +244,7 @@ describe('directive declaration jit compilation', () => {
       ],
       hostBindings: functionContaining([
         'return ctx.handleEvent($event)',
-        /hostProperty[^(]*\('foo',ctx\.foo\.prop\)/,
+        /domProperty[^(]*\('foo',ctx\.foo\.prop\)/,
         /attribute[^(]*\('bar',ctx\.bar\.prop\)/,
       ]),
       hostVars: 2,

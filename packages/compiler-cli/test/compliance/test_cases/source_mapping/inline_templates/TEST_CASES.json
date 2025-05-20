@@ -7,7 +7,8 @@
         "simple_element.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -29,7 +30,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -41,7 +43,8 @@
         "void_element.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -63,7 +66,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -75,7 +79,8 @@
         "interpolation_basic.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -97,7 +102,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -109,7 +115,8 @@
         "interpolation_complex.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -131,7 +138,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -143,7 +151,8 @@
         "interpolation_properties.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -165,7 +174,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -177,7 +187,8 @@
         "interpolation_with_pipe.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -199,7 +210,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -211,7 +223,8 @@
         "input_binding_simple.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -233,7 +246,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -245,7 +259,8 @@
         "input_binding_complex.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -267,7 +282,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -279,7 +295,8 @@
         "input_binding_longhand.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -301,7 +318,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -313,7 +331,8 @@
         "output_binding_simple.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -335,7 +354,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -347,7 +367,8 @@
         "output_binding_complex.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -369,7 +390,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -381,7 +403,8 @@
         "output_binding_longhand.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -403,7 +426,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -415,7 +439,8 @@
         "two_way_binding_simple.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -437,7 +462,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -449,7 +475,8 @@
         "two_way_binding_longhand.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -471,7 +498,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -483,7 +511,8 @@
         "input_binding_class.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -505,7 +534,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -517,7 +547,8 @@
         "ng_if_simple.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -539,7 +570,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -551,7 +583,8 @@
         "ng_if_templated.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -573,7 +606,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -585,7 +619,8 @@
         "ng_for_simple.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -608,7 +643,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -620,7 +656,8 @@
         "ng_for_templated.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -642,7 +679,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -654,7 +692,8 @@
         "projection.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -676,7 +715,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -688,7 +728,8 @@
         "i18n_message_simple.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -710,7 +751,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -722,7 +764,8 @@
         "i18n_message_placeholder.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -744,7 +787,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -756,7 +800,8 @@
         "i18n_message_placeholder_entities.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -778,7 +823,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -794,13 +840,14 @@
           "files": [
             {
               "generated": "i18n_message_interpolation_whitespace.js",
-              "expected": "i18n_message_interpolation_whitespace_template.pipeline.js"
+              "expected": "i18n_message_interpolation_whitespace_template.js"
             }
           ]
         }
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -817,13 +864,14 @@
           "files": [
             {
               "generated": "i18n_message_interpolation_whitespace.js",
-              "expected": "i18n_message_interpolation_whitespace_partial_template.pipeline.js"
+              "expected": "i18n_message_interpolation_whitespace_partial_template.js"
             }
           ]
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -835,7 +883,8 @@
         "i18n_message_element_whitespace.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -857,7 +906,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -869,7 +919,8 @@
         "i18n_message_container_tag.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -891,7 +942,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -903,7 +955,8 @@
         "update_mode.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -925,7 +978,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -937,7 +991,8 @@
         "escape_sequences.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true
@@ -959,7 +1014,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true

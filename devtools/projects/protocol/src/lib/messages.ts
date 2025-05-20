@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken, InjectOptions, Injector, Type, ViewEncapsulation} from '@angular/core';
+import {
+  ɵFramework as Framework,
+  ɵAcxViewEncapsulation as AcxViewEncapsulation,
+  InjectionToken,
+  InjectOptions,
+  Injector,
+  Type,
+  ViewEncapsulation as AngularViewEncapsulation,
+} from '@angular/core';
 
 export interface DirectiveType {
   name: string;
@@ -20,14 +28,37 @@ export interface ComponentType {
 }
 
 export type HydrationStatus =
+  // null represent the absence of hydration status (a node created via CSR)
   | null
-  | {status: 'hydrated' | 'skipped'}
+  | {status: 'hydrated' | 'skipped' | 'dehydrated'}
   | {
       status: 'mismatched';
       expectedNodeDetails: string | null;
       actualNodeDetails: string | null;
     };
 
+export type CurrentDeferBlock = 'placeholder' | 'loading' | 'error';
+
+export interface DeferInfo {
+  id: string;
+  state: 'placeholder' | 'loading' | 'complete' | 'error' | 'initial';
+  currentBlock: CurrentDeferBlock | null;
+  triggers: {
+    defer: string[];
+    hydrate: string[];
+    prefetch: string[];
+  };
+  blocks: BlockDetails;
+}
+
+export interface BlockDetails {
+  hasErrorBlock: boolean;
+  placeholderBlock: null | {minimumTime: number | null};
+  loadingBlock: null | {minimumTime: number | null; afterTime: number | null};
+}
+
+// TODO: refactor to remove nativeElement as it is not serializable
+// and only really exists on the ng-devtools-backend
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
   element: string;
   directives: DirType[];
@@ -36,12 +67,14 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
+  defer: DeferInfo | null;
+  onPush?: boolean;
 }
 
 export interface SerializedInjector {
   id: string;
   name: string;
-  type: string;
+  type: 'imported-module' | 'environment' | 'element' | 'null' | 'hidden';
   node?: DevToolsNode;
   providers?: number;
 }
@@ -98,13 +131,42 @@ export interface DirectivesProperties {
   [name: string]: Properties;
 }
 
-export interface DirectiveMetadata {
+/** Directive metadata shared by all frameworks. */
+export interface BaseDirectiveMetadata {
+  framework: Framework;
+  name?: string;
+}
+
+/** Directive metadata specific to Angular. */
+export interface AngularDirectiveMetadata extends BaseDirectiveMetadata {
+  framework: Framework.Angular;
   inputs: {[name: string]: string};
   outputs: {[name: string]: string};
-  encapsulation: ViewEncapsulation;
-  onPush: boolean;
+  encapsulation?: AngularViewEncapsulation;
+  onPush?: boolean;
   dependencies?: SerializedInjectedService[];
 }
+
+/** Directive metadata specific to ACX. */
+export interface AcxDirectiveMetadata extends BaseDirectiveMetadata {
+  framework: Framework.ACX;
+  inputs: {[name: string]: string};
+  outputs: {[name: string]: string};
+  encapsulation?: AcxViewEncapsulation;
+  onPush?: boolean;
+}
+
+/** Directive metadata specific to Wiz. */
+export interface WizComponentMetadata extends BaseDirectiveMetadata {
+  framework: Framework.Wiz;
+  props: {[name: string]: string};
+}
+
+/** Directive metadata for all supported frameworks. */
+export type DirectiveMetadata =
+  | AngularDirectiveMetadata
+  | AcxDirectiveMetadata
+  | WizComponentMetadata;
 
 export interface SerializedInjectedService {
   token: string;
@@ -188,6 +250,7 @@ export interface DirectiveProfile {
 export interface ElementProfile {
   directives: DirectiveProfile[];
   children: ElementProfile[];
+  type: 'defer' | 'element';
 }
 
 export interface ProfilerFrame {
@@ -240,6 +303,12 @@ export interface InjectorGraphViewQuery {
   paramIndex: number;
 }
 
+export interface SupportedApis {
+  profiler: boolean;
+  dependencyInjection: boolean;
+  routes: boolean;
+}
+
 export interface Events {
   handshake: () => void;
   shutdown: () => void;
@@ -249,6 +318,7 @@ export interface Events {
     devMode: boolean;
     ivy: boolean;
     hydration: boolean;
+    supportedApis: SupportedApis;
   }) => void;
 
   inspectorStart: () => void;

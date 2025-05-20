@@ -423,7 +423,7 @@ export interface ComponentDecorator {
    *
    * ### Setting component outputs
    *
-   * The following example shows two event emitters that emit on an interval. One
+   * The following example shows two output function that emit on an interval. One
    * emits an output every second, while the other emits every five seconds.
    *
    * {@example core/ts/metadata/directives.ts region='component-output-interval'}
@@ -583,7 +583,7 @@ export interface Component extends Directive {
   template?: string;
 
   /**
-   * One relative paths or an absolute URL for files containing CSS stylesheet to use
+   * One relative path or an absolute URL for file containing a CSS stylesheet to use
    * in this component.
    */
   styleUrl?: string;

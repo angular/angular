@@ -6,12 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {R3CompiledExpression, R3HmrMetadata, outputAst as o} from '@angular/compiler';
+import {
+  R3CompiledExpression,
+  R3ComponentDeferMetadata,
+  R3HmrMetadata,
+  outputAst as o,
+} from '@angular/compiler';
 import {DeclarationNode, ReflectionHost} from '../../reflection';
 import {getProjectRelativePath} from '../../util/src/path';
 import {CompileResult} from '../../transform';
 import {extractHmrDependencies} from './extract_dependencies';
 import ts from 'typescript';
+import {PartialEvaluator} from '../../partial_evaluator';
 
 /**
  * Extracts the HMR metadata for a class declaration.
@@ -21,16 +27,19 @@ import ts from 'typescript';
  * @param rootDirs Root directories configured by the user.
  * @param definition Analyzed component definition.
  * @param factory Analyzed component factory.
+ * @param deferBlockMetadata Metadata about the defer blocks in the component.
  * @param classMetadata Analyzed `setClassMetadata` expression, if any.
  * @param debugInfo Analyzed `setClassDebugInfo` expression, if any.
  */
 export function extractHmrMetatadata(
   clazz: DeclarationNode,
   reflection: ReflectionHost,
+  evaluator: PartialEvaluator,
   compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
   rootDirs: readonly string[],
   definition: R3CompiledExpression,
   factory: CompileResult,
+  deferBlockMetadata: R3ComponentDeferMetadata,
   classMetadata: o.Statement | null,
   debugInfo: o.Statement | null,
 ): R3HmrMetadata | null {
@@ -38,12 +47,26 @@ export function extractHmrMetatadata(
     return null;
   }
 
-  const sourceFile = clazz.getSourceFile();
+  const sourceFile = ts.getOriginalNode(clazz).getSourceFile();
   const filePath =
     getProjectRelativePath(sourceFile.fileName, rootDirs, compilerHost) ||
     compilerHost.getCanonicalFileName(sourceFile.fileName);
 
-  const dependencies = extractHmrDependencies(clazz, definition, factory, classMetadata, debugInfo);
+  const dependencies = extractHmrDependencies(
+    clazz,
+    definition,
+    factory,
+    deferBlockMetadata,
+    classMetadata,
+    debugInfo,
+    reflection,
+    evaluator,
+  );
+
+  if (dependencies === null) {
+    return null;
+  }
+
   const meta: R3HmrMetadata = {
     type: new o.WrappedNodeExpr(clazz.name),
     className: clazz.name.text,

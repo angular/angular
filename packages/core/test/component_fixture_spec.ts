@@ -15,18 +15,20 @@ import {
   Input,
   NgZone,
   createComponent,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   signal,
-} from '@angular/core';
+} from '../src/core';
 import {
   ComponentFixtureAutoDetect,
   ComponentFixtureNoNgZone,
+  fakeAsync,
   TestBed,
+  tick,
   waitForAsync,
   withModule,
-} from '@angular/core/testing';
-import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+} from '../testing';
+import {dispatchEvent} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 
 @Component({
   selector: 'simple-comp',
@@ -43,14 +45,12 @@ class SimpleComp {
 
 @Component({
   selector: 'deferred-comp',
-  standalone: true,
   template: `<div>Deferred Component</div>`,
 })
 class DeferredComp {}
 
 @Component({
   selector: 'second-deferred-comp',
-  standalone: true,
   template: `<div>More Deferred Component</div>`,
 })
 class SecondDeferredComp {}
@@ -363,7 +363,6 @@ describe('ComponentFixture', () => {
   it('throws errors that happen during detectChanges', () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       ngOnInit() {
@@ -375,10 +374,40 @@ describe('ComponentFixture', () => {
     expect(() => fixture.detectChanges()).toThrow();
   });
 
+  it('should not duplicate errors when used with fake async', fakeAsync(() => {
+    @Component({
+      template: '<button (click)="doThrow()">a</button>',
+    })
+    class Throwing {
+      doThrow() {
+        throw new Error('thrown');
+      }
+    }
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: ErrorHandler,
+          useClass: class {
+            handleError(e: unknown) {
+              throw e;
+            }
+          },
+        },
+      ],
+    });
+    const fix = TestBed.createComponent(Throwing);
+    try {
+      fix.nativeElement.querySelector('button').click();
+      tick();
+      fail('should have thrown');
+    } catch (e) {
+      expect((e as Error).message).toMatch('thrown');
+    }
+  }));
+
   describe('errors during ApplicationRef.tick', () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class ThrowingThing {
       ngOnInit() {
@@ -387,7 +416,6 @@ describe('ComponentFixture', () => {
     }
     @Component({
       template: '',
-      standalone: true,
     })
     class Blank {}
 
@@ -417,7 +445,6 @@ describe('ComponentFixture', () => {
     it('should return all defer blocks in the component', async () => {
       @Component({
         selector: 'defer-comp',
-        standalone: true,
         imports: [DeferredComp, SecondDeferredComp],
         template: `<div>
             @defer (on immediate) {
@@ -472,7 +499,6 @@ describe('ComponentFixture', () => {
     it('throws errors that happen during detectChanges', () => {
       @Component({
         template: '',
-        standalone: true,
       })
       class App {
         ngOnInit() {
@@ -537,14 +563,14 @@ describe('ComponentFixture with zoneless', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         {provide: ErrorHandler, useValue: {handleError: () => {}}},
       ],
     });
   });
 
   it('will not refresh CheckAlways views when detectChanges is called if not marked dirty', () => {
-    @Component({standalone: true, template: '{{signalThing()}}|{{regularThing}}'})
+    @Component({template: '{{signalThing()}}|{{regularThing}}'})
     class CheckAlwaysCmp {
       regularThing = 'initial';
       signalThing = signal('initial');
@@ -566,7 +592,6 @@ describe('ComponentFixture with zoneless', () => {
   it('throws errors that happen during detectChanges', () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       ngOnInit() {
@@ -581,7 +606,6 @@ describe('ComponentFixture with zoneless', () => {
   it('rejects whenStable promise when errors happen during detectChanges', async () => {
     @Component({
       template: '',
-      standalone: true,
     })
     class App {
       ngOnInit() {
@@ -596,7 +620,6 @@ describe('ComponentFixture with zoneless', () => {
   it('can disable checkNoChanges', () => {
     @Component({
       template: '{{thing}}',
-      standalone: true,
     })
     class App {
       thing = 1;
@@ -611,19 +634,15 @@ describe('ComponentFixture with zoneless', () => {
     expect(() => fixture.detectChanges()).toThrowError(/ExpressionChanged/);
   });
 
-  it('runs change detection when autoDetect is false', () => {
+  it('disallows autoDetect: false', () => {
     @Component({
       template: '{{thing()}}',
-      standalone: true,
     })
     class App {
       thing = signal(1);
     }
 
     const fixture = TestBed.createComponent(App);
-    fixture.autoDetectChanges(false);
-    fixture.componentInstance.thing.set(2);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.innerText).toBe('2');
+    expect(() => fixture.autoDetectChanges(false)).toThrow();
   });
 });

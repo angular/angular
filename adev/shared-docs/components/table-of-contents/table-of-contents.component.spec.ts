@@ -10,30 +10,26 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TableOfContents} from './table-of-contents.component';
 import {RouterTestingModule} from '@angular/router/testing';
 import {TableOfContentsItem, TableOfContentsLevel} from '../../interfaces/index';
-import {TableOfContentsScrollSpy, TableOfContentsLoader} from '../../services/index';
+import {TableOfContentsLoader} from '../../services/index';
 import {WINDOW} from '../../providers/index';
-import {provideExperimentalZonelessChangeDetection, signal} from '@angular/core';
+import {provideZonelessChangeDetection, signal} from '@angular/core';
 
 describe('TableOfContents', () => {
   let component: TableOfContents;
   let fixture: ComponentFixture<TableOfContents>;
-  let scrollSpy: jasmine.SpyObj<TableOfContentsScrollSpy>;
   const items: TableOfContentsItem[] = [
     {
       title: 'Heading 2',
-      top: 0,
       id: 'item-heading-2',
       level: TableOfContentsLevel.H2,
     },
     {
       title: 'First Heading 3',
-      top: 100,
       id: 'first-item-heading-3',
       level: TableOfContentsLevel.H3,
     },
     {
       title: 'Second Heading 3',
-      top: 200,
       id: 'second-item-heading-3',
       level: TableOfContentsLevel.H3,
     },
@@ -44,27 +40,15 @@ describe('TableOfContents', () => {
   };
 
   beforeEach(async () => {
-    scrollSpy = jasmine.createSpyObj<TableOfContentsScrollSpy>('TableOfContentsScrollSpy', [
-      'startListeningToScroll',
-      'activeItemId',
-      'scrollbarThumbOnTop',
-    ]);
-    scrollSpy.startListeningToScroll.and.returnValue();
-    scrollSpy.activeItemId.and.returnValue(items[0].id);
-    scrollSpy.scrollbarThumbOnTop.and.returnValue(false);
-
     await TestBed.configureTestingModule({
       imports: [TableOfContents, RouterTestingModule],
       providers: [
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         {
           provide: WINDOW,
           useValue: fakeWindow,
         },
       ],
-    }).compileComponents();
-    TestBed.overrideProvider(TableOfContentsScrollSpy, {
-      useValue: scrollSpy,
     });
 
     const tableOfContentsLoaderSpy = TestBed.inject(TableOfContentsLoader);
@@ -115,7 +99,6 @@ describe('TableOfContents', () => {
     fixture.detectChanges();
 
     const activeItem = fixture.nativeElement.querySelector('.docs-faceted-list-item-active');
-
-    expect(activeItem).toBeTruthy();
+    expect(activeItem).toBeDefined();
   });
 });

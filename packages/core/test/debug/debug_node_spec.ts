@@ -26,11 +26,11 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {createMouseEvent, hasClass} from '@angular/platform-browser/testing/src/browser_util';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+} from '../../src/core';
+import {ComponentFixture, TestBed, waitForAsync} from '../../testing';
+import {By} from '@angular/platform-browser';
+import {createMouseEvent, hasClass} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 
 @Injectable()
 class Logger {

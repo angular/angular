@@ -57,7 +57,7 @@ export interface NgModule {
    * The following example defines a class that is injected in
    * the HelloWorld NgModule:
    *
-   * ```
+   * ```ts
    * class Greeter {
    *    greet(name:string) {
    *      return 'Hello ' + name + '!';

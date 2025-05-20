@@ -1,0 +1,32 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "injector_providers_component_styles",
+    src = "injector-providers.component.scss",
+    include_paths = ["external/npm/node_modules"],
+    deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
+)
+
+ng_project(
+    name = "injector-providers",
+    srcs = [
+        "injector-providers.component.ts",
+    ],
+    angular_assets = [
+        "injector-providers.component.html",
+        ":injector_providers_component_styles",
+    ],
+    interop_deps = [
+        "//packages/animations",
+        "//packages/common",
+        "//packages/core",
+    ],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path:resolution-path_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)

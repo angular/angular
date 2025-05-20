@@ -12,7 +12,6 @@ import {
   inject,
   InjectionToken,
   makeStateKey,
-  PLATFORM_ID,
   Provider,
   StateKey,
   TransferState,
@@ -21,7 +20,6 @@ import {
   ɵtruncateMiddle as truncateMiddle,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
-import {isPlatformServer} from '@angular/common';
 import {Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -149,8 +147,8 @@ export function transferCacheInterceptorFn(
   const originMap: Record<string, string> | null = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, {
     optional: true,
   });
-  const isServer = isPlatformServer(inject(PLATFORM_ID));
-  if (originMap && !isServer) {
+
+  if (typeof ngServerMode !== 'undefined' && !ngServerMode && originMap) {
     throw new RuntimeError(
       RuntimeErrorCode.HTTP_ORIGIN_MAP_USED_IN_CLIENT,
       ngDevMode &&
@@ -160,7 +158,10 @@ export function transferCacheInterceptorFn(
     );
   }
 
-  const requestUrl = isServer && originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
+  const requestUrl =
+    typeof ngServerMode !== 'undefined' && ngServerMode && originMap
+      ? mapRequestOriginUrl(req.url, originMap)
+      : req.url;
 
   const storeKey = makeCacheKey(req, requestUrl);
   const response = transferState.get(storeKey, null);
@@ -217,7 +218,7 @@ export function transferCacheInterceptorFn(
   // Request not found in cache. Make the request and cache it if on the server.
   return next(req).pipe(
     tap((event: HttpEvent<unknown>) => {
-      if (event instanceof HttpResponse && isServer) {
+      if (event instanceof HttpResponse && typeof ngServerMode !== 'undefined' && ngServerMode) {
         transferState.set<TransferHttpResponse>(storeKey, {
           [BODY]: event.body,
           [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
@@ -327,7 +328,6 @@ export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): P
       provide: HTTP_ROOT_INTERCEPTOR_FNS,
       useValue: transferCacheInterceptorFn,
       multi: true,
-      deps: [TransferState, CACHE_OPTIONS],
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,

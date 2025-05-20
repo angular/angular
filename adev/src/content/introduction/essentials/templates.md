@@ -46,7 +46,7 @@ Angular supports binding dynamic values into DOM properties with square brackets
 ```angular-ts
 @Component({
   /*...*/
-  // Set the `disabled` property of the button based on the value of `isAccountDisabled`.
+  // Set the `disabled` property of the button based on the value of `isValidUserId`.
   template: `<button [disabled]="isValidUserId()">Save changes</button>`,
 })
 export class UserProfile {
@@ -136,7 +136,7 @@ You can repeat part of a template multiple times with Angular's `@for` block:
 
 Angular's uses the `track` keyword, shown in the example above, to associate data with the DOM elements created by `@for`. See [_Why is track in @for blocks important?_](guide/templates/control-flow#why-is-track-in-for-blocks-important) for more info.
 
-Tip: Want to know more about Angular templates? See the [In-depth Templates guide](guide/templates) for the full details.
+TIP: Want to know more about Angular templates? See the [In-depth Templates guide](guide/templates) for the full details.
 
 ## Next Step
 

@@ -25,6 +25,9 @@
               // see https://github.com/xtermjs/xterm.js/pull/4940
               "self": "this"
             },
+            // Ensures we don't escape sandbox to the workspace root with the full node modules that
+            // might contain e.g. `@angular/core` from npm.
+            "preserveSymlinks": true,
             "outputMode": "static",
             "outputPath": "dist/angular-dev",
             "index": "src/index.html",
@@ -33,7 +36,13 @@
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/robots.txt", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              "src/robots.txt",
+              "src/assets",
+              "src/llms.txt",
+              "src/llms-full.txt"
+            ],
             "styles": ["@angular/docs/styles/global-styles.scss", "./src/local-styles.scss"],
             "scripts": [],
             "webWorkerTsConfig": "tsconfig.worker.json",

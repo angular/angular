@@ -7,10 +7,10 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {expect} from '@angular/private/testing/matchers';
+import {BehaviorSubject} from 'rxjs';
 import {
   ApplicationRef,
-  NgZone,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -22,33 +22,27 @@ import {
   EventEmitter,
   inject,
   Input,
-  NgModule,
   OnInit,
   Output,
+  provideCheckNoChangesConfig,
+  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   QueryList,
+  ɵRuntimeError as RuntimeError,
+  ɵRuntimeErrorCode as RuntimeErrorCode,
   TemplateRef,
   Type,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-  provideExperimentalCheckNoChangesForDebug,
-  provideExperimentalZonelessChangeDetection,
-  ɵRuntimeError as RuntimeError,
-  ɵRuntimeErrorCode as RuntimeErrorCode,
-  afterRender,
-  PLATFORM_ID,
-  provideZoneChangeDetection,
-} from '@angular/core';
-import {} from '@angular/core/src/errors';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {BehaviorSubject} from 'rxjs';
+} from '../../src/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '../../testing';
 
 describe('change detection', () => {
   it('can provide zone and zoneless (last one wins like any other provider) in TestBed', () => {
     expect(() => {
       TestBed.configureTestingModule({
-        providers: [provideExperimentalZonelessChangeDetection(), provideZoneChangeDetection()],
+        providers: [provideZonelessChangeDetection(), provideZoneChangeDetection()],
       });
       TestBed.inject(ApplicationRef);
     }).not.toThrow();
@@ -115,7 +109,6 @@ describe('change detection', () => {
       @Component({
         selector: 'onpush',
         template: '',
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class OnPushComponent {
@@ -126,7 +119,7 @@ describe('change detection', () => {
         }
       }
 
-      @Component({template: '<ng-template #template></ng-template>', standalone: true})
+      @Component({template: '<ng-template #template></ng-template>'})
       class Container {
         @ViewChild('template', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
       }
@@ -235,7 +228,6 @@ describe('change detection', () => {
         selector: `test-cmpt`,
         template: `{{counter}}|<ng-template #vc></ng-template>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
-        standalone: true,
       })
       class TestCmpt {
         counter = 0;
@@ -249,7 +241,6 @@ describe('change detection', () => {
       @Component({
         selector: 'dynamic-cmpt',
         template: `dynamic|{{binding}}`,
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class DynamicCmpt {
@@ -1410,7 +1401,6 @@ describe('change detection', () => {
 
         @Component({
           changeDetection: ChangeDetectionStrategy.OnPush,
-          standalone: true,
           template: '{{state}}{{resolveReadPromise()}}',
         })
         class MyApp {
@@ -1428,117 +1418,12 @@ describe('change detection', () => {
           }
         }
 
-        it('throws error if used after zoneless provider', async () => {
-          TestBed.configureTestingModule({
-            providers: [
-              {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
-              provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
-              provideExperimentalZonelessChangeDetection(),
-            ],
-          });
-
-          expect(() => {
-            TestBed.createComponent(MyApp);
-          }).toThrowError(/must be after any other provider for `NgZone`/);
-        });
-
-        it('throws error if used after zone provider', async () => {
-          TestBed.configureTestingModule({
-            providers: [
-              {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
-              provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
-              provideZoneChangeDetection(),
-            ],
-          });
-
-          expect(() => {
-            TestBed.createComponent(MyApp);
-          }).toThrowError(/must be after any other provider for `NgZone`/);
-        });
-
-        it('throws expression changed with useNgZoneOnStable', async () => {
-          let error: RuntimeError | undefined = undefined;
-          TestBed.configureTestingModule({
-            providers: [
-              {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
-              provideExperimentalZonelessChangeDetection(),
-              provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
-              {
-                provide: ErrorHandler,
-                useValue: {
-                  handleError(e: unknown) {
-                    error = e as RuntimeError;
-                  },
-                },
-              },
-            ],
-          });
-
-          let renderHookCalls = 0;
-          TestBed.runInInjectionContext(() => {
-            afterRender(() => {
-              renderHookCalls++;
-            });
-          });
-
-          const fixture = TestBed.createComponent(MyApp);
-          await fixture.whenStable();
-          expect(renderHookCalls).toBe(1);
-
-          fixture.componentInstance.createReadPromise();
-          TestBed.inject(NgZone).run(() => {
-            fixture.componentInstance.state = 'new';
-          });
-          await fixture.componentInstance.promise;
-          // should not have run appplicationRef.tick again
-          expect(renderHookCalls).toBe(1);
-          expect(error).toBeDefined();
-          expect(error!.code).toEqual(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED);
-        });
-
-        it('does not throw expression changed with useNgZoneOnStable if there is a change detection scheduled', async () => {
-          let error: RuntimeError | undefined = undefined;
-          TestBed.configureTestingModule({
-            providers: [
-              provideExperimentalZonelessChangeDetection(),
-              provideExperimentalCheckNoChangesForDebug({useNgZoneOnStable: true}),
-              {
-                provide: ErrorHandler,
-                useValue: {
-                  handleError(e: unknown) {
-                    error = e as RuntimeError;
-                  },
-                },
-              },
-            ],
-          });
-
-          const fixture = TestBed.createComponent(MyApp);
-          await fixture.whenStable();
-
-          fixture.componentInstance.createReadPromise();
-          TestBed.inject(NgZone).run(() => {
-            setTimeout(() => {
-              fixture.componentInstance.state = 'new';
-              fixture.componentInstance.changeDetectorRef.markForCheck();
-            }, 20);
-          });
-          await fixture.componentInstance.promise;
-          // checkNoChanges runs from zone.run call
-          expect(error).toBeUndefined();
-
-          // checkNoChanges runs from the timeout
-          fixture.componentInstance.createReadPromise();
-          await fixture.componentInstance.promise;
-          expect(error).toBeUndefined();
-        });
-
         it('throws expression changed with interval', async () => {
           let error: RuntimeError | undefined = undefined;
           TestBed.configureTestingModule({
             providers: [
-              provideExperimentalZonelessChangeDetection(),
-              provideExperimentalCheckNoChangesForDebug({interval: 5}),
+              provideZonelessChangeDetection(),
+              provideCheckNoChangesConfig({interval: 5, exhaustive: true}),
               {
                 provide: ErrorHandler,
                 useValue: {
@@ -1563,8 +1448,8 @@ describe('change detection', () => {
           let error: RuntimeError | undefined = undefined;
           TestBed.configureTestingModule({
             providers: [
-              provideExperimentalZonelessChangeDetection(),
-              provideExperimentalCheckNoChangesForDebug({interval: 0}),
+              provideZonelessChangeDetection(),
+              provideCheckNoChangesConfig({interval: 0, exhaustive: true}),
               {
                 provide: ErrorHandler,
                 useValue: {
@@ -1588,30 +1473,24 @@ describe('change detection', () => {
           expect(error).toBeUndefined();
         });
 
-        it('does not throw expression changed with interval if OnPush component an no exhaustive', async () => {
-          let error: RuntimeError | undefined = undefined;
+        it('throws expression changed OnPush components', () => {
           TestBed.configureTestingModule({
-            providers: [
-              provideExperimentalZonelessChangeDetection(),
-              provideExperimentalCheckNoChangesForDebug({interval: 0, exhaustive: false}),
-              {
-                provide: ErrorHandler,
-                useValue: {
-                  handleError(e: unknown) {
-                    error = e as RuntimeError;
-                  },
-                },
-              },
-            ],
+            providers: [provideCheckNoChangesConfig({exhaustive: true})],
           });
 
-          const fixture = TestBed.createComponent(MyApp);
-          fixture.detectChanges();
-
-          fixture.componentInstance.state = 'new';
-          // wait beyond the exhaustive check interval
-          await new Promise<void>((resolve) => setTimeout(resolve, 1));
-          expect(error).toBeUndefined();
+          @Component({
+            template: '{{state}}',
+            changeDetection: ChangeDetectionStrategy.OnPush,
+          })
+          class NotUnidirectionalDataFlow {
+            state = 1;
+            ngAfterViewChecked() {
+              this.state++;
+            }
+          }
+          expect(() =>
+            TestBed.createComponent(NotUnidirectionalDataFlow).detectChanges(),
+          ).toThrowError(/.*ExpressionChanged.*/);
         });
       });
     });

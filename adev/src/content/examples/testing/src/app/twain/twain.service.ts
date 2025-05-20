@@ -1,5 +1,5 @@
 // Mark Twain Quote service gets quotes from server
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 
 import {Observable, of, throwError, Observer} from 'rxjs';
@@ -9,7 +9,7 @@ import {Quote} from './quote';
 
 @Injectable()
 export class TwainService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   private nextId = 1;
 

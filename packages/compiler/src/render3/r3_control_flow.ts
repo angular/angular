@@ -20,13 +20,16 @@ const FOR_LOOP_EXPRESSION_PATTERN = /^\s*([0-9A-Za-z_$]*)\s+of\s+([\S\s]*)/;
 const FOR_LOOP_TRACK_PATTERN = /^track\s+([\S\s]*)/;
 
 /** Pattern for the `as` expression in a conditional block. */
-const CONDITIONAL_ALIAS_PATTERN = /^(as\s)+(.*)/;
+const CONDITIONAL_ALIAS_PATTERN = /^(as\s+)(.*)/;
 
 /** Pattern used to identify an `else if` block. */
 const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
 
 /** Pattern used to identify a `let` parameter. */
 const FOR_LOOP_LET_PATTERN = /^let\s+([\S\s]*)/;
+
+/** Pattern used to validate a JavaScript identifier. */
+const IDENTIFIER_PATTERN = /^[$A-Z_][0-9A-Z_$]*$/i;
 
 /**
  * Pattern to group a string into leading whitespace, non whitespace, and trailing whitespace.
@@ -386,7 +389,7 @@ function parseForLoopParameters(
     }
 
     errors.push(
-      new ParseError(param.sourceSpan, `Unrecognized @for loop paramater "${param.expression}"`),
+      new ParseError(param.sourceSpan, `Unrecognized @for loop parameter "${param.expression}"`),
     );
   }
 
@@ -614,7 +617,7 @@ function parseConditionalBlockParameters(
       errors.push(
         new ParseError(
           param.sourceSpan,
-          `Unrecognized conditional paramater "${param.expression}"`,
+          `Unrecognized conditional parameter "${param.expression}"`,
         ),
       );
     } else if (block.name !== 'if') {
@@ -630,9 +633,16 @@ function parseConditionalBlockParameters(
       );
     } else {
       const name = aliasMatch[2].trim();
-      const variableStart = param.sourceSpan.start.moveBy(aliasMatch[1].length);
-      const variableSpan = new ParseSourceSpan(variableStart, variableStart.moveBy(name.length));
-      expressionAlias = new t.Variable(name, name, variableSpan, variableSpan);
+
+      if (IDENTIFIER_PATTERN.test(name)) {
+        const variableStart = param.sourceSpan.start.moveBy(aliasMatch[1].length);
+        const variableSpan = new ParseSourceSpan(variableStart, variableStart.moveBy(name.length));
+        expressionAlias = new t.Variable(name, name, variableSpan, variableSpan);
+      } else {
+        errors.push(
+          new ParseError(param.sourceSpan, '"as" expression must be a valid JavaScript identifier'),
+        );
+      }
     }
   }
 

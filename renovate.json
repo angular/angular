@@ -1,32 +1,27 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "baseBranches": ["main"],
-  "enabledManagers": ["npm", "bazel", "github-actions"],
-  "rangeStrategy": "replace",
-  "pinDigests": true,
-  "semanticCommits": "enabled",
-  "semanticCommitScope": "",
-  "semanticCommitType": "build",
-  "dependencyDashboard": true,
-  "commitBody": "See associated pull request for more information.",
-  "separateMajorMinor": false,
-  "prHourlyLimit": 3,
-  "timezone": "America/Tijuana",
-  "lockFileMaintenance": {
-    "enabled": true
-  },
-  "labels": ["target: patch", "area: build & ci", "action: merge"],
+  "extends": ["github>angular/dev-infra//renovate-presets/default.json5"],
+  "baseBranches": ["main", "20.0.x"],
   "postUpgradeTasks": {
     "commands": [
-      "git restore .yarn/releases/yarn-1.22.22.cjs",
+      "git clean -f && git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
       "yarn install --frozen-lockfile --non-interactive",
-      "yarn ng-dev misc update-generated-files"
+      "yarn bazel sync --only=repo || true",
+      "yarn bazel run //.github/actions/deploy-docs-site:main.update",
+      "yarn bazel run //packages/common:base_currencies_file.update",
+      "yarn bazel run //packages/common/locales:closure_locale_file.update",
+      "yarn bazel run //packages/core:base_locale_file.update"
     ],
-    "fileFilters": [".github/actions/deploy-docs-site/**/*", "packages/**/*"],
+    "fileFilters": [
+      ".aspect/rules/external_repository_action_cache/**/*",
+      ".github/actions/deploy-docs-site/**/*",
+      "packages/**/*",
+      "pnpm-lock.yaml"
+    ],
     "executionMode": "branch"
   },
   "ignoreDeps": [
-    "@types/node",
+    "@angular/build-tooling",
     "@types/selenium-webdriver",
     "angular-1.5",
     "angular-1.6",
@@ -36,92 +31,16 @@
     "angular-mocks-1.6",
     "angular-mocks-1.7",
     "angular-mocks-1.8",
-    "remark",
-    "remark-html",
-    "selenium-webdriver",
-    "watchr",
-    "rxjs",
-    "glob",
-    "chalk",
     "convert-source-map",
-    "@rollup/plugin-node-resolve",
-    "hast-util-is-element",
-    "hast-util-has-property",
-    "hast-util-to-string",
-    "rehype-slug",
-    "rollup",
-    "systemjs",
-    "unist-util-filter",
-    "unist-util-source",
-    "unist-util-visit",
-    "unist-util-visit-parents",
-    "rules_pkg",
-    "aspect_bazel_lib",
-    "@bazel/runfiles",
-    "build_bazel_rules_nodejs"
+    "selenium-webdriver",
+    "systemjs"
   ],
   "packageRules": [
     {
-      "matchPackageNames": ["*"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "all non-major dependencies",
-      "schedule": ["after 10:00pm on monday", "before 04:00am on tuesday"]
-    },
-    {
-      "groupName": "bazel setup",
-      "schedule": ["at any time"],
-      "matchDepNames": ["/^@bazel/.*/", "/^build_bazel.*/"]
-    },
-    {
-      "followTag": "next",
-      "groupName": "cross-repo Angular dependencies",
-      "schedule": ["at any time"],
-      "matchPackageNames": [
-        "@angular/{/,}**",
-        "angular/{/,}**",
-        "@angular-devkit{/,}**",
-        "@schematics/{/,}**"
-      ]
-    },
-    {
-      "matchFileNames": ["packages/**", "adev/src/content/tutorials/**"],
-      "followTag": null,
-      "matchPackageNames": [
-        "@angular/{/,}**",
-        "angular/{/,}**",
-        "@angular-devkit{/,}**",
-        "@schematics/{/,}**"
-      ]
-    },
-    {
-      "groupName": "babel dependencies",
-      "matchPackageNames": ["@babel/{/,}**", "@types/babel__{/,}**"]
-    },
-    {
-      "groupName": "eslint dependencies",
-      "matchPackageNames": [
-        "@angular-eslint/{/,}**",
-        "@typescript-eslint/{/,}**"
-      ]
-    },
-    {
-      "matchPackageNames": ["typescript", "tslib"],
-      "groupName": "typescript dependencies"
-    },
-    {
-      "matchFileNames": [".github/workflows/scorecard.yml"],
-      "groupName": "scorecard action dependencies",
-      "groupSlug": "scorecard-action"
-    },
-    {
-      "matchCurrentVersion": "0.0.0-PLACEHOLDER",
-      "enabled": false
-    },
-    {
       "matchFileNames": [
         "integration/**",
-        "packages/zone.js/test/typings/package.json",
-        "packages/core/schematics/migrations/signal-migration/test/**"
+        "packages/core/schematics/migrations/signal-migration/test/**",
+        "packages/zone.js/test/typings/package.json"
       ],
       "enabled": false
     }

@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '@angular/common';
+import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '../../index';
 import {
   EnvironmentInjector,
   Inject,
   inject,
   Injectable,
   InjectionToken,
-  PLATFORM_ID,
   runInInjectionContext,
 } from '@angular/core';
 import {Observable} from 'rxjs';
@@ -66,12 +65,11 @@ export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
 
   constructor(
     @Inject(DOCUMENT) private doc: any,
-    @Inject(PLATFORM_ID) private platform: string,
     @Inject(XSRF_COOKIE_NAME) private cookieName: string,
   ) {}
 
   getToken(): string | null {
-    if (this.platform === 'server') {
+    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
       return null;
     }
     const cookieString = this.doc.cookie || '';

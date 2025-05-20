@@ -14,7 +14,6 @@
 
 export * from './metadata';
 export {assertInInjectionContext, runInInjectionContext} from './contextual';
-export {InjectFlags} from './interface/injector';
 export {
   ɵɵdefineInjectable,
   defineInjectable,
@@ -24,7 +23,7 @@ export {
 } from './interface/defs';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './injectable';
-export {Injector} from './injector';
+export {Injector, DestroyableInjector} from './injector';
 export {EnvironmentInjector} from './r3_injector';
 export {
   importProvidersFrom,

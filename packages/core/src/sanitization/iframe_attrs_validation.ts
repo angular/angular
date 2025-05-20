@@ -11,7 +11,7 @@ import {getTemplateLocationDetails} from '../render3/instructions/element_valida
 import {TNodeType} from '../render3/interfaces/node';
 import {RComment, RElement} from '../render3/interfaces/renderer_dom';
 import {RENDERER} from '../render3/interfaces/view';
-import {nativeRemoveNode} from '../render3/node_manipulation';
+import {nativeRemoveNode} from '../render3/dom_node_manipulation';
 import {getLView, getSelectedTNode} from '../render3/state';
 import {getNativeByTNode} from '../render3/util/view_utils';
 import {trustedHTMLFromString} from '../util/security/trusted_types';

@@ -17,11 +17,12 @@
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
+    "preserveSymlinks": true,
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
     "lib": ["ES2022", "dom"],
-    "types": ["node"],
+    "types": ["node", "dom-navigation"],
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "jsx": "react",
@@ -31,8 +32,8 @@
     "skipLibCheck": true,
     "paths": {
       "@angular/docs": ["./shared-docs"],
-      "@angular/*": ["../packages/*"],
-    },
+      "@angular/*": ["../packages/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -23,6 +23,7 @@ interface HttpRequestInit {
   responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
   withCredentials?: boolean;
   transferCache?: {includeHeaders?: string[]} | boolean;
+  keepalive?: boolean;
 }
 
 /**
@@ -78,6 +79,47 @@ function isUrlSearchParams(value: any): value is URLSearchParams {
 }
 
 /**
+ * `Content-Type` is an HTTP header used to indicate the media type
+ * (also known as MIME type) of the resource being sent to the client
+ * or received from the server.
+ */
+export const CONTENT_TYPE_HEADER = 'Content-Type';
+
+/**
+ * The `Accept` header is an HTTP request header that indicates the media types
+ * (or content types) the client is willing to receive from the server.
+ */
+export const ACCEPT_HEADER = 'Accept';
+
+/**
+ * `X-Request-URL` is a custom HTTP header used in older browser versions,
+ * including Firefox (< 32), Chrome (< 37), Safari (< 8), and Internet Explorer,
+ * to include the full URL of the request in cross-origin requests.
+ */
+export const X_REQUEST_URL_HEADER = 'X-Request-URL';
+
+/**
+ * `text/plain` is a content type used to indicate that the content being
+ * sent is plain text with no special formatting or structured data
+ * like HTML, XML, or JSON.
+ */
+export const TEXT_CONTENT_TYPE = 'text/plain';
+
+/**
+ * `application/json` is a content type used to indicate that the content
+ * being sent is in the JSON format.
+ */
+export const JSON_CONTENT_TYPE = 'application/json';
+
+/**
+ * `application/json, text/plain, *\/*` is a content negotiation string often seen in the
+ * Accept header of HTTP requests. It indicates the types of content the client is willing
+ * to accept from the server, with a preference for `application/json` and `text/plain`,
+ * but also accepting any other type (*\/*).
+ */
+export const ACCEPT_HEADER_VALUE = `${JSON_CONTENT_TYPE}, ${TEXT_CONTENT_TYPE}, */*`;
+
+/**
  * An outgoing HTTP request with an optional typed body.
  *
  * `HttpRequest` represents an outgoing request, including URL, method,
@@ -100,7 +142,6 @@ export class HttpRequest<T> {
   /**
    * Outgoing headers for this request.
    */
-  // TODO(issue/24571): remove '!'.
   readonly headers!: HttpHeaders;
 
   /**
@@ -124,6 +165,11 @@ export class HttpRequest<T> {
   readonly withCredentials: boolean = false;
 
   /**
+   * When using the fetch implementation and set to `true`, the browser will not abort the associated request if the page that initiated it is unloaded before the request is complete.
+   */
+  readonly keepalive: boolean = false;
+
+  /**
    * The expected response type of the server.
    *
    * This is used to parse the response appropriately before returning it to
@@ -142,11 +188,10 @@ export class HttpRequest<T> {
    * To pass a string representation of HTTP parameters in the URL-query-string format,
    * the `HttpParamsOptions`' `fromString` may be used. For example:
    *
-   * ```
+   * ```ts
    * new HttpParams({fromString: 'angular=awesome'})
    * ```
    */
-  // TODO(issue/24571): remove '!'.
   readonly params!: HttpParams;
 
   /**
@@ -169,6 +214,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      keepalive?: boolean;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -190,6 +236,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      keepalive?: boolean;
     },
   );
   constructor(
@@ -203,6 +250,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      keepalive?: boolean;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -225,6 +273,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      keepalive?: boolean;
     },
   );
   constructor(
@@ -238,6 +287,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      keepalive?: boolean;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -261,6 +311,7 @@ export class HttpRequest<T> {
           params?: HttpParams;
           responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
           withCredentials?: boolean;
+          keepalive?: boolean;
           transferCache?: {includeHeaders?: string[]} | boolean;
         }
       | null,
@@ -271,6 +322,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      keepalive?: boolean;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ) {
@@ -295,7 +347,7 @@ export class HttpRequest<T> {
       // Normalize reportProgress and withCredentials.
       this.reportProgress = !!options.reportProgress;
       this.withCredentials = !!options.withCredentials;
-
+      this.keepalive = !!options.keepalive;
       // Override default response type of 'json' if one is provided.
       if (!!options.responseType) {
         this.responseType = options.responseType;
@@ -413,7 +465,7 @@ export class HttpRequest<T> {
     // Technically, strings could be a form of JSON data, but it's safe enough
     // to assume they're plain strings.
     if (typeof this.body === 'string') {
-      return 'text/plain';
+      return TEXT_CONTENT_TYPE;
     }
     // `HttpUrlEncodedParams` has its own content-type.
     if (this.body instanceof HttpParams) {
@@ -425,7 +477,7 @@ export class HttpRequest<T> {
       typeof this.body === 'number' ||
       typeof this.body === 'boolean'
     ) {
-      return 'application/json';
+      return JSON_CONTENT_TYPE;
     }
     // No type could be inferred.
     return null;
@@ -439,6 +491,7 @@ export class HttpRequest<T> {
     params?: HttpParams;
     responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
     withCredentials?: boolean;
+    keepalive?: boolean;
     transferCache?: {includeHeaders?: string[]} | boolean;
     body?: T | null;
     method?: string;
@@ -452,6 +505,7 @@ export class HttpRequest<T> {
     reportProgress?: boolean;
     params?: HttpParams;
     responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+    keepalive?: boolean;
     withCredentials?: boolean;
     transferCache?: {includeHeaders?: string[]} | boolean;
     body?: V | null;
@@ -468,6 +522,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      keepalive?: boolean;
       transferCache?: {includeHeaders?: string[]} | boolean;
       body?: any | null;
       method?: string;
@@ -481,7 +536,7 @@ export class HttpRequest<T> {
     const method = update.method || this.method;
     const url = update.url || this.url;
     const responseType = update.responseType || this.responseType;
-
+    const keepalive = update.keepalive ?? this.keepalive;
     // Carefully handle the transferCache to differentiate between
     // `false` and `undefined` in the update args.
     const transferCache = update.transferCache ?? this.transferCache;
@@ -532,6 +587,7 @@ export class HttpRequest<T> {
       responseType,
       withCredentials,
       transferCache,
+      keepalive,
     });
   }
 }

@@ -141,7 +141,7 @@ describe('jest modern fakeTimers with zone.js fakeAsync', () => {
     let d = fakeAsyncZoneSpec.getRealSystemTime();
     jest.setSystemTime(d);
     expect(Date.now()).toEqual(d);
-    for (let i = 0; i < 100000; i++) {}
+    for (let i = 0; i < 10_000_000; i++) {}
     expect(fakeAsyncZoneSpec.getRealSystemTime()).not.toEqual(d);
     d = fakeAsyncZoneSpec.getRealSystemTime();
     let timeoutTriggered = false;

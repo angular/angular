@@ -58,7 +58,9 @@ export function optimizeTrackFns(job: CompilationJob): void {
         op.track = ir.transformExpressionsInExpression(
           op.track,
           (expr) => {
-            if (expr instanceof ir.ContextExpr) {
+            if (expr instanceof ir.PipeBindingExpr || expr instanceof ir.PipeBindingVariadicExpr) {
+              throw new Error(`Illegal State: Pipes are not allowed in this context`);
+            } else if (expr instanceof ir.ContextExpr) {
               op.usesComponentInstance = true;
               return new ir.TrackContextExpr(expr.view);
             }
@@ -66,6 +68,14 @@ export function optimizeTrackFns(job: CompilationJob): void {
           },
           ir.VisitorContextFlag.None,
         );
+
+        // Also create an OpList for the tracking expression since it may need
+        // additional ops when generating the final code (e.g. temporary variables).
+        const trackOpList = new ir.OpList<ir.UpdateOp>();
+        trackOpList.push(
+          ir.createStatementOp(new o.ReturnStatement(op.track, op.track.sourceSpan)),
+        );
+        op.trackByOps = trackOpList;
       }
     }
   }

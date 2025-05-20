@@ -1,6 +1,7 @@
 <!-- Primary Nav -->
 <div
   [attr.id]="PRIMARY_NAV_ID"
+  class="wrapper"
   (docsClickOutside)="closeMobileNav()"
   [docsClickOutsideIgnore]="[SECONDARY_NAV_ID]"
 >
@@ -149,7 +150,7 @@
             (cdkMenuClosed)="closeMenu()"
             (click)="openVersionMenu($event)"
           >
-            {{ currentDocsVersion()?.displayName }}
+            {{ currentDocsVersion().displayName }}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="15"
@@ -343,6 +344,27 @@
                   <path
                     d="M0.04145 0.04432l6.56351 8.77603L0 15.95564h1.48651l5.78263-6.24705 4.6722 6.24705h5.05865l-6.9328-9.26967L16.21504.04432h-1.48651l-5.32552 5.75341L5.1001.04432H.04145Zm2.18602 1.09497h2.32396l10.26221 13.72122h-2.32396L2.22747 1.13928Z"
                   />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                [href]="BLUESKY"
+                cdkMenuItem
+                title="Angular Bluesky profile"
+                target="_blank"
+                rel="noopener"
+              >
+                <!-- Bluesky Icon -->
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+			<path
+				d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.697-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948Z"></path>
                 </svg>
               </a>
             </li>

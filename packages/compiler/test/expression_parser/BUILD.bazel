@@ -5,10 +5,10 @@ ts_library(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages:types",
         "//packages/compiler",
         "//packages/compiler/test/expression_parser/utils",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 

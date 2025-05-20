@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {OutputRef, ɵgetOutputDestroyRef} from '@angular/core';
+import {OutputRef, ɵgetOutputDestroyRef} from '../../src/core';
 import {Observable} from 'rxjs';
 
 /**
@@ -15,7 +15,7 @@ import {Observable} from 'rxjs';
  *
  * You can subscribe to the output via `Observable.subscribe` then.
  *
- * @publicApi
+ * @publicApi 19.0
  */
 export function outputToObservable<T>(ref: OutputRef<T>): Observable<T> {
   const destroyRef = ɵgetOutputDestroyRef(ref);

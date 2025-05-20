@@ -2,6 +2,7 @@
 
 :host {
   width: 100%;
+  position: relative;
 
   // While editor is loading, display an svg of the editor
   .docs-dark-mode & {
@@ -20,262 +21,9 @@
       }
     }
   }
-  .adev-banner {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    z-index: 10;
-    border: 1px solid var(--senary-contrast);
-    background: var(--page-background);
-    position: relative;
-    border-radius: 0.25rem;
-    padding: 10px;
-    max-width: 100%;
-    width: fit-content;
-    box-sizing: border-box;
-    transition: background 0.3s ease, border 0.3s ease;
 
-    h1,
-    p {
-      display: inline;
-      font-size: 0.875rem;
-      margin: 0;
-      background-image: var(--red-to-pink-to-purple-horizontal-gradient);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      width: fit-content;
-      font-weight: 500;
-
-      &.adev-banner-cta {
-        color: var(--tertiary-contrast);
-        &::after {
-          content: '';
-          position: absolute;
-          width: 100%;
-          transform: scaleX(0);
-          height: 1px;
-          bottom: -2px;
-          left: 0;
-          background: var(--red-to-pink-to-purple-horizontal-gradient);
-          transform-origin: bottom right;
-          transition: transform 0.3s ease;
-        }
-      }
-    }
-    &:hover {
-      .adev-banner-cta {
-        &::after {
-          transform: scaleX(1);
-          transform-origin: bottom left;
-        }
-      }
-    }
-  }
-}
-
-.adev-top {
-  position: absolute;
-  top: 0;
-
-  @include mq.for-tablet-landscape-down {
-    top: 6rem;
-  }
-
-  @include mq.for-phone-only {
-    top: 4.5rem;
-  }
-
-  .adev-top-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    padding-top: 10px;
-    padding-inline: var(--layout-padding);
-    gap: 0.5rem;
-
-    @include mq.for-tablet-landscape-up {
-      padding-top: var(--layout-padding);
-      padding-left: calc(var(--layout-padding) + var(--primary-nav-width));
-    }
-  }
-}
-
-.adev-home {
-  img,
-  svg {
-    user-select: none;
-  }
-
-  h2,
-  p {
-    position: relative;
-  }
-
-  h2 {
-    font-size: 4vw;
-    font-weight: 600;
-    white-space: nowrap;
-    margin-top: 0;
-    margin-bottom: 0.5em;
-
-    @media screen and (max-width: 1000px) {
-      font-size: 2rem;
-    }
-  }
-
-  p {
-    font-weight: 400;
-    color: var(--quaternary-contrast);
-    font-size: clamp(1rem, 1vw, 2rem);
-    line-height: 1.5;
-    width: clamp(375px, 50%, 600px);
-    margin: 0 auto;
-  }
-
-  .adev-cta {
-    position: fixed;
-    left: 50%;
-    bottom: 10%;
-    transform: translateX(-50%);
-    display: inline-block;
-    padding: 7px;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s linear, visibility 0.5s linear;
-
-    button {
-      font-size: 1rem;
-      padding: 1rem 1.75rem;
-      &::after {
-        font-size: 1rem;
-      }
-    }
-  }
-
-  .adev-arrow {
-    position: fixed;
-    left: 50%;
-    bottom: 5%;
-    transform: translateX(-50%) rotate(45deg);
-    border: solid var(--primary-contrast);
-    border-width: 0 2px 2px 0;
-    display: inline-block;
-    padding: 7px;
-    opacity: 0;
-    transition: opacity 0.5s linear;
-  }
-
-  .adev-canvas {
-    position: fixed;
-    top: 0;
-    width: calc(100vw - 8px);
+  .spacer {
     height: 100vh;
-    max-width: 2560px;
-    margin-inline: auto;
-    pointer-events: none;
-    overflow: hidden;
-
-    // hide canvas to prevent fouc
-    opacity: 0;
-
-    // large viewport height for canvas
-    @supports (height: 100lvh) {
-      height: 100lvh;
-    }
-  }
-
-  .adev-logo,
-  .adev-scale,
-  .adev-lines,
-  .adev-build {
-    height: 130vh;
-    overflow: hidden;
-
-    @supports (height: 100lvh) {
-      height: 130lvh;
-    }
-  }
-
-  .adev-logo-wordmark,
-  .adev-scale-text,
-  .adev-lines-text,
-  .adev-build-text,
-  .adev-build-webgl-text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
-    max-width: 2560px;
-    margin-inline: auto;
-    pointer-events: none;
-    overflow: hidden;
-
-    @supports (height: 100lvh) {
-      height: 100lvh;
-    }
-  }
-
-  .adev-build-webgl-text {
-    display: none;
-    visibility: hidden;
-    position: fixed;
-  }
-
-  .adev-scale-container,
-  .adev-lines-container,
-  .adev-build-container {
-    position: relative;
-  }
-
-  .adev-lines-container {
-    &::before {
-      content: '';
-      position: absolute;
-      left: -50px;
-      top: 0;
-      right: -50px;
-      bottom: -50px;
-      background-color: var(--page-background);
-      filter: blur(25px);
-    }
-  }
-
-  .adev-scale-wrapper,
-  .adev-lines-wrapper,
-  .adev-build-wrapper {
-    position: relative;
-  }
-
-  .adev-build-text,
-  .adev-build-webgl-text {
-    h2 {
-      color: var(--gray-unfilled);
-
-      @media screen and (max-width: 1000px) {
-        font-size: 2.75rem;
-      }
-    }
-
-    .adev-gradient {
-      position: absolute;
-      left: 0;
-      top: 0;
-      right: 0;
-      background: url('../../../assets/textures/gradient.jpg');
-      background-size: cover;
-      background-position: center;
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      clip-path: inset(0%);
-    }
   }
 
   .adev-editor-scroll-container {
@@ -283,14 +31,35 @@
     height: 300vh;
     background-color: var(--page-background);
 
-    .adev-sticky-editor {
+    .adev-code-editor {
+      background-color: var(--page-background);
+      padding-bottom: 60px;
       position: sticky;
       top: calc((100vh - (100vh - 110px)) / 2);
+
       @include mq.for-tablet {
         top: calc(((100vh - (100vh - 110px)) / 2) + 36px);
       }
       @include mq.for-phone-only {
         top: calc(((100vh - (100vh - 110px)) / 2) + 25px);
+      }
+
+      // stylelint-disable-next-line
+      ::ng-deep {
+        embedded-editor {
+          margin: 0 auto;
+          display: flex;
+          width: 75vw;
+          height: calc(100vh - 110px);
+
+          @include mq.for-phone-only {
+            width: 95vw;
+          }
+
+          .adev-editor-container {
+            width: 100%;
+          }
+        }
       }
     }
 
@@ -303,105 +72,5 @@
       min-height: 60vh;
       width: 75vw;
     }
-  }
-
-  &.adev-header {
-    .adev-cta,
-    .adev-arrow {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
-
-  &.adev-webgl {
-    .adev-logo,
-    .adev-scale,
-    .adev-lines {
-      height: 200vh;
-
-      @supports (height: 100lvh) {
-        height: 200lvh;
-      }
-    }
-
-    .adev-logo-wordmark,
-    .adev-scale-text,
-    .adev-lines-text,
-    .adev-build-text {
-      position: fixed;
-    }
-
-    .adev-scale-text,
-    .adev-lines-text,
-    .adev-build-text {
-      opacity: 0;
-    }
-
-    .adev-build {
-      height: 300vh;
-
-      @supports (height: 100lvh) {
-        height: 300lvh;
-      }
-    }
-
-    .adev-build-text {
-      h2 {
-        opacity: 0;
-      }
-    }
-
-    .adev-build-webgl-text {
-      display: flex;
-    }
-
-    &.adev-loaded {
-      .adev-canvas {
-        opacity: unset;
-      }
-
-      .adev-logo-wordmark {
-        opacity: 0;
-      }
-    }
-  }
-}
-
-.adev-code-editor {
-  background-color: var(--page-background);
-  padding-bottom: 60px;
-
-  // stylelint-disable-next-line
-  ::ng-deep {
-    embedded-editor {
-      margin: 0 auto;
-      display: flex;
-      width: 75vw;
-
-      @include mq.for-phone-only {
-        width: 95vw;
-      }
-
-      height: calc(100vh - 110px);
-
-      .adev-editor-container {
-        width: 100%;
-      }
-    }
-  }
-}
-
-.adev-code-editor-gradient {
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin-top: -100vh;
-  height: 100vh;
-  background: linear-gradient(to top, var(--page-background), transparent);
-  pointer-events: none;
-
-  @supports (height: 100svh) {
-    margin-top: -100svh;
-    height: 100svh;
   }
 }

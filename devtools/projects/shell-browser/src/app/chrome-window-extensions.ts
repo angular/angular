@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {findNodeFromSerializedPosition} from 'ng-devtools-backend';
+import {findNodeFromSerializedPosition} from '../../../ng-devtools-backend';
 
 import {
   buildDirectiveForest,
   queryDirectiveForest,
-} from '../../../ng-devtools-backend/src/lib/component-tree';
+} from '../../../ng-devtools-backend/src/lib/component-tree/component-tree';
 
-import {ElementPosition} from 'protocol';
+import {ElementPosition} from '../../../protocol';
 
 export const initializeExtendedWindowOperations = () => {
   extendWindowOperations(globalThis, {inspectedApplication: chromeWindowExtensions});

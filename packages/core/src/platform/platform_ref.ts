@@ -7,11 +7,7 @@
  */
 
 import {compileNgModuleFactory} from '../application/application_ngmodule_factory_compiler';
-import {
-  _callAndReportToErrorHandler,
-  BootstrapOptions,
-  optionsReducer,
-} from '../application/application_ref';
+import {BootstrapOptions, optionsReducer} from '../application/application_ref';
 import {
   getNgZoneOptions,
   internalProvideZoneChangeDetection,
@@ -19,13 +15,14 @@ import {
 import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
 import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {Injectable, Injector} from '../di';
+import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {CompilerOptions} from '../linker';
 import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {createNgModuleRefWithProviders} from '../render3/ng_module_ref';
-import {getNgZone, NgZone} from '../zone/ng_zone';
-import {bootstrap} from './bootstrap';
+import {getNgZone} from '../zone/ng_zone';
+import {bootstrap, setModuleBootstrapImpl} from './bootstrap';
 import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
 
 /**
@@ -72,6 +69,7 @@ export class PlatformRef {
         ignoreChangesOutsideZone,
       }),
       {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+      errorHandlerEnvironmentInitializer,
     ];
     const moduleRef = createNgModuleRefWithProviders(
       moduleFactory.moduleType,
@@ -79,6 +77,7 @@ export class PlatformRef {
       allAppProviders,
     );
 
+    setModuleBootstrapImpl();
     return bootstrap({
       moduleRef,
       allPlatformModules: this._modules,
@@ -109,6 +108,7 @@ export class PlatformRef {
       | Array<CompilerOptions & BootstrapOptions> = [],
   ): Promise<NgModuleRef<M>> {
     const options = optionsReducer({}, compilerOptions);
+    setModuleBootstrapImpl();
     return compileNgModuleFactory(this.injector, options, moduleType).then((moduleFactory) =>
       this.bootstrapModuleFactory(moduleFactory, options),
     );

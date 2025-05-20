@@ -7,19 +7,14 @@
  */
 
 import {Fragment, h} from 'preact';
-import {CliCardRenderable} from '../entities/renderables';
+import {CliCardRenderable} from '../entities/renderables.mjs';
 import {DeprecatedLabel} from './deprecated-label';
-import { REFERENCE_MEMBER_CARD, REFERENCE_MEMBER_CARD_HEADER } from '../styling/css-classes';
+import {REFERENCE_MEMBER_CARD, REFERENCE_MEMBER_CARD_BODY} from '../styling/css-classes.mjs';
 
 export function CliCard(props: {card: CliCardRenderable}) {
   return (
-    <div id={props.card.type} class={REFERENCE_MEMBER_CARD} tabIndex={-1}>
-      <header>
-        <div class={REFERENCE_MEMBER_CARD_HEADER}>
-          <h3>{props.card.type}</h3>
-        </div>
-      </header>
-      <div class="docs-reference-card-body">
+    <div class={REFERENCE_MEMBER_CARD}>
+      <div className={REFERENCE_MEMBER_CARD_BODY}>
         {props.card.items.map((item) => (
           <div class="docs-ref-content">
             {item.deprecated ? <DeprecatedLabel entry={item} /> : <></>}

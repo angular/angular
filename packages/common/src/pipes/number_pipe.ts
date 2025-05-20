@@ -6,12 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DEFAULT_CURRENCY_CODE, Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {
+  DEFAULT_CURRENCY_CODE,
+  Inject,
+  LOCALE_ID,
+  Pipe,
+  PipeTransform,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 
 import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
 import {getCurrencySymbol} from '../i18n/locale_data_api';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * @ngModule CommonModule
@@ -274,7 +282,7 @@ export class CurrencyPipe implements PipeTransform {
     locale ||= this._locale;
 
     if (typeof display === 'boolean') {
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && <any>console && <any>console.warn) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
         console.warn(
           `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`,
         );
@@ -313,7 +321,10 @@ function strToNumber(value: number | string): number {
     return Number(value);
   }
   if (typeof value !== 'number') {
-    throw new Error(`${value} is not a number`);
+    throw new RuntimeError(
+      RuntimeErrorCode.VALUE_NOT_A_NUMBER,
+      ngDevMode && `${value} is not a number`,
+    );
   }
   return value;
 }

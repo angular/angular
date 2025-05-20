@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {SIGNAL} from '@angular/core/primitives/signals';
+import {SIGNAL} from '../../../primitives/signals';
 
 /**
  * A reactive value which notifies consumers of any changes.
@@ -15,6 +15,8 @@ import {SIGNAL} from '@angular/core/primitives/signals';
  * call it.
  *
  * Ordinary values can be turned into `Signal`s with the `signal` function.
+ *
+ * @publicApi 17.0
  */
 export type Signal<T> = (() => T) & {
   [SIGNAL]: unknown;
@@ -22,6 +24,8 @@ export type Signal<T> = (() => T) & {
 
 /**
  * Checks if the given `value` is a reactive `Signal`.
+ *
+ * @publicApi 17.0
  */
 export function isSignal(value: unknown): value is Signal<unknown> {
   return typeof value === 'function' && (value as Signal<unknown>)[SIGNAL] !== undefined;

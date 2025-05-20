@@ -6,16 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {R3CompiledExpression, R3HmrNamespaceDependency, outputAst as o} from '@angular/compiler';
-import {DeclarationNode} from '../../reflection';
+import {
+  DeferBlockDepsEmitMode,
+  R3CompiledExpression,
+  R3ComponentDeferMetadata,
+  R3HmrNamespaceDependency,
+  outputAst as o,
+} from '@angular/compiler';
+import {DeclarationNode, ReflectionHost} from '../../reflection';
 import {CompileResult} from '../../transform';
 import ts from 'typescript';
+import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 
 /**
  * Determines the file-level dependencies that the HMR initializer needs to capture and pass along.
  * @param sourceFile File in which the file is being compiled.
  * @param definition Compiled component definition.
  * @param factory Compiled component factory.
+ * @param deferBlockMetadata Metadata about the defer blocks in the component.
  * @param classMetadata Compiled `setClassMetadata` expression, if any.
  * @param debugInfo Compiled `setClassDebugInfo` expression, if any.
  */
@@ -23,14 +31,20 @@ export function extractHmrDependencies(
   node: DeclarationNode,
   definition: R3CompiledExpression,
   factory: CompileResult,
+  deferBlockMetadata: R3ComponentDeferMetadata,
   classMetadata: o.Statement | null,
   debugInfo: o.Statement | null,
-): {local: string[]; external: R3HmrNamespaceDependency[]} {
+  reflection: ReflectionHost,
+  evaluator: PartialEvaluator,
+): {
+  local: {name: string; runtimeRepresentation: o.Expression}[];
+  external: R3HmrNamespaceDependency[];
+} | null {
   const name = ts.isClassDeclaration(node) && node.name ? node.name.text : null;
   const visitor = new PotentialTopLevelReadsVisitor();
-  const sourceFile = node.getSourceFile();
+  const sourceFile = ts.getOriginalNode(node).getSourceFile();
 
-  // Visit all of the compiled expression to look for potential
+  // Visit all of the compiled expressions to look for potential
   // local references that would have to be retained.
   definition.expression.visitExpression(visitor, null);
   definition.statements.forEach((statement) => statement.visitStatement(visitor, null));
@@ -39,18 +53,89 @@ export function extractHmrDependencies(
   classMetadata?.visitStatement(visitor, null);
   debugInfo?.visitStatement(visitor, null);
 
+  if (deferBlockMetadata.mode === DeferBlockDepsEmitMode.PerBlock) {
+    deferBlockMetadata.blocks.forEach((loader) => loader?.visitExpression(visitor, null));
+  } else {
+    deferBlockMetadata.dependenciesFn?.visitExpression(visitor, null);
+  }
+
   // Filter out only the references to defined top-level symbols. This allows us to ignore local
   // variables inside of functions. Note that we filter out the class name since it is always
   // defined and it saves us having to repeat this logic wherever the locals are consumed.
   const availableTopLevel = getTopLevelDeclarationNames(sourceFile);
+  const local: {name: string; runtimeRepresentation: o.Expression}[] = [];
+  const seenLocals = new Set<string>();
+
+  for (const readNode of visitor.allReads) {
+    const readName = readNode instanceof o.ReadVarExpr ? readNode.name : readNode.text;
+
+    if (readName !== name && !seenLocals.has(readName) && availableTopLevel.has(readName)) {
+      const runtimeRepresentation = getRuntimeRepresentation(readNode, reflection, evaluator);
+
+      if (runtimeRepresentation === null) {
+        return null;
+      }
+
+      local.push({name: readName, runtimeRepresentation});
+      seenLocals.add(readName);
+    }
+  }
 
   return {
-    local: Array.from(visitor.allReads).filter((r) => r !== name && availableTopLevel.has(r)),
+    local,
     external: Array.from(visitor.namespaceReads, (name, index) => ({
       moduleName: name,
       assignedName: `ɵhmr${index}`,
     })),
   };
+}
+
+/**
+ * Gets a node that can be used to represent an identifier in the HMR replacement code at runtime.
+ */
+function getRuntimeRepresentation(
+  node: o.ReadVarExpr | ts.Identifier,
+  reflection: ReflectionHost,
+  evaluator: PartialEvaluator,
+): o.Expression | null {
+  if (node instanceof o.ReadVarExpr) {
+    return o.variable(node.name);
+  }
+
+  // Const enums can't be passed by reference, because their values are inlined.
+  // Pass in an object literal with all of the values instead.
+  if (isConstEnumReference(node, reflection)) {
+    const evaluated = evaluator.evaluate(node);
+
+    if (evaluated instanceof Map) {
+      const members: {key: string; quoted: boolean; value: o.Expression}[] = [];
+
+      for (const [name, value] of evaluated.entries()) {
+        if (
+          value instanceof EnumValue &&
+          (value.resolved == null ||
+            typeof value.resolved === 'string' ||
+            typeof value.resolved === 'boolean' ||
+            typeof value.resolved === 'number')
+        ) {
+          members.push({
+            key: name,
+            quoted: false,
+            value: o.literal(value.resolved),
+          });
+        } else {
+          // TS is pretty restrictive about what values can be in a const enum so our evaluator
+          // should be able to handle them, however if we happen to hit such a case, we return null
+          // so the HMR update can be invalidated.
+          return null;
+        }
+      }
+
+      return o.literalMap(members);
+    }
+  }
+
+  return o.variable(node.text);
 }
 
 /**
@@ -67,8 +152,7 @@ function getTopLevelDeclarationNames(sourceFile: ts.SourceFile): Set<string> {
     if (
       ts.isClassDeclaration(node) ||
       ts.isFunctionDeclaration(node) ||
-      (ts.isEnumDeclaration(node) &&
-        !node.modifiers?.some((m) => m.kind === ts.SyntaxKind.ConstKeyword))
+      ts.isEnumDeclaration(node)
     ) {
       if (node.name) {
         results.add(node.name.text);
@@ -143,7 +227,7 @@ function trackBindingName(node: ts.BindingName, results: Set<string>): void {
  * inside functions.
  */
 class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
-  readonly allReads = new Set<string>();
+  readonly allReads = new Set<o.ReadVarExpr | ts.Identifier>();
   readonly namespaceReads = new Set<string>();
 
   override visitExternalExpr(ast: o.ExternalExpr, context: any) {
@@ -154,7 +238,7 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
   }
 
   override visitReadVarExpr(ast: o.ReadVarExpr, context: any) {
-    this.allReads.add(ast.name);
+    this.allReads.add(ast);
     super.visitReadVarExpr(ast, context);
   }
 
@@ -172,7 +256,7 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
    */
   private addAllTopLevelIdentifiers = (node: ts.Node) => {
     if (ts.isIdentifier(node) && this.isTopLevelIdentifierReference(node)) {
-      this.allReads.add(node.text);
+      this.allReads.add(node);
     } else {
       ts.forEachChild(node, this.addAllTopLevelIdentifiers);
     }
@@ -182,10 +266,11 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
    * TypeScript identifiers are used both when referring to a variable (e.g. `console.log(foo)`)
    * and for names (e.g. `{foo: 123}`). This function determines if the identifier is a top-level
    * variable read, rather than a nested name.
-   * @param node Identifier to check.
+   * @param identifier Identifier to check.
    */
-  private isTopLevelIdentifierReference(node: ts.Identifier): boolean {
-    const parent = node.parent;
+  private isTopLevelIdentifierReference(identifier: ts.Identifier): boolean {
+    let node = identifier as ts.Expression;
+    let parent = node.parent;
 
     // The parent might be undefined for a synthetic node or if `setParentNodes` is set to false
     // when the SourceFile was created. We can account for such cases using the type checker, at
@@ -195,11 +280,17 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       return false;
     }
 
+    // Unwrap parenthesized identifiers, but use the closest parenthesized expression
+    // as the reference node so that we can check cases like `{prop: ((value))}`.
+    if (ts.isParenthesizedExpression(parent) && parent.expression === node) {
+      while (parent && ts.isParenthesizedExpression(parent)) {
+        node = parent;
+        parent = parent.parent;
+      }
+    }
+
     // Identifier referenced at the top level. Unlikely.
-    if (
-      ts.isSourceFile(parent) ||
-      (ts.isExpressionStatement(parent) && parent.expression === node)
-    ) {
+    if (ts.isSourceFile(parent)) {
       return true;
     }
 
@@ -209,8 +300,24 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       return parent.expression === node || parent.arguments.includes(node);
     }
 
-    // Identifier used in a property read is only top-level if it's the expression.
-    if (ts.isPropertyAccessExpression(parent)) {
+    // Identifier used in a nested expression is only top-level if it's the actual expression.
+    if (
+      ts.isExpressionStatement(parent) ||
+      ts.isPropertyAccessExpression(parent) ||
+      ts.isComputedPropertyName(parent) ||
+      ts.isTemplateSpan(parent) ||
+      ts.isSpreadAssignment(parent) ||
+      ts.isSpreadElement(parent) ||
+      ts.isAwaitExpression(parent) ||
+      ts.isNonNullExpression(parent) ||
+      ts.isIfStatement(parent) ||
+      ts.isDoStatement(parent) ||
+      ts.isWhileStatement(parent) ||
+      ts.isSwitchStatement(parent) ||
+      ts.isCaseClause(parent) ||
+      ts.isThrowStatement(parent) ||
+      ts.isNewExpression(parent)
+    ) {
       return parent.expression === node;
     }
 
@@ -219,14 +326,63 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
       return parent.elements.includes(node);
     }
 
-    // Identifier in a property assignment is only top level if it's the initializer.
-    if (ts.isPropertyAssignment(parent)) {
+    // If the parent is an initialized node, the identifier is
+    // at the top level if it's the initializer itself.
+    if (
+      ts.isPropertyAssignment(parent) ||
+      ts.isParameter(parent) ||
+      ts.isBindingElement(parent) ||
+      ts.isPropertyDeclaration(parent) ||
+      ts.isEnumMember(parent)
+    ) {
       return parent.initializer === node;
     }
 
-    // Identifier in a class is only top level if it's the name.
-    if (ts.isClassDeclaration(parent)) {
+    // Identifier in a function is top level if it's either the name or the initializer.
+    if (ts.isVariableDeclaration(parent)) {
+      return parent.name === node || parent.initializer === node;
+    }
+
+    // Identifier in a declaration is only top level if it's the name.
+    // In shorthand assignments the name is also the value.
+    if (
+      ts.isClassDeclaration(parent) ||
+      ts.isFunctionDeclaration(parent) ||
+      ts.isShorthandPropertyAssignment(parent)
+    ) {
       return parent.name === node;
+    }
+
+    if (ts.isElementAccessExpression(parent)) {
+      return parent.expression === node || parent.argumentExpression === node;
+    }
+
+    if (ts.isBinaryExpression(parent)) {
+      return parent.left === node || parent.right === node;
+    }
+
+    if (ts.isForInStatement(parent) || ts.isForOfStatement(parent)) {
+      return parent.expression === node || parent.initializer === node;
+    }
+
+    if (ts.isForStatement(parent)) {
+      return (
+        parent.condition === node || parent.initializer === node || parent.incrementor === node
+      );
+    }
+
+    if (ts.isArrowFunction(parent)) {
+      return parent.body === node;
+    }
+
+    // It's unlikely that we'll run into imports/exports in this use case.
+    // We handle them since it's simple and for completeness' sake.
+    if (ts.isImportSpecifier(parent) || ts.isExportSpecifier(parent)) {
+      return (parent.propertyName || parent.name) === node;
+    }
+
+    if (ts.isConditionalExpression(parent)) {
+      return parent.condition === node || parent.whenFalse === node || parent.whenTrue === node;
     }
 
     // Otherwise it's not top-level.
@@ -239,4 +395,26 @@ class PotentialTopLevelReadsVisitor extends o.RecursiveAstVisitor {
     // on a narrow set of use cases so checking for `kind` should be enough.
     return !!value && typeof value.kind === 'number';
   }
+}
+
+/** Checks whether a node is a reference to a const enum. */
+function isConstEnumReference(node: ts.Identifier, reflection: ReflectionHost): boolean {
+  const parent = node.parent;
+
+  // Only check identifiers that are in the form of `Foo.bar` where `Foo` is the node being checked.
+  if (
+    !parent ||
+    !ts.isPropertyAccessExpression(parent) ||
+    parent.expression !== node ||
+    !ts.isIdentifier(parent.name)
+  ) {
+    return false;
+  }
+
+  const declaration = reflection.getDeclarationOfIdentifier(node);
+  return (
+    declaration !== null &&
+    ts.isEnumDeclaration(declaration.node) &&
+    !!declaration.node.modifiers?.some((m) => m.kind === ts.SyntaxKind.ConstKeyword)
+  );
 }

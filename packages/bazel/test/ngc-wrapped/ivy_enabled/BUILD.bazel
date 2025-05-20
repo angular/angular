@@ -28,7 +28,6 @@ jasmine_node_test(
 ng_module(
     name = "test_module_warnings_lib",
     srcs = ["test_module_warnings.ts"],
-    strict_templates = True,
     tags = [],
     deps = ["//packages/core"],
 )

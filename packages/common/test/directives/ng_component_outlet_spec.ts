@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
-import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
+import {CommonModule} from '../../index';
+import {NgComponentOutlet} from '../../src/directives/ng_component_outlet';
 import {
   Compiler,
   Component,
@@ -28,7 +28,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('insert/remove', () => {
   beforeEach(() => {

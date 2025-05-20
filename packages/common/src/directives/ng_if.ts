@@ -13,7 +13,10 @@ import {
   TemplateRef,
   ViewContainerRef,
   ɵstringify as stringify,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * A structural directive that conditionally includes a template based on the value of
@@ -153,6 +156,9 @@ import {
  *
  * @ngModule CommonModule
  * @publicApi
+ *
+ * @deprecated 20.0
+ * Use the @if block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngIf]',
@@ -173,6 +179,7 @@ export class NgIf<T = unknown> {
 
   /**
    * The Boolean expression to evaluate as the condition for showing a template.
+   * @deprecated Use the @if block instead. Intent to remove in v22
    */
   @Input()
   set ngIf(condition: T) {
@@ -182,10 +189,11 @@ export class NgIf<T = unknown> {
 
   /**
    * A template to show if the condition expression evaluates to true.
+   * @deprecated Use the @if block instead. Intent to remove in v22
    */
   @Input()
   set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null) {
-    assertTemplate('ngIfThen', templateRef);
+    assertTemplate(templateRef, (typeof ngDevMode === 'undefined' || ngDevMode) && 'ngIfThen');
     this._thenTemplateRef = templateRef;
     this._thenViewRef = null; // clear previous view if any.
     this._updateView();
@@ -193,10 +201,11 @@ export class NgIf<T = unknown> {
 
   /**
    * A template to show if the condition expression evaluates to false.
+   * @deprecated Use the @if block instead. Intent to remove in v22
    */
   @Input()
   set ngIfElse(templateRef: TemplateRef<NgIfContext<T>> | null) {
-    assertTemplate('ngIfElse', templateRef);
+    assertTemplate(templateRef, (typeof ngDevMode === 'undefined' || ngDevMode) && 'ngIfElse');
     this._elseTemplateRef = templateRef;
     this._elseViewRef = null; // clear previous view if any.
     this._updateView();
@@ -257,15 +266,24 @@ export class NgIf<T = unknown> {
 
 /**
  * @publicApi
+ *
+ * @deprecated 20.0
+ * The ngIf directive is deprecated in favor of the @if block instead.
  */
 export class NgIfContext<T = unknown> {
   public $implicit: T = null!;
   public ngIf: T = null!;
 }
 
-function assertTemplate(property: string, templateRef: TemplateRef<any> | null): void {
-  const isTemplateRefOrNull = !!(!templateRef || templateRef.createEmbeddedView);
-  if (!isTemplateRefOrNull) {
-    throw new Error(`${property} must be a TemplateRef, but received '${stringify(templateRef)}'.`);
+function assertTemplate(
+  templateRef: TemplateRef<any> | null,
+  property: string | false | null,
+): void {
+  if (templateRef && !templateRef.createEmbeddedView) {
+    throw new RuntimeError(
+      RuntimeErrorCode.NG_IF_NOT_A_TEMPLATE_REF,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `${property} must be a TemplateRef, but received '${stringify(templateRef)}'.`,
+    );
   }
 }

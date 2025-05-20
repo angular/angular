@@ -7,20 +7,21 @@
  */
 
 import {h} from 'preact';
-import {TypeAliasEntryRenderable} from '../entities/renderables';
+import {TypeAliasEntryRenderable} from '../entities/renderables.mjs';
 import {HeaderApi} from './header-api';
-import {TabDescription} from './tab-description';
-import {TabUsageNotes} from './tab-usage-notes';
-import {TabApi} from './tab-api';
+import {SectionDescription} from './section-description';
+import {SectionUsageNotes} from './section-usage-notes';
+import {SectionApi} from './section-api';
+import {API_REFERENCE_CONTAINER} from '../styling/css-classes.mjs';
 
 /** Component to render a type alias API reference document. */
 export function TypeAliasReference(entry: TypeAliasEntryRenderable) {
   return (
-    <div class="api">
+    <div className={API_REFERENCE_CONTAINER}>
       <HeaderApi entry={entry} />
-      <TabApi entry={entry} />
-      <TabDescription entry={entry} />
-      <TabUsageNotes entry={entry} />
+      <SectionApi entry={entry} />
+      <SectionDescription entry={entry} />
+      <SectionUsageNotes entry={entry} />
     </div>
   );
 }

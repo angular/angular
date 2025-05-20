@@ -71,6 +71,7 @@ export function migrateFile(sourceFile: ts.SourceFile, options: MigrationOptions
         prependToClass,
         afterInjectCalls,
         memberIndentation,
+        options,
       );
     }
 
@@ -408,7 +409,7 @@ function createInjectReplacementCall(
   const moduleName = '@angular/core';
   const sourceFile = param.getSourceFile();
   const decorators = getAngularDecorators(localTypeChecker, ts.getDecorators(param) || []);
-  const literalProps: ts.ObjectLiteralElementLike[] = [];
+  const literalProps = new Set<string>();
   const type = param.type;
   let injectedType = '';
   let typeArguments = type && hasGenerics(type) ? [type] : undefined;
@@ -450,24 +451,27 @@ function createInjectReplacementCall(
           const expression = ts.factory.createNewExpression(constructorRef, undefined, [firstArg]);
           injectedType = printer.printNode(ts.EmitHint.Unspecified, expression, sourceFile);
           typeArguments = undefined;
+          // @Attribute is implicitly optional.
+          hasOptionalDecorator = true;
+          literalProps.add('optional');
         }
         break;
 
       case 'Optional':
         hasOptionalDecorator = true;
-        literalProps.push(ts.factory.createPropertyAssignment('optional', ts.factory.createTrue()));
+        literalProps.add('optional');
         break;
 
       case 'SkipSelf':
-        literalProps.push(ts.factory.createPropertyAssignment('skipSelf', ts.factory.createTrue()));
+        literalProps.add('skipSelf');
         break;
 
       case 'Self':
-        literalProps.push(ts.factory.createPropertyAssignment('self', ts.factory.createTrue()));
+        literalProps.add('self');
         break;
 
       case 'Host':
-        literalProps.push(ts.factory.createPropertyAssignment('host', ts.factory.createTrue()));
+        literalProps.add('host');
         break;
     }
   }
@@ -478,8 +482,14 @@ function createInjectReplacementCall(
   const injectRef = tracker.addImport(param.getSourceFile(), 'inject', moduleName);
   const args: ts.Expression[] = [ts.factory.createIdentifier(PLACEHOLDER)];
 
-  if (literalProps.length > 0) {
-    args.push(ts.factory.createObjectLiteralExpression(literalProps));
+  if (literalProps.size > 0) {
+    args.push(
+      ts.factory.createObjectLiteralExpression(
+        Array.from(literalProps, (prop) =>
+          ts.factory.createPropertyAssignment(prop, ts.factory.createTrue()),
+        ),
+      ),
+    );
   }
 
   let expression: ts.Expression = ts.factory.createCallExpression(injectRef, typeArguments, args);
@@ -755,8 +765,9 @@ function applyInternalOnlyChanges(
   prependToClass: string[],
   afterInjectCalls: string[],
   memberIndentation: string,
+  options: MigrationOptions,
 ) {
-  const result = findUninitializedPropertiesToCombine(node, constructor, localTypeChecker);
+  const result = findUninitializedPropertiesToCombine(node, constructor, localTypeChecker, options);
 
   if (result === null) {
     return;
@@ -773,25 +784,47 @@ function applyInternalOnlyChanges(
 
   result.toCombine.forEach(({declaration, initializer}) => {
     const initializerStatement = closestNode(initializer, ts.isStatement);
+
+    // Strip comments if we are just going modify the node in-place.
+    const modifiers = preserveInitOrder
+      ? declaration.modifiers
+      : cloneModifiers(declaration.modifiers);
+    const name = preserveInitOrder ? declaration.name : cloneName(declaration.name);
+
     const newProperty = ts.factory.createPropertyDeclaration(
-      cloneModifiers(declaration.modifiers),
-      cloneName(declaration.name),
+      modifiers,
+      name,
       declaration.questionToken,
       declaration.type,
-      initializer,
+      undefined,
     );
+
+    const propText = printer.printNode(
+      ts.EmitHint.Unspecified,
+      newProperty,
+      declaration.getSourceFile(),
+    );
+    const initializerText = replaceParameterReferencesInInitializer(
+      initializer,
+      constructor,
+      localTypeChecker,
+    );
+    const withInitializer = `${propText.slice(0, -1)} = ${initializerText};`;
 
     // If the initialization order is being preserved, we have to remove the original
     // declaration and re-declare it. Otherwise we can do the replacement in-place.
     if (preserveInitOrder) {
       tracker.removeNode(declaration, true);
       removedMembers.add(declaration);
-      afterInjectCalls.push(
-        memberIndentation +
-          printer.printNode(ts.EmitHint.Unspecified, newProperty, declaration.getSourceFile()),
-      );
+      afterInjectCalls.push(memberIndentation + withInitializer);
     } else {
-      tracker.replaceNode(declaration, newProperty);
+      const sourceFile = declaration.getSourceFile();
+      tracker.replaceText(
+        sourceFile,
+        declaration.getStart(),
+        declaration.getWidth(),
+        withInitializer,
+      );
     }
 
     // This should always be defined, but null check it just in case.
@@ -813,4 +846,42 @@ function applyInternalOnlyChanges(
   if (prependToClass.length > 0) {
     prependToClass.push('');
   }
+}
+
+function replaceParameterReferencesInInitializer(
+  initializer: ts.Expression,
+  constructor: ts.ConstructorDeclaration,
+  localTypeChecker: ts.TypeChecker,
+): string {
+  // 1. Collect the locations of identifier nodes that reference constructor parameters.
+  // 2. Add `this.` to those locations.
+  const insertLocations = [0];
+
+  function walk(node: ts.Node) {
+    if (
+      ts.isIdentifier(node) &&
+      !(ts.isPropertyAccessExpression(node.parent) && node === node.parent.name) &&
+      localTypeChecker
+        .getSymbolAtLocation(node)
+        ?.declarations?.some((decl) =>
+          constructor.parameters.includes(decl as ts.ParameterDeclaration),
+        )
+    ) {
+      insertLocations.push(node.getStart() - initializer.getStart());
+    }
+    ts.forEachChild(node, walk);
+  }
+  walk(initializer);
+
+  const initializerText = initializer.getText();
+  insertLocations.push(initializerText.length);
+
+  insertLocations.sort((a, b) => a - b);
+
+  const result: string[] = [];
+  for (let i = 0; i < insertLocations.length - 1; i++) {
+    result.push(initializerText.slice(insertLocations[i], insertLocations[i + 1]));
+  }
+
+  return result.join('this.');
 }

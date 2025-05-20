@@ -11,33 +11,23 @@ import {
   APP_ID,
   createPlatformFactory,
   NgModule,
-  PLATFORM_INITIALIZER,
-  platformCore,
   StaticProvider,
   ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
+  PlatformRef,
 } from '@angular/core';
-import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
-
-function initBrowserTests() {
-  BrowserDomAdapter.makeCurrent();
-}
-
-const _TEST_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
-  {provide: PLATFORM_INITIALIZER, useValue: initBrowserTests, multi: true},
-];
+import {TestComponentRenderer} from '@angular/core/testing';
+import {BrowserModule, platformBrowser} from '../../index';
+import {DOMTestComponentRenderer} from './dom_test_component_renderer';
 
 /**
  * Platform for testing
  *
  * @publicApi
  */
-export const platformBrowserTesting = createPlatformFactory(
-  platformCore,
-  'browserTesting',
-  _TEST_BROWSER_PLATFORM_PROVIDERS,
-);
+export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => PlatformRef =
+  createPlatformFactory(platformBrowser, 'browserTesting');
 
 /**
  * NgModule for testing.
@@ -51,6 +41,7 @@ export const platformBrowserTesting = createPlatformFactory(
     internalProvideZoneChangeDetection({}),
     {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
     {provide: PlatformLocation, useClass: MockPlatformLocation},
+    {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
   ],
 })
 export class BrowserTestingModule {}

@@ -13,8 +13,8 @@ import {
   LocationStrategy,
   PathLocationStrategy,
   PlatformLocation,
-} from '@angular/common';
-import {MockLocationStrategy, MockPlatformLocation} from '@angular/common/testing';
+} from '../../index';
+import {MockLocationStrategy, MockPlatformLocation} from '../../testing';
 import {TestBed} from '@angular/core/testing';
 
 const baseUrl = '/base';

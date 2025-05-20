@@ -6,8 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AsyncPipe} from '@angular/common';
-import {ChangeDetectorRef, Component, computed, EventEmitter, signal} from '@angular/core';
+import {AsyncPipe} from '../../index';
+import {
+  ChangeDetectorRef,
+  Component,
+  computed,
+  ErrorHandler,
+  EventEmitter,
+  signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Observable, of, Subscribable, Unsubscribable} from 'rxjs';
 
@@ -21,7 +28,7 @@ describe('AsyncPipe', () => {
 
   beforeEach(() => {
     ref = getChangeDetectorRefSpy();
-    pipe = new AsyncPipe(ref);
+    pipe = TestBed.runInInjectionContext(() => new AsyncPipe(ref));
   });
 
   afterEach(() => {
@@ -167,8 +174,6 @@ describe('AsyncPipe', () => {
     let resolve: (result: any) => void;
     let reject: (error: any) => void;
     let promise: Promise<any>;
-    // adds longer timers for passing tests in IE
-    const timer = 10;
 
     beforeEach(() => {
       promise = new Promise((res, rej) => {
@@ -182,50 +187,52 @@ describe('AsyncPipe', () => {
         expect(pipe.transform(promise)).toBe(null);
       });
 
-      it('should return the latest available value', (done) => {
+      it('should return the latest available value', async () => {
         pipe.transform(promise);
 
         resolve(message);
+        await promise;
 
-        setTimeout(() => {
-          expect(pipe.transform(promise)).toEqual(message);
-          done();
-        }, timer);
+        expect(pipe.transform(promise)).toEqual(message);
       });
 
-      it('should return value when nothing has changed since the last call', (done) => {
+      it('should return value when nothing has changed since the last call', async () => {
         pipe.transform(promise);
         resolve(message);
+        await promise;
 
-        setTimeout(() => {
-          pipe.transform(promise);
-          expect(pipe.transform(promise)).toBe(message);
-          done();
-        }, timer);
+        pipe.transform(promise);
+        expect(pipe.transform(promise)).toBe(message);
       });
 
-      it('should dispose of the existing subscription when subscribing to a new promise', (done) => {
+      it('should report rejections to error handler', async () => {
+        const spy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
+        pipe.transform(promise);
+        reject(message);
+        try {
+          await promise;
+        } catch {}
+        expect(spy).toHaveBeenCalledWith(message);
+      });
+
+      it('should dispose of the existing subscription when subscribing to a new promise', async () => {
         pipe.transform(promise);
 
-        promise = new Promise<any>(() => {});
+        const newPromise = new Promise<any>(() => {});
+        expect(pipe.transform(newPromise)).toBe(null);
+
+        resolve(message);
+        await promise;
+
         expect(pipe.transform(promise)).toBe(null);
-
-        resolve(message);
-
-        setTimeout(() => {
-          expect(pipe.transform(promise)).toBe(null);
-          done();
-        }, timer);
       });
 
-      it('should request a change detection check upon receiving a new value', (done) => {
+      it('should request a change detection check upon receiving a new value', async () => {
         pipe.transform(promise);
         resolve(message);
+        await promise;
 
-        setTimeout(() => {
-          expect(ref.markForCheck).toHaveBeenCalled();
-          done();
-        }, timer);
+        expect(ref.markForCheck).toHaveBeenCalled();
       });
 
       describe('ngOnDestroy', () => {
@@ -233,31 +240,35 @@ describe('AsyncPipe', () => {
           expect(() => pipe.ngOnDestroy()).not.toThrow();
         });
 
-        it('should dispose of the existing source', (done) => {
+        it('should dispose of the existing source', async () => {
           pipe.transform(promise);
           expect(pipe.transform(promise)).toBe(null);
           resolve(message);
+          await promise;
 
-          setTimeout(() => {
-            expect(pipe.transform(promise)).toEqual(message);
-            pipe.ngOnDestroy();
-            expect(pipe.transform(promise)).toBe(null);
-            done();
-          }, timer);
+          expect(pipe.transform(promise)).toEqual(message);
+          pipe.ngOnDestroy();
+          expect(pipe.transform(promise)).toBe(null);
         });
 
-        it('should ignore signals after the pipe has been destroyed', (done) => {
+        it('should ignore signals after the pipe has been destroyed', async () => {
           pipe.transform(promise);
           expect(pipe.transform(promise)).toBe(null);
           pipe.ngOnDestroy();
           resolve(message);
+          await promise;
 
-          setTimeout(() => {
-            expect(pipe.transform(promise)).toBe(null);
-            done();
-          }, timer);
+          expect(pipe.transform(promise)).toBe(null);
         });
       });
+    });
+  });
+
+  describe('PromiseLike', () => {
+    it('should infer the type from the subscribable', () => {
+      const promiseLike = {then: (resolve) => resolve!({name: 'T'})} as PromiseLike<{name: 'T'}>;
+      // The following line will fail to compile if the type cannot be inferred.
+      const name = pipe.transform(promiseLike)?.name;
     });
   });
 

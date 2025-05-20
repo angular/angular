@@ -2,7 +2,9 @@
 
 When you want to manage your forms programmatically instead of relying purely on the template, reactive forms are the answer.
 
-In this activity, you'll learn how to setup reactive forms.
+Note: Learn more about [reactive forms in the in-depth guide](/guide/forms/reactive-forms).
+
+In this activity, you'll learn how to set up reactive forms.
 
 <hr>
 
@@ -10,7 +12,7 @@ In this activity, you'll learn how to setup reactive forms.
 
 <docs-step title="Import `ReactiveForms` module">
 
-In `app.component.ts`, import `ReactiveFormsModule` from `@angular/forms` and add it to the `imports` array of the component.
+In `app.ts`, import `ReactiveFormsModule` from `@angular/forms` and add it to the `imports` array of the component.
 
 ```angular-ts
 import { ReactiveFormsModule } from '@angular/forms';
@@ -43,7 +45,7 @@ Add `FormControl` and `FormGroup` to the import from `@angular/forms` so that yo
 ```ts
 import {ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 ...
-export class AppComponent {
+export class App {
   profileForm = new FormGroup({
     name: new FormControl(''),
     email: new FormControl(''),

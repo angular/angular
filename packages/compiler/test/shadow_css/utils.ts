@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ShadowCss} from '@angular/compiler/src/shadow_css';
+import {ShadowCss} from '../../src/shadow_css';
 
 export function shim(css: string, contentAttr: string, hostAttr: string = '') {
   const shadowCss = new ShadowCss();

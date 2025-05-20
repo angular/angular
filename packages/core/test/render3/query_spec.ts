@@ -15,8 +15,8 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('query', () => {
   describe('predicate', () => {
@@ -31,7 +31,6 @@ describe('query', () => {
 
       @Directive({
         selector: '[myDir]',
-        standalone: true,
         providers: [Service, {provide: Alias, useExisting: Service}],
       })
       class MyDirective {
@@ -48,7 +47,6 @@ describe('query', () => {
           selector: 'app',
           template: '<div myDir></div>',
           imports: [MyDirective],
-          standalone: true,
         })
         class App {
           @ViewChild(MyDirective) directive!: MyDirective;
@@ -67,7 +65,6 @@ describe('query', () => {
       it('should resolve a provider if given as read token', () => {
         @Component({
           selector: 'app',
-          standalone: true,
           template: '<div myDir></div>',
           imports: [MyDirective],
         })
@@ -85,7 +82,6 @@ describe('query', () => {
   it('should restore queries if view changes', () => {
     @Directive({
       selector: '[someDir]',
-      standalone: true,
     })
     class SomeDir {
       constructor(
@@ -98,7 +94,6 @@ describe('query', () => {
 
     @Component({
       selector: 'app',
-      standalone: true,
       template: `
         <div *someDir></div>
         <div #foo></div>

@@ -73,7 +73,7 @@ ng generate directive select
 Angular creates the directive class and specifies the CSS selector, `[select]`, that identifies the directive in a template.
 </docs-step>
 <docs-step title="Make the directive structural">
-Import `TemplateRef`, and `ViewContainerRef`. Inject `TemplateRef` and `ViewContainerRef` in the directive constructor as private variables.
+Import `TemplateRef`, and `ViewContainerRef`. Inject `TemplateRef` and `ViewContainerRef` in the directive as private properties.
 
 ```ts
 import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
@@ -82,7 +82,8 @@ import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
   selector: '[select]',
 })
 export class SelectDirective {
-  constructor(private templateRef: TemplateRef, private ViewContainerRef: ViewContainerRef) {}
+  private templateRef = inject(TemplateRef);
+  private viewContainerRef = inject(ViewContainerRef);
 }
 
 ```

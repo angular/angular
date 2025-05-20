@@ -1,40 +1,12 @@
 {
-  // This tsconfig is only used by IDEs, no actual builds.
   "compilerOptions": {
-    "baseUrl": ".",
-    "declaration": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "outDir": "../dist/tools/",
-    "noImplicitAny": true,
-    "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "@angular/*": ["../packages/*"]
-    },
-    "rootDirs": [".", ".."],
-    "sourceMap": true,
-    "inlineSources": true,
-    "lib": [
-      "es6",
-      "dom"
-    ],
-    "target": "es5",
+    "strict": true,
     "skipLibCheck": true,
-    "types": [
-      "node"
-    ]
-  },
-  "exclude": [
-    "testing",
-    "node_modules",
-    "typings-test",
-    "public_api_guard",
-    "docs"
-  ],
-  "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true
+    "declaration": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "types": ["node"]
   }
 }

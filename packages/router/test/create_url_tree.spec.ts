@@ -7,7 +7,7 @@
  */
 
 import {Component, Injectable} from '@angular/core';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {createUrlTreeFromSnapshot} from '../src/create_url_tree';
@@ -18,8 +18,9 @@ import {ActivatedRoute, ActivatedRouteSnapshot} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 import {provideRouter, withRouterConfig} from '../src';
+import {timeout} from './helpers';
 
-describe('createUrlTree', async () => {
+describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
   let router: Router;
   beforeEach(() => {
@@ -47,7 +48,7 @@ describe('createUrlTree', async () => {
     ]);
   });
 
-  describe('query parameters', async () => {
+  describe('query parameters', () => {
     it('should support parameter with multiple values', async () => {
       const p1 = serializer.parse('/');
       const t1 = await createRoot(p1, ['/'], {m: ['v1', 'v2']});
@@ -115,7 +116,7 @@ describe('createUrlTree', async () => {
     expect(serializer.serialize(t)).toEqual('/%2Fone/two%2Fthree');
   });
 
-  describe('named outlets', async () => {
+  describe('named outlets', () => {
     it('should preserve secondary segments', async () => {
       const p = serializer.parse('/a/11/b(right:c)');
       const t = await createRoot(p, ['/a', 11, 'd']);
@@ -445,7 +446,7 @@ describe('createUrlTree', async () => {
     expect(segmentA.parameterMap.get('pp')).toEqual('33');
   });
 
-  describe('relative navigation', async () => {
+  describe('relative navigation', () => {
     it('should work', async () => {
       await router.navigateByUrl('/a/(c//left:cp)(left:ap)');
       const t = create(router.routerState.root.children[0], ['c2']);
@@ -616,7 +617,7 @@ describe('defaultQueryParamsHandling', () => {
 
 async function createRoot(
   tree: UrlTree,
-  commands: any[],
+  commands: readonly any[],
   queryParams?: Params,
   fragment?: string,
 ): Promise<UrlTree> {
@@ -631,15 +632,15 @@ async function createRoot(
 
 function create(
   relativeTo: ActivatedRoute,
-  commands: any[],
+  commands: readonly any[],
   queryParams?: Params,
   fragment?: string,
 ) {
   return TestBed.inject(Router).createUrlTree(commands, {relativeTo, queryParams, fragment});
 }
 
-describe('createUrlTreeFromSnapshot', async () => {
-  it('can create a UrlTree relative to empty path named parent', fakeAsync(() => {
+describe('createUrlTreeFromSnapshot', () => {
+  it('can create a UrlTree relative to empty path named parent', async () => {
     @Component({
       template: `<router-outlet></router-outlet>`,
       imports: [RouterModule],
@@ -683,13 +684,13 @@ describe('createUrlTreeFromSnapshot', async () => {
     const fixture = TestBed.createComponent(RootCmp);
 
     router.initialNavigation();
-    advance(fixture);
+    await advance(fixture);
     fixture.debugElement.query(By.directive(MainPageComponent)).componentInstance.navigate();
-    advance(fixture);
+    await advance(fixture);
     expect(fixture.nativeElement.innerHTML).toContain('child works!');
-  }));
+  });
 
-  it('can navigate to relative to `ActivatedRouteSnapshot` in guard', fakeAsync(() => {
+  it('can navigate to relative to `ActivatedRouteSnapshot` in guard', async () => {
     @Injectable({providedIn: 'root'})
     class Guard {
       constructor(private readonly router: Router) {}
@@ -736,12 +737,12 @@ describe('createUrlTreeFromSnapshot', async () => {
     const fixture = TestBed.createComponent(RootCmp);
 
     router.navigateByUrl('parent/guarded');
-    advance(fixture);
+    await advance(fixture);
     expect(router.url).toEqual('/parent/sibling');
-  }));
+  });
 });
 
-function advance(fixture: ComponentFixture<unknown>) {
-  tick();
+async function advance(fixture: ComponentFixture<unknown>) {
+  await timeout();
   fixture.detectChanges();
 }

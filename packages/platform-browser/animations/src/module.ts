@@ -11,7 +11,7 @@ import {
   Provider,
   ɵperformanceMarkFeature as performanceMarkFeature,
 } from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule} from '../../index';
 
 import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from './providers';
 
@@ -46,7 +46,7 @@ export class BrowserAnimationsModule {
    * @usageNotes
    * When registering the `BrowserAnimationsModule`, you can use the `withConfig`
    * function as follows:
-   * ```
+   * ```ts
    * @NgModule({
    *   imports: [BrowserAnimationsModule.withConfig(config)]
    * })

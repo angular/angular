@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EventEmitter} from '@angular/core/public_api';
-import {TestBed} from '@angular/core/testing';
+import {EventEmitter} from '../../src/core';
+import {TestBed} from '../../testing';
 import {BehaviorSubject, config, ReplaySubject, Subject} from 'rxjs';
 
 import {outputFromObservable} from '../src';

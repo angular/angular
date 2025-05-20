@@ -6,8 +6,7 @@ generate_guides(
         "*.md",
     ]),
     data = [
-        "//adev/src/content/examples/angular-compiler-options:tsconfig.app.json",
-        "//adev/src/content/examples/angular-compiler-options:tsconfig.json",
+        "//adev/src/content/examples",
     ],
     visibility = ["//adev:__subpackages__"],
 )

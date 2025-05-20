@@ -123,7 +123,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     this.initializeOutputs();
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnInit() {
     // Collect contents, insert and compile template
     const attachChildNodes: ɵangular1.ILinkFn | undefined = this.helper.prepareTransclusion();
@@ -196,7 +196,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
     if (!this.bindingDestination) {
       this.pendingChanges = changes;
@@ -205,7 +205,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngDoCheck() {
     const twoWayBoundProperties = this.bindings.twoWayBoundProperties;
     const twoWayBoundLastValues = this.bindings.twoWayBoundLastValues;
@@ -225,7 +225,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     });
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy() {
     if (ɵutil.isFunction(this.unregisterDoCheckWatcher)) {
       this.unregisterDoCheckWatcher();

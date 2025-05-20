@@ -9,7 +9,8 @@
 import type {ChangeDetectorRef} from '../change_detection/change_detection';
 import type {Injector} from '../di/injector';
 import type {EnvironmentInjector} from '../di/r3_injector';
-import {Type} from '../interface/type';
+import type {Type} from '../interface/type';
+import type {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 
 import type {ElementRef} from './element_ref';
 import type {NgModuleRef} from './ng_module_factory';
@@ -122,5 +123,7 @@ export abstract class ComponentFactory<C> {
     projectableNodes?: any[][],
     rootSelectorOrNode?: string | any,
     environmentInjector?: EnvironmentInjector | NgModuleRef<any>,
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
+    bindings?: Binding[],
   ): ComponentRef<C>;
 }

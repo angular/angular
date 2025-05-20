@@ -20,7 +20,7 @@
   },
   "forms": {
     "uncompressed": {
-      "main": 176726,
+      "main": 181773,
       "polyfills": 33772
     }
   },
@@ -47,7 +47,7 @@
   },
   "defer": {
     "uncompressed": {
-      "main": 12094,
+      "main": 12709,
       "polyfills": 33807,
       "defer.component": 345
     }

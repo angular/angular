@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/// <reference path="../../../goog.d.ts" />
+
 import {global} from './global';
 
 declare global {
@@ -21,10 +23,8 @@ if (typeof ngI18nClosureMode === 'undefined') {
   // Make sure to refer to ngI18nClosureMode as ['ngI18nClosureMode'] for closure.
   // NOTE: we need to have it in IIFE so that the tree-shaker is happy.
   (function () {
-    // tslint:disable-next-line:no-toplevel-property-access
     global['ngI18nClosureMode'] =
       // TODO(FW-1250): validate that this actually, you know, works.
-      // tslint:disable-next-line:no-toplevel-property-access
       typeof goog !== 'undefined' && typeof goog.getMsg === 'function';
   })();
 }

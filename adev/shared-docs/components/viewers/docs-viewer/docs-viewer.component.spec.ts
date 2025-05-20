@@ -8,7 +8,6 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {provideRouter} from '@angular/router';
 import {ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
@@ -19,7 +18,7 @@ import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {NavigationState} from '../../../services';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
-import {provideExperimentalZonelessChangeDetection} from '@angular/core';
+import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('DocViewer', () => {
   let fixture: ComponentFixture<DocViewer>;
@@ -82,13 +81,12 @@ describe('DocViewer', () => {
     await TestBed.configureTestingModule({
       imports: [DocViewer],
       providers: [
-        provideNoopAnimations(),
         provideRouter([]),
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: NavigationState, useValue: navigationStateSpy},
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(DocViewer);
     fixture.detectChanges();
@@ -112,9 +110,16 @@ describe('DocViewer', () => {
 
     expect(exampleViewer).not.toBeNull();
     expect(exampleViewer.componentInstance.view()).toBe(CodeExampleViewMode.SNIPPET);
+
+    const checkIcon = fixture.debugElement.query(By.directive(IconComponent));
+    expect((checkIcon.nativeElement as HTMLElement).classList).toContain(
+      `material-symbols-outlined`,
+    );
+    expect((checkIcon.nativeElement as HTMLElement).classList).toContain(`docs-check`);
+    expect(checkIcon.nativeElement.innerHTML).toBe('check');
   });
 
-  it('should display example viewer in multi file mode when user clicks expand', async () => {
+  it('should display example viewer in multi file mode when provided example is multi file snippet', async () => {
     const fixture = TestBed.createComponent(DocViewer);
     fixture.componentRef.setInput(
       'docContent',
@@ -124,10 +129,6 @@ describe('DocViewer', () => {
     await fixture.whenStable();
 
     const exampleViewer = fixture.debugElement.query(By.directive(ExampleViewer));
-    const expandButton = fixture.debugElement.query(
-      By.css('button[aria-label="Expand code example"]'),
-    );
-    expandButton.nativeElement.click();
 
     expect(exampleViewer).not.toBeNull();
     expect(exampleViewer.componentInstance.view()).toBe(CodeExampleViewMode.MULTI_FILE);

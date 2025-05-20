@@ -1,46 +1,46 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "guides",
     srcs = glob(
         [
-            "**/*.ts",
+            "**/*.mts",
+            "shiki.d.ts",
         ],
-        exclude = ["index.ts"],
+        exclude = ["index.mts"],
     ),
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        "@npm//@bazel/runfiles",
-        "@npm//@types/diff",
-        "@npm//@types/jsdom",
-        "@npm//@types/node",
-        "@npm//diff",
-        "@npm//emoji-regex",
-        "@npm//html-entities",
-        "@npm//jsdom",
-        "@npm//marked",
-        "@npm//mermaid",
-        "@npm//playwright-core",
-        "@npm//shiki",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/jsdom",
+        "//:node_modules/@types/node",
+        "//:node_modules/diff",
+        "//:node_modules/emoji-regex",
+        "//:node_modules/html-entities",
+        "//:node_modules/jsdom",
+        "//:node_modules/marked",
+        "//:node_modules/mermaid",
+        "//:node_modules/playwright-core",
+        "//:node_modules/shiki",
     ],
 )
 
-ts_library(
+ts_project(
     name = "index",
     srcs = [
-        "index.ts",
+        "index.mts",
     ],
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":guides",
-        "@npm//@types/node",
+        ":guides_rjs",
+        "//:node_modules/@types/node",
     ],
 )
 
 exports_files([
-    "index.ts",
+    "index.mts",
 ])

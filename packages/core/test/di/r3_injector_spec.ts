@@ -7,7 +7,6 @@
  */
 
 import {
-  InjectFlags,
   InjectionToken,
   INJECTOR,
   Injector,
@@ -15,9 +14,10 @@ import {
   ɵɵdefineInjectable,
   ɵɵdefineInjector,
   ɵɵinject,
-} from '@angular/core';
-import {createInjector} from '@angular/core/src/di/create_injector';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
+} from '../../src/core';
+import {createInjector} from '../../src/di/create_injector';
+import {InternalInjectFlags} from '../../src/di/interface/injector';
+import {R3Injector} from '../../src/di/r3_injector';
 
 describe('InjectorDef-based createInjector()', () => {
   class CircularA {
@@ -83,7 +83,8 @@ describe('InjectorDef-based createInjector()', () => {
     static ɵprov = ɵɵdefineInjectable({
       token: ServiceWithOptionalDep,
       providedIn: null,
-      factory: () => new ServiceWithOptionalDep(ɵɵinject(OptionalService, InjectFlags.Optional)),
+      factory: () =>
+        new ServiceWithOptionalDep(ɵɵinject(OptionalService, InternalInjectFlags.Optional)),
     });
   }
 

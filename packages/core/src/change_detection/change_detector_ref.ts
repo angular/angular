@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectFlags} from '../di';
 import {InternalInjectFlags} from '../di/interface/injector';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost} from '../render3/interfaces/type_checks';
@@ -123,11 +122,12 @@ export abstract class ChangeDetectorRef {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__: (flags: InjectFlags) => ChangeDetectorRef = injectChangeDetectorRef;
+  static __NG_ELEMENT_ID__: (flags: InternalInjectFlags) => ChangeDetectorRef =
+    injectChangeDetectorRef;
 }
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
-export function injectChangeDetectorRef(flags: InjectFlags): ChangeDetectorRef {
+export function injectChangeDetectorRef(flags: InternalInjectFlags): ChangeDetectorRef {
   return createViewRef(
     getCurrentTNode()!,
     getLView(),

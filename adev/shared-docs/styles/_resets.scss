@@ -1,10 +1,12 @@
+@use '@angular/material' as mat;
 @use './media-queries' as mq;
 
 @mixin resets() {
   :root {
-    --fallback-font-stack: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-      Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --fallback-font-stack:
+      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol', 'Noto Color Emoji';
     --page-width: 80ch;
     --layout-padding: 3.12rem; // a common padding value throughout the layout
     --primary-nav-width: 110px;
@@ -151,38 +153,34 @@
 
   // Material tab styling
   .mat-mdc-tab-header {
-    --mat-tab-header-disabled-ripple-color: transparent;
-    --mat-tab-header-pagination-icon-color: var(--secondary-contrast);
-    --mat-tab-header-inactive-label-text-color: var(--secondary-contrast);
-    --mat-tab-header-inactive-ripple-color: transparent;
-    --mat-tab-header-inactive-hover-label-text-color: var(--tertiary-contrast);
-    --mat-tab-header-inactive-focus-label-text-color: var(--secondary-contrast);
-    --mat-tab-header-active-label-text-color: var(--primary-contrast);
-    --mat-tab-header-active-ripple-color: transparent;
-    --mdc-tab-indicator-active-indicator-color: color-mix(in srgb, var(--bright-blue) 40%, white);
-    --mat-tab-header-active-focus-label-text-color: var(--primary-contrast);
-    --mat-tab-header-active-hover-label-text-color: var(--primary-contrast);
-    --mat-tab-header-active-focus-indicator-color: var(--bright-blue);
-    --mat-tab-header-active-hover-indicator-color: color-mix(
-      in srgb,
-      var(--bright-blue) 40%,
-      white
-    );
-
-    .mdc-tab {
-      --mat-tab-header-label-text-font: Inter, sans-serif;
-      --mat-tab-header-label-text-letter-spacing: -0.00875rem;
-      --mat-tab-header-label-text-size: 0.875rem;
-      --mat-tab-header-label-text-weight: 500;
-    }
+    @include mat.tabs-overrides((
+      disabled-ripple-color: transparent,
+      pagination-icon-color: var(--secondary-contrast),
+      inactive-label-text-color: var(--secondary-contrast),
+      inactive-ripple-color: transparent,
+      inactive-hover-label-text-color: var(--tertiary-contrast),
+      inactive-focus-label-text-color: var(--secondary-contrast),
+      active-label-text-color: var(--primary-contrast),
+      active-ripple-color: transparent,
+      active-indicator-color: color-mix(in srgb, var(--bright-blue) 40%, white),
+      active-focus-label-text-color: var(--primary-contrast),
+      active-hover-label-text-color: var(--primary-contrast),
+      active-focus-indicator-color: var(--bright-blue),
+      active-hover-indicator-color: color-mix(in srgb, var(--bright-blue) 40%, white),
+      label-text-font: 'Inter, sans-serif',
+      label-text-tracking: -0.00875rem,
+      label-text-size: 0.875rem,
+      label-text-weight: 500,
+    ));
 
     .mdc-tab__text-label {
       user-select: none;
-      letter-spacing: -0.00875rem;
     }
 
     .mdc-tab--active {
-      --mat-tab-header-label-text-weight: 500;
+      @include mat.tabs-overrides((
+        label-text-weight: 500,
+      ));
     }
   }
 
@@ -192,9 +190,6 @@
       gap: 20px;
       border-bottom: 1px solid var(--senary-contrast);
       transition: border-color 0.3s ease;
-    }
-    .mdc-tab__text-label {
-      letter-spacing: -0.00875rem;
     }
 
     .mdc-tab {
@@ -208,12 +203,14 @@
   .docs-code-editor-tabs,
   .docs-editor-tabs {
     .mat-mdc-tab-header {
-      --mdc-tab-indicator-active-indicator-color: transparent;
-      --mat-tab-header-active-focus-indicator-color: transparent;
-      --mat-tab-header-active-hover-indicator-color: transparent;
-      --mat-tab-header-label-text-font: InterTight, sans-serif;
-      --mat-tab-header-label-text-tracking: -0.00875rem;
-      --mat-tab-header-label-text-size: 0.8125rem;
+      @include mat.tabs-overrides((
+        active-indicator-color: transparent,
+        active-focus-indicator-color: transparent,
+        active-hover-indicator-color: transparent,
+        label-text-font: 'InterTight, sans-serif',
+        label-text-tracking: -0.00875rem,
+        label-text-size: 0.8125rem,
+      ));
 
       .mat-mdc-tab-labels {
         gap: 0;
@@ -285,15 +282,17 @@
     }
 
     .mat-mdc-tab-header {
-      --mdc-tab-indicator-active-indicator-color: transparent;
-      --mat-tab-header-active-focus-indicator-color: transparent;
-      --mat-tab-header-active-hover-indicator-color: transparent;
-      --mat-tab-header-active-focus-label-text-color: transparent;
-      --mat-tab-header-active-hover-label-text-color: transparent;
-      --mat-tab-header-active-label-text-color: transparent;
-      --mat-tab-header-label-text-font: InterTight, sans-serif;
-      --mat-tab-header-label-text-letter-spacing: -0.00875rem;
-      --mat-tab-header-label-text-size: 0.8125rem;
+      @include mat.tabs-overrides((
+        active-indicator-color: transparent,
+        active-focus-indicator-color: transparent,
+        active-hover-indicator-color: transparent,
+        active-focus-label-text-color: transparent,
+        active-hover-label-text-color: transparent,
+        active-label-text-color: transparent,
+        label-text-font: 'InterTight, sans-serif',
+        label-text-tracking: -0.00875rem,
+        label-text-size: 0.8125rem,
+      ));
 
       .mat-mdc-tab-labels {
         gap: 0;

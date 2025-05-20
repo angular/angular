@@ -2,6 +2,8 @@
 
 Event handling enables interactive features on web apps. It gives you the ability as a developer to respond to user actions like button presses, form submissions and more.
 
+Note: Learn more about [handling user interaction in the essentials guide](/essentials/templates#handling-user-interaction).
+
 In this activity, you'll learn how to add an event handler.
 
 <hr />
@@ -13,7 +15,7 @@ In Angular you bind to events with the parentheses syntax `()`. On a given eleme
     ...
     template: `<button (click)="greet()">`
 })
-class AppComponent {
+class App {
     greet() {
         console.log('Hello, there 👋');
     }
@@ -27,7 +29,7 @@ Alright, your turn to give this a try:
 <docs-workflow>
 
 <docs-step title="Add an event handler">
-Add the `onMouseOver` event handler function in the `AppComponent` class. Use the following code as the implementation:
+Add the `onMouseOver` event handler function in the `App` class. Use the following code as the implementation:
 
 ```ts
 onMouseOver() {
@@ -38,7 +40,7 @@ onMouseOver() {
 </docs-step>
 
 <docs-step title="Bind to the template event">
-Update the template code in `app.component.ts` to bind to the `mouseover` event of the `section` element.
+Update the template code in `app.ts` to bind to the `mouseover` event of the `section` element.
 
 ```angular-html
 <section (mouseover)="onMouseOver()">

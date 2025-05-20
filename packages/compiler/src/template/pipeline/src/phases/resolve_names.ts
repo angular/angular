@@ -80,6 +80,11 @@ function processLexicalScope(
         // lexical scope.
         processLexicalScope(unit, op.handlerOps, savedView);
         break;
+      case ir.OpKind.RepeaterCreate:
+        if (op.trackByOps !== null) {
+          processLexicalScope(unit, op.trackByOps, savedView);
+        }
+        break;
     }
   }
 

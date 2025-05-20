@@ -13,7 +13,7 @@ import {
   ElementRef,
   inject,
   ViewEncapsulation,
-} from '@angular/core';
+} from '../../src/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
@@ -45,14 +45,12 @@ describe('CSP integration', () => {
         selector: 'uses-styles',
         template: '',
         styles: [testStyles],
-        standalone: true,
         encapsulation: ViewEncapsulation.Emulated,
       })
       class UsesStyles {}
 
       @Component({
         selector: 'app',
-        standalone: true,
         template: '<uses-styles></uses-styles>',
         imports: [UsesStyles],
       })
@@ -73,14 +71,12 @@ describe('CSP integration', () => {
         selector: 'uses-styles',
         template: '',
         styles: [testStyles],
-        standalone: true,
         encapsulation: ViewEncapsulation.None,
       })
       class UsesStyles {}
 
       @Component({
         selector: 'app',
-        standalone: true,
         template: '<uses-styles></uses-styles>',
         imports: [UsesStyles],
       })
@@ -107,7 +103,6 @@ describe('CSP integration', () => {
         selector: 'uses-styles',
         template: '',
         styles: [testStyles],
-        standalone: true,
         encapsulation: ViewEncapsulation.ShadowDom,
       })
       class UsesStyles {
@@ -118,7 +113,6 @@ describe('CSP integration', () => {
 
       @Component({
         selector: 'app',
-        standalone: true,
         template: '<uses-styles></uses-styles>',
         imports: [UsesStyles],
       })
@@ -135,12 +129,11 @@ describe('CSP integration', () => {
   it(
     'should prefer nonce provided through DI over one provided in the DOM',
     withBody('<app ngCspNonce="dom-nonce"></app>', async () => {
-      @Component({selector: 'uses-styles', template: '', styles: [testStyles], standalone: true})
+      @Component({selector: 'uses-styles', template: '', styles: [testStyles]})
       class UsesStyles {}
 
       @Component({
         selector: 'app',
-        standalone: true,
         template: '<uses-styles></uses-styles>',
         imports: [UsesStyles],
       })

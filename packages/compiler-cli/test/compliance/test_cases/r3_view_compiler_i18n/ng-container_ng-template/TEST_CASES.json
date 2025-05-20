@@ -95,7 +95,7 @@
           "files": [
             {
               "generated": "self_closing_tags.js",
-              "expected": "self_closing_tags.pipeline.js"
+              "expected": "self_closing_tags.js"
             }
           ],
           "extraChecks": [
@@ -115,6 +115,10 @@
             "verifyUniqueConsts"
           ]
         }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "linked compile"
       ]
     },
     {
@@ -169,7 +173,7 @@
           "files": [
             {
               "generated": "structural_directives.js",
-              "expected": "structural_directives.pipeline.js"
+              "expected": "structural_directives.js"
             }
           ],
           "extraChecks": [

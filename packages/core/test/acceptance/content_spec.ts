@@ -19,10 +19,10 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('projection', () => {
   function getElementHtml(element: HTMLElement) {
@@ -1539,12 +1539,10 @@ describe('projection', () => {
           `<ng-content select="[two]">Two fallback</ng-content>` +
           `<ng-content select="[three]">Three fallback</ng-content>
         `,
-        standalone: true,
       })
       class Projection {}
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `
           <projection>
@@ -1566,12 +1564,10 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-content>Fallback content</ng-content>`,
-        standalone: true,
       })
       class Projection {}
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `
             <projection>
@@ -1594,12 +1590,10 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-content select="div">I have no divs</ng-content>|<ng-content select="span">I have no spans</ng-content>`,
-        standalone: true,
       })
       class Projection {}
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `
           <projection>
@@ -1622,12 +1616,10 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-content>Wildcard fallback</ng-content>|<ng-content select="span">Span fallback</ng-content>`,
-        standalone: true,
       })
       class Projection {}
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `
           <projection>
@@ -1664,12 +1656,10 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-content>Fallback</ng-content>`,
-        standalone: true,
       })
       class Projection {}
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `
           <projection><ng-container/></projection>
@@ -1687,13 +1677,12 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-content>Value: {{value}}</ng-content>`,
-        standalone: true,
       })
       class Projection {
         value = 0;
       }
 
-      @Component({standalone: true, imports: [Projection], template: `<projection/>`})
+      @Component({imports: [Projection], template: `<projection/>`})
       class App {
         @ViewChild(Projection) projection!: Projection;
       }
@@ -1717,7 +1706,6 @@ describe('projection', () => {
 
           Value: {{value}}
         `,
-        standalone: true,
       })
       class Projection {
         value = 0;
@@ -1727,7 +1715,7 @@ describe('projection', () => {
         }
       }
 
-      @Component({standalone: true, imports: [Projection], template: `<projection/>`})
+      @Component({imports: [Projection], template: `<projection/>`})
       class App {}
 
       const fixture = TestBed.createComponent(App);
@@ -1744,7 +1732,6 @@ describe('projection', () => {
 
       @Directive({
         selector: 'fallback-dir',
-        standalone: true,
       })
       class FallbackDir implements OnDestroy {
         constructor() {
@@ -1759,13 +1746,11 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-content><fallback-dir/></ng-content>`,
-        standalone: true,
         imports: [FallbackDir],
       })
       class Projection {}
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `
           @if (hasProjection) {
@@ -1791,7 +1776,6 @@ describe('projection', () => {
 
       @Directive({
         selector: 'fallback-dir',
-        standalone: true,
       })
       class FallbackDir {
         constructor() {
@@ -1802,7 +1786,6 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-content><fallback-dir/></ng-content>`,
-        standalone: true,
         imports: [FallbackDir],
       })
       class Projection {
@@ -1810,7 +1793,6 @@ describe('projection', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `<projection/>`,
       })
@@ -1828,7 +1810,6 @@ describe('projection', () => {
     it('should be able to inject the host component from inside the fallback content', () => {
       @Directive({
         selector: 'fallback-dir',
-        standalone: true,
       })
       class FallbackDir {
         host = inject(Projection);
@@ -1837,7 +1818,6 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-content><fallback-dir/></ng-content>`,
-        standalone: true,
         imports: [FallbackDir],
       })
       class Projection {
@@ -1845,7 +1825,6 @@ describe('projection', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `<projection/>`,
       })
@@ -1861,7 +1840,6 @@ describe('projection', () => {
 
     it('should render the fallback content if content is not provided through projectableNodes', () => {
       @Component({
-        standalone: true,
         template:
           `<ng-content>One fallback</ng-content>|` +
           `<ng-content>Two fallback</ng-content>|<ng-content>Three fallback</ng-content>`,
@@ -1886,7 +1864,6 @@ describe('projection', () => {
 
     it('should render the content through projectableNodes along with fallback', () => {
       @Component({
-        standalone: true,
         template:
           `<ng-content>One fallback</ng-content>|` +
           `<ng-content>Two fallback</ng-content>|<ng-content>Three fallback</ng-content>`,
@@ -1914,7 +1891,6 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-container #ref/><ng-template #template><ng-content>Fallback</ng-content></ng-template>`,
-        standalone: true,
       })
       class Projection {
         @ViewChild('template') template!: TemplateRef<unknown>;
@@ -1926,7 +1902,6 @@ describe('projection', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `<projection/>`,
       })
@@ -1950,7 +1925,6 @@ describe('projection', () => {
           <ng-content select="[inner-header]">Inner header fallback</ng-content>
           <ng-content select="[inner-footer]">Inner footer fallback</ng-content>
         `,
-        standalone: true,
       })
       class InnerProjection {}
 
@@ -1962,13 +1936,11 @@ describe('projection', () => {
             <ng-content select="[outer-footer]" inner-footer>Outer footer fallback</ng-content>
           </inner-projection>
         `,
-        standalone: true,
         imports: [InnerProjection],
       })
       class Projection {}
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `
           <projection>
@@ -1990,7 +1962,6 @@ describe('projection', () => {
 
       @Component({
         selector: 'fallback',
-        standalone: true,
         template: 'Fallback',
       })
       class Fallback {
@@ -2002,13 +1973,11 @@ describe('projection', () => {
       @Component({
         selector: 'projection',
         template: `<ng-content><fallback/></ng-content>`,
-        standalone: true,
         imports: [Fallback],
       })
       class Projection {}
 
       @Component({
-        standalone: true,
         imports: [Projection],
         template: `<projection>Hello</projection>`,
       })
@@ -2026,12 +1995,10 @@ describe('projection', () => {
         @Component({
           selector: 'projection',
           template: `<ng-content>Fallback</ng-content>`,
-          standalone: true,
         })
         class Projection {}
 
         @Component({
-          standalone: true,
           imports: [Projection],
           template: `
             <projection>Content</projection>
@@ -2054,12 +2021,10 @@ describe('projection', () => {
         @Component({
           selector: 'projection',
           template: `<ng-content>Fallback</ng-content>`,
-          standalone: true,
         })
         class Projection {}
 
         @Component({
-          standalone: true,
           imports: [Projection],
           template: `
             <projection/>

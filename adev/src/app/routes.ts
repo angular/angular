@@ -12,10 +12,11 @@ import {Route} from '@angular/router';
 import {DefaultPage, PagePrefix} from './core/enums/pages';
 import {SUB_NAVIGATION_DATA} from './sub-navigation-data';
 import {mapApiManifestToRoutes} from './features/references/helpers/manifest.helper';
+import MainComponent from './main.component';
 
 // Docs navigation data contains routes which navigates to /tutorials pages, in
 // that case we should load Tutorial component
-export const DOCS_ROUTES = mapNavigationItemsToRoutes(
+export const DOCS_ROUTES: Route[] = mapNavigationItemsToRoutes(
   flatNavigationData(SUB_NAVIGATION_DATA.docs).filter(
     (route) =>
       !route.path?.startsWith(PagePrefix.TUTORIALS) && route.path !== PagePrefix.PLAYGROUND,
@@ -215,6 +216,14 @@ const REDIRECT_ROUTES: Route[] = [
     redirectTo: '/guide/components',
   },
   {
+    path: 'guide/hybrid-rendering',
+    redirectTo: '/guide/ssr',
+  },
+  {
+    path: 'guide/prerendering',
+    redirectTo: '/guide/ssr',
+  },
+  {
     path: 'guide',
     children: [
       {
@@ -228,6 +237,7 @@ const REDIRECT_ROUTES: Route[] = [
 export const routes: Route[] = [
   {
     path: '',
+    component: MainComponent,
     children: [
       {
         path: '',
@@ -237,10 +247,6 @@ export const routes: Route[] = [
       {
         path: PagePrefix.DOCS,
         redirectTo: DefaultPage.DOCS,
-      },
-      {
-        path: PagePrefix.TUTORIALS,
-        redirectTo: DefaultPage.TUTORIALS,
       },
       {
         path: PagePrefix.REFERENCE,

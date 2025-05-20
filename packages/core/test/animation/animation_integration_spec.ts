@@ -35,15 +35,15 @@ import {
   RendererFactory2,
   ViewChild,
   ViewContainerRef,
-} from '@angular/core';
-import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {
   ANIMATION_MODULE_TYPE,
   BrowserAnimationsModule,
   NoopAnimationsModule,
 } from '@angular/platform-browser/animations';
-import {hasStyle} from '@angular/platform-browser/testing/src/browser_util';
+import {hasStyle, isNode} from '@angular/private/testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';
@@ -3078,11 +3078,9 @@ const DEFAULT_COMPONENT_ID = '1';
           exp2: any = false;
           event1: AnimationEvent | undefined;
           event2: AnimationEvent | undefined;
-          // tslint:disable:semicolon
           callback1 = (event: any) => {
             this.event1 = event;
           };
-          // tslint:disable:semicolon
           callback2 = (event: any) => {
             this.event2 = event;
           };
@@ -4523,8 +4521,8 @@ const DEFAULT_COMPONENT_ID = '1';
 
       function syntheticPropError(name: string, nameKind: string) {
         return `NG05105: Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
-  - Either \`BrowserAnimationsModule\` or \`NoopAnimationsModule\` are imported in your application.
-  - There is corresponding configuration for the animation named \`${name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`;
+  - Make sure \`provideAnimationsAsync()\`, \`provideAnimations()\` or \`provideNoopAnimations()\` call was added to a list of providers used to bootstrap an application.
+  - There is a corresponding animation configuration named \`${name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.dev/api/core/Component#animations).`;
       }
 
       describe('when modules are missing', () => {

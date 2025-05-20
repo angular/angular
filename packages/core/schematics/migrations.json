@@ -1,20 +1,25 @@
 {
   "schematics": {
-    "explicit-standalone-flag": {
-      "version": "19.0.0",
-      "description": "Updates non-standalone Directives, Component and Pipes to 'standalone:false' and removes 'standalone:true' from those who are standalone",
-      "factory": "./bundles/explicit-standalone-flag#migrate"
+    "inject-flags": {
+      "version": "20.0.0",
+      "description": "Replaces usages of the deprecated InjectFlags enum",
+      "factory": "./bundles/inject-flags.cjs#migrate"
     },
-    "pending-tasks": {
-      "version": "19.0.0",
-      "description": "Updates ExperimentalPendingTasks to PendingTasks",
-      "factory": "./bundles/pending-tasks#migrate"
+    "test-bed-get": {
+      "version": "20.0.0",
+      "description": "Replaces usages of the deprecated TestBed.get method with TestBed.inject",
+      "factory": "./bundles/test-bed-get.cjs#migrate"
     },
-    "provide-initializer": {
-      "version": "19.0.0",
-      "description": "Replaces `APP_INITIALIZER`, `ENVIRONMENT_INITIALIZER` & `PLATFORM_INITIALIZER` respectively with `provideAppInitializer`, `provideEnvironmentInitializer` & `providePlatformInitializer`.",
-      "factory": "./bundles/provide-initializer#migrate",
+    "control-flow-migration": {
+      "version": "20.0.0",
+      "description": "Converts the entire application to block control flow syntax",
+      "factory": "./bundles/control-flow-migration.cjs#migrate",
       "optional": true
+    },
+    "document-core": {
+      "version": "20.0.0",
+      "description": "Moves imports of `DOCUMENT` from `@angular/common` to `@angular/core`",
+      "factory": "./bundles/document-core.cjs#migrate"
     }
   }
 }

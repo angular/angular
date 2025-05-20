@@ -1,3 +1,5 @@
+@use '../../styles/typography';
+
 :host {
   position: relative;
   width: 100%;
@@ -21,6 +23,10 @@ ng-injector-tree.hidden {
   height: calc(100% - 31px);
 }
 
+nav {
+  border-bottom: 1px solid var(--color-separator);
+}
+
 #nav-buttons {
   display: flex;
 
@@ -29,6 +35,7 @@ ng-injector-tree.hidden {
     border: none;
     cursor: pointer;
     opacity: 0.8;
+    color: var(--secondary-contrast);
 
     &:active {
       opacity: 1;
@@ -36,31 +43,21 @@ ng-injector-tree.hidden {
   }
 }
 
-:host-context(.dark-theme) {
-  #nav-buttons {
-    button {
-      color: #fff;
-    }
-  }
-}
-
 .inspector-active {
-  color: #1a73e8 !important;
+  color: var(--blue-02) !important;
 }
 
 #app-angular-version {
   align-self: center;
   margin-left: auto;
   margin-right: 8px;
-  font-size: 0.8em;
-  font-weight: bold;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
 #version-number {
-  color: #1b1aa5;
+  color: var(--blue-02);
   cursor: text;
   -moz-user-select: text;
   -khtml-user-select: text;
@@ -69,7 +66,7 @@ ng-injector-tree.hidden {
   user-select: text;
 
   &.unsupported-version {
-    color: red;
+    color: var(--red-04);
   }
 }
 
@@ -81,27 +78,11 @@ mat-icon {
 }
 
 .mat-mdc-tab-link {
+  @extend %body-medium-01;
   min-width: unset;
-  line-height: 30px;
   height: 30px;
-  font-size: 13px;
   padding: 0px 10px;
   opacity: 1;
-  font-weight: 400;
-}
-
-:host-context(.dark-theme) {
-  #version-number {
-    color: #5caace;
-
-    &.unsupported-version {
-      color: red;
-    }
-  }
-
-  .inspector-active {
-    color: #4688f1 !important;
-  }
 }
 
 @media only screen and (max-width: 700px) {
@@ -129,20 +110,10 @@ mat-icon {
 }
 
 .frame-selector {
-  background-color: #e2e2e2;
   border-radius: 2px;
-  color: #474747;
   border: none;
   margin: 4px 4px 2px 4px;
   padding: 2px;
   outline-offset: -2px;
   width: 100px;
-  font-size: 12px;
-}
-
-:host-context(.dark-theme) {
-  .frame-selector {
-    background-color: #464646;
-    color: #fff;
-  }
 }

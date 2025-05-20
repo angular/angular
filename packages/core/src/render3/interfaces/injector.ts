@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectFlags} from '../../di/interface/injector';
+import {InternalInjectFlags} from '../../di/interface/injector';
 import {ProviderToken} from '../../di/provider_token';
 import {assertDefined, assertEqual} from '../../util/assert';
 
@@ -175,7 +175,7 @@ export class NodeInjectorFactory {
   /**
    * The inject implementation to be activated when using the factory.
    */
-  injectImpl: null | (<T>(token: ProviderToken<T>, flags?: InjectFlags) => T);
+  injectImpl: null | (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T);
 
   /**
    * Marker set to true during factory invocation to see if we get into recursive loop.
@@ -202,7 +202,7 @@ export class NodeInjectorFactory {
    * Example:
    *
    * If we have a component and directive active an a single element as declared here
-   * ```
+   * ```ts
    * component:
    *   providers: [ {provide: String, useValue: 'component', multi: true} ],
    *   viewProviders: [ {provide: String, useValue: 'componentView', multi: true} ],
@@ -213,7 +213,7 @@ export class NodeInjectorFactory {
    *
    * Then the expected results are:
    *
-   * ```
+   * ```ts
    * providers: ['component', 'directive']
    * viewProviders: ['component', 'componentView', 'directive']
    * ```
@@ -238,7 +238,7 @@ export class NodeInjectorFactory {
    * Example:
    *
    * Given:
-   * ```
+   * ```ts
    * providers: [ {provide: String, useValue: 'all', multi: true} ],
    * viewProviders: [ {provide: String, useValue: 'viewOnly', multi: true} ],
    * ```
@@ -261,6 +261,10 @@ export class NodeInjectorFactory {
       this: NodeInjectorFactory,
       _: undefined,
       /**
+       * Flags that control the injection behavior.
+       */
+      flags: InternalInjectFlags | undefined,
+      /**
        * array where injectables tokens are stored. This is used in
        * case of an error reporting to produce friendlier errors.
        */
@@ -279,15 +283,11 @@ export class NodeInjectorFactory {
      * Set to `true` if the token is declared in `viewProviders` (or if it is component).
      */
     isViewProvider: boolean,
-    injectImplementation: null | (<T>(token: ProviderToken<T>, flags?: InjectFlags) => T),
+    injectImplementation: null | (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T),
   ) {
     ngDevMode && assertDefined(factory, 'Factory not specified');
     ngDevMode && assertEqual(typeof factory, 'function', 'Expected factory function.');
     this.canSeeViewProviders = isViewProvider;
     this.injectImpl = injectImplementation;
   }
-}
-
-export function isFactory(obj: any): obj is NodeInjectorFactory {
-  return obj instanceof NodeInjectorFactory;
 }

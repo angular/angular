@@ -7,6 +7,9 @@
 // @public
 export function formatRuntimeError<T extends number = RuntimeErrorCode>(code: T, message: null | false | string): string;
 
+// @public (undocumented)
+export function formatRuntimeErrorCode<T extends number = RuntimeErrorCode>(code: T): string;
+
 // @public
 export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
     constructor(code: T, message: null | false | string);
@@ -29,7 +32,9 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
-    DEFER_LOADING_FAILED = 750,
+    DEFER_IN_HMR_MODE = -751,
+    // (undocumented)
+    DEFER_LOADING_FAILED = -750,
     // (undocumented)
     DUPLICATE_DIRECTIVE = 309,
     // (undocumented)
@@ -63,6 +68,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
     // (undocumented)
+    INVALID_BINDING_TARGET = 316,
+    // (undocumented)
     INVALID_DIFFER_INPUT = 900,
     // (undocumented)
     INVALID_EVENT_BINDING = 306,
@@ -77,6 +84,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_MULTI_PROVIDER = -209,
     // (undocumented)
+    INVALID_SET_INPUT_CALL = 317,
+    // (undocumented)
     INVALID_SKIP_HYDRATION_HOST = -504,
     // (undocumented)
     LOOP_TRACK_DUPLICATE_KEYS = -955,
@@ -84,6 +93,8 @@ export const enum RuntimeErrorCode {
     LOOP_TRACK_RECREATE = -956,
     // (undocumented)
     MISCONFIGURED_INCREMENTAL_HYDRATION = 508,
+    // (undocumented)
+    MISSING_DIRECTIVE_DEFINITION = 916,
     // (undocumented)
     MISSING_DOCUMENT = 210,
     // (undocumented)
@@ -97,6 +108,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_LOCALE_DATA = 701,
     // (undocumented)
+    MISSING_NG_MODULE_DEFINITION = 915,
+    // (undocumented)
     MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP = 402,
     // (undocumented)
     MISSING_SSR_CONTENT_INTEGRITY_MARKER = -507,
@@ -108,6 +121,10 @@ export const enum RuntimeErrorCode {
     MULTIPLE_MATCHING_PIPES = 313,
     // (undocumented)
     MULTIPLE_PLATFORMS = 400,
+    // (undocumented)
+    NO_BINDING_TARGET = 315,
+    // (undocumented)
+    NO_COMPONENT_FACTORY_FOUND = 917,
     // (undocumented)
     NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)

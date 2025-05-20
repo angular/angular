@@ -53,6 +53,8 @@ describe('CodeEditor', () => {
     await TestBed.configureTestingModule({
       imports: [CodeEditor],
       providers: [
+        // Removing the noop animations makes the test VERY flaky.
+        // TODO: understand why and fix the flakiness.
         provideNoopAnimations(),
         {
           provide: CodeMirrorEditor,
@@ -78,7 +80,7 @@ describe('CodeEditor', () => {
           },
         },
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(CodeEditor);
     loader = TestbedHarnessEnvironment.loader(fixture);
@@ -97,7 +99,7 @@ describe('CodeEditor', () => {
     component.ngAfterViewInit();
 
     expect(codeMirrorEditorInitSpy).toHaveBeenCalledWith(
-      component['codeEditorWrapperRef'].nativeElement,
+      component.codeEditorWrapperRef().nativeElement,
     );
   });
 
@@ -148,6 +150,9 @@ describe('CodeEditor', () => {
     });
 
     it('should focused on a new tab when adding a new file', async () => {
+      // Wait until the asynchronous injection stuff is done.
+      await fixture.whenStable();
+
       const button = fixture.debugElement.query(By.css('button.adev-add-file')).nativeElement;
       button.click();
 

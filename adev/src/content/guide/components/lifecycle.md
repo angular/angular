@@ -1,6 +1,6 @@
 # Component Lifecycle
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 A component's **lifecycle** is the sequence of steps that happen between the component's creation
 and its destruction. Each step represents a different part of Angular's process for rendering
@@ -72,7 +72,7 @@ process.
       <td>Runs once the next time that <strong>all</strong> components have been rendered to the DOM.</td>
     </tr>
     <tr>
-      <td><code>afterRender</code></td>
+      <td><code>afterEveryRender</code></td>
       <td>Runs every time <strong>all</strong> components have been rendered to the DOM.</td>
     </tr>
     <tr>
@@ -132,7 +132,7 @@ TypeScript property name as a key, rather than the alias.
 ### ngOnDestroy
 
 The `ngOnDestroy` method runs once just before a component is destroyed. Angular destroys a
-component when it is no longer shown on the page, such as being hidden by `NgIf` or upon navigating
+component when it is no longer shown on the page, such as being hidden by `@if` or upon navigating
 to another page.
 
 #### DestroyRef
@@ -146,8 +146,8 @@ of `DestroyRef`.
   /* ... */
 })
 export class UserProfile {
-  constructor(private destroyRef: DestroyRef) {
-    destroyRef.onDestroy(() => {
+  constructor() {
+    inject(DestroyRef).onDestroy(() => {
       console.log('UserProfile destruction');
     });
   }
@@ -219,16 +219,16 @@ here, attempting to
 change any state in this method results in
 an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
-### afterRender and afterNextRender
+### afterEveryRender and afterNextRender
 
-The `afterRender` and `afterNextRender` functions let you register a **render callback** to be
+The `afterEveryRender` and `afterNextRender` functions let you register a **render callback** to be
 invoked after Angular has finished rendering _all components_ on the page into the DOM.
 
 These functions are different from the other lifecycle hooks described in this guide. Rather than a
 class method, they are standalone functions that accept a callback. The execution of render
 callbacks are not tied to any specific component instance, but instead an application-wide hook.
 
-`afterRender` and `afterNextRender` must be called in
+`afterEveryRender` and `afterNextRender` must be called in
 an [injection context](guide/di/dependency-injection-context), typically a
 component's constructor.
 
@@ -237,9 +237,9 @@ See [Using DOM APIs](guide/components/dom-apis) for guidance on working with the
 
 Render callbacks do not run during server-side rendering or during build-time pre-rendering.
 
-#### afterRender phases
+#### after*Render phases
 
-When using `afterRender` or `afterNextRender`, you can optionally split the work into phases. The
+When using `afterEveryRender` or `afterNextRender`, you can optionally split the work into phases. The
 phase gives you control over the sequencing of DOM operations, letting you sequence _write_
 operations before _read_ operations in order to minimize
 [layout thrashing](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing). In order to
@@ -254,14 +254,15 @@ export class UserProfile {
   private prevPadding = 0;
   private elementHeight = 0;
 
-  constructor(elementRef: ElementRef) {
+  constructor() {
+    private elementRef = inject(ElementRef);
     const nativeElement = elementRef.nativeElement;
 
     afterNextRender({
       // Use the `Write` phase to write to a geometric property.
       write: () => {
         const padding = computePadding();
-        const changed = padding !== prevPadding;
+        const changed = padding !== this.prevPadding;
         if (changed) {
           nativeElement.style.padding = padding;
         }
@@ -326,7 +327,7 @@ ngDoCheck-->ngAfterViewInit
 ngAfterContentInit-->ngAfterContentChecked
 ngAfterViewInit-->ngAfterViewChecked
 end
-CHANGE--Rendering-->afterRender
+CHANGE--Rendering-->afterNextRender-->afterEveryRender
 ```
 
 ### Subsequent updates
@@ -339,7 +340,7 @@ ngOnChanges-->ngDoCheck
 ngDoCheck-->ngAfterContentChecked;
 ngDoCheck-->ngAfterViewChecked
 end
-CHANGE--Rendering-->afterRender
+CHANGE--Rendering-->afterEveryRender
 ```
 
 ### Ordering with directives

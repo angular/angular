@@ -17,7 +17,7 @@ ts_library(
         "@npm//@types/babel__core",
         "@npm//@types/node",
         "@npm//@types/yargs",
-        "@npm//fast-glob",
+        "@npm//tinyglobby",
     ],
 )
 
@@ -41,7 +41,7 @@ esbuild(
         "@angular/compiler-cli/private/localize",
         "@babel/core",
         "yargs",
-        "fast-glob",
+        "tinyglobby",
     ],
     format = "esm",
     platform = "node",

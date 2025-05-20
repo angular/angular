@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementPosition} from 'protocol';
+import {ElementPosition} from '../../../../protocol';
 
 import {ComponentTreeNode} from '../interfaces';
 

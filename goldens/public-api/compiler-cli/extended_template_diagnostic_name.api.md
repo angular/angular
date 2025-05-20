@@ -17,6 +17,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     MISSING_NGFOROF_LET = "missingNgForOfLet",
     // (undocumented)
+    MISSING_STRUCTURAL_DIRECTIVE = "missingStructuralDirective",
+    // (undocumented)
     NULLISH_COALESCING_NOT_NULLABLE = "nullishCoalescingNotNullable",
     // (undocumented)
     OPTIONAL_CHAIN_NOT_NULLABLE = "optionalChainNotNullable",
@@ -28,6 +30,10 @@ export enum ExtendedTemplateDiagnosticName {
     TEXT_ATTRIBUTE_NOT_BINDING = "textAttributeNotBinding",
     // (undocumented)
     UNINVOKED_FUNCTION_IN_EVENT_BINDING = "uninvokedFunctionInEventBinding",
+    // (undocumented)
+    UNINVOKED_TRACK_FUNCTION = "uninvokedTrackFunction",
+    // (undocumented)
+    UNPARENTHESIZED_NULLISH_COALESCING = "unparenthesizedNullishCoalescing",
     // (undocumented)
     UNUSED_LET_DECLARATION = "unusedLetDeclaration",
     // (undocumented)

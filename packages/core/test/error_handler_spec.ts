@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorHandler} from '../src/error_handler';
+import {TestBed} from '../testing';
+import {ErrorHandler, provideBrowserGlobalErrorListeners} from '../src/error_handler';
+import {isNode} from '@angular/private/testing';
 
 class MockConsole {
   res: any[][] = [];
@@ -37,5 +39,30 @@ describe('ErrorHandler', () => {
     expect(errorToString(false)).toBe('ERROR#false');
     expect(errorToString(null)).toBe('ERROR#null');
     expect(errorToString(undefined)).toBe('ERROR#undefined');
+  });
+
+  it('installs global error handler once', async () => {
+    if (isNode) {
+      return;
+    }
+    // override global.onerror to prevent jasmine report error
+    let originalWindowOnError = window.onerror;
+    window.onerror = function () {};
+    TestBed.configureTestingModule({
+      rethrowApplicationErrors: false,
+      providers: [provideBrowserGlobalErrorListeners(), provideBrowserGlobalErrorListeners()],
+    });
+
+    const spy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        throw new Error('abc');
+      });
+      setTimeout(resolve, 1);
+    });
+
+    expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({message: 'abc'}));
+    expect(spy.calls.count()).toBe(1);
+    window.onerror = originalWindowOnError;
   });
 });

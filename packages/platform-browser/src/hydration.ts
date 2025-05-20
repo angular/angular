@@ -93,8 +93,7 @@ export function withHttpTransferCacheOptions(
 /**
  * Enables support for hydrating i18n blocks.
  *
- * @developerPreview
- * @publicApi
+ * @publicApi 20.0
  */
 export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSupport> {
   return hydrationFeature(HydrationFeatureKind.I18nSupport, ɵwithI18nSupport());
@@ -133,8 +132,7 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
  *   providers: [provideClientHydration(withIncrementalHydration())]
  * });
  * ```
- * @experimental
- * @publicApi
+ * @publicApi 20.0
  * @see {@link provideClientHydration}
  */
 export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKind.IncrementalHydration> {
@@ -163,7 +161,6 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
               'that uses a custom or a noop Zone.js implementation. ' +
               'This is not yet a fully supported configuration.',
           );
-          // tslint:disable-next-line:no-console
           console.warn(message);
         }
       },
@@ -216,19 +213,16 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  * @see {@link withI18nSupport}
  * @see {@link withEventReplay}
  *
- * @param features Optional features to configure additional router behaviors.
+ * @param features Optional features to configure additional hydration behaviors.
  * @returns A set of providers to enable hydration.
  *
- * @publicApi
+ * @publicApi 17.0
  */
 export function provideClientHydration(
   ...features: HydrationFeature<HydrationFeatureKind>[]
 ): EnvironmentProviders {
   const providers: Provider[] = [];
   const featuresKind = new Set<HydrationFeatureKind>();
-  const hasHttpTransferCacheOptions = featuresKind.has(
-    HydrationFeatureKind.HttpTransferCacheOptions,
-  );
 
   for (const {ɵproviders, ɵkind} of features) {
     featuresKind.add(ɵkind);
@@ -237,6 +231,10 @@ export function provideClientHydration(
       providers.push(ɵproviders);
     }
   }
+
+  const hasHttpTransferCacheOptions = featuresKind.has(
+    HydrationFeatureKind.HttpTransferCacheOptions,
+  );
 
   if (
     typeof ngDevMode !== 'undefined' &&

@@ -4,7 +4,6 @@
   "description": "Angular - the compiler CLI for Node.js",
   "typings": "index.d.ts",
   "bin": {
-    "ngcc": "./bundles/ngcc/index.js",
     "ngc": "./bundles/src/bin/ngc.js",
     "ng-xi18n": "./bundles/src/bin/ng_xi18n.js"
   },
@@ -43,7 +42,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "7.26.0",
+    "@babel/core": "7.27.1",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "reflect-metadata": "^0.2.0",
     "chokidar": "^4.0.0",
@@ -54,7 +53,10 @@
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=5.5 <5.8"
+    "typescript": ">=5.8 <5.9"
+  },
+  "devDependencies": {
+    "@angular/compiler": "workspace:*"
   },
   "repository": {
     "type": "git",
@@ -67,7 +69,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": "^18.19.1 || ^20.11.1 || >=22.0.0"
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
   },
   "bugs": {
     "url": "https://github.com/angular/angular/issues"

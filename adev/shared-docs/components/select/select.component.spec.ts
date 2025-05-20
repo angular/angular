@@ -9,7 +9,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {Select} from './select.component';
-import {provideExperimentalZonelessChangeDetection} from '@angular/core';
+import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('Select', () => {
   let component: Select;
@@ -18,7 +18,7 @@ describe('Select', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [Select],
-      providers: [provideExperimentalZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection()],
     });
     fixture = TestBed.createComponent(Select);
     component = fixture.componentInstance;

@@ -24,7 +24,7 @@ describe('BannerComponent (initial CLI generated)', () => {
   let fixture: ComponentFixture<BannerComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({imports: [BannerComponent]}).compileComponents();
+    TestBed.configureTestingModule({imports: [BannerComponent]});
   }));
 
   beforeEach(() => {
@@ -90,7 +90,7 @@ describe('BannerComponent (with beforeEach)', () => {
   // #enddocregion v4-test-3
 
   // #docregion v4-test-4
-  it('should find the <p> with fixture.debugElement.nativeElement)', () => {
+  it('should find the <p> with fixture.debugElement.nativeElement', () => {
     // #docregion debugElement-nativeElement
     const bannerDe: DebugElement = fixture.debugElement;
     const bannerEl: HTMLElement = bannerDe.nativeElement;

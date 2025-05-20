@@ -1,6 +1,6 @@
 # Using DOM APIs
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular handles most DOM creation, updates, and removals for you. However, you might rarely need to
 directly interact with a component's DOM. Components can inject ElementRef to get a reference to the
@@ -9,7 +9,8 @@ component's host element:
 ```ts
 @Component({...})
 export class ProfilePhoto {
-  constructor(elementRef: ElementRef) {
+  constructor() {
+    const elementRef = inject(ElementRef);
     console.log(elementRef.nativeElement);
   }
 }
@@ -18,14 +19,15 @@ export class ProfilePhoto {
 The `nativeElement` property references the
 host [Element](https://developer.mozilla.org/docs/Web/API/Element) instance.
 
-You can use Angular's `afterRender` and `afterNextRender` functions to register a **render
+You can use Angular's `afterEveryRender` and `afterNextRender` functions to register a **render
 callback** that runs when Angular has finished rendering the page.
 
 ```ts
 @Component({...})
 export class ProfilePhoto {
-  constructor(elementRef: ElementRef) {
-    afterRender(() => {
+  constructor() {
+    const elementRef = inject(ElementRef);
+    afterEveryRender(() => {
       // Focus the first input element in this component.
       elementRef.nativeElement.querySelector('input')?.focus();
     });
@@ -33,7 +35,7 @@ export class ProfilePhoto {
 }
 ```
 
-`afterRender` and `afterNextRender` must be called in an _injection context_, typically a
+`afterEveryRender` and `afterNextRender` must be called in an _injection context_, typically a
 component's constructor.
 
 **Avoid direct DOM manipulation whenever possible.** Always prefer expressing your DOM's structure

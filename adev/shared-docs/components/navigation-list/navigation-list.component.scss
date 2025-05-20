@@ -24,13 +24,13 @@
   }
 
   &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
     background-color: var(--septenary-contrast);
+
     @include mq.for-tablet-landscape-down {
       background-color: var(--quinary-contrast);
     }
-
-    border-radius: 10px;
-    transition: background-color 0.3s ease;
   }
 
   &::-webkit-scrollbar-thumb:hover {
@@ -43,6 +43,12 @@
 
   > .docs-faceted-list {
     border: 0;
+  }
+
+  .docs-faceted-list-item-text {
+    max-width: calc(100% - 1rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .docs-nav-item-has-icon {
@@ -115,7 +121,7 @@ a,
 
 // Add padding-bottom to last item in the list
 .docs-navigation-list {
-  width: 100%;
+  width: 15rem;
 
   li:last-of-type {
     ul:last-of-type {
@@ -142,5 +148,14 @@ a,
     color: var(--quinary-contrast);
     transition: color 0.3s ease;
     margin-inline-end: 0.4rem;
+  }
+}
+
+::ng-deep .API-tooltip{
+  .mat-mdc-tooltip-surface{
+    max-width: unset;
+    width:auto;
+    word-break: keep-all;
+    white-space: pre;
   }
 }

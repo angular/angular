@@ -40,6 +40,27 @@ export interface MigrationOptions {
    * ```
    */
   _internalCombineMemberInitializers?: boolean;
+
+  /**
+   * Internal-only option that determines whether the migration should
+   * replace constructor parameter references with `this.param` property
+   * references. Only applies to references to readonly properties in
+   * initializers.
+   *
+   * ```
+   * // Before
+   * private foo;
+   *
+   * constructor(readonly service: Service) {
+   *   this.foo = service.getFoo();
+   * }
+   *
+   * // After
+   * readonly service = inject(Service);
+   * private foo = this.service.getFoo();
+   * ```
+   */
+  _internalReplaceParameterReferencesInInitializers?: boolean;
 }
 
 /** Names of decorators that enable DI on a class declaration. */
@@ -302,9 +323,21 @@ export function getSuperParameters(
       localTypeChecker.getSymbolAtLocation(node)?.declarations?.forEach((decl) => {
         if (ts.isParameter(decl) && topLevelParameters.has(decl)) {
           usedParams.add(decl);
+        } else if (
+          ts.isShorthandPropertyAssignment(decl) &&
+          topLevelParameterNames.has(decl.name.text)
+        ) {
+          for (const param of topLevelParameters) {
+            if (ts.isIdentifier(param.name) && decl.name.text === param.name.text) {
+              usedParams.add(param);
+              break;
+            }
+          }
         }
       });
-    } else {
+      // Parameters referenced inside callbacks can be used directly
+      // within `super` so don't descend into inline functions.
+    } else if (!isInlineFunction(node)) {
       node.forEachChild(walk);
     }
   });
@@ -422,4 +455,13 @@ function findSuperCall(root: ts.Node): ts.CallExpression | null {
   });
 
   return result;
+}
+
+/** Checks whether a node is an inline function. */
+export function isInlineFunction(
+  node: ts.Node,
+): node is ts.FunctionDeclaration | ts.FunctionExpression | ts.ArrowFunction {
+  return (
+    ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node) || ts.isArrowFunction(node)
+  );
 }

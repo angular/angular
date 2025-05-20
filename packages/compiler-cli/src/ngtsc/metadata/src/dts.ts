@@ -219,6 +219,10 @@ export class DtsMetadataReader implements MetadataReader {
       // used to increase the accuracy of a diagnostic.
       preserveWhitespaces: false,
       isExplicitlyDeferred: false,
+      // We don't need to know if imported components from .d.ts
+      // files are selectorless for type-checking purposes.
+      selectorlessEnabled: false,
+      localReferencedSymbols: null,
     };
   }
 
@@ -242,11 +246,15 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
     const type = def.type.typeArguments[1];
-    if (!ts.isLiteralTypeNode(type) || !ts.isStringLiteral(type.literal)) {
+
+    if (
+      !ts.isLiteralTypeNode(type) ||
+      (!ts.isStringLiteral(type.literal) && type.literal.kind !== ts.SyntaxKind.NullKeyword)
+    ) {
       // The type metadata was the wrong type.
       return null;
     }
-    const name = type.literal.text;
+    const name = ts.isStringLiteral(type.literal) ? type.literal.text : null;
 
     const isStandalone =
       def.type.typeArguments.length > 2 && (readBooleanType(def.type.typeArguments[2]) ?? false);
@@ -257,6 +265,7 @@ export class DtsMetadataReader implements MetadataReader {
       name,
       nameExpr: null,
       isStandalone,
+      isPure: null!, // The DTS has no idea about that
       decorator: null,
       isExplicitlyDeferred: false,
     };

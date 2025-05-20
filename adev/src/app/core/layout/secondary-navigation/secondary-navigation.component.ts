@@ -34,7 +34,6 @@ import {SUB_NAVIGATION_DATA} from '../../../sub-navigation-data';
 import {PagePrefix} from '../../enums/pages';
 import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
 import {isPlatformBrowser} from '@angular/common';
-import {trigger, transition, style, animate} from '@angular/animations';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 
 export const ANIMATION_DURATION = 500;
@@ -45,17 +44,6 @@ export const ANIMATION_DURATION = 500;
   templateUrl: './secondary-navigation.component.html',
   styleUrls: ['./secondary-navigation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('leaveAnimation', [
-      transition(':leave', [
-        style({transform: 'translateX(0%)'}),
-        animate(
-          `${ANIMATION_DURATION}ms ${ANIMATION_DURATION}ms ease-out`,
-          style({transform: 'translateX(100%)'}),
-        ),
-      ]),
-    ]),
-  ],
 })
 export class SecondaryNavigation implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
@@ -69,10 +57,11 @@ export class SecondaryNavigation implements OnInit {
     this.primaryActiveRouteItem() === PagePrefix.REFERENCE ? 1 : 2,
   );
   readonly navigationItemsSlides = this.navigationState.expandedItems;
+
   navigationItems: NavigationItem[] | undefined;
 
   translateX = computed(() => {
-    const level = this.navigationState.expandedItems()?.length ?? 0;
+    const level = this.navigationState.level();
     return `translateX(${-level * 100}%)`;
   });
   transition = signal('0ms');

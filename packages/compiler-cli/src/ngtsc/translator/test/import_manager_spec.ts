@@ -1081,6 +1081,32 @@ describe('import manager', () => {
     `),
     );
   });
+
+  it('should work when using an isolated transform', () => {
+    const {testFile} = createTestProgram('import { input } from "@angular/core";');
+    const manager = new ImportManager();
+    const ref = manager.addImport({
+      exportModuleSpecifier: '@angular/core',
+      exportSymbolName: 'input',
+      requestedFile: testFile,
+    });
+
+    const extraStatements = [ts.factory.createExpressionStatement(ref)];
+    const transformer = manager.toTsTransform(new Map([[testFile.fileName, extraStatements]]));
+
+    const result = ts.transform(testFile, [transformer]);
+    expect(result.diagnostics?.length ?? 0).toBe(0);
+    expect(result.transformed.length).toBe(1);
+
+    const printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
+    const output = printer.printFile(result.transformed[0]);
+    expect(output).toBe(
+      omitLeadingWhitespace(`
+      import { input } from "@angular/core";
+      input;
+    `),
+    );
+  });
 });
 
 function createTestProgram(text: string): {

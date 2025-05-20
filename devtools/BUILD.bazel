@@ -1,5 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "npm_sass_library", "sass_library")
-load("//tools:defaults.bzl", "ts_config")
+load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,24 +7,15 @@ exports_files([
     "cypress.json",
 ])
 
-npm_sass_library(
-    name = "material_sass_deps",
-    deps = [
-        "@npm//@angular/cdk",
-        "@npm//@angular/material",
-    ],
+rules_js_tsconfig(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
 )
 
-ts_config(
-    name = "tsconfig_spec",
-    src = "tsconfig.spec.json",
+rules_js_tsconfig(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
     deps = [
-        "//devtools:tsconfig.json",
+        ":tsconfig_build",
     ],
-)
-
-sass_library(
-    name = "global_styles",
-    srcs = ["styles.scss"],
-    deps = [":material_sass_deps"],
 )

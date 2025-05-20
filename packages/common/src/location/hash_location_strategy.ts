@@ -45,7 +45,7 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     while (this._removeListenerFns.length) {
       this._removeListenerFns.pop()!();
@@ -77,18 +77,16 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
   }
 
   override pushState(state: any, title: string, path: string, queryParams: string) {
-    let url: string | null = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
-    if (url.length == 0) {
-      url = this._platformLocation.pathname;
-    }
+    const url =
+      this.prepareExternalUrl(path + normalizeQueryParams(queryParams)) ||
+      this._platformLocation.pathname;
     this._platformLocation.pushState(state, title, url);
   }
 
   override replaceState(state: any, title: string, path: string, queryParams: string) {
-    let url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
-    if (url.length == 0) {
-      url = this._platformLocation.pathname;
-    }
+    const url =
+      this.prepareExternalUrl(path + normalizeQueryParams(queryParams)) ||
+      this._platformLocation.pathname;
     this._platformLocation.replaceState(state, title, url);
   }
 

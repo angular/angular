@@ -63,7 +63,7 @@ If an Observable used in `toSignal` produces an error, that error is thrown when
 
 If an Observable used in `toSignal` completes, the signal continues to return the most recently emitted value before completion.
 
-## Create an RxJS Observale from a signal with `toObservable`
+## Create an RxJS Observable from a signal with `toObservable`
 
 Use the `toObservable` utility to create an `Observable` which tracks the value of a signal. The signal's value is monitored with an `effect` which emits the value to the Observable when it changes.
 

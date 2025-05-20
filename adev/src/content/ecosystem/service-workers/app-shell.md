@@ -11,7 +11,7 @@ Do this with the following Angular CLI command:
 
 <docs-code language="shell">
 
-ng new my-app --routing
+ng new my-app
 
 </docs-code>
 

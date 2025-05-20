@@ -16,7 +16,7 @@ import {
   signal,
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {Router, RouterOutlet, ɵafterNextNavigation as afterNextNavigation} from '@angular/router';
+import {Router, RouterOutlet, ɵafterNextNavigation as afterNextNavigation} from '../../index';
 
 @Injectable({providedIn: 'root'})
 export class RootFixtureService {

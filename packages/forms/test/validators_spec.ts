@@ -16,7 +16,7 @@ import {
   ValidationErrors,
   ValidatorFn,
   Validators,
-} from '@angular/forms';
+} from '../index';
 import {Observable, of, timer} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
@@ -209,6 +209,18 @@ import {normalizeValidators} from '../src/validators';
       it('should not error on an object containing a length attribute that is zero', () => {
         expect(Validators.required(new FormControl({id: 1, length: 0, width: 0}))).toBeNull();
       });
+
+      it('should error on an empty set', () => {
+        expect(Validators.required(new FormControl(new Set()))).toEqual({'required': true});
+      });
+
+      it('should not error on a non-empty set', () => {
+        expect(Validators.required(new FormControl(new Set([1, 2])))).toBeNull();
+      });
+
+      it('should not error on an object containing a size attribute that is zero', () => {
+        expect(Validators.required(new FormControl({id: 1, size: 0, width: 0}))).toBeNull();
+      });
     });
 
     describe('requiredTrue', () => {
@@ -246,6 +258,10 @@ import {normalizeValidators} from '../src/validators';
         expect(Validators.minLength(2)(new FormControl(undefined))).toBeNull();
       });
 
+      it('should not error on empty array', () => {
+        expect(Validators.minLength(2)(new FormControl([]))).toBeNull();
+      });
+
       it('should not error on valid strings', () => {
         expect(Validators.minLength(2)(new FormControl('aa'))).toBeNull();
       });
@@ -281,6 +297,24 @@ import {normalizeValidators} from '../src/validators';
         expect(Validators.minLength(10)(new FormControl(value))).toEqual({
           'minlength': {'requiredLength': 10, 'actualLength': 5},
         });
+      });
+
+      it('should return null when passing a boolean', () => {
+        expect(Validators.minLength(1)(new FormControl(true))).toBeNull();
+        expect(Validators.minLength(1)(new FormControl(false))).toBeNull();
+      });
+
+      it('should trigger validation for an object that contains numeric size property', () => {
+        const value = new Set([1, 2, 3, 4, 5]);
+        expect(Validators.minLength(1)(new FormControl(value))).toBeNull();
+        expect(Validators.minLength(10)(new FormControl(value))).toEqual({
+          'minlength': {'requiredLength': 10, 'actualLength': 5},
+        });
+      });
+
+      it('should not error on empty set', () => {
+        const value = new Set();
+        expect(Validators.minLength(1)(new FormControl(value))).toBeNull();
       });
 
       it('should return null when passing a boolean', () => {
@@ -333,6 +367,22 @@ import {normalizeValidators} from '../src/validators';
 
       it('should trigger validation for an object that contains numeric length property', () => {
         const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
+        expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
+        expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
+          'maxlength': {'requiredLength': 1, 'actualLength': 5},
+        });
+      });
+
+      it('should trigger validation for an object that contains numeric length property', () => {
+        const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
+        expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
+        expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
+          'maxlength': {'requiredLength': 1, 'actualLength': 5},
+        });
+      });
+
+      it('should trigger validation for an object that contains numeric size property', () => {
+        const value = new Set([1, 2, 3, 4, 5]);
         expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
         expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
           'maxlength': {'requiredLength': 1, 'actualLength': 5},

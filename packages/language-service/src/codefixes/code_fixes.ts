@@ -9,7 +9,7 @@
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import tss from 'typescript';
 
-import {TemplateInfo} from '../utils';
+import {TypeCheckInfo} from '../utils';
 
 import {CodeActionMeta, FixIdForCodeFixesAll, isFixAllAvailable} from './utils';
 
@@ -50,7 +50,7 @@ export class CodeFixes {
    */
   getCodeFixesAtPosition(
     fileName: string,
-    templateInfo: TemplateInfo | null,
+    typeCheckInfo: TypeCheckInfo | null,
     compiler: NgCompiler,
     start: number,
     end: number,
@@ -68,7 +68,7 @@ export class CodeFixes {
       for (const meta of metas) {
         const codeActionsForMeta = meta.getCodeActions({
           fileName,
-          templateInfo,
+          typeCheckInfo: typeCheckInfo,
           compiler,
           start,
           end,

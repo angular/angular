@@ -9,12 +9,12 @@ This table covers [Angular versions under active support](reference/releases#act
 
 | Angular            | Node.js                              | TypeScript     | RxJS               |
 | ------------------ | ------------------------------------ | -------------- | ------------------ |
+| 20.0.x             | ^20.19.0 \|\| ^22.12.0 \|\| ^24.0.0  | >=5.8.0 <5.9.0 | ^6.5.3 \|\| ^7.4.0 |
+| 19.2.x             | ^18.19.1 \|\| ^20.11.1 \|\| ^22.0.0  | >=5.5.0 <5.9.0 | ^6.5.3 \|\| ^7.4.0 |
+| 19.1.x             | ^18.19.1 \|\| ^20.11.1 \|\| ^22.0.0  | >=5.5.0 <5.8.0 | ^6.5.3 \|\| ^7.4.0 |
 | 19.0.x             | ^18.19.1 \|\| ^20.11.1 \|\| ^22.0.0  | >=5.5.0 <5.7.0 | ^6.5.3 \|\| ^7.4.0 |
 | 18.1.x \|\| 18.2.x | ^18.19.1 \|\| ^20.11.1 \|\| ^22.0.0  | >=5.4.0 <5.6.0 | ^6.5.3 \|\| ^7.4.0 |
 | 18.0.x             | ^18.19.1 \|\| ^20.11.1 \|\| ^22.0.0  | >=5.4.0 <5.5.0 | ^6.5.3 \|\| ^7.4.0 |
-| 17.3.x             | ^18.13.0 \|\| ^20.9.0                | >=5.2.0 <5.5.0 | ^6.5.3 \|\| ^7.4.0 |
-| 17.1.x \|\| 17.2.x | ^18.13.0 \|\| ^20.9.0                | >=5.2.0 <5.4.0 | ^6.5.3 \|\| ^7.4.0 |
-| 17.0.x             | ^18.13.0 \|\| ^20.9.0                | >=5.2.0 <5.3.0 | ^6.5.3 \|\| ^7.4.0 |
 
 ## Unsupported Angular versions
 
@@ -24,6 +24,9 @@ guarantees. It is listed here for historical reference.
 
 | Angular            | Node.js                              | TypeScript     | RxJS               |
 | ------------------ | ------------------------------------ | -------------- | ------------------ |
+| 17.3.x             | ^18.13.0 \|\| ^20.9.0                | >=5.2.0 <5.5.0 | ^6.5.3 \|\| ^7.4.0 |
+| 17.1.x \|\| 17.2.x | ^18.13.0 \|\| ^20.9.0                | >=5.2.0 <5.4.0 | ^6.5.3 \|\| ^7.4.0 |
+| 17.0.x             | ^18.13.0 \|\| ^20.9.0                | >=5.2.0 <5.3.0 | ^6.5.3 \|\| ^7.4.0 |
 | 16.1.x \|\| 16.2.x | ^16.14.0 \|\| ^18.10.0               | >=4.9.3 <5.2.0 | ^6.5.3 \|\| ^7.4.0 |
 | 16.0.x             | ^16.14.0 \|\| ^18.10.0               | >=4.9.3 <5.1.0 | ^6.5.3 \|\| ^7.4.0 |
 | 15.1.x \|\| 15.2.x | ^14.20.0 \|\| ^16.13.0 \|\| ^18.10.0 | >=4.8.2 <5.0.0 | ^6.5.3 \|\| ^7.4.0 |
@@ -66,8 +69,21 @@ Until Angular v9, Angular and Angular CLI versions were not synced.
 
 ## Browser support
 
-Angular supports most recent browsers.
-This includes the following specific versions:
+Angular uses the ["widely available" Baseline](https://web.dev/baseline) to define browser
+support. For each major version, Angular supports browsers included in the Baseline of a
+chosen date near the release date for that major.
+
+The "widely available" Baseline includes browsers released less than 30 months (2.5 years)
+of the chosen date within Baseline's core browser set (Chrome, Edge, Firefox, Safari) and
+targets supporting approximately 95% of web users.
+
+| Angular | Baseline Date | Browser Set                 |
+| ------- | ------------- | --------------------------- |
+| v20     | 2025-04-30    | [Browser Set][browsers-v20] |
+
+[browsers-v20]: https://browsersl.ist/#q=Chrome+%3E%3D+105%0AChromeAndroid+%3E%3D+105%0AEdge+%3E%3D+105%0AFirefox+%3E%3D+104%0AFirefoxAndroid+%3E%3D+104%0ASafari+%3E%3D+16%0AiOS+%3E%3D+16
+
+Angular versions prior to v20 support the following specific browser versions:
 
 | Browser | Supported versions                          |
 | :------ | :------------------------------------------ |
@@ -77,8 +93,6 @@ This includes the following specific versions:
 | Safari  | 2 most recent major versions                |
 | iOS     | 2 most recent major versions                |
 | Android | 2 most recent major versions                |
-
-HELPFUL: Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request, using [Sauce Labs](https://saucelabs.com).
 
 ## Polyfills
 

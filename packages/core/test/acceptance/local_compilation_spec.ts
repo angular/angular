@@ -12,9 +12,9 @@ import {
   ɵɵdefineNgModule,
   ɵɵgetComponentDepsFactory,
   ɵɵsetNgModuleScope,
-} from '@angular/core';
-import {ComponentType} from '@angular/core/src/render3';
-import {getNgModuleDef} from '@angular/core/src/render3/def_getters';
+} from '../../src/core';
+import {ComponentType} from '../../src/render3';
+import {getNgModuleDef} from '../../src/render3/def_getters';
 
 describe('component dependencies in local compilation', () => {
   it('should compute correct set of dependencies when importing ng-modules directly', () => {

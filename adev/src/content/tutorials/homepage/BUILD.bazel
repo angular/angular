@@ -5,7 +5,12 @@ package(default_visibility = ["//adev:__subpackages__"])
 filegroup(
     name = "files",
     srcs = glob(
-        ["**/*"],
+        [
+            "**/*",
+        ],
+        exclude = [
+            "**/node_modules/**/*.md",
+        ],
     ),
 )
 

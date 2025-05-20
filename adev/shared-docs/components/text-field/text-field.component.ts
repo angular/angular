@@ -46,6 +46,7 @@ export class TextField implements ControlValueAccessor {
   readonly disabled = model<boolean>(false);
   readonly hideIcon = input<boolean>(false);
   readonly autofocus = input<boolean>(false);
+  readonly resetLabel = input<string | null>(null);
 
   // Implemented as part of ControlValueAccessor.
   private onChange: (value: string) => void = (_: string) => {};
@@ -62,8 +63,8 @@ export class TextField implements ControlValueAccessor {
   }
 
   // Implemented as part of ControlValueAccessor.
-  writeValue(value: string): void {
-    this.value.set(value);
+  writeValue(value: unknown): void {
+    this.value.set(typeof value === 'string' ? value : null);
   }
 
   // Implemented as part of ControlValueAccessor.
@@ -89,5 +90,9 @@ export class TextField implements ControlValueAccessor {
     this.value.set(value);
     this.onChange(value);
     this.onTouched();
+  }
+
+  clearTextField() {
+    this.setValue('');
   }
 }

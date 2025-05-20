@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 import {inject} from '../di';
 import {InjectionToken} from '../di/injection_token';
@@ -38,6 +38,16 @@ export class DehydratedBlockRegistry {
 
   add(blockId: string, info: DehydratedDeferBlock) {
     this.registry.set(blockId, info);
+    // It's possible that hydration is queued that's waiting for the
+    // resolution of a lazy loaded route. In this case, we ensure
+    // the callback function is called to continue the hydration process
+    // for the queued block set.
+    if (this.awaitingCallbacks.has(blockId)) {
+      const awaitingCallbacks = this.awaitingCallbacks.get(blockId)!;
+      for (const cb of awaitingCallbacks) {
+        cb();
+      }
+    }
   }
 
   get(blockId: string): DehydratedDeferBlock | null {
@@ -55,6 +65,7 @@ export class DehydratedBlockRegistry {
       this.jsActionMap.delete(blockId);
       this.invokeTriggerCleanupFns(blockId);
       this.hydrating.delete(blockId);
+      this.awaitingCallbacks.delete(blockId);
     }
     if (this.size === 0) {
       this.contract.instance?.cleanUp();
@@ -86,6 +97,15 @@ export class DehydratedBlockRegistry {
 
   // Blocks that are being hydrated.
   hydrating = new Map<string, PromiseWithResolvers<void>>();
+
+  // Blocks that are awaiting a defer instruction finish.
+  private awaitingCallbacks = new Map<string, Function[]>();
+
+  awaitParentBlock(topmostParentBlock: string, callback: Function) {
+    const parentBlockAwaitCallbacks = this.awaitingCallbacks.get(topmostParentBlock) ?? [];
+    parentBlockAwaitCallbacks.push(callback);
+    this.awaitingCallbacks.set(topmostParentBlock, parentBlockAwaitCallbacks);
+  }
 
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({

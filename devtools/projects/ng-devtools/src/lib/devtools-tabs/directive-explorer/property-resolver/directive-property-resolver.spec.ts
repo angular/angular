@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Properties, PropType} from 'protocol';
+import {ɵFramework as Framework} from '@angular/core';
+import {Properties, PropType} from '../../../../../../protocol';
 
 import {DirectivePropertyResolver} from './directive-property-resolver';
 
@@ -98,6 +99,7 @@ const properties: Properties = {
     },
   },
   metadata: {
+    framework: Framework.Angular,
     inputs: {
       i: 'i',
       i1: 'i_1',
@@ -131,6 +133,36 @@ describe('DirectivePropertyResolver', () => {
     expect(resolver.directiveOutputControls.dataSource.data[2].prop.name).toBe('b1');
     expect(resolver.directiveOutputControls.dataSource.data[3].prop.name).toBe('o_1');
     expect(resolver.directiveStateControls.dataSource.data[0].prop.name).toBe('p');
+  });
+
+  it('should register directive props', () => {
+    const resolver = new DirectivePropertyResolver(
+      messageBusMock,
+      {
+        props: {
+          foo: {
+            editable: false,
+            expandable: false,
+            preview: '',
+            type: PropType.Object,
+            value: {},
+            containerType: null,
+          },
+        },
+        metadata: {
+          framework: Framework.Wiz,
+          props: {
+            foo: 'foo',
+          },
+        },
+      },
+      {
+        element: [0],
+        directive: 0,
+      },
+    );
+
+    expect(resolver.directivePropControls.dataSource.data[0].prop.name).toBe('foo');
   });
 
   it('should sort properties', () => {

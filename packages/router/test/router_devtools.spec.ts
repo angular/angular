@@ -7,8 +7,8 @@
  */
 
 import {Component} from '@angular/core';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Router, RouterModule} from '@angular/router';
+import {TestBed} from '@angular/core/testing';
+import {Router, RouterModule} from '../index';
 import {getLoadedRoutes} from '../src/router_devtools';
 
 @Component({template: '<div>simple standalone</div>'})
@@ -22,7 +22,7 @@ export class RootCmp {}
 
 describe('router_devtools', () => {
   describe('getLoadedRoutes', () => {
-    it('should return loaded routes when called with load children', fakeAsync(() => {
+    it('should return loaded routes when called with load children', async () => {
       TestBed.configureTestingModule({
         imports: [
           RouterModule.forRoot([
@@ -38,17 +38,17 @@ describe('router_devtools', () => {
       const root = TestBed.createComponent(RootCmp);
 
       const router = TestBed.inject(Router);
-      router.navigateByUrl('/lazy/simple');
-      advance(root);
+      await router.navigateByUrl('/lazy/simple');
+      root.detectChanges();
       expect(root.nativeElement.innerHTML).toContain('simple standalone');
 
       const loadedRoutes = getLoadedRoutes(router.config[0]);
       const loadedPath = loadedRoutes && loadedRoutes[0].path;
       expect(loadedPath).toEqual('simple');
-    }));
+    });
   });
 
-  it('should return undefined when called without load children', fakeAsync(() => {
+  it('should return undefined when called without load children', async () => {
     TestBed.configureTestingModule({
       imports: [
         RouterModule.forRoot([
@@ -63,17 +63,12 @@ describe('router_devtools', () => {
     const root = TestBed.createComponent(RootCmp);
 
     const router = TestBed.inject(Router);
-    router.navigateByUrl('/lazy');
-    advance(root);
+    await router.navigateByUrl('/lazy');
+    root.detectChanges();
     expect(root.nativeElement.innerHTML).toContain('');
 
     const loadedRoutes = getLoadedRoutes(router.config[0]);
     const loadedPath = loadedRoutes && loadedRoutes[0].path;
     expect(loadedPath).toEqual(undefined);
-  }));
+  });
 });
-
-function advance(fixture: ComponentFixture<unknown>) {
-  tick();
-  fixture.detectChanges();
-}

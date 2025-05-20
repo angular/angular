@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AttributeMarker} from '@angular/core/src/render3';
-import {TAttributes} from '@angular/core/src/render3/interfaces/node';
-import {mergeHostAttribute, mergeHostAttrs} from '@angular/core/src/render3/util/attrs_utils';
+import {AttributeMarker} from '../../../src/render3';
+import {TAttributes} from '../../../src/render3/interfaces/node';
+import {mergeHostAttribute, mergeHostAttrs} from '../../../src/render3/util/attrs_utils';
 
 describe('attr_util', () => {
   describe('mergeHostAttribute', () => {

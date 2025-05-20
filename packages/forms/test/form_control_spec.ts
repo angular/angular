@@ -7,7 +7,7 @@
  */
 
 import {fakeAsync, tick} from '@angular/core/testing';
-import {AsyncValidatorFn, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AsyncValidatorFn, FormArray, FormControl, FormGroup, Validators} from '../index';
 
 import {asyncValidator, asyncValidatorReturningObservable} from './util';
 
@@ -24,6 +24,15 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
     it('should default the value to null', () => {
       const c = new FormControl();
       expect(c.value).toBe(null);
+    });
+
+    describe('markAllAsDirty', () => {
+      it('should mark only the control itself as dirty', () => {
+        const control = new FormControl('');
+        expect(control.dirty).toBe(false);
+        control.markAllAsDirty();
+        expect(control.dirty).toBe(true);
+      });
     });
 
     describe('markAllAsTouched', () => {

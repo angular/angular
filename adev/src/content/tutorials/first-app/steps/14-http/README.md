@@ -169,6 +169,8 @@ The data source has been configured, the next step is to update your web app to 
         HELPFUL: For this example, the code uses `fetch`. For more advanced use cases consider using `HttpClient` provided by Angular.
 
     1. Update the `getHousingLocationsById` function to make a call to the web server you configured.
+  
+       HELPFUL: Notice the `fetch` method has been updated to _query_ the data for location with a matching `id` property value. See [URL Search Parameter](https://developer.mozilla.org/en-US/docs/Web/API/URL/search) for more information.
 
         <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[15,18]"/>
 
@@ -181,13 +183,13 @@ The data source has been configured, the next step is to update your web app to 
 <docs-step title="Update the components to use asynchronous calls to the housing service">
 The server is now reading data from the HTTP request but the components that rely on the service now have errors because they were programmed to use the synchronous version of the service.
 
-1. In `src/app/home/home.component.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method.
+1. In `src/app/home/home.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method.
 
-    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.component.ts" visibleLines="[32,37]"/>
+    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[32,37]"/>
 
-1. In `src/app/details/details.component.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method.
+1. In `src/app/details/details.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method.
 
-    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.component.ts" visibleLines="[61,66]"/>
+    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[61,66]"/>
 
 1. Save your code.
 
@@ -196,9 +198,9 @@ The server is now reading data from the HTTP request but the components that rel
 
 </docs-workflow>
 
-Note: This lesson relies on the `fetch` browser API. For the support of interceptors, please refer to the [Http Client documentation](/guide/http)
+NOTE: This lesson relies on the `fetch` browser API. For the support of interceptors, please refer to the [Http Client documentation](/guide/http)
 
-Summary: In this lesson, you updated your app to use a local web server (`json-server`), and use asynchronous service methods to retrieve data.
+SUMMARY: In this lesson, you updated your app to use a local web server (`json-server`), and use asynchronous service methods to retrieve data.
 
 Congratulations! You've successfully completed this tutorial and are ready to continue your journey with building even more complex Angular Apps.
 

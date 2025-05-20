@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Directive, HostListener, Input} from '@angular/core';
+import {Directive, HostListener, Input} from '../../../src/core';
 
 import {
   convertToR3QueryMetadata,

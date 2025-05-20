@@ -13,7 +13,7 @@ import {
   ɵgetDeferBlocks as getDeferBlocks,
   ɵrenderDeferBlockState as renderDeferBlockState,
   ɵtriggerResourceLoading as triggerResourceLoading,
-} from '@angular/core';
+} from '../../src/core';
 
 import type {ComponentFixture} from './component_fixture';
 
@@ -23,7 +23,7 @@ import type {ComponentFixture} from './component_fixture';
  * @publicApi
  */
 export class DeferBlockFixture {
-  /** @nodoc */
+  /** @docs-private */
   constructor(
     private block: DeferBlockDetails,
     private componentFixture: ComponentFixture<unknown>,

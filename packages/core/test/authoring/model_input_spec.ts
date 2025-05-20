@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, isSignal, model, WritableSignal} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {computed, isSignal, model, WritableSignal} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('model signal', () => {
   it('should work with computed expressions', () => {

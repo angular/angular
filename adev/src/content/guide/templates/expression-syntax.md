@@ -8,21 +8,23 @@ Angular supports a subset of [literal values](https://developer.mozilla.org/en-U
 
 ### Supported value literals
 
-| Literal type | Example values                  |
-| ------------ | ------------------------------- |
-| String       | `'Hello'`, `"World"`            |
-| Boolean      | `true`, `false`                 |
-| Number       | `123`, `3.14`                   |
-| Object       | `{name: 'Alice'}`               |
-| Array        | `['Onion', 'Cheese', 'Garlic']` |
-| null         | `null`                          |
+| Literal type           | Example values                  |
+| ---------------------- | ------------------------------- |
+| String                 | `'Hello'`, `"World"`            |
+| Boolean                | `true`, `false`                 |
+| Number                 | `123`, `3.14`                   |
+| Object                 | `{name: 'Alice'}`               |
+| Array                  | `['Onion', 'Cheese', 'Garlic']` |
+| null                   | `null`                          |
+| Template string        | `` `Hello ${name}` ``           |
+| Tagged template string | `` tag`Hello ${name}` ``        |
 
 ### Unsupported literals
 
-| Literal type    | Example value         |
-| --------------- | --------------------- |
-| Template string | `` `Hello ${name}` `` |
-| RegExp          | `/\d+/`               |
+| Literal type           | Example value            |
+| ---------------------- | ------------------------ |
+| RegExp                 | `/\d+/`                  |
+| Tagged template string | `` tag`Hello ${name}` `` |
 
 ## Globals
 
@@ -52,26 +54,30 @@ Angular supports the following operators from standard JavaScript.
 | Multiply              | `41 * 6`                                 |
 | Divide                | `20 / 4`                                 |
 | Remainder (Modulo)    | `17 % 5`                                 |
+| Exponentiation        | `10 ** 3`                                |
 | Parenthesis           | `9 * (8 + 4)`                            |
 | Conditional (Ternary) | `a > b ? true : false`                   |
 | And (Logical)         | `&&`                                     |
 | Or (Logical)          | `\|\|`                                   |
 | Not (Logical)         | `!`                                      |
-| Nullish Coalescing    | `const foo = null ?? 'default'`          |
+| Nullish Coalescing    | `possiblyNullValue ?? 'default'`         |
 | Comparison Operators  | `<`, `<=`, `>`, `>=`, `==`, `===`, `!==` |
-| Unary Negation        | `const y = -x`                           |
-| Unary Plus            | `const x = +y`                           |
-| Property Accessor     | `person['name'] = 'Mirabel'`             |
+| Unary Negation        | `-x`                                     |
+| Unary Plus            | `+y`                                     |
+| Property Accessor     | `person['name']`                         |
+| typeof                | `typeof 42`                              |
+| void                  | `void 1`                                 |
+| in                    | `'model' in car`                         |
 
 Angular expressions additionally also support the following non-standard operators:
 
 | Operator                        | Example(s)                     |
 | ------------------------------- | ------------------------------ |
-| [Pipe](/guides/templates/pipes) | `{{ total \| currency }}`      |
+| [Pipe](/guide/templates/pipes) | `{{ total \| currency }}`      |
 | Optional chaining\*             | `someObj.someProp?.nestedProp` |
 | Non-null assertion (TypeScript) | `someObj!.someProp`            |
 
-\*Note: Optional chaining behaves differently from the standard JavaScript version in that if the left side of Angular’s optional chaining operator is `null` or `undefined`, it returns `null` instead of `undefined`.
+NOTE: Optional chaining behaves differently from the standard JavaScript version in that if the left side of Angular’s optional chaining operator is `null` or `undefined`, it returns `null` instead of `undefined`.
 
 ### Unsupported operators
 
@@ -82,9 +88,9 @@ Angular expressions additionally also support the following non-standard operato
 | Object destructuring  | `const { name } = person`         |
 | Array destructuring   | `const [firstItem] = items`       |
 | Comma operator        | `x = (x++, x)`                    |
+| in                    | `'model' in car`                  |
 | typeof                | `typeof 42`                       |
 | void                  | `void 1`                          |
-| in                    | `'model' in car`                  |
 | instanceof            | `car instanceof Automobile`       |
 | new                   | `new Car()`                       |
 
@@ -92,7 +98,7 @@ Angular expressions additionally also support the following non-standard operato
 
 Angular expressions are evaluated within the context of the component class as well as any relevant [template variables](/guide/templates/variables), locals, and globals.
 
-When referring to class members, `this` is always implied.
+When referring to component class members, `this` is always implied. However, if a template declares a [template variables](guide/templates/variables) with the same name as a member, the variable shadows that member. You can unambiguously reference such a class member by explicitly using `this.`. This can be useful when creating an `@let` declaration that shadows a class member, e.g. for signal narrowing purposes.
 
 ## Declarations
 

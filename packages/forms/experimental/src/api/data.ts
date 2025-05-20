@@ -42,7 +42,7 @@ export function defineComputed<TValue, TData>(
 }
 
 export interface DefineResourceOptions<TValue, TData, TRequest> extends DefineOptions<TData> {
-  request: (ctx: FieldContext<TValue>) => TRequest;
+  params: (ctx: FieldContext<TValue>) => TRequest;
   factory: (req: Signal<TRequest>) => ResourceRef<TData>;
 }
 
@@ -54,9 +54,9 @@ export function defineResource<TValue, TData, TRequest>(
   const key = opts.asKey ?? new DataKey<Resource<TData>>();
 
   const factory = (ctx: FieldContext<unknown>) => {
-    const request = computed(() => opts.request(ctx as FieldContext<TValue>));
+    const params = computed(() => opts.params(ctx as FieldContext<TValue>));
     // we can wrap/process the resource here
-    return opts.factory(request);
+    return opts.factory(params);
   };
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);

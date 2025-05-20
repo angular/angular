@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, computed, input, linkedSignal} from '@angular/core';
-import {ProfilerFrame} from 'protocol';
+import {ProfilerFrame} from '../../../../../../../protocol';
 
 import {BargraphNode} from '../record-formatter/bargraph-formatter';
 import {FlamegraphNode} from '../record-formatter/flamegraph-formatter';

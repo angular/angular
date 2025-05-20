@@ -6,8 +6,22 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+export {
+  type NavigateEvent as ɵNavigateEvent,
+  type Navigation as ɵNavigation,
+  type NavigationCurrentEntryChangeEvent as ɵNavigationCurrentEntryChangeEvent,
+  type NavigationHistoryEntry as ɵNavigationHistoryEntry,
+  type NavigationNavigateOptions as ɵNavigationNavigateOptions,
+  type NavigationOptions as ɵNavigationOptions,
+  type NavigationReloadOptions as ɵNavigationReloadOptions,
+  type NavigationResult as ɵNavigationResult,
+  type NavigationTransition as ɵNavigationTransition,
+  type NavigationUpdateCurrentEntryOptions as ɵNavigationUpdateCurrentEntryOptions,
+  type NavigationTypeString as ɵNavigationTypeString,
+  type NavigationInterceptOptions as ɵNavigationInterceptOptions,
+  type NavigationDestination as ɵNavigationDestination,
+} from '../primitives/dom-navigation';
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
-export {detectChangesInViewIfRequired as ɵdetectChangesInViewIfRequired} from './application/application_ref';
 export {INTERNAL_APPLICATION_ERROR_HANDLER as ɵINTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 export {
   IMAGE_CONFIG as ɵIMAGE_CONFIG,
@@ -103,11 +117,9 @@ export {
   resolveComponentResources as ɵresolveComponentResources,
   restoreComponentResolutionQueue as ɵrestoreComponentResolutionQueue,
 } from './metadata/resource_loading';
-export {
-  PendingTasksInternal as ɵPendingTasks, // TODO(atscott): remove once there is a release with PendingTasksInternal so adev can be updated
-  PendingTasksInternal as ɵPendingTasksInternal,
-} from './pending_tasks';
+export {PendingTasksInternal as ɵPendingTasksInternal} from './pending_tasks';
 export {ALLOW_MULTIPLE_PLATFORMS as ɵALLOW_MULTIPLE_PLATFORMS} from './platform/platform';
+export {ENABLE_ROOT_COMPONENT_BOOTSTRAP as ɵENABLE_ROOT_COMPONENT_BOOTSTRAP} from './platform/bootstrap';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {AnimationRendererType as ɵAnimationRendererType} from './render/api';
 export {
@@ -149,5 +161,7 @@ export {
   enableProfiling as ɵenableProfiling,
   disableProfiling as ɵdisableProfiling,
 } from './profiler';
+
+export {ResourceImpl as ɵResourceImpl} from './resource/resource';
 
 export {getClosestComponentName as ɵgetClosestComponentName} from './internal/get_closest_component_name';

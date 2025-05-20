@@ -13,7 +13,7 @@ import {
   Pipe,
   Type,
   ɵReflectionCapabilities as ReflectionCapabilities,
-} from '@angular/core';
+} from '../../src/core';
 
 import {MetadataOverride} from './metadata_override';
 import {MetadataOverrider} from './metadata_overrider';

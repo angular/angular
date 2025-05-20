@@ -11,7 +11,7 @@ import {
   Logger,
   PathManipulation,
 } from '@angular/compiler-cli/private/localize';
-import {ɵParsedMessage} from '@angular/localize';
+import {ɵParsedMessage} from '../../../index';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
 

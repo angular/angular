@@ -13,11 +13,11 @@ When you want to add event listeners to an HTML element, you wrap the event with
   `,
   ...
 })
-export class AppComponent({
+export class AppComponent{
   updateField(): void {
     console.log('Field is updated!');
   }
-})
+}
 ```
 
 In this example, Angular calls `updateField` every time the `<input>` element emits a `keyup` event.
@@ -71,11 +71,11 @@ However, since this is a common scenario, Angular lets you filter the events by 
   `,
   ...
 })
-export class AppComponent({
+export class AppComponent{
   updateField(event: KeyboardEvent): void {
     console.log('The user pressed enter in the text field.');
   }
-})
+}
 ```
 
 You can also add additional key modifiers:
@@ -93,7 +93,28 @@ Angular also allows you to specify [Code values for keyboard events](https://dev
 
 ```angular-html
 <!-- Matches alt and left shift -->
-<input type="text" (keydown.code.alt.leftshift)="updateField($event)" />
+<input type="text" (keydown.code.alt.shiftleft)="updateField($event)" />
 ```
 
 This can be useful for handling keyboard events consistently across different operating systems. For example, when using the Alt key on MacOS devices, the `key` property reports the key based on the character already modified by the Alt key. This means that a combination like Alt + S reports a `key` value of `'ß'`. The `code` property, however, corresponds to the physical or virtual button pressed rather than the character produced.
+
+## Preventing event default behavior
+
+If your event handler should replace the native browser behavior, you can use the event object's [`preventDefault` method](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault):
+
+```angular-ts
+@Component({
+  template: `
+    <a href="#overlay" (click)="showOverlay($event)">
+  `,
+  ...
+})
+export class AppComponent{
+  showOverlay(event: PointerEvent): void {
+    event.preventDefault();
+    console.log('Show overlay without updating the URL!');
+  }
+}
+```
+
+If the event handler statement evaluates to `false`, Angular automatically calls `preventDefault()`, similar to [native event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes#event_handler_attributes). *Always prefer explicitly calling `preventDefault`*, as this approach makes the code's intent obvious.

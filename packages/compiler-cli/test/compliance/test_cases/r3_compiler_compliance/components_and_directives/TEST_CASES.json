@@ -213,7 +213,8 @@
       ],
       "compilationModeFilter": [
         "full compile",
-        "local compile"
+        "local compile",
+        "declaration-only emit"
       ]
     }
   ]

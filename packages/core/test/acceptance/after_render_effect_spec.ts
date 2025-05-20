@@ -11,11 +11,11 @@ import {
   ApplicationRef,
   computed,
   PLATFORM_ID,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   signal,
-} from '@angular/core';
-import {afterRenderEffect} from '@angular/core/src/render3/reactivity/after_render_effect';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {afterRenderEffect} from '../../src/render3/reactivity/after_render_effect';
+import {TestBed} from '../../testing';
 
 describe('afterRenderEffect', () => {
   beforeEach(() => {
@@ -227,10 +227,7 @@ describe('afterRenderEffect', () => {
 
   it('should schedule CD when dirty', async () => {
     TestBed.configureTestingModule({
-      providers: [
-        provideExperimentalZonelessChangeDetection(),
-        {provide: PLATFORM_ID, useValue: 'browser'},
-      ],
+      providers: [provideZonelessChangeDetection(), {provide: PLATFORM_ID, useValue: 'browser'}],
     });
 
     const log: string[] = [];

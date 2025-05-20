@@ -111,7 +111,7 @@ export function ingestHostBinding(
         bindingKind === ir.BindingKind.Attribute,
       )
       .filter((context) => context !== SecurityContext.NONE);
-    ingestHostProperty(job, property, bindingKind, securityContexts);
+    ingestDomProperty(job, property, bindingKind, securityContexts);
   }
   for (const [name, expr] of Object.entries(input.attributes) ?? []) {
     const securityContexts = bindingParser
@@ -127,7 +127,7 @@ export function ingestHostBinding(
 
 // TODO: We should refactor the parser to use the same types and structures for host bindings as
 // with ordinary components. This would allow us to share a lot more ingestion code.
-export function ingestHostProperty(
+export function ingestDomProperty(
   job: HostBindingCompilationJob,
   property: e.ParsedProperty,
   bindingKind: ir.BindingKind,
@@ -231,6 +231,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestForBlock(unit, node);
     } else if (node instanceof t.LetDeclaration) {
       ingestLetDeclaration(unit, node);
+    } else if (node instanceof t.Component) {
+      // TODO(crisbeto): account for selectorless nodes.
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }
@@ -494,7 +496,9 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
       ifCaseI18nMeta = ifCase.i18n;
     }
 
-    const templateOp = ir.createTemplateOp(
+    const createOp = i === 0 ? ir.createConditionalCreateOp : ir.createConditionalBranchCreateOp;
+
+    const conditionalCreateOp = createOp(
       cView.xref,
       ir.TemplateKind.Block,
       tagName,
@@ -504,7 +508,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
       ifCase.startSourceSpan,
       ifCase.sourceSpan,
     );
-    unit.create.push(templateOp);
+    unit.create.push(conditionalCreateOp);
 
     if (firstXref === null) {
       firstXref = cView.xref;
@@ -513,8 +517,8 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
     const conditionalCaseExpr = new ir.ConditionalCaseExpr(
       caseExpr,
-      templateOp.xref,
-      templateOp.handle,
+      conditionalCreateOp.xref,
+      conditionalCreateOp.handle,
       ifCase.expressionAlias,
     );
     conditions.push(conditionalCaseExpr);
@@ -534,7 +538,8 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
 
   let firstXref: ir.XrefId | null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
-  for (const switchCase of switchBlock.cases) {
+  for (let i = 0; i < switchBlock.cases.length; i++) {
+    const switchCase = switchBlock.cases[i];
     const cView = unit.job.allocateView(unit.xref);
     const tagName = ingestControlFlowInsertionPoint(unit, cView.xref, switchCase);
     let switchCaseI18nMeta: i18n.BlockPlaceholder | undefined = undefined;
@@ -546,7 +551,10 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       }
       switchCaseI18nMeta = switchCase.i18n;
     }
-    const templateOp = ir.createTemplateOp(
+
+    const createOp = i === 0 ? ir.createConditionalCreateOp : ir.createConditionalBranchCreateOp;
+
+    const conditionalCreateOp = createOp(
       cView.xref,
       ir.TemplateKind.Block,
       tagName,
@@ -556,7 +564,8 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       switchCase.startSourceSpan,
       switchCase.sourceSpan,
     );
-    unit.create.push(templateOp);
+    unit.create.push(conditionalCreateOp);
+
     if (firstXref === null) {
       firstXref = cView.xref;
     }
@@ -565,8 +574,8 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       : null;
     const conditionalCaseExpr = new ir.ConditionalCaseExpr(
       caseExpr,
-      templateOp.xref,
-      templateOp.handle,
+      conditionalCreateOp.xref,
+      conditionalCreateOp.handle,
     );
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, switchCase.children);
@@ -1164,11 +1173,46 @@ function convertAst(
     );
   } else if (ast instanceof e.TypeofExpression) {
     return o.typeofExpr(convertAst(ast.expression, job, baseSourceSpan));
+  } else if (ast instanceof e.VoidExpression) {
+    return new o.VoidExpr(
+      convertAst(ast.expression, job, baseSourceSpan),
+      undefined,
+      convertSourceSpan(ast.span, baseSourceSpan),
+    );
+  } else if (ast instanceof e.TemplateLiteral) {
+    return convertTemplateLiteral(ast, job, baseSourceSpan);
+  } else if (ast instanceof e.TaggedTemplateLiteral) {
+    return new o.TaggedTemplateLiteralExpr(
+      convertAst(ast.tag, job, baseSourceSpan),
+      convertTemplateLiteral(ast.template, job, baseSourceSpan),
+      undefined,
+      convertSourceSpan(ast.span, baseSourceSpan),
+    );
+  } else if (ast instanceof e.ParenthesizedExpression) {
+    return new o.ParenthesizedExpr(
+      convertAst(ast.expression, job, baseSourceSpan),
+      undefined,
+      convertSourceSpan(ast.span, baseSourceSpan),
+    );
   } else {
     throw new Error(
       `Unhandled expression type "${ast.constructor.name}" in file "${baseSourceSpan?.start.file.url}"`,
     );
   }
+}
+
+function convertTemplateLiteral(
+  ast: e.TemplateLiteral,
+  job: CompilationJob,
+  baseSourceSpan: ParseSourceSpan | null,
+) {
+  return new o.TemplateLiteralExpr(
+    ast.elements.map((el) => {
+      return new o.TemplateLiteralElementExpr(el.text, convertSourceSpan(el.span, baseSourceSpan));
+    }),
+    ast.expressions.map((expr) => convertAst(expr, job, baseSourceSpan)),
+    convertSourceSpan(ast.span, baseSourceSpan),
+  );
 }
 
 function convertAstWithInterpolation(

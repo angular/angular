@@ -7,12 +7,12 @@ import {
   EventEmitter,
   HostBinding,
   HostListener,
+  inject,
   Injectable,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
-  Optional,
   Output,
   Pipe,
   PipeTransform,
@@ -58,7 +58,7 @@ export class ValueService {
 // #docregion MasterService
 @Injectable()
 export class MasterService {
-  constructor(private valueService: ValueService) {}
+  public valueService = inject(ValueService);
   getValue() {
     return this.valueService.getValue();
   }
@@ -88,11 +88,6 @@ export class ReversePipe implements PipeTransform {
 export class BankAccountComponent {
   @Input() bank = '';
   @Input('account') id = '';
-
-  // Removed on 12/02/2016 when ceased public discussion of the `Renderer`. Revive in future?
-  // constructor(private renderer: Renderer, private el: ElementRef ) {
-  //   renderer.setElementProperty(el.nativeElement, 'customProperty', true);
-  // }
 }
 
 /** A component with attributes, styles, classes, and property setting */
@@ -106,8 +101,7 @@ export class BankAccountComponent {
       [style.color]="color"
       [class.closed]="isClosed"
       [class.open]="!isClosed"
-    >
-    </bank-account>
+    />
   `,
   imports: [BankAccountComponent],
 })
@@ -260,7 +254,7 @@ export class MyIfComponent {
   providers: [ValueService],
 })
 export class TestProvidersComponent {
-  constructor(public valueService: ValueService) {}
+  public valueService = inject(ValueService);
 }
 
 @Component({
@@ -269,23 +263,17 @@ export class TestProvidersComponent {
   viewProviders: [ValueService],
 })
 export class TestViewProvidersComponent {
-  constructor(public valueService: ValueService) {}
+  public valueService = inject(ValueService);
 }
 
 @Component({
   selector: 'external-template-comp',
   templateUrl: './demo-external-template.html',
 })
-export class ExternalTemplateComponent implements OnInit {
-  serviceValue = '';
+export class ExternalTemplateComponent {
+  private service = inject(ValueService, {optional: true});
 
-  constructor(@Optional() private service?: ValueService) {}
-
-  ngOnInit() {
-    if (this.service) {
-      this.serviceValue = this.service.getValue();
-    }
-  }
+  serviceValue = this.service?.getValue() ?? '';
 }
 
 @Component({
@@ -420,25 +408,25 @@ export class ShellComponent {}
   template: `
     <h1>Specs Demo</h1>
     <my-if-parent-comp></my-if-parent-comp>
-    <hr />
+    <hr>
     <h3>Input/Output Component</h3>
     <io-parent-comp></io-parent-comp>
-    <hr />
+    <hr>
     <h3>External Template Component</h3>
     <external-template-comp></external-template-comp>
-    <hr />
+    <hr>
     <h3>Component With External Template Component</h3>
     <comp-w-ext-comp></comp-w-ext-comp>
-    <hr />
+    <hr>
     <h3>Reverse Pipe</h3>
     <reverse-pipe-comp></reverse-pipe-comp>
-    <hr />
+    <hr>
     <h3>InputValueBinder Directive</h3>
     <input-value-comp></input-value-comp>
-    <hr />
+    <hr>
     <h3>Button Component</h3>
     <lightswitch-comp></lightswitch-comp>
-    <hr />
+    <hr>
     <h3>Needs Content</h3>
     <needs-content #nc>
       <child-1 #content text="My"></child-1>

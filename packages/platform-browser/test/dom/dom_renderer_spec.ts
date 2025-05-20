@@ -7,12 +7,14 @@
  */
 import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '../../src/dom/debug/by';
 import {
+  addBaseHrefToCssSourceMap,
   NAMESPACE_URIS,
   REMOVE_STYLES_ON_COMPONENT_DESTROY,
-} from '@angular/platform-browser/src/dom/dom_renderer';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+} from '../../src/dom/dom_renderer';
+import {expect} from '@angular/private/testing/matchers';
+import {isNode} from '@angular/private/testing';
 
 describe('DefaultDomRendererV2', () => {
   if (isNode) {
@@ -268,6 +270,89 @@ describe('DefaultDomRendererV2', () => {
       }
     });
   });
+
+  it('should update an external sourceMappingURL by prepending the baseHref as a prefix', () => {
+    document.head.innerHTML = `<base href="/base/" />`;
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      declarations: [CmpEncapsulationNoneWithSourceMap],
+    });
+
+    const fixture = TestBed.createComponent(CmpEncapsulationNoneWithSourceMap);
+    fixture.detectChanges();
+
+    expect(document.head.querySelector('style')?.textContent).toContain(
+      '/*# sourceMappingURL=/base/cmp-none.css.map */',
+    );
+
+    document.head.innerHTML = '';
+  });
+});
+
+describe('addBaseHrefToCssSourceMap', () => {
+  it('should return the original styles if baseHref is empty', () => {
+    const styles = ['body { color: red; }'];
+    const result = addBaseHrefToCssSourceMap('', styles);
+    expect(result).toEqual(styles);
+  });
+
+  it('should skip styles that do not contain a sourceMappingURL', () => {
+    const styles = ['body { color: red; }', 'h1 { font-size: 2rem; }'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(styles);
+  });
+
+  it('should not modify inline (encoded) sourceMappingURL maps', () => {
+    const styles = ['/*# sourceMappingURL=data:application/json;base64,xyz */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(styles);
+  });
+
+  it('should prepend baseHref to external sourceMappingURL', () => {
+    const styles = ['/*# sourceMappingURL=style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
+  });
+
+  it('should handle baseHref with a trailing slash correctly', () => {
+    const styles = ['/*# sourceMappingURL=style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
+  });
+
+  it('should handle baseHref without a trailing slash correctly', () => {
+    const styles = ['/*# sourceMappingURL=style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=/style.css */']);
+  });
+
+  it('should not duplicate slashes in the final URL', () => {
+    const styles = ['/*# sourceMappingURL=./style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=/base/style.css */']);
+  });
+
+  it('should not add base href to sourceMappingURL that is absolute', () => {
+    const styles = ['/*# sourceMappingURL=http://example.com/style.css */'];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual(['/*# sourceMappingURL=http://example.com/style.css */']);
+  });
+
+  it('should process multiple styles and handle each case correctly', () => {
+    const styles = [
+      '/*# sourceMappingURL=style1.css */',
+      '/*# sourceMappingURL=data:application/json;base64,xyz */',
+      'h1 { font-size: 2rem; }',
+      '/*# sourceMappingURL=style2.css */',
+    ];
+    const result = addBaseHrefToCssSourceMap('/base/', styles);
+    expect(result).toEqual([
+      '/*# sourceMappingURL=/base/style1.css */',
+      '/*# sourceMappingURL=data:application/json;base64,xyz */',
+      'h1 { font-size: 2rem; }',
+      '/*# sourceMappingURL=/base/style2.css */',
+    ]);
+  });
 });
 
 async function styleCount(
@@ -308,6 +393,15 @@ class CmpEncapsulationEmulated {}
   standalone: false,
 })
 class CmpEncapsulationNone {}
+
+@Component({
+  selector: 'cmp-none',
+  template: `<div class="none"></div>`,
+  styles: [`.none { color: lime; }\n/*# sourceMappingURL=cmp-none.css.map */`],
+  encapsulation: ViewEncapsulation.None,
+  standalone: false,
+})
+class CmpEncapsulationNoneWithSourceMap {}
 
 @Component({
   selector: 'cmp-shadow',

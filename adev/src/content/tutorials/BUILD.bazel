@@ -8,6 +8,7 @@ generate_guides(
         ],
         exclude = [
             "README.md",
+            "**/node_modules/**/*.md",
         ],
     ),
     data = [

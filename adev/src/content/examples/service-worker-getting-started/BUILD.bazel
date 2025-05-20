@@ -1,8 +1,0 @@
-package(default_visibility = ["//visibility:public"])
-
-exports_files([
-    "src/app/check-for-update.service.ts",
-    "src/app/handle-unrecoverable-state.service.ts",
-    "src/app/log-update.service.ts",
-    "src/app/prompt-update.service.ts",
-])

@@ -13,7 +13,7 @@ import {
   DisplayInfoKind,
   unsafeCastDisplayInfoKindToScriptElementKind,
 } from '../src/utils/display_parts';
-import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
+import {LanguageServiceTestEnv, OpenBuffer, TestableOptions} from '../testing';
 
 const DIR_WITH_INPUT = {
   'Dir': `
@@ -968,6 +968,27 @@ describe('completions', () => {
           templateFile.moveCursorToText(`<button ¦>`);
           const completions = templateFile.getCompletionsAtPosition();
           expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
+        });
+
+        it('should return event completion for self closing tag', () => {
+          const {templateFile} = setup(`<br />`, ``);
+          templateFile.moveCursorToText(`<br ¦`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expectContain(completions, DisplayInfoKind.EVENT, ['(click)']);
+        });
+
+        it('should not return element completions in end tag', () => {
+          const {templateFile} = setup(`<button ></button>`, ``);
+          templateFile.moveCursorToText(`</¦button>`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expect(completions).not.toBeDefined();
+        });
+
+        it('should not return element completions in between start and end tag', () => {
+          const {templateFile} = setup(`<button></button>`, ``);
+          templateFile.moveCursorToText(`<button>¦</button>`);
+          const completions = templateFile.getCompletionsAtPosition();
+          expect(completions).not.toBeDefined();
         });
 
         it('should return event completion with empty parens', () => {
@@ -2057,6 +2078,63 @@ describe('completions', () => {
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['hasRing', 'size']);
     });
   });
+
+  describe('host bindings', () => {
+    it('should be able to complete a property host binding', () => {
+      const {appFile} = setupInlineTemplate(
+        '',
+        `title!: string; hero!: number;`,
+        undefined,
+        `host: {'[title]': 'ti'},`,
+        {
+          typeCheckHostBindings: true,
+        },
+      );
+      appFile.moveCursorToText(`'ti¦'`);
+      const completions = appFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
+    });
+
+    it('should be able to complete a listener host binding', () => {
+      const {appFile} = setupInlineTemplate(
+        '',
+        `title!: string; hero!: number;`,
+        undefined,
+        `host: {'(click)': 't'},`,
+        {
+          typeCheckHostBindings: true,
+        },
+      );
+      appFile.moveCursorToText(`'(click)': 't¦'`);
+      const completions = appFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
+    });
+
+    it('should be able to complete inside `host` of a directive', () => {
+      const {appFile} = setupInlineTemplate(
+        '',
+        '',
+        {
+          'Dir': `
+            @Directive({
+              host: {'[title]': 'ti'},
+            })
+            export class Dir {
+              title!: string;
+              hero!: number;
+            }
+          `,
+        },
+        undefined,
+        {
+          typeCheckHostBindings: true,
+        },
+      );
+      appFile.moveCursorToText(`'ti¦'`);
+      const completions = appFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
+    });
+  });
 });
 
 function expectContainInsertText(
@@ -2207,6 +2285,8 @@ function setupInlineTemplate(
   template: string,
   classContents: string,
   otherDeclarations: {[name: string]: string} = {},
+  componentMetadata = '',
+  compilerOptions?: TestableOptions,
 ): {
   appFile: OpenBuffer;
 } {
@@ -2215,13 +2295,16 @@ function setupInlineTemplate(
   const otherDirectiveClassDecls = Object.values(otherDeclarations).join('\n\n');
 
   const env = LanguageServiceTestEnv.setup();
-  const project = env.addProject('test', {
-    'test.ts': `
+  const project = env.addProject(
+    'test',
+    {
+      'test.ts': `
          import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
 
          @Component({
            template: '${template}',
            selector: 'app-cmp',
+           ${componentMetadata}
          })
          export class AppCmp {
            ${classContents}
@@ -2234,6 +2317,8 @@ function setupInlineTemplate(
          })
          export class AppModule {}
          `,
-  });
+    },
+    compilerOptions,
+  );
   return {appFile: project.openFile('test.ts')};
 }

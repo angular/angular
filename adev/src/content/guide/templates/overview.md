@@ -3,7 +3,7 @@ In Angular, a template is a chunk of HTML.
 Use special syntax within a template to leverage many of Angular's features.
 </docs-decorative-header>
 
-Tip: Check out Angular's [Essentials](essentials/templates) before diving into this comprehensive guide.
+TIP: Check out Angular's [Essentials](essentials/templates) before diving into this comprehensive guide.
 
 Every Angular component has a **template** that defines the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) that the component renders onto the page. By using templates, Angular is able to automatically keep your page up-to-date as data changes.
 

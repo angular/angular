@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {EventCallback} from '../../event_delegation_utils';
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {RENDERER} from '../interfaces/view';
@@ -13,7 +14,7 @@ import {isWritableSignal, WritableSignal} from '../reactivity/signal';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 
 import {listenerInternal} from './listener';
-import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
+import {setPropertyAndInputs, storePropertyBindingMetadata} from './shared';
 
 /**
  * Update a two-way bound property on a selected element.
@@ -43,16 +44,7 @@ export function ɵɵtwoWayProperty<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      value,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, value, lView[RENDERER], sanitizer);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
 
@@ -83,7 +75,7 @@ export function ɵɵtwoWayBindingSet<T>(target: unknown, value: T): boolean {
  */
 export function ɵɵtwoWayListener(
   eventName: string,
-  listenerFn: (e?: any) => any,
+  listenerFn: EventCallback,
 ): typeof ɵɵtwoWayListener {
   const lView = getLView<{} | null>();
   const tView = getTView();

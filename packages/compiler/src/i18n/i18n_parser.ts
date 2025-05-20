@@ -109,46 +109,15 @@ class _I18nVisitor implements html.Visitor {
   }
 
   visitElement(el: html.Element, context: I18nMessageVisitorContext): i18n.Node {
-    const children = html.visitAll(this, el.children, context);
-    const attrs: {[k: string]: string} = {};
-    el.attrs.forEach((attr) => {
-      // Do not visit the attributes, translatable ones are top-level ASTs
-      attrs[attr.name] = attr.value;
-    });
+    return this._visitElementLike(el, context);
+  }
 
-    const isVoid: boolean = getHtmlTagDefinition(el.name).isVoid;
-    const startPhName = context.placeholderRegistry.getStartTagPlaceholderName(
-      el.name,
-      attrs,
-      isVoid,
-    );
-    context.placeholderToContent[startPhName] = {
-      text: el.startSourceSpan.toString(),
-      sourceSpan: el.startSourceSpan,
-    };
+  visitComponent(component: html.Component, context: I18nMessageVisitorContext) {
+    return this._visitElementLike(component, context);
+  }
 
-    let closePhName = '';
-
-    if (!isVoid) {
-      closePhName = context.placeholderRegistry.getCloseTagPlaceholderName(el.name);
-      context.placeholderToContent[closePhName] = {
-        text: `</${el.name}>`,
-        sourceSpan: el.endSourceSpan ?? el.sourceSpan,
-      };
-    }
-
-    const node = new i18n.TagPlaceholder(
-      el.name,
-      attrs,
-      startPhName,
-      closePhName,
-      children,
-      isVoid,
-      el.sourceSpan,
-      el.startSourceSpan,
-      el.endSourceSpan,
-    );
-    return context.visitNodeFn(el, node);
+  visitDirective(directive: html.Directive, context: any) {
+    throw new Error('Unreachable code');
   }
 
   visitAttribute(attribute: html.Attribute, context: I18nMessageVisitorContext): i18n.Node {
@@ -258,6 +227,65 @@ class _I18nVisitor implements html.Visitor {
 
   visitLetDeclaration(decl: html.LetDeclaration, context: any) {
     return null;
+  }
+
+  private _visitElementLike(
+    node: html.Element | html.Component,
+    context: I18nMessageVisitorContext,
+  ): i18n.Node {
+    const children = html.visitAll(this, node.children, context);
+    const attrs: {[k: string]: string} = {};
+    const visitAttribute = (attr: html.Attribute) => {
+      // Do not visit the attributes, translatable ones are top-level ASTs
+      attrs[attr.name] = attr.value;
+    };
+
+    let nodeName: string;
+    let isVoid: boolean;
+
+    if (node instanceof html.Element) {
+      nodeName = node.name;
+      isVoid = getHtmlTagDefinition(node.name).isVoid;
+    } else {
+      nodeName = node.fullName;
+      isVoid = node.tagName ? getHtmlTagDefinition(node.tagName).isVoid : false;
+    }
+
+    node.attrs.forEach(visitAttribute);
+    node.directives.forEach((dir) => dir.attrs.forEach(visitAttribute));
+
+    const startPhName = context.placeholderRegistry.getStartTagPlaceholderName(
+      nodeName,
+      attrs,
+      isVoid,
+    );
+    context.placeholderToContent[startPhName] = {
+      text: node.startSourceSpan.toString(),
+      sourceSpan: node.startSourceSpan,
+    };
+
+    let closePhName = '';
+
+    if (!isVoid) {
+      closePhName = context.placeholderRegistry.getCloseTagPlaceholderName(nodeName);
+      context.placeholderToContent[closePhName] = {
+        text: `</${nodeName}>`,
+        sourceSpan: node.endSourceSpan ?? node.sourceSpan,
+      };
+    }
+
+    const i18nNode = new i18n.TagPlaceholder(
+      nodeName,
+      attrs,
+      startPhName,
+      closePhName,
+      children,
+      isVoid,
+      node.sourceSpan,
+      node.startSourceSpan,
+      node.endSourceSpan,
+    );
+    return context.visitNodeFn(node, i18nNode);
   }
 
   /**

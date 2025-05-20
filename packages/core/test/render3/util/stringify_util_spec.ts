@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵsetClassDebugInfo, ɵɵdefineComponent} from '@angular/core/src/render3';
-import {debugStringifyTypeForError} from '@angular/core/src/render3/util/stringify_utils';
+import {ɵsetClassDebugInfo, ɵɵdefineComponent} from '../../../src/render3';
+import {debugStringifyTypeForError} from '../../../src/render3/util/stringify_utils';
 
 describe('stringify utils', () => {
   describe('stringifyTypeForError util', () => {

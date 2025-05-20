@@ -8,6 +8,7 @@
 
 import {Injector, runInInjectionContext, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, of, throwError} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
 import {NavigationCancellationCode} from './events';
@@ -16,6 +17,7 @@ import {navigationCancelingError} from './navigation_canceling_error';
 import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+import {wrapIntoObservable} from './utils/collection';
 
 export class NoMatch {
   public segmentGroup: UrlSegmentGroup | null;
@@ -88,31 +90,26 @@ export class ApplyRedirects {
     posParams: {[k: string]: UrlSegment},
     currentSnapshot: ActivatedRouteSnapshot,
     injector: Injector,
-  ): UrlTree {
-    if (typeof redirectTo !== 'string') {
-      const redirectToFn = redirectTo;
-      const {queryParams, fragment, routeConfig, url, outlet, params, data, title} =
-        currentSnapshot;
-      const newRedirect = runInInjectionContext(injector, () =>
-        redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
-      );
-      if (newRedirect instanceof UrlTree) {
-        throw new AbsoluteRedirect(newRedirect);
-      }
+  ): Observable<UrlTree> {
+    return getRedirectResult(redirectTo, currentSnapshot, injector).pipe(
+      map((redirect) => {
+        if (redirect instanceof UrlTree) {
+          throw new AbsoluteRedirect(redirect);
+        }
 
-      redirectTo = newRedirect;
-    }
+        const newTree = this.applyRedirectCreateUrlTree(
+          redirect,
+          this.urlSerializer.parse(redirect),
+          segments,
+          posParams,
+        );
 
-    const newTree = this.applyRedirectCreateUrlTree(
-      redirectTo,
-      this.urlSerializer.parse(redirectTo),
-      segments,
-      posParams,
+        if (redirect[0] === '/') {
+          throw new AbsoluteRedirect(newTree);
+        }
+        return newTree;
+      }),
     );
-    if (redirectTo[0] === '/') {
-      throw new AbsoluteRedirect(newTree);
-    }
-    return newTree;
   }
 
   applyRedirectCreateUrlTree(
@@ -198,4 +195,21 @@ export class ApplyRedirects {
     }
     return redirectToUrlSegment;
   }
+}
+
+function getRedirectResult(
+  redirectTo: string | RedirectFunction,
+  currentSnapshot: ActivatedRouteSnapshot,
+  injector: Injector,
+): Observable<string | UrlTree> {
+  if (typeof redirectTo === 'string') {
+    return of(redirectTo);
+  }
+  const redirectToFn = redirectTo;
+  const {queryParams, fragment, routeConfig, url, outlet, params, data, title} = currentSnapshot;
+  return wrapIntoObservable(
+    runInInjectionContext(injector, () =>
+      redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
+    ),
+  );
 }

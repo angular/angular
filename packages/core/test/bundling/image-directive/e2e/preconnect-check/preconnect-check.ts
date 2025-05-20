@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, IMAGE_LOADER, NgOptimizedImage} from '@angular/common';
-import {Component, Inject} from '@angular/core';
+import {Component, Inject} from '../../../../../src/core';
 
 @Component({
   selector: 'preconnect-check',

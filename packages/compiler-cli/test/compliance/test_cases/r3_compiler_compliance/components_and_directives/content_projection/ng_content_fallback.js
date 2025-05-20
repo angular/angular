@@ -65,7 +65,8 @@ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵelementStart(2, "div");
       $r3$.ɵɵprojection(3, 1, null, TestComponent_ProjectionFallback_3_Template, 5, 1);
       $r3$.ɵɵelementEnd();
-      $r3$.ɵɵtemplate(5, TestComponent_Conditional_5_Template, 2, 0)(6, TestComponent_ng_content_6_Template, 2, 0, "ng-content", 0);
+      $r3$.ɵɵconditionalCreate(5, TestComponent_Conditional_5_Template, 2, 0);
+      $r3$.ɵɵtemplate(6, TestComponent_ng_content_6_Template, 2, 0, "ng-content", 0);
     }
     if (rf & 2) {
       $r3$.ɵɵadvance(5);

@@ -63,7 +63,7 @@
       }
 
       &:not(:first-of-type) {
-        border-left: 1px solid #eeeeee;
+        border-left: 1px solid var(--color-separator);
       }
     }
   }
@@ -91,7 +91,7 @@
       }
 
       &:not(:first-of-type) {
-        border-top: 1px solid #eeeeee;
+        border-top: 1px solid var(--color-separator);
       }
 
       &.as-hidden {
@@ -114,24 +114,6 @@
     & > .as-split-gutter,
     ::ng-deep > .as-split-area {
       transition: flex-basis 0.3s;
-    }
-  }
-}
-
-:host-context(.dark-theme) {
-  &.as-horizontal {
-    ::ng-deep > .as-split-area {
-      &:not(:first-of-type) {
-        border-left: 1px solid #3f3f3f;
-      }
-    }
-  }
-
-  &.as-vertical {
-    ::ng-deep > .as-split-area {
-      &:not(:first-of-type) {
-        border-top: 1px solid #3f3f3f;
-      }
     }
   }
 }

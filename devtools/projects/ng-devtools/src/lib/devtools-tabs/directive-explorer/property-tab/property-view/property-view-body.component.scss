@@ -1,3 +1,5 @@
+@use '../../../../../styles/typography';
+
 :host {
   ::ng-deep {
     mat-expansion-panel {
@@ -22,37 +24,25 @@
       }
 
       .docs-link {
-        color: #000000de;
         height: inherit;
         width: fit-content;
         font-size: initial;
         padding-left: 0.1rem;
 
         &:active {
-          color: #1b1aa5;
+          color: var(--blue-02);
         }
       }
     }
 
     .mat-expansion-panel-header-title {
-      font-size: 0.8em;
-      font-family: Menlo, monospace;
+      @extend %body-medium-01;
     }
 
     .mat-expansion-indicator {
       &::after {
         padding: 2.5px;
         margin-bottom: 4.5px;
-      }
-    }
-
-    :host-context(.dark-theme) {
-      .docs-link {
-        color: #bcc5ce;
-
-        &:active {
-          color: #5caace;
-        }
       }
     }
   }

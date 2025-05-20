@@ -13,6 +13,7 @@ import url from 'url';
 
 /** Currently-configured tests. */
 const TESTS = new Map<string, (value: string) => string>([
+  ['linked_signal_signature_test', (v) => `WritableSignal<${v}>`],
   [
     'signal_input_signature_test',
     (v) => (v.includes(',') ? `InputSignalWithTransform<${v}>` : `InputSignal<${v}>`),

@@ -13,6 +13,7 @@ import {
   assertFileNames,
   assertTextSpans,
   createModuleAndProjectWithDeclarations,
+  createProjectWithStandaloneDeclarations,
   humanizeDocumentSpanLike,
   LanguageServiceTestEnv,
   OpenBuffer,
@@ -472,10 +473,486 @@ describe('definitions', () => {
     assertFileNames(Array.from(definitions), ['app.html']);
   });
 
+  it('gets definition for selectorless component', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'dep.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({template: ''})
+         export class Dep {}
+       `,
+      'app.ts': `
+         import {Component} from '@angular/core';
+         import {Dep} from './dep';
+
+         @Component({
+          templateUrl: '/app.html',
+         })
+         export class AppCmp {}
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createProjectWithStandaloneDeclarations(env, 'test', files, {
+      _enableSelectorless: true,
+    });
+    const template = project.openFile('app.html');
+    template.contents = '<Dep/>';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('<De¦p/>');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('Dep');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.classElement);
+    expect(definitions[0].textSpan).toBe('Dep');
+    assertFileNames(Array.from(definitions), ['dep.ts']);
+  });
+
+  it('gets definition for selectorless directive', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'dep.ts': `
+         import {Directive} from '@angular/core';
+
+         @Directive()
+         export class Dep {}
+       `,
+      'app.ts': `
+         import {Component} from '@angular/core';
+         import {Dep} from './dep';
+
+         @Component({
+          templateUrl: '/app.html',
+         })
+         export class AppCmp {}
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createProjectWithStandaloneDeclarations(env, 'test', files, {
+      _enableSelectorless: true,
+    });
+    const template = project.openFile('app.html');
+    template.contents = '<div @Dep></div>';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('@De¦p');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('Dep');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.classElement);
+    expect(definitions[0].textSpan).toBe('Dep');
+    assertFileNames(Array.from(definitions), ['dep.ts']);
+  });
+
+  it('gets definition of selectorless component input', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'dep.ts': `
+         import {Component, Input} from '@angular/core';
+
+         @Component({template: ''})
+         export class Dep {
+          @Input() someInput: any;
+         }
+       `,
+      'app.ts': `
+         import {Component} from '@angular/core';
+         import {Dep} from './dep';
+
+         @Component({
+          templateUrl: '/app.html',
+         })
+         export class AppCmp {}
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createProjectWithStandaloneDeclarations(env, 'test', files, {
+      _enableSelectorless: true,
+    });
+    const template = project.openFile('app.html');
+    template.contents = '<Dep [someInput]="123"/>';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('[some¦Input]');
+    const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+
+    expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+      'someInput',
+    );
+    expect(definitions.length).toBe(1);
+    expect(definitions[0].textSpan).toContain('someInput');
+    assertFileNames(definitions, ['dep.ts']);
+  });
+
+  it('gets definition of selectorless directive input', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'dep.ts': `
+         import {Directive, Input} from '@angular/core';
+
+         @Directive()
+         export class Dep {
+          @Input() someInput: any;
+         }
+       `,
+      'app.ts': `
+         import {Component} from '@angular/core';
+         import {Dep} from './dep';
+
+         @Component({
+          templateUrl: '/app.html',
+         })
+         export class AppCmp {}
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createProjectWithStandaloneDeclarations(env, 'test', files, {
+      _enableSelectorless: true,
+    });
+    const template = project.openFile('app.html');
+    template.contents = '<div @Dep([someInput]="123")></div>';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('[some¦Input]');
+    const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+
+    expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+      'someInput',
+    );
+    expect(definitions.length).toBe(1);
+    expect(definitions[0].textSpan).toContain('someInput');
+    assertFileNames(definitions, ['dep.ts']);
+  });
+
+  it('gets definition of selectorless component output', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'dep.ts': `
+         import {Component, Output, EventEmitter} from '@angular/core';
+
+         @Component({template: ''})
+         export class Dep {
+          @Output() someEvent = new EventEmitter<void>();
+         }
+       `,
+      'app.ts': `
+         import {Component} from '@angular/core';
+         import {Dep} from './dep';
+
+         @Component({
+          templateUrl: '/app.html',
+         })
+         export class AppCmp {
+          handler() {}
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createProjectWithStandaloneDeclarations(env, 'test', files, {
+      _enableSelectorless: true,
+    });
+    const template = project.openFile('app.html');
+    template.contents = '<Dep (someEvent)="handler()"/>';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('(some¦Event)');
+    const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+
+    expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+      'someEvent',
+    );
+    expect(definitions.length).toBe(1);
+    expect(definitions[0].textSpan).toContain('someEvent');
+    assertFileNames(definitions, ['dep.ts']);
+  });
+
+  it('gets definition of selectorless directive output', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'dep.ts': `
+         import {Directive, Output, EventEmitter} from '@angular/core';
+
+         @Directive()
+         export class Dep {
+          @Output() someEvent = new EventEmitter<void>();
+         }
+       `,
+      'app.ts': `
+         import {Component} from '@angular/core';
+         import {Dep} from './dep';
+
+         @Component({
+          templateUrl: '/app.html',
+         })
+         export class AppCmp {
+          handler() {}
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createProjectWithStandaloneDeclarations(env, 'test', files, {
+      _enableSelectorless: true,
+    });
+    const template = project.openFile('app.html');
+    template.contents = '<div @Dep((someEvent)="handler()")></div>';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('(some¦Event)');
+    const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+
+    expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+      'someEvent',
+    );
+    expect(definitions.length).toBe(1);
+    expect(definitions[0].textSpan).toContain('someEvent');
+    assertFileNames(definitions, ['dep.ts']);
+  });
+
+  it('gets definition for a method in a void expression', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
+         export class AppCmp {
+           doSomething() {}
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.contents = '<div (click)="void doSomething()">';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('void doSomet¦hing()');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('doSomething');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberFunctionElement);
+    expect(definitions[0].textSpan).toBe('doSomething');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
+  it('gets definition for a tagged template literal expression', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
+         export class AppCmp {
+           name = 'Bob';
+           tag = (...args: unknown[]) => '';
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.contents = '{{ tag`Hello, ${name}!` }}';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('${na¦me}');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('name');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('name');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
+  it('gets definition for a tagged template literal tag', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
+         export class AppCmp {
+           name = 'Bob';
+           tag = (...args: unknown[]) => '';
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.contents = '{{ tag`Hello, ${name}!` }}';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('t¦ag`');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('tag');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('tag');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
+  it('gets definition for a host binding value of a component', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          template: '',
+          standalone: false,
+          host: {
+            '[title]': 'myTitle',
+          }
+        })
+        export class AppCmp {
+          myTitle = 'hello';
+        }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      typeCheckHostBindings: true,
+    });
+    const appFile = project.openFile('app.ts');
+    project.expectNoSourceDiagnostics();
+
+    appFile.moveCursorToText(`'[title]': 'myT¦itle'`);
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, appFile);
+    expect(definitions[0].name).toEqual('myTitle');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('myTitle');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
+  it('gets definition for a host listener of a component', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          template: '',
+          standalone: false,
+          host: {
+            '(click)': 'handleClick($event)',
+          }
+        })
+        export class AppCmp {
+          handleClick(event: MouseEvent) {}
+        }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      typeCheckHostBindings: true,
+    });
+    const appFile = project.openFile('app.ts');
+    project.expectNoSourceDiagnostics();
+
+    appFile.moveCursorToText(`'(click)': 'handle¦Click($event)'`);
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, appFile);
+    expect(definitions[0].name).toEqual('handleClick');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberFunctionElement);
+    expect(definitions[0].textSpan).toBe('handleClick');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
+  it('gets definition for a host binding value of a directive', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'dir.ts': `
+        import {Directive} from '@angular/core';
+        @Directive({
+          selector: '[my-dir]',
+          standalone: false,
+          host: {
+            '[title]': 'myTitle',
+          }
+        })
+        export class MyDir {
+          myTitle = 'hello';
+        }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      typeCheckHostBindings: true,
+    });
+    const dirFile = project.openFile('dir.ts');
+    project.expectNoSourceDiagnostics();
+
+    dirFile.moveCursorToText(`'[title]': 'myT¦itle'`);
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, dirFile);
+    expect(definitions[0].name).toEqual('myTitle');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('myTitle');
+    assertFileNames(Array.from(definitions), ['dir.ts']);
+  });
+
+  it('gets definition for a property in a "in" expression', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': `<div>{{'foo' in myObj}}</div>`,
+      'app.ts': `
+         import {Component} from '@angular/core';
+         @Component({
+          templateUrl: '/app.html',
+          standalone: false,
+         })
+         export class AppCmp {
+           myObj: {foo: string} = {foo: 'bar'};
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText(`'foo' in myO¦bj`);
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('myObj');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('myObj');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
   function getDefinitionsAndAssertBoundSpan(env: LanguageServiceTestEnv, file: OpenBuffer) {
     env.expectNoSourceDiagnostics();
     const definitionAndBoundSpan = file.getDefinitionAndBoundSpan();
-    const {textSpan, definitions} = definitionAndBoundSpan!;
+
+    if (!definitionAndBoundSpan) {
+      throw new Error('Could not retrieve definition');
+    }
+
+    const {textSpan, definitions} = definitionAndBoundSpan;
     expect(definitions).toBeTruthy();
     return {textSpan, definitions: definitions!.map((d) => humanizeDocumentSpanLike(d, env))};
   }

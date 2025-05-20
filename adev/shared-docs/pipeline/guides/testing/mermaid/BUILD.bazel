@@ -1,25 +1,28 @@
-load("//tools:defaults.bzl", "esbuild_jasmine_node_test", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//tools:defaults.bzl", "esbuild_jasmine_node_test")
 
-ts_library(
+ts_project(
     name = "unit_test_lib",
     testonly = True,
     srcs = glob([
-        "*.spec.ts",
+        "*.spec.mts",
     ]),
     deps = [
-        "//adev/shared-docs/pipeline/guides",
-        "@npm//@bazel/runfiles",
-        "@npm//@types/jsdom",
-        "@npm//jsdom",
-        "@npm//marked",
+        "//:node_modules/@types/jsdom",
+        "//:node_modules/jsdom",
+        "//:node_modules/marked",
+        "//adev/shared-docs/pipeline/guides:guides_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "bootstrap",
     testonly = True,
     srcs = [
-        "bootstrap.init.ts",
+        "bootstrap.init.mts",
+    ],
+    deps = [
+        "//:node_modules/@types/node",
     ],
 )
 
@@ -36,7 +39,7 @@ esbuild_jasmine_node_test(
     ] + glob([
         "**/*.md",
         "**/*.svg",
-        "**/*.ts",
+        "**/*.mts",
     ]),
     env = {
         "CHROME_BIN": "$(CHROMIUM)",

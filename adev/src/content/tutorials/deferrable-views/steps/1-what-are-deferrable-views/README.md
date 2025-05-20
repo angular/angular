@@ -10,7 +10,7 @@ In this activity, you'll learn how to use deferrable views to defer load a secti
 <docs-workflow>
 
 <docs-step title="Add a `@defer` block to a section of a template">
-In your `app.component.ts`, wrap the `article-comments` component with a `@defer` block to defer load it.
+In your `app.ts`, wrap the `article-comments` component with a `@defer` block to defer load it.
 
 <docs-code language="angular-html">
 @defer {

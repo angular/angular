@@ -334,7 +334,6 @@ export function reconcile<T, V>(
           '.',
       );
 
-      // tslint:disable-next-line:no-console
       console.warn(message);
     }
   }

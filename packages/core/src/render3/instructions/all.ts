@@ -44,7 +44,7 @@ export {
   ɵsetUnknownPropertyStrictMode,
 } from './element_validation';
 export * from './get_current_view';
-export * from './host_property';
+export * from './dom_property';
 export * from './i18n';
 export * from './listener';
 export * from './namespace';

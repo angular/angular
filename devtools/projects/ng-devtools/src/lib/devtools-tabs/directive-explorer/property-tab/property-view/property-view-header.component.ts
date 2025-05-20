@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, input, output} from '@angular/core';
+import {Component, computed, inject, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatToolbar} from '@angular/material/toolbar';
+import {Platform} from '@angular/cdk/platform';
+import {FrameManager} from '../../../../application-services/frame_manager';
 
 @Component({
   selector: 'ng-property-view-header',
@@ -20,6 +22,15 @@ import {MatToolbar} from '@angular/material/toolbar';
 export class PropertyViewHeaderComponent {
   readonly directive = input.required<string>();
   readonly viewSource = output<void>();
+
+  private readonly frameManager = inject(FrameManager);
+  private readonly platform = inject(Platform);
+
+  readonly disableViewSourceButton = computed(() => {
+    const isTopLevelFrame = this.frameManager.topLevelFrameIsActive();
+    const frameHasUniqueUrl = this.frameManager.activeFrameHasUniqueUrl();
+    return (this.platform.FIREFOX && !isTopLevelFrame) || !frameHasUniqueUrl;
+  });
 
   // output that emits directive
   handleViewSource(event: MouseEvent): void {

@@ -26,7 +26,7 @@ import {OnSameUrlNavigation, QueryParamsHandling, RedirectCommand} from './model
  * more control over when the router starts its initial navigation due to some complex
  * initialization logic.
  *
- * @see {@link forRoot()}
+ * @see {@link /api/router/RouterModule#forRoot forRoot}
  *
  * @publicApi
  */
@@ -179,7 +179,7 @@ export interface InMemoryScrollingOptions {
  * A set of configuration options for a router module, provided in the
  * `forRoot()` method.
  *
- * @see {@link forRoot()}
+ * @see {@link /api/router/routerModule#forRoot forRoot}
  *
  *
  * @publicApi
@@ -223,7 +223,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    *
    * @see https://developer.chrome.com/docs/web-platform/view-transitions/
    * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
-   * @experimental
+   * @experimental 17.0
    */
   enableViewTransitions?: boolean;
 

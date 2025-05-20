@@ -1,18 +1,21 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("@npm//@angular/build-tooling/bazel/integration:index.bzl", "integration_test")
-load("//packages/core/schematics/migrations/signal-migration/test/ts-versions:index.bzl", "TS_VERSIONS")
-load("//tools:defaults.bzl", "jasmine_node_test", "nodejs_binary", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "nodejs_binary")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_runners_lib",
     testonly = True,
     srcs = [
         "batch_runner.ts",
         "golden_test_runner.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/core/schematics/utils/tsurge",
-        "@npm//chalk",
-        "@npm//fast-glob",
+    ],
+    deps = [
+        "//:node_modules/chalk",
+        "//:node_modules/tinyglobby",
     ],
 )
 
@@ -20,14 +23,14 @@ nodejs_binary(
     name = "golden_test_runner",
     testonly = True,
     data = [":test_runners_lib"],
-    entry_point = ":golden_test_runner.ts",
+    entry_point = ":golden_test_runner.js",
 )
 
-nodejs_binary(
+js_binary(
     name = "batch_runner",
     testonly = True,
     data = [":test_runners_lib"],
-    entry_point = ":batch_runner.ts",
+    entry_point = ":batch_runner.js",
 )
 
 integration_test(
@@ -42,38 +45,14 @@ integration_test(
     ],
     data = [
         ":golden_test_runner",
+        "//packages:package_json",
         "//packages/core/schematics/migrations/signal-migration/src:bin",
     ],
     environment = {
+        "BAZEL_BINDIR": ".",
         "FORCE_COLOR": "3",
     },
 )
-
-[
-    integration_test(
-        name = "test_ts_%s" % version,
-        srcs = [
-            "golden.txt",
-            "//packages/core/schematics/migrations/signal-migration/test/golden-test:test_files",
-            "//packages/core/schematics/migrations/signal-migration/test/ts-versions:hooks.mjs",
-            "//packages/core/schematics/migrations/signal-migration/test/ts-versions:loader.mjs",
-        ],
-        commands = [
-            "$(rootpath //packages/core/schematics/migrations/signal-migration/src:bin) --node_options=--import=./ts-versions/loader.js ./golden-test/tsconfig.json --insert-todos ",
-            "$(rootpath :golden_test_runner) ./golden-test ./golden.txt",
-        ],
-        data = [
-            ":golden_test_runner",
-            "//packages/core/schematics/migrations/signal-migration/src:bin",
-            "@npm_ts_versions//%s" % version,
-        ],
-        environment = {
-            "FORCE_COLOR": "3",
-            "TS_VERSION_PACKAGE": version,
-        },
-    )
-    for version in TS_VERSIONS
-]
 
 integration_test(
     name = "test_best_effort",
@@ -87,9 +66,11 @@ integration_test(
     ],
     data = [
         ":golden_test_runner",
+        "//packages:package_json",
         "//packages/core/schematics/migrations/signal-migration/src:bin",
     ],
     environment = {
+        "BAZEL_BINDIR": ".",
         "FORCE_COLOR": "3",
     },
 )
@@ -111,6 +92,7 @@ integration_test(
     data = [
         ":batch_runner",
         ":golden_test_runner",
+        "//packages:package_json",
         "//packages/core/schematics/migrations/signal-migration/src:batch_test_bin",
         "//packages/core/schematics/migrations/signal-migration/src:bin",
     ],
@@ -127,11 +109,11 @@ integration_test(
     },
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = ["migration_spec.ts"],
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/core/schematics/migrations/signal-migration/src",

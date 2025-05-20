@@ -349,7 +349,7 @@ export class ActivatedRouteSnapshot {
      *  You can compute all params (or data) in the router state or to get params outside
      *  of an activated component by traversing the `RouterState` tree as in the following
      *  example:
-     *  ```
+     *  ```ts
      *  collectRouteParams(router: Router) {
      *    let params = {};
      *    let stack: ActivatedRouteSnapshot[] = [router.routerState.snapshot.root];

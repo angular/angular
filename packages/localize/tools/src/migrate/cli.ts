@@ -13,7 +13,7 @@ import {
   NodeJSFileSystem,
   setFileSystem,
 } from '@angular/compiler-cli/private/localize';
-import glob from 'fast-glob';
+import {globSync} from 'tinyglobby';
 import yargs from 'yargs';
 import {migrateFiles} from './index';
 
@@ -49,7 +49,7 @@ const fs = new NodeJSFileSystem();
 setFileSystem(fs);
 
 const rootPath = options.r;
-const translationFilePaths = glob.sync(options.f, {cwd: rootPath, onlyFiles: true});
+const translationFilePaths = globSync(options.f, {cwd: rootPath, onlyFiles: true});
 const logger = new ConsoleLogger(LogLevel.warn);
 
 migrateFiles({rootPath, translationFilePaths, mappingFilePath: options.m, logger});

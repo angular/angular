@@ -1,22 +1,20 @@
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {FormsModule} from '@angular/forms';
 
 import {createNewEvent} from '../../shared/utils';
-import {FavoriteColorComponent} from './favorite-color.component';
+import {FavoriteColorTemplateComponent} from './favorite-color.component';
 
 describe('FavoriteColorComponent', () => {
-  let component: FavoriteColorComponent;
-  let fixture: ComponentFixture<FavoriteColorComponent>;
+  let component: FavoriteColorTemplateComponent;
+  let fixture: ComponentFixture<FavoriteColorTemplateComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [FavoriteColorComponent],
-    }).compileComponents();
+      declarations: [FavoriteColorTemplateComponent],
+    });
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FavoriteColorComponent);
+    fixture = TestBed.createComponent(FavoriteColorTemplateComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

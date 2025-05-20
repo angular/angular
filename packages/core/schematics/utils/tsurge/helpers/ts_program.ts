@@ -42,7 +42,7 @@ export function createPlainTsProgram(
     ngCompiler: null,
     program,
     userOptions: tsconfig.options,
-    programAbsoluteRootFileNames: tsconfig.rootNames,
+    __programAbsoluteRootFileNames: tsconfig.rootNames,
     host: tsHost,
   };
 }

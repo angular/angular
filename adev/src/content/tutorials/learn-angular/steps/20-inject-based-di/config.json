@@ -1,5 +1,5 @@
 {
-  "openFiles": ["src/app/car.service.ts", "src/app/app.component.ts"],
+  "openFiles": ["src/app/car.service.ts", "src/app/app.ts"],
   "title": "Inject-based dependency injection",
   "type": "editor"
 }

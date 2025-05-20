@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {NgFor} from '@angular/common';
 import {RouterLink} from '@angular/router';
 
@@ -9,15 +9,15 @@ import {HeroService} from '../hero.service';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  imports: [NgFor, RouterLink, HeroSearchComponent],
+  imports: [RouterLink, HeroSearchComponent],
   styleUrls: ['./dashboard.component.css'],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
   heroes: Hero[] = [];
 
-  constructor(private heroService: HeroService) {}
+  private heroService = inject(HeroService);
 
-  ngOnInit() {
+  constructor() {
     this.getHeroes();
   }
 

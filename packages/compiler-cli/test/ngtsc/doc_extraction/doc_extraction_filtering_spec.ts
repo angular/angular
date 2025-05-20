@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
+import {DocEntry} from '../../../src/ngtsc/docs';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {loadStandardTestFiles} from '../../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
@@ -44,6 +44,31 @@ runInEachFileSystem(() => {
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(0);
+    });
+
+    it('should extract the type declaration if the value declaration is private', () => {
+      env.write(
+        'index.ts',
+        `
+       /**
+        * Documented 
+        */ 
+       export interface FormControl<T> {
+          name: string;
+       }
+       export interface ɵFormControlCtor {
+        new (): FormControl<any>;
+       }
+       export const FormControl: ɵFormControlCtor = class FormControl<TValue = any> {
+       
+       }
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+      expect(docs[0].name).toBe('FormControl');
+      expect(docs[0].rawComment).toMatch(/Documented/);
     });
   });
 });

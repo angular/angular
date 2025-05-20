@@ -3,9 +3,7 @@
   "cases": [
     {
       "description": "should be able to generate the TODO example",
-      "inputFiles": [
-        "todo_example.ts"
-      ],
+      "inputFiles": ["todo_example.ts"],
       "expectations": [
         {
           "files": [
@@ -20,9 +18,10 @@
     },
     {
       "description": "should handle binary and unary operators",
-      "inputFiles": [
-        "operators.ts"
-      ],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "inputFiles": ["operators.ts"],
       "expectations": [
         {
           "files": [

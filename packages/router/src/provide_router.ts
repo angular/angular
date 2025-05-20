@@ -14,20 +14,20 @@ import {
 } from '@angular/common';
 import {
   APP_BOOTSTRAP_LISTENER,
-  APP_INITIALIZER,
   ApplicationRef,
   ComponentRef,
   ENVIRONMENT_INITIALIZER,
   EnvironmentProviders,
   inject,
-  InjectFlags,
   InjectionToken,
   Injector,
   makeEnvironmentProviders,
   NgZone,
+  provideAppInitializer,
   Provider,
   runInInjectionContext,
   Type,
+  ɵperformanceMarkFeature as performanceMarkFeature,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -109,7 +109,7 @@ export function rootRoute(router: Router): ActivatedRoute {
  */
 export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
   ɵkind: FeatureKind;
-  ɵproviders: Provider[];
+  ɵproviders: Array<Provider | EnvironmentProviders>;
 }
 
 /**
@@ -117,7 +117,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
  */
 function routerFeature<FeatureKind extends RouterFeatureKind>(
   kind: FeatureKind,
-  providers: Provider[],
+  providers: Array<Provider | EnvironmentProviders>,
 ): RouterFeature<FeatureKind> {
   return {ɵkind: kind, ɵproviders: providers};
 }
@@ -239,8 +239,8 @@ export function getBootstrapListener() {
       router.initialNavigation();
     }
 
-    injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
-    injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional)?.init();
+    injector.get(ROUTER_PRELOADER, null, {optional: true})?.setUpPreloading();
+    injector.get(ROUTER_SCROLLER, null, {optional: true})?.init();
     router.resetRootComponentType(ref.componentTypes[0]);
     if (!bootstrapDone.closed) {
       bootstrapDone.next();
@@ -348,40 +348,34 @@ export type InitialNavigationFeature =
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature {
   const providers = [
     {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.EnabledBlocking},
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      deps: [Injector],
-      useFactory: (injector: Injector) => {
-        const locationInitialized: Promise<any> = injector.get(
-          LOCATION_INITIALIZED,
-          Promise.resolve(),
-        );
+    provideAppInitializer(() => {
+      const injector = inject(Injector);
+      const locationInitialized: Promise<any> = injector.get(
+        LOCATION_INITIALIZED,
+        Promise.resolve(),
+      );
 
-        return () => {
-          return locationInitialized.then(() => {
-            return new Promise((resolve) => {
-              const router = injector.get(Router);
-              const bootstrapDone = injector.get(BOOTSTRAP_DONE);
-              afterNextNavigation(router, () => {
-                // Unblock APP_INITIALIZER in case the initial navigation was canceled or errored
-                // without a redirect.
-                resolve(true);
-              });
-
-              injector.get(NavigationTransitions).afterPreactivation = () => {
-                // Unblock APP_INITIALIZER once we get to `afterPreactivation`. At this point, we
-                // assume activation will complete successfully (even though this is not
-                // guaranteed).
-                resolve(true);
-                return bootstrapDone.closed ? of(void 0) : bootstrapDone;
-              };
-              router.initialNavigation();
-            });
+      return locationInitialized.then(() => {
+        return new Promise((resolve) => {
+          const router = injector.get(Router);
+          const bootstrapDone = injector.get(BOOTSTRAP_DONE);
+          afterNextNavigation(router, () => {
+            // Unblock APP_INITIALIZER in case the initial navigation was canceled or errored
+            // without a redirect.
+            resolve(true);
           });
-        };
-      },
-    },
+
+          injector.get(NavigationTransitions).afterPreactivation = () => {
+            // Unblock APP_INITIALIZER once we get to `afterPreactivation`. At this point, we
+            // assume activation will complete successfully (even though this is not
+            // guaranteed).
+            resolve(true);
+            return bootstrapDone.closed ? of(void 0) : bootstrapDone;
+          };
+          router.initialNavigation();
+        });
+      });
+    }),
   ];
   return routerFeature(RouterFeatureKind.EnabledBlockingInitialNavigationFeature, providers);
 }
@@ -426,16 +420,9 @@ export type DisabledInitialNavigationFeature =
  */
 export function withDisabledInitialNavigation(): DisabledInitialNavigationFeature {
   const providers = [
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      useFactory: () => {
-        const router = inject(Router);
-        return () => {
-          router.setUpLocationChangeListener();
-        };
-      },
-    },
+    provideAppInitializer(() => {
+      inject(Router).setUpLocationChangeListener();
+    }),
     {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.Disabled},
   ];
   return routerFeature(RouterFeatureKind.DisabledInitialNavigationFeature, providers);
@@ -622,7 +609,7 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
  * ```
  *
  * @see {@link provideRouter}
- * @see {@link HashLocationStrategy}
+ * @see {@link /api/common/HashLocationStrategy HashLocationStrategy}
  *
  * @returns A set of providers for use with `provideRouter`.
  *
@@ -672,7 +659,7 @@ export type NavigationErrorHandlerFeature =
  * ```
  *
  * @see {@link NavigationError}
- * @see {@link core/inject}
+ * @see {@link /api/core/inject inject}
  * @see {@link runInInjectionContext}
  *
  * @returns A set of providers for use with `provideRouter`.
@@ -747,7 +734,7 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * Default values can be provided with a resolver on the route to ensure the value is always present
  * or an input and use an input transform in the component.
  *
- * @see {@link guide/components/inputs#input-transforms input transforms}
+ * @see {@link /guide/components/inputs#input-transforms Input Transforms}
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withComponentInputBinding(): ComponentInputBindingFeature {
@@ -784,11 +771,12 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  * @returns A set of providers for use with `provideRouter`.
  * @see https://developer.chrome.com/docs/web-platform/view-transitions/
  * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
- * @developerPreview
+ * @developerPreview 19.0
  */
 export function withViewTransitions(
   options?: ViewTransitionsFeatureOptions,
 ): ViewTransitionsFeature {
+  performanceMarkFeature('NgRouterViewTransitions');
   const providers = [
     {provide: CREATE_VIEW_TRANSITION, useValue: createViewTransition},
     {

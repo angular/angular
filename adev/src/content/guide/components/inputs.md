@@ -1,8 +1,8 @@
 # Accepting data with input properties
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
-Tip: If you're familiar with other web frameworks, input properties are similar to _props_.
+TIP: If you're familiar with other web frameworks, input properties are similar to _props_.
 
 When you use a component, you commonly want to pass some data to it. A component specifies the data that it accepts by declaring
 **inputs**:
@@ -232,7 +232,7 @@ export class MediaControls {
 }
 ```
 
-In the example above, the `CustomSlider` can write values into its `value` model input, which then propagates those values back to the `volume` property in `MediaControls`. This binding keeps that values of `value` and `volume` in sync.
+In the example above, the `CustomSlider` can write values into its `value` model input, which then propagates those values back to the `volume` property in `MediaControls`. This binding keeps the values of `value` and `volume` in sync.
 
 ### Implicit `change` events
 
@@ -269,7 +269,7 @@ Avoid adding prefixes for component inputs like you would with component selecto
 
 ## Declaring inputs with the `@Input` decorator
 
-Tip: While the Angular team recommends using the signal-based `input` function for new projects, the original decorator-based `@Input` API remains fully supported.
+TIP: While the Angular team recommends using the signal-based `input` function for new projects, the original decorator-based `@Input` API remains fully supported.
 
 You can alternatively declare component inputs by adding the `@Input` decorator to a property:
 

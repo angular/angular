@@ -28,7 +28,7 @@ import {
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
-import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD} from '../../constants/links';
+import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD, BLUESKY} from '../../constants/links';
 import {PagePrefix} from '../../enums/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
@@ -67,6 +67,7 @@ export class Navigation implements OnInit {
   readonly MEDIUM = MEDIUM;
   readonly YOUTUBE = YOUTUBE;
   readonly DISCORD = DISCORD;
+  readonly BLUESKY = BLUESKY;
 
   readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
@@ -93,7 +94,7 @@ export class Navigation implements OnInit {
   openedMenu: MenuType | null = null;
 
   currentDocsVersion = this.versionManager.currentDocsVersion;
-  currentDocsVersionMode = this.versionManager.currentDocsVersion()?.version;
+  currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
 
   // Set the values of the search label and title only on the client, because the label is user-agent specific.
   searchLabel = this.isBrowser

@@ -1,15 +1,14 @@
 // #docplaster
 // #docregion imports
-import {Directive, ElementRef, HostListener} from '@angular/core';
+import {Directive, ElementRef, HostListener, inject} from '@angular/core';
 // #enddocregion imports
-import {Input} from '@angular/core';
 // #docregion
 
 @Directive({
   selector: '[appHighlight]',
 })
 export class HighlightDirective {
-  constructor(private el: ElementRef) {}
+  private el = inject(ElementRef);
 
   // #docregion mouse-methods
   @HostListener('mouseenter') onMouseEnter() {

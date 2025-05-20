@@ -9,7 +9,7 @@
 import {
   InternalOptions,
   LegacyNgcOptions,
-  StrictTemplateOptions,
+  TypeCheckingOptions,
 } from '@angular/compiler-cli/src/ngtsc/core/api';
 import {
   absoluteFrom,
@@ -63,9 +63,12 @@ function writeTsconfig(
   );
 }
 
-export type TestableOptions = StrictTemplateOptions &
+export type TestableOptions = TypeCheckingOptions &
   InternalOptions &
-  Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'>;
+  Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'> & {
+    // This already exists in `InternalOptions`, but it's `internal` so it's stripped away.
+    _enableSelectorless?: boolean;
+  };
 
 export class Project {
   private tsProject: ts.server.Project;

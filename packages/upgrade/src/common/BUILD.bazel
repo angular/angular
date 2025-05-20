@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = [
     "//packages:__pkg__",
@@ -6,12 +6,12 @@ package(default_visibility = [
     "//tools/public_api_guard:__subpackages__",
 ])
 
-ts_library(
+ts_project(
     name = "common",
     srcs = glob([
         "src/**/*.ts",
     ]),
-    deps = [
+    interop_deps = [
         "//packages/core",
     ],
 )

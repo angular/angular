@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createLContainer, createTNode} from '@angular/core/src/render3/instructions/shared';
-import {isLContainer, isLView} from '@angular/core/src/render3/interfaces/type_checks';
+import {isLContainer, isLView} from '../../src/render3/interfaces/type_checks';
 import {ViewFixture} from './view_fixture';
+import {createTNode} from '../../src/render3/tnode_manipulation';
+import {createLContainer} from '../../src/render3/view/container';
 
 describe('view_utils', () => {
   it('should verify unwrap methods (isLView and isLContainer)', () => {

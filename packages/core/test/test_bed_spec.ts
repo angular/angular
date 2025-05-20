@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {ɵPLATFORM_BROWSER_ID} from '@angular/common';
 import {
   APP_INITIALIZER,
   ChangeDetectorRef,
@@ -19,7 +19,6 @@ import {
   inject,
   Inject,
   Injectable,
-  InjectFlags,
   InjectionToken,
   InjectOptions,
   Injector,
@@ -40,11 +39,12 @@ import {
   ɵɵelementStart as elementStart,
   ɵɵsetNgModuleScope as setNgModuleScope,
   ɵɵtext as text,
-} from '@angular/core';
-import {DeferBlockBehavior} from '@angular/core/testing';
-import {TestBed, TestBedImpl} from '@angular/core/testing/src/test_bed';
+  DOCUMENT,
+} from '../src/core';
+import {DeferBlockBehavior} from '../testing';
+import {TestBed, TestBedImpl} from '../testing/src/test_bed';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 import {NgModuleType} from '../src/render3';
 import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
@@ -54,7 +54,6 @@ import {
   THROW_ON_UNKNOWN_ELEMENTS_DEFAULT,
   THROW_ON_UNKNOWN_PROPERTIES_DEFAULT,
 } from '../testing/src/test_bed_common';
-import {DOCUMENT} from '@angular/common/src/dom_tokens';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -237,21 +236,18 @@ describe('TestBed with Standalone types', () => {
   it('should override dependencies of standalone components', () => {
     @Component({
       selector: 'dep',
-      standalone: true,
       template: 'main dep',
     })
     class MainDep {}
 
     @Component({
       selector: 'dep',
-      standalone: true,
       template: 'mock dep',
     })
     class MockDep {}
 
     @Component({
       selector: 'app-root',
-      standalone: true,
       imports: [MainDep],
       template: '<dep />',
     })
@@ -284,7 +280,6 @@ describe('TestBed with Standalone types', () => {
     const A = new InjectionToken('A');
 
     @Component({
-      standalone: true,
       template: '{{ a }}',
       providers: [{provide: A, useValue: 'A'}],
     })
@@ -316,7 +311,6 @@ describe('TestBed with Standalone types', () => {
 
     @Component({
       selector: 'dep',
-      standalone: true,
       template: '{{ service.id }}',
       providers: [Service],
     })
@@ -325,7 +319,6 @@ describe('TestBed with Standalone types', () => {
     }
 
     @Component({
-      standalone: true,
       template: '<dep />',
       imports: [Dep],
     })
@@ -361,7 +354,6 @@ describe('TestBed with Standalone types', () => {
     class ComponentDependenciesModule {}
 
     @Component({
-      standalone: true,
       template: '{{ a }}',
       imports: [ComponentDependenciesModule],
     })
@@ -388,7 +380,6 @@ describe('TestBed with Standalone types', () => {
     class ComponentDependenciesModule {}
 
     @Component({
-      standalone: true,
       template: '{{ a }}',
       imports: [ComponentDependenciesModule],
     })
@@ -410,7 +401,6 @@ describe('TestBed with Standalone types', () => {
 
   it('should allow overriding a template of a standalone component', () => {
     @Component({
-      standalone: true,
       template: 'Original',
     })
     class MyStandaloneComp {}
@@ -428,7 +418,6 @@ describe('TestBed with Standalone types', () => {
   it('should allow overriding the set of directives and pipes used in a standalone component', () => {
     @Directive({
       selector: '[dir]',
-      standalone: true,
       host: {'[id]': 'id'},
     })
     class MyStandaloneDirectiveA {
@@ -437,20 +426,19 @@ describe('TestBed with Standalone types', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: true,
       host: {'[id]': 'id'},
     })
     class MyStandaloneDirectiveB {
       id = 'B';
     }
 
-    @Pipe({name: 'pipe', standalone: true})
+    @Pipe({name: 'pipe'})
     class MyStandalonePipeA {
       transform(value: string): string {
         return `transformed ${value} (A)`;
       }
     }
-    @Pipe({name: 'pipe', standalone: true})
+    @Pipe({name: 'pipe'})
     class MyStandalonePipeB {
       transform(value: string): string {
         return `transformed ${value} (B)`;
@@ -458,7 +446,6 @@ describe('TestBed with Standalone types', () => {
     }
 
     @Component({
-      standalone: true,
       template: '<div dir>{{ name | pipe }}</div>',
       imports: [MyStandalonePipeA, MyStandaloneDirectiveA],
     })
@@ -483,7 +470,6 @@ describe('TestBed with Standalone types', () => {
   it('should reflect overrides on imported standalone directive', () => {
     @Directive({
       selector: '[dir]',
-      standalone: true,
       host: {'[id]': 'id'},
     })
     class DepStandaloneDirective {
@@ -492,7 +478,6 @@ describe('TestBed with Standalone types', () => {
 
     @Component({
       selector: 'standalone-cmp',
-      standalone: true,
       template: 'Original MyStandaloneComponent',
     })
     class DepStandaloneComponent {
@@ -500,7 +485,6 @@ describe('TestBed with Standalone types', () => {
     }
 
     @Component({
-      standalone: true,
       template: '<standalone-cmp dir>Hello world!</standalone-cmp>',
       imports: [DepStandaloneDirective, DepStandaloneComponent],
     })
@@ -526,7 +510,6 @@ describe('TestBed with Standalone types', () => {
     const TOKEN_A = new InjectionToken('TOKEN_A');
     @Pipe({
       name: 'testPipe',
-      standalone: true,
     })
     class TestPipe {
       constructor(@Inject(TOKEN_A) private token: string) {}
@@ -544,7 +527,6 @@ describe('TestBed with Standalone types', () => {
 
     @Component({
       selector: 'test-component',
-      standalone: true,
       imports: [TestNgModule],
       template: `{{ 'original value' | testPipe }}`,
     })
@@ -588,7 +570,6 @@ describe('TestBed with Standalone types', () => {
     class TestModule {}
 
     @Component({
-      standalone: true,
       selector: 'app-root',
       template: `<test-cmp #testCmpCtrl></test-cmp>`,
       imports: [TestModule],
@@ -663,7 +644,6 @@ describe('TestBed', () => {
 
   it('should not allow overrides of the `standalone` field', () => {
     @Component({
-      standalone: true,
       selector: 'standalone-comp',
       template: '...',
     })
@@ -676,7 +656,7 @@ describe('TestBed', () => {
     })
     class NonStandaloneComponent {}
 
-    @Directive({standalone: true})
+    @Directive()
     class StandaloneDirective {}
 
     @Directive({
@@ -684,7 +664,7 @@ describe('TestBed', () => {
     })
     class NonStandaloneDirective {}
 
-    @Pipe({standalone: true, name: 'test'})
+    @Pipe({name: 'test'})
     class StandalonePipe {}
 
     @Pipe({
@@ -1079,12 +1059,10 @@ describe('TestBed', () => {
         declarations: [App],
         // AppModule -> ModuleB -> ModuleA (to be overridden)
         imports: [AppModule],
-      })
-        .overrideModule(ModuleA, {
-          remove: {declarations: [CompA], exports: [CompA]},
-          add: {declarations: [MockCompA], exports: [MockCompA]},
-        })
-        .compileComponents();
+      }).overrideModule(ModuleA, {
+        remove: {declarations: [CompA], exports: [CompA]},
+        add: {declarations: [MockCompA], exports: [MockCompA]},
+      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -1109,8 +1087,7 @@ describe('TestBed', () => {
         .overrideModule(ModuleB, {
           remove: {declarations: [CompB], exports: [CompB]},
           add: {declarations: [MockCompB], exports: [MockCompB]},
-        })
-        .compileComponents();
+        });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -1332,25 +1309,23 @@ describe('TestBed', () => {
 
     TestBed.configureTestingModule({
       imports: [TestModule],
-    })
-      .overrideModule(TestModule, {
-        remove: {
-          providers: [
-            // Removing the cycle named "a" should result in removing the provider for "a".
-            // Note: although this removes a different instance than the one provided, metadata
-            // overrides compare objects by value, not by reference.
-            {provide: CYCLES, useValue: new Cyclic('a'), multi: true},
+    }).overrideModule(TestModule, {
+      remove: {
+        providers: [
+          // Removing the cycle named "a" should result in removing the provider for "a".
+          // Note: although this removes a different instance than the one provided, metadata
+          // overrides compare objects by value, not by reference.
+          {provide: CYCLES, useValue: new Cyclic('a'), multi: true},
 
-            // Also attempt to remove a cycle named "B" (which does not exist) to verify that
-            // objects are correctly compared by value.
-            {provide: CYCLES, useValue: new Cyclic('B'), multi: true},
-          ],
-        },
-        add: {
-          providers: [{provide: CYCLES, useValue: new Cyclic('c'), multi: true}],
-        },
-      })
-      .compileComponents();
+          // Also attempt to remove a cycle named "B" (which does not exist) to verify that
+          // objects are correctly compared by value.
+          {provide: CYCLES, useValue: new Cyclic('B'), multi: true},
+        ],
+      },
+      add: {
+        providers: [{provide: CYCLES, useValue: new Cyclic('c'), multi: true}],
+      },
+    });
 
     const values = TestBed.inject(CYCLES);
     expect(values.map((v) => v.name)).toEqual(['b', 'c']);
@@ -1613,8 +1588,7 @@ describe('TestBed', () => {
      * Function returns a class that represents AOT-compiled version of the following Component:
      *
      * @Component({
-     *  standalone: true,
-     *  imports: [...],
+     *       *  imports: [...],
      *  selector: '...',
      *  template: '...',
      * })
@@ -1631,7 +1605,6 @@ describe('TestBed', () => {
       class ComponentClass {
         static ɵfac = () => new ComponentClass();
         static ɵcmp = defineComponent({
-          standalone: true,
           type: ComponentClass,
           selectors: [[selector]],
           decls: 2,
@@ -1665,7 +1638,6 @@ describe('TestBed', () => {
                 args: [
                   {
                     selector,
-                    standalone: true,
                     imports: [...dependencies, ...deferrableSymbols],
                     template: `<div>root cmp!</div>`,
                   },
@@ -1682,7 +1654,6 @@ describe('TestBed', () => {
 
     it('should handle async metadata on root and nested components', async () => {
       @Component({
-        standalone: true,
         selector: 'cmp-a',
         template: 'CmpA!',
       })
@@ -1700,6 +1671,7 @@ describe('TestBed', () => {
         set: {template: `Override of a nested template! <cmp-a />`},
       });
 
+      // This is only required because the components are AOT compiled and thus include setClassMetadataAsync
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(RootAotComponent);
@@ -1728,7 +1700,6 @@ describe('TestBed', () => {
       class ThisModuleProvidesService {}
 
       @Component({
-        standalone: true,
         selector: 'child',
         imports: [ThisModuleProvidesService],
         template: '<h1>{{value}}</h1>',
@@ -1739,7 +1710,6 @@ describe('TestBed', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'parent',
         imports: [ChildCmp],
         template: `
@@ -1769,7 +1739,6 @@ describe('TestBed', () => {
                 args: [
                   {
                     selector: 'parent',
-                    standalone: true,
                     imports: [...deferrableSymbols],
                     template: `<div>root cmp!</div>`,
                   },
@@ -1784,11 +1753,12 @@ describe('TestBed', () => {
 
       // Set `PLATFORM_ID` to a browser platform value to trigger defer loading
       // while running tests in Node.
-      const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
+      const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: ɵPLATFORM_BROWSER_ID}];
 
       TestBed.configureTestingModule({imports: [ParentCmp], providers: [COMMON_PROVIDERS]});
       TestBed.overrideProvider(ImportantService, {useValue: {value: 'overridden'}});
 
+      // This is only required because the component has setClassMetadataAsync
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(ParentCmp);
@@ -1814,6 +1784,7 @@ describe('TestBed', () => {
         },
       });
 
+      // This is only required because the components are AOT compiled and thus include setClassMetadataAsync
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(RootAotComponent);
@@ -2247,9 +2218,9 @@ describe('TestBed', () => {
       imports: [TestingModule],
       declarations: [AppComponent],
       providers: [{provide: InjectedString, useValue: {value: 'initial'}}],
-    }).compileComponents();
+    });
 
-    TestBed.overrideProvider(InjectedString, {useValue: {value: 'changed'}}).compileComponents();
+    TestBed.overrideProvider(InjectedString, {useValue: {value: 'changed'}});
 
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
@@ -2260,12 +2231,8 @@ describe('TestBed', () => {
     describe('injection flags', () => {
       it('should be able to optionally inject a token', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
-
         expect(TestBed.inject(TOKEN, undefined, {optional: true})).toBeNull();
-        expect(TestBed.inject(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
-
         expect(TestBed.inject(TOKEN, undefined, {optional: true})).toBeNull();
-        expect(TestBed.inject(TOKEN, undefined, InjectFlags.Optional)).toBeNull();
       });
 
       it('should include `null` into the result type when the optional flag is used', () => {
@@ -2288,11 +2255,7 @@ describe('TestBed', () => {
         });
 
         expect(TestBed.inject(TOKEN)).toBe('from TestBed');
-
         expect(TestBed.inject(TOKEN, undefined, {skipSelf: true, optional: true})).toBeNull();
-        expect(
-          TestBed.inject(TOKEN, undefined, InjectFlags.SkipSelf | InjectFlags.Optional),
-        ).toBeNull();
       });
     });
   });

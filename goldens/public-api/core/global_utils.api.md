@@ -8,20 +8,10 @@
 export function applyChanges(component: {}): void;
 
 // @public
-export interface ComponentDebugMetadata extends DirectiveDebugMetadata {
-    // (undocumented)
-    changeDetection: ChangeDetectionStrategy;
-    // (undocumented)
-    encapsulation: ViewEncapsulation;
-}
+export type DirectiveDebugMetadata = AngularDirectiveDebugMetadata | AcxDirectiveDebugMetadata | AngularComponentDebugMetadata | AcxComponentDebugMetadata | WizComponentDebugMetadata;
 
 // @public
-export interface DirectiveDebugMetadata {
-    // (undocumented)
-    inputs: Record<string, string>;
-    // (undocumented)
-    outputs: Record<string, string>;
-}
+export function enableProfiling(): () => void;
 
 // @public
 export function getComponent<T>(element: Element): T | null;
@@ -30,7 +20,7 @@ export function getComponent<T>(element: Element): T | null;
 export function getContext<T extends {}>(element: Element): T | null;
 
 // @public
-export function getDirectiveMetadata(directiveOrComponentInstance: any): ComponentDebugMetadata | DirectiveDebugMetadata | null;
+export function getDirectiveMetadata(directiveOrComponentInstance: any): AngularComponentDebugMetadata | AngularDirectiveDebugMetadata | null;
 
 // @public
 export function getDirectives(node: Node): {}[];

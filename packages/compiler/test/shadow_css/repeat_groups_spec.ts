@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {repeatGroups} from '@angular/compiler/src/shadow_css';
+import {repeatGroups} from '../../src/shadow_css';
 
 describe('ShadowCss, repeatGroups()', () => {
   it('should do nothing if `multiples` is 0', () => {

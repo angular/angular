@@ -10,7 +10,7 @@ import {DOCUMENT} from '@angular/common';
 import {provideLocationMocks} from '@angular/common/testing';
 import {Component, inject, Inject, Injectable, NgModule} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {
   ActivatedRoute,
   provideRouter,
@@ -20,8 +20,8 @@ import {
   RouterStateSnapshot,
   TitleStrategy,
   withRouterConfig,
-} from '@angular/router';
-import {RouterTestingHarness} from '@angular/router/testing';
+} from '../index';
+import {RouterTestingHarness} from '../testing';
 
 describe('title strategy', () => {
   describe('DefaultTitleStrategy', () => {
@@ -40,28 +40,25 @@ describe('title strategy', () => {
       document = TestBed.inject(DOCUMENT);
     });
 
-    it('sets page title from data', fakeAsync(() => {
+    it('sets page title from data', async () => {
       router.resetConfig([{path: 'home', title: 'My Application', component: BlankCmp}]);
-      router.navigateByUrl('home');
-      tick();
+      await router.navigateByUrl('home');
       expect(document.title).toBe('My Application');
-    }));
+    });
 
-    it('sets page title from resolved data', fakeAsync(() => {
+    it('sets page title from resolved data', async () => {
       router.resetConfig([{path: 'home', title: TitleResolver, component: BlankCmp}]);
-      router.navigateByUrl('home');
-      tick();
+      await router.navigateByUrl('home');
       expect(document.title).toBe('resolved title');
-    }));
+    });
 
-    it('sets page title from resolved data function', fakeAsync(() => {
+    it('sets page title from resolved data function', async () => {
       router.resetConfig([{path: 'home', title: () => 'resolved title', component: BlankCmp}]);
-      router.navigateByUrl('home');
-      tick();
+      await router.navigateByUrl('home');
       expect(document.title).toBe('resolved title');
-    }));
+    });
 
-    it('sets title with child routes', fakeAsync(() => {
+    it('sets title with child routes', async () => {
       router.resetConfig([
         {
           path: 'home',
@@ -69,12 +66,12 @@ describe('title strategy', () => {
           children: [{path: '', title: 'child title', component: BlankCmp}],
         },
       ]);
-      router.navigateByUrl('home');
-      tick();
-      expect(document.title).toBe('child title');
-    }));
+      await router.navigateByUrl('home');
 
-    it('sets title with child routes and named outlets', fakeAsync(() => {
+      expect(document.title).toBe('child title');
+    });
+
+    it('sets title with child routes and named outlets', async () => {
       router.resetConfig([
         {
           path: 'home',
@@ -86,12 +83,11 @@ describe('title strategy', () => {
         },
         {path: 'compose', component: BlankCmp, outlet: 'aux', title: 'compose'},
       ]);
-      router.navigateByUrl('home(aux:compose)');
-      tick();
+      await router.navigateByUrl('home(aux:compose)');
       expect(document.title).toBe('child title');
-    }));
+    });
 
-    it('sets page title with inherited params', fakeAsync(() => {
+    it('sets page title with inherited params', async () => {
       router.resetConfig([
         {
           path: 'home',
@@ -105,10 +101,9 @@ describe('title strategy', () => {
           ],
         },
       ]);
-      router.navigateByUrl('home');
-      tick();
+      await router.navigateByUrl('home');
       expect(document.title).toBe('resolved title');
-    }));
+    });
 
     it('can get the title from the ActivatedRouteSnapshot', async () => {
       router.resetConfig([
@@ -151,7 +146,7 @@ describe('title strategy', () => {
   });
 
   describe('custom strategies', () => {
-    it('overriding the setTitle method', fakeAsync(() => {
+    it('overriding the setTitle method', async () => {
       @Injectable({providedIn: 'root'})
       class TemplatePageTitleStrategy extends TitleStrategy {
         constructor(@Inject(DOCUMENT) private readonly document: Document) {
@@ -183,10 +178,9 @@ describe('title strategy', () => {
         },
       ]);
 
-      router.navigateByUrl('home');
-      tick();
+      await router.navigateByUrl('home');
       expect(document.title).toEqual('My Application | Child');
-    }));
+    });
   });
 });
 

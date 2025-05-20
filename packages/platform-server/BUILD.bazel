@@ -15,13 +15,11 @@ ng_module(
     ),
     deps = [
         ":bundled_domino_lib",
-        "//packages/animations/browser",
         "//packages/common",
         "//packages/common/http",
         "//packages/compiler",
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser/animations",
         "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/node",
         "@npm//rxjs",
@@ -58,6 +56,9 @@ ng_package(
     ],
     externals = [
         "xhr2",
+    ],
+    side_effect_entry_points = [
+        "@angular/platform-server/init",
     ],
     tags = [
         "release-with-framework",

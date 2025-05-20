@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Config, Generator} from '@angular/service-worker/config';
+import {Config, Generator} from '../config';
 import * as fs from 'fs';
 import * as path from 'path';
 

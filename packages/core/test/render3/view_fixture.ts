@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Sanitizer, Type} from '@angular/core';
-import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
+import {Sanitizer, Type} from '../../src/core';
+import {stringifyElement} from '@angular/private/testing';
 
 import {extractDirectiveDef} from '../../src/render3/definition';
 import {refreshView} from '../../src/render3/instructions/change_detection';
 import {renderView} from '../../src/render3/instructions/render';
-import {createLView, createTNode, createTView} from '../../src/render3/instructions/shared';
 import {
   DirectiveDef,
   DirectiveDefList,
@@ -34,6 +33,8 @@ import {enterView, leaveView, specOnlyIsInstructionStateEmpty} from '../../src/r
 import {noop} from '../../src/util/noop';
 
 import {getRendererFactory2} from './imported_renderer2';
+import {createTNode} from '../../src/render3/tnode_manipulation';
+import {createLView, createTView} from '../../src/render3/view/construction';
 
 /**
  * Fixture useful for testing operations which need `LView` / `TView`
@@ -115,6 +116,7 @@ export class ViewFixture {
         rendererFactory,
         sanitizer: sanitizer || null,
         changeDetectionScheduler: null,
+        ngReflect: false,
       },
       hostRenderer,
       null,

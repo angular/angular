@@ -44,13 +44,13 @@ describe('Viewing component metadata', () => {
     });
 
     it('should display correct set of inputs', () => {
-      cy.contains('.cy-inputs', '@Inputs');
+      cy.contains('.cy-inputs', 'Inputs');
       cy.contains('.cy-inputs mat-tree-node:first span:first', 'inputOne');
       cy.contains('.cy-inputs mat-tree-node:last span:first', 'inputTwo');
     });
 
     it('should display correct set of outputs', () => {
-      cy.contains('.cy-outputs', '@Outputs');
+      cy.contains('.cy-outputs', 'Outputs');
       cy.contains('.cy-outputs mat-tree-node:first span:first', 'outputOne');
       cy.contains('.cy-outputs mat-tree-node:last span:first', 'outputTwo');
     });

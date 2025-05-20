@@ -10,7 +10,7 @@ import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
-import {CssSelector} from '../../selector';
+import {CssSelector} from '../../directive_matching';
 import {ShadowCss} from '../../shadow_css';
 import {CompilationJobKind} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
@@ -114,7 +114,6 @@ function addFeatures(
 
   const providers = meta.providers;
   const viewProviders = (meta as R3ComponentMetadata<R3TemplateDependency>).viewProviders;
-  const inputKeys = Object.keys(meta.inputs);
 
   if (providers || viewProviders) {
     const args = [providers || new o.LiteralArrayExpr([])];
@@ -122,12 +121,6 @@ function addFeatures(
       args.push(viewProviders);
     }
     features.push(o.importExpr(R3.ProvidersFeature).callFn(args));
-  }
-  for (const key of inputKeys) {
-    if (meta.inputs[key].transformFunction !== null) {
-      features.push(o.importExpr(R3.InputTransformsFeatureFeature));
-      break;
-    }
   }
   // Note: host directives feature needs to be inserted before the
   // inheritance feature to ensure the correct execution order.

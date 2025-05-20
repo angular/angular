@@ -47,7 +47,18 @@ By default, Angular uses `en-US` as the source locale of your project.
 To change the source locale of your project for the build, complete the following actions.
 
 1. Open the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
-1. Change the source locale in the `sourceLocale` field.
+2. Add or modify the `sourceLocale` field inside the `i18n` section:
+```json
+{
+  "projects": {
+    "your-project": {
+      "i18n": {
+        "sourceLocale": "ca"  // Use your desired locale code
+      }
+    }
+  }
+}
+```
 
 ## What's next
 

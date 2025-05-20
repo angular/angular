@@ -47,14 +47,14 @@ export const missingImportMeta: CodeActionMeta = {
   },
 };
 
-function getCodeActions({templateInfo, start, compiler}: CodeActionContext) {
-  if (templateInfo === null) {
+function getCodeActions({typeCheckInfo, start, compiler}: CodeActionContext) {
+  if (typeCheckInfo === null) {
     return [];
   }
 
   let codeActions: ts.CodeFixAction[] = [];
   const checker = compiler.getTemplateTypeChecker();
-  const target = getTargetAtPosition(templateInfo.template, start);
+  const target = getTargetAtPosition(typeCheckInfo.nodes, start);
   if (target === null) {
     return [];
   }
@@ -64,21 +64,21 @@ function getCodeActions({templateInfo, start, compiler}: CodeActionContext) {
     target.context.kind === TargetNodeKind.ElementInTagContext &&
     target.context.node instanceof TmplAstElement
   ) {
-    const allPossibleDirectives = checker.getPotentialTemplateDirectives(templateInfo.component);
+    const allPossibleDirectives = checker.getPotentialTemplateDirectives(typeCheckInfo.declaration);
     matches = getDirectiveMatchesForElementTag(target.context.node, allPossibleDirectives);
   } else if (
     target.context.kind === TargetNodeKind.RawExpression &&
     target.context.node instanceof ASTWithName
   ) {
     const name = (target.context.node as any).name;
-    const allPossiblePipes = checker.getPotentialPipes(templateInfo.component);
+    const allPossiblePipes = checker.getPotentialPipes(typeCheckInfo.declaration);
     matches = new Set(allPossiblePipes.filter((p) => p.name === name));
   } else {
     return [];
   }
 
   // Find all possible importable directives with a matching selector.
-  const importOn = standaloneTraitOrNgModule(checker, templateInfo.component);
+  const importOn = standaloneTraitOrNgModule(checker, typeCheckInfo.declaration);
   if (importOn === null) {
     return [];
   }

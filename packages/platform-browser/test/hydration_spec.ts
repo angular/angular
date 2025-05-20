@@ -50,8 +50,18 @@ describe('provideClientHydration', () => {
 
   @Injectable()
   class ApplicationRefPatched extends ApplicationRef {
-    override isStable = new BehaviorSubject<boolean>(false);
+    override get isStable() {
+      return new BehaviorSubject(false);
+    }
   }
+
+  beforeEach(() => {
+    globalThis['ngServerMode'] = true;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
 
   describe('default', () => {
     beforeEach(

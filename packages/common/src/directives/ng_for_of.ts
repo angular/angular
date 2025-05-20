@@ -16,16 +16,19 @@ import {
   IterableDiffer,
   IterableDiffers,
   NgIterable,
+  ɵRuntimeError as RuntimeError,
   TemplateRef,
   TrackByFunction,
   ViewContainerRef,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
 /**
  * @publicApi
+ *
+ * @deprecated 20.0
+ * The `ngFor` directive is deprecated. Use the `@for` block instead.
  */
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
   constructor(
@@ -164,6 +167,9 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * @see [Structural Directives](guide/directives/structural-directives)
  * @ngModule CommonModule
  * @publicApi
+ *
+ * @deprecated 20.0
+ * Use the `@for` block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngFor][ngForOf]',
@@ -172,6 +178,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   /**
    * The value of the iterable expression, which can be used as a
    * [template input variable](guide/directives/structural-directives#shorthand).
+   * @deprecated The `ngFor` directive is deprecated. Use the `@for` block instead.
    */
   @Input()
   set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null) {
@@ -195,6 +202,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * and the iterable is recreated and re-rendered, but most of the data is still the same).
    *
    * @see {@link TrackByFunction}
+   * @deprecated The `ngFor` directive is deprecated. Use the `@for` block instead.
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
@@ -214,7 +222,6 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   private _ngForOf: U | undefined | null = null;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T> | null = null;
-  // TODO(issue/24571): remove '!'
   // waiting for microsoft/typescript#43662 to allow the return type `TrackByFunction|undefined` for
   // the getter
   private _trackByFn!: TrackByFunction<T>;
@@ -228,6 +235,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   /**
    * A reference to the template that is stamped out for each item in the iterable.
    * @see [template reference variable](guide/templates/variables#template-reference-variables)
+   * @deprecated The `ngFor` directive is deprecated. Use the `@for` block instead.
    */
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>) {
@@ -241,7 +249,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
 
   /**
    * Applies the changes when needed.
-   * @nodoc
+   * @docs-private
    */
   ngDoCheck(): void {
     if (this._ngForOfDirty) {

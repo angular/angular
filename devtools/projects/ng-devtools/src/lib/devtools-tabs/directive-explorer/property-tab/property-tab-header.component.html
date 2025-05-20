@@ -1,27 +1,21 @@
-@if (currentSelectedElement()) {
-  @let comp = currentSelectedElement().component;
-  @if (comp) {
-    <mat-accordion class="property-tab-header">
-      <div>
-        <mat-expansion-panel [hideToggle]="true">
-          <mat-expansion-panel-header collapsedHeight="32px" expandedHeight="32px">
-            <mat-panel-title>
-              <div class="element-header">
-                <div class="component-name">{{ comp.name }}</div>
-              </div>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <ng-component-metadata [currentSelectedComponent]="comp"></ng-component-metadata>
-        </mat-expansion-panel>
-      </div>
-    </mat-accordion>
-  } @else {
-    <div class="element-header">
-      <div class="element-name">{{ currentSelectedElement().element }}</div>
+@let comp = currentSelectedElement().component;
+@if (comp) {
+  <mat-accordion class="property-tab-header">
+    <div>
+      <mat-expansion-panel [hideToggle]="true">
+        <mat-expansion-panel-header collapsedHeight="32px" expandedHeight="32px">
+          <mat-panel-title>
+            <div class="element-header">
+              <div class="component-name">{{ comp.name }}</div>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-component-metadata [currentSelectedComponent]="comp"></ng-component-metadata>
+      </mat-expansion-panel>
     </div>
-  }
+  </mat-accordion>
 } @else {
   <div class="element-header">
-    <div class="element-name">No selected Element</div>
+    <div class="element-name">{{ currentSelectedElement().element }}</div>
   </div>
 }

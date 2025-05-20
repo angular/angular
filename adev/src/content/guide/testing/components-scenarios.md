@@ -73,7 +73,7 @@ Then add it to the `providers` array of the testing module configuration:
 
 HELPFUL: You can also use the `fixture.autoDetectChanges()` function instead if you only want to enable automatic change detection
 after making updates to the state of the fixture's component. In addition, automatic change detection is on by default
-when using `provideExperimentalZonelessChangeDetection` and turning it off is not recommended.
+when using `provideZonelessChangeDetection` and turning it off is not recommended.
 
 Here are three tests that illustrate how automatic change detection works.
 
@@ -83,7 +83,7 @@ The first test shows the benefit of automatic change detection.
 
 The second and third test reveal an important limitation.
 The Angular testing environment does not run change detection synchronously when updates happen inside the test case that changed the component's `title`.
-The test must call `await fixture.whenStable` to wait for another of change detection.
+The test must call `await fixture.whenStable` to wait for another round of change detection.
 
 HELPFUL: Angular does not know about direct updates to values that are not signals. The easiest way to ensure that
 change detection will be scheduled is to use signals for values read in the template.
@@ -554,7 +554,7 @@ It confirms that the selected `DashboardHeroComponent` hero really does find its
 A *routing component* is a component that tells the `Router` to navigate to another component.
 The `DashboardComponent` is a *routing component* because the user can navigate to the `HeroDetailComponent` by clicking on one of the *hero buttons* on the dashboard.
 
-Angular provides test helpers to reduce boilerplate and more effectively test code which depends HttpClient. The `provideRouter` function can be used directly in the test module as well.
+Angular provides test helpers to reduce boilerplate and more effectively test code which depends on `HttpClient`. The `provideRouter` function can be used directly in the test module as well.
 
 <docs-code header="app/dashboard/dashboard.component.spec.ts" path="adev/src/content/examples/testing/src/app/dashboard/dashboard.component.spec.ts" visibleRegion="router-harness"/>
 
@@ -574,9 +574,9 @@ The `:id` is a route parameter whose value is the `id` of the hero to edit.
 The `Router` matches that URL to a route to the `HeroDetailComponent`.
 It creates an `ActivatedRoute` object with the routing information and injects it into a new instance of the `HeroDetailComponent`.
 
-Here's the `HeroDetailComponent` constructor:
+Here are the services injected into `HeroDetailComponent`:
 
-<docs-code header="app/hero/hero-detail.component.ts (constructor)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="ctor"/>
+<docs-code header="app/hero/hero-detail.component.ts (inject)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="inject"/>
 
 The `HeroDetail` component needs the `id` parameter so it can fetch the corresponding hero using the `HeroDetailService`.
 The component has to get the `id` from the `ActivatedRoute.paramMap` property which is an `Observable`.
@@ -584,7 +584,7 @@ The component has to get the `id` from the `ActivatedRoute.paramMap` property wh
 It can't just reference the `id` property of the `ActivatedRoute.paramMap`.
 The component has to *subscribe* to the `ActivatedRoute.paramMap` observable and be prepared for the `id` to change during its lifetime.
 
-<docs-code header="app/hero/hero-detail.component.ts (ngOnInit)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="ng-on-init"/>
+<docs-code header="app/hero/hero-detail.component.ts (constructor)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="ctor"/>
 
 Tests can explore how the `HeroDetailComponent` responds to different `id` parameter values by navigating to different routes.
 

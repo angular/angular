@@ -15,16 +15,16 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
-} from '@angular/core';
-import {EventEmitter} from '@angular/core/src/event_emitter';
-import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
-import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {EventEmitter} from '../../src/event_emitter';
+import {isLView} from '../../src/render3/interfaces/type_checks';
+import {CONTEXT} from '../../src/render3/interfaces/view';
+import {ComponentFixture, TestBed} from '../../testing';
 
 import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement} from '../../src/render3/index';
 import {
-  ComponentDebugMetadata,
+  AngularComponentDebugMetadata,
   getComponent,
   getComponentLView,
   getContext,
@@ -383,13 +383,11 @@ describe('discovery utils', () => {
 
   describe('getDirectiveMetadata', () => {
     it('should work with components', () => {
-      const metadata = getDirectiveMetadata(myApp);
-      expect(metadata!.inputs).toEqual({a: 'b'});
-      expect(metadata!.outputs).toEqual({c: 'd'});
-      expect((metadata as ComponentDebugMetadata).changeDetection).toBe(
-        ChangeDetectionStrategy.Default,
-      );
-      expect((metadata as ComponentDebugMetadata).encapsulation).toBe(ViewEncapsulation.None);
+      const metadata = getDirectiveMetadata(myApp)! as AngularComponentDebugMetadata;
+      expect(metadata.inputs).toEqual({a: 'b'});
+      expect(metadata.outputs).toEqual({c: 'd'});
+      expect(metadata.changeDetection).toBe(ChangeDetectionStrategy.Default);
+      expect(metadata.encapsulation).toBe(ViewEncapsulation.None);
     });
 
     it('should work with directives', () => {

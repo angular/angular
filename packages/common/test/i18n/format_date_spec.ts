@@ -5,20 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import localeAr from '@angular/common/locales/ar';
-import localeDe from '@angular/common/locales/de';
-import localeEn from '@angular/common/locales/en';
-import localeEnExtra from '@angular/common/locales/extra/en';
-import localeFi from '@angular/common/locales/fi';
-import localeHu from '@angular/common/locales/hu';
-import localeSr from '@angular/common/locales/sr';
-import localeTh from '@angular/common/locales/th';
-import {
-  formatDate,
-  getThursdayThisIsoWeek,
-  isDate,
-  toDate,
-} from '@angular/common/src/i18n/format_date';
+import localeAr from '../../locales/ar';
+import localeDe from '../../locales/de';
+import localeEn from '../../locales/en';
+import localeEnExtra from '../../locales/extra/en';
+import localeFi from '../../locales/fi';
+import localeHu from '../../locales/hu';
+import localeSr from '../../locales/sr';
+import localeTh from '../../locales/th';
+import {formatDate, getThursdayThisIsoWeek, isDate, toDate} from '../../src/i18n/format_date';
 import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
 describe('Format date', () => {
@@ -246,6 +241,14 @@ describe('Format date', () => {
         BBBBB: 'at night',
       };
 
+      // Suppress console warnings for 'YYYY' patterns.
+      const consoleError = console.error;
+      spyOn(console, 'error').and.callFake((...args: unknown[]) => {
+        if (!/Suspicious use of week-based year/.test(String(args))) {
+          consoleError(...args);
+        }
+      });
+
       Object.keys(dateFixtures).forEach((pattern: string) => {
         expectDateFormatAs(date, pattern, dateFixtures[pattern]);
       });
@@ -450,17 +453,23 @@ describe('Format date', () => {
 
     // https://github.com/angular/angular/issues/38739
     it('should return correct ISO 8601 week-numbering year for dates close to year end/beginning', () => {
-      expect(formatDate('2013-12-27', 'YYYY', 'en')).toEqual('2013');
-      expect(formatDate('2013-12-29', 'YYYY', 'en')).toEqual('2013');
-      expect(formatDate('2013-12-31', 'YYYY', 'en')).toEqual('2014');
+      expect(formatDate('2013-12-27', `YYYY 'W'ww`, 'en')).toEqual('2013 W52');
+      expect(formatDate('2013-12-29', `YYYY 'W'ww`, 'en')).toEqual('2013 W52');
+      expect(formatDate('2013-12-31', `YYYY 'W'ww`, 'en')).toEqual('2014 W01');
 
       // Dec. 31st is a Sunday, last day of the last week of 2023
-      expect(formatDate('2023-12-31', 'YYYY', 'en')).toEqual('2023');
+      expect(formatDate('2023-12-31', `YYYY 'W'ww`, 'en')).toEqual('2023 W52');
 
-      expect(formatDate('2010-01-02', 'YYYY', 'en')).toEqual('2009');
-      expect(formatDate('2010-01-04', 'YYYY', 'en')).toEqual('2010');
-      expect(formatDate('0049-01-01', 'YYYY', 'en')).toEqual('0048');
-      expect(formatDate('0049-01-04', 'YYYY', 'en')).toEqual('0049');
+      expect(formatDate('2010-01-02', `YYYY 'W'ww`, 'en')).toEqual('2009 W53');
+      expect(formatDate('2010-01-04', `YYYY 'W'ww`, 'en')).toEqual('2010 W01');
+      expect(formatDate('0049-01-01', `YYYY 'W'ww`, 'en')).toEqual('0048 W53');
+      expect(formatDate('0049-01-04', `YYYY 'W'ww`, 'en')).toEqual('0049 W01');
+    });
+
+    it('should throw an error when using YYYY incorrectly', () => {
+      expect(() => formatDate('2013-12-31', `YYYY/MM/dd`, ɵDEFAULT_LOCALE_ID)).toThrowError(
+        /.*Suspicious use of week-based year "Y".*/,
+      );
     });
 
     // https://github.com/angular/angular/issues/53813
@@ -480,11 +489,11 @@ describe('Format date', () => {
 
     // https://github.com/angular/angular/issues/40377
     it('should format date with year between 0 and 99 correctly', () => {
-      expect(formatDate('0098-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0098');
-      expect(formatDate('0099-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0099');
-      expect(formatDate('0100-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0100');
-      expect(formatDate('0001-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0001');
-      expect(formatDate('0000-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0000');
+      expect(formatDate('0098-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0098 W02');
+      expect(formatDate('0099-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0099 W02');
+      expect(formatDate('0100-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0100 W02');
+      expect(formatDate('0001-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0001 W02');
+      expect(formatDate('0000-01-11', `YYYY 'W'ww`, ɵDEFAULT_LOCALE_ID)).toEqual('0000 W02');
     });
 
     // https://github.com/angular/angular/issues/26922

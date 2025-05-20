@@ -74,9 +74,9 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 
 | Version | Date               |
 |:--------|:-------------------|
-| v19.1   | TBD                |
-| v19.2   | TBD                |
-| v20.0   | TBD                |
+| v20.1   | TBD |
+| v20.2   | TBD |
+| v21.0   | TBD |
 
 ### Support window
 
@@ -93,11 +93,11 @@ The following table provides the status for Angular versions under support.
 
 | Version | Status | Released   | Active ends | LTS ends   |
 |:--------|:-------|:-----------|:------------|:-----------|
-| ^19.0.0 | Active | 2024-11-19 | 2025-05-19  | 2026-05-19 |
-| ^18.0.0 | LTS    | 2024-05-22 | 2024-11-19  | 2025-11-19 |
-| ^17.0.0 | LTS    | 2023-11-08 | 2024-05-08  | 2025-05-15 |
+| ^20.0.0 | Active | 2025-05-28 | 2025-11-21  | 2026-11-21 |
+| ^19.0.0 | LTS    | 2024-11-19 | 2025-05-28  | 2026-05-19 |
+| ^18.0.0 | LTS    | 2024-05-22 | 2024-11-19  | 2025-11-21 |
 
-Angular versions v2 to v16 are no longer supported.
+Angular versions v2 to v17 are no longer supported.
 
 ### LTS fixes
 
@@ -159,9 +159,11 @@ For example, to update from version 10 to version 12:
 
 Occasionally we introduce new APIs under the label of "Developer Preview". These are APIs that are fully functional and polished, but that we are not ready to stabilize under our normal deprecation policy.
 
-This may be because we want to gather feedback from real applications before stabilization, or because the associated documentation or migration tooling is not fully complete.
+This may be because we want to gather feedback from real applications before stabilization, or because the associated documentation or migration tooling is not fully complete. Feedback can be provided via a [GitHub issue](https://github.com/angular/angular/issues), where developers can share their experiences, report bugs, or suggest improvements to help refine the feature.
 
 The policies and practices that are described in this document do not apply to APIs marked as Developer Preview. Such APIs can change at any time, even in new patch versions of the framework. Teams should decide for themselves whether the benefits of using Developer Preview APIs are worth the risk of breaking changes outside of our normal use of semantic versioning.
+
+
 
 ## Experimental
 

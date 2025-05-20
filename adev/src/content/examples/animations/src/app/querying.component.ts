@@ -11,7 +11,6 @@ import {
 } from '@angular/animations';
 
 import {HEROES} from './mock-heroes';
-import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-querying',
@@ -34,7 +33,6 @@ import {NgIf} from '@angular/common';
     }
   `,
   styleUrls: ['./querying.component.css'],
-  imports: [NgIf],
   animations: [
     trigger('query', [
       transition(':enter', [

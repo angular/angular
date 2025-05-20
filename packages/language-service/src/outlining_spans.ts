@@ -34,8 +34,12 @@ export function getOutliningSpans(compiler: NgCompiler, fileName: string): ts.Ou
     const templatesInFile: Array<TmplAstNode[]> = [];
     for (const stmt of sf.statements) {
       if (isNamedClassDeclaration(stmt)) {
-        const resources = compiler.getComponentResources(stmt);
-        if (resources === null || isExternalResource(resources.template)) {
+        const resources = compiler.getDirectiveResources(stmt);
+        if (
+          resources === null ||
+          resources.template === null ||
+          isExternalResource(resources.template)
+        ) {
           continue;
         }
         const template = compiler.getTemplateTypeChecker().getTemplate(stmt);
@@ -47,12 +51,8 @@ export function getOutliningSpans(compiler: NgCompiler, fileName: string): ts.Ou
     }
     return templatesInFile.map((template) => BlockVisitor.getBlockSpans(template)).flat();
   } else {
-    const templateInfo = getFirstComponentForTemplateFile(fileName, compiler);
-    if (templateInfo === undefined) {
-      return [];
-    }
-    const {template} = templateInfo;
-    return BlockVisitor.getBlockSpans(template);
+    const typeCheckInfo = getFirstComponentForTemplateFile(fileName, compiler);
+    return typeCheckInfo === undefined ? [] : BlockVisitor.getBlockSpans(typeCheckInfo.nodes);
   }
 }
 
@@ -93,5 +93,6 @@ class BlockVisitor extends TmplAstRecursiveVisitor {
     ) {
       this.blocks.push(node);
     }
+    node.visit(this);
   }
 }

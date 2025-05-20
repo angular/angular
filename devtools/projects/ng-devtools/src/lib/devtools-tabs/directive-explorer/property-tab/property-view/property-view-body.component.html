@@ -1,9 +1,10 @@
 @if (controlsLoaded()) {
   <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" [multi]="true">
-    @if (controller().directiveMetadata?.dependencies.length > 0) {
+    @let deps = dependencies();
+    @if (deps && deps.length > 0) {
       <div class="mat-accordion-content">
         <mat-expansion-panel [expanded]="true">
-          <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
+          <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
             <mat-panel-title>
               Injected Services
               <a
@@ -21,28 +22,16 @@
         </mat-expansion-panel>
       </div>
     }
-    @for (index of categoryOrder; track $index) {
+    @for (panel of panels(); track $index) {
       <div class="mat-accordion-content" cdkDrag>
-        @let panel = panels()[index];
-        @if (!panel.hidden) {
-          <mat-expansion-panel [class]="panel.class" [expanded]="true">
-            <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
-              <mat-panel-title>
-                {{ panel.title }}
-                <a
-                  href="{{ panel.documentation }}"
-                  target="_blank"
-                  class="documentation"
-                  matTooltip="Open docs reference"
-                  (click)="$event.stopPropagation()"
-                >
-                  <mat-icon class="docs-link">open_in_new</mat-icon>
-                </a>
-              </mat-panel-title>
+        @if (panel.controls().dataSource.data.length > 0) {
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
+              <mat-panel-title>{{ panel.title() }}</mat-panel-title>
             </mat-expansion-panel-header>
             <ng-property-view-tree
-              [dataSource]="panel.controls.dataSource"
-              [treeControl]="panel.controls.treeControl"
+              [dataSource]="panel.controls().dataSource"
+              [treeControl]="panel.controls().treeControl"
               (updateValue)="updateValue($event)"
               (inspect)="handleInspect($event)"
             />

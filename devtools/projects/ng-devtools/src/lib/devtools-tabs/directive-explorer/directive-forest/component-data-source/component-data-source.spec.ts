@@ -7,7 +7,7 @@
  */
 
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {DevToolsNode} from 'protocol';
+import {DevToolsNode} from '../../../../../../../protocol';
 
 import {ComponentDataSource, FlatNode} from '.';
 
@@ -33,9 +33,11 @@ const tree1: DevToolsNode = {
       element: 'bar',
       hydration: null,
       nativeElement: document.createElement('bar'),
+      defer: null,
     },
   ],
   nativeElement: document.createElement('foo'),
+  defer: null,
 };
 
 const tree2: DevToolsNode = {
@@ -60,6 +62,7 @@ const tree2: DevToolsNode = {
       element: 'bar',
       hydration: null,
       nativeElement: document.createElement('bar'),
+      defer: null,
     },
     {
       children: [],
@@ -72,9 +75,11 @@ const tree2: DevToolsNode = {
       element: 'qux',
       hydration: null,
       nativeElement: document.createElement('qux'),
+      defer: null,
     },
   ],
   nativeElement: document.createElement('foo'),
+  defer: null,
 };
 
 const tree3: DevToolsNode = {
@@ -98,6 +103,7 @@ const tree3: DevToolsNode = {
       directives: [],
       element: '#comment',
       hydration: null,
+      defer: null,
       nativeElement: document.createComment('bar'),
     },
     {
@@ -110,10 +116,12 @@ const tree3: DevToolsNode = {
       directives: [],
       element: '#comment',
       hydration: null,
+      defer: null,
       nativeElement: document.createComment('bar'),
     },
   ],
   nativeElement: document.createElement('foo'),
+  defer: null,
 };
 
 const tree4: DevToolsNode = {
@@ -145,6 +153,7 @@ const tree4: DevToolsNode = {
                       directives: [],
                       element: 'bar',
                       hydration: null,
+                      defer: null,
                       nativeElement: document.createComment('bar'),
                     },
                   ],
@@ -156,6 +165,7 @@ const tree4: DevToolsNode = {
                   directives: [],
                   element: '#comment',
                   hydration: null,
+                  defer: null,
                   nativeElement: document.createComment('bar'),
                 },
               ],
@@ -167,6 +177,7 @@ const tree4: DevToolsNode = {
               directives: [],
               element: '#comment',
               hydration: null,
+              defer: null,
               nativeElement: document.createComment('bar'),
             },
           ],
@@ -178,6 +189,7 @@ const tree4: DevToolsNode = {
           directives: [],
           element: '#comment',
           hydration: null,
+          defer: null,
           nativeElement: document.createComment('bar'),
         },
       ],
@@ -190,8 +202,10 @@ const tree4: DevToolsNode = {
       element: '#comment',
       hydration: null,
       nativeElement: document.createComment('bar'),
+      defer: null,
     },
   ],
+  defer: null,
   nativeElement: document.createElement('foo'),
 };
 

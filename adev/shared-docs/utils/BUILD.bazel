@@ -1,36 +1,25 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ts_library(
+ts_project(
     name = "utils",
-    srcs = [
-        "index.ts",
-    ],
-    visibility = ["//adev/shared-docs:__subpackages__"],
-    deps = [
-        ":lib",
-    ],
-)
-
-ts_library(
-    name = "lib",
     srcs = glob(
         [
             "**/*.ts",
         ],
         exclude = [
-            "index.ts",
             "**/*.spec.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",
         "//packages/core",
         "//packages/router",
-        "@npm//@types/node",
-        "@npm//@webcontainer/api",
-        "@npm//fflate",
+    ],
+    visibility = ["//adev/shared-docs:__subpackages__"],
+    deps = [
+        "//:node_modules/fflate",
     ],
 )

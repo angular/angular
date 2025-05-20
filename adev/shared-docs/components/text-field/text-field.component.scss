@@ -7,3 +7,11 @@
 docs-icon + .docs-text-field {
   font-size: 1rem;
 }
+
+button {
+  color: var(--secondary-contrast);
+
+  &:hover {
+    color: var(--vivid-pink);
+  }
+}

@@ -13,6 +13,7 @@ const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
 const MagicString = require('magic-string');
 const sourcemaps = require('rollup-plugin-sourcemaps');
+const {dts} = require('rollup-plugin-dts');
 const path = require('path');
 const fs = require('fs');
 
@@ -26,6 +27,9 @@ const rootDir = 'TMPL_root_dir';
 const bannerFile = TMPL_banner_file;
 const moduleMappings = TMPL_module_mappings;
 const nodeModulesRoot = 'TMPL_node_modules_root';
+const entrypointMetadata = JSON.parse(`TMPL_metadata`);
+const sideEffectEntryPoints = JSON.parse('TMPL_side_effect_entrypoints');
+const dtsMode = TMPL_dts_mode;
 
 log_verbose(`running with
   cwd: ${process.cwd()}
@@ -34,6 +38,7 @@ log_verbose(`running with
   bannerFile: ${bannerFile}
   moduleMappings: ${JSON.stringify(moduleMappings)}
   nodeModulesRoot: ${nodeModulesRoot}
+  dtsMode: ${dtsMode}
 `);
 
 function fileExists(filePath) {
@@ -148,35 +153,72 @@ const stripBannerPlugin = {
     const pos = code.indexOf(bannerContent);
     magicString.remove(pos, pos + bannerContent.length).trimStart();
 
-    return {
-      code: magicString.toString(),
-      map: magicString.generateMap({
-        hires: true,
-      }),
-    };
+    return {code: magicString.toString(), map: magicString.generateMap({hires: true})};
   },
 };
 
-const plugins = [
-  {
-    name: 'resolveBazel',
-    resolveId: resolveBazel,
-  },
-  nodeResolve({
-    mainFields: ['es2020', 'es2015', 'module', 'browser'],
-    jail: process.cwd(),
-    customResolveOptions: {moduleDirectory: nodeModulesRoot},
-  }),
-  stripBannerPlugin,
-  commonjs({ignoreGlobal: true}),
-  sourcemaps(),
-];
+const plugins = [stripBannerPlugin];
 
+// Rollup input option:
+// https://rollupjs.org/configuration-options/#input.
+const input = {};
+for (const info of Object.values(entrypointMetadata)) {
+  const entryFile = dtsMode ? info.typingsEntryPoint.path : info.index.path;
+  const chunkName = dtsMode
+    ? info.dtsBundleRelativePath.replace(/\.d\.ts$/, '')
+    : info.fesm2022RelativePath.replace(/\.mjs$/, '').replace('fesm2022/', '');
+
+  input[chunkName] = entryFile;
+}
+
+const sideEffectFileMatchers = sideEffectEntryPoints.map((entryPointModule) => {
+  const entryPointDir = path.join(
+    process.cwd(), // Execroot.
+    path.dirname(entrypointMetadata[entryPointModule].index.path),
+  );
+
+  return (file) => file.startsWith(`${entryPointDir}/`);
+});
+
+if (dtsMode) {
+  plugins.push(dts());
+} else {
+  plugins.push(
+    {name: 'resolveBazel', resolveId: resolveBazel},
+    nodeResolve({
+      mainFields: ['es2020', 'es2015', 'module', 'browser'],
+      jail: process.cwd(),
+      modulePaths: [nodeModulesRoot],
+    }),
+    commonjs({ignoreGlobal: true}),
+    sourcemaps(),
+  );
+}
+
+const outputExtension = dtsMode ? 'd.ts' : 'mjs';
+
+/** @type {import('rollup').RollupOptions} */
 const config = {
+  input,
   plugins,
   external: [TMPL_external],
+  treeshake: {
+    // Note: Rollup would otherwise eagerly remove e.g. PURE statements. We should
+    // keep those and leave elision to end-user bundling, depending on if they are
+    // necessary or not.
+    annotations: false,
+    propertyReadSideEffects: false,
+    unknownGlobalSideEffects: false,
+    moduleSideEffects: (id) => {
+      return sideEffectFileMatchers.some((matcher) => matcher(id));
+    },
+  },
   output: {
+    minifyInternalExports: false,
+    sourcemap: !dtsMode,
     banner: bannerContent,
+    entryFileNames: `[name].${outputExtension}`,
+    chunkFileNames: `[name]-[hash].${outputExtension}`,
   },
 };
 

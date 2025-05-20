@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 
 @Component({
@@ -14,12 +14,13 @@ export class BypassSecurityComponent {
   videoUrl!: SafeResourceUrl;
 
   // #docregion trust-url
-  constructor(private sanitizer: DomSanitizer) {
+  private sanitizer = inject(DomSanitizer);
+  constructor() {
     // javascript: URLs are dangerous if attacker controlled.
     // Angular sanitizes them in data binding, but you can
     // explicitly tell Angular to trust this value:
     this.dangerousUrl = 'javascript:alert("Hi there")';
-    this.trustedUrl = sanitizer.bypassSecurityTrustUrl(this.dangerousUrl);
+    this.trustedUrl = this.sanitizer.bypassSecurityTrustUrl(this.dangerousUrl);
     // #enddocregion trust-url
     this.updateVideoUrl('PUBnlbjZFAI');
   }

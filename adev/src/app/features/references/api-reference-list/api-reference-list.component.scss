@@ -1,6 +1,5 @@
 :host {
   padding: var(--layout-padding);
-  max-width: var(--page-width);
   display: block;
 
   container: api-ref-page / inline-size;
@@ -79,6 +78,10 @@
           border: 1px solid var(--quinary-contrast);
           color: var(--primary-contrast);
         }
+
+        .docs-api-item-label-full {
+          white-space: nowrap;
+        }
       }
     }
 
@@ -100,7 +103,32 @@
     }
   }
 
-  .docs-api-item-label-full {
-    white-space: nowrap;
+  adev-api-items-section {
+    width: 100%;
+  }
+}
+
+.adev-reference-list-empty {
+  flex-basis: 100%;
+  p {
+    font-size: 1rem;
+  }
+}
+
+.docs-api-item-label-full {
+  white-space: nowrap;
+}
+
+.map-chip-option {
+  min-width: 190px;
+}
+
+.adev-reference-list-status {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+
+  label {
+    margin-right: 8px;
   }
 }

@@ -34,7 +34,7 @@ describe('HeroListComponent', () => {
         ],
       }),
     )
-      .compileComponents()
+
       .then(createComponent);
   }));
 

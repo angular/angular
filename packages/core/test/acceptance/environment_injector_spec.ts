@@ -14,17 +14,16 @@ import {
   ENVIRONMENT_INITIALIZER,
   EnvironmentInjector,
   inject,
-  InjectFlags,
   InjectionToken,
   INJECTOR,
   Injector,
   NgModuleRef,
   provideEnvironmentInitializer,
   ViewContainerRef,
-} from '@angular/core';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
-import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {R3Injector} from '../../src/di/r3_injector';
+import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
+import {TestBed} from '../../testing';
 
 describe('environment injector', () => {
   it('should create and destroy an environment injector', () => {
@@ -212,7 +211,7 @@ describe('environment injector', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
       const injector = TestBed.inject(EnvironmentInjector);
       injector.runInContext(() => {});
-      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+      expect(() => inject(TOKEN, {optional: true})).toThrow();
     });
 
     it('should properly clean up after the function throws', () => {
@@ -223,7 +222,7 @@ describe('environment injector', () => {
           throw new Error('crashes!');
         }),
       ).toThrow();
-      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+      expect(() => inject(TOKEN, {optional: true})).toThrow();
     });
 
     it('should set the correct inject implementation', () => {
@@ -233,7 +232,6 @@ describe('environment injector', () => {
       });
 
       @Component({
-        standalone: true,
         template: '',
         providers: [{provide: TOKEN, useValue: 'from component'}],
       })
@@ -246,7 +244,7 @@ describe('environment injector', () => {
         // Attempt to inject ViewContainerRef within the environment injector's context. This should
         // not be available, so the result should be `null`.
         vcrFromEnvContext = this.envInjector.runInContext(() =>
-          inject(ViewContainerRef, InjectFlags.Optional),
+          inject(ViewContainerRef, {optional: true}),
         );
       }
 

@@ -12,7 +12,7 @@ import {
   createMultiResultQuerySignalFn,
   createSingleResultOptionalQuerySignalFn,
   createSingleResultRequiredQuerySignalFn,
-} from '../render3/query_reactive';
+} from '../render3/queries/query_reactive';
 import {Signal} from '../render3/reactivity/api';
 
 function viewChildFn<LocatorT, ReadT>(
@@ -37,7 +37,7 @@ function viewChildRequiredFn<LocatorT, ReadT>(
  * It is a special function that also provides access to required query results via the `.required`
  * property.
  *
- * @publicAPI
+ * @publicApi
  * @docsPrivate Ignored because `viewChild` is the canonical API entry.
  */
 export interface ViewChildFunction {
@@ -105,7 +105,7 @@ export interface ViewChildFunction {
  * }
  * ```
  *
- * @publicAPI
+ * @publicApi 19.0
  * @initializerApiFunction
  */
 export const viewChild: ViewChildFunction = (() => {
@@ -146,7 +146,7 @@ export function viewChildren<LocatorT, ReadT>(
  * ```
  *
  * @initializerApiFunction
- * @publicAPI
+ * @publicApi 19.0
  */
 export function viewChildren<LocatorT, ReadT>(
   locator: ProviderToken<LocatorT> | string,
@@ -189,7 +189,7 @@ function contentChildRequiredFn<LocatorT, ReadT>(
  * The contentChild function creates a singular content query. It is a special function that also
  * provides access to required query results via the `.required` property.
  *
- * @publicAPI
+ * @publicApi 19.0
  * @docsPrivate Ignored because `contentChild` is the canonical API entry.
  */
 export interface ContentChildFunction {
@@ -260,7 +260,7 @@ export interface ContentChildFunction {
  * ```
  *
  * @initializerApiFunction
- * @publicAPI
+ * @publicApi 19.0
  */
 export const contentChild: ContentChildFunction = (() => {
   // Note: This may be considered a side-effect, but nothing will depend on
@@ -305,7 +305,7 @@ export function contentChildren<LocatorT, ReadT>(
  * ```
  *
  * @initializerApiFunction
- * @publicAPI
+ * @publicApi 19.0
  */
 export function contentChildren<LocatorT, ReadT>(
   locator: ProviderToken<LocatorT> | string,

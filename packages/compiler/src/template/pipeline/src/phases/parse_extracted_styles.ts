@@ -134,7 +134,9 @@ export function parseExtractedStyles(job: CompilationJob) {
 
         if (
           target !== undefined &&
-          target.kind === ir.OpKind.Template &&
+          (target.kind === ir.OpKind.Template ||
+            target.kind === ir.OpKind.ConditionalCreate ||
+            target.kind === ir.OpKind.ConditionalBranchCreate) &&
           target.templateKind === ir.TemplateKind.Structural
         ) {
           // TemplateDefinitionBuilder will not apply class and style bindings to structural

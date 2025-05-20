@@ -1,16 +1,17 @@
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_module", "ts_library")
-load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 load("@npm//http-server:index.bzl", "http_server")
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
+load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "defer",
     srcs = [
         "defer.component.ts",
         "index.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/core",
         "//packages/platform-browser",
     ],
@@ -27,16 +28,17 @@ app_bundle(
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
-    deps = [
-        "//packages:types",
+    interop_deps = [
         "//packages/compiler",
         "//packages/core/testing",
         "//packages/private/testing",
-        "@npm//@bazel/runfiles",
+    ],
+    deps = [
+        "//:node_modules/@bazel/runfiles",
     ],
 )
 

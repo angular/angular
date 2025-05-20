@@ -3,6 +3,7 @@
     "target": "angular-docs",
     "public": "./build/browser",
     "ignore": ["**/.*"],
+    "trailingSlash": false,
     "headers": [
       {
         "source": "assets/images/tutorials/common/*.jpg",
@@ -18,7 +19,7 @@
         ]
       },
       {
-        "source": "*.[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].+(css|js)",
+        "source": "/**/*-[0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z].*",
         "headers": [
           {
             "key": "Cache-Control",

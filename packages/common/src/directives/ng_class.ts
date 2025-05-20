@@ -10,8 +10,6 @@ import {
   DoCheck,
   ElementRef,
   Input,
-  IterableDiffers,
-  KeyValueDiffers,
   Renderer2,
   ɵstringify as stringify,
 } from '@angular/core';
@@ -43,17 +41,23 @@ interface CssClassState {
  *
  * @usageNotes
  * ```html
- *     <some-element [ngClass]="'first second'">...</some-element>
+ * <some-element [ngClass]="stringExp|arrayExp|objExp|Set">...</some-element>
  *
- *     <some-element [ngClass]="['first', 'second']">...</some-element>
- *
- *     <some-element [ngClass]="{'first': true, 'second': true, 'third': false}">...</some-element>
- *
- *     <some-element [ngClass]="stringExp|arrayExp|objExp">...</some-element>
- *
- *     <some-element [ngClass]="{'class1 class2 class3' : true}">...</some-element>
+ * <some-element [ngClass]="{'class1 class2 class3' : true}">...</some-element>
  * ```
  *
+ * For more simple use cases you can use the [class bindings](/guide/templates/binding#css-class-and-style-property-bindings) directly.
+ * It doesn't require importing a directive.
+ *
+ * ```html
+ * <some-element [class]="'first second'">...</some-element>
+ *
+ * <some-element [class.expanded]="isExpanded">...</some-element>
+ *
+ * <some-element [class]="['first', 'second']">...</some-element>
+ *
+ * <some-element [class]="{'first': true, 'second': true, 'third': false}">...</some-element>
+ * ```
  * @description
  *
  * Adds and removes CSS classes on an HTML element.
@@ -63,6 +67,9 @@ interface CssClassState {
  * - `Array` - the CSS classes declared as Array elements are added,
  * - `Object` - keys are CSS classes that get added when the expression given in the value
  *              evaluates to a truthy value, otherwise they are removed.
+ *
+ *
+ * @see [Class bindings](/guide/templates/binding#css-class-and-style-property-bindings)
  *
  * @publicApi
  */

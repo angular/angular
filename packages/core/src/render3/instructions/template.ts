@@ -10,23 +10,30 @@ import {TEMPLATES} from '../../hydration/interfaces';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {
   calcSerializedContainerSize,
-  isDisconnectedNode,
+  canHydrateNode,
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {isDetachedByI18n} from '../../i18n/utils';
 import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertEqual} from '../../util/assert';
 import {assertFirstCreatePass} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNode, TNodeType} from '../interfaces/node';
+import {
+  LocalRefExtractor,
+  TAttributes,
+  TContainerNode,
+  TNode,
+  TNodeFlags,
+  TNodeType,
+} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView, TViewType} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
 import {
+  getBindingsEnabled,
   getLView,
   getTView,
   isInSkipHydrationBlock,
@@ -34,15 +41,16 @@ import {
   setCurrentTNode,
   wasLastNodeCreated,
 } from '../state';
+import {getOrCreateTNode} from '../tnode_manipulation';
+import {mergeHostAttrs} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
+import {addToEndOfViewTree, createTView} from '../view/construction';
+import {createLContainer} from '../view/container';
+import {resolveDirectives} from '../view/directives';
 
 import {
-  addToEndOfViewTree,
   createDirectivesInstances,
-  createLContainer,
-  createTView,
-  getOrCreateTNode,
-  resolveDirectives,
+  findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
 
@@ -58,13 +66,24 @@ function templateFirstCreatePass(
   localRefsIndex?: number | null,
 ): TContainerNode {
   ngDevMode && assertFirstCreatePass(tView);
-  ngDevMode && ngDevMode.firstCreatePass++;
   const tViewConsts = tView.consts;
 
   // TODO(pk): refactor getOrCreateTNode to have the "create" only version
   const tNode = getOrCreateTNode(tView, index, TNodeType.Container, tagName || null, attrs || null);
 
-  resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
+  if (getBindingsEnabled()) {
+    resolveDirectives(
+      tView,
+      lView,
+      tNode,
+      getConstant<string[]>(tViewConsts, localRefsIndex),
+      findDirectiveDefMatches,
+    );
+  }
+
+  // Merge the template attrs last so that they have the highest priority.
+  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
+
   registerPostOrderHooks(tView, tNode);
 
   const embeddedTView = (tNode.tView = createTView(
@@ -113,6 +132,7 @@ export function declareTemplate(
   vars: number,
   tagName?: string | null,
   attrs?: TAttributes | null,
+  flags?: TNodeFlags,
   localRefsIndex?: number | null,
   localRefExtractor?: LocalRefExtractor,
 ): TNode {
@@ -130,6 +150,10 @@ export function declareTemplate(
         localRefsIndex,
       )
     : (declarationTView.data[adjustedIndex] as TContainerNode);
+
+  if (flags) {
+    tNode.flags |= flags;
+  }
   setCurrentTNode(tNode, false);
 
   const comment = _locateOrCreateContainerAnchor(
@@ -205,6 +229,7 @@ export function ɵɵtemplate(
     vars,
     tagName,
     attrs,
+    undefined,
     localRefsIndex,
     localRefExtractor,
   );
@@ -237,12 +262,7 @@ function locateOrCreateContainerAnchorImpl(
   tNode: TNode,
   index: number,
 ): RComment {
-  const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode =
-    !hydrationInfo ||
-    isInSkipHydrationBlock() ||
-    isDetachedByI18n(tNode) ||
-    isDisconnectedNode(hydrationInfo, index);
+  const isNodeCreationMode = !canHydrateNode(lView, tNode);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
@@ -250,6 +270,7 @@ function locateOrCreateContainerAnchorImpl(
     return createContainerAnchorImpl(tView, lView, tNode, index);
   }
 
+  const hydrationInfo = lView[HYDRATION]!;
   const ssrId = hydrationInfo.data[TEMPLATES]?.[index] ?? null;
 
   // Apply `ssrId` value to the underlying TView if it was not previously set.

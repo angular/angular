@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DATE_PIPE_DEFAULT_OPTIONS, DatePipe} from '@angular/common';
-import localeEn from '@angular/common/locales/en';
-import localeEnExtra from '@angular/common/locales/extra/en';
+import {DATE_PIPE_DEFAULT_OPTIONS, DatePipe} from '../../index';
+import localeEn from '../../locales/en';
+import localeEnExtra from '../../locales/extra/en';
 import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

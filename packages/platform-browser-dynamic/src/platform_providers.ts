@@ -6,22 +6,34 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
+import {
+  COMPILER_OPTIONS,
+  CompilerFactory,
+  createPlatformFactory,
+  PlatformRef,
+  StaticProvider,
+} from '@angular/core';
+import {platformBrowser} from '@angular/platform-browser';
 import {ResourceLoader} from '@angular/compiler';
-import {COMPILER_OPTIONS, PLATFORM_ID, StaticProvider} from '@angular/core';
-import {ɵINTERNAL_BROWSER_PLATFORM_PROVIDERS as INTERNAL_BROWSER_PLATFORM_PROVIDERS} from '@angular/platform-browser';
-
 import {ResourceLoaderImpl} from './resource_loader/resource_loader_impl';
+import {JitCompilerFactory} from './compiler_factory';
 
-/**
- * @publicApi
- */
 export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: StaticProvider[] = [
-  INTERNAL_BROWSER_PLATFORM_PROVIDERS,
   {
     provide: COMPILER_OPTIONS,
     useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl, deps: []}]},
     multi: true,
   },
-  {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+  {provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
 ];
+
+/**
+ * @deprecated Use the `platformBrowser` function instead from `@angular/platform-browser`.
+ * In case you are not in a CLI app and rely on JIT compilation, you will also need to import `@angular/compiler`
+ */
+export const platformBrowserDynamic: (extraProviders?: StaticProvider[]) => PlatformRef =
+  createPlatformFactory(
+    platformBrowser,
+    'browserDynamic',
+    INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
+  );

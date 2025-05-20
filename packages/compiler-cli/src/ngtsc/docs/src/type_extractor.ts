@@ -10,5 +10,9 @@ import ts from 'typescript';
 
 /** Gets the string representation of a node's resolved type. */
 export function extractResolvedTypeString(node: ts.Node, checker: ts.TypeChecker): string {
-  return checker.typeToString(checker.getTypeAtLocation(node));
+  return checker.typeToString(
+    checker.getTypeAtLocation(node),
+    undefined,
+    ts.TypeFormatFlags.NoTruncation,
+  );
 }

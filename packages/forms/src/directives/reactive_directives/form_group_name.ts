@@ -115,7 +115,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
 
   /** @internal */
   override _checkParentType(): void {
-    if (_hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw groupParentException();
     }
   }
@@ -187,21 +187,21 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   /**
    * A lifecycle method called when the directive's inputs are initialized. For internal use only.
    * @throws If the directive does not have a valid parent.
-   * @nodoc
+   * @docs-private
    */
   ngOnInit(): void {
-    this._checkParentType();
+    if (hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw arrayParentException();
+    }
     this.formDirective!.addFormArray(this);
   }
 
   /**
    * A lifecycle method called before the directive's instance is destroyed. For internal use only.
-   * @nodoc
+   * @docs-private
    */
   ngOnDestroy(): void {
-    if (this.formDirective) {
-      this.formDirective.removeFormArray(this);
-    }
+    this.formDirective?.removeFormArray(this);
   }
 
   /**
@@ -228,15 +228,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   override get path(): string[] {
     return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
   }
-
-  private _checkParentType(): void {
-    if (_hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw arrayParentException();
-    }
-  }
 }
 
-function _hasInvalidParent(parent: ControlContainer): boolean {
+function hasInvalidParent(parent: ControlContainer): boolean {
   return (
     !(parent instanceof FormGroupName) &&
     !(parent instanceof FormGroupDirective) &&

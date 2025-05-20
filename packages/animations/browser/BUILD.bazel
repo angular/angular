@@ -1,10 +1,11 @@
-load("//tools:defaults.bzl", "generate_api_docs", "ng_module")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
 
-ng_module(
+ng_project(
     name = "browser",
     srcs = glob(
         [
@@ -13,8 +14,8 @@ ng_module(
         ],
     ),
     deps = [
-        "//packages/animations",
-        "//packages/core",
+        "//packages/animations:animations_rjs",
+        "//packages/core:core_rjs",
     ],
 )
 

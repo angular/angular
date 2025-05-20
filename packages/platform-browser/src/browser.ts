@@ -13,25 +13,20 @@ import {
   ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
 } from '@angular/common';
 import {
-  APP_ID,
   ApplicationConfig as ApplicationConfigFromCore,
   ApplicationModule,
   ApplicationRef,
   createPlatformFactory,
   ErrorHandler,
-  Inject,
   InjectionToken,
-  ModuleWithProviders,
   NgModule,
   NgZone,
-  Optional,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
   platformCore,
   PlatformRef,
   Provider,
   RendererFactory2,
-  SkipSelf,
   StaticProvider,
   Testability,
   TestabilityRegistry,
@@ -42,6 +37,7 @@ import {
   ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
+  inject,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -187,10 +183,10 @@ export function _document(): any {
   return document;
 }
 
-export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
+const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
   {provide: PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true},
-  {provide: DOCUMENT, useFactory: _document, deps: []},
+  {provide: DOCUMENT, useFactory: _document},
 ];
 
 /**
@@ -216,7 +212,6 @@ const TESTABILITY_PROVIDERS = [
   {
     provide: TESTABILITY_GETTER,
     useClass: BrowserGetTestability,
-    deps: [],
   },
   {
     provide: TESTABILITY,
@@ -232,19 +227,19 @@ const TESTABILITY_PROVIDERS = [
 
 const BROWSER_MODULE_PROVIDERS: Provider[] = [
   {provide: INJECTOR_SCOPE, useValue: 'root'},
-  {provide: ErrorHandler, useFactory: errorHandler, deps: []},
+  {provide: ErrorHandler, useFactory: errorHandler},
   {
     provide: EVENT_MANAGER_PLUGINS,
     useClass: DomEventsPlugin,
     multi: true,
-    deps: [DOCUMENT, NgZone, PLATFORM_ID],
+    deps: [DOCUMENT],
   },
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
   DomRendererFactory2,
   SharedStylesHost,
   EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
-  {provide: XhrFactory, useClass: BrowserXhr, deps: []},
+  {provide: XhrFactory, useClass: BrowserXhr},
   typeof ngDevMode === 'undefined' || ngDevMode
     ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true}
     : [],
@@ -264,18 +259,20 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   exports: [CommonModule, ApplicationModule],
 })
 export class BrowserModule {
-  constructor(
-    @Optional()
-    @SkipSelf()
-    @Inject(BROWSER_MODULE_PROVIDERS_MARKER)
-    providersAlreadyPresent: boolean | null,
-  ) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && providersAlreadyPresent) {
-      throw new RuntimeError(
-        RuntimeErrorCode.BROWSER_MODULE_ALREADY_LOADED,
-        `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
-          `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`,
-      );
+  constructor() {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      const providersAlreadyPresent = inject(BROWSER_MODULE_PROVIDERS_MARKER, {
+        optional: true,
+        skipSelf: true,
+      });
+
+      if (providersAlreadyPresent) {
+        throw new RuntimeError(
+          RuntimeErrorCode.BROWSER_MODULE_ALREADY_LOADED,
+          `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
+            `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`,
+        );
+      }
     }
   }
 }

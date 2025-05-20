@@ -13,17 +13,20 @@ import {
   ɵsetInjectorProfilerContext,
   ɵɵFactoryTarget,
   ɵɵngDeclareFactory,
-} from '@angular/core';
-import {ɵɵdefineInjector} from '@angular/core/src/di';
-import {setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
+} from '../../../src/core';
+import {ɵɵdefineInjector} from '../../../src/di';
+import {RetrievingInjector, setCurrentInjector} from '../../../src/di/injector_compatibility';
 
 describe('Factory declaration jit compilation', () => {
-  let previousInjector: Injector | null | undefined;
+  let previousInjector: RetrievingInjector | null | undefined;
   let previousInjectorProfilerContext: ɵInjectorProfilerContext;
   beforeEach(() => {
-    const injector = ɵcreateInjector(TestInjector);
-    previousInjector = setCurrentInjector(injector);
-    previousInjectorProfilerContext = ɵsetInjectorProfilerContext({injector, token: null});
+    const injector = new RetrievingInjector(ɵcreateInjector(TestInjector));
+    previousInjector = setCurrentInjector(injector) as RetrievingInjector;
+    previousInjectorProfilerContext = ɵsetInjectorProfilerContext({
+      injector: injector.injector,
+      token: null,
+    });
   });
   afterEach(() => {
     setCurrentInjector(previousInjector);

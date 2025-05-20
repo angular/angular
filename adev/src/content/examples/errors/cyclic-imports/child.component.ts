@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {ParentComponent} from './parent.component';
 
 @Component({
@@ -6,5 +6,5 @@ import {ParentComponent} from './parent.component';
   template: 'The child!',
 })
 export class ChildComponent {
-  constructor(private parent: ParentComponent) {}
+  private parent = inject(ParentComponent);
 }

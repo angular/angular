@@ -11,13 +11,14 @@ import {
   AbstractControl,
   ControlEvent,
   FormArray,
+  FormBuilder,
   FormControl,
   FormGroup,
   ValidationErrors,
   Validators,
   ValueChangeEvent,
-} from '@angular/forms';
-import {of} from 'rxjs';
+} from '../index';
+import {delay, filter, map, of, startWith, timer} from 'rxjs';
 
 import {
   asyncValidator,
@@ -25,7 +26,7 @@ import {
   currentStateOf,
   simpleAsyncValidator,
 } from './util';
-import {StatusChangeEvent} from '../src/model/abstract_model';
+import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model';
 
 (function () {
   function simpleValidator(c: AbstractControl): ValidationErrors | null {
@@ -81,9 +82,12 @@ import {StatusChangeEvent} from '../src/model/abstract_model';
       });
     });
 
-    describe('markAllAsTouched', () => {
-      it('should mark all descendants as touched', () => {
-        const formGroup: FormGroup = new FormGroup({
+    describe('markAllAsDirty', () => {
+      let form: FormGroup;
+      let logger: any[];
+
+      beforeEach(() => {
+        form = new FormGroup({
           'c1': new FormControl('v1'),
           'group': new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
           'array': new FormArray([
@@ -92,14 +96,91 @@ import {StatusChangeEvent} from '../src/model/abstract_model';
             new FormGroup({'c4': new FormControl('v4')}),
           ]),
         });
+        logger = [];
+      });
 
-        expect(formGroup.touched).toBe(false);
+      it('should mark all descendants as dirty', () => {
+        expect(form.dirty).toBe(false);
 
-        const control1 = formGroup.get('c1') as FormControl;
+        const control1 = form.get('c1') as FormControl;
+
+        expect(control1.dirty).toBe(false);
+
+        const innerGroup = form.get('group') as FormGroup;
+
+        expect(innerGroup.dirty).toBe(false);
+
+        const innerGroupFirstChildCtrl = innerGroup.get('c2') as FormControl;
+
+        expect(innerGroupFirstChildCtrl.dirty).toBe(false);
+
+        form.markAllAsDirty();
+
+        expect(form.dirty).toBe(true);
+
+        expect(control1.dirty).toBe(true);
+
+        expect(innerGroup.dirty).toBe(true);
+
+        expect(innerGroupFirstChildCtrl.dirty).toBe(true);
+
+        const innerGroupSecondChildCtrl = innerGroup.get('c3') as FormControl;
+
+        expect(innerGroupSecondChildCtrl.dirty).toBe(true);
+
+        const array = form.get('array') as FormArray;
+
+        expect(array.dirty).toBe(true);
+
+        const arrayFirstChildCtrl = array.at(0) as FormControl;
+
+        expect(arrayFirstChildCtrl.dirty).toBe(true);
+
+        const arraySecondChildCtrl = array.at(1) as FormControl;
+
+        expect(arraySecondChildCtrl.dirty).toBe(true);
+
+        const arrayFirstChildGroup = array.at(2) as FormGroup;
+
+        expect(arrayFirstChildGroup.dirty).toBe(true);
+
+        const arrayFirstChildGroupFirstChildCtrl = arrayFirstChildGroup.get('c4') as FormControl;
+
+        expect(arrayFirstChildGroupFirstChildCtrl.dirty).toBe(true);
+      });
+
+      it('should not emit events when `FormGroup.markAllAsDirty` is called with `emitEvent: false`', () => {
+        form.valueChanges.subscribe(() => logger.push('form'));
+        form.markAllAsDirty({emitEvent: false});
+        expect(logger).toEqual([]);
+      });
+    });
+
+    describe('markAllAsTouched', () => {
+      let form: FormGroup;
+      let logger: any[];
+
+      beforeEach(() => {
+        form = new FormGroup({
+          'c1': new FormControl('v1'),
+          'group': new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
+          'array': new FormArray([
+            new FormControl('v4') as any,
+            new FormControl('v5'),
+            new FormGroup({'c4': new FormControl('v4')}),
+          ]),
+        });
+        logger = [];
+      });
+
+      it('should mark all descendants as touched', () => {
+        expect(form.touched).toBe(false);
+
+        const control1 = form.get('c1') as FormControl;
 
         expect(control1.touched).toBe(false);
 
-        const innerGroup = formGroup.get('group') as FormGroup;
+        const innerGroup = form.get('group') as FormGroup;
 
         expect(innerGroup.touched).toBe(false);
 
@@ -107,9 +188,9 @@ import {StatusChangeEvent} from '../src/model/abstract_model';
 
         expect(innerGroupFirstChildCtrl.touched).toBe(false);
 
-        formGroup.markAllAsTouched();
+        form.markAllAsTouched();
 
-        expect(formGroup.touched).toBe(true);
+        expect(form.touched).toBe(true);
 
         expect(control1.touched).toBe(true);
 
@@ -121,7 +202,7 @@ import {StatusChangeEvent} from '../src/model/abstract_model';
 
         expect(innerGroupSecondChildCtrl.touched).toBe(true);
 
-        const array = formGroup.get('array') as FormArray;
+        const array = form.get('array') as FormArray;
 
         expect(array.touched).toBe(true);
 
@@ -140,6 +221,12 @@ import {StatusChangeEvent} from '../src/model/abstract_model';
         const arrayFirstChildGroupFirstChildCtrl = arrayFirstChildGroup.get('c4') as FormControl;
 
         expect(arrayFirstChildGroupFirstChildCtrl.touched).toBe(true);
+      });
+
+      it('should not emit events when `FormGroup.markAllAsTouched` is called with `emitEvent: false`', () => {
+        form.valueChanges.subscribe(() => logger.push('form'));
+        form.markAllAsTouched({emitEvent: false});
+        expect(logger).toEqual([]);
       });
     });
 
@@ -2219,6 +2306,40 @@ import {StatusChangeEvent} from '../src/model/abstract_model';
           // Because we are calling `setValue` with `emitEvent: false`, nothing is emitted
           // and our logger remains empty
           expect(logger).toEqual([]);
+        }));
+
+        it('should emit status change despite updating the value with emitEvent: false multiple times', fakeAsync(() => {
+          const c = new FormControl(
+            '',
+            null,
+            simpleAsyncValidator({timeout: 1, shouldFail: false}),
+          );
+
+          const statusChange$ = c.events.pipe(
+            filter((event): event is StatusChangeEvent => event instanceof StatusChangeEvent),
+            map((event) => event.status),
+          );
+
+          c.setValue('foo', {emitEvent: false});
+          // This will still emit as the status will be updated because of the initial validator run
+          c.setValue('foo', {emitEvent: false});
+
+          const events: FormControlStatus[] = [];
+          statusChange$.subscribe((e) => events.push(e));
+          tick(1);
+
+          expect(c.status).toBe('VALID');
+          expect(events.length).toBe(1);
+          expect(events.at(-1)).toBe('VALID');
+
+          c.setValue('foo', {emitEvent: false});
+          c.setValue('foo', {emitEvent: false});
+          tick(1);
+
+          // We make sure that we're still not emitting if none of the updates requested an emit
+          expect(c.status).toBe('VALID');
+          expect(events.length).toBe(1);
+          expect(events.at(-1)).toBe('VALID');
         }));
 
         it('should cancel initial run of the async validator and emit on the event Observable', fakeAsync(() => {

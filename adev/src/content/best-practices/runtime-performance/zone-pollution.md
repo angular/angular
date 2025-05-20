@@ -26,7 +26,8 @@ import { Component, NgZone, OnInit } from '@angular/core';
 
 @Component(...)
 class AppComponent implements OnInit {
-  constructor(private ngZone: NgZone) {}
+  private ngZone = inject(NgZone);
+
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => setInterval(pollForUpdates), 500);
   }
@@ -35,7 +36,7 @@ class AppComponent implements OnInit {
 
 The preceding snippet instructs Angular to call `setInterval` outside the Angular Zone and skip running change detection after `pollForUpdates` runs.
 
-Third-party libraries commonly trigger unnecessary change detection cycles when their APIs are invoked within the Angular zone. This phenomenon particularly affects libraries that setup event listeners or initiate other tasks (such as timers, XHR requests, etc.). Avoid these extra cycles by calling library APIs outside the Angular zone:
+Third-party libraries commonly trigger unnecessary change detection cycles when their APIs are invoked within the Angular zone. This phenomenon particularly affects libraries that set up event listeners or initiate other tasks (such as timers, XHR requests, etc.). Avoid these extra cycles by calling library APIs outside the Angular zone:
 
 <docs-code header="Move the plot initialization outside of the Zone" language='ts' linenums>
 import { Component, NgZone, OnInit } from '@angular/core';
@@ -43,8 +44,7 @@ import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-
-  constructor(private ngZone: NgZone) {}
+  private ngZone = inject(NgZone);
 
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => {
@@ -66,9 +66,9 @@ import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-  plotlyClick = output<Plotly.PlotMouseEvent>();
+  private ngZone = inject(NgZone);
 
-  constructor(private ngZone: NgZone) {}
+  plotlyClick = output<Plotly.PlotMouseEvent>();
 
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => {
@@ -98,9 +98,9 @@ import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-  plotlyClick = output<Plotly.PlotMouseEvent>();
+  private ngZone = inject(NgZone);
 
-  constructor(private ngZone: NgZone) {}
+  plotlyClick = output<Plotly.PlotMouseEvent>();
 
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => {
@@ -120,4 +120,4 @@ class AppComponent implements OnInit {
 }
 </docs-code>
 
-The scenario of dispatching events outside of the Angular zone may also arise. It's important to remember that triggering change detection (for example, manually) may result to the creation/update of views outside of the Angular zone.
+The scenario of dispatching events outside of the Angular zone may also arise. It's important to remember that triggering change detection (for example, manually) may result in the creation/update of views outside of the Angular zone.

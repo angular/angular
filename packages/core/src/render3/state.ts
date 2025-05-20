@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectFlags} from '../di/interface/injector';
+import {InternalInjectFlags} from '../di/interface/injector';
 import {
   assertDefined,
   assertEqual,
@@ -176,7 +176,7 @@ interface InstructionState {
    * directives on children of that element.
    *
    * Example:
-   * ```
+   * ```html
    * <my-comp my-directive>
    *   Should match component / directive.
    * </my-comp>
@@ -193,7 +193,7 @@ interface InstructionState {
    * Stores the root TNode that has the 'ngSkipHydration' attribute on it for later reference.
    *
    * Example:
-   * ```
+   * ```html
    * <my-comp ngSkipHydration>
    *   Should reference this root node
    * </my-comp>
@@ -572,10 +572,10 @@ function getDeclarationTNode(lView: LView): TNode | null {
  *     - If `true` than this call must be fallowed by `leaveDI`
  *     - If `false` than this call failed and we should NOT call `leaveDI`
  */
-export function enterDI(lView: LView, tNode: TNode, flags: InjectFlags) {
+export function enterDI(lView: LView, tNode: TNode, flags: InternalInjectFlags) {
   ngDevMode && assertLViewOrUndefined(lView);
 
-  if (flags & InjectFlags.SkipSelf) {
+  if (flags & InternalInjectFlags.SkipSelf) {
     ngDevMode && assertTNodeForTView(tNode, lView[TVIEW]);
 
     let parentTNode = tNode as TNode | null;
@@ -584,7 +584,7 @@ export function enterDI(lView: LView, tNode: TNode, flags: InjectFlags) {
     while (true) {
       ngDevMode && assertDefined(parentTNode, 'Parent TNode should be defined');
       parentTNode = parentTNode!.parent as TNode | null;
-      if (parentTNode === null && !(flags & InjectFlags.Host)) {
+      if (parentTNode === null && !(flags & InternalInjectFlags.Host)) {
         parentTNode = getDeclarationTNode(parentLView);
         if (parentTNode === null) break;
 

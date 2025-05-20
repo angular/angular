@@ -46,9 +46,9 @@ import {
 } from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
+import {FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
 import type {FormControlName} from './form_control_name';
 import type {FormArrayName, FormGroupName} from './form_group_name';
-import {FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
 
 const formDirectiveProvider: Provider = {
   provide: ControlContainer,
@@ -147,9 +147,12 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     this._setAsyncValidators(asyncValidators);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges): void {
-    this._checkFormPresent();
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this.form) {
+      throw missingFormException();
+    }
+
     if (changes.hasOwnProperty('form')) {
       this._updateValidators();
       this._updateDomValue();
@@ -158,7 +161,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy() {
     if (this.form) {
       cleanUpValidators(this.form, this);
@@ -336,12 +339,14 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @description
    * Resets the form to an initial value and resets its submitted status.
    *
-   * @param value The new value for the form.
+   * @param value The new value for the form, `undefined` by default
    */
-  resetForm(value: any = undefined): void {
-    this.form.reset(value);
+  resetForm(value: any = undefined, options: {onlySelf?: boolean; emitEvent?: boolean} = {}): void {
+    this.form.reset(value, options);
     this._submittedReactive.set(false);
-    this.form._events.next(new FormResetEvent(this.form));
+    if (options?.emitEvent !== false) {
+      this.form._events.next(new FormResetEvent(this.form));
+    }
   }
 
   /** @internal */
@@ -403,12 +408,6 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     setUpValidators(this.form, this);
     if (this._oldForm) {
       cleanUpValidators(this._oldForm, this);
-    }
-  }
-
-  private _checkFormPresent() {
-    if (!this.form && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw missingFormException();
     }
   }
 }

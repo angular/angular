@@ -213,7 +213,7 @@ In the example above, clicking the "Show" button results in the following output
 
 ## Passing parameters when rendering a template fragment
 
-When declaring a template fragment with `<ng-template>`, you can additionally declare parameters accepted by the fragment. When you render a fragment, you can optimally pass a `context` object corresponding to these parameters. You can use data from this context object in binding expressions and statements, in addition to referencing data from the component in which the fragment is declared.
+When declaring a template fragment with `<ng-template>`, you can additionally declare parameters accepted by the fragment. When you render a fragment, you can optionally pass a `context` object corresponding to these parameters. You can use data from this context object in binding expressions and statements, in addition to referencing data from the component in which the fragment is declared.
 
 Each parameter is written as an attribute prefixed with `let-` with a value matching a property name in the context object:
 
@@ -279,5 +279,5 @@ For more details, see [Structural Directives](/guide/directives/structural-direc
 
 For examples of how `ng-template` is used in other libraries, check out:
 
-- [Tabs from Angular Material](https://material.angular.io/components/tabs/overview) - nothing gets rendered into the DOM until the tab is activated
-- [Table from Angular Material](https://material.angular.io/components/table/overview) - allows developers to define different ways to render data
+- [Tabs from Angular Material](https://material.angular.dev/components/tabs/overview) - nothing gets rendered into the DOM until the tab is activated
+- [Table from Angular Material](https://material.angular.dev/components/table/overview) - allows developers to define different ways to render data

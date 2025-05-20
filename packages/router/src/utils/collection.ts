@@ -9,7 +9,7 @@
 import {ɵisPromise as isPromise} from '@angular/core';
 import {from, isObservable, Observable, of} from 'rxjs';
 
-export function shallowEqualArrays(a: any[], b: any[]): boolean {
+export function shallowEqualArrays(a: readonly any[], b: readonly any[]): boolean {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; ++i) {
     if (!shallowEqual(a[i], b[i])) return false;
@@ -48,7 +48,10 @@ export function getDataKeys(obj: Object): Array<string | symbol> {
 /**
  * Test equality for arrays of strings or a string.
  */
-export function equalArraysOrString(a: string | string[], b: string | string[]) {
+export function equalArraysOrString(
+  a: string | readonly string[],
+  b: string | readonly string[],
+): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
     const aSorted = [...a].sort();
@@ -62,7 +65,7 @@ export function equalArraysOrString(a: string | string[], b: string | string[]) 
 /**
  * Return the last element of an array.
  */
-export function last<T>(a: T[]): T | null {
+export function last<T>(a: readonly T[]): T | null {
   return a.length > 0 ? a[a.length - 1] : null;
 }
 

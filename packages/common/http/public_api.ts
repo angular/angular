@@ -54,6 +54,8 @@ export {
   HttpUploadProgressEvent,
   HttpUserEvent,
 } from './src/response';
+export {HttpResourceRef, HttpResourceOptions, HttpResourceRequest} from './src/resource_api';
+export {httpResource, HttpResourceFn} from './src/resource';
 export {
   HttpTransferCacheOptions,
   withHttpTransferCache as ɵwithHttpTransferCache,

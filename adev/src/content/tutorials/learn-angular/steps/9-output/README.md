@@ -4,23 +4,25 @@ When working with components it may be required to notify other components that 
 
 Angular uses the `@Output` decorator to enable this type of behavior.
 
+Note: Learn more about [custom events in the outputs guide](/guide/components/outputs).
+
 In this activity, you'll learn how to use the `@Output` decorator and `EventEmitter` to communicate with components.
 
 <hr />
 
 To create the communication path from child to parent components, use the `@Output` decorator on a class property and assign it a value of type `EventEmitter`:
 
-<docs-code header="child.component.ts" language="ts">
+<docs-code header="child.ts" language="ts">
 @Component({...})
-class ChildComponent {
+class Child {
     @Output() incrementCountEvent = new EventEmitter<number>();
 }
 </docs-code>
 
 Now the component can generate events that can be listened to by the parent component. Trigger events by calling the `emit` method:
 
-<docs-code header="child.component.ts" language="ts">
-class ChildComponent {
+<docs-code header="child.ts" language="ts">
+class Child {
     ...
 
     onClick() {
@@ -38,13 +40,13 @@ Alright, your turn to give this a try. Complete the code by following these task
 <docs-workflow>
 
 <docs-step title="Add an `@Output` property">
-Update `child.component.ts` by adding an output property called `addItemEvent`, be sure to set the EventEmitter type to be `string`.
+Update `child.ts` by adding an output property called `addItemEvent`, be sure to set the EventEmitter type to be `string`.
 </docs-step>
 
 <docs-step title="Complete `addItem` method">
-In `child.component.ts` update the `addItem` method; use the following code as the logic:
+In `child.ts` update the `addItem` method; use the following code as the logic:
 
-<docs-code header="child.component.ts" highlight="[2]" language="ts">
+<docs-code header="child.ts" highlight="[2]" language="ts">
 addItem() {
   this.addItemEvent.emit('🐢');
 }
@@ -52,8 +54,8 @@ addItem() {
 
 </docs-step>
 
-<docs-step title="Update the `AppComponent` template">
-In `app.component.ts` update the template to listen to the emitted event by adding the following code:
+<docs-step title="Update the `App` template">
+In `app.ts` update the template to listen to the emitted event by adding the following code:
 
 ```angular-html
 <app-child (addItemEvent)="addItem($event)" />

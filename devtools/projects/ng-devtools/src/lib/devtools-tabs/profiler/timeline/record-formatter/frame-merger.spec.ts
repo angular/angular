@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ProfilerFrame} from 'protocol';
+import {ElementProfile, ProfilerFrame} from '../../../../../../../protocol';
 
 import {mergeFrames} from './frame-merger';
 
@@ -16,7 +16,7 @@ describe('mergeFrames', () => {
   });
 
   it('should work with a single frame', () => {
-    const frame = {
+    const frame: ProfilerFrame = {
       directives: [
         {
           children: [],
@@ -29,6 +29,7 @@ describe('mergeFrames', () => {
               name: 'Foo',
             },
           ],
+          type: 'element',
         },
       ],
       duration: 5,
@@ -43,7 +44,7 @@ describe('mergeFrames', () => {
   });
 
   it('should merge frames when nesting matches', () => {
-    const frame = {
+    const frame: ProfilerFrame = {
       directives: [
         {
           children: [],
@@ -57,6 +58,7 @@ describe('mergeFrames', () => {
               name: 'Foo',
             },
           ],
+          type: 'element',
         },
       ],
       duration: 5,
@@ -78,6 +80,7 @@ describe('mergeFrames', () => {
               name: 'Foo',
             },
           ],
+          type: 'element',
         },
       ],
       duration: 10,
@@ -86,7 +89,7 @@ describe('mergeFrames', () => {
   });
 
   it('should merge frames when nesting does not match', () => {
-    const frame = {
+    const frame: ProfilerFrame = {
       directives: [
         {
           children: [],
@@ -100,6 +103,7 @@ describe('mergeFrames', () => {
               name: 'Foo',
             },
           ],
+          type: 'element',
         },
       ],
       duration: 5,
@@ -122,6 +126,7 @@ describe('mergeFrames', () => {
                   name: 'Foo',
                 },
               ],
+              type: 'element',
             },
           ],
           directives: [
@@ -134,6 +139,7 @@ describe('mergeFrames', () => {
               name: 'Foo',
             },
           ],
+          type: 'element',
         },
       ],
       duration: 5,
@@ -157,6 +163,7 @@ describe('mergeFrames', () => {
                   name: 'Foo',
                 },
               ],
+              type: 'element',
             },
           ],
           directives: [
@@ -169,6 +176,7 @@ describe('mergeFrames', () => {
               name: 'Foo',
             },
           ],
+          type: 'element',
         },
       ],
       duration: 10,

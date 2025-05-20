@@ -2,13 +2,14 @@
   display: flex;
   flex-direction: column;
   position: fixed;
-  right: 16px;
+  right: 1rem;
   top: 0;
   height: fit-content;
   width: 14rem;
-  padding-inline: 1rem;
+  padding-right: 2rem;
   max-height: 100vh;
   overflow-y: scroll;
+  box-sizing: border-box;
 
   aside {
     margin-bottom: 2rem;

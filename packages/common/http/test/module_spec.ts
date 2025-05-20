@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpHandler} from '@angular/common/http/src/backend';
-import {HttpClient} from '@angular/common/http/src/client';
-import {HttpContext, HttpContextToken} from '@angular/common/http/src/context';
-import {HTTP_INTERCEPTORS, HttpInterceptor} from '@angular/common/http/src/interceptor';
-import {HttpRequest} from '@angular/common/http/src/request';
-import {HttpEvent, HttpResponse} from '@angular/common/http/src/response';
-import {HttpTestingController} from '@angular/common/http/testing/src/api';
-import {HttpClientTestingModule} from '@angular/common/http/testing/src/module';
-import {TestRequest} from '@angular/common/http/testing/src/request';
+import {HttpHandler} from '../src/backend';
+import {HttpClient} from '../src/client';
+import {HttpContext, HttpContextToken} from '../src/context';
+import {HTTP_INTERCEPTORS, HttpInterceptor} from '../src/interceptor';
+import {HttpRequest} from '../src/request';
+import {HttpEvent, HttpResponse} from '../src/response';
+import {HttpTestingController} from '../testing/src/api';
+import {HttpClientTestingModule} from '../testing/src/module';
+import {TestRequest} from '../testing/src/request';
 import {Injectable, Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Observable} from 'rxjs';
@@ -79,7 +79,7 @@ class ReentrantInterceptor implements HttpInterceptor {
 describe('HttpClientModule', () => {
   let injector: Injector;
   beforeEach(() => {
-    injector = TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         {provide: HTTP_INTERCEPTORS, useClass: InterceptorA, multi: true},
@@ -87,6 +87,7 @@ describe('HttpClientModule', () => {
         {provide: HTTP_INTERCEPTORS, useClass: InterceptorC, multi: true},
       ],
     });
+    injector = TestBed.inject(Injector);
   });
   it('initializes HttpClient properly', (done) => {
     injector
@@ -132,10 +133,11 @@ describe('HttpClientModule', () => {
   });
   it('allows interceptors to inject HttpClient', (done) => {
     TestBed.resetTestingModule();
-    injector = TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [{provide: HTTP_INTERCEPTORS, useClass: ReentrantInterceptor, multi: true}],
     });
+    injector = TestBed.inject(Injector);
     injector
       .get(HttpClient)
       .get('/test')

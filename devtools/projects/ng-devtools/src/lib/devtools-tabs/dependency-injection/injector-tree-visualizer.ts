@@ -7,11 +7,11 @@
  */
 
 import * as d3 from 'd3';
-import {SerializedInjector} from 'protocol';
+import {SerializedInjector} from '../../../../../protocol';
 
 let arrowDefId = 0;
 
-const injectorTypeToClassMap = new Map<string, string>([
+const injectorTypeToClassMap = new Map<SerializedInjector['type'], string>([
   ['imported-module', 'node-imported-module'],
   ['environment', 'node-environment'],
   ['element', 'node-element'],

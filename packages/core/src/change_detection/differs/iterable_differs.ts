@@ -20,7 +20,7 @@ import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
 export type NgIterable<T> = Array<T> | Iterable<T>;
 
 /**
- * A strategy for tracking changes over time to an iterable. Used by {@link NgForOf} to
+ * A strategy for tracking changes over time to an iterable. Used by {@link /api/common/NgForOf NgForOf} to
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
  *
  * @publicApi
@@ -222,7 +222,7 @@ export class IterableDiffers {
    * which will only be applied to the injector for this component and its children.
    * This step is all that's required to make a new {@link IterableDiffer} available.
    *
-   * ```
+   * ```ts
    * @Component({
    *   viewProviders: [
    *     IterableDiffers.extend([new ImmutableListDiffer()])

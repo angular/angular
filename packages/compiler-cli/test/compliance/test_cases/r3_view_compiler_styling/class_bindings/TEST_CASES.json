@@ -80,7 +80,7 @@
         {
           "files": [
             {
-              "expected": "shared_name_with_consts_template.pipeline.js",
+              "expected": "shared_name_with_consts_template.js",
               "generated": "shared_name_with_consts.js"
             }
           ],

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LiveCollection, reconcile} from '@angular/core/src/render3/list_reconciliation';
-import {assertDefined} from '@angular/core/src/util/assert';
+import {LiveCollection, reconcile} from '../../src/render3/list_reconciliation';
+import {assertDefined} from '../../src/util/assert';
 
 interface ItemAdapter<T, V> {
   create(index: number, value: V): T;
@@ -41,7 +41,7 @@ class LoggingLiveCollection<T, V> extends LiveCollection<T, V> {
     super();
   }
 
-  get length(): number {
+  override get length(): number {
     return this.arr.length;
   }
   override at(index: number): V {

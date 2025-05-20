@@ -61,11 +61,11 @@ import {
   ɵrestoreComponentResolutionQueue,
   ɵsetLocaleId as setLocaleId,
   ɵtransitiveScopesFor as transitiveScopesFor,
-  ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT as USE_RUNTIME_DEPS_TRACKER_FOR_JIT,
   ɵɵInjectableDeclaration as InjectableDeclaration,
   NgZone,
   ErrorHandler,
-} from '@angular/core';
+  ENVIRONMENT_INITIALIZER,
+} from '../../src/core';
 
 import {ComponentDef, ComponentType} from '../../src/render3';
 
@@ -237,9 +237,7 @@ export class TestBedCompiler {
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
-    if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
-      depsTracker.clearScopeCacheFor(ngModule);
-    }
+    depsTracker.clearScopeCacheFor(ngModule);
     this.overriddenModules.add(ngModule as NgModuleType<any>);
 
     // Compile the module right away.
@@ -511,9 +509,7 @@ export class TestBedCompiler {
       }
 
       this.maybeStoreNgDef(NG_COMP_DEF, declaration);
-      if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
-        depsTracker.clearScopeCacheFor(declaration);
-      }
+      depsTracker.clearScopeCacheFor(declaration);
       compileComponent(declaration, metadata);
     });
     this.pendingComponents.clear();
@@ -550,12 +546,7 @@ export class TestBedCompiler {
       const affectedModules = this.collectModulesAffectedByOverrides(testingModuleDef.imports);
       if (affectedModules.size > 0) {
         affectedModules.forEach((moduleType) => {
-          if (!USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
-            this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
-            (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
-          } else {
-            depsTracker.clearScopeCacheFor(moduleType);
-          }
+          depsTracker.clearScopeCacheFor(moduleType);
         });
       }
     }
@@ -910,9 +901,7 @@ export class TestBedCompiler {
     // Restore initial component/directive/pipe defs
     this.initialNgDefs.forEach(
       (defs: Map<string, PropertyDescriptor | undefined>, type: Type<any>) => {
-        if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
-          depsTracker.clearScopeCacheFor(type);
-        }
+        depsTracker.clearScopeCacheFor(type);
         defs.forEach((descriptor, prop) => {
           if (!descriptor) {
             // Delete operations are generally undesirable since they have performance
@@ -943,6 +932,13 @@ export class TestBedCompiler {
         internalProvideZoneChangeDetection({}),
         TestBedApplicationErrorHandler,
         {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+        {
+          provide: ENVIRONMENT_INITIALIZER,
+          multi: true,
+          useValue: () => {
+            inject(ErrorHandler);
+          },
+        },
       ],
     });
 
@@ -989,7 +985,7 @@ export class TestBedCompiler {
     }
 
     const providers: StaticProvider[] = [];
-    const compilerOptions = this.platform.injector.get(COMPILER_OPTIONS);
+    const compilerOptions = this.platform.injector.get(COMPILER_OPTIONS, []);
     compilerOptions.forEach((opts) => {
       if (opts.providers) {
         providers.push(opts.providers);

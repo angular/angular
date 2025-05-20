@@ -1,9 +1,8 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(
     default_visibility = [
         "//packages/core/schematics:__pkg__",
-        "//packages/core/schematics/migrations/google3:__pkg__",
         "//packages/core/schematics/ng-generate/signals:__pkg__",
         "//packages/core/schematics/test:__pkg__",
     ],
@@ -14,17 +13,17 @@ filegroup(
     srcs = ["schema.json"],
 )
 
-ts_library(
+ts_project(
     name = "signal-queries-migration",
     srcs = glob(["**/*.ts"]),
-    tsconfig = "//packages/core/schematics:tsconfig.json",
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/core/schematics/migrations/signal-queries-migration:migration",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
-        "@npm//@angular-devkit/schematics",
-        "@npm//@types/node",
+    ],
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
     ],
 )

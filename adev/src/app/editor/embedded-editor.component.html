@@ -1,81 +1,84 @@
-<div class="adev-editor-container" #editorContainer>
-  <as-split class="docs-editor" [direction]="splitDirection" restrictMove="true" gutterSize="5">
-    <as-split-area class="adev-left-side" [size]="50">
-      <!-- Code Editor -->
-      @if (!displayOnlyTerminal()) {
-      <docs-tutorial-code-editor class="adev-tutorial-code-editor" />
-      }
-
-      <!-- CLI Terminal -->
-      @if (displayOnlyTerminal()) {
+@if (this.editorUiState.tutorialType() !== undefined) {
+  <div class="adev-editor-container" #editorContainer>
+    @if (displayOnlyTerminal()) {
       <docs-tutorial-terminal
         class="docs-tutorial-terminal-only"
         [type]="TerminalType.INTERACTIVE"
       />
-      }
-    </as-split-area>
-
-    <as-split-area [size]="50">
-      <!-- Preview, Terminal & Console -->
-      @if (!displayOnlyTerminal()) {
-      <as-split class="docs-right-side" direction="vertical" restrictMove="true" gutterSize="5">
-        <!-- Preview Section: for larger screens -->
-        @if (!displayPreviewInMatTabGroup()) {
-        <as-split-area [size]="50">
-          <!-- Preview Section: for larger screens -->
-          <div class="adev-preview-section">
-            <div class="adev-preview-header">
-              <span>Preview</span>
-            </div>
-            @if (!displayPreviewInMatTabGroup()) {
-            <docs-tutorial-preview />
-            }
-          </div>
+    } @else {
+      <as-split class="docs-editor" [direction]="splitDirection()" restrictMove="true" gutterSize="5">
+        <as-split-area class="adev-left-side" size="50">
+          <docs-tutorial-code-editor class="adev-tutorial-code-editor" />
         </as-split-area>
-        }
 
-        <as-split-area class="docs-editor-tabs-and-refresh" [size]="50">
-          <!-- Container to hide preview, console and footer when only the interactive terminal is used  -->
-          <mat-tab-group class="docs-editor-tabs" animationDuration="0ms" mat-stretch-tabs="false">
-            @if (displayPreviewInMatTabGroup()) {
-            <mat-tab label="Preview">
-              <docs-tutorial-preview />
-            </mat-tab>
+        <as-split-area size="50">
+          <!-- Preview, Terminal & Console -->
+          <as-split class="docs-right-side" direction="vertical" restrictMove="true" gutterSize="5">
+            <!-- Preview Section: for larger screens -->
+            @if (!displayPreviewInMatTabGroup()) {
+              <as-split-area size="50">
+                <!-- Preview Section: for larger screens -->
+                <div class="adev-preview-section">
+                  <div class="adev-preview-header">
+                    <span>Preview</span>
+                  </div>
+                  @if (!displayPreviewInMatTabGroup()) {
+                    <docs-tutorial-preview />
+                  }
+                </div>
+              </as-split-area>
             }
-            <mat-tab label="Console">
-              <ng-template mat-tab-label>
-                Console @if (errorsCount()) {
-                <docs-icon class="docs-icon_high-contrast">error</docs-icon>
-                <span>
-                  {{ errorsCount() }}
-                </span>
-                }
-              </ng-template>
-              <docs-tutorial-terminal
-                [type]="TerminalType.READONLY"
-                class="docs-tutorial-terminal"
-              />
-            </mat-tab>
-            <mat-tab label="Terminal">
-              <docs-tutorial-terminal
-                [type]="TerminalType.INTERACTIVE"
-                class="docs-tutorial-terminal"
-              />
-            </mat-tab>
-          </mat-tab-group>
 
-          <button
-            type="button"
-            (click)="reset()"
-            title="Refresh the preview"
-            [disabled]="!shouldEnableReset()"
-            class="adev-refresh-btn"
-          >
-            <docs-icon class="docs-icon">refresh</docs-icon>
-          </button>
+            <as-split-area class="docs-editor-tabs-and-refresh" size="50">
+              <!-- Container to hide preview, console and footer when only the interactive terminal is used  -->
+              <mat-tab-group
+                class="docs-editor-tabs"
+                animationDuration="0ms"
+                mat-stretch-tabs="false"
+                [selectedIndex]="selectedTabIndex()"
+                (selectedIndexChange)="selectedTabIndex.set($event)"
+              >
+                @if (displayPreviewInMatTabGroup()) {
+                  <mat-tab label="Preview">
+                    <docs-tutorial-preview />
+                  </mat-tab>
+                }
+                <mat-tab label="Console">
+                  <ng-template mat-tab-label>
+                    Console
+                    @if (errorsCount()) {
+                      <docs-icon class="docs-icon_high-contrast">error</docs-icon>
+                      <span>
+                        {{ errorsCount() }}
+                      </span>
+                    }
+                  </ng-template>
+                  <docs-tutorial-terminal
+                    [type]="TerminalType.READONLY"
+                    class="docs-tutorial-terminal"
+                  />
+                </mat-tab>
+                <mat-tab label="Terminal">
+                  <docs-tutorial-terminal
+                    [type]="TerminalType.INTERACTIVE"
+                    class="docs-tutorial-terminal"
+                  />
+                </mat-tab>
+              </mat-tab-group>
+
+              <button
+                type="button"
+                (click)="reset()"
+                title="Refresh the preview"
+                [disabled]="!shouldEnableReset()"
+                class="adev-refresh-btn"
+              >
+                <docs-icon class="docs-icon">refresh</docs-icon>
+              </button>
+            </as-split-area>
+          </as-split>
         </as-split-area>
       </as-split>
-      }
-    </as-split-area>
-  </as-split>
-</div>
+    }
+  </div>
+}

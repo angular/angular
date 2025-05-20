@@ -15,7 +15,7 @@ import {Subject} from 'rxjs';
 export class FileApiService {
   uploadedData: Subject<any> = new Subject();
 
-  publishFileUpload(parentEvent: InputEvent): void {
+  publishFileUpload(parentEvent: Event): void {
     const reader = new FileReader();
     reader.onload = (event) => {
       try {

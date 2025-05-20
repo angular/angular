@@ -24,7 +24,7 @@ describe('signal queries migration', () => {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
 
-  function runMigration(options?: {path?: string}) {
+  function runMigration(options?: {bestEffortMode?: boolean}) {
     return runner.runSchematic('signal-queries-migration', options, tree);
   }
 
@@ -68,5 +68,69 @@ describe('signal queries migration', () => {
 
     const content = tree.readContent('/index.ts').replace(/\s+/g, ' ');
     expect(content).toContain("readonly ref = contentChild.required<ElementRef>('ref');");
+  });
+
+  it('should report correct statistics', async () => {
+    writeFile(`node_modules/@tsconfig/strictest/tsconfig.json`, `{}`);
+    writeFile(
+      `tsconfig.json`,
+      JSON.stringify({
+        extends: `@tsconfig/strictest/tsconfig.json`,
+      }),
+    );
+    writeFile(
+      '/index.ts',
+      `
+      import {ContentChild, ElementRef, Directive} from '@angular/core';
+
+      @Directive({})
+      export class SomeDirective {
+        @ContentChild('ref') ref!: ElementRef;
+        @ContentChild('ref') ref2: ElementRef|null = null;
+
+        someFn() {
+          this.ref2 = null;
+        }
+      }`,
+    );
+
+    const messages: string[] = [];
+    runner.logger.subscribe((m) => messages.push(m.message));
+
+    await runMigration();
+
+    expect(messages).toContain(`  -> Migrated 1/2 queries.`);
+  });
+
+  it('should report correct statistics with best effort mode', async () => {
+    writeFile(`node_modules/@tsconfig/strictest/tsconfig.json`, `{}`);
+    writeFile(
+      `tsconfig.json`,
+      JSON.stringify({
+        extends: `@tsconfig/strictest/tsconfig.json`,
+      }),
+    );
+    writeFile(
+      '/index.ts',
+      `
+      import {ContentChild, ElementRef, Directive} from '@angular/core';
+
+      @Directive({})
+      export class SomeDirective {
+        @ContentChild('ref') ref!: ElementRef;
+        @ContentChild('ref') ref2: ElementRef|null = null;
+
+        someFn() {
+          this.ref2 = null;
+        }
+      }`,
+    );
+
+    const messages: string[] = [];
+    runner.logger.subscribe((m) => messages.push(m.message));
+
+    await runMigration({bestEffortMode: true});
+
+    expect(messages).toContain(`  -> Migrated 2/2 queries.`);
   });
 });

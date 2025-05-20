@@ -12,7 +12,6 @@ import {
   ElementRef,
   Injector,
   OnDestroy,
-  Signal,
   afterNextRender,
   effect,
   inject,
@@ -20,22 +19,20 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
-import {NgTemplateOutlet} from '@angular/common';
 
 import {WINDOW} from '../../providers/index';
 import {ClickOutside} from '../../directives/index';
 import {Search} from '../../services/index';
 
 import {TextField} from '../text-field/text-field.component';
-import {FormsModule} from '@angular/forms';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 import {SearchItem} from '../../directives/search-item/search-item.directive';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Router, RouterLink} from '@angular/router';
-import {filter, fromEvent} from 'rxjs';
+import {fromEvent} from 'rxjs';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {RelativeLink} from '../../pipes/relative-link.pipe';
-import {SearchResult, SnippetResult} from '../../interfaces';
 
 @Component({
   selector: 'docs-search-dialog',
@@ -43,12 +40,11 @@ import {SearchResult, SnippetResult} from '../../interfaces';
   imports: [
     ClickOutside,
     TextField,
-    FormsModule,
+    ReactiveFormsModule,
     SearchItem,
     AlgoliaIcon,
     RelativeLink,
     RouterLink,
-    NgTemplateOutlet,
   ],
   templateUrl: './search-dialog.component.html',
   styleUrls: ['./search-dialog.component.scss'],
@@ -57,6 +53,7 @@ export class SearchDialog implements OnDestroy {
   onClose = output();
   dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
   items = viewChildren(SearchItem);
+  textField = viewChild(TextField);
 
   private readonly search = inject(Search);
   private readonly relativeLink = new RelativeLink();
@@ -71,7 +68,18 @@ export class SearchDialog implements OnDestroy {
   searchQuery = this.search.searchQuery;
   searchResults = this.search.searchResults;
 
+  // We use a FormControl instead of relying on NgModel+signal to avoid
+  // the issue https://github.com/angular/angular/issues/13568
+  // TODO: Use signal forms when available
+  searchControl = new FormControl(this.searchQuery(), {nonNullable: true});
+
   constructor() {
+    this.searchControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
+      this.searchQuery.set(value);
+    });
+
+    // Thinkig about refactoring this to a single afterRenderEffect ?
+    // Answer: It won't have the same behavior
     effect(() => {
       this.items();
       afterNextRender(
@@ -91,6 +99,9 @@ export class SearchDialog implements OnDestroy {
         if (!this.dialog().nativeElement.open) {
           this.dialog().nativeElement.showModal?.();
         }
+        // We want to select the pre-existing text on opening
+        // In order to change the search input with minimal user interaction.
+        this.textField()?.input().nativeElement.select();
       },
     });
 
@@ -106,46 +117,6 @@ export class SearchDialog implements OnDestroy {
       });
   }
 
-  splitMarkedText(snippet: string): Array<{highlight: boolean; text: string}> {
-    const parts: Array<{highlight: boolean; text: string}> = [];
-    while (snippet.indexOf('<ɵ>') !== -1) {
-      const beforeMatch = snippet.substring(0, snippet.indexOf('<ɵ>'));
-      const match = snippet.substring(snippet.indexOf('<ɵ>') + 3, snippet.indexOf('</ɵ>'));
-      parts.push({highlight: false, text: beforeMatch});
-      parts.push({highlight: true, text: match});
-      snippet = snippet.substring(snippet.indexOf('</ɵ>') + 4);
-    }
-    parts.push({highlight: false, text: snippet});
-    return parts;
-  }
-
-  getBestSnippetForMatch(result: SearchResult): string {
-    // if there is content, return it
-    if (result._snippetResult.content !== undefined) {
-      return result._snippetResult.content.value;
-    }
-
-    const hierarchy = result._snippetResult.hierarchy;
-    if (hierarchy === undefined) {
-      return '';
-    }
-    function matched(snippet: SnippetResult | undefined) {
-      return snippet?.matchLevel !== undefined && snippet.matchLevel !== 'none';
-    }
-    // return the most specific subheader match
-    if (matched(hierarchy.lvl4)) {
-      return hierarchy.lvl4!.value;
-    }
-    if (matched(hierarchy.lvl3)) {
-      return hierarchy.lvl3!.value;
-    }
-    if (matched(hierarchy.lvl2)) {
-      return hierarchy.lvl2!.value;
-    }
-    // if no subheader matched the query, fall back to just returning the most specific one
-    return hierarchy.lvl3?.value ?? hierarchy.lvl2?.value ?? '';
-  }
-
   ngOnDestroy(): void {
     this.keyManager.destroy();
   }
@@ -153,10 +124,6 @@ export class SearchDialog implements OnDestroy {
   closeSearchDialog() {
     this.dialog().nativeElement.close();
     this.onClose.emit();
-  }
-
-  updateSearchQuery(query: string) {
-    this.search.updateSearchQuery(query);
   }
 
   private navigateToTheActiveItem(): void {

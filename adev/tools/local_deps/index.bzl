@@ -1,5 +1,5 @@
-load("//:packages.bzl", "ALL_PACKAGES", "to_package_label")
 load("@build_bazel_rules_nodejs//internal/linker:npm_link.bzl", "npm_link")
+load("//:packages.bzl", "ALL_PACKAGES", "to_package_label")
 load("//adev/tools/local_deps:filter_external_npm_deps.bzl", "filter_external_npm_deps")
 
 def ensure_local_package_deps(deps):
@@ -44,24 +44,18 @@ def link_local_packages(all_deps):
     # dependencies on external npm packages. This help the rules_nodejs linker,
     # which fails to link local packages into transitive dependencies of npm deps.
     for dep in all_deps:
+        target = dep
         if dep in local_angular_deps:
             pkg_name = _angular_dep_to_pkg_name(dep)
+            target = ":%s" % _npm_link_name(pkg_name)
 
-            # We don't need to filter transitives on local packages as they
-            # depend on each other locally.
-            native.alias(
-                name = _filtered_transitives_name(dep),
-                actual = ":%s" % _npm_link_name(pkg_name),
-                tags = ["manual"],
-            )
-        else:
-            filter_external_npm_deps(
-                name = _filtered_transitives_name(dep),
-                target = dep,
-                testonly = True if dep in testonly_deps else False,
-                angular_packages = local_angular_package_names,
-                tags = ["manual"],
-            )
+        filter_external_npm_deps(
+            name = _filtered_transitives_name(dep),
+            target = target,
+            testonly = True if dep in testonly_deps else False,
+            angular_packages = local_angular_package_names,
+            tags = ["manual"],
+        )
 
 def _is_angular_dep(dep):
     """Check if a dep , e.g., @npm//@angular/core corresonds to a local Angular pacakge."""

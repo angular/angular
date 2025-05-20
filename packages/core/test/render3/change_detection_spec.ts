@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed} from '@angular/core/testing';
+import {TestBed} from '../../testing';
 import {withBody} from '@angular/private/testing';
 
 import {Component, RendererFactory2} from '../../src/core';
@@ -18,7 +18,6 @@ describe('change detection', () => {
       const log: string[] = [];
       @Component({
         selector: 'my-comp',
-        standalone: true,
         template: '{{ value }}',
       })
       class MyComponent {
@@ -33,7 +32,8 @@ describe('change detection', () => {
       rendererFactory.end = () => log.push('end');
 
       const fixture = TestBed.createComponent(MyComponent);
-      fixture.detectChanges();
+      log.length = 0;
+      fixture.changeDetectorRef.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toEqual('works');
 
@@ -41,7 +41,6 @@ describe('change detection', () => {
         'begin',
         'detect changes', // regular change detection cycle
         'end',
-        'detect changes', // check no changes cycle
       ]);
     }),
   );

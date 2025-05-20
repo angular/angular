@@ -28,10 +28,14 @@ export function calculateDeclarationReplacement(
   aliasParam?: string,
 ): Replacement {
   const sf = node.getSourceFile();
-  const payloadTypes =
-    node.initializer !== undefined && ts.isNewExpression(node.initializer)
-      ? node.initializer?.typeArguments
-      : undefined;
+
+  let payloadTypes: ts.NodeArray<ts.TypeNode> | undefined;
+
+  if (node.initializer && ts.isNewExpression(node.initializer) && node.initializer.typeArguments) {
+    payloadTypes = node.initializer.typeArguments;
+  } else if (node.type && ts.isTypeReferenceNode(node.type) && node.type.typeArguments) {
+    payloadTypes = ts.factory.createNodeArray(node.type.typeArguments);
+  }
 
   const outputCall = ts.factory.createCallExpression(
     ts.factory.createIdentifier('output'),

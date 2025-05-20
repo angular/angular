@@ -1,8 +1,9 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "upgrade",
     srcs = glob(
         [
@@ -10,11 +11,13 @@ ng_module(
             "src/dynamic/src/*.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages/core",
         "//packages/platform-browser-dynamic",
-        "//packages/upgrade/src/common",
         "//packages/zone.js/lib:zone_d_ts",
+    ],
+    deps = [
+        "//packages/upgrade/src/common:common_rjs",
     ],
 )
 

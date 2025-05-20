@@ -6,7 +6,28 @@
   type="text"
   [attr.placeholder]="placeholder()"
   [attr.name]="name()"
-  [ngModel]="value()"
-  (ngModelChange)="setValue($event)"
+  [value]="value()"
+  (input)="setValue(inputRef.value)"
   class="docs-text-field"
 />
+
+@if (resetLabel() && inputRef.value.length > 0) {
+  <button
+    type="reset"
+    [title]="resetLabel()"
+    class="docs-text-reset"
+    [attr.aria-label]="resetLabel()"
+    (click)="clearTextField()"
+  >
+    <svg width="20" height="20" viewBox="0 0 20 20">
+      <path
+        d="M10 10l5.09-5.09L10 10l5.09 5.09L10 10zm0 0L4.91 4.91 10 10l-5.09 5.09L10 10z"
+        stroke="currentColor"
+        fill="none"
+        fill-rule="evenodd"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></path>
+    </svg>
+  </button>
+}

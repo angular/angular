@@ -97,10 +97,8 @@ describe('output migration', () => {
     ]);
 
     expect(await getStatistics()).toEqual({
-      counters: {
-        allOutputs: 2,
-        migratedOutputs: 1,
-      },
+      allOutputs: 2,
+      migratedOutputs: 1,
     });
   });
 });

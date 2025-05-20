@@ -81,7 +81,7 @@
 5. The file is added to the TypeScript virtual file system, allowing the TypeScript web worker to provide diagnostics, autocomplete and type features for the new file. Also, exports from the new file are available in other files.
 6. The new file is added as the last tab in the code editor and the new file can be edited.
 
-Note: If the new file name matches a file that already exists but is hidden in the code editor, the content for that file will show up in the created file. An example for a file that always exists is `index.html`.
+NOTE: If the new file name matches a file that already exists but is hidden in the code editor, the content for that file will show up in the created file. An example for a file that always exists is `index.html`.
 
 ### Deleting a file
 
@@ -90,7 +90,7 @@ Note: If the new file name matches a file that already exists but is hidden in t
 3. The file is removed from the TypeScript virtual file system.
 4. The file is removed from the code editor tabs.
 
-Note: Some files can't be deleted to prevent users to break the app, being `src/main.ts`and `src/index.html`
+NOTE: Some files can't be deleted to prevent users to break the app, being `src/main.ts`and `src/index.html`
 
 ### Switching a project
 

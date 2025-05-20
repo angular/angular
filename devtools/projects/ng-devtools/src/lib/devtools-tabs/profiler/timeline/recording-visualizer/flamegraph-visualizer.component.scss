@@ -15,32 +15,18 @@
 
   ::ng-deep {
     .ngx-fg-label {
-      color: #000000de;
       font-weight: 500;
       font-size: 1em;
-    }
-  }
-
-  :host-context(.dark-theme) {
-    .entry-statistics {
-      span {
-        color: #54c9bd;
-      }
+      color: var(--senary-contrast);
     }
 
-    ::ng-deep {
-      .ngx-fg-rect {
-        stroke: #303030;
-        transition: none;
-      }
+    .ngx-fg-rect {
+      stroke: var(--secondary-contrast);
+      transition: none;
+    }
 
-      .ngx-fg-label {
-        color: #bcc5ce;
-      }
-
-      .ngx-fg-svg-g {
-        transition: none;
-      }
+    .ngx-fg-svg-g {
+      transition: none;
     }
   }
 }

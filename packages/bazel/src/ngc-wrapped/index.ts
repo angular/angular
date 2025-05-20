@@ -94,6 +94,8 @@ export async function runOneBuild(
     '_enableLetSyntax',
     '_enableHmr',
     'strictStandalone',
+    'typeCheckHostBindings',
+    '_enableSelectorless',
   ]);
 
   const userOverrides = Object.entries(userOptions)

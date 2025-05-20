@@ -25,20 +25,27 @@ import type {
 import {RuntimeErrorCode} from './errors';
 import type {AbstractControl} from './model/abstract_model';
 
-function isEmptyInputValue(value: any): boolean {
-  /**
-   * Check if the object is a string or array before evaluating the length attribute.
-   * This avoids falsely rejecting objects that contain a custom length attribute.
-   * For example, the object {id: 1, length: 0, width: 0} should not be returned as empty.
-   */
-  return (
-    value == null || ((typeof value === 'string' || Array.isArray(value)) && value.length === 0)
-  );
+function isEmptyInputValue(value: unknown): boolean {
+  return value == null || lengthOrSize(value) === 0;
 }
 
-function hasValidLength(value: any): boolean {
+/**
+ * Extract the length property in case it's an array or a string.
+ * Extract the size property in case it's a set.
+ * Return null else.
+ * @param value Either an array, set or undefined.
+ */
+function lengthOrSize(value: unknown): number | null {
   // non-strict comparison is intentional, to check for both `null` and `undefined` values
-  return value != null && typeof value.length === 'number';
+  if (value == null) {
+    return null;
+  } else if (Array.isArray(value) || typeof value === 'string') {
+    return value.length;
+  } else if (value instanceof Set) {
+    return value.size;
+  }
+
+  return null;
 }
 
 /**
@@ -168,7 +175,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `min` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static min(min: number): ValidatorFn {
@@ -192,7 +199,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `max` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static max(max: number): ValidatorFn {
@@ -216,7 +223,7 @@ export class Validators {
    * @returns An error map with the `required` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static required(control: AbstractControl): ValidationErrors | null {
@@ -241,7 +248,7 @@ export class Validators {
    * @returns An error map that contains the `required` property
    * set to `true` if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static requiredTrue(control: AbstractControl): ValidationErrors | null {
@@ -281,7 +288,7 @@ export class Validators {
    * @returns An error map with the `email` property
    * if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static email(control: AbstractControl): ValidationErrors | null {
@@ -290,13 +297,14 @@ export class Validators {
 
   /**
    * @description
-   * Validator that requires the length of the control's value to be greater than or equal
-   * to the provided minimum length. This validator is also provided by default if you use the
+   * Validator that requires the number of items in the control's value to be greater than or equal
+   * to the provided minimum length. This validator is also provided by default if you use
    * the HTML5 `minlength` attribute. Note that the `minLength` validator is intended to be used
-   * only for types that have a numeric `length` property, such as strings or arrays. The
-   * `minLength` validator logic is also not invoked for values when their `length` property is 0
-   * (for example in case of an empty string or an empty array), to support optional controls. You
-   * can use the standard `required` validator if empty values should not be considered valid.
+   * only for types that have a numeric `length` or `size` property, such as strings, arrays or
+   * sets. The `minLength` validator logic is also not invoked for values when their `length` or
+   * `size` property is 0 (for example in case of an empty string or an empty array), to support
+   * optional controls. You can use the standard `required` validator if empty values should not be
+   * considered valid.
    *
    * @usageNotes
    *
@@ -315,7 +323,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `minlength` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static minLength(minLength: number): ValidatorFn {
@@ -324,10 +332,11 @@ export class Validators {
 
   /**
    * @description
-   * Validator that requires the length of the control's value to be less than or equal
-   * to the provided maximum length. This validator is also provided by default if you use the
+   * Validator that requires the number of items in the control's value to be less than or equal
+   * to the provided maximum length. This validator is also provided by default if you use
    * the HTML5 `maxlength` attribute. Note that the `maxLength` validator is intended to be used
-   * only for types that have a numeric `length` property, such as strings or arrays.
+   * only for types that have a numeric `length` or `size` property, such as strings, arrays or
+   * sets.
    *
    * @usageNotes
    *
@@ -346,7 +355,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `maxlength` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static maxLength(maxLength: number): ValidatorFn {
@@ -399,7 +408,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * `pattern` property if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static pattern(pattern: string | RegExp): ValidatorFn {
@@ -410,7 +419,7 @@ export class Validators {
    * @description
    * Validator that performs no operation.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static nullValidator(control: AbstractControl): ValidationErrors | null {
@@ -425,7 +434,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error maps of the validators if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static compose(validators: null): null;
@@ -442,7 +451,7 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
    *
-   * @see {@link updateValueAndValidity()}
+   * @see {@link /api/forms/AbstractControl#updateValueAndValidity updateValueAndValidity}
    *
    */
   static composeAsync(validators: (AsyncValidatorFn | null)[]): AsyncValidatorFn | null {
@@ -456,7 +465,7 @@ export class Validators {
  */
 export function minValidator(min: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
+    if (control.value == null || min == null) {
       return null; // don't validate empty values to allow optional controls
     }
     const value = parseFloat(control.value);
@@ -472,7 +481,7 @@ export function minValidator(min: number): ValidatorFn {
  */
 export function maxValidator(max: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
+    if (control.value == null || max == null) {
       return null; // don't validate empty values to allow optional controls
     }
     const value = parseFloat(control.value);
@@ -511,32 +520,41 @@ export function emailValidator(control: AbstractControl): ValidationErrors | nul
 }
 
 /**
- * Validator that requires the length of the control's value to be greater than or equal
+ * Validator that requires the number of items in the control's value to be greater than or equal
  * to the provided minimum length. See `Validators.minLength` for additional information.
+ *
+ * The minLengthValidator respects every length property in an object, regardless of whether it's an array.
+ * For example, the object {id: 1, length: 0, width: 0} should be validated.
  */
 export function minLengthValidator(minLength: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
+    const length = control.value?.length ?? lengthOrSize(control.value);
+    if (length === null || length === 0) {
       // don't validate empty values to allow optional controls
-      // don't validate values without `length` property
+      // don't validate values without `length` or `size` property
       return null;
     }
 
-    return control.value.length < minLength
-      ? {'minlength': {'requiredLength': minLength, 'actualLength': control.value.length}}
+    return length < minLength
+      ? {'minlength': {'requiredLength': minLength, 'actualLength': length}}
       : null;
   };
 }
 
 /**
- * Validator that requires the length of the control's value to be less than or equal
+ * Validator that requires the number of items in the control's value to be less than or equal
  * to the provided maximum length. See `Validators.maxLength` for additional information.
+ *
+ * The maxLengthValidator respects every length property in an object, regardless of whether it's an array.
+ * For example, the object {id: 1, length: 0, width: 0} should be validated.
  */
 export function maxLengthValidator(maxLength: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    return hasValidLength(control.value) && control.value.length > maxLength
-      ? {'maxlength': {'requiredLength': maxLength, 'actualLength': control.value.length}}
-      : null;
+    const length = control.value?.length ?? lengthOrSize(control.value);
+    if (length !== null && length > maxLength) {
+      return {'maxlength': {'requiredLength': maxLength, 'actualLength': length}};
+    }
+    return null;
   };
 }
 

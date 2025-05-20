@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken, ɵɵInjectorDef, ɵɵngDeclareInjector} from '@angular/core';
+import {InjectionToken, ɵɵInjectorDef, ɵɵngDeclareInjector} from '../../../src/core';
 
 describe('Injector declaration jit compilation', () => {
   it('should compile a minimal Injector declaration', () => {

@@ -13,13 +13,17 @@ import {isCaptureEventType} from './event_type';
 import {UnrenamedEventContract} from './eventcontract';
 import {Restriction} from './restriction';
 
+// Necessary to make the `ngDevMode` global types available.
+import '../../../src/util/ng_dev_mode';
+
 /**
  * A replayer is a function that is called when there are queued events, from the `EventContract`.
  */
 export type Replayer = (eventInfoWrappers: Event[]) => void;
 
 /** An internal symbol used to indicate whether propagation should be stopped or not. */
-export const PROPAGATION_STOPPED_SYMBOL = Symbol.for('propagationStopped');
+export const PROPAGATION_STOPPED_SYMBOL: unique symbol =
+  /* @__PURE__ */ Symbol.for('propagationStopped');
 
 /** Extra event phases beyond what the browser provides. */
 export const EventPhase = {

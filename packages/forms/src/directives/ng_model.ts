@@ -173,7 +173,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   // match the native "disabled attribute" semantics which can be observed on input elements.
   // This static member tells the compiler that values of type "string" can also be assigned
   // to the input in a template.
-  /** @nodoc */
+  /** @docs-private */
   static ngAcceptInputType_isDisabled: boolean | string;
 
   /** @internal */
@@ -181,7 +181,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * Internal reference to the view model value.
-   * @nodoc
+   * @docs-private
    */
   viewModel: any;
 
@@ -196,7 +196,6 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * @description
    * Tracks whether the control is disabled.
    */
-  // TODO(issue/24571): remove '!'.
   @Input('disabled') isDisabled!: boolean;
 
   /**
@@ -221,7 +220,6 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Defaults to 'change'. Possible values: `'change'` | `'blur'` | `'submit'`.
    *
    */
-  // TODO(issue/24571): remove '!'.
   @Input('ngModelOptions') options!: {name?: string; standalone?: boolean; updateOn?: FormHooks};
 
   /**
@@ -251,7 +249,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
     this._checkForErrors();
     if (!this._registered || 'name' in changes) {
@@ -278,7 +276,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     this.formDirective && this.formDirective.removeControl(this);
   }
@@ -333,23 +331,10 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _checkForErrors(): void {
-    if (!this._isStandalone()) {
-      this._checkParentType();
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this._isStandalone()) {
+      checkParentType(this._parent);
     }
     this._checkName();
-  }
-
-  private _checkParentType(): void {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      if (
-        !(this._parent instanceof NgModelGroup) &&
-        this._parent instanceof AbstractFormGroupDirective
-      ) {
-        throw formGroupNameException();
-      } else if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
-        throw modelParentException();
-      }
-    }
   }
 
   private _checkName(): void {
@@ -385,5 +370,13 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   private _getPath(controlName: string): string[] {
     return this._parent ? controlPath(controlName, this._parent) : [controlName];
+  }
+}
+
+function checkParentType(parent: ControlContainer | null) {
+  if (!(parent instanceof NgModelGroup) && parent instanceof AbstractFormGroupDirective) {
+    throw formGroupNameException();
+  } else if (!(parent instanceof NgModelGroup) && !(parent instanceof NgForm)) {
+    throw modelParentException();
   }
 }

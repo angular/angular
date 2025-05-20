@@ -5,12 +5,11 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^18.19.1 || ^20.11.1 || >=22.0.0"
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
   },
   "bin": {
     "ngc-wrapped": "./src/ngc-wrapped/index.mjs",
     "packager": "./src/ng_package/packager.mjs",
-    "types_bundler": "./src/types_bundle/index.mjs",
     "xi18n": "./src/ngc-wrapped/extract_i18n.mjs"
   },
   "typings": "./src/ngc-wrapped/index.d.ts",
@@ -24,6 +23,7 @@
   "dependencies": {
     "@microsoft/api-extractor": "^7.24.2",
     "magic-string": "^0.30.0",
+    "tinyglobby": "^0.2.12",
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
@@ -31,11 +31,12 @@
     "@bazel/concatjs": "^5.3.0",
     "@bazel/worker": "^5.3.0",
     "@rollup/plugin-commonjs": "^28.0.0",
-    "@rollup/plugin-node-resolve": "^13.0.4",
-    "rollup": "^2.56.3",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-sourcemaps": "^0.6.3",
+    "rollup": "4.41.0",
     "terser": "^5.9.0",
-    "typescript": ">=5.5 <5.8"
+    "typescript": ">=5.8 <5.9"
   },
   "peerDependenciesMeta": {
     "terser": {

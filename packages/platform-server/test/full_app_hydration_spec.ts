@@ -11,17 +11,20 @@ import '@angular/localize/init';
 import {
   CommonModule,
   DOCUMENT,
+  isPlatformBrowser,
   isPlatformServer,
   NgComponentOutlet,
   NgFor,
   NgIf,
+  NgSwitch,
+  NgSwitchCase,
   NgTemplateOutlet,
   PlatformLocation,
 } from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
 import {computeMsgId} from '@angular/compiler';
 import {
-  afterRender,
+  afterEveryRender,
   ApplicationRef,
   ChangeDetectorRef,
   Component,
@@ -35,10 +38,11 @@ import {
   inject,
   Input,
   NgZone,
+  PendingTasks,
   Pipe,
   PipeTransform,
   PLATFORM_ID,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   Provider,
   QueryList,
   TemplateRef,
@@ -60,10 +64,12 @@ import {
   stripUtilAttributes,
 } from './dom_utils';
 import {
+  clearConsole,
   EMPTY_TEXT_NODE_COMMENT,
   getComponentRef,
   getHydrationInfoFromTransferState,
   NGH_ATTR_NAME,
+  resetNgDevModeCounters,
   ssr,
   stripExcessiveSpaces,
   stripSsrIntegrityMarker,
@@ -73,6 +79,7 @@ import {
   verifyAllChildNodesClaimedForHydration,
   verifyAllNodesClaimedForHydration,
   verifyClientAndSSRContentsMatch,
+  verifyEmptyConsole,
   verifyHasLog,
   verifyHasNoLog,
   verifyNodeHasMismatchInfo,
@@ -80,24 +87,13 @@ import {
   verifyNoNodesWereClaimedForHydration,
   withDebugConsole,
   withNoopErrorHandler,
-  verifyEmptyConsole,
-  clearConsole,
 } from './hydration_utils';
 
 import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
 
 describe('platform-server full application hydration integration', () => {
   beforeEach(() => {
-    if (typeof ngDevMode === 'object') {
-      // Reset all ngDevMode counters.
-      for (const metric of Object.keys(ngDevMode!)) {
-        const currentValue = (ngDevMode as unknown as {[key: string]: number | boolean})[metric];
-        if (typeof currentValue === 'number') {
-          // Rest only numeric values, which represent counters.
-          (ngDevMode as unknown as {[key: string]: number | boolean})[metric] = 0;
-        }
-      }
-    }
+    resetNgDevModeCounters();
   });
 
   afterEach(() => {
@@ -2079,7 +2075,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content');
           expect(content.innerHTML).toBe(
-            'Start  Inner Start  Hello <span>World</span>! <!--ICU 26:0--> Inner End  Middle <span>Span</span> End',
+            'Start  Inner Start  Hello <span>World</span>! <!--ICU 27:0--> Inner End  Middle <span>Span</span> End',
           );
         });
 
@@ -2133,7 +2129,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content-outer');
           expect(content.innerHTML).toBe(
-            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>! <!--ICU 26:0--> Outer End  Middle  End</app-content-inner>',
+            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>! <!--ICU 27:0--> Outer End  Middle  End</app-content-inner>',
           );
         });
 
@@ -2374,7 +2370,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const div = clientRootNode.querySelector('div');
-          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 26:0--> content/);
+          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 27:0--> content/);
         });
 
         it('should support translations that remove elements', async () => {
@@ -2602,9 +2598,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const clientContents = stripExcessiveSpaces(clientRootNode.innerHTML);
-          expect(clientContents).toBe(
-            '<ol><li>1</li><li>2</li><li>3</li><!--bindings={ "ng-reflect-ng-for-of": "1,2,3" }--></ol>',
-          );
+          expect(clientContents).toBe('<ol><li>1</li><li>2</li><li>3</li><!--container--></ol>');
         });
 
         it('should hydrate when using @for control flow', async () => {
@@ -3050,6 +3044,41 @@ describe('platform-server full application hydration integration', () => {
         // Verify that defer block renders correctly after hydration and triggering
         // loading condition.
         expect(clientRootNode.outerHTML).toContain('<my-lazy-cmp>Hi!</my-lazy-cmp>');
+      });
+
+      it('should not trigger `setTimeout` calls for `on timer` triggers on the server', async () => {
+        const setTimeoutSpy = spyOn(globalThis, 'setTimeout').and.callThrough();
+
+        @Component({
+          selector: 'my-lazy-cmp',
+          standalone: true,
+          template: 'Hi!',
+        })
+        class MyLazyCmp {}
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          imports: [MyLazyCmp],
+          template: `
+            @defer (on timer(123ms)) {
+              <my-lazy-cmp />
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+
+        const ssrContents = getAppContents(html);
+        expect(ssrContents).toContain('<app ngh');
+
+        // Make sure that there were no `setTimeout` calls with the # of ms
+        // defined in the `on timer` trigger.
+        for (let i = 0; i < setTimeoutSpy.calls.count(); i++) {
+          const args = setTimeoutSpy.calls.argsFor(i);
+          expect(args[1]).not.toBe(123, 'on timer was triggered during SSR unexpectedly');
+        }
       });
 
       it('should hydrate a placeholder block', async () => {
@@ -4723,16 +4752,14 @@ describe('platform-server full application hydration integration', () => {
         // Post-cleanup should *not* contain dehydrated views.
         const postCleanupContents = stripExcessiveSpaces(clientRootNode.outerHTML);
         expect(postCleanupContents).not.toContain(
-          '<span> 5 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "false" }--></span>',
+          '<span> 5 <b>is bigger than 15!</b><!--container--></span>',
         );
         expect(postCleanupContents).toContain(
-          '<span> 30 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "true" }--></span>',
+          '<span> 30 <b>is bigger than 15!</b><!--container--></span>',
         );
+        expect(postCleanupContents).toContain('<span> 5 <!--container--></span>');
         expect(postCleanupContents).toContain(
-          '<span> 5 <!--bindings={ "ng-reflect-ng-if": "false" }--></span>',
-        );
-        expect(postCleanupContents).toContain(
-          '<span> 50 <b>is bigger than 15!</b><!--bindings={ "ng-reflect-ng-if": "true" }--></span>',
+          '<span> 50 <b>is bigger than 15!</b><!--container--></span>',
         );
       });
 
@@ -4820,7 +4847,7 @@ describe('platform-server full application hydration integration', () => {
           elementRef = inject(ElementRef);
 
           constructor() {
-            afterRender(() => {
+            afterEveryRender(() => {
               observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
             });
           }
@@ -4863,7 +4890,7 @@ describe('platform-server full application hydration integration', () => {
           elementRef = inject(ElementRef);
 
           constructor() {
-            afterRender(() => {
+            afterEveryRender(() => {
               observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
             });
 
@@ -6996,6 +7023,61 @@ describe('platform-server full application hydration integration', () => {
           expect(clientRootNode.textContent).toContain('Hi!');
         },
       );
+
+      it('should not throw an error when app is destroyed before becoming stable', async () => {
+        // Spy manually, because we may not be able to retrieve the `DebugConsole`
+        // after we destroy the application, but we still want to ensure that
+        // no error is thrown in the console.
+        const errorSpy = spyOn(console, 'error').and.callThrough();
+        const logs: string[] = [];
+
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `Hi!`,
+        })
+        class SimpleComponent {
+          constructor() {
+            const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+            if (isBrowser) {
+              const pendingTasks = inject(PendingTasks);
+              // Given that, in a real-world scenario, some APIs add a pending
+              // task and don't remove it until the app is destroyed.
+              // This could be an HTTP request that contributes to app stability
+              // and does not respond until the app is destroyed.
+              pendingTasks.add();
+            }
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+
+        appRef.isStable.subscribe((isStable) => {
+          logs.push(`isStable=${isStable}`);
+        });
+
+        // Destroy the application before it becomes stable, because we added
+        // a task and didn't remove it explicitly.
+        appRef.destroy();
+
+        expect(logs).toEqual([
+          'isStable=false',
+          // In the end, the application became stable while being destroyed.
+          'isStable=true',
+        ]);
+
+        // Wait for a microtask so that `whenStableWithTimeout` resolves.
+        await Promise.resolve();
+
+        // Ensure no error has been logged in the console,
+        // such as "injector has already been destroyed."
+        expect(errorSpy).not.toHaveBeenCalled();
+      });
     });
 
     describe('@if', () => {
@@ -7003,11 +7085,19 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           standalone: true,
           selector: 'app',
+          imports: [NgIf],
           template: `
-              @if (isServer) { <b>This is a SERVER-ONLY content</b> }
-              @if (!isServer) { <i>This is a CLIENT-ONLY content</i> }
-              @if (alwaysTrue) { <p>CLIENT and SERVER content</p> }
-            `,
+            <ng-container *ngIf="isServer; else elseBlock">
+              <b>This is NgIf SERVER-ONLY content</b>
+            </ng-container>
+            <ng-template #elseBlock>
+              <i>This is NgIf CLIENT-ONLY content</i>
+            </ng-template>
+
+            @if (isServer) { <b>This is new if SERVER-ONLY content</b> }
+            @else { <i id="client-only">This is new if CLIENT-ONLY content</i> }
+            @if (alwaysTrue) { <p>CLIENT and SERVER content</p> }
+          `,
         })
         class SimpleComponent {
           alwaysTrue = true;
@@ -7016,6 +7106,9 @@ describe('platform-server full application hydration integration', () => {
           // and the server: we use it to test the logic to cleanup
           // dehydrated views.
           isServer = isPlatformServer(inject(PLATFORM_ID));
+          ngOnInit() {
+            setTimeout(() => {}, 100);
+          }
         }
 
         const html = await ssr(SimpleComponent);
@@ -7023,38 +7116,48 @@ describe('platform-server full application hydration integration', () => {
 
         expect(ssrContents).toContain('<app ngh');
 
-        resetTViewsFor(SimpleComponent);
-
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
         ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
 
         // In the SSR output we expect to see SERVER content, but not CLIENT.
-        expect(ssrContents).not.toContain('<i>This is a CLIENT-ONLY content</i>');
-        expect(ssrContents).toContain('<b>This is a SERVER-ONLY content</b>');
+        expect(ssrContents).not.toContain(
+          '<i id="client-only">This is new if CLIENT-ONLY content</i>',
+        );
+        expect(ssrContents).toContain('<b>This is new if SERVER-ONLY content</b>');
+
+        expect(ssrContents).not.toContain('<i>This is NgIf CLIENT-ONLY content</i>');
+        expect(ssrContents).toContain('<b>This is NgIf SERVER-ONLY content</b>');
 
         // Content that should be rendered on both client and server should also be present.
         expect(ssrContents).toContain('<p>CLIENT and SERVER content</p>');
 
+        resetTViewsFor(SimpleComponent);
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
         const clientRootNode = compRef.location.nativeElement;
 
-        await appRef.whenStable();
+        expect(clientRootNode.outerHTML).not.toContain('<b>This is NgIf SERVER-ONLY content</b>');
+        expect(clientRootNode.outerHTML).not.toContain('<b>This is new if SERVER-ONLY content</b>');
+
+        await appRef.whenStable(); // post-hydration cleanup happens here
 
         const clientContents = stripExcessiveSpaces(
           stripUtilAttributes(clientRootNode.outerHTML, false),
         );
 
         // After the cleanup, we expect to see CLIENT content, but not SERVER.
-        expect(clientContents).toContain('<i>This is a CLIENT-ONLY content</i>');
-        expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
+        expect(clientContents).toContain(
+          '<i id="client-only">This is new if CLIENT-ONLY content</i>',
+        );
+        expect(clientContents).not.toContain('<b>This is new if SERVER-ONLY content</b>');
 
         // Content that should be rendered on both client and server should still be present.
         expect(clientContents).toContain('<p>CLIENT and SERVER content</p>');
 
-        const clientOnlyNode = clientRootNode.querySelector('i');
-        verifyAllNodesClaimedForHydration(clientRootNode, [clientOnlyNode]);
+        const clientOnlyNode1 = clientRootNode.querySelector('i');
+        const clientOnlyNode2 = clientRootNode.querySelector('#client-only');
+        verifyAllNodesClaimedForHydration(clientRootNode, [clientOnlyNode1, clientOnlyNode2]);
       });
 
       it('should support nested `if`s', async () => {
@@ -7147,10 +7250,16 @@ describe('platform-server full application hydration integration', () => {
         @Component({
           standalone: true,
           selector: 'app',
+          imports: [NgSwitch, NgSwitchCase],
           template: `
+              <ng-container [ngSwitch]="isServer">
+                <b *ngSwitchCase="true">This is NgSwitch SERVER-ONLY content</b>
+                <i *ngSwitchCase="false" id="old">This is NgSwitch CLIENT-ONLY content</i>
+              </ng-container>
+
               @switch (isServer) {
                 @case (true) { <b>This is a SERVER-ONLY content</b> }
-                @case (false) { <i>This is a CLIENT-ONLY content</i> }
+                @case (false) { <i id="new">This is a CLIENT-ONLY content</i> }
               }
             `,
         })
@@ -7159,6 +7268,9 @@ describe('platform-server full application hydration integration', () => {
           // and the server: we use it to test the logic to cleanup
           // dehydrated views.
           isServer = isPlatformServer(inject(PLATFORM_ID));
+          ngOnInit() {
+            setTimeout(() => {}, 100);
+          }
         }
 
         const html = await ssr(SimpleComponent);
@@ -7166,19 +7278,29 @@ describe('platform-server full application hydration integration', () => {
 
         expect(ssrContents).toContain('<app ngh');
 
-        resetTViewsFor(SimpleComponent);
+        ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
 
+        // In the SSR output we expect to see SERVER content, but not CLIENT.
+        expect(ssrContents).not.toContain('<i id="new">This is a CLIENT-ONLY content</i>');
+        expect(ssrContents).not.toContain('<i id="old">This is NgSwitch CLIENT-ONLY content</i>');
+        expect(ssrContents).toContain('<b>This is a SERVER-ONLY content</b>');
+        expect(ssrContents).toContain('<b>This is NgSwitch SERVER-ONLY content</b>');
+
+        resetTViewsFor(SimpleComponent);
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 
-        ssrContents = stripExcessiveSpaces(stripUtilAttributes(ssrContents, false));
-
-        // In the SSR output we expect to see SERVER content, but not CLIENT.
-        expect(ssrContents).not.toContain('<i>This is a CLIENT-ONLY content</i>');
-        expect(ssrContents).toContain('<b>This is a SERVER-ONLY content</b>');
-
         const clientRootNode = compRef.location.nativeElement;
+
+        // NgSwitch had slower cleanup than NgIf
+        expect(clientRootNode.outerHTML).toContain('<b>This is NgSwitch SERVER-ONLY content</b>');
+
+        expect(clientRootNode.outerHTML).not.toContain('<b>This is a SERVER-ONLY content</b>');
+        expect(clientRootNode.outerHTML).toContain('<i id="new">This is a CLIENT-ONLY content</i>');
+        expect(clientRootNode.outerHTML).toContain(
+          '<i id="old">This is NgSwitch CLIENT-ONLY content</i>',
+        );
 
         await appRef.whenStable();
 
@@ -7187,11 +7309,14 @@ describe('platform-server full application hydration integration', () => {
         );
 
         // After the cleanup, we expect to see CLIENT content, but not SERVER.
-        expect(clientContents).toContain('<i>This is a CLIENT-ONLY content</i>');
+        expect(clientContents).toContain('<i id="new">This is a CLIENT-ONLY content</i>');
+        expect(clientContents).toContain('<i id="old">This is NgSwitch CLIENT-ONLY content</i>');
+        expect(clientContents).not.toContain('<b>This is NgSwitch SERVER-ONLY content</b>');
         expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
 
-        const clientOnlyNode = clientRootNode.querySelector('i');
-        verifyAllNodesClaimedForHydration(clientRootNode, [clientOnlyNode]);
+        const clientOnlyNode1 = clientRootNode.querySelector('#old');
+        const clientOnlyNode2 = clientRootNode.querySelector('#new');
+        verifyAllNodesClaimedForHydration(clientRootNode, [clientOnlyNode1, clientOnlyNode2]);
       });
 
       it('should cleanup rendered case if none of the cases match on the client', async () => {
@@ -7331,6 +7456,9 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {
             items = isPlatformServer(inject(PLATFORM_ID)) ? [] : [1, 2, 3];
+            ngOnInit() {
+              setTimeout(() => {}, 100);
+            }
           }
 
           const html = await ssr(SimpleComponent);
@@ -7349,10 +7477,14 @@ describe('platform-server full application hydration integration', () => {
           const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
+          const clientRootNode = compRef.location.nativeElement;
+
+          expect(clientRootNode.innerHTML).toContain('Item #1');
+          expect(clientRootNode.innerHTML).toContain('Item #2');
+          expect(clientRootNode.innerHTML).toContain('Item #3');
+          expect(clientRootNode.innerHTML).not.toContain('This is an "empty" block');
 
           await appRef.whenStable();
-
-          const clientRootNode = compRef.location.nativeElement;
 
           // After hydration and post-hydration cleanup,
           // expect items to be present, but `@empty` block to be removed.
@@ -7383,6 +7515,9 @@ describe('platform-server full application hydration integration', () => {
           })
           class SimpleComponent {
             items = isPlatformServer(inject(PLATFORM_ID)) ? [1, 2, 3] : [];
+            ngOnInit() {
+              setTimeout(() => {}, 100);
+            }
           }
 
           const html = await ssr(SimpleComponent);
@@ -7390,21 +7525,26 @@ describe('platform-server full application hydration integration', () => {
 
           expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
 
-          resetTViewsFor(SimpleComponent);
-
           // Expect items to be rendered on the server.
           expect(ssrContents).toContain('Item #1');
           expect(ssrContents).toContain('Item #2');
           expect(ssrContents).toContain('Item #3');
           expect(ssrContents).not.toContain('This is an "empty" block');
 
+          resetTViewsFor(SimpleComponent);
+
           const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
           const compRef = getComponentRef<SimpleComponent>(appRef);
           appRef.tick();
 
-          await appRef.whenStable();
-
           const clientRootNode = compRef.location.nativeElement;
+
+          expect(clientRootNode.innerHTML).not.toContain('Item #1');
+          expect(clientRootNode.innerHTML).not.toContain('Item #2');
+          expect(clientRootNode.innerHTML).not.toContain('Item #3');
+          expect(clientRootNode.innerHTML).toContain('This is an "empty" block');
+
+          await appRef.whenStable();
 
           // After hydration and post-hydration cleanup,
           // expect an `@empty` block to be present and items to be removed.
@@ -7892,7 +8032,7 @@ describe('platform-server full application hydration integration', () => {
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
           envProviders: [
             withDebugConsole(),
-            provideExperimentalZonelessChangeDetection() as unknown as Provider[],
+            provideZonelessChangeDetection() as unknown as Provider[],
           ],
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
@@ -8010,7 +8150,7 @@ describe('platform-server full application hydration integration', () => {
         class SimpleComponent {}
 
         const envProviders = [
-          provideExperimentalZonelessChangeDetection(),
+          provideZonelessChangeDetection(),
           {provide: PlatformLocation, useClass: MockPlatformLocation},
           provideRouter(routes),
         ] as unknown as Provider[];

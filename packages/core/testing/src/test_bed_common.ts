@@ -10,7 +10,7 @@ import {
   InjectionToken,
   SchemaMetadata,
   ɵDeferBlockBehavior as DeferBlockBehavior,
-} from '@angular/core';
+} from '../../src/core';
 
 /** Whether test modules should be torn down by default. */
 export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = true;

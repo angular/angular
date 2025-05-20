@@ -16,15 +16,22 @@ import {
   TmplAstBoundEvent,
   TmplAstLetDeclaration,
   TmplAstNode,
+  TmplAstElement,
   TmplAstReference,
   TmplAstTextAttribute,
   TmplAstVariable,
+  TmplAstComponent,
+  TmplAstDirective,
+  TmplAstRecursiveVisitor,
+  tmplAstVisitAll,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {DirectiveMeta, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {
   DirectiveSymbol,
+  SelectorlessComponentSymbol,
+  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   TcbLocation,
@@ -43,7 +50,7 @@ import {
   getDirectiveMatchesForElementTag,
   getTemplateLocationFromTcbLocation,
   isWithin,
-  TemplateInfo,
+  TypeCheckInfo,
   toTextSpan,
 } from './utils';
 
@@ -83,12 +90,12 @@ export interface TemplateLocationDetails {
  * the targeted template node.
  */
 export function getTargetDetailsAtTemplatePosition(
-  {template, component}: TemplateInfo,
+  info: TypeCheckInfo,
   position: number,
   templateTypeChecker: TemplateTypeChecker,
 ): TemplateLocationDetails[] | null {
   // Find the AST node in the template at the position.
-  const positionDetails = getTargetAtPosition(template, position);
+  const positionDetails = getTargetAtPosition(info.nodes, position);
   if (positionDetails === null) {
     return null;
   }
@@ -102,7 +109,7 @@ export function getTargetDetailsAtTemplatePosition(
 
   for (const node of nodes) {
     // Get the information about the TCB at the template position.
-    const symbol = templateTypeChecker.getSymbolOfNode(node, component);
+    const symbol = templateTypeChecker.getSymbolOfNode(node, info.declaration);
     if (symbol === null) {
       continue;
     }
@@ -215,6 +222,17 @@ export function getTargetDetailsAtTemplatePosition(
         });
         break;
       }
+      case SymbolKind.SelectorlessDirective:
+      case SymbolKind.SelectorlessComponent:
+        const dirPosition = getPositionForDirective(symbol);
+        if (dirPosition !== null) {
+          details.push({
+            typescriptLocations: [dirPosition],
+            templateTarget,
+            symbol,
+          });
+        }
+        break;
     }
   }
 
@@ -227,17 +245,31 @@ export function getTargetDetailsAtTemplatePosition(
 function getPositionsForDirectives(directives: Set<DirectiveSymbol>): FilePosition[] {
   const allDirectives: FilePosition[] = [];
   for (const dir of directives.values()) {
-    const dirClass = dir.tsSymbol.valueDeclaration;
-    if (dirClass === undefined || !ts.isClassDeclaration(dirClass) || dirClass.name === undefined) {
-      continue;
+    const position = getPositionForDirective(dir);
+    if (position !== null) {
+      allDirectives.push(position);
     }
+  }
+  return allDirectives;
+}
 
-    const {fileName} = dirClass.getSourceFile();
-    const position = dirClass.name.getStart();
-    allDirectives.push({fileName, position});
+/** Gets the `FilePosition` for a single directive symbol. */
+function getPositionForDirective(
+  directive: DirectiveSymbol | SelectorlessComponentSymbol | SelectorlessDirectiveSymbol,
+): FilePosition | null {
+  const declaration = directive.tsSymbol?.valueDeclaration;
+
+  if (
+    declaration !== undefined &&
+    ts.isClassDeclaration(declaration) &&
+    declaration.name !== undefined
+  ) {
+    const {fileName} = declaration.getSourceFile();
+    const position = declaration.name.getStart();
+    return {fileName, position};
   }
 
-  return allDirectives;
+  return null;
 }
 
 /**
@@ -341,9 +373,7 @@ export function getRenameTextAndSpanAtPosition(
     } else if (node.valueSpan && isWithin(position, node.valueSpan)) {
       return {text: node.valueSpan.toString(), span: toTextSpan(node.valueSpan)};
     }
-  }
-
-  if (
+  } else if (
     node instanceof PropertyRead ||
     node instanceof PropertyWrite ||
     node instanceof SafePropertyRead ||
@@ -359,6 +389,10 @@ export function getRenameTextAndSpanAtPosition(
       span.length -= 2;
     }
     return {text, span};
+  } else if (node instanceof TmplAstElement || node instanceof TmplAstDirective) {
+    return {text: node.name, span: toTextSpan(node.startSourceSpan)};
+  } else if (node instanceof TmplAstComponent) {
+    return {text: node.componentName, span: toTextSpan(node.startSourceSpan)};
   }
 
   return null;
@@ -378,4 +412,22 @@ export function getParentClassMeta(
     return null;
   }
   return compiler.getMeta(parentClass);
+}
+
+/** Visitor that collects all selectorless AST nodes from a template. */
+export class SelectorlessCollector extends TmplAstRecursiveVisitor {
+  private nodes: (TmplAstComponent | TmplAstDirective)[] = [];
+
+  static getSelectorlessNodes(nodes: TmplAstNode[]): (TmplAstComponent | TmplAstDirective)[] {
+    const visitor = new SelectorlessCollector();
+    tmplAstVisitAll(visitor, nodes);
+    return visitor.nodes;
+  }
+
+  visit(node: TmplAstNode) {
+    if (node instanceof TmplAstComponent || node instanceof TmplAstDirective) {
+      this.nodes.push(node);
+    }
+    node.visit(this);
+  }
 }

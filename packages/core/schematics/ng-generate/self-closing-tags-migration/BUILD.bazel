@@ -1,0 +1,28 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+filegroup(
+    name = "static_files",
+    srcs = ["schema.json"],
+)
+
+ts_project(
+    name = "self-closing-tags-migration",
+    srcs = glob(["**/*.ts"]),
+    interop_deps = [
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/core/schematics/migrations/self-closing-tags-migration:migration",
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
+        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
+    ],
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+    ],
+)

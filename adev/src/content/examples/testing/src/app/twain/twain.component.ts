@@ -1,5 +1,5 @@
 // #docregion
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {sharedImports} from '../shared/shared';
 
@@ -22,13 +22,13 @@ import {TwainService} from './twain.service';
   styles: ['.twain { font-style: italic; } .error { color: red; }'],
   imports: [AsyncPipe, sharedImports],
 })
-export class TwainComponent implements OnInit {
+export class TwainComponent {
   errorMessage = signal('');
   quote?: Observable<string>;
 
-  constructor(private twainService: TwainService) {}
+  private twainService = inject(TwainService);
 
-  ngOnInit(): void {
+  constructor() {
     this.getQuote();
   }
 

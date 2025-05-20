@@ -16,13 +16,17 @@ import {
   trigger,
   ɵAnimationGroupPlayer as AnimationGroupPlayer,
 } from '@angular/animations';
-import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
-import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
+import {
+  AnimationDriver,
+  ɵAnimationEngine,
+  ɵTransitionAnimationPlayer as TransitionAnimationPlayer,
+} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
-import {Component, HostBinding} from '@angular/core';
-import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
+import {Component, HostBinding} from '../../src/core';
+import {fakeAsync, flushMicrotasks, TestBed, tick} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ActivatedRoute, Router, RouterModule, RouterOutlet} from '@angular/router';
+import {isNode} from '@angular/private/testing';
 
 (function () {
   // these tests are only meant to be run within the DOM (for now)

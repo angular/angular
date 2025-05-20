@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {EntryType, FunctionEntry, ParameterEntry} from './entities';
+import {EntryType, FunctionEntry, FunctionSignatureMetadata, ParameterEntry} from './entities';
 import {extractGenerics} from './generics_extractor';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
@@ -18,7 +18,8 @@ export type FunctionLike =
   | ts.MethodDeclaration
   | ts.MethodSignature
   | ts.CallSignatureDeclaration
-  | ts.ConstructSignatureDeclaration;
+  | ts.ConstructSignatureDeclaration
+  | ts.ConstructorDeclaration;
 
 export class FunctionExtractor {
   constructor(
@@ -31,21 +32,16 @@ export class FunctionExtractor {
     // TODO: is there any real situation in which the signature would not be available here?
     //     Is void a better type?
     const signature = this.typeChecker.getSignatureFromDeclaration(this.exportDeclaration);
-    const returnType = signature
-      ? this.typeChecker.typeToString(
-          this.typeChecker.getReturnTypeOfSignature(signature),
-          undefined,
-          // This ensures that e.g. `T | undefined` is not reduced to `T`.
-          ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
-        )
-      : 'unknown';
+    const returnType = signature ? extractReturnType(signature, this.typeChecker) : 'unknown';
 
     const implementation =
       findImplementationOfFunction(this.exportDeclaration, this.typeChecker) ??
       this.exportDeclaration;
 
     const type = this.typeChecker.getTypeAtLocation(this.exportDeclaration);
-    const overloads = extractCallSignatures(this.name, this.typeChecker, type);
+    const overloads = ts.isConstructorDeclaration(this.exportDeclaration)
+      ? constructorOverloads(this.exportDeclaration, this.typeChecker)
+      : extractCallSignatures(this.name, this.typeChecker, type);
     const jsdocsTags = extractJsDocTags(implementation);
     const description = extractJsDocDescription(implementation);
 
@@ -72,6 +68,32 @@ export class FunctionExtractor {
   }
 }
 
+function constructorOverloads(
+  constructorDeclaration: ts.ConstructorDeclaration,
+  typeChecker: ts.TypeChecker,
+) {
+  const classDeclaration = constructorDeclaration.parent;
+  const constructorNode = classDeclaration.members.filter(
+    (member): member is ts.ConstructorDeclaration => {
+      return ts.isConstructorDeclaration(member) && !member.body;
+    },
+  );
+
+  return constructorNode.map((n): FunctionSignatureMetadata => {
+    return {
+      name: 'constructor',
+      params: extractAllParams(n.parameters, typeChecker),
+      returnType: typeChecker.getTypeAtLocation(classDeclaration)?.symbol.name,
+      description: extractJsDocDescription(n),
+      entryType: EntryType.Function,
+      jsdocTags: extractJsDocTags(n),
+      rawComment: extractRawJsDoc(n),
+      generics: extractGenerics(n),
+      isNewType: false,
+    };
+  });
+}
+
 /** Extracts parameters of the given parameter declaration AST nodes. */
 export function extractAllParams(
   params: ts.NodeArray<ts.ParameterDeclaration>,
@@ -90,14 +112,19 @@ export function extractAllParams(
 function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
   const result: Array<{
     signature: ts.Signature;
-    decl: ts.FunctionDeclaration | ts.CallSignatureDeclaration | ts.MethodDeclaration;
+    decl:
+      | ts.FunctionDeclaration
+      | ts.CallSignatureDeclaration
+      | ts.MethodDeclaration
+      | ts.ConstructSignatureDeclaration;
   }> = [];
   for (const signature of signatures) {
     const decl = signature.getDeclaration();
     if (
       ts.isFunctionDeclaration(decl) ||
       ts.isCallSignatureDeclaration(decl) ||
-      ts.isMethodDeclaration(decl)
+      ts.isMethodDeclaration(decl) ||
+      ts.isConstructSignatureDeclaration(decl)
     ) {
       result.push({signature, decl});
     }
@@ -115,13 +142,22 @@ export function extractCallSignatures(name: string, typeChecker: ts.TypeChecker,
     jsdocTags: extractJsDocTags(decl),
     params: extractAllParams(decl.parameters, typeChecker),
     rawComment: extractRawJsDoc(decl),
-    returnType: typeChecker.typeToString(
-      typeChecker.getReturnTypeOfSignature(signature),
-      undefined,
-      // This ensures that e.g. `T | undefined` is not reduced to `T`.
-      ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
-    ),
+    returnType: extractReturnType(signature, typeChecker),
   }));
+}
+
+function extractReturnType(signature: ts.Signature, typeChecker: ts.TypeChecker): string {
+  // Handling Type Predicates
+  if (signature?.declaration?.type && ts.isTypePredicateNode(signature.declaration.type)) {
+    return signature.declaration.type.getText();
+  }
+
+  return typeChecker.typeToString(
+    typeChecker.getReturnTypeOfSignature(signature),
+    undefined,
+    // This ensures that e.g. `T | undefined` is not reduced to `T`.
+    ts.TypeFormatFlags.NoTypeReduction | ts.TypeFormatFlags.NoTruncation,
+  );
 }
 
 /** Finds the implementation of the given function declaration overload signature. */

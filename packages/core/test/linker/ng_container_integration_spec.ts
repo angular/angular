@@ -18,9 +18,9 @@ import {
   Input,
   QueryList,
   ViewChildren,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+} from '../../src/core';
+import {TestBed} from '../../testing';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('<ng-container>', function () {
   beforeEach(() => {

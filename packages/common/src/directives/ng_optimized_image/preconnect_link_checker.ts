@@ -11,16 +11,14 @@ import {
   Injectable,
   InjectionToken,
   ɵformatRuntimeError as formatRuntimeError,
-  PLATFORM_ID,
+  DOCUMENT,
 } from '@angular/core';
 
-import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
 import {assertDevMode} from './asserts';
 import {imgDirectiveDetails} from './error_helper';
 import {extractHostname, getUrl} from './url';
-import {isPlatformServer} from '../../platform_id';
 
 // Set of origins that are always excluded from the preconnect checks.
 const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
@@ -57,7 +55,6 @@ export const PRECONNECT_CHECK_BLOCKLIST = new InjectionToken<Array<string | stri
 @Injectable({providedIn: 'root'})
 export class PreconnectLinkChecker {
   private document = inject(DOCUMENT);
-  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
   /**
    * Set of <link rel="preconnect"> tags found on this page.
@@ -70,16 +67,12 @@ export class PreconnectLinkChecker {
    */
   private alreadySeen = new Set<string>();
 
-  private window: Window | null = null;
+  private window: Window | null = this.document.defaultView;
 
   private blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
 
   constructor() {
     assertDevMode('preconnect link checker');
-    const win = this.document.defaultView;
-    if (typeof win !== 'undefined') {
-      this.window = win;
-    }
     const blocklist = inject(PRECONNECT_CHECK_BLOCKLIST, {optional: true});
     if (blocklist) {
       this.populateBlocklist(blocklist);
@@ -104,7 +97,7 @@ export class PreconnectLinkChecker {
    * @param originalNgSrc ngSrc value
    */
   assertPreconnect(rewrittenSrc: string, originalNgSrc: string): void {
-    if (this.isServer) return;
+    if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
 
     const imgUrl = getUrl(rewrittenSrc, this.window!);
     if (this.blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
@@ -134,9 +127,8 @@ export class PreconnectLinkChecker {
 
   private queryPreconnectLinks(): Set<string> {
     const preconnectUrls = new Set<string>();
-    const selector = 'link[rel=preconnect]';
-    const links: HTMLLinkElement[] = Array.from(this.document.querySelectorAll(selector));
-    for (let link of links) {
+    const links = this.document.querySelectorAll<HTMLLinkElement>('link[rel=preconnect]');
+    for (const link of links) {
       const url = getUrl(link.href, this.window!);
       preconnectUrls.add(url.origin);
     }

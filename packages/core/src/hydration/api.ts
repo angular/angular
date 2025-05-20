@@ -44,11 +44,13 @@ import {
 } from './tokens';
 import {
   appendDeferBlocksToJSActionMap,
+  countBlocksSkippedByHydration,
   enableRetrieveDeferBlockDataImpl,
   enableRetrieveHydrationInfoImpl,
+  isIncrementalHydrationEnabled,
   NGH_DATA_KEY,
   processBlockData,
-  SSR_CONTENT_INTEGRITY_MARKER,
+  verifySsrContentsIntegrity,
 } from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../defer/registry';
@@ -143,6 +145,9 @@ function printHydrationStats(injector: Injector) {
     `Angular hydrated ${ngDevMode!.hydratedComponents} component(s) ` +
     `and ${ngDevMode!.hydratedNodes} node(s), ` +
     `${ngDevMode!.componentsSkippedHydration} component(s) were skipped. ` +
+    (isIncrementalHydrationEnabled(injector)
+      ? `${ngDevMode!.deferBlocksWithIncrementalHydration} defer block(s) were configured to use incremental hydration. `
+      : '') +
     `Learn more at https://angular.dev/guide/hydration.`;
   // tslint:disable-next-line:no-console
   console.log(message);
@@ -151,12 +156,12 @@ function printHydrationStats(injector: Injector) {
 /**
  * Returns a Promise that is resolved when an application becomes stable.
  */
-function whenStableWithTimeout(appRef: ApplicationRef, injector: Injector): Promise<void> {
+function whenStableWithTimeout(appRef: ApplicationRef): Promise<void> {
   const whenStablePromise = appRef.whenStable();
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
-    const console = injector.get(Console);
-    const ngZone = injector.get(NgZone);
+    const console = appRef.injector.get(Console);
+    const ngZone = appRef.injector.get(NgZone);
 
     // The following call should not and does not prevent the app to become stable
     // We cannot use RxJS timer here because the app would remain unstable.
@@ -233,7 +238,7 @@ export function withDomHydration(): EnvironmentProviders {
         }
 
         if (inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
-          verifySsrContentsIntegrity();
+          verifySsrContentsIntegrity(getDocument());
           enableHydrationRuntimeSupport();
         } else if (typeof ngDevMode !== 'undefined' && ngDevMode && !isClientRenderModeEnabled()) {
           const console = inject(Console);
@@ -245,7 +250,6 @@ export function withDomHydration(): EnvironmentProviders {
               'Make sure the `provideClientHydration()` is included into the list ' +
               'of providers in the server part of the application configuration.',
           );
-          // tslint:disable-next-line:no-console
           console.warn(message);
         }
       },
@@ -270,7 +274,7 @@ export function withDomHydration(): EnvironmentProviders {
         useFactory: () => {
           if (inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
             const appRef = inject(ApplicationRef);
-            const injector = inject(Injector);
+
             return () => {
               // Wait until an app becomes stable and cleanup all views that
               // were not claimed during the application bootstrap process.
@@ -279,10 +283,21 @@ export function withDomHydration(): EnvironmentProviders {
               //
               // Note: the cleanup task *MUST* be scheduled within the Angular zone in Zone apps
               // to ensure that change detection is properly run afterward.
-              whenStableWithTimeout(appRef, injector).then(() => {
+              whenStableWithTimeout(appRef).then(() => {
+                // Note: we have to check whether the application is destroyed before
+                // performing other operations with the `injector`.
+                // The application may be destroyed **before** it becomes stable, so when
+                // the `whenStableWithTimeout` resolves, the injector might already be in
+                // a destroyed state. Thus, calling `injector.get` would throw an error
+                // indicating that the injector has already been destroyed.
+                if (appRef.destroyed) {
+                  return;
+                }
+
                 cleanupDehydratedViews(appRef);
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-                  printHydrationStats(injector);
+                  countBlocksSkippedByHydration(appRef.injector);
+                  printHydrationStats(appRef.injector);
                 }
               });
             };
@@ -325,8 +340,6 @@ export function withI18nSupport(): Provider[] {
  * Returns a set of providers required to setup support for incremental hydration.
  * Requires hydration to be enabled separately.
  * Enabling incremental hydration also enables event replay for the entire app.
- *
- * @developerPreview
  */
 export function withIncrementalHydration(): Provider[] {
   const providers: Provider[] = [
@@ -381,39 +394,4 @@ function logWarningOnStableTimedout(time: number, console: Console): void {
     `as a signal to complete hydration process.`;
 
   console.warn(formatRuntimeError(RuntimeErrorCode.HYDRATION_STABLE_TIMEDOUT, message));
-}
-
-/**
- * Verifies whether the DOM contains a special marker added during SSR time to make sure
- * there is no SSR'ed contents transformations happen after SSR is completed. Typically that
- * happens either by CDN or during the build process as an optimization to remove comment nodes.
- * Hydration process requires comment nodes produced by Angular to locate correct DOM segments.
- * When this special marker is *not* present - throw an error and do not proceed with hydration,
- * since it will not be able to function correctly.
- *
- * Note: this function is invoked only on the client, so it's safe to use DOM APIs.
- */
-function verifySsrContentsIntegrity(): void {
-  const doc = getDocument();
-  let hydrationMarker: Node | undefined;
-  for (const node of doc.body.childNodes) {
-    if (
-      node.nodeType === Node.COMMENT_NODE &&
-      node.textContent?.trim() === SSR_CONTENT_INTEGRITY_MARKER
-    ) {
-      hydrationMarker = node;
-      break;
-    }
-  }
-  if (!hydrationMarker) {
-    throw new RuntimeError(
-      RuntimeErrorCode.MISSING_SSR_CONTENT_INTEGRITY_MARKER,
-      typeof ngDevMode !== 'undefined' &&
-        ngDevMode &&
-        'Angular hydration logic detected that HTML content of this page was modified after it ' +
-          'was produced during server side rendering. Make sure that there are no optimizations ' +
-          'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
-          'relies on HTML produced by the server, including whitespaces and comment nodes.',
-    );
-  }
 }

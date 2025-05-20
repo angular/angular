@@ -1,0 +1,58 @@
+@use '../../../../styles/typography';
+
+h2 {
+  @extend %heading-400;
+}
+
+.select {
+  cursor: pointer;
+}
+
+:host {
+  display: block;
+  padding: 16px;
+}
+
+.filter {
+  display: flex;
+  gap: 0.5rem;
+
+  mat-form-field {
+    &.token-search {
+      flex: 1;
+    }
+
+    &.type-filter {
+      width: 10rem;
+    }
+  }
+}
+
+table {
+  width: 100%;
+  --mat-table-row-item-label-text-size: 0.8rem;
+  --mat-table-header-container-height: 42px;
+  --mat-table-row-item-container-height: 42px;
+
+  td {
+    @extend %body-01;
+  }
+}
+
+.column-title {
+  @extend %body-bold-01;
+  margin: 0;
+}
+
+.token-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  max-width: 0;
+}
+
+.no-providers-label {
+  padding: 0.5rem 0;
+  text-align: center;
+}

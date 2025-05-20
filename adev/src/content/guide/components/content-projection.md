@@ -1,6 +1,6 @@
 # Content projection with ng-content
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 You often need to create components that act as containers for different types of content. For
 example, you may want to create a custom card component:
@@ -23,7 +23,7 @@ export class CustomCard {/* ... */}
 export class CustomCard {/* ... */}
 ```
 
-Tip: `<ng-content>` works similarly
+TIP: `<ng-content>` works similarly
 to [the native `<slot>` element](https://developer.mozilla.org/docs/Web/HTML/Element/slot),
 but with some Angular-specific functionality.
 
@@ -140,7 +140,7 @@ did not match a `select` attribute:
     <card-title>Hello</card-title>
     <div class="card-divider"></div>
     <img src="..." />
-    <p>Welcome to the example></p>
+    <p>Welcome to the example</p>
   </div>
 </custom-card>
 ```
@@ -173,7 +173,7 @@ Angular can show *fallback content* for a component's `<ng-content>` placeholder
 <!-- Rendered DOM -->
 <custom-card>
   <div class="card-shadow">
-    Hello
+    <card-title>Hello</card-title>
     <div class="card-divider"></div>
     Default Body
   </div>
@@ -210,7 +210,7 @@ placeholder, Angular compares against the `ngProjectAs` value instead of the ele
   <div class="card-shadow">
     <h3>Hello</h3>
     <div class="card-divider"></div>
-    <p>Welcome to the example></p>
+    <p>Welcome to the example</p>
   </div>
 </custom-card>
 ```

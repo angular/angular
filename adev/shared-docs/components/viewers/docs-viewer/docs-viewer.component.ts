@@ -25,7 +25,7 @@ import {
   Type,
   ViewContainerRef,
   ViewEncapsulation,
-  ɵPendingTasks as PendingTasks,
+  PendingTasks,
   output,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -41,16 +41,13 @@ import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
 
-/// <reference types="@types/dom-view-transitions" />
-
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
 export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
 export const DOCS_VIEWER_SELECTOR = 'docs-viewer';
 export const DOCS_CODE_SELECTOR = '.docs-code';
 export const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
 // TODO: Update the branch/sha
-export const GITHUB_CONTENT_URL =
-  'https://github.com/angular/angular/blob/main/adev/src/content/examples/';
+export const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/main/';
 
 @Component({
   selector: DOCS_VIEWER_SELECTOR,
@@ -61,6 +58,7 @@ export const GITHUB_CONTENT_URL =
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class.docs-animate-content]': 'animateContent',
+    '[class.docs-with-TOC]': 'hasToc',
   },
 })
 export class DocViewer implements OnChanges {
@@ -79,8 +77,7 @@ export class DocViewer implements OnChanges {
   private readonly injector = inject(Injector);
   private readonly appRef = inject(ApplicationRef);
 
-  // tslint:disable-next-line:no-unused-variable
-  private animateContent = false;
+  protected animateContent = false;
   private readonly pendingTasks = inject(PendingTasks);
 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -88,11 +85,11 @@ export class DocViewer implements OnChanges {
   private countOfExamples = 0;
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    const taskId = this.pendingTasks.add();
+    const removeTask = this.pendingTasks.add();
     if ('docContent' in changes) {
       await this.renderContentsAndRunClientSetup(this.docContent!);
     }
-    this.pendingTasks.remove(taskId);
+    removeTask();
   }
 
   async renderContentsAndRunClientSetup(content?: string): Promise<void> {
@@ -197,13 +194,13 @@ export class DocViewer implements OnChanges {
     const exampleRef = this.viewContainer.createComponent(ExampleViewer);
 
     this.countOfExamples++;
-    exampleRef.instance.metadata = {
+    exampleRef.setInput('metadata', {
       title: title ?? firstCodeSnippetTitle,
       path,
       files: snippets,
       preview,
       id: this.countOfExamples,
-    };
+    });
 
     exampleRef.instance.githubUrl = `${GITHUB_CONTENT_URL}/${snippets[0].name}`;
     exampleRef.instance.stackblitzUrl = `${ASSETS_EXAMPLES_PATH}/${snippets[0].name}.html`;
@@ -266,9 +263,12 @@ export class DocViewer implements OnChanges {
   }
 
   private loadIcons(element: HTMLElement): void {
-    element.querySelectorAll('docs-icon').forEach((iconsPlaceholder) => {
-      this.renderComponent(IconComponent, iconsPlaceholder as HTMLElement);
-    });
+    // We need to make sure that we don't reload the icons in loadCopySourceCodeButtons
+    element
+      .querySelectorAll('docs-icon:not([docs-copy-source-code] docs-icon)')
+      .forEach((iconsPlaceholder) => {
+        this.renderComponent(IconComponent, iconsPlaceholder as HTMLElement);
+      });
   }
 
   /**
@@ -290,9 +290,6 @@ export class DocViewer implements OnChanges {
         componentRef.setInput(name, value);
       }
     }
-
-    // Trigger change detection after setting inputs.
-    componentRef.changeDetectorRef.detectChanges();
 
     // Attach a view to the ApplicationRef for change detection
     // purposes and for hydration serialization to pick it up
@@ -341,7 +338,12 @@ export class DocViewer implements OnChanges {
             relativeUrl = hrefAttr;
           }
 
-          handleHrefClickEventWithRouter(e, this.router, relativeUrl);
+          // Unless this is a link to an element within the same page, use the Angular router.
+          // https://github.com/angular/angular/issues/30139
+          const scrollToElementExists = relativeUrl.startsWith(this.location.path() + '#');
+          if (!scrollToElementExists) {
+            handleHrefClickEventWithRouter(e, this.router, relativeUrl);
+          }
         });
     });
   }

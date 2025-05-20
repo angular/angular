@@ -14,11 +14,11 @@
 
 <ul class="adev-api-items-section-grid">
   @for (apiItem of group().items; track apiItem.url) {
-    <li [class.adev-api-items-section-item-deprecated]="apiItem.isDeprecated">
+    <li [class.adev-api-items-section-item-deprecated]="apiItem.deprecated">
       <a
         [routerLink]="'/' + apiItem.url"
         class="adev-api-items-section-item"
-        [attr.aria-describedby]="apiItem.isDeprecated ? 'deprecated-description' : null"
+        [attr.aria-describedby]="apiItem.deprecated ? 'deprecated-description' : null"
       >
         <docs-api-item-label
           [type]="apiItem.itemType"
@@ -26,10 +26,16 @@
           class="docs-api-item-label"
           aria-hidden="true"
         />
-        <span class="adev-item-title">{{ apiItem.title }}</span>
+        <span class="adev-item-title" [attr.title]="apiItem.title">{{ apiItem.title }}</span>
       </a>
-      @if (apiItem.isDeprecated) {
-        <span class="docs-deprecated"> &lt;!&gt; </span>
+      @if (apiItem.deprecated) {
+        <span class="adev-item-attribute" matTooltip="Deprecated"> &lt;!&gt; </span>
+      }
+      @if(apiItem.experimental) {
+        <span class="adev-item-attribute" matTooltip="Experimental"> 🧪 </span>
+      }
+      @if(apiItem.developerPreview) {
+        <span class="adev-item-attribute" matTooltip="Developer Preview"> 🚧 </span>
       }
     </li>
   }

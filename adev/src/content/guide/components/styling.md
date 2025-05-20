@@ -1,6 +1,6 @@
 # Styling components
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Components can optionally include CSS styles that apply to that component's DOM:
 
@@ -63,7 +63,7 @@ the [`:host`](https://developer.mozilla.org/docs/Web/CSS/:host)
 and [`:host-context()`](https://developer.mozilla.org/docs/Web/CSS/:host-context) pseudo
 classes without
 using [Shadow DOM](https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM).
-During compilation, the framework transforms these pseudo classes into attributes so it doesn't 
+During compilation, the framework transforms these pseudo classes into attributes so it doesn't
 comply with these native pseudo classes' rules at runtime (e.g. browser compatibility, specificity). Angular's
 emulated encapsulation mode does not support any other pseudo classes related to Shadow DOM, such
 as `::shadow` or `::part`.
@@ -96,6 +96,9 @@ Shadow DOM in your application before enabling this option.
 
 This mode disables all style encapsulation for the component. Any styles associated with the
 component behave as global styles.
+
+NOTE: In `Emulated` and `ShadowDom` modes, Angular doesn't 100% guarantee that your component's styles will always override styles coming from outside it.
+It is assumed that these styles have the same specificity as your component's styles in case of collision.
 
 ## Defining styles in templates
 

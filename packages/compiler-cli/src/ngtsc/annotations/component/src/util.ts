@@ -7,15 +7,13 @@
  */
 
 import {AnimationTriggerNames} from '@angular/compiler';
-import {
-  isResolvedModuleWithProviders,
-  ResolvedModuleWithProviders,
-} from '@angular/compiler-cli/src/ngtsc/annotations/ng_module';
-import {ErrorCode, makeDiagnostic} from '@angular/compiler-cli/src/ngtsc/diagnostics';
+import {isResolvedModuleWithProviders, ResolvedModuleWithProviders} from '../../ng_module';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../../diagnostics';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
 import {
+  DynamicValue,
   ForeignFunctionResolver,
   ResolvedValue,
   ResolvedValueMap,
@@ -96,7 +94,9 @@ export function validateAndFlattenComponentImports(
   }
   const diagnostics: ts.Diagnostic[] = [];
 
-  for (const ref of imports) {
+  for (let i = 0; i < imports.length; i++) {
+    const ref = imports[i];
+
     if (Array.isArray(ref)) {
       const {imports: childImports, diagnostics: childDiagnostics} =
         validateAndFlattenComponentImports(ref, expr, isDeferred);
@@ -132,7 +132,32 @@ export function validateAndFlattenComponentImports(
         ),
       );
     } else {
-      diagnostics.push(createValueHasWrongTypeError(expr, imports, errorMessage).toDiagnostic());
+      let diagnosticNode: ts.Node;
+      let diagnosticValue: ResolvedValue;
+
+      if (ref instanceof DynamicValue) {
+        diagnosticNode = ref.node;
+        diagnosticValue = ref;
+      } else if (
+        ts.isArrayLiteralExpression(expr) &&
+        expr.elements.length === imports.length &&
+        !expr.elements.some(ts.isSpreadAssignment) &&
+        !imports.some(Array.isArray)
+      ) {
+        // Reporting a diagnostic on the entire array can be noisy, especially if the user has a
+        // large array. The most common case is that the array will be static so we can reliably
+        // trace back a `ResolvedValue` back to its node using its index. This allows us to report
+        // the exact node that caused the issue.
+        diagnosticNode = expr.elements[i];
+        diagnosticValue = ref;
+      } else {
+        diagnosticNode = expr;
+        diagnosticValue = imports;
+      }
+
+      diagnostics.push(
+        createValueHasWrongTypeError(diagnosticNode, diagnosticValue, errorMessage).toDiagnostic(),
+      );
     }
   }
 

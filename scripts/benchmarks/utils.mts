@@ -14,7 +14,7 @@ import url from 'url';
 const scriptDir = path.dirname(url.fileURLToPath(import.meta.url));
 
 /** Absolute disk path to the project directory. */
-export const projectDir = path.join(scriptDir, '../..');
+export const projectDir: string = path.join(scriptDir, '../..');
 
 /**
  * Executes the given command, forwarding stdin, stdout and stderr while

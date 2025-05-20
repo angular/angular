@@ -22,4 +22,12 @@ export const pullRequest: PullRequestConfig = {
     assertEnforceTested: true,
     assertIsolatedSeparateFiles: true,
   },
+
+  requiredStatuses: [
+    {type: 'check', name: 'test'},
+    {type: 'check', name: 'lint'},
+    {type: 'check', name: 'adev'},
+    {type: 'check', name: 'zone-js'},
+    {type: 'status', name: 'google-internal-tests'},
+  ],
 };

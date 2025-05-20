@@ -8,19 +8,21 @@ The Angular compiler includes "extended diagnostics" which identify many of thes
 
 Currently, Angular supports the following extended diagnostics:
 
-| Code     | Name                                                             |
-|:---------|:-----------------------------------------------------------------|
-| `NG8101` | [`invalidBananaInBox`](extended-diagnostics/NG8101)              |
-| `NG8102` | [`nullishCoalescingNotNullable`](extended-diagnostics/NG8102)    |
-| `NG8103` | [`missingControlFlowDirective`](extended-diagnostics/NG8103)     |
-| `NG8104` | [`textAttributeNotBinding`](extended-diagnostics/NG8104)         |
-| `NG8105` | [`missingNgForOfLet`](extended-diagnostics/NG8105)               |
-| `NG8106` | [`suffixNotSupported`](extended-diagnostics/NG8106)              |
-| `NG8107` | [`optionalChainNotNullable`](extended-diagnostics/NG8107)        |
-| `NG8108` | [`skipHydrationNotStatic`](extended-diagnostics/NG8108)          |
-| `NG8109` | [`interpolatedSignalNotInvoked`](extended-diagnostics/NG8109)    |
-| `NG8111` | [`uninvokedFunctionInEventBinding`](extended-diagnostics/NG8111) |
-| `NG8113` | [`unusedStandaloneImports`](extended-diagnostics/NG8113) |
+| Code     | Name                                                              |
+| :------- | :---------------------------------------------------------------- |
+| `NG8101` | [`invalidBananaInBox`](extended-diagnostics/NG8101)               |
+| `NG8102` | [`nullishCoalescingNotNullable`](extended-diagnostics/NG8102)     |
+| `NG8103` | [`missingControlFlowDirective`](extended-diagnostics/NG8103)      |
+| `NG8104` | [`textAttributeNotBinding`](extended-diagnostics/NG8104)          |
+| `NG8105` | [`missingNgForOfLet`](extended-diagnostics/NG8105)                |
+| `NG8106` | [`suffixNotSupported`](extended-diagnostics/NG8106)               |
+| `NG8107` | [`optionalChainNotNullable`](extended-diagnostics/NG8107)         |
+| `NG8108` | [`skipHydrationNotStatic`](extended-diagnostics/NG8108)           |
+| `NG8109` | [`interpolatedSignalNotInvoked`](extended-diagnostics/NG8109)     |
+| `NG8111` | [`uninvokedFunctionInEventBinding`](extended-diagnostics/NG8111)  |
+| `NG8113` | [`unusedStandaloneImports`](extended-diagnostics/NG8113)          |
+| `NG8114` | [`unparenthesizedNullishCoalescing`](extended-diagnostics/NG8114) |
+| `NG8116` | [`missingStructuralDirective`](extended-diagnostics/NG8116)       |
 
 ## Configuration
 
@@ -28,10 +30,10 @@ Extended diagnostics are warnings by default and do not block compilation.
 Each diagnostic can be configured as either:
 
 | Error category | Effect                                                                                                                                                                   |
-|:---            | :---                                                                                                                                                                     |
+| :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `warning`      | Default - The compiler emits the diagnostic as a warning but does not block compilation. The compiler will still exist with status code 0, even if warnings are emitted. |
 | `error`        | The compiler emits the diagnostic as an error and fails the compilation. The compiler will exit with a non-zero status code if one or more errors are emitted.           |
-| `suppress`     | The compiler does *not* emit the diagnostic at all.                                                                                                                      |
+| `suppress`     | The compiler does _not_ emit the diagnostic at all.                                                                                                                      |
 
 Check severity can be configured as an [Angular compiler option](reference/configs/angular-compiler-options):
 
@@ -48,7 +50,8 @@ Check severity can be configured as an [Angular compiler option](reference/confi
       // The category to use for any diagnostics not listed in `checks` above.
       "defaultCategory": "error"
     }
-  }
+
+}
 }
 </docs-code>
 
@@ -78,11 +81,11 @@ Defaulting to error is a very powerful tool; just be aware of this semver caveat
 The Angular team is always open to suggestions about new diagnostics that could be added.
 Extended diagnostics should generally:
 
-* Detect a common, non-obvious developer mistake with Angular templates
-* Clearly articulate why this pattern can lead to bugs or unintended behavior
-* Suggest one or more clear solutions
-* Have a low, preferably zero, false-positive rate
-* Apply to the vast majority of Angular applications (not specific to an unofficial library)
-* Improve program correctness or performance (not style, that responsibility falls to a linter)
+- Detect a common, non-obvious developer mistake with Angular templates
+- Clearly articulate why this pattern can lead to bugs or unintended behavior
+- Suggest one or more clear solutions
+- Have a low, preferably zero, false-positive rate
+- Apply to the vast majority of Angular applications (not specific to an unofficial library)
+- Improve program correctness or performance (not style, that responsibility falls to a linter)
 
 If you have an idea for an extended diagnostic which fits these criteria, consider filing a [feature request](https://github.com/angular/angular/issues/new?template=2-feature-request.yaml).

@@ -32,19 +32,21 @@ import {
   ViewChild,
   ViewContainerRef,
   ɵsetDocument,
-} from '@angular/core';
-import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
-import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
-import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
+import {getComponentLView} from '../../src/render3/util/discovery_utils';
+import {DeferBlockBehavior, DeferBlockState, TestBed} from '../../testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {BehaviorSubject} from 'rxjs';
+import {provideNgReflectAttributes} from '../../src/ng_reflect';
 
 describe('runtime i18n', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [AppComp, DirectiveWithTplRef, UppercasePipe],
+      providers: [provideNgReflectAttributes()],
       // In some of the tests we use made-up tag names for better readability, however
       // they'll cause validation errors. Add the `NO_ERRORS_SCHEMA` so that we don't have
       // to declare dummy components for each one of them.
@@ -563,7 +565,6 @@ describe('runtime i18n', () => {
 
     @Component({
       selector: 'defer-comp',
-      standalone: true,
       template:
         '<div i18n>Content: @defer (when isLoaded) {before<span>middle</span>after} ' +
         '@placeholder {before<div>placeholder</div>after}!</div>',

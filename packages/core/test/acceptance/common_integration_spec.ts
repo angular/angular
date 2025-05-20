@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component, Directive} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('@angular/common integration', () => {

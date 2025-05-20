@@ -7,7 +7,7 @@
  */
 
 import {Component, computed, input, output} from '@angular/core';
-import {DirectivePosition} from 'protocol';
+import {DirectivePosition} from '../../../../../../../protocol';
 
 import {IndexedNode} from '../../directive-forest/index-forest';
 import {FlatNode} from '../../property-resolver/element-property-resolver';
@@ -29,9 +29,9 @@ export class PropertyTabBodyComponent {
     if (!selected) {
       return;
     }
-    const directives = selected.directives.map((d) => d.name);
+    const directives = [...selected.directives];
     if (selected.component) {
-      directives.push(selected.component.name);
+      directives.push(selected.component);
     }
     return directives;
   });

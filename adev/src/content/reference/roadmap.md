@@ -20,12 +20,11 @@ Start developing with the latest Angular features from our roadmap. This list re
 ### Available to experiment with
 
 * [Incremental hydration](/guide/incremental-hydration)
-* [Zoneless change detection](/guide/experimental/zoneless)
+* [Zoneless change detection](/guide/zoneless)
 * [Hydration support for i18n blocks](/api/platform-browser/withI18nSupport)
 * [Resource API](/guide/signals/resource)
 * [Effect API](/api/core/effect)
 * [Linked Signal API](/guide/signals/linked-signal)
-* [Route-level render mode](/guide/hybrid-rendering)
 
 ### Production ready
 
@@ -38,6 +37,7 @@ Start developing with the latest Angular features from our roadmap. This list re
 * [Model inputs](/guide/signals/model)
 * [Signal queries](/guide/signals/queries)
 * [Function-based outputs](/guide/components/outputs)
+* [Route-level render mode](/guide/ssr)
 
 ## Improving the Angular developer experience
 
@@ -62,7 +62,7 @@ Start developing with the latest Angular features from our roadmap. This list re
   </docs-card>
   <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306">
   We're working towards faster edit/refresh cycle by enabling hot module replacement.
-  
+
   In Angular v19 we shipped initial support for CSS and template HMR. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
   </docs-card>
 </docs-card-container>
@@ -71,7 +71,7 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 <docs-card-container>
   <docs-card title="New CDK primitives" href="">
-  We are working on new CDK primitives to facilitate creating custom components based on the WAI-ARIA design patterns for [Combobox](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox). Angular v14 introduced stable [menu and dialog primitives](https://material.angular.io/cdk/categories) as part of this project, and in v15 Listbox.
+  We are working on new CDK primitives to facilitate creating custom components based on the WAI-ARIA design patterns for [Combobox](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox). Angular v14 introduced stable [menu and dialog primitives](https://material.angular.dev/cdk/categories) as part of this project, and in v15 Listbox.
   </docs-card>
   <docs-card title="Angular component accessibility" href="">
   We are evaluating components in Angular Material against accessibility standards such as WCAG and working to fix any issues that arise from this process.
@@ -98,13 +98,13 @@ Start developing with the latest Angular features from our roadmap. This list re
 <docs-card-container>
   <docs-card title="Enable incremental hydration" href="">
   In v17 we graduated hydration from developer preview and we've been consistently observing 40-50% improvements in LCP. Since then we started prototyping incremental hydration and shared a demo on stage at ng-conf.
-  
+
   In v19 we shipped the incremental hydration in developer preview mode, powered by `@defer` blocks. Give it a try and <a href="https://github.com/angular/angular/issues">share your feedback</a> with us!
   </docs-card>
   <docs-card title="Server route configuration" href="">
   We're working towards enabling a more ergonomic route configuration on the server. We want to make it trivial to declare which routes should be server-side rendered, prerendered or client-side rendered.
 
-  In Angular v19 we shipped developer preview of route-level render mode which allows you to granularly configure which routes you want Angular to prerender, server-side render or client-side render. 
+  In Angular v19 we shipped developer preview of route-level render mode which allows you to granularly configure which routes you want Angular to prerender, server-side render or client-side render.
   </docs-card>
 </docs-card-container>
 
@@ -157,7 +157,7 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Local template variables" link="Completed in Q3 2024">
   We've released the support for local template variables in Angular, see [`@let` docs](https://angular.dev/api/core/@let) for additional information.
   </docs-card>
-  <docs-card title="Expand the customizability of Angular Material" link="Completed in Q2 2024" href="https://material.angular.io/guide/theming">
+  <docs-card title="Expand the customizability of Angular Material" link="Completed in Q2 2024" href="https://material.angular.dev/guide/theming">
   To provide better customization of our Angular Material components and enable Material 3 capabilities, we'll be collaborating with Google's Material Design team on defining token-based theming APIs.
 
   In v17.2 we shared experimental support for Angular Material 3 and in v18 we graduated it to stable.
@@ -215,7 +215,7 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Better stack traces" link="Completed Q4 2022" href="https://developer.chrome.com/blog/devtools-better-angular-debugging/">
   The Angular and the Chrome DevTools are working together to enable more readable stack traces for error messages. In v15 we released improved relevant and linked stack traces. As a lower priority initiative, we'll be exploring how to make the stack traces friendlier by providing more accurate call frame names for templates.
   </docs-card>
-  <docs-card title="Enhanced Angular Material components by integrating MDC Web" link="Completed Q4 2022" href="https://material.angular.io/guide/mdc-migration">
+  <docs-card title="Enhanced Angular Material components by integrating MDC Web" link="Completed Q4 2022" href="https://material.angular.dev/guide/mdc-migration">
   MDC Web is a library created by the Google Material Design team that provides reusable primitives for building Material Design components. The Angular team is incorporating these primitives into Angular Material. Using MDC Web aligns Angular Material more closely with the Material Design specification, expands accessibility, improves component quality, and improves the velocity of our team.
   </docs-card>
   <docs-card title="Implement APIs for optional NgModules" link="Completed Q4 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
@@ -287,7 +287,7 @@ This section represents explorations and prototyping of potential future project
   <docs-card title="Improved developer onboarding with refreshed introductory documentation" link="Completed Q1 2021" href="tutorials">
   We will redefine the user learning journeys and refresh the introductory documentation. We will clearly state the benefits of Angular, how to explore its capabilities and provide guidance so developers can become proficient with the framework in as little time as possible.
   </docs-card>
-  <docs-card title="Expand component harnesses best practices" link="Completed Q1 2021" href="https://material.angular.io/guide/using-component-harnesses">
+  <docs-card title="Expand component harnesses best practices" link="Completed Q1 2021" href="https://material.angular.dev/guide/using-component-harnesses">
   Angular CDK introduced the concept of component test harnesses to Angular in version 9. Test harnesses let component authors create supported APIs for testing component interactions. We are continuing to improve this harness infrastructure and clarifying the best practices around using harnesses. We are also working to drive more harness adoption inside of Google.
   </docs-card>
   <docs-card title="Author a guide for content projection" link="Completed Q2 2021" href="https://angular.io/docs">

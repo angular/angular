@@ -1,15 +1,16 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "typecheck",
     srcs = glob(
         ["**/*.ts"],
     ),
-    deps = [
+    interop_deps = [
         "//packages:types",
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/annotations/common",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/imports",
@@ -25,8 +26,10 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/typecheck/diagnostics",
         "//packages/compiler-cli/src/ngtsc/util",
-        "@npm//@types/node",
-        "@npm//magic-string",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/magic-string",
+        "//:node_modules/typescript",
     ],
 )

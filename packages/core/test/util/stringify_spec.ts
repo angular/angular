@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {concatStringsWithSpace} from '@angular/core/src/util/stringify';
+import {concatStringsWithSpace} from '../../src/util/stringify';
 
 describe('stringify', () => {
   describe('concatStringsWithSpace', () => {

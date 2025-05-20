@@ -50,6 +50,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     hasValidator(validator: ValidatorFn): boolean;
     get invalid(): boolean;
+    markAllAsDirty(opts?: {
+        emitEvent?: boolean;
+    }): void;
     markAllAsTouched(opts?: {
         emitEvent?: boolean;
     }): void;
@@ -140,9 +143,7 @@ export interface AbstractControlOptions {
 export class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
     get control(): FormGroup;
     get formDirective(): Form | null;
-    // (undocumented)
     ngOnDestroy(): void;
-    // (undocumented)
     ngOnInit(): void;
     get path(): string[];
     // (undocumented)
@@ -222,7 +223,6 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
 // @public
 export class EmailValidator extends AbstractValidatorDirective {
     email: boolean | string;
-    // (undocumented)
     enabled(input: boolean): boolean;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<EmailValidator, "[email][formControlName],[email][formControl],[email][ngModel]", never, { "email": { "alias": "email"; "required": false; }; }, {}, never, never, false, never>;
@@ -360,9 +360,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     set isDisabled(isDisabled: boolean);
     // @deprecated (undocumented)
     model: any;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     get path(): string[];
     // @deprecated (undocumented)
@@ -384,9 +382,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     // @deprecated (undocumented)
     model: any;
     name: string | number | null;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     get path(): string[];
     // @deprecated (undocumented)
@@ -491,9 +487,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     getControl(dir: FormControlName): FormControl;
     getFormArray(dir: FormArrayName): FormArray;
     getFormGroup(dir: FormGroupName): FormGroup;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     ngSubmit: EventEmitter<any>;
     onReset(): void;
@@ -502,7 +496,10 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     removeControl(dir: FormControlName): void;
     removeFormArray(dir: FormArrayName): void;
     removeFormGroup(dir: FormGroupName): void;
-    resetForm(value?: any): void;
+    resetForm(value?: any, options?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
     get submitted(): boolean;
     updateModel(dir: FormControlName, value: any): void;
     // (undocumented)
@@ -556,7 +553,7 @@ export interface FormRecord<TControl> {
         emitEvent?: boolean;
     }): void;
     setValue(value: {
-        [key: string]: ɵValue<TControl>;
+        [key: string]: ɵRawValue<TControl>;
     }, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -580,7 +577,7 @@ export class FormsModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<FormsModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<FormsModule, [typeof i1_2.NgModel, typeof i2_2.NgModelGroup, typeof i3_2.NgForm], never, [typeof i4_2.ɵInternalFormsSharedModule, typeof i1_2.NgModel, typeof i2_2.NgModelGroup, typeof i3_2.NgForm]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<FormsModule, [typeof NgModel, typeof NgModelGroup, typeof NgForm], never, [typeof ɵInternalFormsSharedModule, typeof NgModel, typeof NgModelGroup, typeof NgForm]>;
 }
 
 // @public
@@ -685,7 +682,6 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     get formDirective(): Form;
     getControl(dir: NgModel): FormControl;
     getFormGroup(dir: NgModelGroup): FormGroup;
-    // (undocumented)
     ngAfterViewInit(): void;
     ngSubmit: EventEmitter<any>;
     onReset(): void;
@@ -717,11 +713,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     isDisabled: boolean;
     model: any;
     name: string;
-    // (undocumented)
     static ngAcceptInputType_isDisabled: boolean | string;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     options: {
         name?: string;
@@ -752,7 +745,6 @@ export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, 
 export class NgSelectOption implements OnDestroy {
     constructor(_element: ElementRef, _renderer: Renderer2, _select: SelectControlValueAccessor);
     id: string;
-    // (undocumented)
     ngOnDestroy(): void;
     set ngValue(value: any);
     set value(value: any);
@@ -810,13 +802,10 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
     fireUncheck(value: any): void;
     formControlName: string;
     name: string;
-    // (undocumented)
     ngOnDestroy(): void;
-    // (undocumented)
     ngOnInit(): void;
     onChange: () => void;
     registerOnChange(fn: (_: any) => {}): void;
-    // (undocumented)
     setDisabledState(isDisabled: boolean): void;
     value: any;
     writeValue(value: any): void;
@@ -847,12 +836,11 @@ export class ReactiveFormsModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<ReactiveFormsModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<ReactiveFormsModule, [typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName], never, [typeof i4_2.ɵInternalFormsSharedModule, typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ReactiveFormsModule, [typeof FormControlDirective, typeof FormGroupDirective, typeof FormControlName, typeof FormGroupName, typeof FormArrayName], never, [typeof ɵInternalFormsSharedModule, typeof FormControlDirective, typeof FormGroupDirective, typeof FormControlName, typeof FormGroupName, typeof FormArrayName]>;
 }
 
 // @public
 export class RequiredValidator extends AbstractValidatorDirective {
-    // (undocumented)
     enabled(input: boolean): boolean;
     required: boolean | string;
     // (undocumented)
@@ -865,7 +853,6 @@ export class RequiredValidator extends AbstractValidatorDirective {
 export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
     registerOnChange(fn: (value: any) => any): void;
-    // (undocumented)
     value: any;
     writeValue(value: any): void;
     // (undocumented)

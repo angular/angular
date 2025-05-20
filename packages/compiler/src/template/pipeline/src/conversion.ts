@@ -22,12 +22,14 @@ export const BINARY_OPERATORS = new Map([
   ['<=', o.BinaryOperator.LowerEquals],
   ['-', o.BinaryOperator.Minus],
   ['%', o.BinaryOperator.Modulo],
+  ['**', o.BinaryOperator.Exponentiation],
   ['*', o.BinaryOperator.Multiply],
   ['!=', o.BinaryOperator.NotEquals],
   ['!==', o.BinaryOperator.NotIdentical],
   ['??', o.BinaryOperator.NullishCoalesce],
   ['||', o.BinaryOperator.Or],
   ['+', o.BinaryOperator.Plus],
+  ['in', o.BinaryOperator.In],
 ]);
 
 export function namespaceForKey(namespacePrefixKey: string | null): ir.Namespace {

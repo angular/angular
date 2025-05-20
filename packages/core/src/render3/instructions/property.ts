@@ -12,8 +12,8 @@ import {LView, RENDERER, TView} from '../interfaces/view';
 import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 
 import {
-  elementPropertyInternal,
-  setInputsForProperty,
+  setPropertyAndInputs,
+  setAllInputsForProperty,
   storePropertyBindingMetadata,
 } from './shared';
 
@@ -45,16 +45,7 @@ export function ɵɵproperty<T>(
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    elementPropertyInternal(
-      tView,
-      tNode,
-      lView,
-      propName,
-      value,
-      lView[RENDERER],
-      sanitizer,
-      false,
-    );
+    setPropertyAndInputs(tNode, lView, propName, value, lView[RENDERER], sanitizer);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵproperty;
@@ -71,8 +62,6 @@ export function setDirectiveInputsWhichShadowsStyling(
   value: any,
   isClassBased: boolean,
 ) {
-  const inputs = tNode.inputs!;
-  const property = isClassBased ? 'class' : 'style';
   // We support both 'class' and `className` hence the fallback.
-  setInputsForProperty(tView, lView, inputs[property], property, value);
+  setAllInputsForProperty(tNode, tView, lView, isClassBased ? 'class' : 'style', value);
 }

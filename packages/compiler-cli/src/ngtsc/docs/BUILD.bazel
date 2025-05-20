@@ -1,20 +1,22 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
 # Compiler code pertaining to extracting data for generating API reference documentation.
-ts_library(
+ts_project(
     name = "docs",
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    module_name = "@angular/compiler-cli/src/ngtsc/docs",
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/util",
-        "@npm//@types/node",
-        "@npm//typescript",
+    ],
+    module_name = "@angular/compiler-cli/src/ngtsc/docs",
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
     ],
 )

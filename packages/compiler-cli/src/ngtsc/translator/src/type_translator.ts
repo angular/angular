@@ -139,7 +139,15 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
-  visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, context: Context): never {
+  visitTaggedTemplateLiteralExpr(ast: o.TaggedTemplateLiteralExpr, context: Context): never {
+    throw new Error('Method not implemented.');
+  }
+
+  visitTemplateLiteralExpr(ast: o.TemplateLiteralExpr, context: any) {
+    throw new Error('Method not implemented.');
+  }
+
+  visitTemplateLiteralElementExpr(ast: o.TemplateLiteralElementExpr, context: any) {
     throw new Error('Method not implemented.');
   }
 
@@ -266,6 +274,14 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
           ${ts.SyntaxKind[typeNode.kind]}`);
     }
     return ts.factory.createTypeQueryNode(typeNode.typeName);
+  }
+
+  visitVoidExpr(ast: o.VoidExpr, context: Context) {
+    throw new Error('Method not implemented.');
+  }
+
+  visitParenthesizedExpr(ast: o.ParenthesizedExpr, context: any) {
+    throw new Error('Method not implemented.');
   }
 
   private translateType(type: o.Type, context: Context): ts.TypeNode {

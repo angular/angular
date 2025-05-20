@@ -4,31 +4,33 @@ Sometimes app development requires you to send data into a component. This data 
 
 Angular uses a concept called `Input`. This is similar to `props` in other frameworks. To create an `Input` property, use the `@Input` decorator.
 
+Note: Learn more about [accepting data with input properties in the inputs guide](/guide/components/inputs).
+
 In this activity, you'll learn how to use the `@Input` decorator to send information to components.
 
 <hr>
 
 To create an `Input` property, add the `@Input` decorator to a property of a component class:
 
-<docs-code header="user.component.ts" language="ts">
-class UserComponent {
+<docs-code header="user.ts" language="ts">
+class User {
   @Input() occupation = '';
 }
 </docs-code>
 
 When you are ready to pass in a value through an `Input`, values can be set in templates using the attribute syntax. Here's an example:
 
-<docs-code header="app.component.ts" language="angular-ts" highlight="[3]">
+<docs-code header="app.ts" language="angular-ts" highlight="[3]">
 @Component({
   ...
   template: `<app-user occupation="Angular Developer"></app-user>`
 })
-class AppComponent {}
+class App {}
 </docs-code>
 
-Make sure you bind the property `occupation` in your `UserComponent`.
+Make sure you bind the property `occupation` in your `User`.
 
-<docs-code header="user.component.ts" language="angular-ts">
+<docs-code header="user.ts" language="angular-ts">
 @Component({
   ...
   template: `<p>The user's occupation is {{occupation}}</p>`
@@ -38,11 +40,11 @@ Make sure you bind the property `occupation` in your `UserComponent`.
 <docs-workflow>
 
 <docs-step title="Define an `@Input` property">
-Update the code in `user.component.ts` to define an `Input` property on the `UserComponent` called `name`. For now, set the initial value to `empty string`. Be sure to update the template to interpolate the `name` property at the end of the sentence.
+Update the code in `user.ts` to define an `Input` property on the `User` called `name`. For now, set the initial value to `empty string`. Be sure to update the template to interpolate the `name` property at the end of the sentence.
 </docs-step>
 
 <docs-step title="Pass a value to the `@Input` property">
-Update the code in `app.component.ts` to send in the `name` property with a value of `"Simran"`.
+Update the code in `app.ts` to send in the `name` property with a value of `"Simran"`.
 <br>
 
 When the code has been successfully updated, the app will display `The user's name is Simran`.

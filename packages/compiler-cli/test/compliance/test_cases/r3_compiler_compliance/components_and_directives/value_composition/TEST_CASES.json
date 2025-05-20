@@ -3,9 +3,7 @@
   "cases": [
     {
       "description": "should instantiate directives",
-      "inputFiles": [
-        "directives.ts"
-      ],
+      "inputFiles": ["directives.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect ChildComponent.ɵcmp",
@@ -64,14 +62,13 @@
       ],
       "compilationModeFilter": [
         "full compile",
-        "local compile"
+        "local compile",
+        "declaration-only emit"
       ]
     },
     {
       "description": "should support complex selectors",
-      "inputFiles": [
-        "complex_selectors.ts"
-      ],
+      "inputFiles": ["complex_selectors.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect SomeDirective.ɵdir",
@@ -113,23 +110,17 @@
     },
     {
       "description": "should convert #my-app selector to [\"\", \"id\", \"my-app\"]",
-      "inputFiles": [
-        "id_selector.ts"
-      ],
+      "inputFiles": ["id_selector.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect SomeComponent.ɵcomp",
-          "files": [
-            "id_selector.js"
-          ]
+          "files": ["id_selector.js"]
         }
       ]
     },
     {
       "description": "should support components without selector",
-      "inputFiles": [
-        "no_selector.ts"
-      ],
+      "inputFiles": ["no_selector.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect EmptyOutletComponent.ɵcmp",
@@ -153,9 +144,7 @@
     },
     {
       "description": "should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting",
-      "inputFiles": [
-        "view_tokens_di.ts"
-      ],
+      "inputFiles": ["view_tokens_di.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect MyComponent.ɵcmp",
@@ -179,9 +168,7 @@
     },
     {
       "description": "should support structural directives",
-      "inputFiles": [
-        "structural_directives.ts"
-      ],
+      "inputFiles": ["structural_directives.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect IfDirective.ɵdir",
@@ -223,71 +210,71 @@
     },
     {
       "description": "should support array literals",
-      "inputFiles": [
-        "array_literals.ts"
-      ],
+      "inputFiles": ["array_literals.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid array emit",
-          "files": [
-            "array_literals.js"
-          ]
+          "files": ["array_literals.js"]
         }
       ]
     },
     {
       "description": "should support 9+ bindings in array literals",
-      "inputFiles": [
-        "array_literals_many.ts"
-      ],
+      "inputFiles": ["array_literals_many.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid array binding",
-          "files": [
-            "array_literals_many.js"
-          ]
+          "files": ["array_literals_many.js"]
         }
       ]
     },
     {
       "description": "should support object literals",
-      "inputFiles": [
-        "object_literals.ts"
-      ],
+      "inputFiles": ["object_literals.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid object literal binding",
-          "files": [
-            "object_literals.js"
-          ]
+          "files": ["object_literals.js"]
         }
       ]
     },
     {
       "description": "should support expressions nested deeply in object/array literals",
-      "inputFiles": [
-        "literal_nested_expression.ts"
-      ],
+      "inputFiles": ["literal_nested_expression.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid array/object literal binding",
-          "files": [
-            "literal_nested_expression.js"
-          ]
+          "files": ["literal_nested_expression.js"]
         }
       ]
     },
     {
       "description": "should support number literals with separators",
-      "inputFiles": [
-        "number_separator.ts"
-      ],
+      "inputFiles": ["number_separator.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid number literal",
-          "files": [
-            "number_separator.js"
-          ]
+          "files": ["number_separator.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support template literals",
+      "inputFiles": ["template_literals.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template literal binding",
+          "files": ["template_literals.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support tagged template literals",
+      "inputFiles": ["tagged_template_literals.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid tagged template literal binding",
+          "files": ["tagged_template_literals.js"]
         }
       ]
     }

@@ -7,9 +7,13 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {Compiler, Component, NgModule} from '@angular/core';
+import {Compiler, Component, getPlatform, NgModule, PlatformRef} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
+import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
+import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '../testing';
+import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {isBrowser} from '@angular/private/testing';
 
 // Components for the tests.
 class FancyService {
@@ -54,6 +58,15 @@ if (isBrowser) {
     describe('using the test injector with the inject helper', () => {
       describe('setting up Providers', () => {
         beforeEach(() => {
+          getPlatform()?.destroy();
+          // We need to reset the test environment because
+          // browser_tests.init.ts doesn't use platformBrowserDynamicTesting
+          TestBed.resetTestEnvironment();
+          TestBed.initTestEnvironment(
+            [BrowserDynamicTestingModule],
+            platformBrowserDynamicTesting(),
+          );
+
           TestBed.configureTestingModule({
             providers: [{provide: FancyService, useValue: new FancyService()}],
           });
@@ -76,6 +89,17 @@ if (isBrowser) {
             expect(value).toEqual('async value');
           }),
         ));
+
+        afterEach(() => {
+          getPlatform()?.destroy();
+
+          // We're reset the test environment to their default values, cf browser_tests.init.ts
+          TestBed.resetTestEnvironment();
+          TestBed.initTestEnvironment(
+            [BrowserTestingModule, NoopAnimationsModule],
+            platformBrowserTesting(),
+          );
+        });
       });
     });
 

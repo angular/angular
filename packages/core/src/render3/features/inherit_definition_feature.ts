@@ -71,7 +71,6 @@ export function ɵɵInheritDefinitionFeature(
         // would've justified object creation. Unwrap them if necessary.
         const writeableDef = definition as WritableDef;
         writeableDef.inputs = maybeUnwrapEmpty(definition.inputs);
-        writeableDef.inputTransforms = maybeUnwrapEmpty(definition.inputTransforms);
         writeableDef.declaredInputs = maybeUnwrapEmpty(definition.declaredInputs);
         writeableDef.outputs = maybeUnwrapEmpty(definition.outputs);
 
@@ -134,26 +133,12 @@ function mergeInputsWithTransforms<T>(target: WritableDef, source: DirectiveDef<
     if (target.inputs.hasOwnProperty(key)) {
       continue;
     }
+
     const value = source.inputs[key];
-    if (value === undefined) {
-      continue;
-    }
 
-    target.inputs[key] = value;
-    target.declaredInputs[key] = source.declaredInputs[key];
-
-    // If the input is inherited, and we have a transform for it, we also inherit it.
-    // Note that transforms should not be inherited if the input has its own metadata
-    // in the `source` directive itself already (i.e. the input is re-declared/overridden).
-    if (source.inputTransforms !== null) {
-      // Note: transforms are stored with their minified names.
-      // Perf: only access the minified name when there are source transforms.
-      const minifiedName = Array.isArray(value) ? value[0] : value;
-      if (!source.inputTransforms.hasOwnProperty(minifiedName)) {
-        continue;
-      }
-      target.inputTransforms ??= {};
-      target.inputTransforms[minifiedName] = source.inputTransforms[minifiedName];
+    if (value !== undefined) {
+      target.inputs[key] = value;
+      target.declaredInputs[key] = source.declaredInputs[key];
     }
   }
 }

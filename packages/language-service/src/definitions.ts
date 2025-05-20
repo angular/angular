@@ -17,11 +17,13 @@ import {
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {isExternalResource, Resource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {
   DirectiveSymbol,
   DomBindingSymbol,
   ElementSymbol,
+  SelectorlessComponentSymbol,
+  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   TcbLocation,
@@ -36,12 +38,12 @@ import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 import {
   getDirectiveMatchesForAttribute,
   getDirectiveMatchesForElementTag,
-  getTemplateInfoAtPosition,
+  getTypeCheckInfoAtPosition,
   getTemplateLocationFromTcbLocation,
   getTextSpanOfNode,
   isDollarEvent,
   isTypeScriptFile,
-  TemplateInfo,
+  TypeCheckInfo,
   toTextSpan,
 } from './utils';
 
@@ -69,8 +71,8 @@ export class DefinitionBuilder {
     fileName: string,
     position: number,
   ): ts.DefinitionInfoAndBoundSpan | undefined {
-    const templateInfo = getTemplateInfoAtPosition(fileName, position, this.compiler);
-    if (templateInfo === undefined) {
+    const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, position, this.compiler);
+    if (typeCheckInfo === undefined) {
       // We were unable to get a template at the given position. If we are in a TS file, instead
       // attempt to get an Angular definition at the location inside a TS file (examples of this
       // would be templateUrl or a url in styleUrls).
@@ -80,7 +82,7 @@ export class DefinitionBuilder {
       return getDefinitionForExpressionAtPosition(fileName, position, this.compiler);
     }
 
-    const definitionMetas = this.getDefinitionMetaAtPosition(templateInfo, position);
+    const definitionMetas = this.getDefinitionMetaAtPosition(typeCheckInfo, position);
 
     if (definitionMetas === undefined) {
       return undefined;
@@ -96,7 +98,7 @@ export class DefinitionBuilder {
       }
 
       definitions.push(
-        ...(this.getDefinitionsForSymbol({...definitionMeta, ...templateInfo}) ?? []),
+        ...(this.getDefinitionsForSymbol({...definitionMeta, ...typeCheckInfo}) ?? []),
       );
     }
 
@@ -111,13 +113,15 @@ export class DefinitionBuilder {
     symbol,
     node,
     parent,
-    component,
-  }: DefinitionMeta & TemplateInfo): readonly ts.DefinitionInfo[] | undefined {
+    declaration,
+  }: DefinitionMeta & TypeCheckInfo): readonly ts.DefinitionInfo[] | undefined {
     switch (symbol.kind) {
       case SymbolKind.Directive:
       case SymbolKind.Element:
       case SymbolKind.Template:
       case SymbolKind.DomBinding:
+      case SymbolKind.SelectorlessComponent:
+      case SymbolKind.SelectorlessDirective:
         // Though it is generally more appropriate for the above symbol definitions to be
         // associated with "type definitions" since the location in the template is the
         // actual definition location, the better user experience would be to allow
@@ -138,7 +142,7 @@ export class DefinitionBuilder {
         const bindingDefs = this.getDefinitionsForSymbols(...symbol.bindings);
         // Also attempt to get directive matches for the input name. If there is a directive that
         // has the input name as part of the selector, we want to return that as well.
-        const directiveDefs = this.getDirectiveTypeDefsForBindingNode(node, parent, component);
+        const directiveDefs = this.getDirectiveTypeDefsForBindingNode(node, parent, declaration);
         return [...bindingDefs, ...directiveDefs];
       }
       case SymbolKind.LetDeclaration:
@@ -222,11 +226,11 @@ export class DefinitionBuilder {
     fileName: string,
     position: number,
   ): readonly ts.DefinitionInfo[] | undefined {
-    const templateInfo = getTemplateInfoAtPosition(fileName, position, this.compiler);
-    if (templateInfo === undefined) {
+    const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, position, this.compiler);
+    if (typeCheckInfo === undefined) {
       return undefined;
     }
-    const definitionMetas = this.getDefinitionMetaAtPosition(templateInfo, position);
+    const definitionMetas = this.getDefinitionMetaAtPosition(typeCheckInfo, position);
     if (definitionMetas === undefined) {
       return undefined;
     }
@@ -238,6 +242,8 @@ export class DefinitionBuilder {
         case SymbolKind.DomBinding:
         case SymbolKind.Element:
         case SymbolKind.Template:
+        case SymbolKind.SelectorlessComponent:
+        case SymbolKind.SelectorlessDirective:
           definitions.push(...this.getTypeDefinitionsForTemplateInstance(symbol, node));
           break;
         case SymbolKind.Output:
@@ -249,7 +255,7 @@ export class DefinitionBuilder {
           const directiveDefs = this.getDirectiveTypeDefsForBindingNode(
             node,
             parent,
-            templateInfo.component,
+            typeCheckInfo.declaration,
           );
           definitions.push(...directiveDefs);
           break;
@@ -286,7 +292,13 @@ export class DefinitionBuilder {
   }
 
   private getTypeDefinitionsForTemplateInstance(
-    symbol: TemplateSymbol | ElementSymbol | DomBindingSymbol | DirectiveSymbol,
+    symbol:
+      | TemplateSymbol
+      | ElementSymbol
+      | DomBindingSymbol
+      | DirectiveSymbol
+      | SelectorlessComponentSymbol
+      | SelectorlessDirectiveSymbol,
     node: AST | TmplAstNode,
   ): ts.DefinitionInfo[] {
     switch (symbol.kind) {
@@ -313,6 +325,8 @@ export class DefinitionBuilder {
         );
         return this.getTypeDefinitionsForSymbols(...dirs);
       }
+      case SymbolKind.SelectorlessComponent:
+      case SymbolKind.SelectorlessDirective:
       case SymbolKind.Directive:
         return this.getTypeDefinitionsForSymbols(symbol);
     }
@@ -362,10 +376,10 @@ export class DefinitionBuilder {
   }
 
   private getDefinitionMetaAtPosition(
-    {template, component}: TemplateInfo,
+    info: TypeCheckInfo,
     position: number,
   ): DefinitionMeta[] | undefined {
-    const target = getTargetAtPosition(template, position);
+    const target = getTargetAtPosition(info.nodes, position);
     if (target === null) {
       return undefined;
     }
@@ -376,7 +390,7 @@ export class DefinitionBuilder {
 
     const definitionMetas: DefinitionMeta[] = [];
     for (const node of nodes) {
-      const symbol = this.compiler.getTemplateTypeChecker().getSymbolOfNode(node, component);
+      const symbol = this.compiler.getTemplateTypeChecker().getSymbolOfNode(node, info.declaration);
       if (symbol === null) {
         continue;
       }
@@ -407,15 +421,36 @@ function getDefinitionForExpressionAtPosition(
   if (classDeclaration === undefined) {
     return;
   }
-  const componentResources = compiler.getComponentResources(classDeclaration);
-  if (componentResources === null) {
+  const resource = compiler.getDirectiveResources(classDeclaration);
+  if (resource === null) {
     return;
   }
 
-  const allResources = [...componentResources.styles, componentResources.template];
+  let resourceForExpression: Resource | null = null;
 
-  const resourceForExpression = allResources.find((resource) => resource.expression === expression);
-  if (resourceForExpression === undefined || !isExternalResource(resourceForExpression)) {
+  if (resource.template?.node === expression) {
+    resourceForExpression = resource.template;
+  }
+
+  if (resourceForExpression === null && resource.styles !== null) {
+    for (const style of resource.styles) {
+      if (style.node === expression) {
+        resourceForExpression = style;
+        break;
+      }
+    }
+  }
+
+  if (resourceForExpression === null && resource.hostBindings !== null) {
+    for (const binding of resource.hostBindings) {
+      if (binding.node === expression) {
+        resourceForExpression = binding;
+        break;
+      }
+    }
+  }
+
+  if (resourceForExpression === null || !isExternalResource(resourceForExpression)) {
     return;
   }
 

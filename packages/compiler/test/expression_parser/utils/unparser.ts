@@ -23,16 +23,21 @@ import {
   LiteralMap,
   LiteralPrimitive,
   NonNullAssert,
+  ParenthesizedExpression,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   RecursiveAstVisitor,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  TaggedTemplateLiteral,
+  TemplateLiteral,
+  TemplateLiteralElement,
   ThisReceiver,
+  TypeofExpression,
   Unary,
+  VoidExpression,
 } from '../../../src/expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 
@@ -193,8 +198,13 @@ class Unparser implements AstVisitor {
     this._visit(ast.expression);
   }
 
-  visitTypeofExpresion(ast: TypeofExpression, context: any) {
+  visitTypeofExpression(ast: TypeofExpression, context: any) {
     this._expression += 'typeof ';
+    this._visit(ast.expression);
+  }
+
+  visitVoidExpression(ast: VoidExpression, context: any) {
+    this._expression += 'void ';
     this._visit(ast.expression);
   }
 
@@ -213,6 +223,35 @@ class Unparser implements AstVisitor {
     this._expression += '?.[';
     this._visit(ast.key);
     this._expression += ']';
+  }
+
+  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
+    this._expression += '`';
+    for (let i = 0; i < ast.elements.length; i++) {
+      this._visit(ast.elements[i]);
+      const expression = i < ast.expressions.length ? ast.expressions[i] : null;
+      if (expression !== null) {
+        this._expression += '${';
+        this._visit(expression);
+        this._expression += '}';
+      }
+    }
+    this._expression += '`';
+  }
+
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+    this._expression += ast.text;
+  }
+
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
+    this._visit(ast.tag);
+    this._visit(ast.template);
+  }
+
+  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
+    this._expression += '(';
+    this._visit(ast.expression);
+    this._expression += ')';
   }
 
   private _visit(ast: AST) {

@@ -475,7 +475,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @internal
    */
-  _hasOwnPendingAsyncValidator: null | {emitEvent: boolean} = null;
+  _hasOwnPendingAsyncValidator: null | {emitEvent: boolean; shouldHaveEmitted: boolean} = null;
 
   /** @internal */
   _pendingTouched = false;
@@ -759,8 +759,6 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * accessing a value of a parent control (using the `value` property) from the callback of this
    * event might result in getting a value that has not been updated yet. Subscribe to the
    * `valueChanges` event of the parent control instead.
-   *
-   * TODO: this should be piped from events() but is breaking in G3
    */
   public readonly valueChanges!: Observable<TValue>;
 
@@ -770,8 +768,6 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @see {@link FormControlStatus}
    * @see {@link AbstractControl.status}
-   *
-   * TODO: this should be piped from events() but is breaking in G3
    */
   public readonly statusChanges!: Observable<FormControlStatus>;
 
@@ -992,6 +988,22 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     if (changed && opts.emitEvent !== false) {
       this._events.next(new TouchedChangeEvent(true, sourceControl));
     }
+  }
+
+  /**
+   * Marks the control and all its descendant controls as `dirty`.
+   * @see {@link markAsDirty()}
+   *
+   * @param opts Configuration options that determine how the control propagates changes
+   * and emits events after marking is applied.
+   * * `emitEvent`: When true or not supplied (the default), the `events`
+   * observable emits a `PristineChangeEvent` with the `pristine` property being `false`.
+   * When false, no events are emitted.
+   */
+  markAllAsDirty(opts: {emitEvent?: boolean} = {}): void {
+    this.markAsDirty({onlySelf: true, emitEvent: opts.emitEvent, sourceControl: this});
+
+    this._forEachChild((control: AbstractControl) => control.markAllAsDirty(opts));
   }
 
   /**
@@ -1391,7 +1403,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   private _runAsyncValidator(shouldHaveEmitted: boolean, emitEvent?: boolean): void {
     if (this.asyncValidator) {
       this.status = PENDING;
-      this._hasOwnPendingAsyncValidator = {emitEvent: emitEvent !== false};
+      this._hasOwnPendingAsyncValidator = {
+        emitEvent: emitEvent !== false,
+        shouldHaveEmitted: shouldHaveEmitted !== false,
+      };
       const obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription = obs.subscribe((errors: ValidationErrors | null) => {
         this._hasOwnPendingAsyncValidator = null;
@@ -1409,7 +1424,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
       // we're cancelling the validator subscribtion, we keep if it should have emitted
       // because we want to emit eventually if it was required at least once.
-      const shouldHaveEmitted = this._hasOwnPendingAsyncValidator?.emitEvent ?? false;
+      const shouldHaveEmitted =
+        (this._hasOwnPendingAsyncValidator?.emitEvent ||
+          this._hasOwnPendingAsyncValidator?.shouldHaveEmitted) ??
+        false;
       this._hasOwnPendingAsyncValidator = null;
       return shouldHaveEmitted;
     }
@@ -1430,7 +1448,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * ### Manually set the errors for a control
    *
-   * ```
+   * ```ts
    * const login = new FormControl('someLogin');
    * login.setErrors({
    *   notUnique: true
@@ -1532,7 +1550,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * @usageNotes
    * For example, for the following `FormGroup`:
    *
-   * ```
+   * ```ts
    * form = new FormGroup({
    *   address: new FormGroup({ street: new FormControl() })
    * });
@@ -1564,7 +1582,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * @usageNotes
    * For example, for the following `FormGroup`:
    *
-   * ```
+   * ```ts
    * form = new FormGroup({
    *   address: new FormGroup({ street: new FormControl() })
    * });
@@ -1626,6 +1644,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
   /** @internal */
   _initObservables() {
+    // TODO: this should be piped from events() but is breaking in G3
     (this as Writable<this>).valueChanges = new EventEmitter();
     (this as Writable<this>).statusChanges = new EventEmitter();
   }

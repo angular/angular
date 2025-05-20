@@ -1,9 +1,13 @@
 # Enable debugging tests with --config=debug
-test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --spawn_strategy=local
+test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --strategy=TestRunner=standalone
 
 # Do not attempt to de-flake locally.
 # On CI we might set this to `3` to run with deflaking.
 test --flaky_test_attempts=1
+
+# Required by `rules_ts`.
+common --@aspect_rules_ts//ts:skipLibCheck=always
+common --@aspect_rules_ts//ts:default_to_tsc_transpiler
 
 ###############################
 # Filesystem interactions     #
@@ -102,8 +106,6 @@ build:remote --cpu=k8
 build:remote --host_cpu=k8
 
 # Toolchain and platform related flags
-build:remote --crosstool_top=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain_suite
-build:remote --extra_toolchains=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain
 build:remote --extra_execution_platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
 build:remote --host_platform=@npm//@angular/build-tooling/bazel/remote-execution:platform
 build:remote --platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
@@ -113,12 +115,21 @@ build:remote --remote_instance_name=projects/internal-200822/instances/primary_i
 build:remote --bes_instance_name=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
+build:remote --remote_upload_local_results=false
+
+build:remote --remote_grpc_log=/tmp/rbe-grpc.log
+
+# See: https://docs.google.com/document/d/1NgDPsCIwprDdqC1zj0qQrh5KGK2hQTSTux1DAvi4rSc/edit?tab=t.0.
+build:remote --experimental_remote_execution_keepalive
 
 # Use HTTP remote cache
 build:remote-cache --remote_cache=https://storage.googleapis.com/angular-team-cache
 build:remote-cache --remote_accept_cached=true
-build:remote-cache --remote_upload_local_results=true
+build:remote-cache --remote_upload_local_results=false
 build:remote-cache --google_default_credentials
+
+# Additional flags added when running a "trusted build" with additional access
+build:trusted-build --remote_upload_local_results=true
 
 # Ensure that tags like "no-remote-exec" get propagated to actions created by rules,
 # even if the rule implementation does not explicitly pass them to the execution requirements.

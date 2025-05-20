@@ -7,7 +7,7 @@ filegroup(
         "**/*.png",
         "*.css",
     ]) + [
-        "//third_party/github.com/google/material-design-icons",
-        "//third_party/github.com/google/material-design-icons:LICENSE",
+        "//third_party/fonts.google.com/material-symbols-outlined",
+        "//third_party/fonts.google.com/material-symbols-outlined:LICENSE",
     ],
 )

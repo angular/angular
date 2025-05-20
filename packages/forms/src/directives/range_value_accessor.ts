@@ -48,8 +48,8 @@ const RANGE_VALUE_ACCESSOR: Provider = {
   selector:
     'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]',
   host: {
-    '(change)': 'onChange($event.target.value)',
-    '(input)': 'onChange($event.target.value)',
+    '(change)': 'onChange($any($event.target).value)',
+    '(input)': 'onChange($any($event.target).value)',
     '(blur)': 'onTouched()',
   },
   providers: [RANGE_VALUE_ACCESSOR],
@@ -61,7 +61,7 @@ export class RangeValueAccessor
 {
   /**
    * Sets the "value" property on the input element.
-   * @nodoc
+   * @docs-private
    */
   writeValue(value: any): void {
     this.setProperty('value', parseFloat(value));
@@ -69,7 +69,7 @@ export class RangeValueAccessor
 
   /**
    * Registers a function called when the control value changes.
-   * @nodoc
+   * @docs-private
    */
   override registerOnChange(fn: (_: number | null) => void): void {
     this.onChange = (value) => {

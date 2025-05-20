@@ -14,6 +14,7 @@ import { HttpTransferCacheOptions } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
+import { ListenerOptions } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
 import { Predicate } from '@angular/core';
@@ -32,9 +33,9 @@ export function bootstrapApplication(rootComponent: Type<unknown>, options?: App
 
 // @public
 export class BrowserModule {
-    constructor(providersAlreadyPresent: boolean | null);
+    constructor();
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<BrowserModule, [{ optional: true; skipSelf: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<BrowserModule, never>;
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<BrowserModule>;
     // (undocumented)
@@ -77,7 +78,7 @@ export const EVENT_MANAGER_PLUGINS: InjectionToken<EventManagerPlugin[]>;
 // @public
 export class EventManager {
     constructor(plugins: EventManagerPlugin[], _zone: NgZone);
-    addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+    addEventListener(element: HTMLElement, eventName: string, handler: Function, options?: ListenerOptions): Function;
     getZone(): NgZone;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<EventManager, never>;
@@ -88,19 +89,19 @@ export class EventManager {
 // @public
 export abstract class EventManagerPlugin {
     constructor(_doc: any);
-    abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+    abstract addEventListener(element: HTMLElement, eventName: string, handler: Function, options?: ListenerOptions): Function;
     // (undocumented)
     manager: EventManager;
     abstract supports(eventName: string): boolean;
 }
 
-// @public
+// @public @deprecated
 export const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
-// @public
+// @public @deprecated
 export const HAMMER_LOADER: InjectionToken<HammerLoader>;
 
-// @public
+// @public @deprecated
 export class HammerGestureConfig {
     buildHammer(element: HTMLElement): HammerInstance;
     events: string[];
@@ -123,10 +124,10 @@ export class HammerGestureConfig {
     static ɵprov: i0.ɵɵInjectableDeclaration<HammerGestureConfig>;
 }
 
-// @public
+// @public @deprecated
 export type HammerLoader = () => Promise<void>;
 
-// @public
+// @public @deprecated
 export class HammerModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HammerModule, never>;

@@ -1,6 +1,7 @@
-package(default_visibility = ["//visibility:private"])
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_config")
+load("//tools:defaults2.bzl", "ts_project")
 
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_config", "ts_library")
+package(default_visibility = ["//visibility:private"])
 
 ts_config(
     name = "tsconfig",
@@ -10,15 +11,16 @@ ts_config(
     ],
 )
 
-ts_library(
+ts_project(
     name = "strict_types_lib",
     testonly = True,
     srcs = glob(
         ["**/*.ts"],
     ),
+    extends = "//packages/core:tsconfig_test",
     tsconfig = ":tsconfig",
     deps = [
-        "//packages/core",
+        "//packages/core:core_rjs",
     ],
 )
 

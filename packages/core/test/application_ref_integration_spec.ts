@@ -14,8 +14,8 @@ import {
   NgModule,
   OnInit,
   TestabilityRegistry,
-} from '@angular/core';
-import {getTestBed} from '@angular/core/testing';
+} from '../src/core';
+import {getTestBed} from '../testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
@@ -69,7 +69,7 @@ describe('ApplicationRef bootstrap', () => {
       expect(helloWorldComponent.log).toEqual(['OnInit', 'DoCheck', 'DoCheck']);
 
       // Cleanup TestabilityRegistry
-      const registry: TestabilityRegistry = getTestBed().get(TestabilityRegistry);
+      const registry = getTestBed().inject(TestabilityRegistry);
       registry.unregisterAllApplications();
     }),
   );

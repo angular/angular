@@ -22,19 +22,19 @@ import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 /**
  * How to handle a navigation request to the current URL. One of:
  *
- * - `'ignore'` :  The router ignores the request it is the same as the current state.
+ * - `'ignore'` : The router ignores the request if it is the same as the current state.
  * - `'reload'` : The router processes the URL even if it is not different from the current state.
- * One example of when you might want this option is if a `canMatch` guard depends on
+ * One example of when you might want to use this option is if a `canMatch` guard depends on the
  * application state and initially rejects navigation to a route. After fixing the state, you want
- * to re-navigate to the same URL so the route with the `canMatch` guard can activate.
+ * to re-navigate to the same URL so that the route with the `canMatch` guard can activate.
  *
- * Note that this only configures whether the Route reprocesses the URL and triggers related
- * action and events like redirects, guards, and resolvers. By default, the router re-uses a
+ * Note that this only configures whether or not the Route reprocesses the URL and triggers related
+ * actions and events like redirects, guards, and resolvers. By default, the router re-uses a
  * component instance when it re-navigates to the same component type without visiting a different
  * component first. This behavior is configured by the `RouteReuseStrategy`. In order to reload
  * routed components on same url navigation, you need to set `onSameUrlNavigation` to `'reload'`
  * _and_ provide a `RouteReuseStrategy` which returns `false` for `shouldReuseRoute`. Additionally,
- * resolvers and most guards for routes do not run unless the path or path params changed
+ * resolvers and most guards for routes do not run unless the path or path params have changed
  * (configured by `runGuardsAndResolvers`).
  *
  * @publicApi
@@ -46,8 +46,8 @@ import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 export type OnSameUrlNavigation = 'reload' | 'ignore';
 
 /**
- * The `InjectionToken` and `@Injectable` classes for guards and resolvers are deprecated in favor
- * of plain JavaScript functions instead.. Dependency injection can still be achieved using the
+ * The `InjectionToken` and `@Injectable` classes for guards are deprecated in favor
+ * of plain JavaScript functions instead. Dependency injection can still be achieved using the
  * [`inject`](api/core/inject) function from `@angular/core` and an injectable class can be used as
  * a functional guard using [`inject`](api/core/inject): `canActivate: [() =>
  * inject(myGuard).canActivate()]`.
@@ -58,11 +58,23 @@ export type OnSameUrlNavigation = 'reload' | 'ignore';
  * @see {@link CanActivateFn}
  * @see {@link CanActivateChildFn}
  * @see {@link CanDeactivateFn}
- * @see {@link ResolveFn}
- * @see {@link core/inject}
+ * @see {@link /api/core/inject inject}
  * @publicApi
  */
-export type DeprecatedGuard = ProviderToken<any> | any;
+export type DeprecatedGuard = ProviderToken<any> | string;
+
+/**
+ * The `InjectionToken` and `@Injectable` classes for resolvers are deprecated in favor
+ * of plain JavaScript functions instead. Dependency injection can still be achieved using the
+ * [`inject`](api/core/inject) function from `@angular/core` and an injectable class can be used as
+ * a functional guard using [`inject`](api/core/inject): `myResolvedData: () => inject(MyResolver).resolve()`.
+ *
+ * @deprecated
+ * @see {@link ResolveFn}
+ * @see {@link /api/core/inject inject}
+ * @publicApi
+ */
+export type DeprecatedResolve = DeprecatedGuard | any;
 
 /**
  * The supported types that can be returned from a `Router` guard.
@@ -90,7 +102,7 @@ export type GuardResult = boolean | UrlTree | RedirectCommand;
  *       if (!authService.isLoggedIn()) {
  *         const loginPath = router.parseUrl("/login");
  *         return new RedirectCommand(loginPath, {
- *           skipLocationChange: "true",
+ *           skipLocationChange: true,
  *         });
  *       }
  *
@@ -197,7 +209,7 @@ export type Data = {
  * @publicApi
  */
 export type ResolveData = {
-  [key: string | symbol]: ResolveFn<unknown> | DeprecatedGuard;
+  [key: string | symbol]: ResolveFn<unknown> | DeprecatedResolve;
 };
 
 /**
@@ -304,7 +316,7 @@ export type RedirectFunction = (
     ActivatedRouteSnapshot,
     'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'
   >,
-) => string | UrlTree;
+) => MaybeAsync<string | UrlTree>;
 
 /**
  * A policy for when to run guards and resolvers on a route.
@@ -974,8 +986,7 @@ export type CanActivateChildFn = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
- *
+ * ```ts
  * @Injectable()
  * class CanDeactivateTeam implements CanDeactivate<TeamComponent> {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
@@ -1071,8 +1082,7 @@ export type CanDeactivateFn<T> = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
- *
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -1151,8 +1161,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  * Here, the defined `resolve()` function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
-
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -1363,8 +1372,7 @@ export type ResolveFn<T> = (
  * Here, the defined guard function is provided as part of the `Route` object
  * in the router configuration:
  *
- * ```
- *
+ * ```ts
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -1497,7 +1505,7 @@ export interface NavigationBehaviorOptions {
    * This feature is useful for redirects, such as redirecting to an error page, without changing
    * the value that will be displayed in the browser's address bar.
    *
-   * ```
+   * ```ts
    * const canActivate: CanActivateFn = (route: ActivatedRouteSnapshot) => {
    *   const userService = inject(UserService);
    *   const router = inject(Router);

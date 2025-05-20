@@ -6,8 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, signal} from '@angular/core';
-import {ReactiveNode, setPostSignalSetFn, SIGNAL} from '@angular/core/primitives/signals';
+import {computed, signal} from '../../src/core';
+import {
+  ReactiveHookFn,
+  ReactiveNode,
+  setPostProducerCreatedFn,
+  setPostSignalSetFn,
+  createSignalTuple,
+  SIGNAL,
+} from '../../primitives/signals';
 
 describe('signals', () => {
   it('should be a getter which reflects the set value', () => {
@@ -166,7 +173,7 @@ describe('signals', () => {
   });
 
   describe('post-signal-set functions', () => {
-    let prevPostSignalSetFn: (() => void) | null = null;
+    let prevPostSignalSetFn: ReactiveHookFn | null = null;
     let log: number;
     beforeEach(() => {
       log = 0;
@@ -197,5 +204,44 @@ describe('signals', () => {
       counter.set(0);
       expect(log).toBe(0);
     });
+
+    it('should pass post-signal-set fn the node that was updated', () => {
+      const counter = signal(0, {debugName: 'test-signal'});
+      let node: ReactiveNode | null = null;
+      setPostSignalSetFn((n: ReactiveNode) => {
+        node = n;
+      });
+
+      counter.set(1);
+      expect(node!.debugName).toBe('test-signal');
+    });
+  });
+
+  it('should call the post-producer-created fn when signal is called', () => {
+    const producerKindsCreated: string[] = [];
+    const prev = setPostProducerCreatedFn((node) => producerKindsCreated.push(node.kind));
+    signal(0);
+
+    expect(producerKindsCreated).toEqual(['signal']);
+    setPostProducerCreatedFn(prev);
+  });
+});
+
+describe('createSignalTuple', () => {
+  it('get returns the signal value', () => {
+    const [get] = createSignalTuple(0);
+    expect(get()).toBe(0);
+  });
+
+  it('set sets the signal value', () => {
+    const [get, set] = createSignalTuple(0);
+    set(1);
+    expect(get()).toBe(1);
+  });
+
+  it('update updates the values based on the previous value', () => {
+    const [get, , update] = createSignalTuple(0);
+    update((prev) => prev + 2);
+    expect(get()).toBe(2);
   });
 });

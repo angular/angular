@@ -7,9 +7,8 @@ import {TemplateModule} from './template/template.module';
 describe('AppComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveModule, TemplateModule],
       declarations: [AppComponent],
-    }).compileComponents();
+    });
   }));
 
   it('should create the app', waitForAsync(() => {

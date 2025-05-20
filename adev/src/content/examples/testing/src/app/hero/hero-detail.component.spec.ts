@@ -67,9 +67,8 @@ function overrideSetup() {
       // #docregion override-component-method
       .overrideComponent(HeroDetailComponent, {
         set: {providers: [{provide: HeroDetailService, useClass: HeroDetailServiceSpy}]},
-      })
-      // #enddocregion override-component-method
-      .compileComponents();
+      });
+    // #enddocregion override-component-method
   });
   // #enddocregion setup-override
 
@@ -137,7 +136,7 @@ function heroModuleSetup() {
           provideHttpClientTesting(),
         ],
       }),
-    ).compileComponents();
+    );
   });
   // #enddocregion setup-hero-module
 
@@ -226,7 +225,7 @@ function formsModuleSetup() {
           provideRouter([{path: 'heroes/:id', component: HeroDetailComponent}]),
         ],
       }),
-    ).compileComponents();
+    );
   });
   // #enddocregion setup-forms-module
 
@@ -252,7 +251,7 @@ function sharedModuleSetup() {
           provideHttpClientTesting(),
         ],
       }),
-    ).compileComponents();
+    );
   });
   // #enddocregion setup-shared-module
 

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {PotentialImportMode} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {PotentialImportMode} from '../../src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {DiagnosticCategoryLabel} from '../../src/ngtsc/core/api';

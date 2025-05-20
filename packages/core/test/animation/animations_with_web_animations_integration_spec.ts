@@ -5,18 +5,26 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {animate, query, state, style, transition, trigger} from '@angular/animations';
+import {
+  animate,
+  query,
+  state,
+  style,
+  transition,
+  trigger,
+  ɵAnimationGroupPlayer as AnimationGroupPlayer,
+} from '@angular/animations';
 import {
   AnimationDriver,
   ɵAnimationEngine,
   ɵWebAnimationsDriver,
   ɵWebAnimationsPlayer,
+  ɵTransitionAnimationPlayer as TransitionAnimationPlayer,
 } from '@angular/animations/browser';
-import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
-import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
-import {Component, ViewChild} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component, ViewChild} from '../../src/core';
+import {TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {isNode} from '@angular/private/testing';
 
 (function () {
   // these tests are only meant to be run within the DOM (for now)

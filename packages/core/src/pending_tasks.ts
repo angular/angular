@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
@@ -15,6 +15,7 @@ import {
   ChangeDetectionScheduler,
   NotificationSource,
 } from './change_detection/scheduling/zoneless_scheduling';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 
 /**
  * Internal implementation of the pending tasks service.
@@ -22,14 +23,35 @@ import {
 export class PendingTasksInternal implements OnDestroy {
   private taskId = 0;
   private pendingTasks = new Set<number>();
-  private get _hasPendingTasks() {
-    return this.hasPendingTasks.value;
+  private destroyed = false;
+
+  private pendingTask = new BehaviorSubject<boolean>(false);
+
+  get hasPendingTasks(): boolean {
+    // Accessing the value of a closed `BehaviorSubject` throws an error.
+    return this.destroyed ? false : this.pendingTask.value;
   }
-  hasPendingTasks = new BehaviorSubject<boolean>(false);
+
+  /**
+   * In case the service is about to be destroyed, return a self-completing observable.
+   * Otherwise, return the observable that emits the current state of pending tasks.
+   */
+  get hasPendingTasksObservable(): Observable<boolean> {
+    if (this.destroyed) {
+      // Manually creating the observable pulls less symbols from RxJS than `of(false)`.
+      return new Observable<boolean>((subscriber) => {
+        subscriber.next(false);
+        subscriber.complete();
+      });
+    }
+
+    return this.pendingTask;
+  }
 
   add(): number {
-    if (!this._hasPendingTasks) {
-      this.hasPendingTasks.next(true);
+    // Emitting a value to a closed subject throws an error.
+    if (!this.hasPendingTasks && !this.destroyed) {
+      this.pendingTask.next(true);
     }
     const taskId = this.taskId++;
     this.pendingTasks.add(taskId);
@@ -42,16 +64,23 @@ export class PendingTasksInternal implements OnDestroy {
 
   remove(taskId: number): void {
     this.pendingTasks.delete(taskId);
-    if (this.pendingTasks.size === 0 && this._hasPendingTasks) {
-      this.hasPendingTasks.next(false);
+    if (this.pendingTasks.size === 0 && this.hasPendingTasks) {
+      this.pendingTask.next(false);
     }
   }
 
   ngOnDestroy(): void {
     this.pendingTasks.clear();
-    if (this._hasPendingTasks) {
-      this.hasPendingTasks.next(false);
+    if (this.hasPendingTasks) {
+      this.pendingTask.next(false);
     }
+    // We call `unsubscribe()` to release observers, as users may forget to
+    // unsubscribe manually when subscribing to `isStable`. We do not call
+    // `complete()` because it is unsafe; if someone subscribes using the `first`
+    // operator and the observable completes before emitting a value,
+    // RxJS will throw an error.
+    this.destroyed = true;
+    this.pendingTask.unsubscribe();
   }
 
   /** @nocollapse */
@@ -81,12 +110,12 @@ export class PendingTasksInternal implements OnDestroy {
  * taskCleanup();
  * ```
  *
- * @publicApi
- * @developerPreview
+ * @publicApi 20.0
  */
 export class PendingTasks {
-  private internalPendingTasks = inject(PendingTasksInternal);
-  private scheduler = inject(ChangeDetectionScheduler);
+  private readonly internalPendingTasks = inject(PendingTasksInternal);
+  private readonly scheduler = inject(ChangeDetectionScheduler);
+  private readonly errorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   /**
    * Adds a new task that should block application's stability.
    * @returns A cleanup function that removes a task when called.
@@ -107,30 +136,19 @@ export class PendingTasks {
   /**
    * Runs an asynchronous function and blocks the application's stability until the function completes.
    *
-   * ```
+   * ```ts
    * pendingTasks.run(async () => {
    *   const userData = await fetch('/api/user');
    *   this.userData.set(userData);
    * });
    * ```
    *
-   * Application stability is at least delayed until the next tick after the `run` method resolves
-   * so it is safe to make additional updates to application state that would require UI synchronization:
-   *
-   * ```
-   * const userData = await pendingTasks.run(() => fetch('/api/user'));
-   * this.userData.set(userData);
-   * ```
-   *
    * @param fn The asynchronous function to execute
+   * @developerPreview 19.0
    */
-  async run<T>(fn: () => Promise<T>): Promise<T> {
+  run(fn: () => Promise<unknown>): void {
     const removeTask = this.add();
-    try {
-      return await fn();
-    } finally {
-      removeTask();
-    }
+    fn().catch(this.errorHandler).finally(removeTask);
   }
 
   /** @nocollapse */

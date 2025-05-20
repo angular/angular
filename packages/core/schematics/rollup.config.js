@@ -38,7 +38,7 @@ const stripBannerPlugin = {
 const banner = `'use strict';
 /**
  * @license Angular v0.0.0-PLACEHOLDER
- * (c) 2010-2024 Google LLC. https://angular.io/
+ * (c) 2010-2025 Google LLC. https://angular.io/
  * License: MIT
  */`;
 
@@ -50,11 +50,14 @@ const plugins = [
   commonjs(),
 ];
 
+/** @type {import('rollup').RollupOptions} */
 const config = {
   plugins,
   external: ['typescript', 'tslib', /@angular-devkit\/.+/],
   output: {
     exports: 'auto',
+    chunkFileNames: '[name]-[hash].cjs',
+    entryFileNames: '[name].cjs',
     banner,
   },
 };

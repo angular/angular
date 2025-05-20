@@ -4,7 +4,7 @@ To merge the completed translations into your project, complete the following ac
 
 1. Use the [Angular CLI][CliMain] to build a copy of the distributable files of your project
 1. Use the `"localize"` option to replace all of the i18n messages with the valid translations and build a localized variant application.
-    A variant application is a complete a copy of the distributable files of your application translated for a single locale.
+    A variant application is a complete copy of the distributable files of your application translated for a single locale.
 
 After you merge the translations, serve each distributable copy of the application using server-side language detection or different subdirectories.
 

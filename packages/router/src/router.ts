@@ -8,27 +8,29 @@
 
 import {Location} from '@angular/common';
 import {
+  ɵConsole as Console,
+  EnvironmentInjector,
   inject,
   Injectable,
-  Type,
-  ɵConsole as Console,
-  ɵPendingTasks as PendingTasks,
+  ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
+  Type,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
+import {standardizeConfig} from './components/empty_outlet';
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
 import {INPUT_BINDER} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {
-  BeforeActivateRoutes,
   Event,
   IMPERATIVE_NAVIGATION,
+  isPublicRouterEvent,
   NavigationCancel,
   NavigationCancellationCode,
   NavigationEnd,
   NavigationTrigger,
-  PrivateRouterEvents,
   RedirectRequest,
 } from './events';
 import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
@@ -56,7 +58,7 @@ import {
 } from './url_tree';
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
-import {standardizeConfig} from './components/empty_outlet';
+import {RouterState} from './router_state';
 
 /**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
@@ -114,6 +116,7 @@ export class Router {
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly location = inject(Location);
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
+  private readonly injector = inject(EnvironmentInjector);
 
   /**
    * The private `Subject` type for the public events exposed in the getter. This is used internally
@@ -134,7 +137,7 @@ export class Router {
   /**
    * The current state of routing in this NgModule.
    */
-  get routerState() {
+  get routerState(): RouterState {
     return this.stateManager.getRouterState();
   }
 
@@ -176,13 +179,11 @@ export class Router {
   constructor() {
     this.resetConfig(this.config);
 
-    this.navigationTransitions
-      .setupNavigations(this, this.currentUrlTree, this.routerState)
-      .subscribe({
-        error: (e) => {
-          this.console.warn(ngDevMode ? `Unhandled Navigation Error: ${e}` : e);
-        },
-      });
+    this.navigationTransitions.setupNavigations(this).subscribe({
+      error: (e) => {
+        this.console.warn(ngDevMode ? `Unhandled Navigation Error: ${e}` : e);
+      },
+    });
     this.subscribeToNavigationEvents();
   }
 
@@ -241,7 +242,7 @@ export class Router {
           this._events.next(e);
         }
       } catch (e: unknown) {
-        this.navigationTransitions.transitionAbortSubject.next(e as Error);
+        this.navigationTransitions.transitionAbortWithErrorSubject.next(e as Error);
       }
     });
     this.eventsSubscription.add(subscription);
@@ -279,12 +280,8 @@ export class Router {
     // already patch onPopState, so location change callback will
     // run into ngZone
     this.nonRouterCurrentEntryChangeSubscription ??=
-      this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state) => {
-        // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
-        // hybrid apps.
-        setTimeout(() => {
-          this.navigateToSyncWithBrowser(url, 'popstate', state);
-        }, 0);
+      this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state, source) => {
+        this.navigateToSyncWithBrowser(url, source, state);
       });
   }
 
@@ -324,7 +321,12 @@ export class Router {
     }
 
     const urlTree = this.parseUrl(url);
-    this.scheduleNavigation(urlTree, source, restoredState, extras);
+    this.scheduleNavigation(urlTree, source, restoredState, extras).catch((e) => {
+      if (this.disposed) {
+        return;
+      }
+      this.injector.get(ɵINTERNAL_APPLICATION_ERROR_HANDLER)(e);
+    });
   }
 
   /** The current URL. */
@@ -355,7 +357,7 @@ export class Router {
    *
    * @usageNotes
    *
-   * ```
+   * ```ts
    * router.resetConfig([
    *  { path: 'team/:id', component: TeamCmp, children: [
    *    { path: 'simple', component: SimpleCmp },
@@ -370,13 +372,19 @@ export class Router {
     this.navigated = false;
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     this.dispose();
   }
 
   /** Disposes of the router. */
   dispose(): void {
+    // We call `unsubscribe()` to release observers, as users may forget to
+    // unsubscribe manually when subscribing to `router.events`. We do not call
+    // `complete()` because it is unsafe; if someone subscribes using the `first`
+    // operator and the observable completes before emitting a value,
+    // RxJS will throw an error.
+    this._events.unsubscribe();
     this.navigationTransitions.complete();
     if (this.nonRouterCurrentEntryChangeSubscription) {
       this.nonRouterCurrentEntryChangeSubscription.unsubscribe();
@@ -434,7 +442,7 @@ export class Router {
    * tree should be created relative to the root.
    * ```
    */
-  createUrlTree(commands: any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
+  createUrlTree(commands: readonly any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
     const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
       navigationExtras;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
@@ -492,7 +500,7 @@ export class Router {
    *
    * The following calls request navigation to an absolute path.
    *
-   * ```
+   * ```ts
    * router.navigateByUrl("/team/33/user/11");
    *
    * // Navigate without updating the URL
@@ -534,7 +542,7 @@ export class Router {
    *
    * The following calls request navigation to a dynamic route path relative to the current URL.
    *
-   * ```
+   * ```ts
    * router.navigate(['team', 33, 'user', 11], {relativeTo: route});
    *
    * // Navigate without updating the URL, overriding the default behavior
@@ -545,7 +553,7 @@ export class Router {
    *
    */
   navigate(
-    commands: any[],
+    commands: readonly any[],
     extras: NavigationExtras = {skipLocationChange: false},
   ): Promise<boolean> {
     validateCommands(commands);
@@ -669,7 +677,7 @@ export class Router {
   }
 }
 
-function validateCommands(commands: string[]): void {
+function validateCommands(commands: readonly string[]): void {
   for (let i = 0; i < commands.length; i++) {
     const cmd = commands[i];
     if (cmd == null) {
@@ -680,8 +688,4 @@ function validateCommands(commands: string[]): void {
       );
     }
   }
-}
-
-function isPublicRouterEvent(e: Event | PrivateRouterEvents): e is Event {
-  return !(e instanceof BeforeActivateRoutes) && !(e instanceof RedirectRequest);
 }

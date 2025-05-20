@@ -35,7 +35,7 @@ export class EventContract implements UnrenamedEventContract {
     // (undocumented)
     static MOUSE_SPECIAL_SUPPORT: boolean;
     registerDispatcher(dispatcher: Dispatcher, restriction: Restriction): void;
-    replayEarlyEventInfos(earlyEventInfos: eventInfoLib.EventInfo[]): void;
+    replayEarlyEventInfos(earlyEventInfos: EventInfo[]): void;
     replayEarlyEvents(earlyJsactionData?: EarlyJsactionData | undefined): void;
 }
 

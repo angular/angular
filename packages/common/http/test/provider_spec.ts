@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, XhrFactory} from '@angular/common';
+import {DOCUMENT, XhrFactory} from '../../index';
 import {
   FetchBackend,
   HTTP_INTERCEPTORS,
@@ -20,16 +20,13 @@ import {
   HttpResponse,
   HttpXhrBackend,
   JsonpClientBackend,
-} from '@angular/common/http';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+} from '../index';
+import {HttpClientTestingModule, HttpTestingController, provideHttpClientTesting} from '../testing';
 import {
   ApplicationRef,
   createEnvironmentInjector,
   EnvironmentInjector,
+  ErrorHandler,
   inject,
   InjectionToken,
   PLATFORM_ID,
@@ -61,6 +58,7 @@ describe('without provideHttpClientTesting', () => {
     });
 
     let stable = false;
+    const appRef = TestBed.inject(ApplicationRef);
     TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
       stable = v;
     });
@@ -68,8 +66,27 @@ describe('without provideHttpClientTesting', () => {
     expect(stable).toBe(true);
     TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
     expect(stable).toBe(false);
-    await Promise.resolve();
-    expect(stable).toBe(true);
+    await expectAsync(appRef.whenStable()).toBeResolved();
+  });
+
+  it('can use an ErrorHandler that injects HttpClient', () => {
+    // This test ensures there is no circular dependency:
+    // possible loops are:
+    // INTERNAL_APPLICATION_ERROR_HANDLER -> ErrorHandler -> HttpClient -> PendingTasks -> ChangeDetectionScheduler -> INTERNAL_APPLICATION_ERROR_HANDLER
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withInterceptors([() => from(Promise.resolve(new HttpResponse()))])),
+        {
+          provide: ErrorHandler,
+          useClass: class extends ErrorHandler {
+            client = inject(HttpClient);
+            override handleError(error: any): void {}
+          },
+        },
+      ],
+    });
+
+    expect(() => TestBed.inject(ApplicationRef)).not.toThrow();
   });
 });
 

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed} from '@angular/core/testing';
-import {filter, tap} from 'rxjs/operators';
+import {TestBed} from '../testing';
+import {filter} from 'rxjs/operators';
 
 import {EventEmitter} from '../src/event_emitter';
-import {ApplicationRef} from '../public_api';
+import {ApplicationRef, NgZone} from '../public_api';
 
 describe('EventEmitter', () => {
   let emitter: EventEmitter<number>;
@@ -204,6 +204,21 @@ describe('EventEmitter', () => {
     await TestBed.inject(ApplicationRef).whenStable();
     expect(emitValue!).toBeDefined();
     expect(emitValue!).toEqual(1);
+  });
+
+  it('should not prevent app from becoming stable if subscriber throws an error', async () => {
+    const logs: string[] = [];
+    const ngZone = TestBed.inject(NgZone);
+    const appRef = TestBed.inject(ApplicationRef);
+    appRef.isStable.subscribe((isStable) => logs.push(`isStable=${isStable}`));
+    const emitter = TestBed.runInInjectionContext(() => new EventEmitter<number>(true));
+    emitter.subscribe(() => {
+      throw new Error('Given this is some TypeError...');
+    });
+    // Emit inside the Angular zone so that the error is not captured by Jasmine in `afterAll`.
+    ngZone.run(() => emitter.emit(1));
+    await appRef.whenStable();
+    expect(logs).toEqual(['isStable=true', 'isStable=false', 'isStable=true']);
   });
 
   // TODO: vsavkin: add tests cases

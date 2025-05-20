@@ -11,6 +11,7 @@ import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {
   AbstractControl,
   CheckboxControlValueAccessor,
+  ControlEvent,
   ControlValueAccessor,
   DefaultValueAccessor,
   FormArray,
@@ -21,18 +22,23 @@ import {
   FormGroup,
   FormGroupDirective,
   FormGroupName,
+  FormResetEvent,
+  FormSubmittedEvent,
   NgControl,
   NgForm,
   NgModel,
   NgModelGroup,
   SelectControlValueAccessor,
   SelectMultipleControlValueAccessor,
+  StatusChangeEvent,
+  TouchedChangeEvent,
   ValidationErrors,
   Validator,
   Validators,
-} from '@angular/forms';
-import {selectValueAccessor} from '@angular/forms/src/directives/shared';
-import {composeValidators} from '@angular/forms/src/validators';
+  ValueChangeEvent,
+} from '../index';
+import {selectValueAccessor} from '../src/directives/shared';
+import {composeValidators} from '../src/validators';
 
 import {asyncValidator} from './util';
 
@@ -431,6 +437,37 @@ describe('Form Directives', () => {
 
       expect(f.form.errors).toEqual({'async': true});
     }));
+
+    describe('events emissions', () => {
+      it('formControl should emit an event when resetting a form', () => {
+        const f = new NgForm([], []);
+        const events: ControlEvent[] = [];
+
+        f.form.events.subscribe((event) => events.push(event));
+        f.resetForm();
+
+        expect(events.length).toBe(4);
+        expect(events[0]).toBeInstanceOf(TouchedChangeEvent);
+        expect(events[1]).toBeInstanceOf(ValueChangeEvent);
+        expect(events[2]).toBeInstanceOf(StatusChangeEvent);
+
+        // The event that matters
+        expect(events[3]).toBeInstanceOf(FormResetEvent);
+        expect(events[3].source).toBe(f.form);
+      });
+
+      it('formControl should emit an event when submitting a form', () => {
+        const f = new NgForm([], []);
+        const events: ControlEvent[] = [];
+
+        f.form.events.subscribe((event) => events.push(event));
+        f.onSubmit({} as any);
+
+        expect(events.length).toBe(1);
+        expect(events[0]).toBeInstanceOf(FormSubmittedEvent);
+        expect(events[0].source).toBe(f.form);
+      });
+    });
   });
 
   describe('FormGroupName', () => {

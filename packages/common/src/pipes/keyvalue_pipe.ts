@@ -132,25 +132,26 @@ export function defaultComparator<K, V>(
 ): number {
   const a = keyValueA.key;
   const b = keyValueB.key;
-  // if same exit with 0;
+  // If both keys are the same, return 0 (no sorting needed).
   if (a === b) return 0;
-  // make sure that undefined are at the end of the sort.
-  if (a === undefined) return 1;
-  if (b === undefined) return -1;
-  // make sure that nulls are at the end of the sort.
-  if (a === null) return 1;
-  if (b === null) return -1;
+  // If one of the keys is `null` or `undefined`, place it at the end of the sort.
+  if (a == null) return 1; // `a` comes after `b`.
+  if (b == null) return -1; // `b` comes after `a`.
+  // If both keys are strings, compare them lexicographically.
   if (typeof a == 'string' && typeof b == 'string') {
     return a < b ? -1 : 1;
   }
+  // If both keys are numbers, sort them numerically.
   if (typeof a == 'number' && typeof b == 'number') {
     return a - b;
   }
+  // If both keys are booleans, sort `false` before `true`.
   if (typeof a == 'boolean' && typeof b == 'boolean') {
     return a < b ? -1 : 1;
   }
-  // `a` and `b` are of different types. Compare their string values.
+  // Fallback case: if keys are of different types, compare their string representations.
   const aString = String(a);
   const bString = String(b);
+  // Compare the string representations lexicographically.
   return aString == bString ? 0 : aString < bString ? -1 : 1;
 }

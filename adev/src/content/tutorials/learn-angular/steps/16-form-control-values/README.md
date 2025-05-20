@@ -1,6 +1,8 @@
 # Getting form control value
 
-Now that your forms are setup with Angular, the next step is to access the values from the form controls.
+Now that your forms are set up with Angular, the next step is to access the values from the form controls.
+
+Note: Learn more about [adding a basic form control in the in-depth guide](/guide/forms/reactive-forms#adding-a-basic-form-control).
 
 In this activity, you'll learn how to get the value from your form input.
 
@@ -24,7 +26,7 @@ To display the input value in a template, you can use the interpolation syntax `
     </label>
   `,
 })
-export class UserComponent {
+export class User {
   favoriteFramework = '';
 }
 </docs-code>
@@ -45,13 +47,13 @@ When you need to reference the input field value in the component class, you can
   `,
   ...
 })
-export class UserComponent {
+export class User {
   favoriteFramework = '';
   ...
 
-  showFramework() {
-    alert(this.favoriteFramework);
-  }
+showFramework() {
+alert(this.favoriteFramework);
+}
 }
 </docs-code>
 

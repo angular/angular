@@ -9,7 +9,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ApplicationOperations} from '../../application-operations';
-import {DirectivePosition, MessageBus, PropType, PropertyQueryTypes} from 'protocol';
+import {DirectivePosition, MessageBus, PropType, PropertyQueryTypes} from '../../../../../protocol';
 
 import {DirectiveExplorerComponent} from './directive-explorer.component';
 import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
@@ -17,7 +17,7 @@ import {IndexedNode} from './directive-forest/index-forest';
 
 import SpyObj = jasmine.SpyObj;
 import {By} from '@angular/platform-browser';
-import {FrameManager} from '../../frame_manager';
+import {FrameManager} from '../../application-services/frame_manager';
 import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input} from '@angular/core';
 import {ElementPropertyResolver, FlatNode} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
@@ -260,8 +260,8 @@ describe('DirectiveExplorerComponent', () => {
         expect(messageBusMock.emit).toHaveBeenCalledWith('enableFrameConnection', [0, 123]);
         expect(applicationOperationsSpy.viewSource).toHaveBeenCalledWith(
           [0], // current selected element position
+          {name: 'test1', id: 0, url: new URL('http://localhost:4200/url')},
           0, // directive index
-          new URL('http://localhost:4200/url'), // selected frame url
         );
       });
     });
@@ -298,7 +298,7 @@ describe('DirectiveExplorerComponent', () => {
         expect(messageBusMock.emit).toHaveBeenCalledWith('enableFrameConnection', [0, 123]);
         expect(applicationOperationsSpy.selectDomElement).toHaveBeenCalledWith(
           [0], // current selected element position
-          new URL('http://localhost:4200/url'), // selected frame url
+          {name: 'test1', id: 0, url: new URL('http://localhost:4200/url')},
         );
       });
     });
@@ -355,11 +355,11 @@ describe('DirectiveExplorerComponent', () => {
 
         expect(applicationOperationsSpy.inspect).toHaveBeenCalledTimes(1);
         expect(messageBusMock.emit).toHaveBeenCalledWith('enableFrameConnection', [0, 123]);
-        expect(applicationOperationsSpy.inspect).toHaveBeenCalledWith(
-          directivePosition,
-          ['foo'],
-          new URL('http://localhost:4200/url'), // selected frame url
-        );
+        expect(applicationOperationsSpy.inspect).toHaveBeenCalledWith(directivePosition, ['foo'], {
+          name: 'test1',
+          id: 0,
+          url: new URL('http://localhost:4200/url'),
+        });
       });
     });
   });

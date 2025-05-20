@@ -50,7 +50,7 @@ In the following example, the `@Component()` metadata object and the class const
 })
 export class TypicalComponent {
   @Input() data: TypicalData;
-  constructor(private someService: SomeService) { … }
+  private someService = inject(SomeService);
 }
 
 </docs-code>

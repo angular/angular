@@ -1,13 +1,33 @@
-load("//adev/shared-docs:index.bzl", "generate_guides")
+load("//adev/shared-docs:index.bzl", "generate_guides", "generate_nav_items")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+filegroup(
+    name = "files",
+    srcs = glob(
+        [
+            "*.md",
+        ],
+        exclude = [
+            "overview.md",
+        ],
+    ),
+    visibility = ["//visibility:private"],
+)
 
 generate_guides(
     name = "errors",
-    srcs = glob([
-        "*.md",
-    ]),
-    data = [
-        "//adev/src/content/examples/errors:cyclic-imports/child.component.ts",
-        "//adev/src/content/examples/errors:cyclic-imports/parent.component.ts",
+    srcs = [
+        "overview.md",
+        ":files",
     ],
-    visibility = ["//adev:__subpackages__"],
+    data = [
+        "//adev/src/content/examples",
+    ],
+)
+
+generate_nav_items(
+    name = "route-nav-items",
+    srcs = [":files"],
+    strategy = "errors",
 )

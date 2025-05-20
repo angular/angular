@@ -2,13 +2,17 @@
 
 This directory contains rules, helpers and test-cases for the Angular compiler compliance tests.
 
-There are three different types of tests that are run based on file-based "test-cases".
+There are five different types of tests that are run based on file-based "test-cases".
 
 * **Full compile** - in this test the source files defined by the test-case are fully compiled by Angular.
   The generated files are compared to "expected files" via a matching algorithm that is tolerant to
   whitespace and variable name changes.
 * **Local compile** - in this test the source files defined by the test-case are compiled in local mode by Angular.
   The generated files are compared to "expected files" via a matching algorithm similar to the case of "full compile"
+* **Declaration-only emit** - in this test the source files defined by the test-case are compiled in full mode by
+  Angular. The same source files are then compiled again in declaration-only emission mode and the resulting type
+  declarations (.d.ts files) are compared to the type declarations produced by the full compilation checking for exact
+  matches.
 * **Partial compile** - in this test the source files defined by the test-case are "partially" compiled by
   Angular to produce files that can be published. These partially compiled files are compared directly
   against "golden files" to ensure that we do not inadvertently break the public API of partial

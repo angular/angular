@@ -1,0 +1,26 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+filegroup(
+    name = "static_files",
+    srcs = ["schema.json"],
+)
+
+ts_project(
+    name = "control-flow-migration",
+    srcs = glob(["**/*.ts"]),
+    interop_deps = [
+        "//packages/compiler",
+        "//packages/core/schematics/utils",
+    ],
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
+    ],
+)

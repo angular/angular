@@ -8,6 +8,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 

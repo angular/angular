@@ -9,7 +9,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SlideToggle} from './slide-toggle.component';
-import {provideExperimentalZonelessChangeDetection} from '@angular/core';
+import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('SlideToggle', () => {
   let component: SlideToggle;
@@ -18,7 +18,7 @@ describe('SlideToggle', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [SlideToggle],
-      providers: [provideExperimentalZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection()],
     });
     fixture = TestBed.createComponent(SlideToggle);
     fixture.componentRef.setInput('buttonId', 'id');

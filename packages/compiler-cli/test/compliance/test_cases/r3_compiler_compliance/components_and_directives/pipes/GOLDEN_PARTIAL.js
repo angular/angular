@@ -243,3 +243,32 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: nameless_pipe.js
+ ****************************************************************************************************/
+import { Pipe } from '@angular/core';
+import * as i0 from "@angular/core";
+// TODO(crisbeto): remove `null!` from the pipes when public API is updated.
+export class PipeWithoutName {
+    transform(value) {
+        return value;
+    }
+}
+PipeWithoutName.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipeWithoutName, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+PipeWithoutName.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipeWithoutName, isStandalone: true, name: "PipeWithoutName" });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipeWithoutName, decorators: [{
+            type: Pipe,
+            args: [null]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: nameless_pipe.d.ts
+ ****************************************************************************************************/
+import { PipeTransform } from '@angular/core';
+import * as i0 from "@angular/core";
+export declare class PipeWithoutName implements PipeTransform {
+    transform(value: unknown): unknown;
+    static ɵfac: i0.ɵɵFactoryDeclaration<PipeWithoutName, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<PipeWithoutName, null, true>;
+}
+

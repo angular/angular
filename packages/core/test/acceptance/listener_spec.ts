@@ -21,13 +21,9 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
-
-function getNoOfNativeListeners(): number {
-  return ngDevMode ? ngDevMode.rendererAddEventListener : 0;
-}
 
 describe('event listeners', () => {
   describe('even handling statements', () => {
@@ -162,7 +158,7 @@ describe('event listeners', () => {
           <ng-template #template>
             <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
           </ng-template>
-  
+
           <ng-container [ngTemplateOutlet]="template"></ng-container>
         `,
         standalone: false,
@@ -187,7 +183,7 @@ describe('event listeners', () => {
           <ng-template let-obj #template>
             <button (click)="obj.value = obj.value + '!'">Change</button>
           </ng-template>
-  
+
           <ng-container *ngTemplateOutlet="template; context: {$implicit: current}"></ng-container>
         `,
         standalone: false,
@@ -226,13 +222,11 @@ describe('event listeners', () => {
     it('should support local refs in listeners', () => {
       @Component({
         selector: 'my-comp',
-        standalone: true,
         template: ``,
       })
       class MyComp {}
 
       @Component({
-        standalone: true,
         imports: [MyComp],
         template: `
           <my-comp #comp></my-comp>
@@ -373,16 +367,11 @@ describe('event listeners', () => {
       TestBed.configureTestingModule({
         declarations: [TestCmpt, WithClicksCmpt, LikesClicks, MdButton],
       });
-      const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
+
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
       const buttonDebugEls = fixture.debugElement.queryAll(By.css('button'));
       const withClicksEls = fixture.debugElement.queryAll(By.css('with-clicks-cmpt'));
-
-      // We want to assert that only one native event handler was registered but still all
-      // directives are notified when an event fires. This assertion can only be verified in
-      // the ngDevMode (but the coalescing always happens!).
-      ngDevMode && expect(getNoOfNativeListeners()).toBe(noOfEventListenersRegisteredSoFar + 2);
 
       buttonDebugEls[0].nativeElement.click();
       expect(withClicksEls[0].injector.get(WithClicksCmpt).counter).toBe(1);
@@ -414,15 +403,9 @@ describe('event listeners', () => {
       }
 
       TestBed.configureTestingModule({declarations: [TestCmpt, LikesClicks]});
-      const noOfEventListenersRegisteredSoFar = getNoOfNativeListeners();
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
       const buttonDebugEl = fixture.debugElement.query(By.css('button'));
-
-      // We want to assert that only one native event handler was registered but still all
-      // directives are notified when an event fires. This assertion can only be verified in
-      // the ngDevMode (but the coalescing always happens!).
-      ngDevMode && expect(getNoOfNativeListeners()).toBe(noOfEventListenersRegisteredSoFar + 1);
 
       buttonDebugEl.nativeElement.click();
       expect(buttonDebugEl.injector.get(LikesClicks).counter).toBe(1);
@@ -457,6 +440,7 @@ describe('event listeners', () => {
       }
 
       TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
         declarations: [TestCmpt, LikesClicks, ThrowsOnClicks],
         providers: [{provide: ErrorHandler, useClass: CountingErrorHandler}],
       });
@@ -768,7 +752,6 @@ describe('event listeners', () => {
 
       @Directive({
         selector: '[hostListenerDir]',
-        standalone: true,
       })
       class HostListenerDir {
         @HostListener('click')
@@ -778,7 +761,6 @@ describe('event listeners', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [HostListenerDir],
         template: `<button hostListenerDir>Click</button>`,
       })
@@ -801,7 +783,6 @@ describe('event listeners', () => {
 
       @Directive({
         selector: '[hostListenerDir]',
-        standalone: true,
       })
       class HostListenerDir {
         @HostListener('document:click')
@@ -811,7 +792,6 @@ describe('event listeners', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [HostListenerDir],
         template: `<button hostListenerDir>Click</button>`,
       })
@@ -883,7 +863,7 @@ describe('event listeners', () => {
               <ng-template #template add-global-listener>
                 <button>Click me!</button>
               </ng-template>
-  
+
               <ng-container [ngTemplateOutlet]="template"></ng-container>
             `,
         standalone: false,

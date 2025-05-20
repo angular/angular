@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/// <reference types="chrome"/>
+
 import {ChromeMessageBus} from './chrome-message-bus';
 import {SamePageMessageBus} from './same-page-message-bus';
 

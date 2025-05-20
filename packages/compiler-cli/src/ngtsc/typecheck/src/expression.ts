@@ -24,23 +24,25 @@ import {
   LiteralMap,
   LiteralPrimitive,
   NonNullAssert,
+  ParenthesizedExpression,
   PrefixNot,
-  TypeofExpression,
   PropertyRead,
   PropertyWrite,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  TaggedTemplateLiteral,
+  TemplateLiteral,
+  TemplateLiteralElement,
   ThisReceiver,
+  TypeofExpression,
   Unary,
+  VoidExpression,
 } from '@angular/compiler';
 import ts from 'typescript';
-
 import {TypeCheckingConfig} from '../api';
-
 import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
 import {tsCastToAny, tsNumericExpression} from './ts_util';
-
 /**
  * Expression that is cast to any. Currently represented as `0 as any`.
  *
@@ -52,7 +54,7 @@ import {tsCastToAny, tsNumericExpression} from './ts_util';
  * - Some flavor of function call, like `isNan(0) as any` - requires even more characters than the
  *   NaN option and has the same issue with `noLib`.
  */
-export const ANY_EXPRESSION = ts.factory.createAsExpression(
+export const ANY_EXPRESSION: ts.AsExpression = ts.factory.createAsExpression(
   ts.factory.createNumericLiteral('0'),
   ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
 );
@@ -73,6 +75,7 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['==', ts.SyntaxKind.EqualsEqualsToken],
   ['===', ts.SyntaxKind.EqualsEqualsEqualsToken],
   ['*', ts.SyntaxKind.AsteriskToken],
+  ['**', ts.SyntaxKind.AsteriskAsteriskToken],
   ['/', ts.SyntaxKind.SlashToken],
   ['%', ts.SyntaxKind.PercentToken],
   ['!=', ts.SyntaxKind.ExclamationEqualsToken],
@@ -82,6 +85,7 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['&', ts.SyntaxKind.AmpersandToken],
   ['|', ts.SyntaxKind.BarToken],
   ['??', ts.SyntaxKind.QuestionQuestionToken],
+  ['in', ts.SyntaxKind.InKeyword],
 ]);
 
 /**
@@ -276,9 +280,16 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
-  visitTypeofExpresion(ast: TypeofExpression): ts.Expression {
+  visitTypeofExpression(ast: TypeofExpression): ts.Expression {
     const expression = wrapForDiagnostics(this.translate(ast.expression));
     const node = ts.factory.createTypeOfExpression(expression);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
+
+  visitVoidExpression(ast: VoidExpression): ts.Expression {
+    const expression = wrapForDiagnostics(this.translate(ast.expression));
+    const node = ts.factory.createVoidExpression(expression);
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -445,6 +456,46 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
+  visitTemplateLiteral(ast: TemplateLiteral): ts.TemplateLiteral {
+    const length = ast.elements.length;
+    const head = ast.elements[0];
+    let result: ts.TemplateLiteral;
+
+    if (length === 1) {
+      result = ts.factory.createNoSubstitutionTemplateLiteral(head.text);
+    } else {
+      const spans: ts.TemplateSpan[] = [];
+      const tailIndex = length - 1;
+
+      for (let i = 1; i < tailIndex; i++) {
+        const middle = ts.factory.createTemplateMiddle(ast.elements[i].text);
+        spans.push(ts.factory.createTemplateSpan(this.translate(ast.expressions[i - 1]), middle));
+      }
+      const resolvedExpression = this.translate(ast.expressions[tailIndex - 1]);
+      const templateTail = ts.factory.createTemplateTail(ast.elements[tailIndex].text);
+      spans.push(ts.factory.createTemplateSpan(resolvedExpression, templateTail));
+      result = ts.factory.createTemplateExpression(ts.factory.createTemplateHead(head.text), spans);
+    }
+
+    return result;
+  }
+
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+    throw new Error('Method not implemented');
+  }
+
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral): ts.TaggedTemplateExpression {
+    return ts.factory.createTaggedTemplateExpression(
+      this.translate(ast.tag),
+      undefined,
+      this.visitTemplateLiteral(ast.template),
+    );
+  }
+
+  visitParenthesizedExpression(ast: ParenthesizedExpression): ts.ParenthesizedExpression {
+    return ts.factory.createParenthesizedExpression(this.translate(ast.expression));
+  }
+
   private convertToSafeCall(
     ast: Call | SafeCall,
     expr: ts.Expression,
@@ -549,10 +600,13 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   visitPrefixNot(ast: PrefixNot): boolean {
     return ast.expression.visit(this);
   }
-  visitTypeofExpresion(ast: PrefixNot): boolean {
+  visitTypeofExpression(ast: TypeofExpression): boolean {
     return ast.expression.visit(this);
   }
-  visitNonNullAssert(ast: PrefixNot): boolean {
+  visitVoidExpression(ast: VoidExpression): boolean {
+    return ast.expression.visit(this);
+  }
+  visitNonNullAssert(ast: NonNullAssert): boolean {
     return ast.expression.visit(this);
   }
   visitPropertyRead(ast: PropertyRead): boolean {
@@ -566,5 +620,17 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   }
   visitSafeKeyedRead(ast: SafeKeyedRead): boolean {
     return false;
+  }
+  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
+    return false;
+  }
+  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+    return false;
+  }
+  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
+    return false;
+  }
+  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
+    return ast.expression.visit(this);
   }
 }

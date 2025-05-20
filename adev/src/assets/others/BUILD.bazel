@@ -1,0 +1,13 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+
+exports_files(
+    glob(["*"]),
+)
+
+copy_to_bin(
+    name = "others",
+    srcs = glob(["**/*"]),
+    visibility = [
+        "//visibility:public",
+    ],
+)

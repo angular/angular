@@ -33,7 +33,9 @@
         <select class="form-control" id="skill"
                 required [(ngModel)]="model.skill" name="skill"
                 #skill="ngModel">
-          <option *ngFor="let skill of skills" [value]="skill">{{ skill }}</option>
+          @for (skill of skills; track $index) {
+            <option [value]="skill">{{ skill }}</option>
+          }
         </select>
         <div [hidden]="skill.valid || skill.pristine" class="alert alert-danger">
           skill is required
@@ -132,10 +134,11 @@
         <div class="form-group">
           <label for="skill">Skill</label>
           <select class="form-control" id="skill" required>
-            <option *ngFor="let skill of skills" [value]="skill">{{ skill }}</option>
+            @for(skill of skills; track $index) {
+              <option [value]="skill">{{ skill }}</option>
+            }
           </select>
         </div>
-
         <!-- #enddocregion skills -->
         <button type="submit" class="btn btn-success">Submit</button>
 
@@ -169,7 +172,9 @@
           <select class="form-control"  id="skill"
                   required
                   [(ngModel)]="model.skill" name="skill">
-            <option *ngFor="let skill of skills" [value]="skill">{{ skill }}</option>
+            @for (skill of skills; track $index) {
+              <option [value]="skill">{{ skill }}</option>
+            }
           </select>
         </div>
 

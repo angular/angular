@@ -165,19 +165,27 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
   createReturnStatement = t.returnStatement;
 
   createTaggedTemplate(tag: t.Expression, template: TemplateLiteral<t.Expression>): t.Expression {
+    return t.taggedTemplateExpression(tag, this.createTemplateLiteral(template));
+  }
+
+  createTemplateLiteral(template: TemplateLiteral<t.Expression>): t.TemplateLiteral {
     const elements = template.elements.map((element, i) =>
       this.setSourceMapRange(
         t.templateElement(element, i === template.elements.length - 1),
         element.range,
       ),
     );
-    return t.taggedTemplateExpression(tag, t.templateLiteral(elements, template.expressions));
+    return t.templateLiteral(elements, template.expressions);
   }
 
   createThrowStatement = t.throwStatement;
 
   createTypeOfExpression(expression: t.Expression): t.Expression {
     return t.unaryExpression('typeof', expression);
+  }
+
+  createVoidExpression(expression: t.Expression): t.Expression {
+    return t.unaryExpression('void', expression);
   }
 
   createUnaryExpression = t.unaryExpression;

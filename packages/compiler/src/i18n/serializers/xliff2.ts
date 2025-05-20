@@ -336,6 +336,10 @@ class Xliff2Parser implements ml.Visitor {
 
   visitLetDeclaration(decl: ml.LetDeclaration, context: any) {}
 
+  visitComponent(component: ml.Component, context: any) {}
+
+  visitDirective(directive: ml.Directive, context: any) {}
+
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));
   }
@@ -431,6 +435,14 @@ class XmlToI18n implements ml.Visitor {
   visitBlockParameter(parameter: ml.BlockParameter, context: any) {}
 
   visitLetDeclaration(decl: ml.LetDeclaration, context: any) {}
+
+  visitComponent(component: ml.Component, context: any) {
+    this._addError(component, 'Unexpected node');
+  }
+
+  visitDirective(directive: ml.Directive, context: any) {
+    this._addError(directive, 'Unexpected node');
+  }
 
   private _addError(node: ml.Node, message: string): void {
     this._errors.push(new I18nError(node.sourceSpan, message));

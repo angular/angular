@@ -723,3 +723,121 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: template_literals.js
+ ****************************************************************************************************/
+import { Component, Pipe } from '@angular/core';
+import * as i0 from "@angular/core";
+export class UppercasePipe {
+    transform(value) {
+        return value.toUpperCase();
+    }
+}
+UppercasePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+UppercasePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, isStandalone: true, name: "uppercase" });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, decorators: [{
+            type: Pipe,
+            args: [{ name: 'uppercase' }]
+        }] });
+export class MyApp {
+    constructor() {
+        this.name = 'Frodo';
+        this.timeOfDay = 'morning';
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "my-app", ngImport: i0, template: `
+    <div>No interpolations: {{ \`hello world \` }}</div>
+    <span>With interpolations: {{ \`hello \${name}, it is currently \${timeOfDay}!\` }}</span>
+    <p>With pipe: {{\`hello \${name}\` | uppercase}}</p>
+    <h4>@let insideLet = \`Hello \${name}\`; Inside let: {{insideLet}}</h4>
+  `, isInline: true, dependencies: [{ kind: "pipe", type: UppercasePipe, name: "uppercase" }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-app',
+                    template: `
+    <div>No interpolations: {{ \`hello world \` }}</div>
+    <span>With interpolations: {{ \`hello \${name}, it is currently \${timeOfDay}!\` }}</span>
+    <p>With pipe: {{\`hello \${name}\` | uppercase}}</p>
+    <h4>@let insideLet = \`Hello \${name}\`; Inside let: {{insideLet}}</h4>
+  `,
+                    imports: [UppercasePipe],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: template_literals.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class UppercasePipe {
+    transform(value: string): string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<UppercasePipe, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<UppercasePipe, "uppercase", true>;
+}
+export declare class MyApp {
+    name: string;
+    timeOfDay: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: tagged_template_literals.js
+ ****************************************************************************************************/
+import { Component, Pipe } from '@angular/core';
+import * as i0 from "@angular/core";
+export class UppercasePipe {
+    transform(value) {
+        return value.toUpperCase();
+    }
+}
+UppercasePipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+UppercasePipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, isStandalone: true, name: "uppercase" });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: UppercasePipe, decorators: [{
+            type: Pipe,
+            args: [{ name: 'uppercase' }]
+        }] });
+export class MyApp {
+    constructor() {
+        this.name = 'Frodo';
+        this.timeOfDay = 'morning';
+        this.tag = (strings, ...args) => '';
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "my-app", ngImport: i0, template: `
+    <div>No interpolations: {{ tag\`hello world \` }}</div>
+    <span>With interpolations: {{ tag\`hello \${name}, it is currently \${timeOfDay}!\` }}</span>
+    <p>With pipe: {{ tag\`hello \${name}\` | uppercase }}</p>
+  `, isInline: true, dependencies: [{ kind: "pipe", type: UppercasePipe, name: "uppercase" }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-app',
+                    template: `
+    <div>No interpolations: {{ tag\`hello world \` }}</div>
+    <span>With interpolations: {{ tag\`hello \${name}, it is currently \${timeOfDay}!\` }}</span>
+    <p>With pipe: {{ tag\`hello \${name}\` | uppercase }}</p>
+  `,
+                    imports: [UppercasePipe],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: tagged_template_literals.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class UppercasePipe {
+    transform(value: string): string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<UppercasePipe, never>;
+    static ɵpipe: i0.ɵɵPipeDeclaration<UppercasePipe, "uppercase", true>;
+}
+export declare class MyApp {
+    name: string;
+    timeOfDay: string;
+    tag: (strings: TemplateStringsArray, ...args: string[]) => string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, true, never>;
+}
+

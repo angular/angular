@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, destroyPlatform, NgModule, Pipe, PipeTransform} from '@angular/core';
+import {Component, destroyPlatform, NgModule, Pipe, PipeTransform} from '../../src/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {withBody} from '@angular/private/testing';

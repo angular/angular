@@ -25,6 +25,10 @@ ng_package(
     srcs = [
         "package.json",
     ],
+    side_effect_entry_points = [
+        "@angular/platform-browser-dynamic",
+        "@angular/platform-browser-dynamic/testing",
+    ],
     tags = [
         "release-with-framework",
     ],

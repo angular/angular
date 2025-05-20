@@ -6,17 +6,31 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, PlatformLocation} from '@angular/common';
-import {inject, Provider} from '@angular/core';
+import {
+  DOCUMENT,
+  PlatformLocation,
+  ɵPlatformNavigation as PlatformNavigation,
+} from '../../../index';
+import {inject, InjectionToken, Provider} from '@angular/core';
 
-// @ng_package: ignore-cross-repo-import
-import {PlatformNavigation} from '../../../src/navigation/platform_navigation';
 import {
   FakeNavigationPlatformLocation,
   MOCK_PLATFORM_LOCATION_CONFIG,
 } from '../mock_platform_location';
 
 import {FakeNavigation} from './fake_navigation';
+
+const FAKE_NAVIGATION = new InjectionToken<FakeNavigation>('fakeNavigation', {
+  providedIn: 'root',
+  factory: () => {
+    const config = inject(MOCK_PLATFORM_LOCATION_CONFIG, {optional: true});
+    const baseFallback = 'http://_empty_/';
+    const startUrl = new URL(config?.startUrl || baseFallback, baseFallback);
+    const fakeNavigation = new FakeNavigation(inject(DOCUMENT), startUrl.href as `http${string}`);
+    fakeNavigation.setSynchronousTraversalsForTesting(true);
+    return fakeNavigation;
+  },
+});
 
 /**
  * Return a provider for the `FakeNavigation` in place of the real Navigation API.
@@ -25,13 +39,7 @@ export function provideFakePlatformNavigation(): Provider[] {
   return [
     {
       provide: PlatformNavigation,
-      useFactory: () => {
-        const config = inject(MOCK_PLATFORM_LOCATION_CONFIG, {optional: true});
-        return new FakeNavigation(
-          inject(DOCUMENT).defaultView!,
-          (config?.startUrl as `http${string}`) ?? 'http://_empty_/',
-        );
-      },
+      useFactory: () => inject(FAKE_NAVIGATION),
     },
     {provide: PlatformLocation, useClass: FakeNavigationPlatformLocation},
   ];

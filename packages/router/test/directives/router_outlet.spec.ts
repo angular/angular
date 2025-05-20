@@ -10,13 +10,13 @@ import {CommonModule, NgForOf} from '@angular/common';
 import {
   Component,
   inject,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   Input,
-  Signal,
   Type,
   NgModule,
+  signal,
 } from '@angular/core';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   provideRouter,
   Router,
@@ -24,12 +24,13 @@ import {
   RouterOutlet,
   withComponentInputBinding,
   ROUTER_OUTLET_DATA,
-} from '@angular/router/src';
-import {RouterTestingHarness} from '@angular/router/testing';
+} from '../../index';
+import {RouterTestingHarness} from '../../testing';
 import {InjectionToken} from '../../../core/src/di';
+import {timeout} from '../helpers';
 
 describe('router outlet name', () => {
-  it('should support name binding', fakeAsync(() => {
+  it('should support name binding', async () => {
     @Component({
       template: '<router-outlet [name]="name"></router-outlet>',
       imports: [RouterOutlet],
@@ -47,17 +48,17 @@ describe('router outlet name', () => {
       imports: [RouterModule.forRoot([{path: '', outlet: 'popup', component: PopupCmp}])],
     });
     const router = TestBed.inject(Router);
-    const fixture = createRoot(router, RootCmp);
+    const fixture = await createRoot(router, RootCmp);
     expect(fixture.nativeElement.innerHTML).toContain('popup component');
-  }));
+  });
 
-  it('should be able to change the name of the outlet', fakeAsync(() => {
+  it('should be able to change the name of the outlet', async () => {
     @Component({
-      template: '<router-outlet [name]="name"></router-outlet>',
+      template: '<router-outlet [name]="name()"></router-outlet>',
       imports: [RouterOutlet],
     })
     class RootCmp {
-      name = '';
+      name = signal('');
     }
 
     @Component({
@@ -79,33 +80,33 @@ describe('router outlet name', () => {
       ],
     });
     const router = TestBed.inject(Router);
-    const fixture = createRoot(router, RootCmp);
+    const fixture = await createRoot(router, RootCmp);
 
     expect(fixture.nativeElement.innerHTML).not.toContain('goodbye');
     expect(fixture.nativeElement.innerHTML).not.toContain('hello');
 
-    fixture.componentInstance.name = 'greeting';
-    advance(fixture);
+    fixture.componentInstance.name.set('greeting');
+    await advance(fixture);
     expect(fixture.nativeElement.innerHTML).toContain('hello');
     expect(fixture.nativeElement.innerHTML).not.toContain('goodbye');
 
-    fixture.componentInstance.name = 'goodbye';
-    advance(fixture);
+    fixture.componentInstance.name.set('farewell');
+    await advance(fixture);
     expect(fixture.nativeElement.innerHTML).toContain('goodbye');
     expect(fixture.nativeElement.innerHTML).not.toContain('hello');
-  }));
+  });
 
-  it('should support outlets in ngFor', fakeAsync(() => {
+  it('should support outlets in ngFor', async () => {
     @Component({
       template: `
-            <div *ngFor="let outlet of outlets">
+            <div *ngFor="let outlet of outlets()">
                 <router-outlet [name]="outlet"></router-outlet>
             </div>
             `,
       imports: [RouterOutlet, NgForOf],
     })
     class RootCmp {
-      outlets = ['outlet1', 'outlet2', 'outlet3'];
+      outlets = signal(['outlet1', 'outlet2', 'outlet3']);
     }
 
     @Component({
@@ -133,35 +134,35 @@ describe('router outlet name', () => {
       ],
     });
     const router = TestBed.inject(Router);
-    const fixture = createRoot(router, RootCmp);
+    const fixture = await createRoot(router, RootCmp);
 
     router.navigate([{outlets: {'outlet1': '1'}}]);
-    advance(fixture);
+    await advance(fixture);
     expect(fixture.nativeElement.innerHTML).toContain('component 1');
     expect(fixture.nativeElement.innerHTML).not.toContain('component 2');
     expect(fixture.nativeElement.innerHTML).not.toContain('component 3');
 
-    router.navigate([{outlets: {'outlet1': null, 'outlet2': '2', 'outlet3': '3'}}]);
-    advance(fixture);
+    await router.navigate([{outlets: {'outlet1': null, 'outlet2': '2', 'outlet3': '3'}}]);
+    await advance(fixture);
     expect(fixture.nativeElement.innerHTML).not.toContain('component 1');
     expect(fixture.nativeElement.innerHTML).toMatch('.*component 2.*component 3');
 
     // reverse the outlets
-    fixture.componentInstance.outlets = ['outlet3', 'outlet2', 'outlet1'];
-    router.navigate([{outlets: {'outlet1': '1', 'outlet2': '2', 'outlet3': '3'}}]);
-    advance(fixture);
+    fixture.componentInstance.outlets.set(['outlet3', 'outlet2', 'outlet1']);
+    await router.navigate([{outlets: {'outlet1': '1', 'outlet2': '2', 'outlet3': '3'}}]);
+    await advance(fixture);
     expect(fixture.nativeElement.innerHTML).toMatch('.*component 3.*component 2.*component 1');
-  }));
+  });
 
-  it('should not activate if route is changed', fakeAsync(() => {
+  it('should not activate if route is changed', async () => {
     @Component({
-      template: '<div *ngIf="initDone"><router-outlet></router-outlet></div>',
+      template: '<div *ngIf="initDone()"><router-outlet></router-outlet></div>',
       imports: [RouterOutlet, CommonModule],
     })
     class ParentCmp {
-      initDone = false;
+      initDone = signal(false);
       constructor() {
-        setTimeout(() => (this.initDone = true), 1000);
+        setTimeout(() => this.initDone.set(true), 100);
       }
     }
 
@@ -178,20 +179,20 @@ describe('router outlet name', () => {
       ],
     });
     const router = TestBed.inject(Router);
-    const fixture = createRoot(router, ParentCmp);
+    const fixture = await createRoot(router, ParentCmp);
 
-    advance(fixture, 250);
+    await advance(fixture, 25);
     router.navigate(['parent/child']);
-    advance(fixture, 250);
+    await advance(fixture, 25);
     // Not contain because initDone is still false
     expect(fixture.nativeElement.innerHTML).not.toContain('child component');
 
-    advance(fixture, 1500);
+    await advance(fixture, 150);
     router.navigate(['parent']);
-    advance(fixture, 1500);
+    await advance(fixture, 150);
     // Not contain because route was changed back to parent
     expect(fixture.nativeElement.innerHTML).not.toContain('child component');
-  }));
+  });
 });
 
 describe('component input binding', () => {
@@ -487,7 +488,7 @@ describe('router outlet data', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{path: '**', component: MyComponent}]),
-        provideExperimentalZonelessChangeDetection(),
+        provideZonelessChangeDetection(),
       ],
     });
 
@@ -572,15 +573,17 @@ describe('router outlet data', () => {
   });
 });
 
-function advance(fixture: ComponentFixture<unknown>, millis?: number): void {
-  tick(millis);
+async function advance(fixture: ComponentFixture<unknown>, millis?: number): Promise<void> {
+  if (millis) {
+    await timeout(millis);
+  }
   fixture.detectChanges();
 }
 
-function createRoot<T>(router: Router, type: Type<T>): ComponentFixture<T> {
+async function createRoot<T>(router: Router, type: Type<T>): Promise<ComponentFixture<T>> {
   const f = TestBed.createComponent(type);
-  advance(f);
+  await advance(f);
   router.initialNavigation();
-  advance(f);
+  await advance(f);
   return f;
 }

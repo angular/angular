@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {assertInInjectionContext, DestroyRef, inject} from '@angular/core';
+import {assertInInjectionContext, DestroyRef, inject} from '../../src/core';
 import {MonoTypeOperatorFunction, Observable} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -18,7 +18,7 @@ import {takeUntil} from 'rxjs/operators';
  *     passed explicitly to use `takeUntilDestroyed` outside of an [injection
  * context](guide/di/dependency-injection-context). Otherwise, the current `DestroyRef` is injected.
  *
- * @publicApi
+ * @publicApi 19.0
  */
 export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperatorFunction<T> {
   if (!destroyRef) {

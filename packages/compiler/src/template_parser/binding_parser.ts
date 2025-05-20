@@ -11,12 +11,12 @@ import {
   AbsoluteSourceSpan,
   AST,
   ASTWithSource,
-  Binary,
   BindingPipe,
   BindingType,
   BoundElementProperty,
-  Conditional,
+  Call,
   EmptyExpr,
+  ImplicitReceiver,
   KeyedRead,
   NonNullAssert,
   ParsedEvent,
@@ -25,10 +25,10 @@ import {
   ParsedPropertyType,
   ParsedVariable,
   ParserError,
-  PrefixNot,
   PropertyRead,
   RecursiveAstVisitor,
   TemplateBinding,
+  ThisReceiver,
   VariableBinding,
 } from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
@@ -37,7 +37,7 @@ import {mergeNsAndName} from '../ml_parser/tags';
 import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {CssSelector} from '../selector';
+import {CssSelector} from '../directive_matching';
 import {splitAtColon, splitAtPeriod} from '../util';
 
 const PROPERTY_PARTS_SEPARATOR = '.';
@@ -263,7 +263,7 @@ export class BindingParser {
 
   /**
    * Parses the bindings in a microsyntax expression, e.g.
-   * ```
+   * ```html
    *    <tag *tplKey="let value1 = prop; let value2 = localVar">
    * ```
    *
@@ -526,7 +526,7 @@ export class BindingParser {
   }
 
   createBoundElementProperty(
-    elementSelector: string,
+    elementSelector: string | null,
     boundProp: ParsedProperty,
     skipValidation: boolean = false,
     mapPropertyName: boolean = true,
@@ -660,6 +660,16 @@ export class BindingParser {
     return calcPossibleSecurityContexts(this._schemaRegistry, selector, prop, isAttribute);
   }
 
+  parseEventListenerName(rawName: string): {eventName: string; target: string | null} {
+    const [target, eventName] = splitAtColon(rawName, [null, rawName]);
+    return {eventName: eventName!, target};
+  }
+
+  parseAnimationEventName(rawName: string): {eventName: string; phase: string | null} {
+    const matches = splitAtPeriod(rawName, [rawName, null]);
+    return {eventName: matches[0]!, phase: matches[1] === null ? null : matches[1].toLowerCase()};
+  }
+
   private _parseAnimationEvent(
     name: string,
     expression: string,
@@ -668,9 +678,7 @@ export class BindingParser {
     targetEvents: ParsedEvent[],
     keySpan: ParseSourceSpan,
   ) {
-    const matches = splitAtPeriod(name, [name, '']);
-    const eventName = matches[0];
-    const phase = matches[1].toLowerCase();
+    const {eventName, phase} = this.parseAnimationEventName(name);
     const ast = this._parseAction(expression, handlerSpan);
     targetEvents.push(
       new ParsedEvent(
@@ -713,7 +721,7 @@ export class BindingParser {
     keySpan: ParseSourceSpan,
   ): void {
     // long format: 'target: eventName'
-    const [target, eventName] = splitAtColon(name, [null!, name]);
+    const {eventName, target} = this.parseEventListenerName(name);
     const prevErrorCount = this.errors.length;
     const ast = this._parseAction(expression, handlerSpan);
     const isValid = this.errors.length === prevErrorCount;
@@ -811,6 +819,17 @@ export class BindingParser {
       return this._isAllowedAssignmentEvent(ast.expression);
     }
 
+    if (
+      ast instanceof Call &&
+      ast.args.length === 1 &&
+      ast.receiver instanceof PropertyRead &&
+      ast.receiver.name === '$any' &&
+      ast.receiver.receiver instanceof ImplicitReceiver &&
+      !(ast.receiver.receiver instanceof ThisReceiver)
+    ) {
+      return this._isAllowedAssignmentEvent(ast.args[0]);
+    }
+
     if (ast instanceof PropertyRead || ast instanceof KeyedRead) {
       return true;
     }
@@ -835,28 +854,29 @@ function isAnimationLabel(name: string): boolean {
 
 export function calcPossibleSecurityContexts(
   registry: ElementSchemaRegistry,
-  selector: string,
+  selector: string | null,
   propName: string,
   isAttribute: boolean,
 ): SecurityContext[] {
-  const ctxs: SecurityContext[] = [];
-  CssSelector.parse(selector).forEach((selector) => {
-    const elementNames = selector.element ? [selector.element] : registry.allKnownElementNames();
-    const notElementNames = new Set(
-      selector.notSelectors
-        .filter((selector) => selector.isElementSelector())
-        .map((selector) => selector.element),
-    );
-    const possibleElementNames = elementNames.filter(
-      (elementName) => !notElementNames.has(elementName),
-    );
+  let ctxs: SecurityContext[];
+  const nameToContext = (elName: string) => registry.securityContext(elName, propName, isAttribute);
 
-    ctxs.push(
-      ...possibleElementNames.map((elementName) =>
-        registry.securityContext(elementName, propName, isAttribute),
-      ),
-    );
-  });
+  if (selector === null) {
+    ctxs = registry.allKnownElementNames().map(nameToContext);
+  } else {
+    ctxs = [];
+    CssSelector.parse(selector).forEach((selector) => {
+      const elementNames = selector.element ? [selector.element] : registry.allKnownElementNames();
+      const notElementNames = new Set(
+        selector.notSelectors
+          .filter((selector) => selector.isElementSelector())
+          .map((selector) => selector.element),
+      );
+      const possibleElementNames = elementNames.filter((elName) => !notElementNames.has(elName));
+
+      ctxs.push(...possibleElementNames.map(nameToContext));
+    });
+  }
   return ctxs.length === 0 ? [SecurityContext.NONE] : Array.from(new Set(ctxs)).sort();
 }
 

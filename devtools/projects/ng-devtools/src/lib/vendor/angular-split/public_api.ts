@@ -1,4 +1,3 @@
-// tslint:disable
 /*
  * Public API Surface of angular-split
  */

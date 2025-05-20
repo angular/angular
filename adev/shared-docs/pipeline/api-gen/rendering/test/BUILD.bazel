@@ -1,5 +1,6 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 load("//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults2.bzl", "jasmine_test")
 
 render_api_to_html(
     name = "test",
@@ -9,28 +10,28 @@ render_api_to_html(
     ],
 )
 
-ts_library(
+ts_project(
     name = "unit_test_lib",
     testonly = True,
     srcs = glob(
         [
-            "**/*.spec.ts",
+            "**/*.spec.mts",
         ],
     ),
     deps = [
-        "//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html_lib",
-        "@npm//@bazel/runfiles",
-        "@npm//@types/jsdom",
-        "@npm//jsdom",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/jsdom",
+        "//:node_modules/jsdom",
+        "//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html_lib_rjs",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "unit_tests",
     data = [
-        "@npm//jsdom",
+        ":unit_test_lib_rjs",
+        "//:node_modules/jsdom",
     ] + glob([
         "**/*.json",
     ]),
-    deps = [":unit_test_lib"],
 )

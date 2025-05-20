@@ -5,7 +5,7 @@ function MyCmp_HostBindings(rf, ctx) {
 		i0.ɵɵlistener("event1", function MyCmp_event1_HostBindingHandler() { return ctx.foo(); });
 	}
 	if (rf & 2) {
-		i0.ɵɵhostProperty("prop1", ctx.foo);
+		i0.ɵɵdomProperty("prop1", ctx.foo);
 		i0.ɵɵattribute("attr1", ctx.foo);
 		i0.ɵɵstyleMap(ctx.foo);
         i0.ɵɵclassMap(ctx.foo);
@@ -26,8 +26,8 @@ function MyCmp_Template(rf, ctx) {
 	} if (rf & 2) {
 		i0.ɵɵstyleProp("style1", ctx.foo);
 		i0.ɵɵclassProp("class1", ctx.foo);
-		i0.ɵɵattributeInterpolate1("attrInterp1", "interp ", ctx.foo, "");
-		i0.ɵɵpropertyInterpolate1("propInterp1", "interp ", ctx.foo, "");
+		i0.ɵɵattributeInterpolate1("attrInterp1", "interp ", ctx.foo);
+		i0.ɵɵpropertyInterpolate1("propInterp1", "interp ", ctx.foo);
 		i0.ɵɵproperty("prop1", ctx.foo);
 		i0.ɵɵattribute("attr1", ctx.foo);
 	}

@@ -12,11 +12,11 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {MatTabLink, MatTabNav, MatTabNavPanel} from '@angular/material/tabs';
 import {MatTooltip} from '@angular/material/tooltip';
-import {Events, MessageBus, Route} from 'protocol';
+import {Events, MessageBus, Route, SupportedApis} from '../../../../protocol';
 
 import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
-import {FrameManager} from '../frame_manager';
-import {ThemeService} from '../theme-service';
+import {FrameManager} from '../application-services/frame_manager';
+import {ThemeService} from '../application-services/theme_service';
 
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {InjectorTreeComponent} from './injector-tree/injector-tree.component';
@@ -24,7 +24,7 @@ import {ProfilerComponent} from './profiler/profiler.component';
 import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TabUpdate} from './tab-update/index';
 
-type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
+type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -49,10 +49,11 @@ type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
 })
 export class DevToolsTabsComponent {
   readonly isHydrationEnabled = input(false);
+  readonly supportedApis = input.required<SupportedApis>();
   readonly frameSelected = output<Frame>();
 
   readonly applicationEnvironment = inject(ApplicationEnvironment);
-  readonly activeTab = signal<Tabs>('Components');
+  readonly activeTab = signal<Tab>('Components');
   readonly inspectorRunning = signal(false);
   readonly showCommentNodes = signal(false);
   readonly routerGraphEnabled = signal(false);
@@ -63,11 +64,21 @@ export class DevToolsTabsComponent {
 
   readonly snapToRoot = signal(false);
 
-  readonly tabs = computed<Tabs[]>(() => {
-    const alwaysShown: Tabs[] = ['Components', 'Profiler', 'Injector Tree'];
-    return this.routerGraphEnabled() && this.routes().length > 0
-      ? [...alwaysShown, 'Router Tree']
-      : alwaysShown;
+  readonly tabs = computed<Tab[]>(() => {
+    const supportedApis = this.supportedApis();
+    const tabs: Tab[] = ['Components'];
+
+    if (supportedApis.profiler) {
+      tabs.push('Profiler');
+    }
+    if (supportedApis.dependencyInjection) {
+      tabs.push('Injector Tree');
+    }
+    if (supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0) {
+      tabs.push('Router Tree');
+    }
+
+    return tabs;
   });
 
   profilingNotificationsSupported = Boolean(
@@ -95,17 +106,25 @@ export class DevToolsTabsComponent {
       this.routes.set(routes || []);
     });
 
+    // Change the tab to Components, if an element is selected via the inspector.
+    this._messageBus.on('selectComponent', () => {
+      if (this.activeTab() !== 'Components') {
+        this.changeTab('Components');
+      }
+    });
+
     if (typeof chrome !== 'undefined' && chrome.runtime !== undefined) {
       this.extensionVersion.set(chrome.runtime.getManifest().version);
     }
   }
 
-  emitSelectedFrame(frameId: string): void {
-    const frame = this.frameManager.frames.find((frame) => frame.id === parseInt(frameId, 10));
+  emitSelectedFrame(event: Event): void {
+    const frameId = (event.target as HTMLInputElement).value;
+    const frame = this.frameManager.frames().find((frame) => frame.id === parseInt(frameId, 10));
     this.frameSelected.emit(frame!);
   }
 
-  changeTab(tab: Tabs): void {
+  changeTab(tab: Tab): void {
     this.activeTab.set(tab);
     this.tabUpdate.notify(tab);
     if (tab === 'Router Tree') {

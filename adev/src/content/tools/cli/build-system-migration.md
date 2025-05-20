@@ -188,14 +188,13 @@ This will not occur in builds outside the development server.
 Hot Module Replacement (HMR) is a technique used by development servers to avoid reloading the entire page when only part of an application is changed.
 The changes in many cases can be immediately shown in the browser which allows for an improved edit/refresh cycle while developing an application.
 While general JavaScript-based hot module replacement (HMR) is currently not supported, several more specific forms of HMR are available:
-- **global stylesheets** (default)
-- **component stylesheet** (default)
-- **component template** (experimental opt-in)
+- **global stylesheet** (`styles` build option)
+- **component stylesheet** (inline and file-based)
+- **component template** (inline and file-based)
 
-The stylesheet HMR capabilities are automatically enabled and require no code or configuration changes to use.
-Angular provides HMR support for both file-based (`styleUrl`/`styleUrls`) and inline (`styles`) component styles.
+The HMR capabilities are automatically enabled and require no code or configuration changes to use.
+Angular provides HMR support for both file-based (`templateUrl`/`styleUrl`/`styleUrls`) and inline (`template`/`styles`) component styles and templates.
 The build system will attempt to compile and process the minimal amount of application code when it detects a stylesheet only change.
-In many cases, no JavaScript/TypeScript processing will be required.
 
 If preferred, the HMR capabilities can be disabled by setting the `hmr` development server option to `false`.
 This can also be changed on the command line via:
@@ -205,14 +204,6 @@ This can also be changed on the command line via:
 ng serve --no-hmr
 
 </docs-code>
-
-In addition to fully supported component stylesheet HMR, Angular provides **experimental** support for component template HMR.
-Template HMR also requires no application code changes but currently requires the use of the `NG_HMR_TEMPLATES=1` environment variable to enable.
-
-IMPORTANT: Component **template** HMR is experimental and is not enabled by default.
-Currently, only file-based (`styleUrl`) templates are supported and any inline template changes will cause a full page reload.
-When manually enabled, there may be cases where the browser is not fully synchronized with the application code and a restart of the development server may be required.
-If you encounter an issue while using this feature, please [report the bug](https://github.com/angular/angular-cli/issues) to help the Angular team stabilize the feature.
 
 ### Vite as a development server
 
@@ -283,7 +274,7 @@ An example is as follows:
       ...
       "define": {
           "SOME_NUMBER": "5",
-          "ANOTHER": "''this is a string literal, note the extra single quotes'",
+          "ANOTHER": "'this is a string literal, note the extra single quotes'",
           "REFERENCE": "globalThis.someValue.noteTheAbsentSingleQuotes"
       }
     }

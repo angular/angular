@@ -13,7 +13,7 @@ import {OutputEmitterRef} from './output_emitter_ref';
 /**
  * Options for declaring an output.
  *
- * @publicAPI
+ * @publicApi 19.0
  */
 export interface OutputOptions {
   alias?: string;
@@ -59,7 +59,7 @@ export interface OutputOptions {
  * }
  * ```
  * @initializerApiFunction {"showTypesInSignaturePreview": true}
- * @publicAPI
+ * @publicApi 19.0
  */
 export function output<T = void>(opts?: OutputOptions): OutputEmitterRef<T> {
   ngDevMode && assertInInjectionContext(output);

@@ -7,11 +7,20 @@
  */
 
 export {ComputedNode, createComputed} from './src/computed';
+export {
+  ComputationFn,
+  LinkedSignalNode,
+  LinkedSignalGetter,
+  createLinkedSignal,
+  linkedSignalSetFn,
+  linkedSignalUpdateFn,
+} from './src/linked_signal';
 export {ValueEqualityFn, defaultEquals} from './src/equality';
 export {setThrowInvalidWriteToSignalError} from './src/errors';
 export {
   REACTIVE_NODE,
   Reactive,
+  ReactiveHookFn,
   ReactiveNode,
   SIGNAL,
   consumerAfterComputation,
@@ -28,7 +37,9 @@ export {
   producerNotifyConsumers,
   producerUpdateValueVersion,
   producerUpdatesAllowed,
+  runPostProducerCreatedFn,
   setActiveConsumer,
+  setPostProducerCreatedFn,
 } from './src/graph';
 export {
   SIGNAL_NODE,
@@ -37,8 +48,11 @@ export {
   createSignal,
   runPostSignalSetFn,
   setPostSignalSetFn,
+  signalGetFn,
   signalSetFn,
   signalUpdateFn,
+  createSignalTuple,
 } from './src/signal';
 export {Watch, WatchCleanupFn, WatchCleanupRegisterFn, createWatch} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';
+export {untracked} from './src/untracked';

@@ -30,14 +30,14 @@ describe('NodeRuntimeSandbox', () => {
   let service: NodeRuntimeSandbox;
 
   const fakeTerminalHandler = {
-    interactiveTerminalInstance: {
+    interactiveTerminalInstance: signal({
       write: (data: string) => {},
       onData: (data: string) => {},
       breakProcess$: observableOf(),
-    },
-    readonlyTerminalInstance: {
+    }),
+    readonlyTerminalInstance: signal({
       write: (data: string) => {},
-    },
+    }),
     clearTerminals: () => {},
   };
 
@@ -194,16 +194,6 @@ describe('NodeRuntimeSandbox', () => {
     expect(renameFileSpy).toHaveBeenCalledOnceWith(oldPath, newPath);
   });
 
-  it('should initialize the Angular CLI based on the tutorial config', async () => {
-    setValuesToInitializeAngularCLI();
-
-    const initAngularCliSpy = spyOn(service, 'initAngularCli' as any);
-
-    await service.init();
-
-    expect(initAngularCliSpy).toHaveBeenCalled();
-  });
-
   it('should initialize a project based on the tutorial config', async () => {
     service['webContainerPromise'] = Promise.resolve(
       new FakeWebContainer() as unknown as WebContainer,
@@ -215,34 +205,6 @@ describe('NodeRuntimeSandbox', () => {
     await service.init();
 
     expect(initProjectSpy).toHaveBeenCalled();
-  });
-
-  it('should cleanup when initializing the Angular CLI if a project was initialized before', async () => {
-    const cleanupSpy = spyOn(service, 'cleanup' as any);
-
-    setValuesToInitializeProject();
-    await service.init();
-
-    expect(cleanupSpy).not.toHaveBeenCalled();
-
-    setValuesToInitializeAngularCLI();
-    await service.init();
-
-    expect(cleanupSpy).toHaveBeenCalledOnceWith();
-  });
-
-  it('should cleanup when initializing a project if the Angular CLI was initialized before', async () => {
-    const cleanupSpy = spyOn(service, 'cleanup' as any);
-
-    setValuesToInitializeAngularCLI();
-    await service.init();
-
-    expect(cleanupSpy).not.toHaveBeenCalled();
-
-    setValuesToInitializeProject();
-    await service.init();
-
-    expect(cleanupSpy).toHaveBeenCalledOnceWith();
   });
 
   it("should set the error state when an out of memory message is received from the web container's output", async () => {
@@ -299,5 +261,19 @@ describe('NodeRuntimeSandbox', () => {
     for (const fileToDelete of allFilesToDelete) {
       expect(deleteFileSpy).toHaveBeenCalledWith(fileToDelete);
     }
+  });
+
+  it('should not have any filePath starting with "/" in solutions files', async () => {
+    service['webContainerPromise'] = Promise.resolve(
+      new FakeWebContainer() as unknown as WebContainer,
+    );
+    setValuesToInitializeProject();
+
+    await service.init();
+
+    const files = await service.getSolutionFiles();
+
+    expect(files.length).toBe(1);
+    expect(files[0].path).toBe('fake-file');
   });
 });

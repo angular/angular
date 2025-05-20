@@ -286,6 +286,14 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * scope via `@Component.deferredImports` field.
    */
   isExplicitlyDeferred: boolean;
+
+  /** Whether selectorless is enabled for the specific component. */
+  selectorlessEnabled: boolean;
+
+  /**
+   * Names of the symbols within the source file that are referenced directly inside the template.
+   */
+  localReferencedSymbols: Set<string> | null;
 }
 
 /** Metadata collected about an additional directive that is being applied to a directive host. */
@@ -350,9 +358,10 @@ export interface TemplateGuardMeta {
 export interface PipeMeta {
   kind: MetaKind.Pipe;
   ref: Reference<ClassDeclaration>;
-  name: string;
+  name: string | null;
   nameExpr: ts.Expression | null;
   isStandalone: boolean;
+  isPure: boolean;
   decorator: ts.Decorator | null;
   isExplicitlyDeferred: boolean;
 }

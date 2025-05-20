@@ -24,7 +24,7 @@ import ts from 'typescript';
 import {Reference} from '../../../imports';
 import {
   ClassPropertyMapping,
-  ComponentResources,
+  DirectiveResources,
   DirectiveTypeCheckMeta,
   HostDirectiveMeta,
   InputMapping,
@@ -33,6 +33,7 @@ import {ClassDeclaration} from '../../../reflection';
 import {SubsetOfKeys} from '../../../util/src/typescript';
 
 import {ParsedTemplateWithSource, StyleUrlMeta} from './resources';
+import {HostBindingNodes} from '../../directive';
 
 /**
  * These fields of `R3ComponentMetadata` are updated in the `resolve` phase.
@@ -74,7 +75,7 @@ export interface ComponentAnalysisData {
    */
   viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>> | null;
 
-  resources: ComponentResources;
+  resources: DirectiveResources;
 
   /**
    * `styleUrls` extracted from the decorator, if present.
@@ -108,6 +109,18 @@ export interface ComponentAnalysisData {
 
   /** Raw expression that defined the host directives array. Used for diagnostics. */
   rawHostDirectives: ts.Expression | null;
+
+  /** Raw nodes representing the host bindings of the directive. */
+  hostBindingNodes: HostBindingNodes;
+
+  /** Whether selectorless is enabled for the specific component. */
+  selectorlessEnabled: boolean;
+
+  /**
+   * Names of the symbols within the source file that are referenced directly inside the template.
+   * Used to reduce the amount of lookups when determining which dependencies to expose.
+   */
+  localReferencedSymbols: Set<string> | null;
 }
 
 export interface ComponentResolutionData {

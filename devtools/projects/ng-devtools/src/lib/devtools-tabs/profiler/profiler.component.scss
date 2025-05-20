@@ -1,6 +1,7 @@
+@use '../../../styles/typography';
+
 :host,
 .profiler-wrapper {
-  font-size: 1em;
   width: 100%;
   height: calc(100% - 30px);
 
@@ -19,11 +20,13 @@
   cursor: pointer;
 
   &.recording-button {
-    color: #d83c34;
+    color: var(--dynamic-red-01);
   }
 }
 
 .instructions {
+  @extend %body-01;
+
   &.hidden {
     display: none;
   }
@@ -31,7 +34,6 @@
   input,
   span {
     margin-top: 5px;
-    font-size: 1em;
     cursor: pointer;
   }
 }
@@ -45,14 +47,6 @@
 .visualization {
   margin: 0;
   height: 100%;
-}
-
-:host-context(.dark-theme) {
-  .profiler-control {
-    &.recording-button {
-      color: #ff625a;
-    }
-  }
 }
 
 .mdc-card {

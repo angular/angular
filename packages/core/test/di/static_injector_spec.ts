@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {forwardRef, Inject, InjectFlags, Injector, Self, SkipSelf} from '@angular/core';
+import {forwardRef, Inject, Injector, Self, SkipSelf} from '../../src/core';
 
 import {stringify} from '../../src/util/stringify';
 
@@ -112,26 +112,24 @@ describe('dependency resolution', () => {
     it('should return a default value when not requested provider on self', () => {
       const car = new SportsCar(new Engine());
       const injector = Injector.create({providers: []});
-      expect(injector.get<Car | null>(Car, null, InjectFlags.Self)).toBeNull();
-      expect(injector.get<Car>(Car, car, InjectFlags.Self)).toBe(car);
+      expect(injector.get<Car | null>(Car, null, {self: true})).toBeNull();
+      expect(injector.get<Car>(Car, car, {self: true})).toBe(car);
     });
 
     it('should return a default value when not requested provider on self and optional', () => {
-      const flags = InjectFlags.Self | InjectFlags.Optional;
       const injector = Injector.create({providers: []});
-      expect(injector.get<Car | null>(Car, null, InjectFlags.Self)).toBeNull();
-      expect(injector.get<Car | number>(Car, 0, flags)).toBe(0);
+      expect(injector.get<Car | null>(Car, null, {self: true})).toBeNull();
+      expect(injector.get<Car | number>(Car, 0, {self: true, optional: true})).toBe(0);
     });
 
     it(`should return null when not requested provider on self and optional`, () => {
-      const flags = InjectFlags.Self | InjectFlags.Optional;
       const injector = Injector.create({providers: []});
-      expect(injector.get<Car | null>(Car, undefined, flags)).toBeNull();
+      expect(injector.get<Car | null>(Car, undefined, {self: true, optional: true})).toBeNull();
     });
 
     it('should throw error when not requested provider on self', () => {
       const injector = Injector.create({providers: []});
-      expect(() => injector.get(Car, undefined, InjectFlags.Self)).toThrowError(
+      expect(() => injector.get(Car, undefined, {self: true})).toThrowError(
         `R3InjectorError[${stringify(Car)}]: \n` +
           `  NullInjectorError: No provider for ${stringify(Car)}!`,
       );

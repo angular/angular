@@ -12,15 +12,19 @@ export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
 }
 
-export function splitAtColon(input: string, defaultValues: string[]): string[] {
+export function splitAtColon(input: string, defaultValues: (string | null)[]): (string | null)[] {
   return _splitAt(input, ':', defaultValues);
 }
 
-export function splitAtPeriod(input: string, defaultValues: string[]): string[] {
+export function splitAtPeriod(input: string, defaultValues: (string | null)[]): (string | null)[] {
   return _splitAt(input, '.', defaultValues);
 }
 
-function _splitAt(input: string, character: string, defaultValues: string[]): string[] {
+function _splitAt(
+  input: string,
+  character: string,
+  defaultValues: (string | null)[],
+): (string | null)[] {
   const characterIndex = input.indexOf(character);
   if (characterIndex == -1) return defaultValues;
   return [input.slice(0, characterIndex).trim(), input.slice(characterIndex + 1).trim()];
@@ -85,19 +89,16 @@ export function stringify(token: any): string {
   }
 
   if (Array.isArray(token)) {
-    return '[' + token.map(stringify).join(', ') + ']';
+    return `[${token.map(stringify).join(', ')}]`;
   }
 
   if (token == null) {
     return '' + token;
   }
 
-  if (token.overriddenName) {
-    return `${token.overriddenName}`;
-  }
-
-  if (token.name) {
-    return `${token.name}`;
+  const name = token.overriddenName || token.name;
+  if (name) {
+    return `${name}`;
   }
 
   if (!token.toString) {
@@ -106,14 +107,14 @@ export function stringify(token: any): string {
 
   // WARNING: do not try to `JSON.stringify(token)` here
   // see https://github.com/angular/angular/issues/23440
-  const res = token.toString();
+  const result = token.toString();
 
-  if (res == null) {
-    return '' + res;
+  if (result == null) {
+    return '' + result;
   }
 
-  const newLineIndex = res.indexOf('\n');
-  return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
+  const newLineIndex = result.indexOf('\n');
+  return newLineIndex >= 0 ? result.slice(0, newLineIndex) : result;
 }
 
 export class Version {

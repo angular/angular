@@ -12,7 +12,7 @@ import {
   ElementProfile,
   LifecycleProfile,
   ProfilerFrame,
-} from 'protocol';
+} from '../../../../protocol';
 
 import {getDirectiveName} from '../highlighter';
 import {ComponentTreeNode} from '../interfaces';
@@ -267,6 +267,7 @@ const insertElementProfile = (
   let lastFrame: ElementProfile = {
     children: [],
     directives: [],
+    type: 'element',
   };
   if (frames[lastIdx]) {
     lastFrame = frames[lastIdx];
@@ -288,9 +289,12 @@ const prepareInitialFrame = (source: string, duration: number) => {
     let position: ElementPosition | undefined;
     if (node.component) {
       position = directiveForestHooks.getDirectivePosition(node.component.instance);
-    } else {
+    } else if (node.directives[0]) {
       position = directiveForestHooks.getDirectivePosition(node.directives[0].instance);
+    } else if (node.defer) {
+      position = directiveForestHooks.getDirectivePosition(node.defer);
     }
+
     if (position === undefined) {
       return;
     }
@@ -312,9 +316,10 @@ const prepareInitialFrame = (source: string, duration: number) => {
         name: getDirectiveName(node.component.instance),
       });
     }
-    const result = {
+    const result: ElementProfile = {
       children: [],
       directives,
+      type: node.defer ? 'defer' : 'element',
     };
     children[position[position.length - 1]] = result;
     node.children.forEach((n) => traverse(n, result.children));

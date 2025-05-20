@@ -1,3 +1,5 @@
+@use '../../../../../styles/typography';
+
 .mdc-card.breadcrumb-card {
   padding: 0;
   width: 100%;
@@ -7,7 +9,7 @@
 
   .scroll-button {
     height: 100%;
-    background-color: rgb(243, 243, 243);
+    background-color: var(--septenary-contrast);
     border: none;
     cursor: pointer;
 
@@ -23,16 +25,19 @@
     // width: calc(100% - 50px);
     height: 100%;
     scroll-behavior: smooth;
+    scrollbar-width: none;
+    flex: 1;
 
     &::-webkit-scrollbar {
       display: none;
     }
 
     button {
+      @extend %monospaced;
       height: 24px;
 
       &.selected {
-        background-color: rgb(243, 243, 243);
+        background-color: var(--color-tree-node-highlighted);
       }
     }
   }
@@ -40,39 +45,12 @@
   .mdc-button {
     height: 20px;
     line-height: 20px;
-    font-size: 11px;
     margin-right: 5px;
     width: fit-content;
-    color: #8a1882;
+    color: var(--color-tree-node-element-name);
 
     &:hover {
-      background-color: #ebf1fb;
-    }
-  }
-}
-
-:host-context(.dark-theme) {
-  .mdc-card {
-    &.breadcrumb-card {
-      .scroll-button {
-        background-color: rgb(41, 42, 45);
-        color: #ffffff;
-      }
-
-      .breadcrumbs {
-        button {
-          &.selected {
-            background-color: rgb(41, 42, 45);
-          }
-        }
-      }
-
-      .mdc-button {
-        color: #5caace;
-        &:hover {
-          background-color: #093e69;
-        }
-      }
+      background-color: var(--color-tree-node-hovered);
     }
   }
 }

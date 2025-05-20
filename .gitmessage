@@ -74,7 +74,7 @@ Fixes #<issue number>
 # =============================
 #
 # The full specification of the Angular Commit Message Format can be found at
-# https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit
+# https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md
 #
 # The following is an excerpt of the specification with the most commonly needed info.
 #

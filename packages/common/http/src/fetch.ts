@@ -6,12 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, NgZone} from '@angular/core';
+import {ApplicationRef, inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
-import {HttpRequest} from './request';
+import {
+  ACCEPT_HEADER,
+  ACCEPT_HEADER_VALUE,
+  CONTENT_TYPE_HEADER,
+  HttpRequest,
+  X_REQUEST_URL_HEADER,
+} from './request';
 import {
   HTTP_STATUS_CODE_OK,
   HttpDownloadProgressEvent,
@@ -22,9 +28,10 @@ import {
   HttpResponse,
 } from './response';
 
-const XSSI_PREFIX = /^\)\]\}',?\n/;
+// Needed for the global `Zone` ambient types to be available.
+import type {} from 'zone.js';
 
-const REQUEST_URL_HEADER = `X-Request-URL`;
+const XSSI_PREFIX = /^\)\]\}',?\n/;
 
 /**
  * Determine an appropriate URL for the response, by checking either
@@ -35,9 +42,17 @@ function getResponseUrl(response: Response): string | null {
     return response.url;
   }
   // stored as lowercase in the map
-  const xRequestUrl = REQUEST_URL_HEADER.toLocaleLowerCase();
+  const xRequestUrl = X_REQUEST_URL_HEADER.toLocaleLowerCase();
   return response.headers.get(xRequestUrl);
 }
+
+/**
+ * An internal injection token to reference `FetchBackend` implementation
+ * in a tree-shakable way.
+ */
+export const FETCH_BACKEND = new InjectionToken<FetchBackend>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'FETCH_BACKEND' : '',
+);
 
 /**
  * Uses `fetch` to send requests to a backend server.
@@ -58,6 +73,7 @@ export class FetchBackend implements HttpBackend {
   private readonly fetchImpl =
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
+  private readonly appRef = inject(ApplicationRef);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
@@ -76,7 +92,6 @@ export class FetchBackend implements HttpBackend {
   ): Promise<void> {
     const init = this.createRequestInit(request);
     let response;
-
     try {
       // Run fetch outside of Angular zone.
       // This is due to Node.js fetch implementation (Undici) which uses a number of setTimeouts to check if
@@ -137,6 +152,14 @@ export class FetchBackend implements HttpBackend {
       // Here calling the async ReadableStreamDefaultReader.read() is responsible for triggering CD
       await this.ngZone.runOutsideAngular(async () => {
         while (true) {
+          // Prevent reading chunks if the app is destroyed. Otherwise, we risk doing
+          // unnecessary work or triggering side effects after teardown.
+          // This may happen if the app was explicitly destroyed before
+          // the response returned entirely.
+          if (this.appRef.destroyed) {
+            break;
+          }
+
           const {done, value} = await reader.read();
 
           if (done) {
@@ -168,7 +191,7 @@ export class FetchBackend implements HttpBackend {
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);
       try {
-        const contentType = response.headers.get('Content-Type') ?? '';
+        const contentType = response.headers.get(CONTENT_TYPE_HEADER) ?? '';
         body = this.parseBody(request, chunksAll, contentType);
       } catch (error) {
         // Body loading or parsing failed
@@ -252,16 +275,16 @@ export class FetchBackend implements HttpBackend {
     req.headers.forEach((name, values) => (headers[name] = values.join(',')));
 
     // Add an Accept header if one isn't present already.
-    if (!req.headers.has('Accept')) {
-      headers['Accept'] = 'application/json, text/plain, */*';
+    if (!req.headers.has(ACCEPT_HEADER)) {
+      headers[ACCEPT_HEADER] = ACCEPT_HEADER_VALUE;
     }
 
     // Auto-detect the Content-Type header if one isn't present already.
-    if (!req.headers.has('Content-Type')) {
+    if (!req.headers.has(CONTENT_TYPE_HEADER)) {
       const detectedType = req.detectContentTypeHeader();
       // Sometimes Content-Type detection fails.
       if (detectedType !== null) {
-        headers['Content-Type'] = detectedType;
+        headers[CONTENT_TYPE_HEADER] = detectedType;
       }
     }
 
@@ -270,6 +293,7 @@ export class FetchBackend implements HttpBackend {
       method: req.method,
       headers,
       credentials,
+      keepalive: req.keepalive,
     };
   }
 

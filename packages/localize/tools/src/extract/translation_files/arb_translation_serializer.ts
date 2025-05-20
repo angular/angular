@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {AbsoluteFsPath, PathManipulation} from '@angular/compiler-cli/private/localize';
-import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
+import {ɵParsedMessage, ɵSourceLocation} from '../../../../index';
 import {TranslationSerializer} from './translation_serializer';
 import {consolidateMessages, hasLocation} from './utils';
 

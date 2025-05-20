@@ -16,7 +16,7 @@ import {compareVersions} from './version_helpers';
  * Note: this check is disabled in g3, search for
  * `angularCompilerOptions.disableTypeScriptVersionCheck` config param value in g3.
  */
-const MIN_TS_VERSION = '5.5.0';
+const MIN_TS_VERSION = '5.8.0';
 
 /**
  * Supremum of supported TypeScript versions
@@ -26,7 +26,7 @@ const MIN_TS_VERSION = '5.5.0';
  * Note: this check is disabled in g3, search for
  * `angularCompilerOptions.disableTypeScriptVersionCheck` config param value in g3.
  */
-const MAX_TS_VERSION = '5.8.0';
+const MAX_TS_VERSION = '5.9.0';
 
 /**
  * The currently used version of TypeScript, which can be adjusted for testing purposes using

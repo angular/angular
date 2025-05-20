@@ -13,7 +13,7 @@ export {CompoundMetadataRegistry, LocalMetadataRegistry} from './src/registry';
 export {
   ResourceRegistry,
   Resource,
-  ComponentResources,
+  DirectiveResources,
   isExternalResource,
   ExternalResource,
 } from './src/resource_registry';

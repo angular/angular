@@ -50,7 +50,11 @@ export function analyzeFileAndEnsureNoCrossImports(
 
   // TODO: Consider handling deep dynamic import expressions.
   for (const st of sf.statements) {
-    if (!ts.isImportDeclaration(st) || !ts.isStringLiteralLike(st.moduleSpecifier)) {
+    if (
+      (!ts.isImportDeclaration(st) && !ts.isExportDeclaration(st)) ||
+      st.moduleSpecifier === undefined ||
+      !ts.isStringLiteralLike(st.moduleSpecifier)
+    ) {
       continue;
     }
     // Skip module imports.
@@ -74,13 +78,6 @@ export function analyzeFileAndEnsureNoCrossImports(
           `You can skip this import by adding a comment: ${skipComment}`,
       );
       continue;
-    }
-
-    if (targetPackage.path !== owningPkg.path) {
-      failures.push(
-        `Found relative cross entry-point import in: ${fileDebugName}. Import to: ${st.moduleSpecifier.text}\n` +
-          `You can skip this import by adding a comment: ${skipComment}`,
-      );
     }
   }
 

@@ -7,31 +7,29 @@
  */
 
 import {h, Fragment} from 'preact';
-import {EnumEntryRenderable, MemberEntryRenderable} from '../entities/renderables';
+import {EnumEntryRenderable, MemberEntryRenderable} from '../entities/renderables.mjs';
 import {HeaderApi} from './header-api';
-import {TabDescription} from './tab-description';
-import {TabApi} from './tab-api';
-import {REFERENCE_MEMBERS, REFERENCE_MEMBERS_CONTAINER} from '../styling/css-classes';
+import {SectionDescription} from './section-description';
+import {SectionApi} from './section-api';
+import {API_REFERENCE_CONTAINER, REFERENCE_MEMBERS} from '../styling/css-classes.mjs';
 import {ClassMember} from './class-member';
 
 /** Component to render a enum API reference document. */
 export function EnumReference(entry: EnumEntryRenderable) {
   return (
-    <div class="api">
+    <div className={API_REFERENCE_CONTAINER}>
       <HeaderApi entry={entry} />
-      <TabApi entry={entry} />
-      <TabDescription entry={entry} />
-      {
-        entry.members.length > 0
-          ? (
-            <div class={REFERENCE_MEMBERS_CONTAINER}>
-              <div class={REFERENCE_MEMBERS}>
-                {entry.members.map((member: MemberEntryRenderable) => (<ClassMember member={member}/>))}
-              </div>
-            </div>
-            )
-          : (<></>)
-      }
+      <SectionApi entry={entry} />
+      {entry.members.length > 0 ? (
+        <div class={REFERENCE_MEMBERS}>
+          {entry.members.map((member: MemberEntryRenderable) => (
+            <ClassMember member={member} />
+          ))}
+        </div>
+      ) : (
+        <></>
+      )}
+      <SectionDescription entry={entry} />
     </div>
   );
 }

@@ -6,18 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {REACTIVE_NODE, ReactiveNode} from '@angular/core/primitives/signals';
+import {REACTIVE_NODE, ReactiveNode} from '../../primitives/signals';
 
-import {
-  LView,
-  PARENT,
-  REACTIVE_TEMPLATE_CONSUMER,
-  TVIEW,
-  TView,
-  TViewType,
-} from './interfaces/view';
+import {LView, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from './interfaces/view';
 import {getLViewParent, markAncestorsForTraversal, markViewForRefresh} from './util/view_utils';
-import {assertDefined} from '../util/assert';
 
 let freeConsumers: ReactiveNode[] = [];
 export interface ReactiveLViewConsumer extends ReactiveNode {
@@ -48,7 +40,7 @@ export function maybeReturnReactiveLViewConsumer(consumer: ReactiveLViewConsumer
   freeConsumers.push(consumer);
 }
 
-const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'> = {
+export const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'> = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
   kind: 'template',
@@ -78,7 +70,7 @@ export function getOrCreateTemporaryConsumer(lView: LView): ReactiveLViewConsume
   return consumer;
 }
 
-const TEMPORARY_CONSUMER_NODE = {
+export const TEMPORARY_CONSUMER_NODE = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
   kind: 'template',
@@ -116,4 +108,8 @@ const TEMPORARY_CONSUMER_NODE = {
  */
 export function viewShouldHaveReactiveConsumer(tView: TView) {
   return tView.type !== TViewType.Embedded;
+}
+
+export function isReactiveLViewConsumer(node: ReactiveNode): node is ReactiveLViewConsumer {
+  return node.kind === 'template';
 }

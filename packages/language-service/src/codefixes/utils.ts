@@ -10,7 +10,7 @@ import {absoluteFrom} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import tss from 'typescript';
 
-import {TemplateInfo} from '../utils';
+import {TypeCheckInfo} from '../utils';
 
 /**
  * This context is the info includes the `errorCode` at the given span the user selected in the
@@ -20,7 +20,7 @@ import {TemplateInfo} from '../utils';
  * context will be provided to the `CodeActionMeta` which could handle the `errorCode`.
  */
 export interface CodeActionContext {
-  templateInfo: TemplateInfo | null;
+  typeCheckInfo: TypeCheckInfo | null;
   fileName: string;
   compiler: NgCompiler;
   start: number;
@@ -74,15 +74,15 @@ export function convertFileTextChangeInTcb(
     let fileName: string | undefined;
     const seenTextChangeInTemplate = new Set<string>();
     for (const textChange of fileTextChange.textChanges) {
-      const templateMap = ttc.getTemplateMappingAtTcbLocation({
+      const sourceLocation = ttc.getSourceMappingAtTcbLocation({
         tcbPath: absoluteFrom(fileTextChange.fileName),
         isShimFile: true,
         positionInFile: textChange.span.start,
       });
-      if (templateMap === null) {
+      if (sourceLocation === null) {
         continue;
       }
-      const mapping = templateMap.templateSourceMapping;
+      const mapping = sourceLocation.sourceMapping;
       if (mapping.type === 'external') {
         fileName = mapping.templateUrl;
       } else if (mapping.type === 'direct') {
@@ -90,8 +90,8 @@ export function convertFileTextChangeInTcb(
       } else {
         continue;
       }
-      const start = templateMap.span.start.offset;
-      const length = templateMap.span.end.offset - templateMap.span.start.offset;
+      const start = sourceLocation.span.start.offset;
+      const length = sourceLocation.span.end.offset - sourceLocation.span.start.offset;
       const changeSpanKey = `${start},${length}`;
       if (seenTextChangeInTemplate.has(changeSpanKey)) {
         continue;

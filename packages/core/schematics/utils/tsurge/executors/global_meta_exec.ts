@@ -10,13 +10,13 @@ import {Serializable} from '../helpers/serializable';
 import {TsurgeMigration} from '../migration';
 
 /**
- * Executes the `globalMeta` stage for the given migration
+ * 1P Logic: Executes the `globalMeta` stage for the given migration
  * to convert the combined unit data into global meta.
  *
  * @returns the serializable global meta.
  */
 export async function executeGlobalMetaPhase<UnitData, GlobalData>(
-  migration: TsurgeMigration<UnitData, GlobalData>,
+  migration: TsurgeMigration<UnitData, GlobalData, unknown>,
   combinedUnitData: UnitData,
 ): Promise<Serializable<GlobalData>> {
   return await migration.globalMeta(combinedUnitData);

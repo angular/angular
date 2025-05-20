@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {Routes} from '@angular/router';
+import {Routes} from '../index';
 
 @Component({
   template: 'default exported',

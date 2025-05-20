@@ -15,7 +15,7 @@ import {
   Signal,
   viewChild,
   viewChildren,
-} from '@angular/core';
+} from '../../src/core';
 
 class QueryType {
   // a random field to brand the type

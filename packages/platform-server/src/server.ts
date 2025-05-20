@@ -35,7 +35,6 @@ import {
   EVENT_MANAGER_PLUGINS,
   ɵBrowserDomAdapter as BrowserDomAdapter,
 } from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 import {DominoAdapter, parseDocument} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
@@ -90,7 +89,6 @@ export const PLATFORM_SERVER_PROVIDERS: Provider[] = [
  */
 @NgModule({
   exports: [BrowserModule],
-  imports: [NoopAnimationsModule],
   providers: PLATFORM_SERVER_PROVIDERS,
 })
 export class ServerModule {}
@@ -118,7 +116,8 @@ function _document(injector: Injector) {
  * @publicApi
  */
 export function platformServer(extraProviders?: StaticProvider[] | undefined): PlatformRef {
-  if (typeof ngServerMode === 'undefined') {
+  const noServerModeSet = typeof ngServerMode === 'undefined';
+  if (noServerModeSet) {
     globalThis['ngServerMode'] = true;
   }
 
@@ -128,9 +127,11 @@ export function platformServer(extraProviders?: StaticProvider[] | undefined): P
     INTERNAL_SERVER_PLATFORM_PROVIDERS,
   )(extraProviders);
 
-  platform.onDestroy(() => {
-    globalThis['ngServerMode'] = undefined;
-  });
+  if (noServerModeSet) {
+    platform.onDestroy(() => {
+      globalThis['ngServerMode'] = undefined;
+    });
+  }
 
   return platform;
 }

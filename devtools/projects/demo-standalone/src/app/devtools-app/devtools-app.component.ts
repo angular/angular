@@ -7,11 +7,11 @@
  */
 
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
+import {Events, MessageBus, PriorityAwareMessageBus} from '../../../../protocol';
 
 import {IFrameMessageBus} from '../../../../../src/iframe-message-bus';
-import {DevToolsComponent} from 'ng-devtools';
-import {FrameManager} from '../../../../../projects/ng-devtools/src/lib/frame_manager';
+import {DevToolsComponent} from '../../../../ng-devtools';
+import {FrameManager} from '../../../../../projects/ng-devtools/src/lib/application-services/frame_manager';
 
 @Component({
   imports: [DevToolsComponent],
@@ -24,7 +24,6 @@ import {FrameManager} from '../../../../../projects/ng-devtools/src/lib/frame_ma
           new IFrameMessageBus(
             'angular-devtools',
             'angular-devtools-backend',
-            // tslint:disable-next-line: no-non-null-assertion
             () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow!,
           ),
         );

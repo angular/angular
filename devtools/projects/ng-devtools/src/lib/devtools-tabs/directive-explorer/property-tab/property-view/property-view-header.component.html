@@ -1,6 +1,10 @@
 <mat-toolbar>
   {{ directive() }}
-  <button matTooltip="Open source" (click)="handleViewSource($event)">
+  <button
+    [disabled]="disableViewSourceButton()"
+    [matTooltip]="disableViewSourceButton() ? 'Inspecting source is not supported in Firefox when the inspected frame is not the top-level frame.' : 'Open Source'"
+    (click)="handleViewSource($event)"
+  >
     <mat-icon> code </mat-icon>
   </button>
 </mat-toolbar>

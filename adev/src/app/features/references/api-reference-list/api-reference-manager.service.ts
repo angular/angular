@@ -10,7 +10,6 @@ import {Injectable, signal} from '@angular/core';
 // This file is generated at build-time, error is expected here.
 import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
 import {getApiUrl} from '../helpers/manifest.helper';
-import {ApiItem} from '../interfaces/api-item';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
 import {ApiManifest} from '../interfaces/api-manifest';
 
@@ -29,17 +28,20 @@ export class ApiReferenceManager {
       groups.push({
         title: module.moduleLabel.replace('@angular/', ''),
         id: module.normalizedModuleName,
-        items: module.entries
-          .map((api) => {
-            const url = getApiUrl(module, api.name);
-            return {
-              itemType: api.type,
-              title: api.name,
-              isDeprecated: !!api.isDeprecated,
-              url,
-            };
-          })
-          .sort((a, b) => a.title.localeCompare(b.title)),
+        items: module.entries.map((api) => {
+          const url = getApiUrl(module, api.name);
+          const apiItem = {
+            itemType: api.type,
+            title: api.name,
+            deprecated: api.deprecated,
+            developerPreview: api.developerPreview,
+            experimental: api.experimental,
+            stable: api.stable,
+            url,
+          };
+
+          return apiItem;
+        }),
       });
     }
 

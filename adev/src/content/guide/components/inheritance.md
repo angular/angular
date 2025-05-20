@@ -1,6 +1,6 @@
 # Inheritance
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular components are TypeScript classes and participate in standard JavaScript inheritance
 semantics.
@@ -20,9 +20,9 @@ export class CustomListbox extends ListboxBase {
 
 ## Extending other components and directives
 
-When a component extends another component or a directive, it inherits all the metadata defined in
-the base class's decorator and the base class's decorated members. This includes the selector,
-template, styles, host bindings, inputs, outputs, lifecycle methods, and any other settings.
+When a component extends another component or a directive, it inherits some of the metadata defined in
+the base class's decorator and the base class's decorated members. This includes
+host bindings, inputs, outputs, lifecycle methods.
 
 ```angular-ts
 @Component({
@@ -67,8 +67,7 @@ and their own.
 
 ### Forwarding injected dependencies
 
-If a base class relies on dependency injection, the child class must explicitly pass these
-dependencies to `super`.
+If a base class injects dependencies as constructor parameters, the child class must explicitly class these dependencies to `super`.
 
 ```ts
 @Component({ ... })

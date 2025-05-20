@@ -1,0 +1,26 @@
+:host {
+  display: block;
+  margin-top: 1rem;
+}
+
+.open-close-container {
+  border: 1px solid #dddddd;
+  margin-top: 1em;
+  padding: 20px 20px 0px 20px;
+  font-weight: bold;
+  font-size: 20px;
+  height: 100px;
+  opacity: 0.8;
+  background-color: blue;
+  color: #ebebeb;
+  transition-property: height, opacity, background-color, color;
+  transition-duration: 1s;
+}
+
+.open {
+  transition-duration: 0.5s;
+  height: 200px;
+  opacity: 1;
+  background-color: yellow;
+  color: #000000;
+}

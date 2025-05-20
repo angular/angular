@@ -1122,3 +1122,99 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 export {};
 
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_duplicate_external_dep_lazy.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class DuplicateLazyDep {
+}
+DuplicateLazyDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DuplicateLazyDep, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+DuplicateLazyDep.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: DuplicateLazyDep, isStandalone: true, selector: "duplicate-lazy-dep", ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DuplicateLazyDep, decorators: [{
+            type: Directive,
+            args: [{ selector: 'duplicate-lazy-dep' }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_duplicate_external_dep_lazy.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class DuplicateLazyDep {
+    static ɵfac: i0.ɵɵFactoryDeclaration<DuplicateLazyDep, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DuplicateLazyDep, "duplicate-lazy-dep", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_duplicate_external_dep_other.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class OtherLazyDep {
+}
+OtherLazyDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: OtherLazyDep, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+OtherLazyDep.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: OtherLazyDep, isStandalone: true, selector: "other-lazy-dep", ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: OtherLazyDep, decorators: [{
+            type: Directive,
+            args: [{ selector: 'other-lazy-dep' }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_duplicate_external_dep_other.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class OtherLazyDep {
+    static ɵfac: i0.ɵɵFactoryDeclaration<OtherLazyDep, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<OtherLazyDep, "other-lazy-dep", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_duplicate_external_dep.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @defer {
+      <duplicate-lazy-dep/>
+    }
+
+    @defer {
+      <duplicate-lazy-dep/>
+    }
+
+    @defer {
+      <other-lazy-dep/>
+    }
+  `, isInline: true, deferBlockDependencies: [() => [import("./deferred_with_duplicate_external_dep_lazy").then(m => m.DuplicateLazyDep)], () => [import("./deferred_with_duplicate_external_dep_lazy").then(m => m.DuplicateLazyDep)], () => [import("./deferred_with_duplicate_external_dep_other").then(m => m.OtherLazyDep)]] });
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, resolveDeferredDeps: () => [import("./deferred_with_duplicate_external_dep_lazy").then(m => m.DuplicateLazyDep), import("./deferred_with_duplicate_external_dep_other").then(m => m.OtherLazyDep)], resolveMetadata: (DuplicateLazyDep, OtherLazyDep) => ({ decorators: [{
+                type: Component,
+                args: [{
+                        template: `
+    @defer {
+      <duplicate-lazy-dep/>
+    }
+
+    @defer {
+      <duplicate-lazy-dep/>
+    }
+
+    @defer {
+      <other-lazy-dep/>
+    }
+  `,
+                        imports: [DuplicateLazyDep, OtherLazyDep],
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_duplicate_external_dep.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

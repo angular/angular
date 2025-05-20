@@ -13,12 +13,14 @@ import {Type} from '../interface/type';
 import {createOrReusePlatformInjector} from '../platform/platform';
 import {assertStandaloneComponentType} from '../render3/errors';
 import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
-import {NgZone} from '../zone/ng_zone';
 
-import {_callAndReportToErrorHandler, ApplicationRef} from './application_ref';
+import {ApplicationRef} from './application_ref';
 import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
 import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {bootstrap} from '../platform/bootstrap';
+import {profiler} from '../render3/profiler';
+import {ProfilerEvent} from '../render3/profiler_types';
+import {errorHandlerEnvironmentInitializer} from '../error_handler';
 
 /**
  * Internal create application API that implements the core application creation logic and optional
@@ -37,6 +39,7 @@ export function internalCreateApplication(config: {
   appProviders?: Array<Provider | EnvironmentProviders>;
   platformProviders?: Provider[];
 }): Promise<ApplicationRef> {
+  profiler(ProfilerEvent.BootstrapApplicationStart);
   try {
     const {rootComponent, appProviders, platformProviders} = config;
 
@@ -51,6 +54,7 @@ export function internalCreateApplication(config: {
     const allAppProviders = [
       internalProvideZoneChangeDetection({}),
       {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+      errorHandlerEnvironmentInitializer,
       ...(appProviders || []),
     ];
     const adapter = new EnvironmentNgModuleRefAdapter({
@@ -69,5 +73,7 @@ export function internalCreateApplication(config: {
     });
   } catch (e) {
     return Promise.reject(e);
+  } finally {
+    profiler(ProfilerEvent.BootstrapApplicationEnd);
   }
 }

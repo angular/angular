@@ -9,21 +9,37 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     EQUALITY_NG_SWITCH_DIFFERENCE = 2001,
     // (undocumented)
+    INVALID_DIGIT_INFO = 2306,
+    // (undocumented)
     INVALID_INPUT = 2952,
+    // (undocumented)
+    INVALID_INTEGER_LITERAL = 2305,
     // (undocumented)
     INVALID_LOADER_ARGUMENTS = 2959,
     // (undocumented)
+    INVALID_NUMBER_OF_DIGITS_AFTER_FRACTION = 2307,
+    // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
+    // (undocumented)
+    INVALID_TO_DATE_CONVERSION = 2302,
     // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
     // (undocumented)
     LCP_IMG_NGSRC_MODIFIED = 2964,
     // (undocumented)
+    LOCALE_DATA_UNDEFINED = 2304,
+    // (undocumented)
     MISSING_BUILTIN_LOADER = 2962,
+    // (undocumented)
+    MISSING_EXTRA_LOCALE_DATA_FOR_LOCALE = 2303,
     // (undocumented)
     MISSING_NECESSARY_LOADER = 2963,
     // (undocumented)
     NG_FOR_MISSING_DIFFER = -2200,
+    // (undocumented)
+    NG_IF_NOT_A_TEMPLATE_REF = 2020,
+    // (undocumented)
+    NO_PLURAL_MESSAGE_FOUND = 2308,
     // (undocumented)
     OVERSIZED_IMAGE = 2960,
     // (undocumented)
@@ -37,6 +53,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
     // (undocumented)
+    SUSPICIOUS_DATE_FORMAT = 2300,
+    // (undocumented)
     TOO_MANY_PRELOADED_IMAGES = 2961,
     // (undocumented)
     TOO_MANY_PRIORITY_ATTRIBUTES = 2966,
@@ -47,7 +65,15 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNEXPECTED_SRC_ATTR = 2950,
     // (undocumented)
-    UNEXPECTED_SRCSET_ATTR = 2951
+    UNEXPECTED_SRCSET_ATTR = 2951,
+    // (undocumented)
+    UNEXPECTED_TRANSLATION_TYPE = 2302,
+    // (undocumented)
+    UNKNOWN_DATE_TYPE_VALUE = 2301,
+    // (undocumented)
+    UNKNOWN_ZONE_WIDTH = 2302,
+    // (undocumented)
+    VALUE_NOT_A_NUMBER = 2309
 }
 
 // (No @packageDocumentation comment for this package)

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// TODO(devversion): Remove this file during `rules_js` migration.
+
 // This file contains all ambient imports needed to compile the packages/ source code
 
 /// <reference types="hammerjs" />
@@ -19,6 +21,3 @@
 // /packages/tsconfig-test.json when `testonly = True` is set
 // and packages such as platform-server that need these types should
 // use `/// <reference types="x">` in their main entry points
-
-declare let isNode: boolean;
-declare let isBrowser: boolean;

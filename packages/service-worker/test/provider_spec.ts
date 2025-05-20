@@ -18,6 +18,12 @@ import {SwUpdate} from '../src/update';
 const provideServiceWorkerApi = 'provideServiceWorker';
 const serviceWorkerModuleApi = 'ServiceWorkerModule';
 
+async function waitForReadyToRegister() {
+  // `readyToRegister` is a microtask, so we wait for it to execute by
+  // scheduling another microtask before running expectations.
+  await Promise.resolve();
+}
+
 [provideServiceWorkerApi, serviceWorkerModuleApi].forEach((apiFnName: string) => {
   describe(apiFnName, () => {
     // Skip environments that don't support the minimum APIs needed to run these SW tests.
@@ -57,6 +63,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
         }
 
         await untilStable();
+        await waitForReadyToRegister();
       };
 
       it('sets the registration options', async () => {
@@ -87,14 +94,13 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
       });
 
-      it('catches and a logs registration errors', async () => {
+      it('catches and logs registration errors', async () => {
         const consoleErrorSpy = spyOn(console, 'error');
         swRegisterSpy.and.returnValue(Promise.reject('no reason'));
 
         await configTestBed({enabled: true, scope: 'foo'});
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Service worker registration failed with:',
-          'no reason',
+          'NG05604: Service worker registration failed with: no reason',
         );
       });
     });
@@ -126,8 +132,8 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
       it('sets the registration options (and overwrites those set via `provideServiceWorker()`', async () => {
         configTestBed({enabled: true, scope: 'provider'});
         await untilStable();
-
         expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'provider'});
+        await waitForReadyToRegister();
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'provider'});
       });
 
@@ -144,6 +150,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
         await untilStable();
 
         expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
+        await waitForReadyToRegister();
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
       });
 
@@ -152,6 +159,7 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
         await untilStable();
 
         expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
+        await waitForReadyToRegister();
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
       });
 
@@ -213,13 +221,11 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
           const isStableSub = configTestBedWithMockedStability();
 
           isStableSub.next(false);
-          isStableSub.next(false);
 
-          tick();
           expect(swRegisterSpy).not.toHaveBeenCalled();
-
-          tick(20000);
-          expect(swRegisterSpy).not.toHaveBeenCalled();
+          // tick(20000);
+          // Calling `tick(20000)` drains the microtask queue,
+          // which leads to `register` being called.
 
           isStableSub.next(true);
 
@@ -229,11 +235,8 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
 
         it('defaults to registering the SW after 30s if the app does not stabilize sooner', fakeAsync(() => {
           configTestBedWithMockedStability();
-
-          tick(29999);
           expect(swRegisterSpy).not.toHaveBeenCalled();
-
-          tick(1);
+          tick(30000);
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
         }));
 
@@ -243,10 +246,6 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
           isStableSub.next(false);
           isStableSub.next(false);
 
-          tick();
-          expect(swRegisterSpy).not.toHaveBeenCalled();
-
-          tick(500);
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           isStableSub.next(true);
@@ -257,11 +256,8 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
 
         it('registers the SW after `timeout` if the app does not stabilize with `registerWhenStable:<timeout>`', fakeAsync(() => {
           configTestBedWithMockedStability('registerWhenStable:1000');
-
-          tick(999);
           expect(swRegisterSpy).not.toHaveBeenCalled();
-
-          tick(1);
+          tick(1000);
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
         }));
 
@@ -271,7 +267,6 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
           // Create a microtask.
           Promise.resolve();
 
-          flushMicrotasks();
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           tick(0);
@@ -284,10 +279,6 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
           isStableSub.next(false);
           isStableSub.next(false);
 
-          tick();
-          expect(swRegisterSpy).not.toHaveBeenCalled();
-
-          tick(60000);
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           isStableSub.next(true);
@@ -302,10 +293,6 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
           isStableSub.next(false);
           isStableSub.next(false);
 
-          tick();
-          expect(swRegisterSpy).not.toHaveBeenCalled();
-
-          tick(60000);
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           isStableSub.next(true);
@@ -314,18 +301,21 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
         }));
 
-        it('registers the SW immediatelly (synchronously) with `registerImmediately`', () => {
+        it('registers the SW immediatelly (synchronously) with `registerImmediately`', async () => {
           configTestBedWithMockedStability('registerImmediately');
+          await waitForReadyToRegister();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
         });
 
         it('registers the SW after the specified delay with `registerWithDelay:<delay>`', fakeAsync(() => {
           configTestBedWithMockedStability('registerWithDelay:100000');
 
-          tick(99999);
+          // tick(99999);
+          // Calling `tick(99999)` drains the microtask queue,
+          // which leads to `register` being called.
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
-          tick(1);
+          tick(100000);
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
         }));
 
@@ -364,12 +354,13 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           registerSub.next();
+          tick();
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
         }));
 
         it('throws an error with unknown strategy', () => {
           expect(() => configTestBedWithMockedStability('registerYesterday')).toThrowError(
-            'Unknown ServiceWorker registration strategy: registerYesterday',
+            'NG05600: Unknown ServiceWorker registration strategy: registerYesterday',
           );
           expect(swRegisterSpy).not.toHaveBeenCalled();
         });

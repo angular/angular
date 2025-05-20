@@ -12,7 +12,7 @@ import {
   Type,
   ɵNgModuleDef,
   ɵɵngDeclareNgModule,
-} from '@angular/core';
+} from '../../../src/core';
 
 describe('NgModule declaration jit compilation', () => {
   it('should compile a minimal NgModule declaration', () => {

@@ -22,9 +22,9 @@
   <select
     matTooltip="Select a frame to inspect with Angular Devtools"
     class="frame-selector"
-    (change)="emitSelectedFrame($event.target.value)"
+    (change)="emitSelectedFrame($event)"
   >
-    @for (frame of frameManager.frames; track frame.id) {
+    @for (frame of frameManager.frames(); track frame.id) {
       <option [value]="frame.id" [selected]="frameManager.isSelectedFrame(frame)">
         @if (frame.id === TOP_LEVEL_FRAME_ID) {
           top
@@ -69,7 +69,7 @@
 </nav>
 
 <mat-tab-nav-panel #tabPanel>
-  @if (!applicationEnvironment.frameSelectorEnabled || frameManager.selectedFrame !== null) {
+  @if (!applicationEnvironment.frameSelectorEnabled || frameManager.selectedFrame() !== null) {
     <div class="tab-content">
       <ng-directive-explorer
         [showCommentNodes]="showCommentNodes()"
@@ -114,11 +114,16 @@
         Show comment nodes
       </mat-slide-toggle>
     </label>
-    <label mat-menu-item disableRipple>
-      <mat-slide-toggle [checked]="routerGraphEnabled()" (change)="setRouterGraph($event.checked)">
-        Enable Router Graph</mat-slide-toggle
-      >
-    </label>
+    @if (supportedApis().routes) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle
+          [checked]="routerGraphEnabled()"
+          (change)="setRouterGraph($event.checked)"
+        >
+          Enable Router Graph</mat-slide-toggle
+        >
+      </label>
+    }
   </div>
 </mat-menu>
 

@@ -11,7 +11,7 @@ import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 /**
  * Represents an Angular view.
  *
- * @see [Change detection usage](/api/core/ChangeDetectorRef?tab=usage-notes)
+ * @see {@link /api/core/ChangeDetectorRef?tab=usage-notes Change detection usage}
  *
  * @publicApi
  */

@@ -1,0 +1,46 @@
+# This workflow addresses a limitation with Renovate's behavior in fork mode.
+# Renovate does not automatically sync non-default branches in forked repositories.
+
+name: Sync angular-robot Forked Repository
+on:
+  workflow_dispatch:
+    inputs: {}
+  push:
+    branches:
+      # We do no run this on the default branch (main), as this is done by Renovate.
+      - '[0-9]+.[0-9]+.x'
+
+permissions:
+  contents: read
+
+jobs:
+  sync_to_upstream:
+    runs-on: ubuntu-latest
+    # Prevents multiple concurrent runs of this workflow for the same branch
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.ref }} # Checks out the branch that triggered the push
+          fetch-depth: 100
+          persist-credentials: false
+
+      - name: Push to angular-robot upstream remote
+        run: |
+          CURRENT_BRANCH="${{ github.ref_name }}"
+          UPSTREAM_TOKEN="${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}"
+          UPSTREAM_OWNER="angular-robot"
+          UPSTREAM_REPO="angular"
+          UPSTREAM_URL="https://x-access-token:${UPSTREAM_TOKEN}@github.com/${UPSTREAM_OWNER}/${UPSTREAM_REPO}.git"
+
+          # The UPSTREAM_TOKEN is automatically masked by GitHub Actions for security.
+          echo "Adding upstream remote: $UPSTREAM_URL"
+          git remote add upstream "$UPSTREAM_URL"
+          git remote -v
+
+          echo "Pushing $CURRENT_BRANCH from origin to $UPSTREAM_OWNER upstream..."
+          git push upstream "$CURRENT_BRANCH"

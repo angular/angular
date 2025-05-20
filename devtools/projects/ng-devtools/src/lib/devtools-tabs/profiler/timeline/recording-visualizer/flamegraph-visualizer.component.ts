@@ -8,9 +8,9 @@
 
 import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {Color, RawData} from 'ngx-flamegraph/lib/utils';
-import {ProfilerFrame} from 'protocol';
+import {ProfilerFrame} from '../../../../../../../protocol';
 
-import {ThemeService} from '../../../../theme-service';
+import {ThemeService} from '../../../../application-services/theme_service';
 import {
   FlamegraphFormatter,
   FlamegraphNode,

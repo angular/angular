@@ -7,7 +7,7 @@ HostBindingComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   hostVars: 3,
   hostBindings: function HostBindingComp_HostBindings(rf, ctx) {
     if (rf & 2) {
-      $r3$.ɵɵhostProperty("id", $r3$.ɵɵpureFunction1(1, $ff$, ctx.id));
+      $r3$.ɵɵdomProperty("id", $r3$.ɵɵpureFunction1(1, $ff$, ctx.id));
     }
   },
   standalone: false,

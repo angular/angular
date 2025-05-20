@@ -19,9 +19,9 @@ import {
   Output,
   QueryList,
   ViewChildren,
-} from '@angular/core';
-import {getDirectiveDef} from '@angular/core/src/render3/def_getters';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {getDirectiveDef} from '../../src/render3/def_getters';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -794,14 +794,12 @@ describe('inheritance', () => {
         }
 
         @Directive({
-          standalone: true,
           selector: 'dir',
           inputs: ['someInput'],
         })
         class ActualDir extends Base {}
 
         @Component({
-          standalone: true,
           imports: [ActualDir],
           template: `<dir someInput="newValue">`,
         })
@@ -825,13 +823,11 @@ describe('inheritance', () => {
         }
 
         @Directive({
-          standalone: true,
           selector: 'dir',
         })
         class ActualDir extends Base {}
 
         @Component({
-          standalone: true,
           imports: [ActualDir],
           template: `<dir publicName="newValue">`,
         })

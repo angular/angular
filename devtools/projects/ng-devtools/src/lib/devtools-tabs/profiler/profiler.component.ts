@@ -8,7 +8,7 @@
 
 import {Component, inject, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {Events, MessageBus, ProfilerFrame} from 'protocol';
+import {Events, MessageBus, ProfilerFrame} from '../../../../../protocol';
 import {Subject} from 'rxjs';
 
 import {FileApiService} from './file-api-service';
@@ -110,7 +110,7 @@ export class ProfilerComponent {
     this._fileApiService.saveObjectAsJSON(fileToExport);
   }
 
-  importProfilerResults(event: InputEvent): void {
+  importProfilerResults(event: Event): void {
     this._fileApiService.publishFileUpload(event);
   }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed} from '@angular/core/testing';
+import {TestBed} from '../../testing';
 
 import {
   Component,
@@ -15,15 +15,11 @@ import {
   EnvironmentInjector,
   inject,
   Injectable,
-  InjectFlags,
   InjectionToken,
   NgModule,
-  RendererFactory2,
   Type,
   ViewContainerRef,
   ɵɵdefineInjectable,
-  ɵɵdefineInjector,
-  ɵɵdefineNgModule,
   ɵɵinject,
 } from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
@@ -1045,7 +1041,6 @@ describe('providers', () => {
     let hostComponent: HostComponent | null = null;
 
     @Component({
-      standalone: true,
       template: `{{s}}`,
       selector: 'embedded-cmp',
     })
@@ -1054,7 +1049,6 @@ describe('providers', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'host-cmp',
       template: `foo`,
       providers: [{provide: String, useValue: 'From host component'}],
@@ -1066,7 +1060,6 @@ describe('providers', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [HostComponent],
       template: `<host-cmp></host-cmp>`,
       providers: [{provide: String, useValue: 'From app component'}],
@@ -1102,7 +1095,7 @@ describe('providers', () => {
 
       const environmentInjector = createEnvironmentInjector(
         [{provide: String, useValue: 'From module injector'}],
-        TestBed.get(EnvironmentInjector),
+        TestBed.inject(EnvironmentInjector),
       );
 
       hostComponent!.vcref.createComponent(EmbeddedComponent, {
@@ -1178,8 +1171,8 @@ describe('providers', () => {
         parent: {
           componentAssertion: () => {
             expect(inject(String)).toEqual('Module');
-            expect(inject(String, InjectFlags.Optional | InjectFlags.Self)).toBeNull();
-            expect(inject(String, InjectFlags.Optional | InjectFlags.Host)).toBeNull();
+            expect(inject(String, {optional: true, self: true})).toBeNull();
+            expect(inject(String, {optional: true, host: true})).toBeNull();
           },
         },
       });
@@ -1197,7 +1190,6 @@ describe('providers', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'my-cmp',
       template: `<p></p>`,
       providers: [{provide: String, useValue: 'From my component'}],
@@ -1206,7 +1198,6 @@ describe('providers', () => {
     class MyComponent {}
 
     @Component({
-      standalone: true,
       imports: [MyComponent],
       template: `<my-cmp></my-cmp>`,
       providers: [

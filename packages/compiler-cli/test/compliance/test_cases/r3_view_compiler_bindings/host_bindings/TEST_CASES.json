@@ -3,359 +3,263 @@
   "cases": [
     {
       "description": "should support host bindings",
-      "inputFiles": [
-        "host_bindings.ts"
-      ],
+      "inputFiles": ["host_bindings.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
-          "files": [
-            "host_bindings.js"
-          ]
+          "files": ["host_bindings.js"]
         }
       ]
     },
     {
       "description": "should support host bindings with temporary expressions",
-      "inputFiles": [
-        "host_bindings_with_temporaries.ts"
-      ],
+      "inputFiles": ["host_bindings_with_temporaries.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
-          "files": [
-            "host_bindings_with_temporaries.js"
-          ]
+          "files": ["host_bindings_with_temporaries.js"]
         }
       ]
     },
     {
       "description": "should support host class bindings with temporary expressions",
-      "inputFiles": [
-        "host_class_bindings_with_temporaries.ts"
-      ],
+      "inputFiles": ["host_class_bindings_with_temporaries.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
-          "files": [
-            "host_class_bindings_with_temporaries.js"
-          ]
+          "files": ["host_class_bindings_with_temporaries.js"]
         }
       ]
     },
     {
       "description": "should support host style bindings with temporary expressions",
-      "inputFiles": [
-        "host_style_bindings_with_temporaries.ts"
-      ],
+      "inputFiles": ["host_style_bindings_with_temporaries.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
-          "files": [
-            "host_style_bindings_with_temporaries.js"
-          ]
+          "files": ["host_style_bindings_with_temporaries.js"]
         }
       ]
     },
     {
       "description": "should support host bindings with pure functions",
-      "inputFiles": [
-        "host_bindings_with_pure_functions.ts"
-      ],
+      "inputFiles": ["host_bindings_with_pure_functions.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
-          "files": [
-            "host_bindings_with_pure_functions.js"
-          ]
+          "files": ["host_bindings_with_pure_functions.js"]
         }
       ]
     },
     {
       "description": "should support host attribute bindings",
-      "inputFiles": [
-        "host_attribute_bindings.ts"
-      ],
+      "inputFiles": ["host_attribute_bindings.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host attribute code",
-          "files": [
-            "host_attribute_bindings.js"
-          ]
+          "files": ["host_attribute_bindings.js"]
         }
       ]
     },
     {
       "description": "should support host attributes",
-      "inputFiles": [
-        "host_attributes.ts"
-      ],
+      "inputFiles": ["host_attributes.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host attribute code",
-          "files": [
-            "host_attributes.js"
-          ]
+          "files": ["host_attributes.js"]
         }
       ]
     },
     {
       "description": "should support host attributes together with host classes and styles",
-      "inputFiles": [
-        "host_attributes_with_classes_and_styles.ts"
-      ],
+      "inputFiles": ["host_attributes_with_classes_and_styles.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host attribute code",
-          "files": [
-            "host_attributes_with_classes_and_styles.js"
-          ]
+          "files": ["host_attributes_with_classes_and_styles.js"]
         }
       ]
     },
     {
       "description": "should chain multiple host property bindings into a single instruction",
-      "inputFiles": [
-        "chain_multiple_property_bindings.ts"
-      ],
+      "inputFiles": ["chain_multiple_property_bindings.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_multiple_property_bindings.js"
-          ]
+          "files": ["chain_multiple_property_bindings.js"]
         }
       ]
     },
     {
       "description": "should chain both host properties in the decorator and on the class",
-      "inputFiles": [
-        "chain_property_bindings_all.ts"
-      ],
+      "inputFiles": ["chain_property_bindings_all.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_property_bindings_all.js"
-          ]
+          "files": ["chain_property_bindings_all.js"]
         }
       ]
     },
     {
       "description": "should chain multiple host property bindings in the presence of other bindings",
-      "inputFiles": [
-        "chain_property_bindings_mixed.ts"
-      ],
+      "inputFiles": ["chain_property_bindings_mixed.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_property_bindings_mixed.js"
-          ]
+          "files": ["chain_property_bindings_mixed.js"]
         }
       ]
     },
     {
       "description": "should chain multiple synthetic properties into a single instruction call",
-      "inputFiles": [
-        "chain_synthetic_properties.ts"
-      ],
+      "inputFiles": ["chain_synthetic_properties.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_synthetic_properties.js"
-          ]
+          "files": ["chain_synthetic_properties.js"]
         }
       ]
     },
     {
       "description": "should chain multiple host attribute bindings into a single instruction",
-      "inputFiles": [
-        "chain_multiple_attribute_bindings.ts"
-      ],
+      "inputFiles": ["chain_multiple_attribute_bindings.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_multiple_attribute_bindings.js"
-          ]
+          "files": ["chain_multiple_attribute_bindings.js"]
         }
       ]
     },
     {
       "description": "should chain both host attributes in the decorator and on the class",
-      "inputFiles": [
-        "chain_attribute_bindings_all.ts"
-      ],
+      "inputFiles": ["chain_attribute_bindings_all.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_attribute_bindings_all.js"
-          ]
+          "files": ["chain_attribute_bindings_all.js"]
         }
       ]
     },
     {
       "description": "should chain multiple host attribute bindings in the presence of other bindings",
-      "inputFiles": [
-        "chain_attribute_bindings_mixed.ts"
-      ],
+      "inputFiles": ["chain_attribute_bindings_mixed.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_attribute_bindings_mixed.js"
-          ]
+          "files": ["chain_attribute_bindings_mixed.js"]
         }
       ]
     },
     {
       "description": "should chain multiple host listeners into a single instruction",
-      "inputFiles": [
-        "chain_multiple_listeners.ts"
-      ],
+      "inputFiles": ["chain_multiple_listeners.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_multiple_listeners.js"
-          ]
+          "files": ["chain_multiple_listeners.js"]
         }
       ]
     },
     {
       "description": "should chain multiple synthetic host listeners into a single instruction",
-      "inputFiles": [
-        "chain_synthetic_listeners.ts"
-      ],
+      "inputFiles": ["chain_synthetic_listeners.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_synthetic_listeners.js"
-          ]
+          "files": ["chain_synthetic_listeners.js"]
         }
       ]
     },
     {
       "description": "should chain multiple regular and synthetic host listeners into two instructions",
-      "inputFiles": [
-        "chain_synthetic_listeners_mixed.ts"
-      ],
+      "inputFiles": ["chain_synthetic_listeners_mixed.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "chain_synthetic_listeners_mixed.js"
-          ]
+          "files": ["chain_synthetic_listeners_mixed.js"]
         }
       ]
     },
     {
       "description": "should allow $any in host binding expressions",
-      "inputFiles": [
-        "host_dollar_any.ts"
-      ],
+      "inputFiles": ["host_dollar_any.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
-          "files": [
-            "host_dollar_any.js"
-          ]
+          "files": ["host_dollar_any.js"]
         }
       ]
     },
     {
       "description": "should handle host bindings with the same name as a primitive value",
-      "inputFiles": [
-        "host_bindings_primitive_names.ts"
-      ],
+      "inputFiles": ["host_bindings_primitive_names.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
-          "files": [
-            "host_bindings_primitive_names.js"
-          ]
+          "files": ["host_bindings_primitive_names.js"]
         }
       ]
     },
     {
       "description": "should handle host bindings with quoted names",
-      "inputFiles": [
-        "host_bindings_quoted_names.ts"
-      ],
+      "inputFiles": ["host_bindings_quoted_names.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
-          "files": [
-            "host_bindings_quoted_names.js"
-          ]
+          "files": ["host_bindings_quoted_names.js"]
         }
       ]
     },
     {
       "description": "should sanitize dangerous bindings",
-      "inputFiles": [
-        "sanitization.ts"
-      ],
+      "inputFiles": ["sanitization.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "sanitization.js"
-          ]
+          "files": ["sanitization.js"]
         }
       ]
     },
     {
       "description": "should handle security-sensitive constant attributes",
-      "inputFiles": [
-        "security_sensitive_constant_attributes.ts"
-      ],
+      "inputFiles": ["security_sensitive_constant_attributes.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "security_sensitive_constant_attributes.js"
-          ]
+          "files": ["security_sensitive_constant_attributes.js"]
         }
       ]
     },
     {
       "description": "should handle security-sensitive style bindings",
-      "inputFiles": [
-        "security_sensitive_style_bindings.ts"
-      ],
+      "inputFiles": ["security_sensitive_style_bindings.ts"],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
-          "files": [
-            "security_sensitive_style_bindings.js"
-          ]
+          "files": ["security_sensitive_style_bindings.js"]
         }
       ]
     },
     {
       "description": "should properly compiler host listeners with an argument",
-      "inputFiles": [
-        "host_listeners.ts"
-      ],
+      "inputFiles": ["host_listeners.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
-          "files": [
-            "host_listeners.js"
-          ]
+          "files": ["host_listeners.js"]
         }
       ]
     },
     {
       "description": "should properly compiler host bindings that read a TS wrapped node",
-      "inputFiles": [
-        "host_with_ts_expression_node.ts"
-      ],
+      "inputFiles": ["host_with_ts_expression_node.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
@@ -370,16 +274,14 @@
     },
     {
       "description": "should handle deceptive attribute names",
-      "inputFiles": [
-        "deceptive_attrs.ts"
-      ],
+      "inputFiles": ["deceptive_attrs.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid host binding code",
           "files": [
             {
               "generated": "deceptive_attrs.js",
-              "expected": "deceptive_attrs.pipeline.js"
+              "expected": "deceptive_attrs.js"
             }
           ]
         }

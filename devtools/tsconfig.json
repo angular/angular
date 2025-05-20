@@ -1,8 +1,5 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "../",
-    "outDir": "bazel-out/darwin-fastbuild/bin",
     "sourceMap": true,
     "declaration": true,
     "strict": true,
@@ -17,31 +14,11 @@
     "importHelpers": true,
     "target": "es2020",
     "lib": ["es2020", "dom", "dom.iterable"],
-    "typeRoots": [
-      "./devtools/node_modules/@types",
-    ],
-    "types": [
-      "angular",
-      "jasmine",
-      "node"
-    ],
+    "types": ["chrome"],
     "paths": {
       "@angular/*": [
-        "./packages/*",
-        "./dist/bin/packages/*"
+        "../packages/*",
       ],
-      "ng-devtools": [
-        "./devtools/projects/ng-devtools/src/public-api.ts",
-      ],
-      "ng-devtools-backend": [
-        "./devtools/projects/ng-devtools-backend/src/public-api.ts",
-      ],
-      "protocol": [
-        "./devtools/projects/protocol/src/public-api.ts",
-      ],
-      "shared-utils": [
-        "./devtools/projects/shared-utils/src/public-api.ts",
-      ]
     },
   },
   "angularCompilerOptions": {

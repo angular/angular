@@ -314,10 +314,10 @@ export class StaticInterpreter {
   private visitEnumDeclaration(node: ts.EnumDeclaration, context: Context): ResolvedValue {
     const enumRef = this.getReference(node, context);
     const map = new Map<string, EnumValue>();
-    node.members.forEach((member) => {
+    node.members.forEach((member, index) => {
       const name = this.stringNameFromPropertyName(member.name, context);
       if (name !== undefined) {
-        const resolved = member.initializer && this.visit(member.initializer, context);
+        const resolved = member.initializer ? this.visit(member.initializer, context) : index;
         map.set(name, new EnumValue(enumRef, name, resolved));
       }
     });

@@ -52,6 +52,7 @@ export function ivyTransformFactory(
   perf: PerfRecorder,
   isCore: boolean,
   isClosureCompilerEnabled: boolean,
+  emitDeclarationOnly: boolean,
 ): ts.TransformerFactory<ts.SourceFile> {
   const recordWrappedNode = createRecorderFn(defaultImportTracker);
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
@@ -66,6 +67,7 @@ export function ivyTransformFactory(
           file,
           isCore,
           isClosureCompilerEnabled,
+          emitDeclarationOnly,
           recordWrappedNode,
         ),
       );
@@ -368,6 +370,7 @@ function transformIvySourceFile(
   file: ts.SourceFile,
   isCore: boolean,
   isClosureCompilerEnabled: boolean,
+  emitDeclarationOnly: boolean,
   recordWrappedNode: RecordWrappedNodeFn<ts.Expression>,
 ): ts.SourceFile {
   const constantPool = new ConstantPool(isClosureCompilerEnabled);
@@ -389,6 +392,11 @@ function transformIvySourceFile(
   // Step 1. Go though all classes in AST, perform compilation and collect the results.
   const compilationVisitor = new IvyCompilationVisitor(compilation, constantPool);
   visit(file, compilationVisitor, context);
+
+  // If we are emitting declarations only, we can skip the script transforms.
+  if (emitDeclarationOnly) {
+    return file;
+  }
 
   // Step 2. Scan through the AST again and perform transformations based on Ivy compilation
   // results obtained at Step 1.

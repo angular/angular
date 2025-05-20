@@ -1,0 +1,16 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+ts_project(
+    name = "unparenthesized_nullish_coalescing",
+    srcs = ["index.ts"],
+    interop_deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
+    ],
+    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
+    deps = [
+        "//:node_modules/typescript",
+    ],
+)

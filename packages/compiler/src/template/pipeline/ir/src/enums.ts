@@ -70,6 +70,16 @@ export enum OpKind {
   DisableBindings,
 
   /**
+   * Create a conditional creation instruction op.
+   */
+  ConditionalCreate,
+
+  /**
+   * Create a conditional branch creation instruction op.
+   */
+  ConditionalBranchCreate,
+
+  /**
    * An op to conditionally render a template.
    */
   Conditional,
@@ -166,9 +176,9 @@ export enum OpKind {
   I18nMessage,
 
   /**
-   * A host binding property.
+   * A binding to a native DOM property.
    */
-  HostProperty,
+  DomProperty,
 
   /**
    * A namespace change, which causes the subsequent elements to be processed as either HTML or SVG.

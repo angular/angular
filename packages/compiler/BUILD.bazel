@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "ng_package", "ts_library", "tsec_test")
+load("//tools:defaults2.bzl", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,6 +24,9 @@ ng_package(
     srcs = [
         "package.json",
     ],
+    side_effect_entry_points = [
+        "@angular/compiler",
+    ],
     tags = [
         "release-with-framework",
     ],
@@ -38,6 +42,16 @@ ng_package(
     deps = [
         ":compiler",
     ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making compiler usable in `rules_angular`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )
 
 filegroup(

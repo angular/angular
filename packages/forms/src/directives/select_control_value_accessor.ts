@@ -102,7 +102,7 @@ function _extractId(valueString: string): string {
 @Directive({
   selector:
     'select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel]',
-  host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
+  host: {'(change)': 'onChange($any($event.target).value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR],
   standalone: false,
 })
@@ -110,7 +110,7 @@ export class SelectControlValueAccessor
   extends BuiltInControlValueAccessor
   implements ControlValueAccessor
 {
-  /** @nodoc */
+  /** @docs-private */
   value: any;
 
   /** @internal */
@@ -139,7 +139,7 @@ export class SelectControlValueAccessor
 
   /**
    * Sets the "value" property on the select element.
-   * @nodoc
+   * @docs-private
    */
   writeValue(value: any): void {
     this.value = value;
@@ -150,7 +150,7 @@ export class SelectControlValueAccessor
 
   /**
    * Registers a function called when the control value changes.
-   * @nodoc
+   * @docs-private
    */
   override registerOnChange(fn: (value: any) => any): void {
     this.onChange = (valueString: string) => {
@@ -198,7 +198,6 @@ export class NgSelectOption implements OnDestroy {
    * @description
    * ID of the option element
    */
-  // TODO(issue/24571): remove '!'.
   id!: string;
 
   constructor(
@@ -238,7 +237,7 @@ export class NgSelectOption implements OnDestroy {
     this._renderer.setProperty(this._element.nativeElement, 'value', value);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);

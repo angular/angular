@@ -5,18 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  AbsoluteFsPath,
-  getFileSystem,
-  PathManipulation,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {AbsoluteFsPath, getFileSystem, PathManipulation} from '../../src/ngtsc/file_system';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {
   AbsoluteSourceSpan,
   IdentifierKind,
   IndexedComponent,
   TopLevelIdentifier,
-} from '@angular/compiler-cli/src/ngtsc/indexer';
+} from '../../src/ngtsc/indexer';
 import {ParseSourceFile} from '@angular/compiler/src/compiler';
 
 import {NgtscTestEnvironment} from './env';

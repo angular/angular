@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, PLATFORM_ID, ɵɵdefineInjectable} from '@angular/core';
-
-import {DOCUMENT} from './dom_tokens';
-import {isPlatformBrowser} from './platform_id';
+import {inject, ɵɵdefineInjectable, DOCUMENT} from '@angular/core';
 
 /**
  * Defines a scroll position manager. Implemented by `BrowserViewportScroller`.
@@ -24,9 +21,9 @@ export abstract class ViewportScroller {
     token: ViewportScroller,
     providedIn: 'root',
     factory: () =>
-      isPlatformBrowser(inject(PLATFORM_ID))
-        ? new BrowserViewportScroller(inject(DOCUMENT), window)
-        : new NullViewportScroller(),
+      typeof ngServerMode !== 'undefined' && ngServerMode
+        ? new NullViewportScroller()
+        : new BrowserViewportScroller(inject(DOCUMENT), window),
   });
 
   /**
@@ -47,13 +44,13 @@ export abstract class ViewportScroller {
    * Scrolls to a specified position.
    * @param position A position in screen coordinates (a tuple with x and y values).
    */
-  abstract scrollToPosition(position: [number, number]): void;
+  abstract scrollToPosition(position: [number, number], options?: ScrollOptions): void;
 
   /**
    * Scrolls to an anchor element.
    * @param anchor The ID of the anchor element.
    */
-  abstract scrollToAnchor(anchor: string): void;
+  abstract scrollToAnchor(anchor: string, options?: ScrollOptions): void;
 
   /**
    * Disables automatic scroll restoration provided by the browser.
@@ -100,8 +97,8 @@ export class BrowserViewportScroller implements ViewportScroller {
    * Sets the scroll position.
    * @param position The new position in screen coordinates.
    */
-  scrollToPosition(position: [number, number]): void {
-    this.window.scrollTo(position[0], position[1]);
+  scrollToPosition(position: [number, number], options?: ScrollOptions): void {
+    this.window.scrollTo({...options, left: position[0], top: position[1]});
   }
 
   /**
@@ -115,11 +112,11 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @see https://html.spec.whatwg.org/#the-indicated-part-of-the-document
    * @see https://html.spec.whatwg.org/#scroll-to-fragid
    */
-  scrollToAnchor(target: string): void {
+  scrollToAnchor(target: string, options?: ScrollOptions): void {
     const elSelected = findAnchorFromDocument(this.document, target);
 
     if (elSelected) {
-      this.scrollToElement(elSelected);
+      this.scrollToElement(elSelected, options);
       // After scrolling to the element, the spec dictates that we follow the focus steps for the
       // target. Rather than following the robust steps, simply attempt focus.
       //
@@ -143,12 +140,16 @@ export class BrowserViewportScroller implements ViewportScroller {
    * The offset can be used when we know that there is a floating header and scrolling naively to an
    * element (ex: `scrollIntoView`) leaves the element hidden behind the floating header.
    */
-  private scrollToElement(el: HTMLElement): void {
+  private scrollToElement(el: HTMLElement, options?: ScrollOptions): void {
     const rect = el.getBoundingClientRect();
     const left = rect.left + this.window.pageXOffset;
     const top = rect.top + this.window.pageYOffset;
     const offset = this.offset();
-    this.window.scrollTo(left - offset[0], top - offset[1]);
+    this.window.scrollTo({
+      ...options,
+      left: left - offset[0],
+      top: top - offset[1],
+    });
   }
 }
 

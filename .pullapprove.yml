@@ -56,8 +56,8 @@
 
 version: 3
 
-availability:
-  users_unavailable: ['atscott', 'devversion']
+# availability:
+#   users_unavailable: ['atscott']
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -112,24 +112,6 @@ overrides:
 
 groups:
   # =========================================================
-  #  Framework: Animations
-  # =========================================================
-  fw-animations:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/animations/**/{*,.*}',
-          'packages/platform-browser/animations/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - crisbeto
-        - ~jelbourn
-        - thePunderWoman
-
-  # =========================================================
   #  Framework: Compiler
   # =========================================================
   fw-compiler:
@@ -140,7 +122,8 @@ groups:
           'packages/compiler/**/{*,.*}',
           'packages/examples/compiler/**/{*,.*}',
           'packages/compiler-cli/**/{*,.*}',
-          ])
+          'packages/language-service/**/{*,.*}',
+        ])
     reviewers:
       users:
         - alxhub
@@ -148,279 +131,54 @@ groups:
         - atscott
         - crisbeto
         - devversion
+        - kirjs
         - JoostK
+        - mmalerba
 
   # =========================================================
-  #  Framework: Migrations
+  #  Framework: General (most code in our packages)
   # =========================================================
-  fw-migrations:
-    <<: *defaults
-    conditions:
-      - files.include("packages/core/schematics/*")
-    reviewers:
-      users:
-        - alxhub
-        - crisbeto
-        - devversion
-        - thePunderWoman
-        - AndrewKushnir
-
-  # =========================================================
-  #  Framework: Core
-  # =========================================================
-  fw-core:
+  fw-general:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude("packages/core/schematics/*").exclude('packages/core/primitives/*'), [
-          'packages/core/**/{*,.*}',
-          'packages/examples/core/**/{*,.*}',
-          'packages/platform-browser/**/{*,.*}',
-          'packages/examples/platform-browser/**/{*,.*}',
-          'packages/platform-browser-dynamic/**/{*,.*}',
-          'packages/docs/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - crisbeto
-        - devversion
-        - thePunderWoman
-        - pkozlowski-opensource
-        - kirjs
-
-  # =========================================================
-  #  Framework: Common
-  # =========================================================
-  fw-common:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files.exclude("packages/common/http/*"), [
+        contains_any_globs(files.exclude('packages/core/primitives/*'), [
+          'contributing-docs/public-api-surface.md',
+          'integration/**/{*,.*}',
+          'modules/**/{*,.*}',
+          'packages/animations/**/{*,.*}',
+          'packages/benchpress/**/{*,.*}',
           'packages/common/**/{*,.*}',
-          'packages/examples/common/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - thePunderWoman
-        - pkozlowski-opensource
-        - kirjs
-
-  # =========================================================
-  #  Framework: Http
-  # =========================================================
-  fw-http:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/common/http/**/{*,.*}',
-          'packages/examples/http/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - thePunderWoman
-        - pkozlowski-opensource
-        - kirjs
-
-  # =========================================================
-  #  Framework: Elements
-  # =========================================================
-  fw-elements:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
+          'packages/core/**/{*,.*}',
+          'packages/docs/**/{*,.*}',
           'packages/elements/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - andrewseguin
-        - atscott
-        - thePunderWoman
-        - pkozlowski-opensource
-        - kirjs
-
-  # =========================================================
-  #  Framework: Forms
-  # =========================================================
-  fw-forms:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
+          'packages/examples/**/{*,.*}',
           'packages/forms/**/{*,.*}',
-          'packages/examples/forms/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - AndrewKushnir
-        - alxhub
-
-  # =========================================================
-  #  Framework: i18n
-  # =========================================================
-  fw-i18n:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/core/src/i18n/**/{*,.*}',
-          'packages/core/src/render3/i18n/**/{*,.*}',
-          'packages/core/src/render3/instructions/i18n.ts',
-          'packages/core/src/render3/interfaces/i18n.ts',
-          'packages/common/locales/**/{*,.*}',
-          'packages/common/src/i18n/**/{*,.*}',
-          'packages/common/src/pipes/date_pipe.ts',
-          'packages/common/src/pipes/i18n_plural_pipe.ts',
-          'packages/common/src/pipes/i18n_select_pipe.ts',
-          'packages/common/src/pipes/number_pipe.ts',
-          'packages/compiler/src/i18n/**/{*,.*}',
-          'packages/compiler/src/render3/view/i18n/**/{*,.*}',
-          'packages/compiler-cli/src/extract_i18n.ts',
           'packages/localize/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - AndrewKushnir
-        - dgp1130
-
-  # =========================================================
-  #  Framework: Platform Server
-  # =========================================================
-  fw-platform-server:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
+          'packages/misc/**/{*,.*}',
+          'packages/platform-browser/**/{*,.*}',
+          'packages/platform-browser-dynamic/**/{*,.*}',
           'packages/platform-server/**/{*,.*}',
           'packages/ssr/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alan-agius4
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - thePunderWoman
-        - pkozlowski-opensource
-
-  # =========================================================
-  #  Framework: Router
-  # =========================================================
-  fw-router:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
           'packages/router/**/{*,.*}',
-          'packages/examples/router/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - AndrewKushnir
-        - atscott
-
-  # =========================================================
-  #  Framework: Service Worker
-  # =========================================================
-  fw-service-worker:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
           'packages/service-worker/**/{*,.*}',
-          'packages/examples/service-worker/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alxhub
-
-  # =========================================================
-  #  Framework: Upgrade
-  # =========================================================
-  fw-upgrade:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
           'packages/upgrade/**/{*,.*}',
-          'packages/common/upgrade/**/{*,.*}',
-          'packages/examples/upgrade/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - thePunderWoman
-
-  # =========================================================
-  #  Framework: Testing
-  # =========================================================
-  fw-testing:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files.exclude('packages/compiler-cli/*').exclude('packages/language-service/*').exclude('packages/service-worker/*').exclude('packages/core/schematics/*'), [
-          'packages/**/testing/**/{*,.*}',
-          ])
+        ])
     reviewers:
       users:
         - alxhub
         - AndrewKushnir
         - atscott
-        - thePunderWoman
-        - pkozlowski-opensource
+        - crisbeto
+        - devversion
         - kirjs
-
-  # =========================================================
-  #  Framework: Benchmarks
-  # =========================================================
-  fw-benchmarks:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'modules/benchmarks/**/{*,.*}',
-          'modules/ssr-benchmarks/**/{*,.*}'
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
+        - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
+        - mmalerba
 
   # =========================================================
-  #  Framework: Playground
-  # =========================================================
-  fw-playground:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'modules/playground/**/{*,.*}'
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - thePunderWoman
-        - pkozlowski-opensource
-
-  # =========================================================
-  #  Framework: Security
+  #  Framework: Security-sensitive files which require extra review
   # =========================================================
   fw-security:
     <<: *defaults
@@ -434,6 +192,8 @@ groups:
           'packages/tsconfig-tsec-base.json',
           'packages/tsec-exemption.json',
           'tools/tsec.bzl',
+          'adev/src/content/guide/security.md',
+          'adev/src/content/examples/security/**/{*,.*}',
           ])
     reviewers:
       users:
@@ -462,105 +222,18 @@ groups:
         - josephperrott
 
   # =========================================================
-  #  Language Service
-  # =========================================================
-  language-service:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/language-service/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - atscott
-        - clydin
-
-  # =========================================================
   #  zone.js
   # =========================================================
   zone-js:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude('yarn.lock'), [
           'packages/zone.js/**/{*,.*}',
-          ])
+        ])
     reviewers:
       users:
         - JiaLiPassion
-
-  # =========================================================
-  #  in-memory-web-api
-  # =========================================================
-  in-memory-web-api:
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/misc/angular-in-memory-web-api/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - crisbeto
-        - thePunderWoman
-        - pkozlowski-opensource
-
-  # =========================================================
-  #  Benchpress
-  # =========================================================
-  benchpress:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/benchpress/**/{*,.*}'
-          ])
-    reviewers:
-      users:
-        - devversion
-        - josephperrott
-        - pkozlowski-opensource
-
-  # =========================================================
-  #  Integration Tests
-  # =========================================================
-  integration-tests:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'integration/**/{*,.*}'
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - thePunderWoman
-        - josephperrott
-        - kirjs
-
-  # =========================================================
-  #  Docs: Packaging, Tooling, Releasing
-  # =========================================================
-  docs-packaging-and-releasing:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'contributing-docs/public-api-surface.md',
-          ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - thePunderWoman
-        - jelbourn
 
   # =========================================================
   #  Tooling: Compiler API shared with Angular CLI
@@ -586,31 +259,35 @@ groups:
       reviewed_for: required
 
   # =========================================================
-  #  Docs: Angular Dev Site
+  #  Documentation content
   # =========================================================
   angular-dev:
     <<: *defaults
     conditions:
       - >
         contains_any_globs(files, [
-          'adev/**/{.*,*}',
-          'aio/**/{.*,*}'
-          ])
+          'adev/**/{*,.*}',
+        ])
     reviewers:
       users:
-        - josephperrott
-        - jelbourn
-        - bencodezen
-        - thePunderWoman
-        - AndrewKushnir
+        - alan-agius4
         - alxhub
-        - crisbeto
-        - devversion
+        - AndrewKushnir
         - atscott
-        - pkozlowski-opensource
-        - MarkTechson
-        - ~JeanMeche
+        - bencodezen
+        - crisbeto
         - kirjs
+        - ~JeanMeche
+        - jelbourn
+        - thePunderWoman
+        - devversion
+        - josephperrott
+        - pkozlowski-opensource
+        - mgechev
+        - MarkTechson
+        - kirjs
+        - mmalerba
+        - ~hawkgs
 
   # =========================================================
   #  Angular DevTools
@@ -659,7 +336,6 @@ groups:
           'scripts/**/{*,.*}',
           'third_party/**/{*,.*}',
           'tools/bazel-repo-patches/**/{*,.*}',
-          'tools/circular_dependency_test/**/{*,.*}',
           'tools/contributing-stats/**/{*,.*}',
           'tools/esm-interop/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
@@ -707,7 +383,7 @@ groups:
       - >
         contains_any_globs(files.exclude("goldens/public-api/manage.js"), [
           'goldens/public-api/**/{*,.*}',
-          ])
+        ])
     reviewers:
       users:
         - AndrewKushnir
@@ -717,6 +393,9 @@ groups:
         - thePunderWoman
         - pkozlowski-opensource
         - kirjs
+        - mmalerba
+        - crisbeto
+        - devversion
         - ~iteriani
         - ~tbondwilkinson
         - ~rahatarmanahmed
@@ -746,32 +425,11 @@ groups:
         - ~jelbourn
         - thePunderWoman
         - pkozlowski-opensource
+        - mmalerba
     reviews:
       request: 2 # Request reviews from 2 people
       required: 1 # Require that 1 person approve
       reviewed_for: required
-
-  # ================================================
-  #  Circular dependencies
-  # ================================================
-  circular-dependencies:
-    <<: *defaults
-    conditions:
-      - *no-groups-above-this-pending
-      - *no-groups-above-this-rejected
-      - >
-        contains_any_globs(files, [
-          'goldens/circular-deps/packages.json'
-        ])
-    reviewers:
-      users:
-        - alxhub
-        - AndrewKushnir
-        - atscott
-        - ~jelbourn
-        - thePunderWoman
-        - pkozlowski-opensource
-        - kirjs
 
   ####################################################################################
   #  Special Cases
@@ -786,7 +444,7 @@ groups:
       - >
         contains_any_globs(files, [
           '.pullapprove.yml'
-          ])
+        ])
     reviewers:
       users:
         - alxhub
@@ -832,16 +490,11 @@ groups:
     reviewers:
       users:
         - csmick # Cameron Smick
-        - lannka # Hongfei Ding
-        - eduhmc # Eduardo Huerta-Mercado
-        - ehlemur # Edward Lesmes
-        - ellenyuan # Ellen Yuan
-        - jesse-good # Jesse Costello-Good
         - mturco # Matt Turco
-        - neonstalwart # Ben Hockey
         - iteriani # Thomas Nguyen
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
+        - ENAML # Ethan Cline
     labels:
       pending: 'requires: TGP'
       approved: 'requires: TGP'

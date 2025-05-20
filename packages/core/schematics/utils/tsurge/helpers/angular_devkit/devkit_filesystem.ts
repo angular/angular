@@ -22,7 +22,7 @@ import {
   FileSystem,
   PathSegment,
   PathString,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
+} from '@angular/compiler-cli';
 import * as posixPath from 'node:path/posix';
 
 /**

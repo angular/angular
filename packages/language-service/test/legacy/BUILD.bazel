@@ -14,6 +14,15 @@ ts_library(
     ],
 )
 
+filegroup(
+    name = "package_types",
+    srcs = [
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+    ],
+    output_group = "types",
+)
+
 jasmine_node_test(
     name = "legacy",
     data = [
@@ -23,8 +32,8 @@ jasmine_node_test(
         # npm_package. Ivy does not currently produce flat dts, so we might
         # as well just depend on the outputs of ng_module.
         "//packages/common",
-        "//packages/core",
         "//packages/forms",
+        ":package_types",
         ":project",
     ],
     deps = [

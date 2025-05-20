@@ -8,49 +8,83 @@
 
 import {
   assertInInjectionContext,
-  ResourceOptions,
   resource,
   ResourceLoaderParams,
   ResourceRef,
-} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
-import {take, takeUntil} from 'rxjs/operators';
+  Signal,
+  signal,
+  BaseResourceOptions,
+} from '../../src/core';
+import {Observable, Subscription} from 'rxjs';
 
 /**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
  *
  * @experimental
  */
-export interface RxResourceOptions<T, R> extends Omit<ResourceOptions<T, R>, 'loader'> {
-  loader: (params: ResourceLoaderParams<R>) => Observable<T>;
+export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
+  stream: (params: ResourceLoaderParams<R>) => Observable<T>;
 }
 
 /**
  * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
- * resource's value. Like `firstValueFrom`, only the first emission of the Observable is considered.
+ * resource's value.
  *
  * @experimental
  */
-export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T> {
+export function rxResource<T, R>(
+  opts: RxResourceOptions<T, R> & {defaultValue: NoInfer<T>},
+): ResourceRef<T>;
+
+/**
+ * Like `resource` but uses an RxJS based `loader` which maps the request to an `Observable` of the
+ * resource's value.
+ *
+ * @experimental
+ */
+export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
+export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined> {
   opts?.injector || assertInInjectionContext(rxResource);
   return resource<T, R>({
     ...opts,
-    loader: (params) => {
-      const cancelled = new Subject<void>();
-      params.abortSignal.addEventListener('abort', () => cancelled.next());
+    loader: undefined,
+    stream: (params) => {
+      let sub: Subscription;
 
-      // Note: this is identical to `firstValueFrom` which we can't use,
-      // because at the time of writing, `core` still supports rxjs 6.x.
-      return new Promise<T>((resolve, reject) => {
-        opts
-          .loader(params)
-          .pipe(take(1), takeUntil(cancelled))
-          .subscribe({
-            next: resolve,
-            error: reject,
-            complete: () => reject(new Error('Resource completed before producing a value')),
-          });
+      // Track the abort listener so it can be removed if the Observable completes (as a memory
+      // optimization).
+      const onAbort = () => sub.unsubscribe();
+      params.abortSignal.addEventListener('abort', onAbort);
+
+      // Start off stream as undefined.
+      const stream = signal<{value: T} | {error: unknown}>({value: undefined as T});
+      let resolve: ((value: Signal<{value: T} | {error: unknown}>) => void) | undefined;
+      const promise = new Promise<Signal<{value: T} | {error: unknown}>>((r) => (resolve = r));
+
+      function send(value: {value: T} | {error: unknown}): void {
+        stream.set(value);
+        resolve?.(stream);
+        resolve = undefined;
+      }
+
+      // TODO(alxhub): remove after g3 updated to rename loader -> stream
+      const streamFn = opts.stream ?? (opts as {loader?: RxResourceOptions<T, R>['stream']}).loader;
+      if (streamFn === undefined) {
+        throw new Error(`Must provide \`stream\` option.`);
+      }
+
+      sub = streamFn(params).subscribe({
+        next: (value) => send({value}),
+        error: (error) => send({error}),
+        complete: () => {
+          if (resolve) {
+            send({error: new Error('Resource completed before producing a value')});
+          }
+          params.abortSignal.removeEventListener('abort', onAbort);
+        },
       });
+
+      return promise;
     },
   });
 }

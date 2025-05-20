@@ -6,19 +6,22 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setActiveConsumer} from '@angular/core/primitives/signals';
+import {setActiveConsumer} from '../../../primitives/signals';
 
 import {TrackByFunction} from '../../change_detection';
 import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedContainerView} from '../../hydration/interfaces';
-import {findMatchingDehydratedView} from '../../hydration/views';
+import {
+  findAndReconcileMatchingDehydratedViews,
+  findMatchingDehydratedView,
+} from '../../hydration/views';
 import {assertDefined, assertFunction} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
 import {assertLContainer, assertLView, assertTNode} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
-import {TNode} from '../interfaces/node';
+import {LocalRefExtractor, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {
   CONTEXT,
   DECLARATION_COMPONENT_VIEW,
@@ -29,19 +32,117 @@ import {
   TView,
 } from '../interfaces/view';
 import {LiveCollection, reconcile} from '../list_reconciliation';
-import {destroyLView, detachView} from '../node_manipulation';
+import {destroyLView} from '../node_manipulation';
 import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
-import {
-  addLViewToLContainer,
-  createAndRenderEmbeddedLView,
-  getLViewFromLContainer,
-  removeLViewFromLContainer,
-  shouldAddViewToDom,
-} from '../view_manipulation';
+import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
 import {declareTemplate} from './template';
+import {
+  addLViewToLContainer,
+  detachView,
+  getLViewFromLContainer,
+  removeLViewFromLContainer,
+} from '../view/container';
+import {removeDehydratedViews} from '../../hydration/cleanup';
+
+/**
+ * Creates an LContainer for an ng-template representing a root node
+ * of control flow (@if, @switch). We use this to explicitly set
+ * flags on the TNode created to identify which nodes are in control
+ * flow or starting control flow for hydration identification and
+ * cleanup timing.
+ *
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ * @codeGenApi
+ */
+export function ɵɵconditionalCreate(
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): typeof ɵɵconditionalBranchCreate {
+  performanceMarkFeature('NgControlFlow');
+  const lView = getLView();
+  const tView = getTView();
+  const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
+  declareTemplate(
+    lView,
+    tView,
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrs,
+    TNodeFlags.isControlFlowStart,
+    localRefsIndex,
+    localRefExtractor,
+  );
+  return ɵɵconditionalBranchCreate;
+}
+
+/**
+ * Creates an LContainer for an ng-template representing a branch
+ * of control flow (@else, @case, @default). We use this to explicitly
+ * set flags on the TNode created to identify which nodes are in
+ * control flow or starting control flow for hydration identification
+ * and cleanup timing.
+ *
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ * @codeGenApi
+ */
+export function ɵɵconditionalBranchCreate(
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): typeof ɵɵconditionalBranchCreate {
+  performanceMarkFeature('NgControlFlow');
+  const lView = getLView();
+  const tView = getTView();
+  const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
+
+  declareTemplate(
+    lView,
+    tView,
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrs,
+    TNodeFlags.isInControlFlow,
+    localRefsIndex,
+    localRefExtractor,
+  );
+  return ɵɵconditionalBranchCreate;
+}
 
 /**
  * The conditional instruction represents the basic building block on the runtime side to support
@@ -82,9 +183,10 @@ export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?:
         const nextContainer = getLContainer(hostLView, nextLContainerIndex);
         const templateTNode = getExistingTNode(hostLView[TVIEW], nextLContainerIndex);
 
-        const dehydratedView = findMatchingDehydratedView(
+        const dehydratedView = findAndReconcileMatchingDehydratedViews(
           nextContainer,
-          templateTNode.tView!.ssrId,
+          templateTNode,
+          hostLView,
         );
         const embeddedLView = createAndRenderEmbeddedLView(hostLView, templateTNode, contextValue, {
           dehydratedView,
@@ -223,6 +325,7 @@ export function ɵɵrepeaterCreate(
     vars,
     tagName,
     getConstant(tView.consts, attrsIndex),
+    TNodeFlags.isControlFlowStart,
   );
 
   if (hasEmptyBlock) {
@@ -240,6 +343,7 @@ export function ɵɵrepeaterCreate(
       emptyVars!,
       emptyTagName,
       getConstant(tView.consts, emptyAttrsIndex),
+      TNodeFlags.isInControlFlow,
     );
   }
 }
@@ -421,9 +525,10 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
         const lContainerForEmpty = getLContainer(hostLView, emptyTemplateIndex);
         if (isCollectionEmpty) {
           const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
-          const dehydratedView = findMatchingDehydratedView(
+          const dehydratedView = findAndReconcileMatchingDehydratedViews(
             lContainerForEmpty,
-            emptyTemplateTNode.tView!.ssrId,
+            emptyTemplateTNode,
+            hostLView,
           );
           const embeddedLView = createAndRenderEmbeddedLView(
             hostLView,
@@ -438,6 +543,14 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
             shouldAddViewToDom(emptyTemplateTNode, dehydratedView),
           );
         } else {
+          // we know that an ssrId was generated for the empty template, but
+          // we were unable to match it to a dehydrated view earlier, which
+          // means that we may have changed branches between server and client.
+          // We'll need to find and remove the stale empty template view.
+          if (hostTView.firstUpdatePass) {
+            removeDehydratedViews(lContainerForEmpty);
+          }
+
           removeLViewFromLContainer(lContainerForEmpty, 0);
         }
       }

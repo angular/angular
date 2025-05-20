@@ -12,7 +12,7 @@ import {
   LocationChangeListener,
   PlatformLocation,
   ɵPlatformNavigation as PlatformNavigation,
-} from '@angular/common';
+} from '../../index';
 import {Inject, inject, Injectable, InjectionToken, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
 
@@ -285,16 +285,17 @@ export class MockPlatformLocation implements PlatformLocation {
  */
 @Injectable()
 export class FakeNavigationPlatformLocation implements PlatformLocation {
-  private _platformNavigation = inject(PlatformNavigation) as FakeNavigation;
-  private window = inject(DOCUMENT).defaultView!;
+  private readonly _platformNavigation: FakeNavigation;
 
   constructor() {
-    if (!(this._platformNavigation instanceof FakeNavigation)) {
+    const platformNavigation = inject(PlatformNavigation);
+    if (!(platformNavigation instanceof FakeNavigation)) {
       throw new Error(
         'FakePlatformNavigation cannot be used without FakeNavigation. Use ' +
           '`provideFakeNavigation` to have all these services provided together.',
       );
     }
+    this._platformNavigation = platformNavigation;
   }
 
   private config = inject(MOCK_PLATFORM_LOCATION_CONFIG, {optional: true});
@@ -303,13 +304,13 @@ export class FakeNavigationPlatformLocation implements PlatformLocation {
   }
 
   onPopState(fn: LocationChangeListener): VoidFunction {
-    this.window.addEventListener('popstate', fn);
-    return () => this.window.removeEventListener('popstate', fn);
+    this._platformNavigation.window.addEventListener('popstate', fn);
+    return () => this._platformNavigation.window.removeEventListener('popstate', fn);
   }
 
   onHashChange(fn: LocationChangeListener): VoidFunction {
-    this.window.addEventListener('hashchange', fn as any);
-    return () => this.window.removeEventListener('hashchange', fn as any);
+    this._platformNavigation.window.addEventListener('hashchange', fn as any);
+    return () => this._platformNavigation.window.removeEventListener('hashchange', fn as any);
   }
 
   get href(): string {

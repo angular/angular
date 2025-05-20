@@ -1,123 +1,47 @@
 @use '@angular/docs/styles/media-queries' as mq;
-// Note: cli-reference-details-page is receiving page styles
-// from api-reference-details-page.component.scss
+@use '@angular/docs/styles/reference' as ref;
+
+:host {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: var(--layout-padding);
+  padding-bottom: var(--layout-padding);
+
+
+
+  //applying styles when TOC position got translated to the top right 
+  @media only screen and (min-width: 1431px) {
+    // take the available space except a reserved area for TOC
+    width: calc(100% - 16rem);
+  }
+
+
+  docs-viewer {
+    display: block;
+    padding-inline: var(--layout-padding);
+    width: 100%;
+
+    //applying styles when TOC position got translated to the top right 
+    @media only screen and (min-width: 1431px) {
+      // take the available space except a reserved area for TOC
+      max-width: var(--page-width);
+    }
+  }
+
+  &>* {
+    width: 100%;
+
+    @include mq.for-desktop-up {
+      padding-inline: 0px;
+      width: var(--page-width);
+    }
+  }
+}
 
 // stylelint-disable-next-line
 ::ng-deep {
-  .adev-ref-content {
-    display: flex;
-    padding-block: 1rem;
-    gap: 1rem;
-    &:not(:last-of-type) {
-      border-block-end: 1px solid var(--senary-contrast);
-    }
-  }
-
-  .adev-header-and-tabs {
-    &.adev-cli-content {
-      width: 100%;
-      max-width: var(--page-width);
-
-      @include mq.for-desktop-down {
-        max-width: none;
-      }
-    }
-  }
-
-  .adev-cli-members-container {
-    padding: 0 0 var(--layout-padding) var(--layout-padding);
-    padding-bottom: 1rem;
-    box-sizing: border-box;
-    max-width: var(--page-width);
-
-    @include mq.for-desktop-down {
-      width: 100%;
-      padding: var(--layout-padding);
-      padding-top: 0;
-      max-width: none;
-    }
-  }
-
-  .adev-ref-option-and-description {
-    flex-grow: 1;
-    max-width: calc(100% - 80px);
-    p {
-      margin-block-end: 0;
-    }
-  }
-
-  .docs-reference-type-and-default {
-    width: 4.375rem;
-    flex-shrink: 0;
-    span {
-      display: block;
-      font-size: 0.875rem;
-      margin-block-end: 0.2rem;
-      white-space: nowrap;
-
-      &:not(:first-child) {
-        margin-block-start: 1rem;
-      }
-    }
-
-    code {
-      font-size: 0.775rem;
-    }
-  }
-
-  .adev-reference-cli-toc {
-    border: 1px solid var(--senary-contrast);
-    border-radius: 0.3rem;
-    position: relative;
-    transition: border 0.3s ease;
-
-    &::before {
-      content: '';
-      inset: -1px;
-      position: absolute;
-      background: transparent;
-      border-radius: 0.35rem;
-      z-index: 0;
-    }
-
-    &:has(.shiki-ln-line-highlighted) {
-      &::before {
-        background: var(--red-to-pink-to-purple-horizontal-gradient);
-      }
-    }
-
-    pre {
-      border-radius: 0.25rem;
-      position: relative;
-      z-index: 100;
-      background: var(--octonary-contrast);
-    }
-  }
-
-  .shiki-ln-line-argument,
-  .shiki-ln-line-option {
-    padding: 0.1rem 0.2rem 0.2rem;
-    margin-inline: 0.1rem;
-    color: var(--quaternary-contrast);
-    background: transparent;
-    border-radius: 0.25rem;
-    position: relative;
-    transition:
-      color 0.3s ease,
-      background 0.3s ease,
-      border 0.3s ease;
-
-    &:hover {
-      color: var(--primary-contrast);
-      background: var(--septenary-contrast);
-    }
-
-    &.shiki-ln-line-highlighted {
-      color: var(--primary-contrast);
-      background: var(--senary-contrast);
-    }
-  }
-  .shiki-ln-line-argument {
-    margin-inline-start: 0.2rem;
-  }
+  @include ref.reference-common();
+  @include ref.cli-reference();
 }

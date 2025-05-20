@@ -74,9 +74,9 @@ In the course of this tutorial, you bind a sample form to data and handle user i
    This demo uses dummy data for `model` and `skills`.
    In a real app, you would inject a data service to get and save real data, or expose these properties as inputs and outputs.
 
-1. The application enables the Forms feature and registers the created form component.
+1. The component enables the Forms feature by importing the `FormsModule` module.
 
-<docs-code header="src/app/app.module.ts" language="typescript" path="adev/src/content/examples/forms/src/app/app.module.ts"/>
+   <docs-code language="typescript" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" language="typescript" visibleRegion="imports"/>
 
 1. The form is displayed in the application layout defined by the root component's template.
 
@@ -93,12 +93,12 @@ In the course of this tutorial, you bind a sample form to data and handle user i
    At this point, the form layout is all plain HTML5, with no bindings or directives.
 
 1. The sample form uses some style classes from [Twitter Bootstrap](https://getbootstrap.com/css): `container`, `form-group`, `form-control`, and `btn`.
-To use these styles, the application's style sheet imports the library.
+   To use these styles, the application's style sheet imports the library.
 
 <docs-code header="src/styles.css" path="adev/src/content/examples/forms/src/styles.1.css"/>
 
 1. The form requires that an actor's skill is chosen from a predefined list of `skills` maintained internally in `ActorFormComponent`.
-The Angular [NgForOf directive](api/common/NgForOf 'API reference') iterates over the data values to populate the `<select>` element.
+   The Angular `@for` loop iterates over the data values to populate the `<select>` element.
 
 <docs-code header="src/app/actor-form/actor-form.component.html (skills)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="skills"/>
 
@@ -404,7 +404,6 @@ Here's the code for the final version of the application:
     <docs-code header="actor-form/actor-form.component.ts" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="final"/>
     <docs-code header="actor-form/actor-form.component.html" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="final"/>
     <docs-code header="actor.ts" path="adev/src/content/examples/forms/src/app/actor.ts"/>
-    <docs-code header="app.module.ts" path="adev/src/content/examples/forms/src/app/app.module.ts"/>
     <docs-code header="app.component.html" path="adev/src/content/examples/forms/src/app/app.component.html"/>
     <docs-code header="app.component.ts" path="adev/src/content/examples/forms/src/app/app.component.ts"/>
     <docs-code header="main.ts" path="adev/src/content/examples/forms/src/main.ts"/>

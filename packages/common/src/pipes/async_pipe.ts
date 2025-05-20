@@ -15,21 +15,28 @@ import {
   untracked,
   ɵisPromise,
   ɵisSubscribable,
+  ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
+  inject,
 } from '@angular/core';
-import {Observable, Subscribable, Unsubscribable} from 'rxjs';
+import type {Observable, Subscribable, Unsubscribable} from 'rxjs';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {
   createSubscription(
-    async: Subscribable<any> | Promise<any>,
+    async: Subscribable<any> | PromiseLike<any>,
     updateLatestValue: any,
-  ): Unsubscribable | Promise<any>;
-  dispose(subscription: Unsubscribable | Promise<any>): void;
+    onError: (e: unknown) => void,
+  ): Unsubscribable | PromiseLike<any>;
+  dispose(subscription: Unsubscribable | PromiseLike<any>): void;
 }
 
 class SubscribableStrategy implements SubscriptionStrategy {
-  createSubscription(async: Subscribable<any>, updateLatestValue: any): Unsubscribable {
+  createSubscription(
+    async: Subscribable<any>,
+    updateLatestValue: any,
+    onError: (e: unknown) => void,
+  ): Unsubscribable {
     // Subscription can be side-effectful, and we don't want any signal reads which happen in the
     // side effect of the subscription to be tracked by a component's template when that
     // subscription is triggered via the async pipe. So we wrap the subscription in `untracked` to
@@ -40,9 +47,7 @@ class SubscribableStrategy implements SubscriptionStrategy {
     return untracked(() =>
       async.subscribe({
         next: updateLatestValue,
-        error: (e: any) => {
-          throw e;
-        },
+        error: onError,
       }),
     );
   }
@@ -54,13 +59,49 @@ class SubscribableStrategy implements SubscriptionStrategy {
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
-  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): Promise<any> {
-    return async.then(updateLatestValue, (e) => {
-      throw e;
-    });
+  createSubscription(
+    async: PromiseLike<any>,
+    updateLatestValue: ((v: any) => any) | null,
+    onError: ((e: unknown) => void) | null,
+  ): Unsubscribable {
+    // According to the promise specification, promises are not cancellable by default.
+    // Once a promise is created, it will either resolve or reject, and it doesn't
+    // provide a built-in mechanism to cancel it.
+    // There may be situations where a promise is provided, and it either resolves after
+    // the pipe has been destroyed or never resolves at all. If the promise never
+    // resolves — potentially due to factors beyond our control, such as third-party
+    // libraries — this can lead to a memory leak.
+    // When we use `async.then(updateLatestValue)`, the engine captures a reference to the
+    // `updateLatestValue` function. This allows the promise to invoke that function when it
+    // resolves. In this case, the promise directly captures a reference to the
+    // `updateLatestValue` function. If the promise resolves later, it retains a reference
+    // to the original `updateLatestValue`, meaning that even if the context where
+    // `updateLatestValue` was defined has been destroyed, the function reference remains in memory.
+    // This can lead to memory leaks if `updateLatestValue` is no longer needed or if it holds
+    // onto resources that should be released.
+    // When we do `async.then(v => ...)` the promise captures a reference to the lambda
+    // function (the arrow function).
+    // When we assign `updateLatestValue = null` within the context of an `unsubscribe` function,
+    // we're changing the reference of `updateLatestValue` in the current scope to `null`.
+    // The lambda will no longer have access to it after the assignment, effectively
+    // preventing any further calls to the original function and allowing it to be garbage collected.
+    async.then(
+      // Using optional chaining because we may have set it to `null`; since the promise
+      // is async, the view might be destroyed by the time the promise resolves.
+      (v) => updateLatestValue?.(v),
+      (e) => onError?.(e),
+    );
+    return {
+      unsubscribe: () => {
+        updateLatestValue = null;
+        onError = null;
+      },
+    };
   }
 
-  dispose(subscription: Promise<any>): void {}
+  dispose(subscription: Unsubscribable): void {
+    subscription.unsubscribe();
+  }
 }
 
 const _promiseStrategy = new PromiseStrategy();
@@ -103,9 +144,10 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _latestValue: any = null;
   private markForCheckOnValueUpdate = true;
 
-  private _subscription: Unsubscribable | Promise<any> | null = null;
-  private _obj: Subscribable<any> | Promise<any> | EventEmitter<any> | null = null;
+  private _subscription: Unsubscribable | PromiseLike<any> | null = null;
+  private _obj: Subscribable<any> | PromiseLike<any> | EventEmitter<any> | null = null;
   private _strategy: SubscriptionStrategy | null = null;
+  private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
 
   constructor(ref: ChangeDetectorRef) {
     // Assign `ref` into `this._ref` manually instead of declaring `_ref` in the constructor
@@ -128,10 +170,10 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   // TypeScript has a hard time matching Observable to Subscribable, for more information
   // see https://github.com/microsoft/TypeScript/issues/43643
 
-  transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T>): T | null;
+  transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T>): T | null;
   transform<T>(obj: null | undefined): null;
-  transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T> | null | undefined): T | null;
-  transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T> | null | undefined): T | null {
+  transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T> | null | undefined): T | null;
+  transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T> | null | undefined): T | null {
     if (!this._obj) {
       if (obj) {
         try {
@@ -155,16 +197,18 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     return this._latestValue;
   }
 
-  private _subscribe(obj: Subscribable<any> | Promise<any> | EventEmitter<any>): void {
+  private _subscribe(obj: Subscribable<any> | PromiseLike<any> | EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
-    this._subscription = this._strategy.createSubscription(obj, (value: Object) =>
-      this._updateLatestValue(obj, value),
+    this._subscription = this._strategy.createSubscription(
+      obj,
+      (value: Object) => this._updateLatestValue(obj, value),
+      (e) => this.applicationErrorHandler(e),
     );
   }
 
   private _selectStrategy(
-    obj: Subscribable<any> | Promise<any> | EventEmitter<any>,
+    obj: Subscribable<any> | PromiseLike<any> | EventEmitter<any>,
   ): SubscriptionStrategy {
     if (ɵisPromise(obj)) {
       return _promiseStrategy;

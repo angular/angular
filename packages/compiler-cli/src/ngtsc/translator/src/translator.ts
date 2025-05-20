@@ -43,6 +43,8 @@ const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.Or, '||'],
   [o.BinaryOperator.Plus, '+'],
   [o.BinaryOperator.NullishCoalesce, '??'],
+  [o.BinaryOperator.Exponentiation, '**'],
+  [o.BinaryOperator.In, 'in'],
 ]);
 
 export type RecordWrappedNodeFn<TExpression> = (node: o.WrappedNodeExpr<TExpression>) => void;
@@ -182,18 +184,19 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     );
   }
 
-  visitTaggedTemplateExpr(ast: o.TaggedTemplateExpr, context: Context): TExpression {
+  visitTaggedTemplateLiteralExpr(ast: o.TaggedTemplateLiteralExpr, context: Context): TExpression {
     return this.setSourceMapRange(
-      this.createTaggedTemplateExpression(ast.tag.visitExpression(this, context), {
-        elements: ast.template.elements.map((e) =>
-          createTemplateElement({
-            cooked: e.text,
-            raw: e.rawText,
-            range: e.sourceSpan ?? ast.sourceSpan,
-          }),
-        ),
-        expressions: ast.template.expressions.map((e) => e.visitExpression(this, context)),
-      }),
+      this.createTaggedTemplateExpression(
+        ast.tag.visitExpression(this, context),
+        this.getTemplateLiteralFromAst(ast.template, context),
+      ),
+      ast.sourceSpan,
+    );
+  }
+
+  visitTemplateLiteralExpr(ast: o.TemplateLiteralExpr, context: Context): TExpression {
+    return this.setSourceMapRange(
+      this.factory.createTemplateLiteral(this.getTemplateLiteralFromAst(ast, context)),
       ast.sourceSpan,
     );
   }
@@ -320,36 +323,8 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
   }
 
   visitConditionalExpr(ast: o.ConditionalExpr, context: Context): TExpression {
-    let cond: TExpression = ast.condition.visitExpression(this, context);
-
-    // Ordinarily the ternary operator is right-associative. The following are equivalent:
-    //   `a ? b : c ? d : e` => `a ? b : (c ? d : e)`
-    //
-    // However, occasionally Angular needs to produce a left-associative conditional, such as in
-    // the case of a null-safe navigation production: `{{a?.b ? c : d}}`. This template produces
-    // a ternary of the form:
-    //   `a == null ? null : rest of expression`
-    // If the rest of the expression is also a ternary though, this would produce the form:
-    //   `a == null ? null : a.b ? c : d`
-    // which, if left as right-associative, would be incorrectly associated as:
-    //   `a == null ? null : (a.b ? c : d)`
-    //
-    // In such cases, the left-associativity needs to be enforced with parentheses:
-    //   `(a == null ? null : a.b) ? c : d`
-    //
-    // Such parentheses could always be included in the condition (guaranteeing correct behavior) in
-    // all cases, but this has a code size cost. Instead, parentheses are added only when a
-    // conditional expression is directly used as the condition of another.
-    //
-    // TODO(alxhub): investigate better logic for precendence of conditional operators
-    if (ast.condition instanceof o.ConditionalExpr) {
-      // The condition of this ternary needs to be wrapped in parentheses to maintain
-      // left-associativity.
-      cond = this.factory.createParenthesizedExpression(cond);
-    }
-
     return this.factory.createConditional(
-      cond,
+      ast.condition.visitExpression(this, context),
       ast.trueCase.visitExpression(this, context),
       ast.falseCase!.visitExpression(this, context),
     );
@@ -433,6 +408,10 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     throw new Error('Method not implemented.');
   }
 
+  visitTemplateLiteralElementExpr(ast: o.TemplateLiteralElementExpr, context: any) {
+    throw new Error('Method not implemented');
+  }
+
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, _context: Context): any {
     this.recordWrappedNode(ast);
     return ast.node;
@@ -440,6 +419,10 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
 
   visitTypeofExpr(ast: o.TypeofExpr, context: Context): TExpression {
     return this.factory.createTypeOfExpression(ast.expr.visitExpression(this, context));
+  }
+
+  visitVoidExpr(ast: o.VoidExpr, context: Context): TExpression {
+    return this.factory.createVoidExpression(ast.expr.visitExpression(this, context));
   }
 
   visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, context: Context): TExpression {
@@ -450,6 +433,11 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       UNARY_OPERATORS.get(ast.operator)!,
       ast.expr.visitExpression(this, context),
     );
+  }
+
+  visitParenthesizedExpr(ast: o.ParenthesizedExpr, context: any) {
+    const result = ast.expr.visitExpression(this, context);
+    return this.factory.createParenthesizedExpression(result);
   }
 
   private visitStatements(statements: o.Statement[], context: Context): TStatement[] {
@@ -473,6 +461,22 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       this.factory.attachComments(statement, leadingComments);
     }
     return statement;
+  }
+
+  private getTemplateLiteralFromAst(
+    ast: o.TemplateLiteralExpr,
+    context: Context,
+  ): TemplateLiteral<TExpression> {
+    return {
+      elements: ast.elements.map((e) =>
+        createTemplateElement({
+          cooked: e.text,
+          raw: e.rawText,
+          range: e.sourceSpan ?? ast.sourceSpan,
+        }),
+      ),
+      expressions: ast.expressions.map((e) => e.visitExpression(this, context)),
+    };
   }
 }
 

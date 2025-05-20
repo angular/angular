@@ -1,19 +1,20 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
-ts_library(
+ts_project(
     name = "services",
     srcs = [
         "index.ts",
     ],
-    visibility = ["//adev/shared-docs:__subpackages__"],
-    deps = [
+    interop_deps = [
         ":lib",
     ],
+    visibility = ["//adev/shared-docs:__subpackages__"],
 )
 
-ng_module(
+ng_project(
     name = "lib",
     srcs = glob(
         [
@@ -24,27 +25,28 @@ ng_module(
             "**/*.spec.ts",
         ],
     ),
-    deps = [
-        "//adev/shared-docs/constants",
-        "//adev/shared-docs/interfaces",
-        "//adev/shared-docs/providers",
-        "//adev/shared-docs/utils",
+    interop_deps = [
         "//packages/common",
         "//packages/core",
         "//packages/core/rxjs-interop",
         "//packages/router",
-        "@npm//algoliasearch",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/algoliasearch",
+        "//:node_modules/rxjs",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/utils:utils_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["*.spec.ts"],
     ),
-    deps = [
+    interop_deps = [
         ":lib",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",

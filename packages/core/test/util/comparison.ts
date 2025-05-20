@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {devModeEqual} from '@angular/core/src/util/comparison';
+import {devModeEqual} from '../../src/util/comparison';
 
 describe('Comparison util', () => {
   describe('devModeEqual', () => {

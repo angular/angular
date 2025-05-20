@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createTNode} from '@angular/core/src/render3/instructions/shared';
-import {AttributeMarker} from '@angular/core/src/render3/interfaces/attribute_marker';
-import {TAttributes, TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {LView} from '@angular/core/src/render3/interfaces/view';
-import {enterView} from '@angular/core/src/render3/state';
-import {computeStaticStyling} from '@angular/core/src/render3/styling/static_styling';
+import {AttributeMarker} from '../../../src/render3/interfaces/attribute_marker';
+import {TAttributes, TNode, TNodeType} from '../../../src/render3/interfaces/node';
+import {LView} from '../../../src/render3/interfaces/view';
+import {enterView} from '../../../src/render3/state';
+import {computeStaticStyling} from '../../../src/render3/styling/static_styling';
+import {createTNode} from '../../../src/render3/tnode_manipulation';
 
 describe('static styling', () => {
   const mockFirstCreatePassLView: LView = [null, {firstCreatePass: true}] as any;

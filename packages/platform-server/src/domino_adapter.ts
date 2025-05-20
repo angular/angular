@@ -79,8 +79,24 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   override getBaseHref(doc: Document): string {
-    // TODO(alxhub): Need relative path logic from BrowserDomAdapter here?
-    return doc.documentElement!.querySelector('base')?.getAttribute('href') || '';
+    const length = doc.head.children.length;
+
+    // The `<base>` can only be a direct child of `<head>` so we can save some
+    // execution time by looking through them directly instead of querying for it.
+    // See: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/base
+    // Note that we can't cache the `href` value itself, because this method gets called with a
+    // different document every time which means that in theory the value can be different too.
+    for (let i = 0; i < length; i++) {
+      const child = doc.head.children[i];
+
+      // Tag names are always uppercase for HTML nodes.
+      if (child.tagName === 'BASE') {
+        // TODO(alxhub): Need relative path logic from BrowserDomAdapter here?
+        return child.getAttribute('href') || '';
+      }
+    }
+
+    return '';
   }
 
   override dispatchEvent(el: Node, evt: any) {

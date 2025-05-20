@@ -18,8 +18,8 @@ import {
   PipeTransform,
   TemplateRef,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('control flow - for', () => {
   it('should create, remove and move views corresponding to items in a collection', () => {
@@ -129,7 +129,7 @@ describe('control flow - for', () => {
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in for loop blocks', () => {
-    @Pipe({name: 'test', standalone: true})
+    @Pipe({name: 'test'})
     class TestPipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -141,7 +141,6 @@ describe('control flow - for', () => {
     @Component({
       template: '@for (item of items | test; track item;) {{{item}}|}',
       imports: [TestPipe],
-      standalone: true,
     })
     class TestComponent {
       items = [1, 2, 3];
@@ -156,7 +155,6 @@ describe('control flow - for', () => {
     @Directive({
       selector: '[dir]',
       exportAs: 'dir',
-      standalone: true,
     })
     class Dir {
       data = [1];
@@ -168,7 +166,6 @@ describe('control flow - for', () => {
 
     @Component({
       selector: 'app-root',
-      standalone: true,
       imports: [Dir],
       template: `
         <div [dir] #dir="dir"></div>
@@ -589,14 +586,12 @@ describe('control flow - for', () => {
       ];
 
       @Component({
-        standalone: true,
         template: ``,
         selector: 'child-cmp',
       })
       class ChildCmp {}
 
       @Component({
-        standalone: true,
         imports: [ChildCmp],
         template: `
           @for(task of tasks; track task.id) {
@@ -622,14 +617,12 @@ describe('control flow - for', () => {
   describe('content projection', () => {
     it('should project an @for with a single root node into the root node slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @for (item of items; track $index) {
@@ -649,14 +642,12 @@ describe('control flow - for', () => {
 
     it('should project an @empty block with a single root node into the root node slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @for (item of items; track $index) {} @empty {
@@ -676,7 +667,6 @@ describe('control flow - for', () => {
 
     it('should allow @for and @empty blocks to be projected into different slots', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template:
           'Main: <ng-content/> Loop slot: <ng-content select="[loop]"/> Empty slot: <ng-content select="[empty]"/>',
@@ -684,7 +674,6 @@ describe('control flow - for', () => {
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @for (item of items; track $index) {
@@ -714,14 +703,12 @@ describe('control flow - for', () => {
 
     it('should project an @for with multiple root nodes into the catch-all slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @for (item of items; track $index) {
@@ -743,7 +730,7 @@ describe('control flow - for', () => {
     it('should project an @for with a single root node with a data binding', () => {
       let directiveCount = 0;
 
-      @Directive({standalone: true, selector: '[foo]'})
+      @Directive({selector: '[foo]'})
       class Foo {
         @Input('foo') value: any;
 
@@ -753,14 +740,12 @@ describe('control flow - for', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent, Foo],
         template: `
         <test>Before @for (item of items; track $index) {
@@ -781,14 +766,12 @@ describe('control flow - for', () => {
 
     it('should project an @for with an ng-container root node', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @for (item of items; track $index) {
@@ -813,14 +796,12 @@ describe('control flow - for', () => {
     // This test is to ensure that we don't regress if it happens in the future.
     it('should project an @for with single root node and comments into the root node slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @for (item of items; track $index) {
@@ -842,14 +823,12 @@ describe('control flow - for', () => {
 
     it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         preserveWhitespaces: true,
         // Note the whitespace due to the indentation inside @for.
@@ -867,14 +846,12 @@ describe('control flow - for', () => {
 
     it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         preserveWhitespaces: true,
         // Note the whitespace due to the indentation inside @for.
@@ -895,14 +872,12 @@ describe('control flow - for', () => {
 
     it('should not project the root node across multiple layers of @for', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @for (item of items; track $index) {
@@ -923,14 +898,12 @@ describe('control flow - for', () => {
 
     it('should project an @for with a single root template node into the root node slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent, NgIf],
         template: `<test>Before @for (item of items; track $index) {
         <span *ngIf="true" foo>{{item}}</span>
@@ -953,7 +926,6 @@ describe('control flow - for', () => {
       let directiveCount = 0;
 
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
@@ -961,7 +933,6 @@ describe('control flow - for', () => {
 
       @Directive({
         selector: '[foo]',
-        standalone: true,
       })
       class FooDirective {
         constructor() {
@@ -970,7 +941,6 @@ describe('control flow - for', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [TestComponent, FooDirective],
         template: `<test>Before @for (item of items; track $index) {
         <span foo>{{item}}</span>
@@ -992,7 +962,6 @@ describe('control flow - for', () => {
       let directiveCount = 0;
 
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
@@ -1000,7 +969,6 @@ describe('control flow - for', () => {
 
       @Directive({
         selector: '[templateDir]',
-        standalone: true,
       })
       class TemplateDirective implements OnInit {
         constructor(
@@ -1017,7 +985,6 @@ describe('control flow - for', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [TestComponent, TemplateDirective],
         template: `<test>Before @for (item of items; track $index) {
         <span *templateDir foo>{{item}}</span>
@@ -1039,7 +1006,6 @@ describe('control flow - for', () => {
       let directiveCount = 0;
 
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
@@ -1047,7 +1013,6 @@ describe('control flow - for', () => {
 
       @Directive({
         selector: '[templateDir]',
-        standalone: true,
       })
       class TemplateDirective implements OnInit {
         constructor(
@@ -1064,7 +1029,6 @@ describe('control flow - for', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [TestComponent, TemplateDirective],
         template: `<test>Before @for (item of items; track $index) {
         <ng-template templateDir foo>{{item}}</ng-template>
@@ -1108,14 +1072,12 @@ describe('control flow - for', () => {
 
     it('should project an @for with a single root node and @let declarations into the root node slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @for (item of items; track $index) {

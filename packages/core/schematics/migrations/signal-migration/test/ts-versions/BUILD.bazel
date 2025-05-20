@@ -1,6 +1,0 @@
-exports_files([
-    "package.json",
-    "yarn.lock",
-    "loader.mjs",
-    "hooks.mjs",
-])

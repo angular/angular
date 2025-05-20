@@ -109,7 +109,7 @@ export class DefaultImportTracker {
             if (clausesToPreserve === null) {
               clausesToPreserve = loadIsReferencedAliasDeclarationPatch(context);
             }
-            clausesToPreserve.add(clause);
+            clausesToPreserve?.add(clause);
           }
         }
 

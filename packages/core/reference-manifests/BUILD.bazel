@@ -1,5 +1,0 @@
-filegroup(
-    name = "reference-manifests",
-    srcs = glob(["*.json"]),
-    visibility = ["//visibility:public"],
-)

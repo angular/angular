@@ -29,32 +29,39 @@
 
 import * as core from './core';
 import {publishFacade} from './jit_compiler_facade';
+import * as outputAst from './output/output_ast';
 import {global} from './util';
 
+export {SECURITY_SCHEMA} from './schema/dom_security_schema';
 export {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from './core';
 export {core};
 
-export * from './version';
 export {CompilerConfig, preserveWhitespacesDefault} from './config';
-export * from './resource_loader';
 export {ConstantPool} from './constant_pool';
-export {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/defaults';
-export * from './schema/element_schema_registry';
-export * from './i18n/index';
+export {
+  ChangeDetectionStrategy,
+  emitDistinctChangesOnlyDefaultValue,
+  ViewEncapsulation,
+} from './core';
 export * from './expression_parser/ast';
 export * from './expression_parser/lexer';
 export * from './expression_parser/parser';
+export * from './i18n/index';
+export * from './injectable_compiler_2';
+export {publishFacade} from './jit_compiler_facade';
 export * from './ml_parser/ast';
+export {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/defaults';
 export * from './ml_parser/html_parser';
 export * from './ml_parser/html_tags';
-export * from './ml_parser/tags';
-export {ParseTreeResult, TreeError} from './ml_parser/parser';
 export {LexerRange} from './ml_parser/lexer';
-export * from './ml_parser/xml_parser';
+export {ParseTreeResult, TreeError} from './ml_parser/parser';
+export * from './ml_parser/tags';
 export {TokenType as LexerTokenType} from './ml_parser/tokens';
+export * from './ml_parser/xml_parser';
+export {EmitterVisitorContext} from './output/abstract_emitter';
 export {
   ArrayType,
-  DYNAMIC_TYPE,
+  ArrowFunctionExpr,
   BinaryOperator,
   BinaryOperatorExpr,
   BuiltinType,
@@ -63,164 +70,63 @@ export {
   ConditionalExpr,
   DeclareFunctionStmt,
   DeclareVarStmt,
+  DYNAMIC_TYPE,
+  DynamicImportExpr,
   Expression,
   ExpressionStatement,
   ExpressionType,
   ExpressionVisitor,
   ExternalExpr,
   ExternalReference,
-  literalMap,
   FunctionExpr,
   IfStmt,
   InstantiateExpr,
   InvokeFunctionExpr,
-  ArrowFunctionExpr,
+  jsDocComment,
+  JSDocComment,
+  leadingComment,
+  LeadingComment,
+  literal,
   LiteralArrayExpr,
   LiteralExpr,
+  literalMap,
   LiteralMapExpr,
+  LocalizedString,
   MapType,
-  NotExpr,
   NONE_TYPE,
+  NotExpr,
+  ParenthesizedExpr,
   ReadKeyExpr,
   ReadPropExpr,
   ReadVarExpr,
   ReturnStatement,
+  Statement,
   StatementVisitor,
-  TaggedTemplateExpr,
-  TemplateLiteral,
-  TemplateLiteralElement,
+  StmtModifier,
+  STRING_TYPE,
+  TaggedTemplateLiteralExpr,
+  TemplateLiteralElementExpr,
+  TemplateLiteralExpr,
+  TransplantedType,
   Type,
   TypeModifier,
+  TypeofExpr,
   TypeVisitor,
+  UnaryOperator,
+  UnaryOperatorExpr,
+  VoidExpr,
   WrappedNodeExpr,
-  literal,
   WriteKeyExpr,
   WritePropExpr,
   WriteVarExpr,
-  StmtModifier,
-  Statement,
-  STRING_TYPE,
-  TypeofExpr,
-  jsDocComment,
-  leadingComment,
-  LeadingComment,
-  JSDocComment,
-  UnaryOperator,
-  UnaryOperatorExpr,
-  LocalizedString,
-  TransplantedType,
-  DynamicImportExpr,
 } from './output/output_ast';
-export {EmitterVisitorContext} from './output/abstract_emitter';
 export {JitEvaluator} from './output/output_jit';
-export * from './parse_util';
-export * from './schema/dom_element_schema_registry';
-export * from './selector';
-export {Version} from './util';
 export {SourceMap} from './output/source_map';
-export * from './injectable_compiler_2';
+export * from './parse_util';
 export * from './render3/partial/api';
-export * from './render3/view/api';
 export {
-  visitAll as tmplAstVisitAll,
-  BlockNode as TmplAstBlockNode,
-  BoundAttribute as TmplAstBoundAttribute,
-  BoundEvent as TmplAstBoundEvent,
-  BoundText as TmplAstBoundText,
-  Content as TmplAstContent,
-  Element as TmplAstElement,
-  Icu as TmplAstIcu,
-  Node as TmplAstNode,
-  Visitor as TmplAstVisitor,
-  RecursiveVisitor as TmplAstRecursiveVisitor,
-  Reference as TmplAstReference,
-  Template as TmplAstTemplate,
-  Text as TmplAstText,
-  TextAttribute as TmplAstTextAttribute,
-  Variable as TmplAstVariable,
-  DeferredBlock as TmplAstDeferredBlock,
-  DeferredBlockPlaceholder as TmplAstDeferredBlockPlaceholder,
-  DeferredBlockLoading as TmplAstDeferredBlockLoading,
-  DeferredBlockError as TmplAstDeferredBlockError,
-  DeferredTrigger as TmplAstDeferredTrigger,
-  BoundDeferredTrigger as TmplAstBoundDeferredTrigger,
-  IdleDeferredTrigger as TmplAstIdleDeferredTrigger,
-  ImmediateDeferredTrigger as TmplAstImmediateDeferredTrigger,
-  HoverDeferredTrigger as TmplAstHoverDeferredTrigger,
-  TimerDeferredTrigger as TmplAstTimerDeferredTrigger,
-  InteractionDeferredTrigger as TmplAstInteractionDeferredTrigger,
-  ViewportDeferredTrigger as TmplAstViewportDeferredTrigger,
-  NeverDeferredTrigger as TmplAstNeverDeferredTrigger,
-  SwitchBlock as TmplAstSwitchBlock,
-  SwitchBlockCase as TmplAstSwitchBlockCase,
-  ForLoopBlock as TmplAstForLoopBlock,
-  ForLoopBlockEmpty as TmplAstForLoopBlockEmpty,
-  IfBlock as TmplAstIfBlock,
-  IfBlockBranch as TmplAstIfBlockBranch,
-  DeferredBlockTriggers as TmplAstDeferredBlockTriggers,
-  UnknownBlock as TmplAstUnknownBlock,
-  LetDeclaration as TmplAstLetDeclaration,
-} from './render3/r3_ast';
-export * from './render3/view/t2_api';
-export * from './render3/view/t2_binder';
-export {createCssSelectorFromNode} from './render3/view/util';
-export {Identifiers as R3Identifiers} from './render3/r3_identifiers';
-export {
-  R3ClassMetadata,
-  CompileClassMetadataFn,
-  compileClassMetadata,
-  compileComponentClassMetadata,
-  compileOpaqueAsyncClassMetadata,
-} from './render3/r3_class_metadata_compiler';
-export {compileClassDebugInfo, R3ClassDebugInfo} from './render3/r3_class_debug_info_compiler';
-export {
-  compileHmrInitializer,
-  compileHmrUpdateCallback,
-  R3HmrMetadata,
-  R3HmrNamespaceDependency,
-} from './render3/r3_hmr_compiler';
-export {
-  compileFactoryFunction,
-  R3DependencyMetadata,
-  R3FactoryMetadata,
-  FactoryTarget,
-} from './render3/r3_factory';
-export {
-  compileNgModule,
-  R3NgModuleMetadata,
-  R3SelectorScopeMode,
-  R3NgModuleMetadataKind,
-  R3NgModuleMetadataGlobal,
-} from './render3/r3_module_compiler';
-export {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
-export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
-export {
-  makeBindingParser,
-  ParsedTemplate,
-  parseTemplate,
-  ParseTemplateOptions,
-} from './render3/view/template';
-export {
-  ForwardRefHandling,
-  MaybeForwardRefExpression,
-  R3CompiledExpression,
-  R3Reference,
-  createMayBeForwardRefExpression,
-  devOnlyGuardedExpression,
-  getSafePropertyAccessString,
-} from './render3/util';
-export {
-  compileComponentFromMetadata,
-  compileDirectiveFromMetadata,
-  parseHostBindings,
-  ParsedHostBindings,
-  verifyHostBindings,
-  encapsulateStyle,
-  compileDeferResolverFunction,
-} from './render3/view/compiler';
-export {
-  compileDeclareClassMetadata,
   compileComponentDeclareClassMetadata,
+  compileDeclareClassMetadata,
 } from './render3/partial/class_metadata';
 export {
   compileDeclareComponentFromMetadata,
@@ -232,14 +138,121 @@ export {compileDeclareInjectableFromMetadata} from './render3/partial/injectable
 export {compileDeclareInjectorFromMetadata} from './render3/partial/injector';
 export {compileDeclareNgModuleFromMetadata} from './render3/partial/ng_module';
 export {compileDeclarePipeFromMetadata} from './render3/partial/pipe';
-export {publishFacade} from './jit_compiler_facade';
 export {
-  emitDistinctChangesOnlyDefaultValue,
-  ChangeDetectionStrategy,
-  ViewEncapsulation,
-} from './core';
-import * as outputAst from './output/output_ast';
+  BlockNode as TmplAstBlockNode,
+  BoundAttribute as TmplAstBoundAttribute,
+  BoundDeferredTrigger as TmplAstBoundDeferredTrigger,
+  BoundEvent as TmplAstBoundEvent,
+  BoundText as TmplAstBoundText,
+  Content as TmplAstContent,
+  DeferredBlock as TmplAstDeferredBlock,
+  DeferredBlockError as TmplAstDeferredBlockError,
+  DeferredBlockLoading as TmplAstDeferredBlockLoading,
+  DeferredBlockPlaceholder as TmplAstDeferredBlockPlaceholder,
+  DeferredBlockTriggers as TmplAstDeferredBlockTriggers,
+  DeferredTrigger as TmplAstDeferredTrigger,
+  Element as TmplAstElement,
+  ForLoopBlock as TmplAstForLoopBlock,
+  ForLoopBlockEmpty as TmplAstForLoopBlockEmpty,
+  HoverDeferredTrigger as TmplAstHoverDeferredTrigger,
+  Icu as TmplAstIcu,
+  IdleDeferredTrigger as TmplAstIdleDeferredTrigger,
+  IfBlock as TmplAstIfBlock,
+  IfBlockBranch as TmplAstIfBlockBranch,
+  ImmediateDeferredTrigger as TmplAstImmediateDeferredTrigger,
+  InteractionDeferredTrigger as TmplAstInteractionDeferredTrigger,
+  LetDeclaration as TmplAstLetDeclaration,
+  NeverDeferredTrigger as TmplAstNeverDeferredTrigger,
+  Node as TmplAstNode,
+  RecursiveVisitor as TmplAstRecursiveVisitor,
+  Reference as TmplAstReference,
+  SwitchBlock as TmplAstSwitchBlock,
+  SwitchBlockCase as TmplAstSwitchBlockCase,
+  Template as TmplAstTemplate,
+  Text as TmplAstText,
+  TextAttribute as TmplAstTextAttribute,
+  TimerDeferredTrigger as TmplAstTimerDeferredTrigger,
+  UnknownBlock as TmplAstUnknownBlock,
+  Variable as TmplAstVariable,
+  ViewportDeferredTrigger as TmplAstViewportDeferredTrigger,
+  HostElement as TmplAstHostElement,
+  Component as TmplAstComponent,
+  Directive as TmplAstDirective,
+  visitAll as tmplAstVisitAll,
+  Visitor as TmplAstVisitor,
+} from './render3/r3_ast';
+export {compileClassDebugInfo, R3ClassDebugInfo} from './render3/r3_class_debug_info_compiler';
+export {
+  compileClassMetadata,
+  CompileClassMetadataFn,
+  compileComponentClassMetadata,
+  compileOpaqueAsyncClassMetadata,
+  R3ClassMetadata,
+} from './render3/r3_class_metadata_compiler';
+export {
+  compileFactoryFunction,
+  R3DependencyMetadata,
+  R3FactoryMetadata,
+} from './render3/r3_factory';
+export {
+  compileHmrInitializer,
+  compileHmrUpdateCallback,
+  R3HmrMetadata,
+  R3HmrNamespaceDependency,
+} from './render3/r3_hmr_compiler';
+export {Identifiers as R3Identifiers} from './render3/r3_identifiers';
+export {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
+export {
+  compileNgModule,
+  R3NgModuleMetadata,
+  R3NgModuleMetadataGlobal,
+  R3NgModuleMetadataKind,
+  R3SelectorScopeMode,
+} from './render3/r3_module_compiler';
+export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
+export {
+  createMayBeForwardRefExpression,
+  devOnlyGuardedExpression,
+  ForwardRefHandling,
+  getSafePropertyAccessString,
+  MaybeForwardRefExpression,
+  R3CompiledExpression,
+  R3Reference,
+} from './render3/util';
+export * from './render3/view/api';
+export {
+  compileComponentFromMetadata,
+  compileDeferResolverFunction,
+  compileDirectiveFromMetadata,
+  encapsulateStyle,
+  ParsedHostBindings,
+  parseHostBindings,
+  verifyHostBindings,
+} from './render3/view/compiler';
+export * from './render3/view/t2_api';
+export * from './render3/view/t2_binder';
+export {
+  makeBindingParser,
+  ParsedTemplate,
+  parseTemplate,
+  ParseTemplateOptions,
+} from './render3/view/template';
+export {CombinedRecursiveAstVisitor} from './combined_visitor';
+
+// Note: BindingParser is intentionally exported as a type only, because it should
+// be constructed through `makeBindingParser`, rather than its constructor.
+export {type BindingParser} from './template_parser/binding_parser';
+export {createCssSelectorFromNode} from './render3/view/util';
+export * from './resource_loader';
+export * from './schema/dom_element_schema_registry';
+export * from './schema/element_schema_registry';
+export * from './directive_matching';
+export {Version, escapeRegExp} from './util';
+export * from './version';
 export {outputAst};
+export {CompilerFacadeImpl} from './jit_compiler_facade';
+export {FactoryTarget} from './compiler_facade_interface';
+
 // This file only reexports content of the `src` folder. Keep it that way.
 
 // This function call has a global side effects and publishes the compiler into global namespace for

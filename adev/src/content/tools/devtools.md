@@ -173,7 +173,7 @@ Later, import the file in the initial view of the profiler by clicking the **Cho
 
  ## Inspect your injectors
 
- Note: The Injector Tree is available for Angular Applications built with version 17 or higher.
+ NOTE: The Injector Tree is available for Angular Applications built with version 17 or higher.
 
 ### View the injector hierarchy of your application
 
@@ -185,7 +185,7 @@ Later, import the file in the initial view of the profiler by clicking the **Cho
 
  When a specific injector is selected, the path that Angular's dependency injection algorithm traverses from that injector to the root is highlighted. For element injectors, this includes highlighting the environment injectors that the dependency injection algorithm jumps to when a dependency cannot be resolved in the element hierarchy.
 
-See [resolution rules](guide/di/hierarchical-dependency-injection#resolution-rules) for more details about how Angular resolves resolution paths. 
+See [resolution rules](guide/di/hierarchical-dependency-injection#resolution-rules) for more details about how Angular resolves resolution paths.
 
 <img src="assets/images/guide/devtools/di-injector-tree-selected.png" alt="A screenshot of the 'Profiler' tab displaying how the injector tree visualize highlights resolution paths when an injector is selected.">
 

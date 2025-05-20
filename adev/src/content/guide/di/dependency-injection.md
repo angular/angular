@@ -22,10 +22,10 @@ class HeroService {}
 The next step is to make it available in the DI by providing it.
 A dependency can be provided in multiple places:
 
-* [**Preferred**: At the application root level using `providedIn`.](#preferred-at-the-application-root-level-using-providedin)
-* [At the Component level.](#at-the-component-level)
-* [At the application root level using `ApplicationConfig`.](#at-the-application-root-level-using-applicationconfig)
-* [`NgModule` based applications.](#ngmodule-based-applications)
+- [**Preferred**: At the application root level using `providedIn`](#preferred-at-the-application-root-level-using-providedin)
+- [At the Component level](#at-the-component-level)
+- [At the application root level using `ApplicationConfig`](#at-the-application-root-level-using-applicationconfig)
+- [`NgModule` based applications](#ngmodule-based-applications)
 
 ### **Preferred**: At the application root level using `providedIn`
 
@@ -61,7 +61,7 @@ class HeroListComponent {}
 
 When you register a provider at the component level, you get a new instance of the service with each new instance of that component.
 
-Note: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
+NOTE: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
 
 ### At the application root level using `ApplicationConfig`
 
@@ -83,7 +83,7 @@ Then, in `main.ts`:
 bootstrapApplication(AppComponent, appConfig)
 </docs-code>
 
-Note: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
+NOTE: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
 
 ### `NgModule` based applications
 
@@ -92,27 +92,28 @@ Note: Declaring a service like this causes `HeroService` to always be included i
 A service provided in a module is available to all declarations of the module, or to any other modules which share the same `ModuleInjector`.
 To understand all edge-cases, see [Hierarchical injectors](guide/di/hierarchical-dependency-injection).
 
-Note: Declaring a service using `providers` causes the service to be included in your application— even if the service is unused.
+NOTE: Declaring a service using `providers` causes the service to be included in your application— even if the service is unused.
 
 ## Injecting/consuming a dependency
 
-The most common way to inject a dependency is to declare it in a class constructor. When Angular creates a new instance of a component, directive, or pipe class, it determines which services or other dependencies that class needs by looking at the constructor parameter types. For example, if the `HeroListComponent` needs the `HeroService`, the constructor can look like this:
+Use Angular's `inject` function to retrieve dependencies.
 
-<docs-code language="typescript" highlight="[3]">
-@Component({ … })
-class HeroListComponent {
-  constructor(private service: HeroService) {}
+```ts
+import {inject, Component} from 'angular/core';
+
+@Component({/* ... */})
+export class UserProfile {
+  // You can use the `inject` function in property initializers.
+  private userClient = inject(UserClient);
+
+  constructor() {
+    // You can also use the `inject` function in a constructor.
+    const logger = inject(Logger);
+  }
 }
-</docs-code>
+```
 
-Another option is to use the [inject](api/core/inject) method:
-
-<docs-code language="typescript" highlight="[3]">
-@Component({ … })
-class HeroListComponent {
-  private service = inject(HeroService);
-}
-</docs-code>
+You can use the `inject` function in any [injection context](guide/di/dependency-injection-context). Most of the time, this is in a class property initializer or a class constructor for components, directives, services, and pipes.
 
 When Angular discovers that a component depends on a service, it first checks if the injector has any existing instances of that service. If a requested service instance doesn't yet exist, the injector creates one using the registered provider, and adds it to the injector before returning the service to Angular.
 
@@ -127,9 +128,9 @@ serviceC[Service C]
 serviceD[Service D]
 end
 direction TB
-componentConstructor["Component\nconstructor(HeroService)"]
-heroService-->componentConstructor
-style componentConstructor text-align: left
+componentProperty["Component <br> heroService = inject(HeroService)"]
+heroService-->componentProperty
+style componentProperty text-align: left
 ```
 
 ## What's next

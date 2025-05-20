@@ -51,7 +51,7 @@ function addNamesToView(
   for (const op of unit.ops()) {
     switch (op.kind) {
       case ir.OpKind.Property:
-      case ir.OpKind.HostProperty:
+      case ir.OpKind.DomProperty:
         if (op.isAnimationTrigger) {
           op.name = '@' + op.name;
         }
@@ -133,6 +133,8 @@ function addNamesToView(
           );
         }
         break;
+      case ir.OpKind.ConditionalCreate:
+      case ir.OpKind.ConditionalBranchCreate:
       case ir.OpKind.Template:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);

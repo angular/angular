@@ -5,7 +5,7 @@
 ```ts
 
 import * as i0 from '@angular/core';
-import * as i1 from '@angular/platform-browser';
+import * as i1 from '@angular/common';
 import { PlatformRef } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 
@@ -16,7 +16,7 @@ export class BrowserTestingModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<BrowserTestingModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserTestingModule, never, never, [typeof i1.BrowserModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserTestingModule, never, never, [typeof BrowserModule]>;
 }
 
 // @public

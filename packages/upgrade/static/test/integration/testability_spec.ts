@@ -10,7 +10,7 @@ import {destroyPlatform, NgModule, Testability, NgZone} from '@angular/core';
 import {fakeAsync, flush, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeModule} from '@angular/upgrade/static';
+import {UpgradeModule} from '../../../static';
 
 import * as angular from '../../../src/common/src/angular1';
 import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';

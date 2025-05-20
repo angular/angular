@@ -1,5 +1,3 @@
-// tslint:disable
-
 import {Directive, ElementRef, Input, NgZone, OnDestroy, OnInit, Renderer2} from '@angular/core';
 
 import {SplitComponent} from '../component/split.component';
@@ -14,7 +12,7 @@ export class SplitAreaDirective implements OnInit, OnDestroy {
   private _order: number | null = null;
 
   @Input()
-  set order(v: number | null) {
+  set order(v: number | string | null) {
     this._order = getInputPositiveNumber(v, null);
 
     this.split.updateArea(this, true, false);
@@ -29,7 +27,7 @@ export class SplitAreaDirective implements OnInit, OnDestroy {
   private _size: number | null = null;
 
   @Input()
-  set size(v: number | null) {
+  set size(v: number | string | null) {
     this._size = getInputPositiveNumber(v, null);
 
     this.split.updateArea(this, false, true);
@@ -44,7 +42,7 @@ export class SplitAreaDirective implements OnInit, OnDestroy {
   private _minSize: number | null = null;
 
   @Input()
-  set minSize(v: number | null) {
+  set minSize(v: number | string | null) {
     this._minSize = getInputPositiveNumber(v, null);
 
     this.split.updateArea(this, false, true);
@@ -59,7 +57,7 @@ export class SplitAreaDirective implements OnInit, OnDestroy {
   private _maxSize: number | null = null;
 
   @Input()
-  set maxSize(v: number | null) {
+  set maxSize(v: number | string | null) {
     this._maxSize = getInputPositiveNumber(v, null);
 
     this.split.updateArea(this, false, true);

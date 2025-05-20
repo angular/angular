@@ -1,14 +1,18 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-package(default_visibility = ["//packages/core/schematics/ng-generate:__subpackages__"])
+package(default_visibility = ["//packages/core/schematics:__subpackages__"])
 
-ts_library(
+ts_project(
     name = "angular_devkit",
     srcs = glob(["**/*.ts"]),
+    interop_deps = [
+        "//packages/compiler-cli",
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
+    ],
     deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "@npm//@angular-devkit/core",
-        "@npm//@angular-devkit/schematics",
-        "@npm//@types/node",
+        "//:node_modules/@angular-devkit/core",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
     ],
 )

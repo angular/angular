@@ -6,38 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setActiveConsumer} from '@angular/core/primitives/signals';
+import {setActiveConsumer} from '../../primitives/signals';
 
 import {Injector} from '../di/injector';
 import {DehydratedContainerView} from '../hydration/interfaces';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {assertDefined} from '../util/assert';
 
-import {assertLContainer, assertLView, assertTNodeForLView} from './assert';
+import {assertLContainer, assertTNodeForLView} from './assert';
 import {renderView} from './instructions/render';
-import {createLView} from './instructions/shared';
-import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
 import {TNode} from './interfaces/node';
-import {RComment, RElement} from './interfaces/renderer_dom';
-import {
-  DECLARATION_LCONTAINER,
-  FLAGS,
-  HYDRATION,
-  LView,
-  LViewFlags,
-  QUERIES,
-  RENDERER,
-  T_HOST,
-  TVIEW,
-} from './interfaces/view';
-import {
-  addViewToDOM,
-  destroyLView,
-  detachView,
-  getBeforeNodeForView,
-  insertView,
-  nativeParentNode,
-} from './node_manipulation';
+import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES} from './interfaces/view';
+import {createLView} from './view/construction';
 
 export function createAndRenderEmbeddedLView<T>(
   declarationLView: LView<unknown>,
@@ -90,20 +70,6 @@ export function createAndRenderEmbeddedLView<T>(
   }
 }
 
-export function getLViewFromLContainer<T>(
-  lContainer: LContainer,
-  index: number,
-): LView<T> | undefined {
-  const adjustedIndex = CONTAINER_HEADER_OFFSET + index;
-  // avoid reading past the array boundaries
-  if (adjustedIndex < lContainer.length) {
-    const lView = lContainer[adjustedIndex];
-    ngDevMode && assertLView(lView);
-    return lView as LView<T>;
-  }
-  return undefined;
-}
-
 /**
  * Returns whether an elements that belong to a view should be
  * inserted into the DOM. For client-only cases, DOM elements are
@@ -118,45 +84,4 @@ export function shouldAddViewToDom(
   return (
     !dehydratedView || dehydratedView.firstChild === null || hasInSkipHydrationBlockFlag(tNode)
   );
-}
-
-export function addLViewToLContainer(
-  lContainer: LContainer,
-  lView: LView<unknown>,
-  index: number,
-  addToDOM = true,
-): void {
-  const tView = lView[TVIEW];
-
-  // Insert into the view tree so the new view can be change-detected
-  insertView(tView, lView, lContainer, index);
-
-  // Insert elements that belong to this view into the DOM tree
-  if (addToDOM) {
-    const beforeNode = getBeforeNodeForView(index, lContainer);
-    const renderer = lView[RENDERER];
-    const parentRNode = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
-    if (parentRNode !== null) {
-      addViewToDOM(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
-    }
-  }
-
-  // When in hydration mode, reset the pointer to the first child in
-  // the dehydrated view. This indicates that the view was hydrated and
-  // further attaching/detaching should work with this view as normal.
-  const hydrationInfo = lView[HYDRATION];
-  if (hydrationInfo !== null && hydrationInfo.firstChild !== null) {
-    hydrationInfo.firstChild = null;
-  }
-}
-
-export function removeLViewFromLContainer(
-  lContainer: LContainer,
-  index: number,
-): LView<unknown> | undefined {
-  const lView = detachView(lContainer, index);
-  if (lView !== undefined) {
-    destroyLView(lView[TVIEW], lView);
-  }
-  return lView;
 }

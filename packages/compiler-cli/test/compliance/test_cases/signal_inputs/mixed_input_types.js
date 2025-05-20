@@ -7,6 +7,6 @@ TestDir.ɵdir = /* @__PURE__ */ $r3$.ɵɵdefineDirective({
     decoratorInput: "decoratorInput",
     decoratorInputWithAlias: [0, "publicNameDecorator", "decoratorInputWithAlias"],
     decoratorInputWithTransformAndAlias: [2, "publicNameDecorator2", "decoratorInputWithTransformAndAlias", convertToBoolean]
-  },
+  }
   …
 });

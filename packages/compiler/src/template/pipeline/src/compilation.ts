@@ -190,6 +190,10 @@ export abstract class CompilationUnit {
         for (const listenerOp of op.handlerOps) {
           yield listenerOp;
         }
+      } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
+        for (const trackOp of op.trackByOps) {
+          yield trackOp;
+        }
       }
     }
     for (const op of this.update) {

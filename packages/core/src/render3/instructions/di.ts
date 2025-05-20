@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {InjectFlags, resolveForwardRef} from '../../di';
+import {resolveForwardRef} from '../../di';
 import {assertInjectImplementationNotEqual} from '../../di/inject_switch';
 import {ɵɵinject} from '../../di/injector_compatibility';
+import {InternalInjectFlags} from '../../di/interface/injector';
 import {ProviderToken} from '../../di/provider_token';
 import {Type} from '../../interface/type';
 import {emitInjectEvent} from '../debug/injector_profiler';
@@ -40,10 +41,10 @@ import {getCurrentTNode, getLView} from '../state';
  * @codeGenApi
  */
 export function ɵɵdirectiveInject<T>(token: ProviderToken<T>): T;
-export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags: InjectFlags): T;
+export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags: InternalInjectFlags): T;
 export function ɵɵdirectiveInject<T>(
   token: ProviderToken<T>,
-  flags = InjectFlags.Default,
+  flags = InternalInjectFlags.Default,
 ): T | null {
   const lView = getLView();
   // Fall back to inject() if view hasn't been created. This situation can happen in tests

@@ -8,7 +8,7 @@
 
 import {Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ɵangular1 as ng, ɵconstants} from '@angular/upgrade/static';
+import {ɵangular1 as ng, ɵconstants} from '../../../static';
 
 import {UpgradeAppType} from '../../../src/common/src/util';
 

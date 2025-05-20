@@ -1,37 +1,46 @@
-load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("//tools:defaults2.bzl", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = ["//tools:tsconfig_build"],
+)
+
+ts_project(
     name = "generate_element_api_json_lib",
-    srcs = ["generate_element_api_json.ts"],
+    srcs = ["generate_element_api_json.mts"],
+    tsconfig = ":tsconfig_build",
     deps = [
-        "//packages/compiler-cli",
-        "@npm//@types/node",
+        "//:node_modules/@types/node",
+        "//packages/compiler-cli/src/ngtsc/docs:docs_rjs",
     ],
 )
 
-nodejs_binary(
+js_binary(
     name = "generate_element_api_json",
     data = [
-        ":generate_element_api_json_lib",
+        ":generate_element_api_json_lib_rjs",
     ],
-    entry_point = ":generate_element_api_json.ts",
+    entry_point = ":generate_element_api_json.mjs",
 )
 
-ts_library(
+ts_project(
     name = "generate_block_api_json_lib",
-    srcs = ["generate_block_api_json.ts"],
+    srcs = ["generate_block_api_json.mts"],
+    tsconfig = ":tsconfig_build",
     deps = [
-        "//packages/compiler-cli",
-        "@npm//@types/node",
+        "//:node_modules/@types/node",
+        "//packages/compiler-cli/src/ngtsc/docs:docs_rjs",
     ],
 )
 
-nodejs_binary(
+js_binary(
     name = "generate_block_api_json",
     data = [
-        ":generate_block_api_json_lib",
+        ":generate_block_api_json_lib_rjs",
     ],
-    entry_point = ":generate_block_api_json.ts",
+    entry_point = ":generate_block_api_json.mjs",
 )

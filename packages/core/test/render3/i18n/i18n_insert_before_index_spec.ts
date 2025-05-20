@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {addTNodeAndUpdateInsertBeforeIndex} from '@angular/core/src/render3/i18n/i18n_insert_before_index';
-import {createTNode} from '@angular/core/src/render3/instructions/shared';
-import {TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
+import {addTNodeAndUpdateInsertBeforeIndex} from '../../../src/render3/i18n/i18n_insert_before_index';
+import {TNode, TNodeType} from '../../../src/render3/interfaces/node';
+import {HEADER_OFFSET} from '../../../src/render3/interfaces/view';
 import {matchTNode} from '../matchers';
+import {createTNode} from '../../../src/render3/tnode_manipulation';
 
 describe('addTNodeAndUpdateInsertBeforeIndex', () => {
   function tNode(index: number, type: TNodeType, insertBeforeIndex: number | null = null): TNode {

@@ -121,7 +121,7 @@ export class DelegatingCompilerHost
   ): ExtendedTsCompilerHost[M] {
     return this.delegate[name] !== undefined
       ? (this.delegate[name] as any).bind(this.delegate)
-      : undefined;
+      : undefined!;
   }
 }
 

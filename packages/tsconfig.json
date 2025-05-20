@@ -24,6 +24,7 @@
       "selenium-webdriver": ["./node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["./node_modules/rxjs/*"],
       "@angular/*": ["./packages/*"],
+      "zone.js": ["./packages/zone.js/lib/zone"],
       "zone.js/*": ["./packages/zone.js/*"],
       "angular-in-memory-web-api": ["./packages/misc/angular-in-memory-web-api/index.ts"]
     },
@@ -36,6 +37,10 @@
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "typeCheckHostBindings": true
   },
   "exclude": [
     "common/locales",

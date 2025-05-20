@@ -6,40 +6,42 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Injectable, inject} from '@angular/core';
 import {DocContent, DocsContentLoader} from '@angular/docs';
-import {Router} from '@angular/router';
-import {firstValueFrom, of} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {firstValueFrom} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Injectable()
 export class ContentLoader implements DocsContentLoader {
-  private readonly cache = new Map<string, Promise<DocContent | undefined>>();
+  private readonly cache = new Map<string, Promise<DocContent>>();
   private readonly httpClient = inject(HttpClient);
-  private readonly router = inject(Router);
 
-  async getContent(path: string): Promise<DocContent | undefined> {
+  async getContent(path: string): Promise<DocContent> {
     // If the path does not end with a file extension, add `.md.html` as the default
     if (!path.match(/\.\w+$/)) {
       path += '.md.html';
     }
-    if (!this.cache.has(path)) {
-      try {
-        this.cache.set(
-          path,
-          firstValueFrom(
-            this.httpClient
-              .get(`assets/content/${path}`, {
-                responseType: 'text',
-              })
-              .pipe(map((contents) => ({contents, id: path}))),
-          ),
+    try {
+      let promise = this.cache.get(path);
+      if (!promise) {
+        promise = firstValueFrom(
+          this.httpClient
+            .get(`assets/content/${path}`, {
+              responseType: 'text',
+            })
+            .pipe(map((contents) => ({contents, id: path}))),
         );
-      } catch {
-        this.router.navigateByUrl('/404');
+        this.cache.set(path, promise);
       }
+      return await promise;
+    } catch (e) {
+      const errorResponse = e as HttpErrorResponse;
+      if (!(e instanceof HttpErrorResponse) || errorResponse.status !== 404) {
+        // assume 404 errors are permanent but don't cache others that may be temporary
+        this.cache.delete(path);
+      }
+      throw e;
     }
-    return this.cache.get(path)!;
   }
 }

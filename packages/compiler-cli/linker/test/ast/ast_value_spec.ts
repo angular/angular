@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {WrappedNodeExpr} from '@angular/compiler';
-import {TypeScriptAstFactory} from '@angular/compiler-cli/src/ngtsc/translator';
+import {TypeScriptAstFactory} from '../../../src/ngtsc/translator';
 import ts from 'typescript';
 
 import {AstHost} from '../../src/ast/ast_host';

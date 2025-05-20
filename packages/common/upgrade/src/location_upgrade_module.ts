@@ -14,7 +14,7 @@ import {
   LocationStrategy,
   PathLocationStrategy,
   PlatformLocation,
-} from '@angular/common';
+} from '../../index';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 

@@ -37,14 +37,31 @@ The CLI project is now set up to use the Angular service worker.
 ## Service worker in action: a tour
 
 This section demonstrates a service worker in action,
-using an example application.
+using an example application. To enable service worker support during local development, use the production configuration with the following command:
+
+<docs-code language="shell">
+
+ng serve --configuration=production
+
+</docs-code>
+
+Alternatively, you can use the [`http-server package`](https://www.npmjs.com/package/http-server) from
+npm, which supports service worker applications. Run it without installation using:
+
+<docs-code language="shell">
+
+npx http-server -p 8080 -c-1 dist/&lt;project-name&gt;/browser
+
+</docs-code>
+
+This will serve your application with service worker support at http://localhost:8080.
 
 ### Initial load
 
 With the server running on port `8080`, point your browser at `http://localhost:8080`.
 Your application should load normally.
 
-Tip: When testing Angular service workers, it's a good idea to use an incognito or private window in your browser to ensure the service worker doesn't end up reading from a previous leftover state, which can cause unexpected behavior.
+TIP: When testing Angular service workers, it's a good idea to use an incognito or private window in your browser to ensure the service worker doesn't end up reading from a previous leftover state, which can cause unexpected behavior.
 
 HELPFUL: If you are not using HTTPS, the service worker will only be registered when accessing the application on `localhost`.
 

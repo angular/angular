@@ -1,20 +1,20 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//tools:defaults.bzl", "esbuild", "http_server")
 
 package(default_visibility = ["//:__subpackages__"])
 
-ng_module(
+ng_project(
     name = "src",
     srcs = ["main.ts"],
-    deps = [
-        "//devtools/projects/demo-no-zone/src/app",
+    interop_deps = [
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//devtools/projects/demo-no-zone/src/app:app_rjs",
     ],
 )
 

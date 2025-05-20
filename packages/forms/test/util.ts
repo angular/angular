@@ -7,7 +7,7 @@
  */
 
 import {EventEmitter} from '@angular/core';
-import {AbstractControl, AsyncValidatorFn, ValidationErrors} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, ValidationErrors} from '../index';
 import {of} from 'rxjs';
 
 function createValidationPromise(

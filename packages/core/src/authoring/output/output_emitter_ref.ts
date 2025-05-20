@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setActiveConsumer} from '@angular/core/primitives/signals';
+import {setActiveConsumer} from '../../../primitives/signals';
 
 import {inject} from '../../di/injector_compatibility';
 import {ErrorHandler} from '../../error_handler';
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DestroyRef} from '../../linker/destroy_ref';
 
 import {OutputRef, OutputRefSubscription} from './output_ref';
@@ -69,12 +69,15 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
   /** Emits a new value to the output. */
   emit(value: T): void {
     if (this.destroyed) {
-      throw new RuntimeError(
-        RuntimeErrorCode.OUTPUT_REF_DESTROYED,
-        ngDevMode &&
-          'Unexpected emit for destroyed `OutputRef`. ' +
-            'The owning directive/component is destroyed.',
+      console.warn(
+        formatRuntimeError(
+          RuntimeErrorCode.OUTPUT_REF_DESTROYED,
+          ngDevMode &&
+            'Unexpected emit for destroyed `OutputRef`. ' +
+              'The owning directive/component is destroyed.',
+        ),
       );
+      return;
     }
 
     if (this.listeners === null) {

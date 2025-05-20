@@ -7,7 +7,12 @@
  */
 
 import ts from 'typescript';
-import {isAccessedViaThis, parameterDeclaresProperty} from './analysis';
+import {
+  isAccessedViaThis,
+  isInlineFunction,
+  MigrationOptions,
+  parameterDeclaresProperty,
+} from './analysis';
 
 /** Property that is a candidate to be combined. */
 interface CombineCandidate {
@@ -40,6 +45,7 @@ export function findUninitializedPropertiesToCombine(
   node: ts.ClassDeclaration,
   constructor: ts.ConstructorDeclaration,
   localTypeChecker: ts.TypeChecker,
+  options: MigrationOptions,
 ): {
   toCombine: CombineCandidate[];
   toHoist: ts.PropertyDeclaration[];
@@ -67,11 +73,15 @@ export function findUninitializedPropertiesToCombine(
     return null;
   }
 
+  const inlinableParameters = options._internalReplaceParameterReferencesInInitializers
+    ? findInlinableParameterReferences(constructor, localTypeChecker)
+    : new Set<ts.Declaration>();
+
   for (const [name, decl] of membersToDeclarations.entries()) {
     if (memberInitializers.has(name)) {
       const initializer = memberInitializers.get(name)!;
 
-      if (!hasLocalReferences(initializer, constructor, localTypeChecker)) {
+      if (!hasLocalReferences(initializer, constructor, inlinableParameters, localTypeChecker)) {
         toCombine ??= [];
         toCombine.push({declaration: membersToDeclarations.get(name)!, initializer});
       }
@@ -231,6 +241,87 @@ function getMemberInitializers(constructor: ts.ConstructorDeclaration) {
 }
 
 /**
+ * Checks if the node is an identifier that references a property from the given
+ * list. Returns the property if it is.
+ */
+function getIdentifierReferencingProperty(
+  node: ts.Node,
+  localTypeChecker: ts.TypeChecker,
+  propertyNames: Set<string>,
+  properties: Set<ts.Declaration>,
+): ts.ParameterDeclaration | undefined {
+  if (!ts.isIdentifier(node) || !propertyNames.has(node.text)) {
+    return undefined;
+  }
+  const declarations = localTypeChecker.getSymbolAtLocation(node)?.declarations;
+  if (!declarations) {
+    return undefined;
+  }
+
+  for (const decl of declarations) {
+    if (properties.has(decl)) {
+      return decl as ts.ParameterDeclaration;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Returns true if the node introduces a new `this` scope (so we can't
+ * reference the outer this).
+ */
+function introducesNewThisScope(node: ts.Node): boolean {
+  return (
+    ts.isFunctionDeclaration(node) ||
+    ts.isFunctionExpression(node) ||
+    ts.isMethodDeclaration(node) ||
+    ts.isClassDeclaration(node) ||
+    ts.isClassExpression(node)
+  );
+}
+
+/**
+ * Finds constructor parameter references which can be inlined as `this.prop`.
+ * - prop must be a readonly property
+ * - the reference can't be in a nested function where `this` might refer
+ *   to something else
+ */
+function findInlinableParameterReferences(
+  constructorDeclaration: ts.ConstructorDeclaration,
+  localTypeChecker: ts.TypeChecker,
+): Set<ts.Declaration> {
+  const eligibleProperties = constructorDeclaration.parameters.filter(
+    (p) =>
+      ts.isIdentifier(p.name) && p.modifiers?.some((s) => s.kind === ts.SyntaxKind.ReadonlyKeyword),
+  );
+  const eligibleNames = new Set(eligibleProperties.map((p) => (p.name as ts.Identifier).text));
+  const eligiblePropertiesSet: Set<ts.Declaration> = new Set(eligibleProperties);
+
+  function walk(node: ts.Node, canReferenceThis: boolean) {
+    const property = getIdentifierReferencingProperty(
+      node,
+      localTypeChecker,
+      eligibleNames,
+      eligiblePropertiesSet,
+    );
+    if (property && !canReferenceThis) {
+      // The property is referenced in a nested context where
+      // we can't use `this`, so we can't inline it.
+      eligiblePropertiesSet.delete(property);
+    } else if (introducesNewThisScope(node)) {
+      canReferenceThis = false;
+    }
+
+    ts.forEachChild(node, (child) => {
+      walk(child, canReferenceThis);
+    });
+  }
+
+  walk(constructorDeclaration, true);
+  return eligiblePropertiesSet;
+}
+
+/**
  * Determines if a node has references to local symbols defined in the constructor.
  * @param root Expression to check for local references.
  * @param constructor Constructor within which the expression is used.
@@ -239,6 +330,7 @@ function getMemberInitializers(constructor: ts.ConstructorDeclaration) {
 function hasLocalReferences(
   root: ts.Expression,
   constructor: ts.ConstructorDeclaration,
+  allowedParameters: Set<ts.Declaration>,
   localTypeChecker: ts.TypeChecker,
 ): boolean {
   const sourceFile = root.getSourceFile();
@@ -265,6 +357,7 @@ function hasLocalReferences(
           // The source file check is a bit redundant since the type checker
           // is local to the file, but it's inexpensive and it can prevent
           // bugs in the future if we decide to use a full type checker.
+          !allowedParameters.has(decl) &&
           decl.getSourceFile() === sourceFile &&
           decl.getStart() >= constructor.getStart() &&
           decl.getEnd() <= constructor.getEnd() &&
@@ -299,11 +392,7 @@ function isInsideInlineFunction(startNode: ts.Node, boundary: ts.Node): boolean 
       return false;
     }
 
-    if (
-      ts.isFunctionDeclaration(current) ||
-      ts.isFunctionExpression(current) ||
-      ts.isArrowFunction(current)
-    ) {
+    if (isInlineFunction(current)) {
       return true;
     }
 

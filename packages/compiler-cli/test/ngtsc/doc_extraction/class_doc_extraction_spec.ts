@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
+import {DocEntry} from '../../../src/ngtsc/docs';
 import {
   ClassEntry,
   EntryType,
@@ -14,9 +14,9 @@ import {
   MemberType,
   MethodEntry,
   PropertyEntry,
-} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
+} from '../../../src/ngtsc/docs/src/entities';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {loadStandardTestFiles} from '../../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
@@ -53,6 +53,61 @@ runInEachFileSystem(() => {
       expect(customSliderEntry.name).toBe('CustomSlider');
       expect(customSliderEntry.isAbstract).toBe(false);
       expect(customSliderEntry.entryType).toBe(EntryType.UndecoratedClass);
+    });
+
+    it('should extract class constructor', () => {
+      env.write(
+        'index.ts',
+        `
+        export class UserProfile {
+          constructor(foo: number) {}
+        }
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(1);
+
+      const methodEntry = classEntry.members[0] as MethodEntry;
+      expect(methodEntry.memberType).toBe(MemberType.Method);
+      expect(methodEntry.name).toBe('constructor');
+      expect(methodEntry.implementation.params.length).toBe(1);
+      expect(methodEntry.implementation.params[0].name).toBe('foo');
+      expect(methodEntry.implementation.params[0].type).toBe('number');
+    });
+
+    it('should extract class constructor with overloads', () => {
+      env.write(
+        'index.ts',
+        `
+        export class UserProfile {
+            constructor(value: boolean);
+            constructor(value: number);
+            constructor(value: number | boolean | string) { }
+        }
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(1);
+
+      const constructorEntry = classEntry.members[0] as MethodEntry;
+
+      expect(constructorEntry.signatures.length).toBe(2);
+
+      const [booleanOverloadEntry, numberOverloadEntry] = constructorEntry.signatures;
+
+      expect(booleanOverloadEntry.name).toBe('constructor');
+      expect(booleanOverloadEntry.params.length).toBe(1);
+      expect(booleanOverloadEntry.params[0].type).toBe('boolean');
+      expect(booleanOverloadEntry.returnType).toBe('UserProfile');
+
+      expect(numberOverloadEntry.name).toBe('constructor');
+      expect(numberOverloadEntry.params.length).toBe(1);
+      expect(numberOverloadEntry.params[0].type).toBe('number');
+      expect(numberOverloadEntry.returnType).toBe('UserProfile');
     });
 
     it('should extract class members', () => {
@@ -650,9 +705,14 @@ runInEachFileSystem(() => {
       expect(docs.length).toBe(1);
 
       const classEntry = docs[0] as ClassEntry;
-      expect(classEntry.members.length).toBe(2);
 
-      const [myPropEntry, fooEntry] = classEntry.members as PropertyEntry[];
+      // constructor, myProp, foo (others are non-public)
+      expect(classEntry.members.length).toBe(3);
+
+      const [constructorEntry, myPropEntry, fooEntry] = classEntry.members as PropertyEntry[];
+
+      expect(constructorEntry.name).toBe('constructor');
+      expect(constructorEntry.memberType).toBe(MemberType.Method);
 
       expect(myPropEntry.name).toBe('myProp');
       expect(myPropEntry.memberType).toBe(MemberType.Property);
@@ -661,6 +721,25 @@ runInEachFileSystem(() => {
       expect(fooEntry.name).toBe('foo');
       expect(fooEntry.memberType).toBe(MemberType.Property);
       expect((fooEntry as PropertyEntry).type).toBe('string');
+    });
+
+    it('should not extract a constructor without parameters', () => {
+      env.write(
+        'index.ts',
+        `
+        export class MyClass {
+          constructor() {}
+
+          foo: string;
+        }`,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(1); // only foo, no constructor
+      const [fooEntry] = classEntry.members as PropertyEntry[];
+      expect(fooEntry.name).toBe('foo');
     });
 
     it('should extract members of a class from .d.ts', () => {

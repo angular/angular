@@ -9,54 +9,55 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SearchDialog} from './search-dialog.component';
-import {WINDOW} from '../../providers';
-import {Search} from '../../services';
+import {ENVIRONMENT, WINDOW} from '../../providers';
+import {ALGOLIA_CLIENT, Search} from '../../services';
 import {FakeEventTarget} from '../../testing/index';
 import {By} from '@angular/platform-browser';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {RouterTestingModule} from '@angular/router/testing';
 import {Router} from '@angular/router';
-import {provideExperimentalZonelessChangeDetection} from '@angular/core';
+import {ApplicationRef, provideZonelessChangeDetection, ResourceStatus} from '@angular/core';
 import {SearchResult} from '../../interfaces';
 
 describe('SearchDialog', () => {
   let fixture: ComponentFixture<SearchDialog>;
 
-  const fakeSearch = {
-    searchQuery: jasmine.createSpy(),
-    searchResults: jasmine.createSpy(),
-  };
+  const searchResults = jasmine.createSpy();
+
   const fakeWindow = new FakeEventTarget();
 
-  beforeEach(async () => {
-    fakeSearch.searchResults.and.returnValue([]);
-    fakeSearch.searchQuery.and.returnValue('');
+  let search: Search;
 
-    await TestBed.configureTestingModule({
+  beforeEach(async () => {
+    searchResults.and.returnValue([]);
+
+    TestBed.configureTestingModule({
       imports: [SearchDialog, RouterTestingModule],
       providers: [
-        provideExperimentalZonelessChangeDetection(),
-        {
-          provide: Search,
-          useValue: fakeSearch,
-        },
-        {
-          provide: WINDOW,
-          useValue: fakeWindow,
-        },
+        provideZonelessChangeDetection(),
+        {provide: ENVIRONMENT, useValue: {algolia: {index: 'fakeIndex'}}},
+        {provide: ALGOLIA_CLIENT, useValue: {search: searchResults}},
+        {provide: WINDOW, useValue: fakeWindow},
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(SearchDialog);
     fixture.detectChanges();
+    search = TestBed.inject(Search);
   });
 
-  it('should navigate to active item when user pressed Enter', () => {
+  it('should navigate to active item when user pressed Enter', async () => {
     const router = TestBed.inject(Router);
     const navigateByUrlSpy = spyOn(router, 'navigateByUrl');
 
-    fakeSearch.searchResults.and.returnValue(fakeSearchResults);
-    fixture.detectChanges();
+    search.searchQuery.set('fakeQuery');
+    searchResults.and.returnValue(Promise.resolve({results: [{hits: fakeSearchResults}]}));
+
+    // Fire the request
+    TestBed.inject(ApplicationRef).tick();
+
+    // Wait for the resource to resolve
+    await TestBed.inject(ApplicationRef).whenStable();
 
     fakeWindow.dispatchEvent(
       new KeyboardEvent('keydown', {
@@ -78,9 +79,15 @@ describe('SearchDialog', () => {
     expect(algoliaIcon).toBeTruthy();
   });
 
-  it('should display `No results found` message when there are no results for provided query', () => {
-    fakeSearch.searchResults.and.returnValue([]);
-    fixture.detectChanges();
+  it('should display `No results found` message when there are no results for provided query', async () => {
+    search.searchQuery.set('fakeQuery');
+    searchResults.and.returnValue(Promise.resolve({results: [{hits: []}]}));
+
+    // Fire the request
+    TestBed.inject(ApplicationRef).tick();
+
+    // Wait for the resource to resolve
+    await TestBed.inject(ApplicationRef).whenStable();
 
     const noResultsContainer = fixture.debugElement.query(
       By.css('.docs-search-results__no-results'),
@@ -90,7 +97,7 @@ describe('SearchDialog', () => {
   });
 
   it('should display `Start typing to see results` message when there are no provided query', () => {
-    fakeSearch.searchResults.and.returnValue(undefined);
+    searchResults.and.returnValue(undefined);
     fixture.detectChanges();
 
     const startTypingContainer = fixture.debugElement.query(
@@ -100,9 +107,15 @@ describe('SearchDialog', () => {
     expect(startTypingContainer).toBeTruthy();
   });
 
-  it('should display list of the search results when results exist', () => {
-    fakeSearch.searchResults.and.returnValue(fakeSearchResults);
-    fixture.detectChanges();
+  it('should display list of the search results when results exist', async () => {
+    search.searchQuery.set('fakeQuery');
+    searchResults.and.returnValue(Promise.resolve({results: [{hits: fakeSearchResults}]}));
+
+    // Fire the request
+    TestBed.inject(ApplicationRef).tick();
+
+    // Wait for the resource to resolve
+    await TestBed.inject(ApplicationRef).whenStable();
 
     const resultListContainer = fixture.debugElement.query(By.css('ul.docs-search-results'));
     const resultItems = fixture.debugElement.queryAll(By.css('ul.docs-search-results li a'));

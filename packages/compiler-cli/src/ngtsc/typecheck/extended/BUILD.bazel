@@ -1,12 +1,11 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "extended",
     srcs = glob(
         ["**/*.ts"],
     ),
-    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
@@ -16,13 +15,19 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/invalid_banana_in_box",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_control_flow_directive",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_ngforof_let",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_structural_directive",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/optional_chain_not_nullable",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/skip_hydration_not_static",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/text_attribute_not_binding",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_function_in_event_binding",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_track_function",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/unparenthesized_nullish_coalescing",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/unused_let_declaration",
-        "@npm//typescript",
+    ],
+    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )

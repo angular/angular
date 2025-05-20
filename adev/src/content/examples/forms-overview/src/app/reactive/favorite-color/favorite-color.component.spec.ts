@@ -1,22 +1,20 @@
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-import {ReactiveFormsModule} from '@angular/forms';
 
 import {createNewEvent} from '../../shared/utils';
-import {FavoriteColorComponent} from './favorite-color.component';
+import {FavoriteColorReactiveComponent} from './favorite-color.component';
 
 describe('Favorite Color Component', () => {
-  let component: FavoriteColorComponent;
-  let fixture: ComponentFixture<FavoriteColorComponent>;
+  let component: FavoriteColorReactiveComponent;
+  let fixture: ComponentFixture<FavoriteColorReactiveComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [FavoriteColorComponent],
-    }).compileComponents();
+      declarations: [FavoriteColorReactiveComponent],
+    });
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FavoriteColorComponent);
+    fixture = TestBed.createComponent(FavoriteColorReactiveComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

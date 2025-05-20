@@ -3,7 +3,8 @@
   padding: 0px;
   border-radius: 0px;
   box-shadow: none !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid var(--color-separator);
+  align-items: center;
 
   label {
     display: flex;
@@ -23,15 +24,11 @@
 
     .filter-input {
       border: none;
-      border-left: 1px solid rgba(0, 0, 0, 0.12);
       padding-left: 5px;
       width: 100%;
-      font-size: 11px;
-      font-family: inherit;
-      font-weight: inherit;
       height: 30px;
       outline: none;
-      color: rgba(0, 0, 0, 0.87);
+      background: var(--color-background);
     }
   }
 }
@@ -42,15 +39,16 @@
 
 .up-down-buttons {
   display: flex;
+  gap: 0.25rem;
+  margin-right: 0.5rem;
 
   button {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     padding: 0;
     background: none;
     border: none;
     cursor: pointer;
-
     opacity: 0.5;
 
     &:hover {
@@ -63,17 +61,9 @@
   }
 }
 
-:host-context(.dark-theme) {
-  .filter {
-    label {
-      .filter-input {
-        background-color: #202124;
-        color: #ffffff;
-      }
-    }
-  }
-
-  mat-icon {
-    color: #fff;
-  }
+.matches-count {
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--quaternary-contrast);
+  margin: 0 0.5rem;
 }

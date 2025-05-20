@@ -440,11 +440,8 @@ export function stringifyCSSSelectorList(selectorList: CssSelectorList): string 
  * @param selector CSS selector in parsed form (in a form of array)
  * @returns object with `attrs` and `classes` fields that contain extracted information
  */
-export function extractAttrsAndClassesFromSelector(selector: CssSelector): {
-  attrs: string[];
-  classes: string[];
-} {
-  const attrs: string[] = [];
+export function extractAttrsAndClassesFromSelector(selector: CssSelector): TAttributes {
+  const attrs: TAttributes = [];
   const classes: string[] = [];
   let i = 1;
   let mode = SelectorFlags.ATTRIBUTE;
@@ -467,5 +464,9 @@ export function extractAttrsAndClassesFromSelector(selector: CssSelector): {
     }
     i++;
   }
-  return {attrs, classes};
+  if (classes.length) {
+    attrs.push(AttributeMarker.Classes, ...classes);
+  }
+
+  return attrs;
 }

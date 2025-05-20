@@ -1,6 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//tools:defaults.bzl", "esbuild_config")
-load(":index.bzl", "create_angular_bundle_targets")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,6 +7,7 @@ js_library(
     name = "esbuild_base",
     srcs = ["esbuild-base.config.mjs"],
     deps = [
+        "//packages:package_json",
         "//packages/compiler-cli/private",
         "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
     ],
@@ -46,5 +46,3 @@ esbuild_config(
         ":esbuild_base",
     ],
 )
-
-create_angular_bundle_targets()

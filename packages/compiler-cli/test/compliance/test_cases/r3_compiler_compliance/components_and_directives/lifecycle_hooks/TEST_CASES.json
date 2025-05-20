@@ -26,7 +26,7 @@
           "files": [
             {
               "generated": "local_reference_nested.js",
-              "expected": "local_reference_nested.pipeline.js"
+              "expected": "local_reference_nested.js"
             }
           ]
         }
@@ -42,7 +42,7 @@
           "failureMessage": "Incorrect template",
           "files": [
             {
-              "expected": "local_reference_and_context_variables_template.pipeline.js",
+              "expected": "local_reference_and_context_variables_template.js",
               "generated": "local_reference_and_context_variables.js"
             }
           ]

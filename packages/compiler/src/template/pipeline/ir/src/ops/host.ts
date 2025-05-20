@@ -18,10 +18,10 @@ import {NEW_OP} from './shared';
 import type {Interpolation, UpdateOp} from './update';
 
 /**
- * Logical operation representing a host binding to a property.
+ * Logical operation representing a binding to a native DOM property.
  */
-export interface HostPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
-  kind: OpKind.HostProperty;
+export interface DomPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
+  kind: OpKind.DomProperty;
   name: string;
   expression: o.Expression | Interpolation;
   isAnimationTrigger: boolean;
@@ -35,16 +35,16 @@ export interface HostPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
   sourceSpan: ParseSourceSpan | null;
 }
 
-export function createHostPropertyOp(
+export function createDomPropertyOp(
   name: string,
   expression: o.Expression | Interpolation,
   isAnimationTrigger: boolean,
   i18nContext: XrefId | null,
   securityContext: SecurityContext | SecurityContext[],
   sourceSpan: ParseSourceSpan | null,
-): HostPropertyOp {
+): DomPropertyOp {
   return {
-    kind: OpKind.HostProperty,
+    kind: OpKind.DomProperty,
     name,
     expression,
     isAnimationTrigger,

@@ -1,7 +1,7 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,7 +10,7 @@ sass_binary(
     src = "directive-explorer.component.scss",
 )
 
-ng_module(
+ng_project(
     name = "directive-explorer",
     srcs = [
         "directive-explorer.component.ts",
@@ -19,42 +19,46 @@ ng_module(
         "directive-explorer.component.html",
         ":directive_explorer_component_styles",
     ],
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib/application-operations",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/common",
         "//packages/core",
-        "@npm//@angular/cdk",
-        "@npm//@angular/material",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/material",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest:directive-forest_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs:breadcrumbs_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver:property-resolver_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab:property-tab_rjs",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
 ts_test_library(
     name = "directive_explorer_test",
     srcs = ["directive-explorer.spec.ts"],
-    deps = [
+    interop_deps = [
+        "//packages/core",
         ":directive-explorer",
-        "//devtools/projects/ng-devtools/src/lib:frame_manager",
-        "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
-        "//devtools/projects/protocol",
-        "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+    ],
+    deps = [
+        "//:node_modules/tslib",
+        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

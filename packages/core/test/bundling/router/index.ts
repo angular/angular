@@ -7,10 +7,11 @@
  */
 
 import {APP_BASE_HREF} from '@angular/common';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '../../../src/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {
   ActivatedRoute,
+  ParamMap,
   provideRouter,
   Router,
   RouterLink,
@@ -48,7 +49,7 @@ class ItemComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe((paramsMap) => {
+    this.activatedRoute.paramMap.subscribe((paramsMap: ParamMap) => {
       this.id = +paramsMap.get('id')!;
     });
   }

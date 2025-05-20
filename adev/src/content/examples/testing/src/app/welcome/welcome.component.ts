@@ -1,5 +1,5 @@
 // #docregion
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {UserService} from '../model/user.service';
 
 @Component({
@@ -7,11 +7,11 @@ import {UserService} from '../model/user.service';
   template: '<h3 class="welcome"><i>{{welcome()}}</i></h3>',
 })
 // #docregion class
-export class WelcomeComponent implements OnInit {
+export class WelcomeComponent {
   welcome = signal('');
-  constructor(private userService: UserService) {}
+  private userService = inject(UserService);
 
-  ngOnInit(): void {
+  constructor() {
     this.welcome.set(
       this.userService.isLoggedIn() ? 'Welcome, ' + this.userService.user().name : 'Please log in.',
     );

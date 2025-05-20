@@ -1,9 +1,10 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
-ng_module(
+ng_project(
     name = "top-level-banner",
     srcs = [
         "top-level-banner.component.ts",
@@ -12,15 +13,17 @@ ng_module(
         ":top-level-banner.component.css",
         "top-level-banner.component.html",
     ],
+    interop_deps = [
+        "//packages/common",
+        "//packages/core",
+    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
     ],
     deps = [
-        "//adev/shared-docs/components/icon",
-        "//adev/shared-docs/directives",
-        "//adev/shared-docs/providers",
-        "//packages/common",
-        "//packages/core",
+        "//adev/shared-docs/components/icon:icon_rjs",
+        "//adev/shared-docs/directives:directives_rjs",
+        "//adev/shared-docs/providers:providers_rjs",
     ],
 )
 
@@ -29,13 +32,13 @@ sass_binary(
     src = "top-level-banner.component.scss",
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["*.spec.ts"],
     ),
-    deps = [
+    interop_deps = [
         ":top-level-banner",
         "//adev/shared-docs/providers",
         "//packages/core",

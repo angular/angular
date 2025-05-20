@@ -1,5 +1,5 @@
 // #docplaster
-import {Component, OnInit} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 
 import {Hero} from '../model/hero';
@@ -15,24 +15,22 @@ import {HeroDetailService} from './hero-detail.service';
   providers: [HeroDetailService],
   imports: [sharedImports, RouterLink],
 })
-export class HeroDetailComponent implements OnInit {
-  // #docregion ctor
-  constructor(
-    private heroDetailService: HeroDetailService,
-    private route: ActivatedRoute,
-    private router: Router,
-  ) {}
-  // #enddocregion ctor
+export class HeroDetailComponent {
+  // #docregion inject
+  private heroDetailService = inject(HeroDetailService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  // #enddocregion inject
   // #enddocregion prototype
 
   hero!: Hero;
 
-  // #docregion ng-on-init
-  ngOnInit(): void {
+  // #docregion ctor
+  constructor() {
     // get hero when `id` param changes
     this.route.paramMap.subscribe((pmap) => this.getHero(pmap.get('id')));
   }
-  // #enddocregion ng-on-init
+  // #enddocregion ctor
 
   private getHero(id: string | null): void {
     // when no id or id===0, create new blank hero

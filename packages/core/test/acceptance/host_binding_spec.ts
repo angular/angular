@@ -26,13 +26,13 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
-} from '@angular/core';
+} from '../../src/core';
 import {
   bypassSanitizationTrustHtml,
   bypassSanitizationTrustStyle,
   bypassSanitizationTrustUrl,
-} from '@angular/core/src/sanitization/bypass';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/sanitization/bypass';
+import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 

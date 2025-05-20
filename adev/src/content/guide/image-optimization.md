@@ -19,7 +19,7 @@ In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enfor
 
 If you're using a background image in CSS, [start here](#how-to-migrate-your-background-image).
 
-**Note: Although the `NgOptimizedImage` directive was made a stable feature in Angular version 15, it has been backported and is available as a stable feature in versions 13.4.0 and 14.3.0 as well.**
+**NOTE: Although the `NgOptimizedImage` directive was made a stable feature in Angular version 15, it has been backported and is available as a stable feature in versions 13.4.0 and 14.3.0 as well.**
 
 ## Getting Started
 
@@ -90,7 +90,7 @@ For **responsive images** (images which you've styled to grow and shrink relativ
 
 For **fixed size images**, the `width` and `height` attributes should reflect the desired rendered size of the image. The aspect ratio of these attributes should always match the intrinsic aspect ratio of the image.
 
-Note: If you don't know the size of your images, consider using "fill mode" to inherit the size of the parent container, as described below.
+NOTE: If you don't know the size of your images, consider using "fill mode" to inherit the size of the parent container, as described below.
 </docs-step>
 </docs-workflow>
 
@@ -162,10 +162,10 @@ You can also specify a placeholder using a base64 [data URL](https://developer.m
 
 <docs-code language="angular-html">
 
-<img 
-  ngSrc="cat.jpg" 
-  width="400" 
-  height="200" 
+<img
+  ngSrc="cat.jpg"
+  width="400"
+  height="200"
   placeholder="data:image/png;base64,iVBORw0K..."
 />
 
@@ -179,11 +179,11 @@ By default, NgOptimizedImage applies a CSS blur effect to image placeholders. To
 
 <docs-code language="angular-html">
 
-<img 
-  ngSrc="cat.jpg" 
-  width="400" 
-  height="200" 
-  placeholder 
+<img
+  ngSrc="cat.jpg"
+  width="400"
+  height="200"
+  placeholder
   [placeholderConfig]="{blur: false}"
 />
 
@@ -235,7 +235,7 @@ Defining a [`srcset` attribute](https://developer.mozilla.org/docs/Web/API/HTMLI
 
 If your image should be "fixed" in size  (i.e. the same size across devices, except for [pixel density](https://web.dev/codelab-density-descriptors/)), there is no need to set a `sizes` attribute. A `srcset` can be generated automatically from the image's width and height attributes with no further input required.
 
-Example srcset generated: 
+Example srcset generated:
 ```angular-html
 <img ... srcset="image-400w.jpg 1x, image-800w.jpg 2x">
 ```
@@ -376,7 +376,7 @@ providers: [
 
 A loader function for the `NgOptimizedImage` directive takes an object with the `ImageLoaderConfig` type (from `@angular/common`) as its argument and returns the absolute URL of the image asset. The `ImageLoaderConfig` object contains the `src` property, and optional `width` and `loaderParams` properties.
 
-Note: even though the `width` property may not always be present, a custom loader must use it to support requesting images at various widths in order for `ngSrcset` to work properly.
+NOTE: even though the `width` property may not always be present, a custom loader must use it to support requesting images at various widths in order for `ngSrcset` to work properly.
 
 ### The `loaderParams` Property
 
@@ -416,7 +416,7 @@ Note that in the above example, we've invented the 'roundedCorners' property nam
 
 The NgOptimizedImage does not directly support the `background-image` css property, but it is designed to easily accommodate the use case of having an image as the background of another element.
 
-For a step-by-step process for migration from `background-image` to `NgOptimizedImage`, see the [How to migrate your background image](#how-to-migrate-your-background-image) section above. 
+For a step-by-step process for migration from `background-image` to `NgOptimizedImage`, see the [How to migrate your background image](#how-to-migrate-your-background-image) section above.
 
 ### Why can't I use `src` with `NgOptimizedImage`?
 
@@ -446,7 +446,7 @@ For maintenance reasons, we don't currently plan to support additional built-in 
 
 ### Can I use this with the `<picture>` tag
 
-No, but this is on our roadmap, so stay tuned. 
+No, but this is on our roadmap, so stay tuned.
 
 If you're waiting on this feature, please upvote the Github issue [here](https://github.com/angular/angular/issues/56594).
 
@@ -454,11 +454,11 @@ If you're waiting on this feature, please upvote the Github issue [here](https:/
 
 1. Using the performance tab of the Chrome DevTools, click on the "start profiling and reload page" button on the top left. It looks like a page refresh icon.
 
-2. This will trigger a profiling snapshot of your Angular application. 
+2. This will trigger a profiling snapshot of your Angular application.
 
 3. Once the profiling result is available, select "LCP" in the timings section.
 
-4. A summary entry should appear in the panel at the bottom. You can find the LCP element in the row for "related node".  Clicking on it will reveal the element in the Elements panel. 
+4. A summary entry should appear in the panel at the bottom. You can find the LCP element in the row for "related node".  Clicking on it will reveal the element in the Elements panel.
 
 <img alt="LCP in the Chrome DevTools" src="assets/images/guide/image-optimization/devtools-lcp.png">
 

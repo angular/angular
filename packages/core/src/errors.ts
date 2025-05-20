@@ -60,6 +60,9 @@ export const enum RuntimeErrorCode {
   HOST_DIRECTIVE_CONFLICTING_ALIAS = 312,
   MULTIPLE_MATCHING_PIPES = 313,
   UNINITIALIZED_LET_ACCESS = 314,
+  NO_BINDING_TARGET = 315,
+  INVALID_BINDING_TARGET = 316,
+  INVALID_SET_INPUT_CALL = 317,
 
   // Bootstrap Errors
   MULTIPLE_PLATFORMS = 400,
@@ -97,7 +100,8 @@ export const enum RuntimeErrorCode {
   MISSING_LOCALE_DATA = 701,
 
   // Defer errors (750-799 range)
-  DEFER_LOADING_FAILED = 750,
+  DEFER_LOADING_FAILED = -750,
+  DEFER_IN_HMR_MODE = -751,
 
   // standalone errors
   IMPORT_PROVIDERS_FROM_STANDALONE = 800,
@@ -119,6 +123,9 @@ export const enum RuntimeErrorCode {
   COMPONENT_ID_COLLISION = -912,
   IMAGE_PERFORMANCE_WARNING = -913,
   UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE = 914,
+  MISSING_NG_MODULE_DEFINITION = 915,
+  MISSING_DIRECTIVE_DEFINITION = 916,
+  NO_COMPONENT_FACTORY_FOUND = 917,
 
   // Signal integration errors
   REQUIRED_INPUT_NO_VALUE = -950,
@@ -164,6 +171,13 @@ export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
   }
 }
 
+export function formatRuntimeErrorCode<T extends number = RuntimeErrorCode>(code: T): string {
+  // Error code might be a negative number, which is a special marker that instructs the logic to
+  // generate a link to the error details page on angular.io.
+  // We also prepend `0` to non-compile-time errors.
+  return `NG0${Math.abs(code)}`;
+}
+
 /**
  * Called to format a runtime error.
  * See additional info on the `message` argument type in the `RuntimeError` class description.
@@ -172,10 +186,7 @@ export function formatRuntimeError<T extends number = RuntimeErrorCode>(
   code: T,
   message: null | false | string,
 ): string {
-  // Error code might be a negative number, which is a special marker that instructs the logic to
-  // generate a link to the error details page on angular.io.
-  // We also prepend `0` to non-compile-time errors.
-  const fullCode = `NG0${Math.abs(code)}`;
+  const fullCode = formatRuntimeErrorCode(code);
 
   let errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
 

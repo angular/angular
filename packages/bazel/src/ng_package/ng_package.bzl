@@ -22,7 +22,6 @@ load(
     "create_package",
 )
 load("//packages/bazel/src/ng_module:partial_compilation.bzl", "partial_compilation_transition")
-load("//packages/bazel/src/types_bundle:index.bzl", "bundle_type_declaration")
 
 # Prints a debug message if "--define=VERBOSE_LOGS=true" is specified.
 def _debug(vars, *args):
@@ -37,13 +36,18 @@ _NG_PACKAGE_MODULE_MAPPINGS_ATTR = "ng_package_module_mappings"
 
 def _ng_package_module_mappings_aspect_impl(target, ctx):
     mappings = dict()
-    for dep in ctx.rule.attr.deps:
-        if hasattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR):
-            for k, v in getattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR).items():
-                if k in mappings and mappings[k] != v:
-                    fail(("duplicate module mapping at %s: %s maps to both %s and %s" %
-                          (target.label, k, mappings[k], v)), "deps")
-                mappings[k] = v
+
+    # Note: the target might not have `deps`. e.g.
+    # in `rules_js`, node module targets don't have such attribute.
+    if hasattr(ctx.rule.attr, "deps"):
+        for dep in ctx.rule.attr.deps:
+            if hasattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR):
+                for k, v in getattr(dep, _NG_PACKAGE_MODULE_MAPPINGS_ATTR).items():
+                    if k in mappings and mappings[k] != v:
+                        fail(("duplicate module mapping at %s: %s maps to both %s and %s" %
+                              (target.label, k, mappings[k], v)), "deps")
+                    mappings[k] = v
+
     if ((hasattr(ctx.rule.attr, "module_name") and ctx.rule.attr.module_name) or
         (hasattr(ctx.rule.attr, "module_root") and ctx.rule.attr.module_root)):
         mn = ctx.rule.attr.module_name
@@ -81,6 +85,7 @@ WELL_KNOWN_EXTERNALS = [
     "@angular/common/upgrade",
     "@angular/compiler",
     "@angular/core",
+    "@angular/core/rxjs-interop",
     "@angular/core/testing",
     "@angular/elements",
     "@angular/forms",
@@ -131,18 +136,11 @@ def _compute_node_modules_root(ctx):
 def _write_rollup_config(
         ctx,
         root_dir,
-        filename = "_%s.rollup.conf.js"):
-    """Generate a rollup config file.
-
-    Args:
-      ctx: Bazel rule execution context
-      root_dir: root directory for module resolution (defaults to None)
-      filename: output filename pattern (defaults to `_%s.rollup.conf.js`)
-
-    Returns:
-      The rollup config file. See https://rollupjs.org/guide/en#configuration-files
-    """
-    config = ctx.actions.declare_file(filename % ctx.label.name)
+        metadata_arg,
+        side_effect_entry_points,
+        dts_mode):
+    filename = "_%s_%s.rollup.conf.js" % (ctx.label.name, "dts" if dts_mode else "fesm")
+    config = ctx.actions.declare_file(filename)
 
     mappings = dict()
     all_deps = ctx.attr.deps + ctx.attr.srcs
@@ -167,37 +165,25 @@ def _write_rollup_config(
             "TMPL_banner_file": "\"%s\"" % ctx.file.license_banner.path if ctx.file.license_banner else "undefined",
             "TMPL_module_mappings": str(mappings),
             "TMPL_node_modules_root": _compute_node_modules_root(ctx),
+            "TMPL_metadata": json.encode(metadata_arg),
             "TMPL_root_dir": root_dir,
             "TMPL_workspace_name": ctx.workspace_name,
             "TMPL_external": ", ".join(["'%s'" % e for e in externals]),
+            "TMPL_side_effect_entrypoints": json.encode(side_effect_entry_points),
+            "TMPL_dts_mode": "true" if dts_mode else "false",
         },
     )
 
     return config
 
-def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, format):
-    map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
+def _run_rollup(ctx, rollup_config, inputs, dts_mode):
+    mode_label = "dts" if dts_mode else "fesm"
+    outdir = ctx.actions.declare_directory("%s_%s_bundle_out" % (ctx.label.name, mode_label))
 
     args = ctx.actions.args()
-    args.add("--input", entry_point.path)
     args.add("--config", rollup_config)
-    args.add("--output.file", js_output)
-    args.add("--output.format", format)
-
-    # After updating to build_bazel_rules_nodejs 0.27.0+, rollup has been updated to v1.3.1
-    # which tree shakes @__PURE__ annotations and const variables which are later amended by NGCC.
-    # We turn this feature off for ng_package as Angular bundles contain these and there are
-    # test failures if they are removed.
-    # See comments in:
-    # https://github.com/angular/angular/pull/29210
-    # https://github.com/angular/angular/pull/32069
-    args.add("--no-treeshake")
-
-    # Note: if the input has external source maps then we need to also install and use
-    #   `rollup-plugin-sourcemaps`, which will require us to use rollup.config.js file instead
-    #   of command line args
-    args.add("--sourcemap")
-
+    args.add("--output.format", "esm")
+    args.add("--output.dir", outdir.path)
     args.add("--preserveSymlinks")
 
     # We will produce errors as needed. Anything else is spammy: a well-behaved
@@ -208,15 +194,15 @@ def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output,
     if ctx.file.license_banner:
         other_inputs.append(ctx.file.license_banner)
     ctx.actions.run(
-        progress_message = "ng_package: Rollup %s (%s)" % (bundle_name, entry_point.short_path),
+        progress_message = "ng_package: Rollup %s (%s)" % (ctx.label, mode_label),
         mnemonic = "AngularPackageRollup",
-        inputs = inputs.to_list() + other_inputs,
-        outputs = [js_output, map_output],
+        inputs = depset(other_inputs, transitive = [inputs]),
+        outputs = [outdir],
         executable = ctx.executable.rollup,
         tools = [ctx.executable.rollup],
         arguments = [args],
     )
-    return [js_output, map_output]
+    return outdir
 
 # Serializes a file into a struct that matches the `BazelFileInfo` type in the
 # packager implementation. Useful for transmission of such information.
@@ -231,11 +217,12 @@ def _serialize_files_for_arg(files):
         result.append(_serialize_file(file))
     return json.encode(result)
 
-def _find_matching_file(files, search_short_path):
+def _find_matching_file(files, search_short_paths):
     for file in files:
-        if file.short_path == search_short_path:
-            return file
-    fail("Could not find file that is expected to exist: %s" % search_short_path)
+        for search_short_path in search_short_paths:
+            if file.short_path == search_short_path:
+                return file
+    fail("Could not find file that matches: %s" % (", ".join(search_short_paths)))
 
 def _is_part_of_package(file, owning_package):
     return file.short_path.startswith(owning_package)
@@ -265,11 +252,9 @@ def _ng_package_impl(ctx):
     npm_package_directory = ctx.actions.declare_directory("%s.ng_pkg" % ctx.label.name)
     owning_package = ctx.label.package
 
-    # The name of the primary entry-point FESM bundles. If not explicitly provided through
-    # the entry-point name attribute, we compute the name from the owning package
-    # e.g. if defined in `packages/core:npm_package`, the name is resolved to be `core`.
-    primary_bundle_name = \
-        ctx.attr.primary_bundle_name if ctx.attr.primary_bundle_name else owning_package.split("/")[-1]
+    # The name of the primary entry-point FESM bundles, computed name from the owning package
+    # e.g. For `packages/core:npm_package`, the name is resolved to be `core`.
+    primary_bundle_name = owning_package.split("/")[-1]
 
     # Static files are files which are simply copied over into the tree artifact. These files
     # are not picked up by the entry-point bundling etc. Can also be generated by e.g. a genrule.
@@ -282,14 +267,13 @@ def _ng_package_impl(ctx):
         else:
             static_files.append(file)
 
-    # These accumulators match the directory names where the files live in the
-    # Angular package format.
-    fesm2022 = []
-    type_files = []
-
     # List of unscoped direct and transitive ESM sources that are provided
     # by all entry-points.
     unscoped_all_entry_point_esm2022 = []
+
+    # List of unscoped direct and transitive dts sources that are provided
+    # by all entry-points.
+    unscoped_all_entry_point_dts = []
 
     # We infer the entry points to be:
     # - ng_module rules in the deps (they have an "angular" provider)
@@ -308,7 +292,7 @@ def _ng_package_impl(ctx):
         # Module name of the current entry-point. eg. @angular/core/testing
         module_name = ""
 
-        # Packsge name where this entry-point is defined in,
+        # Package name where this entry-point is defined in,
         entry_point_package = dep.label.package
 
         # Intentionally evaluates to empty string for the main entry point
@@ -322,12 +306,18 @@ def _ng_package_impl(ctx):
         # necessary to allow for entry-points to rely on sub-targets (as a perf improvement).
         unscoped_esm2022_depset = dep[JSEcmaScriptModuleInfo].sources
         unscoped_types_depset = dep[DeclarationInfo].transitive_declarations
+
         unscoped_all_entry_point_esm2022.append(unscoped_esm2022_depset)
+        unscoped_all_entry_point_dts.append(unscoped_types_depset)
 
         # Extract the "module_name" from either "ts_library" or "ng_module". Both
         # set the "module_name" in the provider struct.
         if hasattr(dep, "module_name"):
             module_name = dep.module_name
+        elif LinkablePackageInfo in dep:
+            # Modern `ts_project` interop targets don't make use of legacy struct
+            # providers, and instead encapsulate the `module_name` in an idiomatic provider.
+            module_name = dep[LinkablePackageInfo].package_name
 
         if is_primary_entry_point:
             npm_package_name = module_name
@@ -368,77 +358,47 @@ def _ng_package_impl(ctx):
             # In case the dependency is built through the "ts_library" rule, or the "ng_module"
             # rule does not generate a flat module bundle, we determine the index file and
             # typings entry-point through the most reasonable defaults (i.e. "package/index").
-            es2022_entry_point = _find_matching_file(unscoped_esm2022_list, "%s/index.mjs" % entry_point_package)
-            typings_entry_point = _find_matching_file(unscoped_types, "%s/index.d.ts" % entry_point_package)
+            es2022_entry_point = _find_matching_file(
+                unscoped_esm2022_list,
+                [
+                    "%s/index.mjs" % entry_point_package,
+                    # Fallback for `ts_project` support where `.mjs` is not auto-generated.
+                    "%s/index.js" % entry_point_package,
+                ],
+            )
+            typings_entry_point = _find_matching_file(unscoped_types, ["%s/index.d.ts" % entry_point_package])
             guessed_paths = True
 
-        bundle_name = "%s.mjs" % (primary_bundle_name if is_primary_entry_point else entry_point)
-        fesm2022_file = ctx.actions.declare_file("fesm2022/%s" % bundle_name)
-
-        # By default, we will bundle the typings entry-point, unless explicitly opted-out
-        # through the `skip_type_bundling` rule attribute.
-        if entry_point in ctx.attr.skip_type_bundling:
-            if typings_entry_point.short_path != "%s/index.d.ts" % entry_point_package:
-                fail(("Type bundling is explicitly disabled for `%s`, expected manual " +
-                      "`%s/index.d.ts` to be provided.") % (entry_point, entry_point_package))
-
-            typings_file = typings_entry_point
-        else:
-            # Note: To avoid conflicts with source-file generated `index.d.ts` files we prefix the
-            # bundle typings file and remove the prefix later when assembling the package.
-            typings_file = ctx.actions.declare_file("%s__index.d.ts" % ("%s/" % entry_point if entry_point else ""))
-
-            bundle_type_declaration(
-                ctx = ctx,
-                output_file = typings_file,
-                entry_point = typings_entry_point,
-                license_banner_file = ctx.file.license_banner,
-                types = unscoped_types_depset,
-            )
-
-        type_files.append(typings_file)
+        bundle_name_base = primary_bundle_name if is_primary_entry_point else entry_point
+        dts_bundle_name_base = "index" if is_primary_entry_point else "%s/index" % entry_point
 
         # Store the collected entry point in a list of all entry-points. This
         # can be later passed to the packager as a manifest.
         collected_entry_points.append(struct(
             module_name = module_name,
             es2022_entry_point = es2022_entry_point,
-            fesm2022_file = fesm2022_file,
-            typings_file = typings_file,
+            fesm2022_file = "fesm2022/%s.mjs" % bundle_name_base,
+            # TODO(devversion): Put all types under `/types/` folder. Breaking change in v20.
+            dts_bundle_relative_path = "%s.d.ts" % dts_bundle_name_base,
+            typings_entry_point = typings_entry_point,
             guessed_paths = guessed_paths,
         ))
-
-        # Note: For creating the bundles, we use all the ESM2022 sources that have been
-        # collected from the dependencies. This allows for bundling of code that is not
-        # necessarily part of the owning package (with respect to the `externals` attribute)
-        rollup_inputs = unscoped_esm2022_depset
-        esm2022_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2022.conf.js")
-
-        fesm2022.extend(
-            _run_rollup(
-                ctx,
-                "fesm2022",
-                esm2022_config,
-                es2022_entry_point,
-                rollup_inputs,
-                fesm2022_file,
-                format = "esm",
-            ),
-        )
 
     # Note: Using `to_list()` is expensive but we cannot get around this here as
     # we need to filter out generated files and need to be able to iterate through
     # JavaScript files in order to capture the relevant package-owned `esm2022/` in the APF.
-    unscoped_all_entry_point_esm2022_list = depset(transitive = unscoped_all_entry_point_esm2022).to_list()
+    unscoped_all_entry_point_esm2022_depset = depset(transitive = unscoped_all_entry_point_esm2022)
+    unscoped_all_entry_point_esm2022_list = unscoped_all_entry_point_esm2022_depset.to_list()
 
     # Filter ESM2022 JavaScript inputs to files which are part of the owning package. The
     # packager should not copy external files into the package.
     esm2022 = _filter_esm_files_to_include(unscoped_all_entry_point_esm2022_list, owning_package)
 
+    unscoped_all_entry_point_dts_depset = depset(transitive = unscoped_all_entry_point_dts)
+
     packager_inputs = (
         static_files +
-        type_files +
-        fesm2022 + esm2022
+        esm2022
     )
 
     packager_args = ctx.actions.args()
@@ -456,12 +416,42 @@ def _ng_package_impl(ctx):
         # in the packager executable tool.
         metadata_arg[m.module_name] = {
             "index": _serialize_file(m.es2022_entry_point),
-            "fesm2022Bundle": _serialize_file(m.fesm2022_file),
-            "typings": _serialize_file(m.typings_file),
+            "typingsEntryPoint": _serialize_file(m.typings_entry_point),
+            "fesm2022RelativePath": m.fesm2022_file,
+            "dtsBundleRelativePath": m.dts_bundle_relative_path,
             # If the paths for that entry-point were guessed (e.g. "ts_library" rule or
             # "ng_module" without flat module bundle), we pass this information to the packager.
             "guessedPaths": m.guessed_paths,
         }
+
+    for ep in ctx.attr.side_effect_entry_points:
+        if not metadata_arg[ep]:
+            known_entry_points = ",".join([e.module_name for e in collected_entry_points])
+            fail("Unknown entry-point (%s) specified to include side effects. " % ep +
+                 "The following entry-points are known: %s" % known_entry_points)
+
+    fesm_rollup_config = _write_rollup_config(
+        ctx,
+        ctx.bin_dir.path,
+        metadata_arg,
+        ctx.attr.side_effect_entry_points,
+        dts_mode = False,
+    )
+    fesm_rollup_inputs = depset(static_files, transitive = [unscoped_all_entry_point_esm2022_depset])
+    fesm_bundles_out = _run_rollup(ctx, fesm_rollup_config, fesm_rollup_inputs, dts_mode = False)
+
+    dts_rollup_config = _write_rollup_config(
+        ctx,
+        ctx.bin_dir.path,
+        metadata_arg,
+        ctx.attr.side_effect_entry_points,
+        dts_mode = True,
+    )
+    dts_rollup_inputs = depset(static_files, transitive = [unscoped_all_entry_point_dts_depset])
+    dts_bundles_out = _run_rollup(ctx, dts_rollup_config, dts_rollup_inputs, dts_mode = True)
+
+    packager_inputs.append(fesm_bundles_out)
+    packager_inputs.append(dts_bundles_out)
 
     # Encodes the package metadata with all its entry-points into JSON so that
     # it can be deserialized by the packager tool. The struct needs to match with
@@ -469,6 +459,8 @@ def _ng_package_impl(ctx):
     packager_args.add(json.encode(struct(
         npmPackageName = npm_package_name,
         entryPoints = metadata_arg,
+        fesmBundlesOut = _serialize_file(fesm_bundles_out),
+        dtsBundlesOut = _serialize_file(dts_bundles_out),
     )))
 
     if ctx.file.readme_md:
@@ -485,10 +477,10 @@ def _ng_package_impl(ctx):
         #placeholder
         packager_args.add("")
 
-    packager_args.add(_serialize_files_for_arg(fesm2022))
     packager_args.add(_serialize_files_for_arg(esm2022))
     packager_args.add(_serialize_files_for_arg(static_files))
-    packager_args.add(_serialize_files_for_arg(type_files))
+
+    packager_args.add(json.encode(ctx.attr.side_effect_entry_points))
 
     ctx.actions.run(
         progress_message = "Angular Packaging: building npm package %s" % str(ctx.label),
@@ -534,6 +526,10 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         cfg = partial_compilation_transition,
         allow_files = True,
     ),
+    "side_effect_entry_points": attr.string_list(
+        doc = "List of entry-points that have top-level side-effects",
+        default = [],
+    ),
     "externals": attr.string_list(
         doc = """List of external module that should not be bundled into the flat ESM bundles.""",
         default = [],
@@ -555,29 +551,10 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         cfg = partial_compilation_transition,
     ),
     "readme_md": attr.label(allow_single_file = [".md"]),
-    "primary_bundle_name": attr.string(
-        doc = "Name to use when generating bundle files for the primary entry-point.",
-    ),
     "ng_packager": attr.label(
         default = Label(_DEFAULT_NG_PACKAGER),
         executable = True,
         cfg = "exec",
-    ),
-    "skip_type_bundling": attr.string_list(
-        default = [],
-        doc = """
-          List of entry-points for which type bundle generation should be skipped. Requires a
-          self-contained `index.d.ts` to be generated (i.e. with no relative imports).
-
-          Skipping of bundling might be desirable due to limitations in Microsoft's API extractor.
-          For example when `declare global` is used: https://github.com/microsoft/rushstack/issues/2090.
-
-          ```
-              "",                # Skips the primary entry-point from bundling.
-              "testing",         # Skips the testing entry-point from type bundling
-              "select/testing",  # Skips the `select/testing` entry-point
-          ```
-        """,
     ),
     "rollup": attr.label(
         default = Label(_DEFAULT_ROLLUP),
@@ -587,11 +564,6 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
     "rollup_config_tmpl": attr.label(
         default = Label(_DEFAULT_ROLLUP_CONFIG_TMPL),
         allow_single_file = True,
-    ),
-    "_types_bundler_bin": attr.label(
-        default = "//packages/bazel/src/types_bundle:types_bundler",
-        cfg = "exec",
-        executable = True,
     ),
     # Needed in order to allow for the outgoing transition on the `deps` attribute.
     # https://docs.bazel.build/versions/main/skylark/config.html#user-defined-transitions.

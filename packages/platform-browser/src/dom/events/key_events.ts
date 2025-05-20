@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, NgZone} from '@angular/core';
+import {Inject, Injectable, type ListenerOptions, NgZone} from '@angular/core';
 
 import {EventManagerPlugin} from './event_manager';
 
@@ -74,7 +74,12 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * event object as an argument.
    * @returns The key event that was registered.
    */
-  override addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  override addEventListener(
+    element: HTMLElement,
+    eventName: string,
+    handler: Function,
+    options?: ListenerOptions,
+  ): Function {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
     const outsideHandler = KeyEventsPlugin.eventCallback(
@@ -84,7 +89,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     );
 
     return this.manager.getZone().runOutsideAngular(() => {
-      return getDOM().onAndCancel(element, parsedEvent['domEventName'], outsideHandler);
+      return getDOM().onAndCancel(element, parsedEvent['domEventName'], outsideHandler, options);
     });
   }
 

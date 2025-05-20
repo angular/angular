@@ -1,0 +1,36 @@
+load("//integration/ng-modules-importability:index.bzl", "module_test")
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    data = [
+        "//packages:package_json",
+    ],
+    deps = [
+        "//packages/compiler-cli",
+        "@npm//typescript",
+    ],
+)
+
+module_test(
+    name = "test",
+    npm_packages = {
+        "//packages/animations:npm_package": "packages/animations/npm_package",
+        "//packages/common:npm_package": "packages/common/npm_package",
+        "//packages/core:npm_package": "packages/core/npm_package",
+        "//packages/elements:npm_package": "packages/elements/npm_package",
+        "//packages/forms:npm_package": "packages/forms/npm_package",
+        "//packages/localize:npm_package": "packages/localize/npm_package",
+        "//packages/platform-browser:npm_package": "packages/platform-browser/npm_package",
+        "//packages/router:npm_package": "packages/router/npm_package",
+        "//packages/service-worker:npm_package": "packages/service-worker/npm_package",
+        "//packages/upgrade:npm_package": "packages/upgrade/npm_package",
+    },
+    shard_count = 4,
+    skipped_entry_points = [
+        # Core does not expose any modules and just needs to be made available.
+        "@angular/core",
+    ],
+)

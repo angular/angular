@@ -50,10 +50,11 @@ import {
 } from '@angular/core/src/platform/platform';
 import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule} from '../../index';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {provideAnimations, provideNoopAnimations} from '@angular/platform-browser/animations';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {provideAnimations, provideNoopAnimations} from '../../animations';
+import {expect} from '@angular/private/testing/matchers';
+import {isNode} from '@angular/private/testing';
 
 import {bootstrapApplication} from '../../src/browser';
 

@@ -26,7 +26,7 @@ import {PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
-describe('create router state', async () => {
+describe('create router state', () => {
   let reuseStrategy: DefaultRouteReuseStrategy;
   beforeEach(() => {
     reuseStrategy = new DefaultRouteReuseStrategy();

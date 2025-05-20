@@ -6,17 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AfterRenderPhase, AfterRenderRef} from './api';
-import {NgZone} from '../../zone';
-import {inject} from '../../di/injector_compatibility';
-import {ɵɵdefineInjectable} from '../../di/interface/defs';
-import {ErrorHandler} from '../../error_handler';
+import {TracingAction, TracingService, TracingSnapshot} from '../../application/tracing';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
 } from '../../change_detection/scheduling/zoneless_scheduling';
+import {inject} from '../../di/injector_compatibility';
+import {ɵɵdefineInjectable} from '../../di/interface/defs';
+import {ErrorHandler} from '../../error_handler';
 import {type DestroyRef} from '../../linker/destroy_ref';
-import {TracingAction, TracingService, TracingSnapshot} from '../../application/tracing';
+import {NgZone} from '../../zone';
+import {AFTER_RENDER_SEQUENCES_TO_ADD, FLAGS, LView, LViewFlags} from '../interfaces/view';
+import {profiler} from '../profiler';
+import {ProfilerEvent} from '../profiler_types';
+import {markAncestorsForTraversal} from '../util/view_utils';
+import {AfterRenderPhase, AfterRenderRef} from './api';
 
 export class AfterRenderManager {
   impl: AfterRenderImpl | null = null;
@@ -33,7 +37,7 @@ export class AfterRenderManager {
   });
 }
 
-export const AFTER_RENDER_PHASES = /* @__PURE__ **/ (() =>
+export const AFTER_RENDER_PHASES: AfterRenderPhase[] = /* @__PURE__ **/ (() =>
   [
     AfterRenderPhase.EarlyRead,
     AfterRenderPhase.Write,
@@ -65,6 +69,12 @@ export class AfterRenderImpl {
    * might be scheduled.
    */
   execute(): void {
+    const hasSequencesToExecute = this.sequences.size > 0;
+
+    if (hasSequencesToExecute) {
+      profiler(ProfilerEvent.AfterRenderHooksStart);
+    }
+
     this.executing = true;
     for (const phase of AFTER_RENDER_PHASES) {
       for (const sequence of this.sequences) {
@@ -74,10 +84,11 @@ export class AfterRenderImpl {
 
         try {
           sequence.pipelinedValue = this.ngZone.runOutsideAngular(() =>
-            this.maybeTrace(
-              () => sequence.hooks[phase]!(sequence.pipelinedValue),
-              sequence.snapshot,
-            ),
+            this.maybeTrace(() => {
+              const hookFn = sequence.hooks[phase]!;
+              const value = hookFn(sequence.pipelinedValue);
+              return value;
+            }, sequence.snapshot),
           );
         } catch (err) {
           sequence.erroredOrDestroyed = true;
@@ -102,20 +113,36 @@ export class AfterRenderImpl {
       this.sequences.add(sequence);
     }
     if (this.deferredRegistrations.size > 0) {
-      this.scheduler.notify(NotificationSource.DeferredRenderHook);
+      this.scheduler.notify(NotificationSource.RenderHook);
     }
     this.deferredRegistrations.clear();
+
+    if (hasSequencesToExecute) {
+      profiler(ProfilerEvent.AfterRenderHooksEnd);
+    }
   }
 
   register(sequence: AfterRenderSequence): void {
-    if (!this.executing) {
-      this.sequences.add(sequence);
-      // Trigger an `ApplicationRef.tick()` if one is not already pending/running, because we have a
-      // new render hook that needs to run.
-      this.scheduler.notify(NotificationSource.RenderHook);
+    const {view} = sequence;
+    if (view !== undefined) {
+      // Delay adding it to the manager, add it to the view instead.
+      (view[AFTER_RENDER_SEQUENCES_TO_ADD] ??= []).push(sequence);
+
+      // Mark the view for traversal to ensure we eventually schedule the afterNextRender.
+      markAncestorsForTraversal(view);
+      view[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
+    } else if (!this.executing) {
+      this.addSequence(sequence);
     } else {
       this.deferredRegistrations.add(sequence);
     }
+  }
+
+  addSequence(sequence: AfterRenderSequence): void {
+    this.sequences.add(sequence);
+    // Trigger an `ApplicationRef.tick()` if one is not already pending/running, because we have a
+    // new render hook that needs to run.
+    this.scheduler.notify(NotificationSource.RenderHook);
   }
 
   unregister(sequence: AfterRenderSequence): void {
@@ -172,6 +199,7 @@ export class AfterRenderSequence implements AfterRenderRef {
   constructor(
     readonly impl: AfterRenderImpl,
     readonly hooks: AfterRenderHooks,
+    readonly view: LView | undefined,
     public once: boolean,
     destroyRef: DestroyRef | null,
     public snapshot: TracingSnapshot | null = null,
@@ -194,5 +222,9 @@ export class AfterRenderSequence implements AfterRenderRef {
   destroy(): void {
     this.impl.unregister(this);
     this.unregisterOnDestroy?.();
+    const scheduled = this.view?.[AFTER_RENDER_SEQUENCES_TO_ADD];
+    if (scheduled) {
+      this.view[AFTER_RENDER_SEQUENCES_TO_ADD] = scheduled.filter((s) => s !== this);
+    }
   }
 }

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import 'reflect-metadata';
+
 import 'zone.js/lib/node/rollup-main';
 import './zone_base_setup';
 

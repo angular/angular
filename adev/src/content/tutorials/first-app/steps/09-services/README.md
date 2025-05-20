@@ -47,13 +47,13 @@ In the **Terminal** pane of your IDE:
 <docs-step title="Add static data to the new service">
 This step adds some sample data to your new service.
 In a later lesson, you'll replace the static data with a web interface to get data as you might in a real app.
-For now, your app's new service uses the data that has, so far, been created locally in `HomeComponent`.
+For now, your app's new service uses the data that has, so far, been created locally in `Home`.
 
 In the **Edit** pane of your IDE:
 
-1. In `src/app/home/home.component.ts`, from `HomeComponent`, copy the `housingLocationList` variable and its array value.
+1. In `src/app/home/home.ts`, from `Home`, copy the `housingLocationList` variable and its array value.
 1. In `src/app/housing.service.ts`:
-    1. Inside the `HousingService` class, paste the variable that you copied from `HomeComponent` in the previous step.
+    1. Inside the `HousingService` class, paste the variable that you copied from `Home` in the previous step.
     1. Inside the `HousingService` class, paste these functions after the data you just copied.
         These functions allow dependencies to access the service's data.
 
@@ -69,33 +69,33 @@ In the **Edit** pane of your IDE:
     Correct any errors before you continue to the next step.
 </docs-step>
 
-<docs-step title="Inject the new service into `HomeComponent`">
-This step injects the new service into your app's `HomeComponent` so that it can read the app's data from a service.
+<docs-step title="Inject the new service into `Home`">
+This step injects the new service into your app's `Home` so that it can read the app's data from a service.
 In a later lesson, you'll replace the static data with a live data source to get data as you might in a real app.
 
-In the **Edit** pane of your IDE, in `src/app/home/home.component.ts`:
+In the **Edit** pane of your IDE, in `src/app/home/home.ts`:
 
-1. At the top of `src/app/home/home.component.ts`, add the `inject` to the items imported from `@angular/core`. This will import the `inject` function into the `HomeComponent` class.
+1. At the top of `src/app/home/home.ts`, add the `inject` to the items imported from `@angular/core`. This will import the `inject` function into the `Home` class.
 
-    <docs-code header="Update to src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[1]"/>
+    <docs-code header="Update to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[1]"/>
 
 1. Add a new file level import for the `HousingService`:
 
-    <docs-code header="Add import to src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[5]"/>
+    <docs-code header="Add import to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[5]"/>
 
-1. From `HomeComponent`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
+1. From `Home`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
 
-1. In `HomeComponent`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
+1. In `Home`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
 
-    <docs-code header="Initialize data from service in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.component.ts" visibleLines="[28,32]"/>
+    <docs-code header="Initialize data from service in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[25,32]"/>
 
-1. Save the changes to `src/app/home/home.component.ts` and confirm your app builds without error.
+1. Save the changes to `src/app/home/home.ts` and confirm your app builds without error.
     Correct any errors before you continue to the next step.
 </docs-step>
 
 </docs-workflow>
 
-Summary: In this lesson, you added an Angular service to your app and injected it into the `HomeComponent` class.
+SUMMARY: In this lesson, you added an Angular service to your app and injected it into the `Home` class.
 This compartmentalizes how your app gets its data.
 For now, the new service gets its data from a static array of data.
 In a later lesson, you'll refactor the service to get its data from an API endpoint.

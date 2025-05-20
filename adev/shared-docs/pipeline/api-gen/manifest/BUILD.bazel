@@ -1,12 +1,12 @@
-load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
 load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild_esm_bundle")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
 esbuild_esm_bundle(
     name = "bin",
-    entry_point = ":index.ts",
+    entry_point = ":index.mts",
     external = [
         "@angular/compiler-cli",
     ],
@@ -19,15 +19,15 @@ esbuild_esm_bundle(
     ],
 )
 
-ts_library(
+ts_project(
     name = "generate_api_manifest_lib",
-    srcs = glob(["**/*.ts"]),
-    devmode_module = "commonjs",
-    tsconfig = "//adev:tsconfig.json",
-    deps = [
+    srcs = glob(["**/*.mts"]),
+    interop_deps = [
         "@angular//packages/compiler-cli",
-        "@npm//@bazel/runfiles",
-        "@npm//@types/node",
+    ],
+    deps = [
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/node",
     ],
 )
 

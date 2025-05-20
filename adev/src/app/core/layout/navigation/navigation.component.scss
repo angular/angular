@@ -19,18 +19,23 @@
       z-index: 50;
     }
   }
+
+  @include mq.for-tablet-landscape-down {
+    width: 100%;
+
+    .wrapper {
+      width: 100%;
+    }
+  }
 }
 
 .adev-mobile-nav-bar {
   display: none;
-  @include mq.for-phone-only {
-    display: flex;
-  }
   gap: 0.75rem;
   backdrop-filter: blur(16px);
   background-color: color-mix(in srgb, var(--page-background) 70%, transparent);
   position: relative;
-  width: 100vw;
+  width: 100%;
   padding-block: 0.75rem;
   padding-inline: var(--layout-padding);
   border-block-end: 1px solid var(--septenary-contrast);
@@ -39,6 +44,10 @@
   transform: translateY(0);
   // mobile bar: enter with delay
   transition: transform 0.3s ease-out 0.6s;
+
+  @include mq.for-phone-only {
+    display: flex;
+  }
 
   &:has(+ .adev-nav-primary--open) {
     transform: translateY(-100%);
@@ -63,11 +72,31 @@
   // render primary nav / mini menu above tablet secondary bar
   z-index: 250;
   position: relative;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
   height: 100dvh;
   padding-block-start: 1rem;
   padding-block-end: 2rem;
   box-sizing: border-box;
+  // Add a subtle border for the home page
+  border-block-end: 1px solid var(--septenary-contrast);
+
+  @include mq.for-tablet-landscape-up {
+    border-inline-end: 1px solid var(--septenary-contrast);
+  }
+
+  @include mq.for-phone-only {
+    border-inline-end: 1px solid var(--septenary-contrast);
+  }
+
+  @include mq.for-tablet {
+    flex-direction: row;
+    width: 100%;
+    padding-inline: calc(var(--layout-padding) - 1.25rem);
+    height: auto;
+    padding-block: 0;
+  }
 
   &.adev-nav-primary--next,
   &.adev-nav-primary--rc {
@@ -77,8 +106,8 @@
       color-mix(in srgb, var(--orange-red), transparent 60%) 0%,
       color-mix(in srgb, var(--vivid-pink), transparent 40%) 15%,
       color-mix(in srgb, var(--electric-violet), transparent 70%) 25%,
-      color-mix(in srgb, var(--bright-blue), transparent 60%) 90%,
-      );
+      color-mix(in srgb, var(--bright-blue), transparent 60%) 90%
+    );
   }
 
   &.adev-nav-primary--deprecated {
@@ -114,23 +143,6 @@
     @media (prefers-reduced-motion: reduce-motion) {
       transition: none;
     }
-  }
-
-  @include mq.for-tablet {
-    flex-direction: row;
-    width: 100vw;
-    padding-inline: calc(var(--layout-padding) - 1.25rem);
-    height: auto;
-    padding-block: 0;
-  }
-
-  // Add a subtle border for the home page
-  border-block-end: 1px solid var(--septenary-contrast);
-  @include mq.for-tablet-up {
-    border-inline-end: 1px solid var(--septenary-contrast);
-  }
-  @include mq.for-phone-only {
-    border-inline-end: 1px solid var(--septenary-contrast);
   }
 }
 
@@ -193,7 +205,7 @@
       }
 
       li {
-        padding-inline: 1rem;
+        padding-inline: 0.875rem;
       }
     }
   }
@@ -207,8 +219,9 @@
     gap: 1rem;
 
     @include mq.for-tablet {
-      flex-direction: row;
+      flex-direction: row !important;
       margin-inline-end: 1.25rem;
+      gap: 0.75rem;
     }
 
     .adev-nav-item--active {
@@ -247,16 +260,23 @@
   }
 }
 
-.adev-nav-item--logo a {
-  height: 34px;
+.adev-nav-item--logo {
+  a {
+    height: 34px;
+  }
+
+  @include mq.for-tablet {
+    gap: 0.75rem;
+  }
 }
 
 .adev-close-nav {
   display: none;
+  color: var(--primary-contrast);
+
   @include mq.for-phone-only {
     display: block;
   }
-  color: var(--primary-contrast);
 }
 
 .adev-search-desktop {
@@ -278,7 +298,10 @@
   border-block-end: 1px solid var(--septenary-contrast);
   padding-block: 1rem;
   padding-inline: var(--layout-padding);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+
   button {
     display: flex;
     gap: 0.5rem;
@@ -287,6 +310,7 @@
     padding: 0;
     font-weight: 500;
   }
+
   @include mq.for-tablet-landscape-up {
     display: none;
   }

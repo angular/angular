@@ -5,7 +5,7 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^18.19.1 || ^20.11.1 || >=22.0.0"
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
@@ -24,5 +24,8 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false
+  "sideEffects": [
+    "./fesm2022/platform-browser-dynamic.mjs",
+    "./fesm2022/testing.mjs"
+  ]
 }

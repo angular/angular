@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component} from '../../src/core';
+import {TestBed} from '../../testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 describe('attribute creation', () => {

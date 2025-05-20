@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {inject, signal, Injectable, PLATFORM_ID} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {inject, signal, Injectable, PLATFORM_ID, DestroyRef} from '@angular/core';
 
 import {TableOfContentsItem, TableOfContentsLevel} from '../interfaces/index';
+import {on} from 'events';
 
 /**
  * Name of an attribute that is set on an element that should be
@@ -29,38 +30,17 @@ export class TableOfContentsLoader {
   readonly tableOfContentItems = signal([] as TableOfContentsItem[]);
 
   private readonly document = inject(DOCUMENT);
-  private readonly platformId = inject(PLATFORM_ID);
 
   buildTableOfContent(docElement: Element): void {
     const headings = this.getHeadings(docElement);
+
     const tocList: TableOfContentsItem[] = headings.map((heading) => ({
       id: heading.id,
       level: heading.tagName.toLowerCase() as TableOfContentsLevel,
       title: this.getHeadingTitle(heading),
-      top: this.calculateTop(heading),
     }));
 
     this.tableOfContentItems.set(tocList);
-  }
-
-  // Update top value of heading, it should be executed after window resize
-  updateHeadingsTopValue(element: HTMLElement): void {
-    const headings = this.getHeadings(element);
-    const updatedTopValues = new Map<string, number>();
-
-    for (const heading of headings) {
-      const parentTop = heading.parentElement?.offsetTop ?? 0;
-      const top = Math.floor(parentTop + heading.offsetTop - this.toleranceThreshold);
-      updatedTopValues.set(heading.id, top);
-    }
-
-    this.tableOfContentItems.update((oldItems) => {
-      let newItems = [...oldItems];
-      for (const item of newItems) {
-        item.top = updatedTopValues.get(item.id) ?? 0;
-      }
-      return newItems;
-    });
   }
 
   private getHeadingTitle(heading: HTMLHeadingElement): string {
@@ -81,11 +61,37 @@ export class TableOfContentsLoader {
     );
   }
 
-  private calculateTop(heading: HTMLHeadingElement): number {
-    if (!isPlatformBrowser(this.platformId)) return 0;
-    return (
-      Math.floor(heading.offsetTop > 0 ? heading.offsetTop : heading.getClientRects()[0]?.top) -
-      this.toleranceThreshold
-    );
+  /**
+   * The methods setups several IntersectionObservers to determine when a heading is at the top of
+   * the viewport. Using an IntersectionObserver is more efficient than reading DOM position
+   * as it won't trigger any reflow.
+   */
+  setupIntersectionObserver(
+    element: Element,
+    destroyRef: DestroyRef,
+    onActiveId: (id: string) => void,
+  ): void {
+    // If we're at the top the we need the default active id to be the first heading.
+    const headings = this.getHeadings(element);
+    onActiveId(headings[0].id);
+
+    headings.forEach((heading) => {
+      const ioConfiguration = {
+        /**
+         * This rootMargin creates a horizontal line at 5% from the top of the viewport
+         * that will help trigger an intersection at that the very point.
+         */
+        rootMargin: '0% 0% -95% 0%',
+        /** 0 is the default  */
+        threshold: 0,
+      };
+      const observer = new IntersectionObserver((entries, o) => {
+        if (entries[0].isIntersecting) {
+          onActiveId(entries[0].target.id);
+        }
+      }, ioConfiguration);
+      observer.observe(heading);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
   }
 }

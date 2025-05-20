@@ -115,7 +115,10 @@ export function split(
   consumedSegments: UrlSegment[],
   slicedSegments: UrlSegment[],
   config: Route[],
-) {
+): {
+  segmentGroup: UrlSegmentGroup;
+  slicedSegments: UrlSegment[];
+} {
   if (
     slicedSegments.length > 0 &&
     containsEmptyPathMatchesWithNamedOutlets(segmentGroup, slicedSegments, config)

@@ -283,6 +283,302 @@ describe('HtmlLexer', () => {
       });
     });
 
+    describe('component tags', () => {
+      const options: TokenizeOptions = {selectorlessEnabled: true};
+
+      it('should parse a basic component tag', () => {
+        expect(tokenizeAndHumanizeParts('<MyComp>hello</MyComp>', options)).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', ''],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', '', ''],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a component tag with a tag name', () => {
+        expect(tokenizeAndHumanizeParts('<MyComp:button>hello</MyComp:button>', options)).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', 'button'],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', '', 'button'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a component tag with a tag name and namespace', () => {
+        expect(
+          tokenizeAndHumanizeParts('<MyComp:svg:title>hello</MyComp:svg:title>', options),
+        ).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', 'svg', 'title'],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', 'svg', 'title'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a self-closing component tag', () => {
+        expect(tokenizeAndHumanizeParts('<MyComp/>', options)).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', ''],
+          [TokenType.COMPONENT_OPEN_END_VOID],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should produce spans for component tags', () => {
+        expect(
+          tokenizeAndHumanizeSourceSpans('<MyComp:svg:title>hello</MyComp:svg:title>', options),
+        ).toEqual([
+          [TokenType.COMPONENT_OPEN_START, '<MyComp:svg:title'],
+          [TokenType.COMPONENT_OPEN_END, '>'],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.COMPONENT_CLOSE, '</MyComp:svg:title>'],
+          [TokenType.EOF, ''],
+        ]);
+      });
+
+      it('should parse an incomplete component open tag', () => {
+        expect(
+          tokenizeAndHumanizeParts('<MyComp:span class="hi" sty<span></span>', options),
+        ).toEqual([
+          [TokenType.INCOMPLETE_COMPONENT_OPEN, 'MyComp', '', 'span'],
+          [TokenType.ATTR_NAME, '', 'class'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'hi'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', 'sty'],
+          [TokenType.TAG_OPEN_START, '', 'span'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'span'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a component tag with raw text', () => {
+        expect(
+          tokenizeAndHumanizeParts(`<MyComp:script>t\ne\rs\r\nt</MyComp:script>`, options),
+        ).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', 'script'],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.RAW_TEXT, 't\ne\ns\nt'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', '', 'script'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a component tag with escapable raw text', () => {
+        expect(
+          tokenizeAndHumanizeParts(`<MyComp:title>t\ne\rs\r\nt</MyComp:title>`, options),
+        ).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'MyComp', '', 'title'],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.ESCAPABLE_RAW_TEXT, 't\ne\ns\nt'],
+          [TokenType.COMPONENT_CLOSE, 'MyComp', '', 'title'],
+          [TokenType.EOF],
+        ]);
+      });
+    });
+
+    describe('selectorless directives', () => {
+      const options: TokenizeOptions = {selectorlessEnabled: true};
+
+      it('should parse a basic directive', () => {
+        expect(tokenizeAndHumanizeParts('<div @MyDir></div>', options)).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.DIRECTIVE_NAME, 'MyDir'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a directive with parentheses, but no attributes', () => {
+        expect(tokenizeAndHumanizeParts('<div @MyDir()></div>', options)).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.DIRECTIVE_NAME, 'MyDir'],
+          [TokenType.DIRECTIVE_OPEN],
+          [TokenType.DIRECTIVE_CLOSE],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a directive with a single attribute without a value', () => {
+        expect(tokenizeAndHumanizeParts('<div @MyDir(foo)></div>', options)).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.DIRECTIVE_NAME, 'MyDir'],
+          [TokenType.DIRECTIVE_OPEN],
+          [TokenType.ATTR_NAME, '', 'foo'],
+          [TokenType.DIRECTIVE_CLOSE],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a directive with attributes', () => {
+        const tokens = tokenizeAndHumanizeParts(
+          '<div @MyDir(static="one" [bound]="expr" [(twoWay)]="expr" #ref="name" (click)="handler()")></div>',
+          options,
+        );
+
+        expect(tokens).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.DIRECTIVE_NAME, 'MyDir'],
+          [TokenType.DIRECTIVE_OPEN],
+          [TokenType.ATTR_NAME, '', 'static'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'one'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', '[bound]'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'expr'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', '[(twoWay)]'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'expr'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', '#ref'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'name'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', '(click)'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'handler()'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.DIRECTIVE_CLOSE],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should parse a directive mixed in with other attributes', () => {
+        const tokens = tokenizeAndHumanizeParts(
+          '<div before="value" @OneDir([one]="1" two="2") middle @TwoDir @ThreeDir((three)="handleThree()") after="value"></div>',
+          options,
+        );
+
+        expect(tokens).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.ATTR_NAME, '', 'before'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'value'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.DIRECTIVE_NAME, 'OneDir'],
+          [TokenType.DIRECTIVE_OPEN],
+          [TokenType.ATTR_NAME, '', '[one]'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, '1'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', 'two'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, '2'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.DIRECTIVE_CLOSE],
+          [TokenType.ATTR_NAME, '', 'middle'],
+          [TokenType.DIRECTIVE_NAME, 'TwoDir'],
+          [TokenType.DIRECTIVE_NAME, 'ThreeDir'],
+          [TokenType.DIRECTIVE_OPEN],
+          [TokenType.ATTR_NAME, '', '(three)'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'handleThree()'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.DIRECTIVE_CLOSE],
+          [TokenType.ATTR_NAME, '', 'after'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'value'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should not pick up selectorless-like text inside a tag', () => {
+        expect(tokenizeAndHumanizeParts('<div>@MyDir()</div>', options)).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.INCOMPLETE_BLOCK_OPEN, 'MyDir'],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should not pick up selectorless-like text inside an attribute', () => {
+        expect(tokenizeAndHumanizeParts('<div hello="@MyDir"></div>', options)).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.ATTR_NAME, '', 'hello'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, '@MyDir'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should produce spans for directives', () => {
+        const tokens = tokenizeAndHumanizeSourceSpans(
+          '<div @Empty @NoAttrs() @WithAttr([one]="1" two="2") @WithSimpleAttr(simple)></div>',
+          options,
+        );
+
+        expect(tokens).toEqual([
+          [TokenType.TAG_OPEN_START, '<div'],
+          [TokenType.DIRECTIVE_NAME, '@Empty'],
+          [TokenType.DIRECTIVE_NAME, '@NoAttrs'],
+          [TokenType.DIRECTIVE_OPEN, '('],
+          [TokenType.DIRECTIVE_CLOSE, ')'],
+          [TokenType.DIRECTIVE_NAME, '@WithAttr'],
+          [TokenType.DIRECTIVE_OPEN, '('],
+          [TokenType.ATTR_NAME, '[one]'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, '1'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, 'two'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, '2'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.DIRECTIVE_CLOSE, ')'],
+          [TokenType.DIRECTIVE_NAME, '@WithSimpleAttr'],
+          [TokenType.DIRECTIVE_OPEN, '('],
+          [TokenType.ATTR_NAME, 'simple'],
+          [TokenType.DIRECTIVE_CLOSE, ')'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TAG_CLOSE, '</div>'],
+          [TokenType.EOF, ''],
+        ]);
+      });
+
+      it('should not capture whitespace in directive spans', () => {
+        const tokens = tokenizeAndHumanizeSourceSpans(
+          '<div    @Dir   (  one="1"    (two)="handleTwo()"     )     ></div>',
+          options,
+        );
+
+        expect(tokens).toEqual([
+          [TokenType.TAG_OPEN_START, '<div'],
+          [TokenType.DIRECTIVE_NAME, '@Dir'],
+          [TokenType.DIRECTIVE_OPEN, '('],
+          [TokenType.ATTR_NAME, 'one'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, '1'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '(two)'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'handleTwo()'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.DIRECTIVE_CLOSE, ')'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TAG_CLOSE, '</div>'],
+          [TokenType.EOF, ''],
+        ]);
+      });
+    });
+
     describe('escapable raw text', () => {
       it('should parse text', () => {
         expect(tokenizeAndHumanizeParts(`<title>t\ne\rs\r\nt</title>`)).toEqual([
@@ -2202,6 +2498,16 @@ describe('HtmlLexer', () => {
 
       expect(tokenizeAndHumanizeErrors('&#xABC')).toEqual([
         [TokenType.ENCODED_ENTITY, 'Unexpected character "EOF"', '0:6'],
+      ]);
+    });
+
+    it('should not parse js object methods', () => {
+      expect(tokenizeAndHumanizeErrors('&valueOf;')).toEqual([
+        [
+          TokenType.ENCODED_ENTITY,
+          'Unknown entity "valueOf" - use the "&#<decimal>;" or  "&#x<hex>;" syntax',
+          '0:0',
+        ],
       ]);
     });
   });

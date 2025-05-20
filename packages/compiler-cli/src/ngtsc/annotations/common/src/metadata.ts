@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
 import {
   ArrowFunctionExpr,
   Expression,
@@ -18,6 +19,7 @@ import {
 import ts from 'typescript';
 
 import {
+  ClassMemberAccessLevel,
   CtorParameter,
   DeclarationNode,
   Decorator,
@@ -83,21 +85,26 @@ export function extractClassMetadata(
 
   // Do the same for property decorators.
   let metaPropDecorators: Expression | null = null;
-  const classMembers = reflection
-    .getMembersOfClass(clazz)
-    .filter(
-      (member) => !member.isStatic && member.decorators !== null && member.decorators.length > 0,
-    );
-  const duplicateDecoratedMemberNames = classMembers
-    .map((member) => member.name)
-    .filter((name, i, arr) => arr.indexOf(name) < i);
-  if (duplicateDecoratedMemberNames.length > 0) {
+  const classMembers = reflection.getMembersOfClass(clazz).filter(
+    (member) =>
+      !member.isStatic &&
+      member.decorators !== null &&
+      member.decorators.length > 0 &&
+      // Private fields are not supported in the metadata emit
+      member.accessLevel !== ClassMemberAccessLevel.EcmaScriptPrivate,
+  );
+  const duplicateDecoratedMembers = classMembers.filter(
+    (member, i, arr) => arr.findIndex((arrayMember) => arrayMember.name === member.name) < i,
+  );
+  if (duplicateDecoratedMembers.length > 0) {
     // This should theoretically never happen, because the only way to have duplicate instance
     // member names is getter/setter pairs and decorators cannot appear in both a getter and the
     // corresponding setter.
-    throw new Error(
+    throw new FatalDiagnosticError(
+      ErrorCode.DUPLICATE_DECORATED_PROPERTIES,
+      duplicateDecoratedMembers[0].nameNode ?? clazz,
       `Duplicate decorated properties found on class '${clazz.name.text}': ` +
-        duplicateDecoratedMemberNames.join(', '),
+        duplicateDecoratedMembers.map((member) => member.name).join(', '),
     );
   }
   const decoratedMembers = classMembers.map((member) =>

@@ -8,7 +8,7 @@ Angular's `@let` syntax allows you to define a local variable and re-use it acro
 
 ### Using `@let`
 
-Use `@let` to declare a variable whose value is based on the result of a template expression. Angular automatically keeps the variable's value up-to-date with the given expression, similar to [bindings](./bindings).
+Use `@let` to declare a variable whose value is based on the result of a template expression. Angular automatically keeps the variable's value up-to-date with the given expression, similar to [bindings](./templates/bindings).
 
 ```angular-html
 @let name = user.name;
@@ -138,7 +138,7 @@ If you declare the variable on a Angular component, the variable refers to the c
 <my-datepicker #startDate />
 ```
 
-If you declare the variable on an `<ng-template>` element, the variable refers to a TemplateRef instance which represents the template. For more information, see [How Angular uses the asterisk, \*, syntax](/guide/directives/structural-directives#asterisk) in [Structural directives](/guide/directives/structural-directives).
+If you declare the variable on an `<ng-template>` element, the variable refers to a TemplateRef instance which represents the template. For more information, see [How Angular uses the asterisk, \*, syntax](/guide/directives/structural-directives#structural-directive-shorthand) in [Structural directives](/guide/directives/structural-directives).
 
 ```angular-html
 <!-- The `myFragment` variable is assigned the `TemplateRef` instance corresponding to this template fragment. -->

@@ -1,9 +1,9 @@
-load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
-load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", "http_server")
+load("@bazel_skylib//lib:collections.bzl", "collections")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", "http_server")
+load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
-load("@bazel_skylib//lib:collections.bzl", "collections")
 load("//adev/tools/local_deps:index.bzl", "ensure_local_package_deps", "link_local_packages")
 
 package(default_visibility = ["//visibility:public"])
@@ -23,7 +23,9 @@ APPLICATION_FILES = [
     exclude = [
         "src/**/*.spec.ts",
     ],
-)
+) + [
+    "//adev/src/content/examples:embeddable",
+]
 
 TEST_FILES = APPLICATION_FILES + [
     "karma.conf.js",
@@ -35,7 +37,7 @@ TEST_FILES = APPLICATION_FILES + [
 
 APPLICATION_ASSETS = [
     "//adev/src/assets/images",
-    "//adev/src/assets/textures",
+    "//adev/src/assets/others",
     "//adev/src/assets/previews",
     "//adev/src/assets:tutorials",
     "//adev/src/assets/icons",
@@ -59,11 +61,12 @@ APPLICATION_DEPS = [
     "@npm//@angular/platform-server",
     "@npm//@angular/router",
     "@npm//@angular/ssr",
-    "@npm//gsap",
+    "@npm//@types/dom-navigation",
+    "@npm//fflate",
     "@npm//marked",
     "@npm//ngx-progressbar",
-    "@npm//ogl",
     "@npm//rxjs",
+    "@npm//xhr2",
     "@npm//typescript",
     "@npm//@typescript/vfs",
     "@npm//@codemirror/state",
@@ -88,11 +91,9 @@ APPLICATION_DEPS = [
     "@npm//@xterm/addon-fit",
     "@npm//algoliasearch",
     "@npm//angular-split",
-    "@npm//zone.js",
 ]
 
 TEST_DEPS = APPLICATION_DEPS + [
-    "@npm//@angular/platform-browser-dynamic",
     "@npm//@types/jasmine",
     "@npm//@types/node",
     "@npm//jasmine",
@@ -155,6 +156,7 @@ architect(
     name = "build",
     args = config_based_architect_flags + [
         "--output-path=build",
+        "",
     ],
     chdir = "$(RULEDIR)",
     data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [

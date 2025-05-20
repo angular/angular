@@ -1,11 +1,5 @@
-<div class="adev-header-and-tabs adev-cli-content docs-scroll-track-transparent">
-  <docs-viewer [docContent]="mainContentInnerHtml()" />
-</div>
-
-<docs-viewer
-  class="adev-cli-members-container"
-  [docContent]="cardsInnerHtml()"
-  (contentLoaded)="contentLoaded()"
-/>
+@if (docContent(); as docContent) {
+  <docs-viewer [docContent]="docContent.contents" [hasToc]="true" />
+}
 
 <div id="jump-msg" class="cdk-visually-hidden">Jump to details</div>

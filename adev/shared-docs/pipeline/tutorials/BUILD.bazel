@@ -1,53 +1,52 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "editor",
     srcs = glob(
         [
-            "*.ts",
+            "*.mts",
         ],
         exclude = [
-            "playground.ts",
-            "tutorial.ts",
+            "playground.mts",
+            "tutorial.mts",
         ],
     ),
     deps = [
-        "//adev/shared-docs/interfaces",
-        "@npm//@types/node",
-        "@npm//@webcontainer/api",
-        "@npm//fast-glob",
+        "//:node_modules/@types/node",
+        "//:node_modules/@webcontainer/api",
+        "//:node_modules/tinyglobby",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "playground",
     srcs = [
-        "playground.ts",
+        "playground.mts",
     ],
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":editor",
-        "//adev/shared-docs/interfaces",
-        "@npm//@types/node",
-        "@npm//fast-glob",
+        ":editor_rjs",
+        "//:node_modules/@types/node",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "tutorials",
     srcs = [
-        "tutorial.ts",
+        "tutorial.mts",
     ],
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":editor",
-        "//adev/shared-docs/interfaces",
-        "@npm//@types/node",
+        ":editor_rjs",
+        "//:node_modules/@types/node",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )

@@ -11,6 +11,7 @@ def partial_compliance_golden(filePath):
     data = [
         "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
         "//packages/core:npm_package",
+        "//packages:package_json",
         filePath,
     ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path, "%s/**/*.css" % path])
 
@@ -36,12 +37,14 @@ def partial_compliance_golden(filePath):
         name = "_generated_%s" % path,
         tool = generate_partial_name,
         testonly = True,
-        stdout = "%s/_generated.js" % path,
+        outs = ["%s/_generated.js" % path],
         link_workspace_root = True,
         # Disable the linker and rely on patched resolution which works better on Windows
         # and is less prone to race conditions when targets build concurrently.
-        args = ["--nobazel_run_linker"],
+        args = ["--nobazel_run_linker", "$@"],
         visibility = [":__pkg__"],
+        # TODO(devversion): re-enable when we figure out the RBE hanging process issue.
+        tags = ["no-remote-exec"],
         data = [],
     )
 
@@ -49,5 +52,7 @@ def partial_compliance_golden(filePath):
         visibility = ["//visibility:public"],
         name = "%s.golden" % path,
         src = "//packages/compiler-cli/test/compliance/test_cases:%s/GOLDEN_PARTIAL.js" % path,
+        # TODO(devversion): re-enable when we figure out the RBE hanging process issue.
+        tags = ["no-remote-exec"],
         generated = "_generated_%s" % path,
     )

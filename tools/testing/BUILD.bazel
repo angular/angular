@@ -20,9 +20,38 @@ ts_library(
         ":zone_base_setup_lib",
         "//packages/compiler",
         "//packages/core/testing",
-        "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
         "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
+    name = "browser_zoneless",
+    testonly = 1,
+    srcs = ["browser_zoneless_tests.init.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "@npm//reflect-metadata",
+    ],
+)
+
+ts_library(
+    name = "node_zoneless",
+    testonly = 1,
+    srcs = ["node_zoneless_tests.init.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-server",
+        "//packages/platform-server:bundled_domino_lib",
+        "//packages/platform-server/testing",
+        "@npm//reflect-metadata",
     ],
 )
 
@@ -38,6 +67,7 @@ ts_library(
         "//packages/platform-server:bundled_domino_lib",
         "//packages/platform-server/testing",
         "//packages/zone.js/lib",
+        "@npm//reflect-metadata",
     ],
 )
 
@@ -73,6 +103,7 @@ jasmine_node_test(
     name = "fail_bootstrap_test",
     srcs = ["fail.spec.js"],
     bootstrap = ["//tools/testing:node"],
+    data = ["//packages:package_json"],
     # While we force the termination of the process with an exitCode of 55 in fail.spec.js. Jasmine force it to 4.
     # see: https://github.com/jasmine/jasmine-npm/blob/eea8b26efe29176ecbb26ce3f1c4990f8bede685/lib/jasmine.js#L213
     expected_exit_code = 4,

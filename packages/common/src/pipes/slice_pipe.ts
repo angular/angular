@@ -81,14 +81,12 @@ export class SlicePipe implements PipeTransform {
   ): Array<T> | string | null {
     if (value == null) return null;
 
-    if (!this.supports(value)) {
+    const supports = typeof value === 'string' || Array.isArray(value);
+
+    if (!supports) {
       throw invalidPipeArgumentError(SlicePipe, value);
     }
 
     return value.slice(start, end);
-  }
-
-  private supports(obj: any): boolean {
-    return typeof obj === 'string' || Array.isArray(obj);
   }
 }

@@ -14,6 +14,8 @@ ts_library(
         ":zone.ts",
         ":zone-impl.ts",
     ],
+    module_name = "zone.js",
+    module_root = "zone.d.ts",
     deps = [
         "@npm//@types/node",
     ],

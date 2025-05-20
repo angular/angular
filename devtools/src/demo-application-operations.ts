@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationOperations} from 'ng-devtools';
-import {DirectivePosition, ElementPosition} from 'protocol';
+import {ApplicationOperations} from '../projects/ng-devtools';
+import {DirectivePosition, ElementPosition} from '../projects/protocol';
 
 export class DemoApplicationOperations extends ApplicationOperations {
   override viewSource(position: ElementPosition): void {

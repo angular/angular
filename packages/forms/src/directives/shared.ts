@@ -31,10 +31,13 @@ import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
  *
  * @see {@link FormsModule#withconfig}
  */
-export const CALL_SET_DISABLED_STATE = new InjectionToken('CallSetDisabledState', {
-  providedIn: 'root',
-  factory: () => setDisabledStateDefault,
-});
+export const CALL_SET_DISABLED_STATE = new InjectionToken(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'CallSetDisabledState' : '',
+  {
+    providedIn: 'root',
+    factory: () => setDisabledStateDefault,
+  },
+);
 
 /**
  * The type for CALL_SET_DISABLED_STATE. If `always`, then ControlValueAccessor will always call

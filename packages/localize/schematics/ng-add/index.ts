@@ -36,6 +36,7 @@ function addPolyfillToConfig(projectName: string): Rule {
     for (const target of project.targets.values()) {
       switch (target.builder) {
         case AngularBuilder.Karma:
+        case AngularBuilder.BuildKarma:
         case AngularBuilder.Server:
         case AngularBuilder.Browser:
         case AngularBuilder.BrowserEsbuild:

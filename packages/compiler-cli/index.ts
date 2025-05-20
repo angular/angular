@@ -38,10 +38,9 @@ export {ConsoleLogger, Logger, LogLevel} from './src/ngtsc/logging';
 export {NodeJSFileSystem, absoluteFrom} from './src/ngtsc/file_system';
 
 // Export documentation entities for Angular-internal API doc generation.
-export * from './src/ngtsc/docs/src/entities';
 export * from './src/ngtsc/docs';
 
 // Exposed for usage in 1P Angular plugin.
-export {isLocalCompilationDiagnostics} from './src/ngtsc/diagnostics';
+export {isLocalCompilationDiagnostics, ErrorCode, ngErrorCode} from './src/ngtsc/diagnostics';
 
 setFileSystem(new NodeJSFileSystem());

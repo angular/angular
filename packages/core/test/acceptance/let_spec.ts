@@ -17,13 +17,12 @@ import {
   inject,
   ChangeDetectorRef,
   ViewChild,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('@let declarations', () => {
   it('should update the value of a @let declaration over time', () => {
     @Component({
-      standalone: true,
       template: `
         @let multiplier = 2;
         @let result = value * multiplier;
@@ -51,7 +50,6 @@ describe('@let declarations', () => {
     const values: number[] = [];
 
     @Component({
-      standalone: true,
       template: `
         @let result = value * 2;
         <button (click)="log(result)"></button>
@@ -81,7 +79,6 @@ describe('@let declarations', () => {
 
   it('should be able to access @let declarations through multiple levels of views', () => {
     @Component({
-      standalone: true,
       template: `
         @if (true) {
           @if (true) {
@@ -110,7 +107,6 @@ describe('@let declarations', () => {
 
   it('should be able to access @let declarations from parent view before they are declared', () => {
     @Component({
-      standalone: true,
       template: `
         @if (true) {
           {{value}} times {{multiplier}} is {{result}}
@@ -142,7 +138,6 @@ describe('@let declarations', () => {
 
     @Directive({
       selector: '[dir]',
-      standalone: true,
     })
     class TestDirective {
       @Output() testEvent = new EventEmitter<void>();
@@ -153,7 +148,6 @@ describe('@let declarations', () => {
     }
 
     @Component({
-      standalone: true,
       imports: [TestDirective],
       template: `
         <div dir (testEvent)="callback(value)"></div>
@@ -186,7 +180,7 @@ describe('@let declarations', () => {
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in a let declaration', () => {
-    @Pipe({name: 'double', standalone: true})
+    @Pipe({name: 'double'})
     class DoublePipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -196,7 +190,6 @@ describe('@let declarations', () => {
     }
 
     @Component({
-      standalone: true,
       template: `
         @let result = value | double;
         Result: {{result}}
@@ -218,7 +211,6 @@ describe('@let declarations', () => {
 
   it('should be able to use local references inside @let declarations', () => {
     @Component({
-      standalone: true,
       template: `
         <input #firstName value="Frodo" name="first-name">
         <input #lastName value="Baggins">
@@ -240,7 +232,6 @@ describe('@let declarations', () => {
 
   it('should be able to proxy a local reference through @let declarations', () => {
     @Component({
-      standalone: true,
       template: `
         <input #input value="foo">
 
@@ -271,7 +262,6 @@ describe('@let declarations', () => {
     let calls = 0;
 
     @Component({
-      standalone: true,
       template: `
         @let one = getOne();
         @let two = one + getTwo();
@@ -302,7 +292,6 @@ describe('@let declarations', () => {
 
   it('should resolve a @let declaration correctly within an embedded view that uses a value from parent view and cannot be optimized', () => {
     @Component({
-      standalone: true,
       template: `
         @let foo = value + 1;
 
@@ -333,7 +322,6 @@ describe('@let declarations', () => {
 
   it('should not be able to access @let declarations using a query', () => {
     @Component({
-      standalone: true,
       template: `
         @let value = 1;
         {{value}}
@@ -355,12 +343,10 @@ describe('@let declarations', () => {
         @let value = 123;
         <ng-content>The value is {{value}}</ng-content>
       `,
-      standalone: true,
     })
     class InnerComponent {}
 
     @Component({
-      standalone: true,
       template: '<inner/>',
       imports: [InnerComponent],
     })
@@ -379,12 +365,10 @@ describe('@let declarations', () => {
         <ng-content>Fallback content</ng-content>
         <ng-content select="footer">Fallback footer</ng-content>
       `,
-      standalone: true,
     })
     class InnerComponent {}
 
     @Component({
-      standalone: true,
       template: `
         <inner>
           @let one = 1;
@@ -408,7 +392,6 @@ describe('@let declarations', () => {
 
   it('should give precedence to @let declarations over component properties', () => {
     @Component({
-      standalone: true,
       template: `
         @let value = '@let';
 
@@ -428,7 +411,6 @@ describe('@let declarations', () => {
 
   it('should give precedence to local @let definition over one from a parent view', () => {
     @Component({
-      standalone: true,
       template: `
         @let value = 'parent';
 
@@ -447,7 +429,6 @@ describe('@let declarations', () => {
 
   it('should be able to use @for loop variables in @let declarations', () => {
     @Component({
-      standalone: true,
       template: `
         @for (value of values; track $index) {
           @let calculation = value * $index;

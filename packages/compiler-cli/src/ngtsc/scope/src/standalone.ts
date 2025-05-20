@@ -10,13 +10,7 @@ import {Reference} from '../../imports';
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {
-  ComponentScopeKind,
-  ComponentScopeReader,
-  ExportScope,
-  RemoteScope,
-  StandaloneScope,
-} from './api';
+import {ComponentScopeKind, ComponentScopeReader, ExportScope, StandaloneScope} from './api';
 import {DtsModuleScopeResolver} from './dependency';
 import {LocalModuleScopeRegistry} from './local';
 
@@ -38,7 +32,12 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
       const clazzRef = new Reference(clazz);
       const clazzMeta = this.metaReader.getDirectiveMetadata(clazzRef);
 
-      if (clazzMeta === null || !clazzMeta.isComponent || !clazzMeta.isStandalone) {
+      if (
+        clazzMeta === null ||
+        !clazzMeta.isComponent ||
+        !clazzMeta.isStandalone ||
+        clazzMeta.selectorlessEnabled
+      ) {
         this.cache.set(clazz, null);
         return null;
       }

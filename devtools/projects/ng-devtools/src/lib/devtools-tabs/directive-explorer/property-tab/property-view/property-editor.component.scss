@@ -1,3 +1,5 @@
+@use '../../../../../styles/typography';
+
 .editor {
   cursor: text;
   border: none;
@@ -8,27 +10,14 @@
 }
 
 .editor-input {
-  background-color: #bbddfb;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 0 1px var(--dynamic-transparent-01);
 }
 
 input {
+  @extend %monospaced;
+  line-height: 1rem;
+  letter-spacing: normal;
   width: fit-content;
-  font-family: Menlo, monospace;
-  font-weight: 500;
-  font-size: 1em;
   border: none;
   outline: none;
-}
-
-:host-context(.dark-theme) {
-  input {
-    color: #bcc5ce;
-    background-color: #202124;
-  }
-
-  .editor-input {
-    background-color: #454546;
-    box-shadow: 0 0 0 1px rgba(165, 165, 165, 0.05);
-  }
 }

@@ -8,7 +8,7 @@ This first lesson serves as the starting point from which each lesson in this tu
 
 The updated app you have after this lesson confirms that you and your IDE are ready to begin creating an Angular app.
 
-Note: If you are working with the embedded editor, skip to [step three](#create-%60hello-world%60).
+NOTE: If you are working with the embedded editor, skip to [step three](#create-%60hello-world%60).
 When working in the browser playground, you do not need to `ng serve` to run the app. Other commands like `ng generate` can be done in the console window to your right.
 
 <docs-workflow>
@@ -58,12 +58,12 @@ In the **Explorer** pane of your IDE:
         1. `main.ts` is where the app starts running.
         1. `favicon.ico` is the app's icon, just as you would find in any web site.
     1. In the file explorer, find the Angular app's component files (`/app`).
-        1. `app.component.ts` is the source file that describes the `app-root` component.
+        1. `app.ts` is the source file that describes the `app-root` component.
             This is the top-level Angular component in the app. A component is the basic building block of an Angular application.
             The component description includes the component's code, HTML template, and styles, which can be described in this file, or in separate files.
 
             In this app, the styles are in a separate file while the component's code and HTML template are in this file.
-        1. `app.component.css` is the style sheet for this component.
+        1. `app.css` is the style sheet for this component.
         1. New components are added to this directory.
     1. In the file explorer, find the image directory (`/assets`) that contains images used by the app.
     1. In the file explorer, find the files and directories that an Angular app needs to build and run, but they are not files that you normally interact with.
@@ -83,24 +83,24 @@ In this step, you update the Angular project files to change the displayed conte
 In your IDE:
 
 1. Open `first-app/src/index.html`.
-    Note: This step and the next are only for your local environment!
+    NOTE: This step and the next are only for your local environment!
 
 1. In `index.html`, replace the `<title>` element with this code to update the title of the app.
 
-    <docs-code header="Replace in src/index.html" path="adev/src/content/tutorials/first-app/steps/02-HomeComponent/src/index.html" visibleLines="[5]"/>
+    <docs-code header="Replace in src/index.html" path="adev/src/content/tutorials/first-app/steps/02-Home/src/index.html" visibleLines="[5]"/>
 
     Then, save the changes you just made to `index.html`.
 
-1. Next, open  `first-app/src/app/app.component.ts`.
-1. In `app.component.ts`, in the `@Component` definition, replace the `template` line with this code to change the text in the app component.
+1. Next, open  `first-app/src/app/app.ts`.
+1. In `app.ts`, in the `@Component` definition, replace the `template` line with this code to change the text in the app component.
 
-    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/02-HomeComponent/src/app/app.component.ts" visibleLines="[7,9]"/>
+    <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[7,9]"/>
 
-1. In `app.component.ts`, in the `AppComponent` class definition, replace the `title` line with this code to change the component title.
+1. In `app.ts`, in the `App` class definition, replace the `title` line with this code to change the component title.
 
-    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/02-HomeComponent/src/app/app.component.ts" visibleLines="[12,14]"/>
+    <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[12,14]"/>
 
-    Then, save the changes you made to `app.component.ts`.
+    Then, save the changes you made to `app.ts`.
 
 1. If you stopped the `ng serve` command from step 1, in the **Terminal** window of your IDE, run `ng serve` again.
 1. Open your browser and navigate to `localhost:4200` and confirm that the app builds without error and displays *Hello world* in the title and body of your app:
@@ -109,7 +109,7 @@ In your IDE:
 
 </docs-workflow>
 
-Summary: In this lesson, you updated a default Angular app to display *Hello world*.
+SUMMARY: In this lesson, you updated a default Angular app to display *Hello world*.
 In the process, you learned about the `ng serve` command to serve your app locally for testing.
 
 For more information about the topics covered in this lesson, visit:

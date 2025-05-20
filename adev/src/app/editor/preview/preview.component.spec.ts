@@ -43,7 +43,7 @@ describe('Preview', () => {
           useValue: fakeNodeRuntimeState,
         },
       ],
-    }).compileComponents();
+    });
 
     const fixture = TestBed.createComponent(Preview);
 
@@ -64,15 +64,10 @@ describe('Preview', () => {
     };
   };
 
-  it('should set iframe src on init', async () => {
-    const {component, PREVIEW_URL} = beforeEach();
-
-    component.ngAfterViewInit();
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    expect(component.previewIframe?.nativeElement).toBeTruthy();
-    expect(component.previewIframe?.nativeElement?.src).toBe(PREVIEW_URL);
+  it('should set iframe src', () => {
+    const {fixture, PREVIEW_URL} = beforeEach();
+    const iframeElement = fixture.debugElement.query(By.css('iframe'));
+    expect(iframeElement?.nativeElement?.src).toBe(PREVIEW_URL);
   });
 
   it('should not render loading elements if the loadingStep is READY or ERROR', () => {

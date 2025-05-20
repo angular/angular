@@ -18,11 +18,11 @@ import {
   PipeTransform,
   TemplateRef,
   ViewContainerRef,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 // Basic shared pipe used during testing.
-@Pipe({name: 'multiply', pure: true, standalone: true})
+@Pipe({name: 'multiply', pure: true})
 class MultiplyPipe implements PipeTransform {
   transform(value: number, amount: number) {
     return value * amount;
@@ -31,7 +31,7 @@ class MultiplyPipe implements PipeTransform {
 
 describe('control flow - if', () => {
   it('should add and remove views based on conditions change', () => {
-    @Component({standalone: true, template: '@if (show) {Something} @else {Nothing}'})
+    @Component({template: '@if (show) {Something} @else {Nothing}'})
     class TestComponent {
       show = true;
     }
@@ -48,7 +48,6 @@ describe('control flow - if', () => {
 
   it('should expose expression value in context', () => {
     @Component({
-      standalone: true,
       template: '@if (show; as alias) {{{show}} aliased to {{alias}}}',
     })
     class TestComponent {
@@ -66,7 +65,6 @@ describe('control flow - if', () => {
 
   it('should not expose the aliased expression to `if` and `else if` blocks', () => {
     @Component({
-      standalone: true,
       template: `
           @if (value === 1; as alias) {
             If: {{value}} as {{alias || 'unavailable'}}
@@ -96,7 +94,6 @@ describe('control flow - if', () => {
 
   it('should expose the context to nested conditional blocks', () => {
     @Component({
-      standalone: true,
       imports: [MultiplyPipe],
       template: `
           @if (value | multiply:2; as root) {
@@ -135,7 +132,6 @@ describe('control flow - if', () => {
     let logs: any[] = [];
 
     @Component({
-      standalone: true,
       imports: [MultiplyPipe],
       template: `
           @if (value | multiply:2; as root) {
@@ -186,7 +182,6 @@ describe('control flow - if', () => {
 
   it('should expose expression value passed through a pipe in context', () => {
     @Component({
-      standalone: true,
       template: '@if (value | multiply:2; as alias) {{{value}} aliased to {{alias}}}',
       imports: [MultiplyPipe],
     })
@@ -205,7 +200,6 @@ describe('control flow - if', () => {
 
   it('should destroy all views if there is nothing to display', () => {
     @Component({
-      standalone: true,
       template: '@if (show) {Something}',
     })
     class TestComponent {
@@ -223,7 +217,6 @@ describe('control flow - if', () => {
 
   it('should be able to use pipes in conditional expressions', () => {
     @Component({
-      standalone: true,
       imports: [MultiplyPipe],
       template: `
           @if ((value | multiply:2) === 2) {
@@ -254,7 +247,7 @@ describe('control flow - if', () => {
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in if blocks', () => {
-    @Pipe({name: 'test', standalone: true})
+    @Pipe({name: 'test'})
     class TestPipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -264,7 +257,6 @@ describe('control flow - if', () => {
     }
 
     @Component({
-      standalone: true,
       template: '@if (show | test) {Something}',
       imports: [TestPipe],
     })
@@ -279,7 +271,6 @@ describe('control flow - if', () => {
 
   it('should support a condition with the a typeof expression', () => {
     @Component({
-      standalone: true,
       template: `
           @if (typeof value === 'string') {
             {{value.length}}
@@ -301,17 +292,39 @@ describe('control flow - if', () => {
     expect(fixture.nativeElement.textContent.trim()).toBe('42');
   });
 
+  it('should support a condition with the a binary expression with the in keyword', () => {
+    @Component({
+      standalone: true,
+      template: `
+          @if (key in {foo: 'bar'}) {
+            has {{key}}
+          } @else {
+            no {{key}}
+          }
+        `,
+    })
+    class TestComponent {
+      key: string | number = 'foo';
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('has foo');
+
+    fixture.componentInstance.key = 42;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('no 42');
+  });
+
   describe('content projection', () => {
     it('should project an @if with a single root node into the root node slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @if (true) {
@@ -330,7 +343,7 @@ describe('control flow - if', () => {
     it('should project an @if with a single root node with a data binding', () => {
       let directiveCount = 0;
 
-      @Directive({standalone: true, selector: '[foo]'})
+      @Directive({selector: '[foo]'})
       class Foo {
         @Input('foo') value: any;
 
@@ -340,14 +353,12 @@ describe('control flow - if', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent, Foo],
         template: `
         <test>Before @if (true) {
@@ -368,14 +379,12 @@ describe('control flow - if', () => {
 
     it('should project an @if with multiple root nodes into the catch-all slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @if (true) {
@@ -394,14 +403,12 @@ describe('control flow - if', () => {
 
     it('should project an @if with an ng-container root node', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @if (true) {
@@ -424,14 +431,12 @@ describe('control flow - if', () => {
     // This test is to ensure that we don't regress if it happens in the future.
     it('should project an @if with a single root node and comments into the root node slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @if (true) {
@@ -451,7 +456,6 @@ describe('control flow - if', () => {
 
     it('should project @if an @else content into separate slots', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template:
           'if: (<ng-content select="[if_case]"/>),  else: (<ng-content select="[else_case]"/>)',
@@ -459,7 +463,6 @@ describe('control flow - if', () => {
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>
@@ -490,14 +493,12 @@ describe('control flow - if', () => {
 
     it('should project @if an @else content into separate slots when if has default content', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'if: (<ng-content />),  else: (<ng-content select="[else_case]"/>)',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
               <test>
@@ -528,14 +529,12 @@ describe('control flow - if', () => {
 
     it('should project @if an @else content into separate slots when else has default content', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'if: (<ng-content select="[if_case]"/>),  else: (<ng-content/>)',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>
@@ -566,14 +565,12 @@ describe('control flow - if', () => {
 
     it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         preserveWhitespaces: true,
         template: '<test>Before @if (true) {<span foo>one</span>} After</test>',
@@ -587,14 +584,12 @@ describe('control flow - if', () => {
 
     it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         preserveWhitespaces: true,
         // Note the whitespace due to the indentation inside @if.
@@ -613,14 +608,12 @@ describe('control flow - if', () => {
 
     it('should not project the root node across multiple layers of @if', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @if (true) {
@@ -639,14 +632,12 @@ describe('control flow - if', () => {
 
     it('should project an @if with a single root template node into the root node slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent, NgFor],
         template: `<test>Before @if (true) {
         <span *ngFor="let item of items" foo>{{item}}</span>
@@ -669,7 +660,6 @@ describe('control flow - if', () => {
       let directiveCount = 0;
 
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
@@ -677,7 +667,6 @@ describe('control flow - if', () => {
 
       @Directive({
         selector: '[foo]',
-        standalone: true,
       })
       class FooDirective {
         constructor() {
@@ -686,7 +675,6 @@ describe('control flow - if', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [TestComponent, FooDirective],
         template: `<test>Before @if (true) {
         <span foo>foo</span>
@@ -706,7 +694,6 @@ describe('control flow - if', () => {
       let directiveCount = 0;
 
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
@@ -714,7 +701,6 @@ describe('control flow - if', () => {
 
       @Directive({
         selector: '[templateDir]',
-        standalone: true,
       })
       class TemplateDirective implements OnInit {
         constructor(
@@ -731,7 +717,6 @@ describe('control flow - if', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [TestComponent, TemplateDirective],
         template: `<test>Before @if (true) {
         <span *templateDir foo>foo</span>
@@ -751,7 +736,6 @@ describe('control flow - if', () => {
       let directiveCount = 0;
 
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
@@ -759,7 +743,6 @@ describe('control flow - if', () => {
 
       @Directive({
         selector: '[templateDir]',
-        standalone: true,
       })
       class TemplateDirective implements OnInit {
         constructor(
@@ -776,7 +759,6 @@ describe('control flow - if', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [TestComponent, TemplateDirective],
         template: `<test>Before @if (true) {
           <ng-template templateDir foo>foo</ng-template>
@@ -796,7 +778,6 @@ describe('control flow - if', () => {
       let directiveCount = 0;
 
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select=".foo"/>',
       })
@@ -804,7 +785,6 @@ describe('control flow - if', () => {
 
       @Directive({
         selector: '.foo',
-        standalone: true,
       })
       class TemplateDirective {
         constructor() {
@@ -813,7 +793,6 @@ describe('control flow - if', () => {
       }
 
       @Component({
-        standalone: true,
         imports: [TestComponent, TemplateDirective],
         template: `<test>Before @if (condition) {
           <div class="foo">foo</div>
@@ -861,14 +840,12 @@ describe('control flow - if', () => {
 
     it('should project an @if with a single root node and @let declarations into the root node slot', () => {
       @Component({
-        standalone: true,
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
       class TestComponent {}
 
       @Component({
-        standalone: true,
         imports: [TestComponent],
         template: `
         <test>Before @if (true) {

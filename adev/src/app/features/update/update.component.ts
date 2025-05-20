@@ -63,6 +63,7 @@ export default class AppComponent {
   protected afterRecommendations: Step[] = [];
 
   protected readonly versions = [
+    {name: '20.0', number: 2000},
     {name: '19.0', number: 1900},
     {name: '18.0', number: 1800},
     {name: '17.0', number: 1700},
@@ -99,9 +100,9 @@ export default class AppComponent {
     {name: '2.1', number: 201},
     {name: '2.0', number: 200},
   ];
-  protected from = this.versions.find((version) => version.name === '17.0')!;
-  protected to = this.versions.find((version) => version.name === '18.0')!;
-  protected futureVersion = 2000;
+  protected from = this.versions.find((version) => version.name === '19.0')!;
+  protected to = this.versions.find((version) => version.name === '20.0')!;
+  protected futureVersion = 2100;
 
   protected readonly steps: Step[] = RECOMMENDATIONS;
 

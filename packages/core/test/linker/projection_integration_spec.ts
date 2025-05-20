@@ -16,18 +16,17 @@ import {
   EnvironmentInjector,
   Injector,
   Input,
-  NgModule,
-  NO_ERRORS_SCHEMA,
   OnInit,
   reflectComponentType,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
-} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+} from '../../src/core';
+import {ComponentFixture, TestBed} from '../../testing';
+import {By} from '@angular/platform-browser';
+import {expect} from '@angular/private/testing/matchers';
+import {isNode} from '@angular/private/testing';
 
 describe('projection', () => {
   beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));

@@ -22,12 +22,6 @@ import {
  *
  * @usageNotes
  *
- * Set the font of the containing element to the result of an expression.
- *
- * ```html
- * <some-element [ngStyle]="{'font-style': styleExp}">...</some-element>
- * ```
- *
  * Set the width of the containing element to a pixel value returned by an expression.
  *
  * ```html
@@ -40,6 +34,15 @@ import {
  * <some-element [ngStyle]="objExp">...</some-element>
  * ```
  *
+ * For more simple use cases you can use the [style bindings](/guide/templates/binding#css-class-and-style-property-bindings) directly.
+ * It doesn't require importing a directive.
+ *
+ * Set the font of the containing element to the result of an expression.
+ *
+ * ```html
+ * <some-element [style]="{'font-style': styleExp}">...</some-element>
+ * ```
+ *
  * @description
  *
  * An attribute directive that updates styles for the containing HTML element.
@@ -50,6 +53,8 @@ import {
  * The resulting non-null value, expressed in the given unit,
  * is assigned to the given style property.
  * If the result of evaluation is null, the corresponding style is removed.
+ *
+ * @see [Style bindings](/guide/templates/binding#css-class-and-style-property-bindings)
  *
  * @publicApi
  */

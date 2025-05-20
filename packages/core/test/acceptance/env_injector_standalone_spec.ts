@@ -13,8 +13,8 @@ import {
   importProvidersFrom,
   InjectionToken,
   NgModule,
-} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 import {internalImportProvidersFrom} from '../../src/di/provider_collection';
 
@@ -25,7 +25,7 @@ describe('environment injector and standalone components', () => {
     @NgModule({providers: [ModuleService]})
     class Module {}
 
-    @Component({standalone: true, imports: [Module]})
+    @Component({imports: [Module]})
     class StandaloneComponent {}
 
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
@@ -42,7 +42,7 @@ describe('environment injector and standalone components', () => {
     @NgModule({providers: [ModuleService]})
     class Module {}
 
-    @Component({standalone: true, imports: [Module]})
+    @Component({imports: [Module]})
     class StandaloneComponent {}
 
     @NgModule({imports: [StandaloneComponent], exports: [StandaloneComponent]})
@@ -62,10 +62,10 @@ describe('environment injector and standalone components', () => {
     @NgModule({providers: [{provide: ModuleService, useClass: ModuleService, multi: true}]})
     class Module {}
 
-    @Component({standalone: true, imports: [Module]})
+    @Component({imports: [Module]})
     class StandaloneComponent1 {}
 
-    @Component({standalone: true, imports: [Module]})
+    @Component({imports: [Module]})
     class StandaloneComponent2 {}
 
     @NgModule({

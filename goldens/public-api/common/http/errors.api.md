@@ -7,15 +7,33 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    CANNOT_SPECIFY_BOTH_FROM_STRING_AND_FROM_OBJECT = 2805,
+    // (undocumented)
     HEADERS_ALTERED_BY_TRANSFER_CACHE = 2802,
     // (undocumented)
     HTTP_ORIGIN_MAP_CONTAINS_PATH = 2804,
     // (undocumented)
     HTTP_ORIGIN_MAP_USED_IN_CLIENT = 2803,
     // (undocumented)
+    JSONP_HEADERS_NOT_SUPPORTED = 2812,
+    // (undocumented)
+    JSONP_WRONG_METHOD = 2810,
+    // (undocumented)
+    JSONP_WRONG_RESPONSE_TYPE = 2811,
+    // (undocumented)
+    KEEPALIVE_NOT_SUPPORTED_WITH_XHR = 2813,
+    // (undocumented)
     MISSING_JSONP_MODULE = -2800,
     // (undocumented)
-    NOT_USING_FETCH_BACKEND_IN_SSR = 2801
+    NOT_USING_FETCH_BACKEND_IN_SSR = 2801,
+    // (undocumented)
+    RESPONSE_IS_NOT_A_BLOB = 2807,
+    // (undocumented)
+    RESPONSE_IS_NOT_A_STRING = 2808,
+    // (undocumented)
+    RESPONSE_IS_NOT_AN_ARRAY_BUFFER = 2806,
+    // (undocumented)
+    UNHANDLED_OBSERVE_TYPE = 2809
 }
 
 // (No @packageDocumentation comment for this package)

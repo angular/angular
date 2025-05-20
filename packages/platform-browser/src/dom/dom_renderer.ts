@@ -22,6 +22,10 @@ import {
   RendererType2,
   ViewEncapsulation,
   ɵRuntimeError as RuntimeError,
+  type ListenerOptions,
+  ɵTracingService as TracingService,
+  ɵTracingSnapshot as TracingSnapshot,
+  Optional,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -39,6 +43,8 @@ export const NAMESPACE_URIS: {[ns: string]: string} = {
 };
 
 const COMPONENT_REGEX = /%COMP%/g;
+const SOURCEMAP_URL_REGEXP = /\/\*#\s*sourceMappingURL=(.+?)\s*\*\//;
+const PROTOCOL_REGEXP = /^https?:/;
 
 export const COMPONENT_VARIABLE = '%COMP%';
 export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
@@ -76,6 +82,52 @@ export function shimStylesContent(compId: string, styles: string[]): string[] {
   return styles.map((s) => s.replace(COMPONENT_REGEX, compId));
 }
 
+/**
+ * Prepends a baseHref to the `sourceMappingURL` within the provided CSS content.
+ * If the `sourceMappingURL` contains an inline (encoded) map, the function skips processing.
+ *
+ * @note For inline stylesheets, the `sourceMappingURL` is relative to the page's origin
+ * and not the provided baseHref. This function is needed as when accessing the page with a URL
+ * containing two or more segments.
+ * For example, if the baseHref is set to `/`, and you visit a URL like `http://localhost/foo/bar`,
+ * the map would be requested from `http://localhost/foo/bar/comp.css.map` instead of what you'd expect,
+ * which is `http://localhost/comp.css.map`. This behavior is corrected by modifying the `sourceMappingURL`
+ * to ensure external source maps are loaded relative to the baseHref.
+ *
+
+ * @param baseHref - The base URL to prepend to the `sourceMappingURL`.
+ * @param styles - An array of CSS content strings, each potentially containing a `sourceMappingURL`.
+ * @returns The updated array of CSS content strings with modified `sourceMappingURL` values,
+ * or the original content if no modification is needed.
+ */
+export function addBaseHrefToCssSourceMap(baseHref: string, styles: string[]): string[] {
+  if (!baseHref) {
+    return styles;
+  }
+
+  const absoluteBaseHrefUrl = new URL(baseHref, 'http://localhost');
+
+  return styles.map((cssContent) => {
+    if (!cssContent.includes('sourceMappingURL=')) {
+      return cssContent;
+    }
+
+    return cssContent.replace(SOURCEMAP_URL_REGEXP, (_, sourceMapUrl) => {
+      if (
+        sourceMapUrl[0] === '/' ||
+        sourceMapUrl.startsWith('data:') ||
+        PROTOCOL_REGEXP.test(sourceMapUrl)
+      ) {
+        return `/*# sourceMappingURL=${sourceMapUrl} */`;
+      }
+
+      const {pathname: resolvedSourceMapUrl} = new URL(sourceMapUrl, absoluteBaseHrefUrl);
+
+      return `/*# sourceMappingURL=${resolvedSourceMapUrl} */`;
+    });
+  });
+}
+
 @Injectable()
 export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
   private readonly rendererByCompId = new Map<
@@ -94,6 +146,9 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Inject(PLATFORM_ID) readonly platformId: Object,
     readonly ngZone: NgZone,
     @Inject(CSP_NONCE) private readonly nonce: string | null = null,
+    @Inject(TracingService)
+    @Optional()
+    private readonly tracingService: TracingService<TracingSnapshot> | null = null,
   ) {
     this.platformIsServer = isPlatformServer(platformId);
     this.defaultRenderer = new DefaultDomRenderer2(
@@ -101,6 +156,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       doc,
       ngZone,
       this.platformIsServer,
+      this.tracingService,
     );
   }
 
@@ -137,6 +193,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       const sharedStylesHost = this.sharedStylesHost;
       const removeStylesOnCompDestroy = this.removeStylesOnCompDestroy;
       const platformIsServer = this.platformIsServer;
+      const tracingService = this.tracingService;
 
       switch (type.encapsulation) {
         case ViewEncapsulation.Emulated:
@@ -149,6 +206,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             platformIsServer,
+            tracingService,
           );
           break;
         case ViewEncapsulation.ShadowDom:
@@ -161,6 +219,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             this.nonce,
             platformIsServer,
+            tracingService,
           );
         default:
           renderer = new NoneEncapsulationDomRenderer(
@@ -171,6 +230,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             platformIsServer,
+            tracingService,
           );
           break;
       }
@@ -183,6 +243,14 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
 
   ngOnDestroy() {
     this.rendererByCompId.clear();
+  }
+
+  /**
+   * Used during HMR to clear any cached data about a component.
+   * @param componentId ID of the component that is being replaced.
+   */
+  protected componentReplaced(componentId: string) {
+    this.rendererByCompId.delete(componentId);
   }
 }
 
@@ -200,6 +268,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     private readonly doc: Document,
     private readonly ngZone: NgZone,
     private readonly platformIsServer: boolean,
+    private readonly tracingService: TracingService<TracingSnapshot> | null,
   ) {}
 
   destroy(): void {}
@@ -342,6 +411,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     target: 'window' | 'document' | 'body' | any,
     event: string,
     callback: (event: any) => boolean,
+    options?: ListenerOptions,
   ): () => void {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       this.throwOnSyntheticProps &&
@@ -349,14 +419,25 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (typeof target === 'string') {
       target = getDOM().getGlobalEventTarget(this.doc, target);
       if (!target) {
-        throw new Error(`Unsupported event target ${target} for event ${event}`);
+        throw new RuntimeError(
+          RuntimeErrorCode.UNSUPPORTED_EVENT_TARGET,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            `Unsupported event target ${target} for event ${event}`,
+        );
       }
+    }
+
+    let wrappedCallback = this.decoratePreventDefault(callback);
+
+    if (this.tracingService?.wrapEventListener) {
+      wrappedCallback = this.tracingService.wrapEventListener(target, event, wrappedCallback);
     }
 
     return this.eventManager.addEventListener(
       target,
       event,
-      this.decoratePreventDefault(callback),
+      wrappedCallback,
+      options,
     ) as VoidFunction;
   }
 
@@ -395,8 +476,8 @@ function checkNoSyntheticProp(name: string, nameKind: string) {
     throw new RuntimeError(
       RuntimeErrorCode.UNEXPECTED_SYNTHETIC_PROPERTY,
       `Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
-  - Either \`BrowserAnimationsModule\` or \`NoopAnimationsModule\` are imported in your application.
-  - There is corresponding configuration for the animation named \`${name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`,
+  - Make sure \`provideAnimationsAsync()\`, \`provideAnimations()\` or \`provideNoopAnimations()\` call was added to a list of providers used to bootstrap an application.
+  - There is a corresponding animation configuration named \`${name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.dev/api/core/Component#animations).`,
     );
   }
 }
@@ -417,12 +498,19 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     ngZone: NgZone,
     nonce: string | null,
     platformIsServer: boolean,
+    tracingService: TracingService<TracingSnapshot> | null,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer);
+    super(eventManager, doc, ngZone, platformIsServer, tracingService);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
-
     this.sharedStylesHost.addHost(this.shadowRoot);
-    const styles = shimStylesContent(component.id, component.styles);
+    let styles = component.styles;
+    if (ngDevMode) {
+      // We only do this in development, as for production users should not add CSS sourcemaps to components.
+      const baseHref = getDOM().getBaseHref(doc) ?? '';
+      styles = addBaseHrefToCssSourceMap(baseHref, styles);
+    }
+
+    styles = shimStylesContent(component.id, styles);
 
     for (const style of styles) {
       const styleEl = document.createElement('style');
@@ -487,10 +575,18 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     doc: Document,
     ngZone: NgZone,
     platformIsServer: boolean,
+    tracingService: TracingService<TracingSnapshot> | null,
     compId?: string,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer);
-    this.styles = compId ? shimStylesContent(compId, component.styles) : component.styles;
+    super(eventManager, doc, ngZone, platformIsServer, tracingService);
+    let styles = component.styles;
+    if (ngDevMode) {
+      // We only do this in development, as for production users should not add CSS sourcemaps to components.
+      const baseHref = getDOM().getBaseHref(doc) ?? '';
+      styles = addBaseHrefToCssSourceMap(baseHref, styles);
+    }
+
+    this.styles = compId ? shimStylesContent(compId, styles) : styles;
     this.styleUrls = component.getExternalStyles?.(compId);
   }
 
@@ -520,6 +616,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     doc: Document,
     ngZone: NgZone,
     platformIsServer: boolean,
+    tracingService: TracingService<TracingSnapshot> | null,
   ) {
     const compId = appId + '-' + component.id;
     super(
@@ -530,6 +627,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       doc,
       ngZone,
       platformIsServer,
+      tracingService,
       compId,
     );
     this.contentAttr = shimContentAttribute(compId);

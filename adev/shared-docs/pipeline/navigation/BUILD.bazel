@@ -1,0 +1,36 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "lib",
+    srcs = glob(
+        [
+            "*.mts",
+        ],
+        exclude = [
+            "index.mts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/@webcontainer/api",
+        "//:node_modules/tinyglobby",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+    ],
+)
+
+ts_project(
+    name = "navigation",
+    srcs = [
+        "index.mts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":lib_rjs",
+        "//:node_modules/@types/node",
+        "//adev/shared-docs/interfaces",
+    ],
+)

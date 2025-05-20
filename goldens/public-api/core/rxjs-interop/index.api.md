@@ -4,18 +4,9 @@
 
 ```ts
 
-import { DestroyRef } from '@angular/core';
-import { Injector } from '@angular/core';
 import { MonoTypeOperatorFunction } from 'rxjs';
 import { Observable } from 'rxjs';
-import { OutputOptions } from '@angular/core';
-import { OutputRef } from '@angular/core';
-import { ResourceLoaderParams } from '@angular/core';
-import { ResourceOptions } from '@angular/core';
-import { ResourceRef } from '@angular/core';
-import { Signal } from '@angular/core';
 import { Subscribable } from 'rxjs';
-import { ValueEqualityFn } from '@angular/core/primitives/signals';
 
 // @public
 export function outputFromObservable<T>(observable: Observable<T>, opts?: OutputOptions): OutputRef<T>;
@@ -27,12 +18,17 @@ export function outputToObservable<T>(ref: OutputRef<T>): Observable<T>;
 export function pendingUntilEvent<T>(injector?: Injector): MonoTypeOperatorFunction<T>;
 
 // @public
-export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T>;
+export function rxResource<T, R>(opts: RxResourceOptions<T, R> & {
+    defaultValue: NoInfer<T>;
+}): ResourceRef<T>;
 
 // @public
-export interface RxResourceOptions<T, R> extends Omit<ResourceOptions<T, R>, 'loader'> {
+export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
+
+// @public
+export interface RxResourceOptions<T, R> extends BaseResourceOptions<T, R> {
     // (undocumented)
-    loader: (params: ResourceLoaderParams<R>) => Observable<T>;
+    stream: (params: ResourceLoaderParams<R>) => Observable<T>;
 }
 
 // @public
@@ -75,11 +71,10 @@ export function toSignal<T, const U extends T>(source: Observable<T> | Subscriba
 
 // @public
 export interface ToSignalOptions<T> {
-    equal?: ValueEqualityFn<T>;
+    equal?: ValueEqualityFn_2<T>;
     initialValue?: unknown;
     injector?: Injector;
     manualCleanup?: boolean;
-    rejectErrors?: boolean;
     requireSync?: boolean;
 }
 

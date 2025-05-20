@@ -6,20 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '@angular/core';
-
 import {
-  NavigateEvent,
-  Navigation,
-  NavigationCurrentEntryChangeEvent,
-  NavigationHistoryEntry,
-  NavigationNavigateOptions,
-  NavigationOptions,
-  NavigationReloadOptions,
-  NavigationResult,
-  NavigationTransition,
-  NavigationUpdateCurrentEntryOptions,
-} from './navigation_types';
+  Injectable,
+  ɵNavigateEvent as NavigateEvent,
+  ɵNavigation as Navigation,
+  ɵNavigationCurrentEntryChangeEvent as NavigationCurrentEntryChangeEvent,
+  ɵNavigationHistoryEntry as NavigationHistoryEntry,
+  ɵNavigationNavigateOptions as NavigationNavigateOptions,
+  ɵNavigationOptions as NavigationOptions,
+  ɵNavigationReloadOptions as NavigationReloadOptions,
+  ɵNavigationResult as NavigationResult,
+  ɵNavigationTransition as NavigationTransition,
+  ɵNavigationUpdateCurrentEntryOptions as NavigationUpdateCurrentEntryOptions,
+} from '@angular/core';
 
 /**
  * This class wraps the platform Navigation API which allows server-specific and test

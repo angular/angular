@@ -47,7 +47,7 @@
           "failureMessage": "Invalid MyApp definition",
           "files": [
             {
-              "expected": "pipes_my_app_def.pipeline.js",
+              "expected": "pipes_my_app_def.js",
               "generated": "pipes.js"
             }
           ]
@@ -108,6 +108,20 @@
               "expected": "pipe_di_change_detector_ref_my_other_pipe_fac.js",
               "generated": "pipe_di_change_detector_ref.js"
             }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle a pipe that does not have a name",
+      "inputFiles": [
+        "nameless_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid definition",
+          "files": [
+            "nameless_pipe.js"
           ]
         }
       ]

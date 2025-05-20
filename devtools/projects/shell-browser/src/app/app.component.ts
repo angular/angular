@@ -7,8 +7,8 @@
  */
 
 import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
-import {DevToolsComponent} from 'ng-devtools';
-import {Events, MessageBus} from 'protocol';
+import {DevToolsComponent} from '../../../ng-devtools';
+import {Events, MessageBus} from '../../../protocol';
 
 @Component({
   selector: 'app-root',

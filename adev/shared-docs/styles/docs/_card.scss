@@ -4,11 +4,12 @@
   .docs-card-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1.25rem;
+    margin-block: 1rem;
+
     @container docs-content (max-width: 450px) {
       grid-template-columns: 1fr;
     }
-    grid-gap: 1.25rem;
-    margin-block: 1rem;
   }
 
   .docs-card {
@@ -20,7 +21,9 @@
     border: 1px solid var(--senary-contrast);
     border-radius: 0.25rem;
     overflow: hidden;
-    transition: border-color 0.3s ease, background-color 0.3s ease;
+    transition:
+      border-color 0.3s ease,
+      background-color 0.3s ease;
 
     p:first-of-type {
       margin-block-start: 1.5rem;
@@ -53,6 +56,7 @@
         flex-direction: column;
         justify-content: space-between;
         border-block-start: 1px solid var(--senary-contrast);
+
         h3 {
           margin-bottom: 0;
           margin-block-start: 1rem;
@@ -78,7 +82,6 @@
       color: transparent;
       font-size: 0.875rem;
       margin-block: 0;
-
       transition: background-position 1.8s ease-out;
       background-size: 200% 100%;
       background-position: 100% 0%;
@@ -86,10 +89,11 @@
     }
 
     &:hover {
+      background: var(--subtle-purple);
+
       span {
         background-position: 0% 0%;
       }
-      background: var(--subtle-purple);
     }
   }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {escapeCommentText} from '@angular/core/src/util/dom';
+import {escapeCommentText} from '../../src/util/dom';
 
 describe('comment node text escaping', () => {
   describe('escapeCommentText', () => {

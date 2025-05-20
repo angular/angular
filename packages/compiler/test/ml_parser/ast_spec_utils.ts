@@ -39,19 +39,23 @@ class _Humanizer implements html.Visitor {
 
   constructor(private includeSourceSpan: boolean) {}
 
-  visitElement(element: html.Element, context: any): any {
+  visitElement(element: html.Element): any {
     const res = this._appendContext(element, [html.Element, element.name, this.elDepth++]);
+    if (element.isSelfClosing) {
+      res.push('#selfClosing');
+    }
     if (this.includeSourceSpan) {
       res.push(element.startSourceSpan.toString() ?? null);
       res.push(element.endSourceSpan?.toString() ?? null);
     }
     this.result.push(res);
     html.visitAll(this, element.attrs);
+    html.visitAll(this, element.directives);
     html.visitAll(this, element.children);
     this.elDepth--;
   }
 
-  visitAttribute(attribute: html.Attribute, context: any): any {
+  visitAttribute(attribute: html.Attribute): any {
     const valueTokens = attribute.valueTokens ?? [];
     const res = this._appendContext(attribute, [
       html.Attribute,
@@ -62,7 +66,7 @@ class _Humanizer implements html.Visitor {
     this.result.push(res);
   }
 
-  visitText(text: html.Text, context: any): any {
+  visitText(text: html.Text): any {
     const res = this._appendContext(text, [
       html.Text,
       text.value,
@@ -72,12 +76,12 @@ class _Humanizer implements html.Visitor {
     this.result.push(res);
   }
 
-  visitComment(comment: html.Comment, context: any): any {
+  visitComment(comment: html.Comment): any {
     const res = this._appendContext(comment, [html.Comment, comment.value, this.elDepth]);
     this.result.push(res);
   }
 
-  visitExpansion(expansion: html.Expansion, context: any): any {
+  visitExpansion(expansion: html.Expansion): any {
     const res = this._appendContext(expansion, [
       html.Expansion,
       expansion.switchValue,
@@ -89,7 +93,7 @@ class _Humanizer implements html.Visitor {
     this.elDepth--;
   }
 
-  visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
+  visitExpansionCase(expansionCase: html.ExpansionCase): any {
     const res = this._appendContext(expansionCase, [
       html.ExpansionCase,
       expansionCase.value,
@@ -98,7 +102,7 @@ class _Humanizer implements html.Visitor {
     this.result.push(res);
   }
 
-  visitBlock(block: html.Block, context: any) {
+  visitBlock(block: html.Block) {
     const res = this._appendContext(block, [html.Block, block.name, this.elDepth++]);
     if (this.includeSourceSpan) {
       res.push(block.startSourceSpan.toString() ?? null);
@@ -110,11 +114,11 @@ class _Humanizer implements html.Visitor {
     this.elDepth--;
   }
 
-  visitBlockParameter(parameter: html.BlockParameter, context: any) {
+  visitBlockParameter(parameter: html.BlockParameter) {
     this.result.push(this._appendContext(parameter, [html.BlockParameter, parameter.expression]));
   }
 
-  visitLetDeclaration(decl: html.LetDeclaration, context: any) {
+  visitLetDeclaration(decl: html.LetDeclaration) {
     const res = this._appendContext(decl, [html.LetDeclaration, decl.name, decl.value]);
 
     if (this.includeSourceSpan) {
@@ -123,6 +127,36 @@ class _Humanizer implements html.Visitor {
     }
 
     this.result.push(res);
+  }
+
+  visitComponent(node: html.Component): any {
+    const res = this._appendContext(node, [
+      html.Component,
+      node.componentName,
+      node.tagName,
+      node.fullName,
+      this.elDepth++,
+    ]);
+    if (node.isSelfClosing) {
+      res.push('#selfClosing');
+    }
+    if (this.includeSourceSpan) {
+      res.push(node.startSourceSpan.toString() ?? null, node.endSourceSpan?.toString() ?? null);
+    }
+    this.result.push(res);
+    html.visitAll(this, node.attrs);
+    html.visitAll(this, node.directives);
+    html.visitAll(this, node.children);
+    this.elDepth--;
+  }
+
+  visitDirective(directive: html.Directive) {
+    const res = this._appendContext(directive, [html.Directive, directive.name]);
+    if (this.includeSourceSpan) {
+      res.push(directive.startSourceSpan.toString(), directive.endSourceSpan?.toString() ?? null);
+    }
+    this.result.push(res);
+    html.visitAll(this, directive.attrs);
   }
 
   private _appendContext(ast: html.Node, input: any[]): any[] {
