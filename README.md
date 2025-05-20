@@ -137,7 +137,7 @@ Join the conversation and help the community.
 [changelog]: CHANGELOG.md
 [ng]: https://angular.dev
 [documentation]: https://angular.dev/overview
-[angularmaterial]: https://material.angular.io/
+[angularmaterial]: https://material.angular.dev/
 [cli]: https://angular.dev/tools/cli
 [architecture]: https://angular.dev/essentials
 [componentstemplates]: https://angular.dev/tutorials/learn-angular/1-components-in-angular

@@ -59,7 +59,7 @@ To do this:
     <docs-code language="typescript">
 
     import * as host from 'host';
-    const parsedUrl = host.parse('https://angular.io');
+    const parsedUrl = host.parse('https://angular.dev');
     console.log(parsedUrl.hostname);
 
     </docs-code>
@@ -184,7 +184,7 @@ If you do not add the interface for the script-defined extension, your IDE shows
 
 [Resources]: resources "Explore Angular Resources | Angular"
 
-[AngularMaterialMain]: https://material.angular.io "Angular Material | Angular"
+[AngularMaterialMain]: https://material.angular.dev "Angular Material | Angular"
 
 [AngularUpdateMain]: https://angular.dev/update-guide "Angular Update Guide | Angular"
 
