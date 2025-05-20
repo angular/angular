@@ -91,6 +91,6 @@ pkg_npm(
     ],
     substitutions = {
         # Force the "unstamped" versions to be later than current so they are considered up to date.
-        "0.0.0": "99.99.99",
+        "0\\.0\\.0": "99.99.99",
     },
 )
