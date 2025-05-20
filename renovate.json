@@ -4,7 +4,7 @@
   "baseBranches": ["main", "20.0.x"],
   "postUpgradeTasks": {
     "commands": [
-      "git clean -f && git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
+      "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
       "yarn install --frozen-lockfile --non-interactive",
       "yarn bazel sync --only=repo || true",
       "yarn bazel run //.github/actions/deploy-docs-site:main.update",
