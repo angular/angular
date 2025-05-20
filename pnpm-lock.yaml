@@ -547,8 +547,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.6
       undici:
-        specifier: ^6.15.0
-        version: 6.21.3
+        specifier: ^7.0.0
+        version: 7.10.0
       vrsource-tslint-rules:
         specifier: 6.0.0
         version: 6.0.0(tslint@6.1.3)(typescript@5.8.2)
@@ -17839,9 +17839,9 @@ packages:
       '@fastify/busboy': 2.1.1
     dev: true
 
-  /undici@6.21.3:
-    resolution: {integrity: sha512-gBLkYIlEnSp8pFbT64yFgGE6UIB9tAkhukC23PmMDCe5Nd+cRqKxSjw5y54MK2AZMgZfJWMaNE4nYUHgi1XEOw==, tarball: https://registry.npmjs.org/undici/-/undici-6.21.3.tgz}
-    engines: {node: '>=18.17'}
+  /undici@7.10.0:
+    resolution: {integrity: sha512-u5otvFBOBZvmdjWLVW+5DAc9Nkq8f24g0O9oY7qw2JVIF1VocIFoyz9JFkuVOS2j41AufeO0xnlweJ2RLT8nGw==, tarball: https://registry.npmjs.org/undici/-/undici-7.10.0.tgz}
+    engines: {node: '>=20.18.1'}
     dev: true
 
   /unicode-canonical-property-names-ecmascript@2.0.1:
