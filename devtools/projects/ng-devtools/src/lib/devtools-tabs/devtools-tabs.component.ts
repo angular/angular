@@ -186,4 +186,8 @@ export class DevToolsTabsComponent {
       this.activeTab.set('Components');
     }
   }
+
+  protected setSignalGraph(enabled: boolean): void {
+    this.signalGraphEnabled.set(enabled);
+  }
 }
