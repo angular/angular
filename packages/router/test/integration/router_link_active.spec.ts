@@ -9,7 +9,7 @@ import {Component, NgZone} from '@angular/core';
 import {Location} from '@angular/common';
 import {fakeAsync, TestBed} from '@angular/core/testing';
 import {Router, provideRouter} from '../../src';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '@angular/platform-browser';
 import {
   createRoot,
   RootCmp,
