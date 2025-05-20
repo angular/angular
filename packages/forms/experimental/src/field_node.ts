@@ -112,6 +112,11 @@ export class FieldNode implements FieldState<unknown> {
   });
 
   /**
+   * Added to array elements for tracking purposes.
+   */
+  private readonly identitySymbol = Symbol();
+
+  /**
    * Lazily initialized injector.
    */
   private _injector: DestroyableInjector | undefined = undefined;
@@ -518,7 +523,22 @@ export class FieldNode implements FieldState<unknown> {
    * Retrieve a child `FieldNode` of this node by property key.
    */
   getChild(key: PropertyKey): FieldNode | undefined {
-    return this.childrenMap()?.get(typeof key === 'number' ? key.toString() : key);
+    const map = this.childrenMap();
+    const value = this.value();
+    if (!map || !isObject(value)) {
+      return undefined;
+    }
+
+    if (Array.isArray(value)) {
+      const childValue = value[key];
+      if (isObject(childValue) && childValue.hasOwnProperty(this.identitySymbol)) {
+        // For arrays, we want to use the tracking identity of the value instead of the raw property
+        // as our index into the `childrenMap`.
+        key = childValue[this.identitySymbol] as PropertyKey;
+      }
+    }
+
+    return map.get(typeof key === 'number' ? key.toString() : key);
   }
 
   /**
@@ -573,19 +593,46 @@ export class FieldNode implements FieldState<unknown> {
       // Non-object values have no children.
       return undefined;
     }
+    const isArray = Array.isArray(value);
 
     // Remove fields that have disappeared since the last time this map was computed.
     if (childrenMap !== undefined) {
-      for (const key of childrenMap.keys()) {
-        if (!value.hasOwnProperty(key)) {
+      let oldKeys: Set<PropertyKey> | undefined = undefined;
+      if (isArray) {
+        oldKeys = new Set(childrenMap.keys());
+        for (let i = 0; i < value.length; i++) {
+          const childValue = value[i] as unknown;
+          if (isObject(childValue) && childValue.hasOwnProperty(this.identitySymbol)) {
+            oldKeys.delete(childValue[this.identitySymbol] as PropertyKey);
+          } else {
+            oldKeys.delete(i.toString());
+          }
+        }
+
+        for (const key of oldKeys) {
           childrenMap.delete(key);
+        }
+      } else {
+        for (let key of childrenMap.keys()) {
+          if (!value.hasOwnProperty(key)) {
+            childrenMap.delete(key);
+          }
         }
       }
     }
 
     // Add fields that exist in the value but don't yet have instances in the map.
-    for (const key of Object.keys(value)) {
-      if (childrenMap?.has(key)) {
+    for (let key of Object.keys(value)) {
+      let identity: PropertyKey = key;
+      const childValue = value[key] as unknown;
+      if (isArray && isObject(childValue)) {
+        // For object values in arrays, assign a synthetic identity instead.
+        identity = (childValue[this.identitySymbol] as PropertyKey) ??= Symbol(
+          ngDevMode ? `id:${globalId++}` : '',
+        );
+      }
+
+      if (childrenMap?.has(identity)) {
         continue;
       }
 
@@ -601,7 +648,7 @@ export class FieldNode implements FieldState<unknown> {
       }
       childrenMap ??= new Map<PropertyKey, FieldNode>();
       childrenMap.set(
-        key,
+        identity,
         new FieldNode(
           this.fieldManager,
           deepSignal(this.value, key as never),
@@ -705,3 +752,5 @@ function lengthOfSharedPrefix(currentPath: PropertyKey[], targetPath: PropertyKe
 }
 
 function cast<T>(value: unknown): asserts value is T {}
+
+let globalId = 0;
