@@ -18,7 +18,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '@angular/platform-browser';
 import {dispatchEvent, isNode, sortedClassList} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {merge, NEVER, Observable, of, Subject, Subscription, timer} from 'rxjs';

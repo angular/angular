@@ -19,6 +19,7 @@ filegroup(
     srcs = [
         "//packages/common:common_rjs",
         "//packages/core:core_rjs",
+        "//packages/forms:forms_rjs",
     ],
     output_group = "types",
 )

@@ -32,7 +32,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '../index';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '@angular/platform-browser';
 import {dispatchEvent, isNode} from '@angular/private/testing';
 
 describe('value accessors', () => {
