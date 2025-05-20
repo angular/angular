@@ -174,6 +174,7 @@ def ng_package(name, readme_md = None, license_banner = None, license = None, de
     if not license:
         license = "//:LICENSE"
     visibility = kwargs.pop("visibility", None)
+    tags = kwargs.pop("tags", [])
 
     common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
     substitutions = dict(common_substitutions, **{
@@ -198,6 +199,23 @@ def ng_package(name, readme_md = None, license_banner = None, license = None, de
         rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
         rollup = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP,
         visibility = visibility,
+        tags = tags,
+        **kwargs
+    )
+
+    _ng_package(
+        name = "%s_nosub" % name,
+        deps = deps,
+        validate = True,
+        readme_md = readme_md,
+        license = license,
+        license_banner = license_banner,
+        substitutions = common_substitutions,
+        ng_packager = _INTERNAL_NG_PACKAGE_PACKAGER,
+        rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
+        rollup = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP,
+        visibility = visibility,
+        tags = ["manual"],
         **kwargs
     )
 
@@ -214,7 +232,6 @@ def ng_package(name, readme_md = None, license_banner = None, license = None, de
 def pkg_npm(name, deps = [], validate = True, **kwargs):
     """Default values for pkg_npm"""
     visibility = kwargs.pop("visibility", None)
-    tags = kwargs.pop("tags", [])
 
     common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
     substitutions = dict(common_substitutions, **{
@@ -248,18 +265,6 @@ def pkg_npm(name, deps = [], validate = True, **kwargs):
         }),
         deps = [":%s_js_module_output" % name],
         visibility = visibility,
-        tags = tags,
-        **kwargs
-    )
-
-    _pkg_npm(
-        name = "%s_nosub" % name,
-        validate = validate,
-        substitutions = common_substitutions,
-        deps = [":%s_js_module_output" % name],
-        visibility = visibility,
-        # should not be built unless it is a dependency of another rule
-        tags = ["manual"],
         **kwargs
     )
 
