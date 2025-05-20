@@ -1,0 +1,8 @@
+load("//devtools/tools:typescript.bzl", "ts_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "utils",
+    srcs = ["debouncer.ts"],
+)
