@@ -40,6 +40,7 @@ modules/ssr-benchmarks/node_modules
 
 
 # For rules_js
+adev/shared-docs/pipeline/api-gen/node_modules
 packages/compiler/node_modules
 packages/compiler-cli/node_modules
 tools/bazel/rules_angular_store/node_modules

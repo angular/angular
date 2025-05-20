@@ -1,24 +1,7 @@
-load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
-load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild_esm_bundle")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
-
-esbuild_esm_bundle(
-    name = "bin",
-    entry_point = ":index.mts",
-    external = [
-        "@angular/compiler-cli",
-        "typescript",
-    ],
-    metafile = False,
-    output = "bin.mjs",
-    platform = "node",
-    target = "es2022",
-    deps = [
-        ":extract_api_to_json_lib",
-    ],
-)
 
 ts_project(
     name = "extract_api_to_json_lib",
@@ -28,11 +11,10 @@ ts_project(
             "**/*.spec.mts",
         ],
     ),
-    interop_deps = [
-        "@angular//packages/compiler",
-        "@angular//packages/compiler-cli",
-    ],
     deps = [
+        # TODO(rules_js): Explore how this could work alternatively at runtime with the module names.
+        "//adev/shared-docs/pipeline/api-gen:node_modules/@angular/compiler-cli",
+        "//adev/shared-docs/pipeline/api-gen:node_modules/@angular/compiler",
         "//:node_modules/@bazel/runfiles",
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
@@ -40,14 +22,12 @@ ts_project(
 )
 
 # Action binary for the api_gen bazel rule.
-nodejs_binary(
+js_binary(
     name = "extract_api_to_json",
     data = [
-        "@angular//packages/compiler",
-        "@angular//packages/compiler-cli:npm_package",
-        "@npm//typescript",
+        ":extract_api_to_json_lib_rjs",
     ],
-    entry_point = "bin.mjs",
+    entry_point = ":index.mjs",
     visibility = ["//visibility:public"],
 )
 
