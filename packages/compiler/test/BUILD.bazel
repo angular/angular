@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
 # Test that should only be run in node
 NODE_ONLY = [
@@ -6,15 +7,14 @@ NODE_ONLY = [
     "aot/**/*.ts",
 ]
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = NODE_ONLY,
     ),
-    deps = [
-        "//packages:types",
+    interop_deps = [
         "//packages/common",
         "//packages/compiler",
         "//packages/compiler/test/expression_parser/utils",
@@ -26,22 +26,26 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@npm//source-map",
+    ],
+    deps = [
+        "//:node_modules/source-map",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_node_only_lib",
     testonly = True,
     srcs = glob(
         NODE_ONLY,
     ),
-    deps = [
+    interop_deps = [
         ":test_lib",
         "//packages/compiler",
         "//packages/compiler/test/expression_parser/utils",
         "//packages/core",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )
 
