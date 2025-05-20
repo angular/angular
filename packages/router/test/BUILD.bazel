@@ -1,24 +1,27 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    # Visible to //:saucelabs_unit_tests_poc target
-    visibility = ["//:__pkg__"],
-    deps = [
+    interop_deps = [
         "//packages/common",
         "//packages/common/testing",
-        "//packages/core",
-        "//packages/core/rxjs-interop",
-        "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "//packages/router",
-        "//packages/router/testing",
-        "@npm//rxjs",
+    ],
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/core:core_rjs",
+        "//packages/core/rxjs-interop:rxjs-interop_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/router:router_rjs",
+        "//packages/router/testing:testing_rjs",
     ],
 )
 
