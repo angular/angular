@@ -11,6 +11,7 @@ import {
   ngDebugDependencyInjectionApiIsSupported,
   ngDebugProfilerApiIsSupported,
   ngDebugRoutesApiIsSupported,
+  ngDebugSignalGraphApiIsSupported,
 } from './ng-debug-api';
 import {Framework} from '../component-tree/core-enums';
 
@@ -111,6 +112,26 @@ describe('ng-debug-api', () => {
       (globalThis as any).ng = fakeNgGlobal(Framework.Wiz);
 
       expect(ngDebugRoutesApiIsSupported()).toBeFalse();
+    });
+  });
+
+  describe('ngDebugSignalGraphIsSupported', () => {
+    beforeEach(() => mockRoot());
+
+    it('should support Signal Graph API with getSignalGraph', () => {
+      (globalThis as any).ng = fakeNgGlobal(Framework.Angular);
+      (globalThis as any).ng.ɵgetSignalGraph = () => {};
+      expect(ngDebugSignalGraphApiIsSupported()).toBeTrue();
+    });
+
+    it('should not support Signal Graph API with no getSignalGraph', () => {
+      (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
+      (globalThis as any).ng.ɵgetSignalGraph = 'not implemented';
+      expect(ngDebugSignalGraphApiIsSupported()).toBeFalse();
+
+      (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
+      (globalThis as any).ng.ɵgetSignalGraph = undefined;
+      expect(ngDebugSignalGraphApiIsSupported()).toBeFalse();
     });
   });
 });
