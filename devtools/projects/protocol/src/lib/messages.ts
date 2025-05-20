@@ -16,6 +16,34 @@ import {
   ViewEncapsulation as AngularViewEncapsulation,
 } from '@angular/core';
 
+export interface DebugSignalGraphNode {
+  id: string;
+  kind: string;
+  epoch: number;
+  label?: string;
+  preview: Descriptor;
+}
+
+export interface DebugSignalGraphEdge {
+  /**
+   * Index of a signal node in the `nodes` array that is a consumer of the signal produced by the producer node.
+   */
+  consumer: number;
+
+  /**
+   * Index of a signal node in the `nodes` array that is a producer of the signal consumed by the consumer node.
+   */
+  producer: number;
+}
+
+/**
+ * A debug representation of the signal graph.
+ */
+export interface DebugSignalGraph {
+  nodes: DebugSignalGraphNode[];
+  edges: DebugSignalGraphEdge[];
+}
+
 export interface SignalNodePosition {
   element: ElementPosition;
   signalId: string;
@@ -306,11 +334,6 @@ export interface AngularDetection {
 
 export type Topic = keyof Events;
 
-export interface InjectorGraphViewQuery {
-  directivePosition: DirectivePosition;
-  paramIndex: number;
-}
-
 export interface SupportedApis {
   profiler: boolean;
   dependencyInjection: boolean;
@@ -331,6 +354,9 @@ export interface Events {
 
   inspectorStart: () => void;
   inspectorEnd: () => void;
+
+  getSignalGraph: (query: ElementPosition) => void;
+  latestSignalGraph: (graph: DebugSignalGraph) => void;
 
   getNestedProperties: (position: DirectivePosition, path: string[]) => void;
   nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;
