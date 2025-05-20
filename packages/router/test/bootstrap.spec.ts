@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
-import {BrowserPlatformLocation} from '@angular/common/src/location/platform_location';
-import {NullViewportScroller, ViewportScroller} from '@angular/common/src/viewport_scroller';
+import {
+  DOCUMENT,
+  PlatformLocation,
+  ɵgetDOM as getDOM,
+  BrowserPlatformLocation,
+  ɵNullViewportScroller as NullViewportScroller,
+  ViewportScroller,
+} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
 import {
   ApplicationRef,
@@ -24,7 +29,6 @@ import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {
-  Event,
   NavigationEnd,
   provideRouter,
   Router,
