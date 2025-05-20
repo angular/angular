@@ -258,7 +258,7 @@ yarn_install(
 
 git_repository(
     name = "devinfra",
-    commit = "a9061f8b8f7bb7b0ea2b578d48dcfd4e6b83a18b",
+    commit = "a24e0366b7fb42ab3df4e7e92e75d10288dd1d54",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
