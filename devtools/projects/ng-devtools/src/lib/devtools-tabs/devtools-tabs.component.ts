@@ -58,6 +58,7 @@ export class DevToolsTabsComponent {
   readonly showCommentNodes = signal(false);
   readonly routerGraphEnabled = signal(false);
   readonly timingAPIEnabled = signal(false);
+  readonly signalGraphEnabled = signal(true);
 
   readonly routes = signal<Route[]>([]);
   readonly frameManager = inject(FrameManager);
@@ -163,5 +164,9 @@ export class DevToolsTabsComponent {
     if (!enabled) {
       this.activeTab.set('Components');
     }
+  }
+  
+  protected setSignalGraph(enabled: boolean): void {
+    this.signalGraphEnabled.set(enabled);
   }
 }
