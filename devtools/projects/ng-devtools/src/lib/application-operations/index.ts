@@ -7,11 +7,12 @@
  */
 
 import {Frame} from '../application-environment';
-import {DirectivePosition, ElementPosition} from '../../../../protocol';
+import {DirectivePosition, ElementPosition, SignalNodePosition} from '../../../../protocol';
 
 export abstract class ApplicationOperations {
   abstract viewSource(position: ElementPosition, target: Frame, directiveIndex?: number): void;
   abstract selectDomElement(position: ElementPosition, target: Frame): void;
   abstract inspect(directivePosition: DirectivePosition, objectPath: string[], target: Frame): void;
+  abstract inspectSignal(position: SignalNodePosition, target: Frame): void;
   abstract viewSourceFromRouter(name: string, type: string, target: Frame): void;
 }

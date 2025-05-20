@@ -16,6 +16,11 @@ import {
   ViewEncapsulation as AngularViewEncapsulation,
 } from '@angular/core';
 
+export interface SignalNodePosition {
+  element: ElementPosition;
+  signalId: string;
+}
+
 export interface DirectiveType {
   name: string;
   id: number;
