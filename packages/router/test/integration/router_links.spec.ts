@@ -8,7 +8,7 @@
 import {Component} from '@angular/core';
 import {Location} from '@angular/common';
 import {fakeAsync, TestBed, ComponentFixture} from '@angular/core/testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '@angular/platform-browser';
 import {Router} from '../../src';
 import {expect} from '@angular/private/testing/matchers';
 import {
