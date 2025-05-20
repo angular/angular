@@ -18,13 +18,12 @@ import {
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 /**
  * Custom validator.
  */
-function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
+function creditCardValidator(c: AbstractControl): {[key: string]: boolean} | null {
   if (c.value && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
@@ -62,7 +61,7 @@ export class ShowError {
     this.formDir = formDir;
   }
 
-  get errorMessage(): string {
+  get errorMessage(): string | null {
     const form: FormGroup = this.formDir.form;
     const control = form.get(this.controlPath);
     if (control && control.touched) {
@@ -173,4 +172,4 @@ export class ReactiveForms {
 })
 export class ExampleModule {}
 
-platformBrowserDynamic().bootstrapModule(ExampleModule);
+platformBrowser().bootstrapModule(ExampleModule);

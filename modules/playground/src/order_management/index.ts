@@ -8,8 +8,7 @@
 
 import {Component, EventEmitter, Injectable, Input, NgModule, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 /**
  * You can find the AngularJS implementation of this example here:
@@ -246,4 +245,4 @@ export class OrderManagementApplication {}
 })
 export class ExampleModule {}
 
-platformBrowserDynamic().bootstrapModule(ExampleModule);
+platformBrowser().bootstrapModule(ExampleModule);

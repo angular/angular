@@ -12,10 +12,10 @@ import 'zone.js/lib/browser/rollup-main';
 // END-EXTERNAL
 
 import {enableProdMode} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {platformBrowser} from '@angular/platform-browser';
 
 import {AppModule} from './app';
 import {init} from './init';
 
 enableProdMode();
-platformBrowserDynamic().bootstrapModule(AppModule).then(init);
+platformBrowser().bootstrapModule(AppModule).then(init);

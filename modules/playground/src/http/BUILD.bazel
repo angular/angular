@@ -10,7 +10,6 @@ ng_module(
         "//packages/common/http",
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "@npm//rxjs",
     ],
 )
