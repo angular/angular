@@ -2979,10 +2979,19 @@
     "@octokit/types" "^13.0.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/graphql@^8.0.0", "@octokit/graphql@^8.2.2":
+"@octokit/graphql@^8.2.2":
   version "8.2.2"
   resolved "https://registry.yarnpkg.com/@octokit/graphql/-/graphql-8.2.2.tgz#3db48c4ffdf07f99600cee513baf45e73eced4d1"
   integrity sha512-Yi8hcoqsrXGdt0yObxbebHXFOiUA+2v3n53epuOg1QUgOB6c4XzvisBNVXJSl8RYA5KrDuSL2yq9Qmqe5N0ryA==
+  dependencies:
+    "@octokit/request" "^9.2.3"
+    "@octokit/types" "^14.0.0"
+    universal-user-agent "^7.0.0"
+
+"@octokit/graphql@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/graphql/-/graphql-9.0.0.tgz#72423a96cbd8ddd5751e5c533ffec2949be2d955"
+  integrity sha512-5Xo42p9btFrcbYUOCStbrRRTpTmVIvEBiTRW7OXSOHB+RFgUxURv7TJhtB3p3Z6vIGzD8+vot5/X0h2CLDCtpw==
   dependencies:
     "@octokit/request" "^9.2.3"
     "@octokit/types" "^14.0.0"
