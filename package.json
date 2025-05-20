@@ -7,7 +7,7 @@
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
   "engines": {
-    "node": "^20.11.1 || ^22.11.0",
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
