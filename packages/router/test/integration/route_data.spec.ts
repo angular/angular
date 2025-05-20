@@ -27,7 +27,7 @@ import {
 } from '../../src';
 import {map} from 'rxjs/operators';
 import {EMPTY, Observer, Observable, of} from 'rxjs';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '@angular/platform-browser';
 import {
   RootCmp,
   BlankCmp,

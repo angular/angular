@@ -1,20 +1,23 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages/common",
         "//packages/common/testing",
         "//packages/common/upgrade",
-        "//packages/core",
-        "//packages/core/testing",
         "//packages/private/testing",
-        "//packages/router",
-        "//packages/router/testing",
-        "//packages/router/upgrade",
-        "//packages/upgrade/static",
+    ],
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/router:router_rjs",
+        "//packages/router/testing:testing_rjs",
+        "//packages/router/upgrade:upgrade_rjs",
+        "//packages/upgrade/static:static_rjs",
     ],
 )
 
