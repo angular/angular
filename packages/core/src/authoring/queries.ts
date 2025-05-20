@@ -259,6 +259,8 @@ export interface ContentChildFunction {
  * }
  * ```
  *
+ * Note: By default `descendants` is `true` which means the query will not traverse all descendants in the same template.
+ *
  * @initializerApiFunction
  * @publicApi 19.0
  */
@@ -303,6 +305,8 @@ export function contentChildren<LocatorT, ReadT>(
  *   headerEl = contentChildren<ElementRef>('h');   // Signal<ReadonlyArray<ElementRef>>
  * }
  * ```
+ *
+ * Note: By default `descendants` is `false` which means the query will not traverse all descendants in the same template.
  *
  * @initializerApiFunction
  * @publicApi 19.0
