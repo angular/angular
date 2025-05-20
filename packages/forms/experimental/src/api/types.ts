@@ -83,6 +83,10 @@ export interface FieldState<T> {
    */
   readonly touched: Signal<boolean>;
   /**
+   * A signal indicating whether field value has been changed by user.
+   */
+  readonly dirty: Signal<boolean>;
+  /**
    * A signal indicating whether the field is currently disabled.
    */
   readonly disabled: Signal<boolean>;
@@ -124,6 +128,10 @@ export interface FieldState<T> {
    * Sets the touched status of the field to `true`.
    */
   markAsTouched(): void;
+  /**
+   * Sets the dirty status of the field to `true`.
+   */
+  markAsDirty(): void;
   /**
    * Resets the `submittedStatus` of the field and all descendant fields to unsubmitted.
    */

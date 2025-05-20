@@ -20,7 +20,7 @@ import {FieldNode} from './field_node';
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
  */
-export const DYNAMIC = Symbol('DYNAMIC');
+export const DYNAMIC: unique symbol = Symbol('DYNAMIC');
 
 export interface Predicate {
   readonly fn: LogicFn<any, boolean>;

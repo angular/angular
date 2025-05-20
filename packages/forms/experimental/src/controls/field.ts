@@ -59,12 +59,12 @@ export class FieldDirective<T> {
     const cmp = illegallyGetComponentInstance(injector);
     if (this.el.nativeElement instanceof HTMLInputElement) {
       // Bind our field to an <input>
-
       const i = this.el.nativeElement;
       const isCheckbox = i.type === 'checkbox';
 
       i.addEventListener('input', () => {
         this.field().$state.value.set((!isCheckbox ? i.value : i.checked) as T);
+        this.field().$state.markAsDirty();
       });
       i.addEventListener('blur', () => this.field().$state.markAsTouched());
 

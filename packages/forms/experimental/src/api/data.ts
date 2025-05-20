@@ -1,9 +1,17 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 import {computed, Resource, ResourceRef, ResourceStatus, signal, Signal} from '@angular/core';
 import type {FieldContext, FieldPath, LogicFn} from './types';
 import {assertPathIsCurrent} from '../schema';
 import {FieldPathNode} from '../path_node';
 
 export class DataKey<TValue> {
+  /** @internal */
   protected __phantom!: TValue;
 }
 
