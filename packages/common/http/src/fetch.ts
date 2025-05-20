@@ -148,6 +148,8 @@ export class FetchBackend implements HttpBackend {
       // when the zone is nooped.
       const reqZone = typeof Zone !== 'undefined' && Zone.current;
 
+      let canceled = false;
+
       // Perform response processing outside of Angular zone to
       // ensure no excessive change detection runs are executed
       // Here calling the async ReadableStreamDefaultReader.read() is responsible for triggering CD
@@ -158,6 +160,12 @@ export class FetchBackend implements HttpBackend {
           // This may happen if the app was explicitly destroyed before
           // the response returned entirely.
           if (this.appRef.destroyed) {
+            // Streams left in a pending state (due to `break` without cancel) may
+            // continue consuming or holding onto data behind the scenes.
+            // Calling `reader.cancel()` allows the browser or the underlying
+            // system to release any network or memory resources associated with the stream.
+            await reader.cancel();
+            canceled = true;
             break;
           }
 
@@ -188,6 +196,15 @@ export class FetchBackend implements HttpBackend {
           }
         }
       });
+
+      // We need to manage the canceled state — because the Streams API does not
+      // expose a direct `.state` property on the reader.
+      // We need to `return` because `parseBody` may not be able to parse chunks
+      // that were only partially read (due to cancellation caused by app destruction).
+      if (canceled) {
+        observer.complete();
+        return;
+      }
 
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);
