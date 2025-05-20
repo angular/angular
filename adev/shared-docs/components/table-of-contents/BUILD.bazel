@@ -32,6 +32,9 @@ ng_project(
 sass_binary(
     name = "style",
     src = "table-of-contents.component.scss",
+    deps = [
+        "//adev/shared-docs/styles",
+    ],
 )
 
 ts_project(
