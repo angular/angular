@@ -14,39 +14,50 @@ import {apply, applyEach, form, submit} from '../src/api/structure';
 import {FormTreeError, SchemaOrSchemaFn} from '../src/api/types';
 import {required} from '../src/api/built_in_validators';
 
-const noopSchema: SchemaOrSchemaFn<unknown> = () => {
-};
+const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
 
 describe('FieldNode', () => {
   it('is untouched initially', () => {
-    const f = form(signal({
-      a: 1,
-      b: 2
-    }), noopSchema, {injector: TestBed.inject(Injector)});
+    const f = form(
+      signal({
+        a: 1,
+        b: 2,
+      }),
+      noopSchema,
+      {injector: TestBed.inject(Injector)},
+    );
     expect(f.$state.touched()).toBe(false);
   });
 
   it('can get a child of a key that exists', () => {
-    const f = form(signal({
-      a: 1,
-      b: 2
-    }), noopSchema, {injector: TestBed.inject(Injector)});
+    const f = form(
+      signal({
+        a: 1,
+        b: 2,
+      }),
+      noopSchema,
+      {injector: TestBed.inject(Injector)},
+    );
     expect(f.a).toBeDefined();
     expect(f.a.$state.value()).toBe(1);
   });
 
   describe('instances', () => {
     it('should get the same instance when asking for a child multiple times', () => {
-      const f = form(signal({
-        a: 1,
-        b: 2
-      }), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        noopSchema,
+        {injector: TestBed.inject(Injector)},
+      );
       const child = f.a;
       expect(f.a).toBe(child);
     });
 
     it('should get the same instance when asking for a child multiple times', () => {
-      const value = signal<{ a: number; b?: number }>({a: 1, b: 2});
+      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
       const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
       const child = f.a;
       value.set({a: 3});
@@ -55,29 +66,41 @@ describe('FieldNode', () => {
   });
 
   it('cannot get a child of a key that does not exist', () => {
-    const f = form(signal<{ a: number; b: number; c?: number }>({
-      a: 1,
-      b: 2
-    }), noopSchema, {
-      injector: TestBed.inject(Injector),
-    });
+    const f = form(
+      signal<{a: number; b: number; c?: number}>({
+        a: 1,
+        b: 2,
+      }),
+      noopSchema,
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
     expect(f.c).toBeUndefined();
   });
 
   it('can get a child inside of a computed', () => {
-    const f = form(signal({
-      a: 1,
-      b: 2
-    }), noopSchema, {injector: TestBed.inject(Injector)});
+    const f = form(
+      signal({
+        a: 1,
+        b: 2,
+      }),
+      noopSchema,
+      {injector: TestBed.inject(Injector)},
+    );
     const childA = computed(() => f.a);
     expect(childA()).toBeDefined();
   });
 
   it('can get a child inside of a computed', () => {
-    const f = form(signal({
-      a: 1,
-      b: 2
-    }), noopSchema, {injector: TestBed.inject(Injector)});
+    const f = form(
+      signal({
+        a: 1,
+        b: 2,
+      }),
+      noopSchema,
+      {injector: TestBed.inject(Injector)},
+    );
     const childA = computed(() => f.a);
     expect(childA()).toBeDefined();
   });
@@ -134,10 +157,14 @@ describe('FieldNode', () => {
     });
 
     it('can be marked as touched', () => {
-      const f = form(signal({
-        a: 1,
-        b: 2
-      }), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        noopSchema,
+        {injector: TestBed.inject(Injector)},
+      );
       expect(f.$state.touched()).toBe(false);
 
       f.$state.markAsTouched();
@@ -145,10 +172,14 @@ describe('FieldNode', () => {
     });
 
     it('propagates from the children', () => {
-      const f = form(signal({
-        a: 1,
-        b: 2
-      }), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        noopSchema,
+        {injector: TestBed.inject(Injector)},
+      );
       expect(f.$state.touched()).toBe(false);
 
       f.a.$state.markAsTouched();
@@ -156,10 +187,14 @@ describe('FieldNode', () => {
     });
 
     it('does not propagate down', () => {
-      const f = form(signal({
-        a: 1,
-        b: 2
-      }), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        noopSchema,
+        {injector: TestBed.inject(Injector)},
+      );
 
       expect(f.a.$state.touched()).toBe(false);
       f.$state.markAsTouched();
@@ -167,7 +202,7 @@ describe('FieldNode', () => {
     });
 
     it('does not consider children that get removed', () => {
-      const value = signal<{ a: number; b?: number }>({a: 1, b: 2});
+      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
       const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.touched()).toBe(false);
 
@@ -251,16 +286,27 @@ describe('FieldNode', () => {
     });
 
     describe('tracking', () => {
-      xit('maintains identity across value moves', () => {
+      it('maintains identity across value moves', () => {
         const value = signal([{name: 'Alex'}, {name: 'Kirill'}]);
-        const f = form(value);
+        const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
         const alex = f[0];
         const kirill = f[1];
 
         value.update((old) => [old[1], old[0]]);
 
         expect(f[0] === kirill).toBeTrue();
-        // expect(f[0] === alex).toBeFalse();
+        expect(f[1] === alex).toBeTrue();
+      });
+
+      it('maintains identity across value update', () => {
+        const value = signal([{name: 'Alex'}, {name: 'Kirill'}]);
+        const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
+        const alex = f[0];
+        const kirill = f[1];
+
+        value.update((old) => [old[1], {...old[0], name: 'Pawel'}]);
+
+        expect(f[0] === kirill).toBeTrue();
         expect(f[1] === alex).toBeTrue();
       });
     });
@@ -782,7 +828,7 @@ describe('FieldNode', () => {
         disabled(p.street, () => true);
       };
 
-      const data = signal<{ name: string; address: Address }>({
+      const data = signal<{name: string; address: Address}>({
         name: '',
         address: {street: '', city: ''},
       });
