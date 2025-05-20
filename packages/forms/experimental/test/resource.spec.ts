@@ -1,10 +1,10 @@
-import {resource, signal, ApplicationRef, Injector, inject, DestroyRef} from '@angular/core';
+import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {define} from '../src/api/data';
-import {applyEach, form} from '../src/api/structure';
-import {Schema} from '../src/api/types';
-import {validate} from '../src/api/logic';
 import {validateAsync} from '../src/api/async';
+import {define} from '../src/api/data';
+import {validate} from '../src/api/logic';
+import {applyEach, form} from '../src/api/structure';
+import {SchemaOrSchemaFn} from '../src/api/types';
 
 interface Cat {
   name: string;
@@ -14,7 +14,7 @@ describe('resources', () => {
   it('Takes a simple resource which reacts to data changes', async () => {
     const injector = TestBed.inject(Injector);
 
-    const s: Schema<Cat> = function (p) {
+    const s: SchemaOrSchemaFn<Cat> = function (p) {
       const res = define(p.name, ({value}) => {
         return resource({
           params: () => ({x: value()}),
@@ -47,7 +47,7 @@ describe('resources', () => {
   it('should create a resource per entry in an array', async () => {
     const injector = TestBed.inject(Injector);
 
-    const s: Schema<Cat[]> = function (p) {
+    const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       applyEach(p, (p) => {
         const res = define(p.name, ({value}) => {
           return resource({
@@ -84,7 +84,7 @@ describe('resources', () => {
   it('should support tree validation for resources', async () => {
     const injector = TestBed.inject(Injector);
 
-    const s: Schema<Cat[]> = function (p) {
+    const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       validateAsync(p, {
         params: ({value}) => value(),
         factory: (params) =>
@@ -119,7 +119,7 @@ describe('resources', () => {
   it('should support tree validation for resources', async () => {
     const injector = TestBed.inject(Injector);
 
-    const s: Schema<Cat[]> = function (p) {
+    const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       validateAsync(p, {
         params: ({value}) => value(),
         factory: (params) =>

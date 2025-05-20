@@ -7,10 +7,10 @@
  */
 
 import {Injector, Signal, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {validate} from '../../src/api/logic';
 import {applyEach, applyWhen, applyWhenValue, form} from '../../src/api/structure';
-import {Schema} from '../../src/api/types';
-import {TestBed} from '@angular/core/testing';
+import {SchemaOrSchemaFn} from '../../src/api/types';
 
 export interface User {
   first: string;
@@ -61,13 +61,13 @@ describe('when', () => {
   it('supports merging two array schemas', () => {
     const data = signal({needLastName: true, items: [{first: '', last: ''}]});
 
-    const s: Schema<User> = (namePath) => {
+    const s: SchemaOrSchemaFn<User> = (namePath) => {
       validate(namePath.last, ({value}) => {
         return value().length > 0 ? undefined : {kind: 'required1'};
       });
     };
 
-    const s2: Schema<User> = (namePath) => {
+    const s2: SchemaOrSchemaFn<User> = (namePath) => {
       validate(namePath.last, ({value}) => {
         return value.length > 0 ? undefined : {kind: 'required2'};
       });
@@ -92,7 +92,7 @@ describe('when', () => {
   it('accepts a schema', () => {
     const data = signal({first: '', needLastName: false, last: ''});
 
-    const s: Schema<User> = (namePath) => {
+    const s: SchemaOrSchemaFn<User> = (namePath) => {
       validate(namePath.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
     };
     const f = form(
@@ -133,7 +133,7 @@ describe('when', () => {
 
   it('supports array schema', () => {
     const data = signal({needLastName: true, items: [{first: '', last: ''}]});
-    const s: Schema<User> = (i) => {
+    const s: SchemaOrSchemaFn<User> = (i) => {
       validate(i.last, ({value}) => {
         return value().length > 0 ? undefined : {kind: 'required'};
       });

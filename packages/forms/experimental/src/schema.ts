@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, Schema} from './api/types';
+import {FieldPath, SchemaFn, SchemaOrSchemaFn} from './api/types';
 import {FieldPathNode} from './path_node';
 
 let currentRoot: FieldPathNode | undefined = undefined;
 
 export class SchemaImpl {
-  constructor(readonly schemaFn: Schema<any>) {}
+  constructor(readonly schema: SchemaOrSchemaFn<any>) {}
 
   apply(path: FieldPathNode): void {
-    let prevRoot = currentRoot;
+    const schemaFn = this.schema as unknown as SchemaFn<any>;
+    const prevRoot = currentRoot;
     try {
       currentRoot = path.root;
-      this.schemaFn(path.fieldPathProxy);
+      schemaFn(path.fieldPathProxy);
     } finally {
       currentRoot = prevRoot;
     }
