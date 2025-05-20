@@ -415,8 +415,8 @@ importers:
         specifier: ^1.0.10
         version: 1.0.10
       '@octokit/graphql':
-        specifier: ^8.0.0
-        version: 8.2.2
+        specifier: ^9.0.0
+        version: 9.0.0
       '@types/adm-zip':
         specifier: ^0.5.0
         version: 0.5.7
@@ -4466,6 +4466,15 @@ packages:
   /@octokit/graphql@8.2.2:
     resolution: {integrity: sha512-Yi8hcoqsrXGdt0yObxbebHXFOiUA+2v3n53epuOg1QUgOB6c4XzvisBNVXJSl8RYA5KrDuSL2yq9Qmqe5N0ryA==, tarball: https://registry.npmjs.org/@octokit/graphql/-/graphql-8.2.2.tgz}
     engines: {node: '>= 18'}
+    dependencies:
+      '@octokit/request': 9.2.3
+      '@octokit/types': 14.0.0
+      universal-user-agent: 7.0.3
+    dev: true
+
+  /@octokit/graphql@9.0.0:
+    resolution: {integrity: sha512-5Xo42p9btFrcbYUOCStbrRRTpTmVIvEBiTRW7OXSOHB+RFgUxURv7TJhtB3p3Z6vIGzD8+vot5/X0h2CLDCtpw==, tarball: https://registry.npmjs.org/@octokit/graphql/-/graphql-9.0.0.tgz}
+    engines: {node: '>= 20'}
     dependencies:
       '@octokit/request': 9.2.3
       '@octokit/types': 14.0.0

@@ -185,7 +185,7 @@
     "@lezer/highlight": "^1.2.0",
     "@lezer/javascript": "^1.4.10",
     "@nginfra/angular-linking": "^1.0.10",
-    "@octokit/graphql": "^8.0.0",
+    "@octokit/graphql": "^9.0.0",
     "@types/adm-zip": "^0.5.0",
     "@types/cldrjs": "^0.4.22",
     "@types/d3": "^7.4.3",
