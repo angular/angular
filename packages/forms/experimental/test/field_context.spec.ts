@@ -69,7 +69,7 @@ describe('Field Context', () => {
     });
   });
 
-  it('fieldOd', () => {
+  it('fieldOf', () => {
     const cat = signal({name: 'pirojok-the-cat', age: 5});
     testContext(cat, (ctx, p) => {
       expect(ctx.fieldOf(p.name).$state.value()).toEqual('pirojok-the-cat');

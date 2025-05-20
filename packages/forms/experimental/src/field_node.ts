@@ -123,12 +123,17 @@ export class FieldNode implements FieldState<unknown> {
    */
   private _fieldContext: FieldContext<unknown> | undefined = undefined;
 
+  private readonly resolveCache = new WeakMap<FieldPath<unknown>, Field<unknown>>();
+
   /**
    * Value of the "context" argument passed to all logic functions, which supports e.g. resolving
    * paths in relation to this field.
    */
   get fieldContext(): FieldContext<unknown> {
     const resolve = <U>(target: FieldPath<U>): Field<U> => {
+      if (this.resolveCache.has(target)) {
+        return this.resolveCache.get(target) as Field<U>;
+      }
       const currentPathKeys = this.pathKeys;
       const targetPathNode = FieldPathNode.unwrapFieldPath(target);
 
@@ -167,10 +172,12 @@ export class FieldNode implements FieldState<unknown> {
         field = field.getChild(property)!;
       }
 
+      this.resolveCache.set(target, field.fieldProxy);
       return field.fieldProxy as Field<U>;
     };
     return (this._fieldContext ??= {
       value: this.value,
+      // TODO: Drop resolve and data
       resolve,
       state: this,
       field: this.fieldProxy,
