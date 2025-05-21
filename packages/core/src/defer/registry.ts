@@ -15,6 +15,7 @@ import {
 } from '../event_delegation_utils';
 import {JSACTION_BLOCK_ELEMENT_MAP} from '../hydration/tokens';
 import {DehydratedDeferBlock} from './interfaces';
+import type {PromiseWithResolvers} from '../util/promise_with_resolvers';
 
 /**
  * An internal injection token to reference `DehydratedBlockRegistry` implementation
