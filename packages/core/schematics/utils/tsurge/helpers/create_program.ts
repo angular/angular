@@ -25,13 +25,13 @@ import {createPlainTsProgram} from './ts_program';
 /** Creates the base program info for the given tsconfig path. */
 export function createBaseProgramInfo(
   absoluteTsconfigPath: string,
-  fs?: FileSystem,
+  fs: FileSystem,
   optionOverrides: NgCompilerOptions = {},
 ): BaseProgramInfo {
-  if (fs === undefined) {
-    fs = new NodeJSFileSystem();
-    setFileSystem(fs);
-  }
+  // Make sure the FS becomes globally available. Some code paths
+  // of the Angular compiler, or tsconfig parsing aren't leveraging
+  // the specified file system.
+  setFileSystem(fs);
 
   const tsconfig = parseTsconfigOrDie(absoluteTsconfigPath, fs);
   const tsHost = new NgtscCompilerHost(fs, tsconfig.options);
