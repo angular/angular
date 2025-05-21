@@ -45,43 +45,6 @@ export class Identifiers {
 
   static attribute: o.ExternalReference = {name: 'ɵɵattribute', moduleName: CORE};
 
-  static attributeInterpolate1: o.ExternalReference = {
-    name: 'ɵɵattributeInterpolate1',
-    moduleName: CORE,
-  };
-  static attributeInterpolate2: o.ExternalReference = {
-    name: 'ɵɵattributeInterpolate2',
-    moduleName: CORE,
-  };
-  static attributeInterpolate3: o.ExternalReference = {
-    name: 'ɵɵattributeInterpolate3',
-    moduleName: CORE,
-  };
-  static attributeInterpolate4: o.ExternalReference = {
-    name: 'ɵɵattributeInterpolate4',
-    moduleName: CORE,
-  };
-  static attributeInterpolate5: o.ExternalReference = {
-    name: 'ɵɵattributeInterpolate5',
-    moduleName: CORE,
-  };
-  static attributeInterpolate6: o.ExternalReference = {
-    name: 'ɵɵattributeInterpolate6',
-    moduleName: CORE,
-  };
-  static attributeInterpolate7: o.ExternalReference = {
-    name: 'ɵɵattributeInterpolate7',
-    moduleName: CORE,
-  };
-  static attributeInterpolate8: o.ExternalReference = {
-    name: 'ɵɵattributeInterpolate8',
-    moduleName: CORE,
-  };
-  static attributeInterpolateV: o.ExternalReference = {
-    name: 'ɵɵattributeInterpolateV',
-    moduleName: CORE,
-  };
-
   static classProp: o.ExternalReference = {name: 'ɵɵclassProp', moduleName: CORE};
 
   static elementContainerStart: o.ExternalReference = {
