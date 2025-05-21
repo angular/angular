@@ -21,6 +21,7 @@ import {
   ChangeDetectionStrategy,
   Compiler,
   Component,
+  createComponent,
   EnvironmentInjector,
   InjectionToken,
   Injector,
@@ -748,32 +749,36 @@ describe('bootstrap', () => {
     });
 
     it('should dirty check attached views', () => {
-      const comp = TestBed.createComponent(MyComp);
+      const comp = createComponent(MyComp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
       const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
       expect(appRef.viewCount).toBe(0);
 
       appRef.tick();
-      expect(comp.nativeElement).toHaveText('');
+      expect(comp.location.nativeElement).toHaveText('');
 
-      appRef.attachView(comp.componentRef.hostView);
+      appRef.attachView(comp.hostView);
       appRef.tick();
       expect(appRef.viewCount).toBe(1);
-      expect(comp.nativeElement).toHaveText('Initial');
+      expect(comp.location.nativeElement).toHaveText('Initial');
     });
 
     it('should not dirty check detached views', () => {
-      const comp = TestBed.createComponent(MyComp);
+      const comp = createComponent(MyComp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
       const appRef: ApplicationRef = TestBed.inject(ApplicationRef);
 
-      appRef.attachView(comp.componentRef.hostView);
+      appRef.attachView(comp.hostView);
       appRef.tick();
-      expect(comp.nativeElement).toHaveText('Initial');
+      expect(comp.location.nativeElement).toHaveText('Initial');
 
-      appRef.detachView(comp.componentRef.hostView);
-      comp.componentInstance.name = 'New';
+      appRef.detachView(comp.hostView);
+      comp.instance.name = 'New';
       appRef.tick();
       expect(appRef.viewCount).toBe(0);
-      expect(comp.nativeElement).toHaveText('Initial');
+      expect(comp.location.nativeElement).toHaveText('Initial');
     });
 
     it('should not dirty host bindings of views not marked for check', () => {

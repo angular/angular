@@ -33,8 +33,9 @@ import {DeferBlockFixture} from './defer';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
 
 interface TestAppRef {
-  externalTestViews: Set<ViewRef>;
-  skipCheckNoChangesForExternalTestViews: Set<ViewRef>;
+  allTestViews: Set<ViewRef>;
+  includeAllTestViews: boolean;
+  autoDetectTestViews: Set<ViewRef>;
 }
 
 /**
@@ -106,13 +107,15 @@ export class ComponentFixture<T> {
     this.nativeElement = this.elementRef.nativeElement;
     this.componentRef = componentRef;
 
+    this._testAppRef.allTestViews.add(this.componentRef.hostView);
     if (this.autoDetect) {
-      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+      this._testAppRef.autoDetectTestViews.add(this.componentRef.hostView);
       this.scheduler?.notify(ɵNotificationSource.ViewAttached);
       this.scheduler?.notify(ɵNotificationSource.MarkAncestorsForTraversal);
     }
     this.componentRef.hostView.onDestroy(() => {
-      this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+      this._testAppRef.allTestViews.delete(this.componentRef.hostView);
+      this._testAppRef.autoDetectTestViews.delete(this.componentRef.hostView);
     });
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
@@ -149,14 +152,7 @@ export class ComponentFixture<T> {
       }
 
       if (this.zonelessEnabled) {
-        try {
-          this._testAppRef.externalTestViews.add(this.componentRef.hostView);
-          this._appRef.tick();
-        } finally {
-          if (!this.autoDetect) {
-            this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
-          }
-        }
+        this._appRef.tick();
       } else {
         // Run the change detection inside the NgZone so that any async tasks as part of the change
         // detection are captured by the zone and can be waited for in isStable.
@@ -203,12 +199,10 @@ export class ComponentFixture<T> {
       throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
     }
 
-    if (autoDetect !== this.autoDetect) {
-      if (autoDetect) {
-        this._testAppRef.externalTestViews.add(this.componentRef.hostView);
-      } else {
-        this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
-      }
+    if (autoDetect) {
+      this._testAppRef.autoDetectTestViews.add(this.componentRef.hostView);
+    } else {
+      this._testAppRef.autoDetectTestViews.delete(this.componentRef.hostView);
     }
 
     this.autoDetect = autoDetect;
@@ -282,7 +276,8 @@ export class ComponentFixture<T> {
    */
   destroy(): void {
     this.subscriptions.unsubscribe();
-    this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+    this._testAppRef.autoDetectTestViews.delete(this.componentRef.hostView);
+    this._testAppRef.allTestViews.delete(this.componentRef.hostView);
     if (!this._isDestroyed) {
       this.componentRef.destroy();
       this._isDestroyed = true;
