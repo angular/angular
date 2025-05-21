@@ -13,11 +13,12 @@ import {
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {assertDefined, assertEqual, assertNumber} from '../../util/assert';
+import {assertDefined, assertEqual, assertLessThan, assertNumber} from '../../util/assert';
+import {assertTNodeCreationIndex} from '../assert';
 import {createCommentNode} from '../dom_node_manipulation';
 import {TNode, TNodeType} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
-import {HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {
   getBindingIndex,
@@ -50,13 +51,7 @@ export function ɵɵelementContainerStart(
   localRefsIndex?: number,
 ): typeof ɵɵelementContainerStart {
   const lView = getLView();
-  const tView = getTView();
-  ngDevMode &&
-    assertEqual(
-      getBindingIndex(),
-      tView.bindingStartIndex,
-      'element containers should be created before any bindings',
-    );
+  ngDevMode && assertTNodeCreationIndex(lView, index);
   elementLikeStartShared(
     lView,
     index,

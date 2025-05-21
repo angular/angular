@@ -583,7 +583,6 @@ export function elementLikeStartShared(
   localRefsIndex: number | undefined,
 ) {
   const adjustedIndex = HEADER_OFFSET + index;
-  ngDevMode && assertIndexInRange(lView, adjustedIndex);
 
   const tView = lView[TVIEW];
   const tNode = tView.firstCreatePass

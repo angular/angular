@@ -7,7 +7,14 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {assertDefined, assertEqual, assertNumber, throwError} from '../util/assert';
+import {
+  assertDefined,
+  assertEqual,
+  assertIndexInRange,
+  assertLessThan,
+  assertNumber,
+  throwError,
+} from '../util/assert';
 
 import {getComponentDef, getNgModuleDef} from './def_getters';
 import {LContainer} from './interfaces/container';
@@ -32,6 +39,16 @@ import {
 
 export function assertTNodeForLView(tNode: TNode, lView: LView) {
   assertTNodeForTView(tNode, lView[TVIEW]);
+}
+
+export function assertTNodeCreationIndex(lView: LView, index: number) {
+  const adjustedIndex = index + HEADER_OFFSET;
+  assertIndexInRange(lView, adjustedIndex);
+  assertLessThan(
+    adjustedIndex,
+    lView[TVIEW].bindingStartIndex,
+    'TNodes should be created before any bindings',
+  );
 }
 
 export function assertTNodeForTView(tNode: TNode, tView: TView) {
