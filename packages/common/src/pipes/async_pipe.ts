@@ -104,8 +104,8 @@ class PromiseStrategy implements SubscriptionStrategy {
   }
 }
 
-const _promiseStrategy = new PromiseStrategy();
-const _subscribableStrategy = new SubscribableStrategy();
+const _promiseStrategy = /* @__PURE__ */ new PromiseStrategy();
+const _subscribableStrategy = /* @__PURE__ */ new SubscribableStrategy();
 
 /**
  * @ngModule CommonModule
