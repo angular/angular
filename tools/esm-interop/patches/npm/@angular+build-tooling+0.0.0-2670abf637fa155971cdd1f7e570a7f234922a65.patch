@@ -43,7 +43,7 @@ index d6249b8..707ae39 100755
          config_file = ":%s_config_file" % name,
          deps = [
 -            "@npm//@angular/compiler-cli",
-+            "@angular//packages/compiler:npm_package",
++            "@angular//packages/compiler:linkable_npm_package",
 +            "@angular//packages/compiler-cli:npm_package",
              "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
          ],
