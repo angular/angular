@@ -49,6 +49,7 @@ import {
 } from './utils/ts_utils';
 import {getTypeCheckInfoAtPosition, isTypeScriptFile} from './utils';
 import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
+import {ModuleSpecifiers} from './utils/module_specifiers';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -68,6 +69,7 @@ export class LanguageService {
   readonly compilerFactory: CompilerFactory;
   private readonly codeFixes: CodeFixes;
   private readonly activeRefactorings = new Map<string, ActiveRefactoring>();
+  private readonly moduleSpecifiers: ModuleSpecifiers;
 
   constructor(
     private readonly project: ts.server.Project,
@@ -86,7 +88,8 @@ export class LanguageService {
     const programDriver = createProgramDriver(project);
     const adapter = new LanguageServiceAdapter(project);
     this.compilerFactory = new CompilerFactory(adapter, programDriver, this.options);
-    this.codeFixes = new CodeFixes(tsLS, ALL_CODE_FIXES_METAS);
+    this.moduleSpecifiers = new ModuleSpecifiers(project, programDriver);
+    this.codeFixes = new CodeFixes(tsLS, ALL_CODE_FIXES_METAS, this.moduleSpecifiers);
   }
 
   getCompilerOptions(): CompilerOptions {
@@ -287,6 +290,7 @@ export class LanguageService {
       typeCheckInfo.declaration,
       node,
       positionDetails,
+      this.moduleSpecifiers,
     );
   }
 

@@ -14,6 +14,7 @@ import {
 } from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 import {guessIndentationInSingleLine} from './format';
+import {ModuleSpecifiers} from './module_specifiers';
 
 /**
  * Return the node that most tightly encompasses the specified `position`.
@@ -684,6 +685,7 @@ export function getCodeActionToImportTheDirectiveDeclaration(
   compiler: NgCompiler,
   importOn: ts.ClassDeclaration,
   directive: PotentialDirective | PotentialPipe,
+  moduleSpecifiers: ModuleSpecifiers,
 ): ts.CodeAction[] | undefined {
   const codeActions: ts.CodeAction[] = [];
   const currMatchSymbol = directive.tsSymbol.valueDeclaration!;
@@ -691,6 +693,9 @@ export function getCodeActionToImportTheDirectiveDeclaration(
     .getTemplateTypeChecker()
     .getPotentialImportsFor(directive.ref, importOn, PotentialImportMode.Normal);
   const declarationName = directive.ref.node.name.getText();
+  const moduleNameFromPath = moduleSpecifiers.getModuleNameFromPaths(
+    currMatchSymbol.getSourceFile().fileName,
+  );
 
   for (const potentialImport of potentialImports) {
     const fileImportChanges: ts.TextChange[] = [];
@@ -703,7 +708,7 @@ export function getCodeActionToImportTheDirectiveDeclaration(
         importOn.getSourceFile(),
         potentialImport.symbolName,
         declarationName,
-        potentialImport.moduleSpecifier,
+        moduleNameFromPath ?? potentialImport.moduleSpecifier,
         currMatchSymbol.getSourceFile(),
       );
       importName = generatedImportName;
@@ -737,7 +742,7 @@ export function getCodeActionToImportTheDirectiveDeclaration(
 
     let description = `Import ${importName}`;
     if (potentialImport.moduleSpecifier !== undefined) {
-      description += ` from '${potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;
+      description += ` from '${moduleNameFromPath ?? potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;
     }
     codeActions.push({
       description,
