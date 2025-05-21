@@ -17,8 +17,7 @@ import {
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
-// Needed for the `Promise.withResolvers()` usage below.
-import '../../src/util/promise_with_resolvers';
+import type {PromiseConstructor} from '../../src/util/promise_with_resolvers';
 
 abstract class MockBackend<T, R> {
   protected pending = new Map<
@@ -191,7 +190,7 @@ describe('resource', () => {
     const res = resource({
       request,
       loader: async ({request}) => {
-        const p = Promise.withResolvers<number>();
+        const p = (Promise as unknown as PromiseConstructor).withResolvers<number>();
         resolve.push(() => p.resolve(request));
         return p.promise;
       },

@@ -44,8 +44,8 @@ import {
   APP_INITIALIZER,
   inject,
   getPlatform,
+  ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
 } from '@angular/core';
-import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {TestBed} from '@angular/core/testing';
 import {
   bootstrapApplication,

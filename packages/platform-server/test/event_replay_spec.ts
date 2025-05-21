@@ -16,6 +16,7 @@ import {
   inject,
   PendingTasks,
   PLATFORM_ID,
+  ɵgetDocument as getDocument,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {
@@ -33,7 +34,6 @@ import {
   prepareEnvironmentAndHydrate,
   resetTViewsFor,
 } from './dom_utils';
-import {getDocument} from '@angular/core/src/render3/interfaces/document';
 import {EVENT_DISPATCH_SCRIPT, ssr} from './hydration_utils';
 import {EVENT_DISPATCH_SCRIPT_ID} from '../src/utils';
 
