@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig-build.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "paths": {
+      "@angular/*": ["../*"],
+      "@angular/compiler-cli": ["../compiler-cli"],
+      "@angular/compiler-cli/*": ["../compiler-cli/*"]
+    }
+  }
+}

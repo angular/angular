@@ -13,12 +13,12 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
-        "//packages/language-service/src",
-        "//packages/language-service/src/utils",
-        "//packages/language-service/testing",
     ],
     deps = [
         "//:node_modules/typescript",
+        "//packages/language-service/src:src_rjs",
+        "//packages/language-service/src/utils:utils_rjs",
+        "//packages/language-service/testing:testing_rjs",
     ],
 )
 
