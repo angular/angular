@@ -936,30 +936,6 @@ const STYLE_PROP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
 };
 
 /**
- * `InterpolationConfig` for the `attributeInterpolate` instruction.
- */
-const ATTRIBUTE_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
-  constant: [
-    Identifiers.attribute,
-    Identifiers.attributeInterpolate1,
-    Identifiers.attributeInterpolate2,
-    Identifiers.attributeInterpolate3,
-    Identifiers.attributeInterpolate4,
-    Identifiers.attributeInterpolate5,
-    Identifiers.attributeInterpolate6,
-    Identifiers.attributeInterpolate7,
-    Identifiers.attributeInterpolate8,
-  ],
-  variable: Identifiers.attributeInterpolateV,
-  mapping: (n) => {
-    if (n % 2 === 0) {
-      throw new Error(`Expected odd number of arguments`);
-    }
-    return (n - 1) / 2;
-  },
-};
-
-/**
  * `InterpolationConfig` for the `styleMapInterpolate` instruction.
  */
 const STYLE_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
