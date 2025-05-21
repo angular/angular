@@ -213,6 +213,47 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static interpolate: o.ExternalReference = {
+    name: 'ɵɵinterpolate',
+    moduleName: CORE,
+  };
+  static interpolate1: o.ExternalReference = {
+    name: 'ɵɵinterpolate1',
+    moduleName: CORE,
+  };
+  static interpolate2: o.ExternalReference = {
+    name: 'ɵɵinterpolate2',
+    moduleName: CORE,
+  };
+  static interpolate3: o.ExternalReference = {
+    name: 'ɵɵinterpolate3',
+    moduleName: CORE,
+  };
+  static interpolate4: o.ExternalReference = {
+    name: 'ɵɵinterpolate4',
+    moduleName: CORE,
+  };
+  static interpolate5: o.ExternalReference = {
+    name: 'ɵɵinterpolate5',
+    moduleName: CORE,
+  };
+  static interpolate6: o.ExternalReference = {
+    name: 'ɵɵinterpolate6',
+    moduleName: CORE,
+  };
+  static interpolate7: o.ExternalReference = {
+    name: 'ɵɵinterpolate7',
+    moduleName: CORE,
+  };
+  static interpolate8: o.ExternalReference = {
+    name: 'ɵɵinterpolate8',
+    moduleName: CORE,
+  };
+  static interpolateV: o.ExternalReference = {
+    name: 'ɵɵinterpolateV',
+    moduleName: CORE,
+  };
+
   static nextContext: o.ExternalReference = {name: 'ɵɵnextContext', moduleName: CORE};
 
   static resetView: o.ExternalReference = {name: 'ɵɵresetView', moduleName: CORE};
