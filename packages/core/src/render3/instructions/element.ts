@@ -71,7 +71,6 @@ export function ɵɵelementStart(
 ): typeof ɵɵelementStart {
   const lView = getLView();
   const tView = getTView();
-  const bindingsEnabled = getBindingsEnabled();
   ngDevMode &&
     assertEqual(
       getBindingIndex(),
@@ -80,25 +79,17 @@ export function ɵɵelementStart(
     );
   const tNode = elementLikeStartShared(
     lView,
-    tView,
     index,
     TNodeType.Element,
     name,
     _locateOrCreateElementNode,
-    bindingsEnabled,
+    getBindingsEnabled(),
     attrsIndex,
     localRefsIndex,
   );
 
   if (ngDevMode && tView.firstCreatePass) {
-    const lView = getLView();
-    validateElementIsKnown(
-      lView[tNode.index],
-      lView,
-      tNode.value,
-      tView.schemas,
-      isDirectiveHost(tNode),
-    );
+    validateElementIsKnown(lView, tNode);
   }
 
   return ɵɵelementStart;

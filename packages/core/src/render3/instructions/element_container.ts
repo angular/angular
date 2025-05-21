@@ -51,7 +51,6 @@ export function ɵɵelementContainerStart(
 ): typeof ɵɵelementContainerStart {
   const lView = getLView();
   const tView = getTView();
-  const bindingsEnabled = getBindingsEnabled();
   ngDevMode &&
     assertEqual(
       getBindingIndex(),
@@ -60,12 +59,11 @@ export function ɵɵelementContainerStart(
     );
   elementLikeStartShared(
     lView,
-    tView,
     index,
     TNodeType.ElementContainer,
     'ng-container',
     _locateOrCreateElementContainerNode,
-    bindingsEnabled,
+    getBindingsEnabled(),
     attrsIndex,
     localRefsIndex,
   );
