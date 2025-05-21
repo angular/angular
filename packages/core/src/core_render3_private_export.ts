@@ -247,6 +247,7 @@ export {
   ɵɵstoreLet,
   ɵɵreadContextLet,
   ɵɵreplaceMetadata,
+  ɵɵgetReplaceMetadataURL,
   ɵɵattachSourceLocations,
 } from './render3/index';
 export {CONTAINER_HEADER_OFFSET as ɵCONTAINER_HEADER_OFFSET} from './render3/interfaces/container';

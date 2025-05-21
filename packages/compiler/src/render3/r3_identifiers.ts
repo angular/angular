@@ -411,6 +411,10 @@ export class Identifiers {
   static resolveForwardRef: o.ExternalReference = {name: 'resolveForwardRef', moduleName: CORE};
 
   static replaceMetadata: o.ExternalReference = {name: 'ɵɵreplaceMetadata', moduleName: CORE};
+  static getReplaceMetadataURL: o.ExternalReference = {
+    name: 'ɵɵgetReplaceMetadataURL',
+    moduleName: CORE,
+  };
 
   static ɵɵdefineInjectable: o.ExternalReference = {name: 'ɵɵdefineInjectable', moduleName: CORE};
   static declareInjectable: o.ExternalReference = {name: 'ɵɵngDeclareInjectable', moduleName: CORE};
