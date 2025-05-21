@@ -22,7 +22,7 @@ import {takeUntil} from 'rxjs/operators';
  */
 export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperatorFunction<T> {
   if (!destroyRef) {
-    assertInInjectionContext(takeUntilDestroyed);
+    ngDevMode && assertInInjectionContext(takeUntilDestroyed);
     destroyRef = inject(DestroyRef);
   }
 
