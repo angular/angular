@@ -23,17 +23,17 @@ import {
   markRNodeAsSkippedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {assertDefined, assertEqual} from '../../util/assert';
+import {assertDefined} from '../../util/assert';
+import {assertTNodeCreationIndex} from '../assert';
 import {clearElementContents, createElementNode} from '../dom_node_manipulation';
 import {hasClassInput, hasStyleInput, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
-import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {isComponentHost} from '../interfaces/type_checks';
+import {HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
-  getBindingIndex,
   getBindingsEnabled,
   getCurrentTNode,
   getLView,
@@ -70,13 +70,9 @@ export function ɵɵelementStart(
   localRefsIndex?: number,
 ): typeof ɵɵelementStart {
   const lView = getLView();
-  const tView = getTView();
-  ngDevMode &&
-    assertEqual(
-      getBindingIndex(),
-      tView.bindingStartIndex,
-      'elements should be created before any bindings',
-    );
+
+  ngDevMode && assertTNodeCreationIndex(lView, index);
+
   const tNode = elementLikeStartShared(
     lView,
     index,
@@ -88,7 +84,7 @@ export function ɵɵelementStart(
     localRefsIndex,
   );
 
-  if (ngDevMode && tView.firstCreatePass) {
+  if (ngDevMode && lView[TVIEW].firstCreatePass) {
     validateElementIsKnown(lView, tNode);
   }
 
