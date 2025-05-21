@@ -568,7 +568,6 @@ function setInputsFromAttrs<T>(
 /** Shared code between instructions that indicate the start of an element. */
 export function elementLikeStartShared(
   lView: LView,
-  tView: TView,
   index: number,
   type: TNodeType.Element | TNodeType.ElementContainer,
   name: string,
@@ -584,9 +583,9 @@ export function elementLikeStartShared(
   localRefsIndex: number | undefined,
 ) {
   const adjustedIndex = HEADER_OFFSET + index;
-  const isElement = type === TNodeType.Element;
   ngDevMode && assertIndexInRange(lView, adjustedIndex);
 
+  const tView = lView[TVIEW];
   const tNode = tView.firstCreatePass
     ? elementLikeStartFirstCreatePass(
         adjustedIndex,
@@ -606,6 +605,7 @@ export function elementLikeStartShared(
   setCurrentTNode(tNode, true);
 
   // It's important that this runs before we've instantiated the directives.
+  const isElement = type === TNodeType.Element;
   if (isElement) {
     setupStaticAttributes(lView[RENDERER], native as RElement, tNode);
 
