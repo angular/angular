@@ -39,6 +39,11 @@ export enum OpKind {
   Element,
 
   /**
+   * An operation to render a static HTML string.
+   */
+  StaticHtml,
+
+  /**
    * An operation which declares an embedded view.
    */
   Template,

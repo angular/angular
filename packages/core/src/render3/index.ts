@@ -187,6 +187,7 @@ export {
   ɵɵstoreLet,
   ɵɵreadContextLet,
   ɵɵattachSourceLocations,
+  ɵɵstaticHtml,
 } from './instructions/all';
 export {
   ɵɵdeferEnableTimerScheduling,
