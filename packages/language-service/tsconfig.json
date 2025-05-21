@@ -4,6 +4,7 @@
     "types": ["node"],
     "paths": {
       "@angular/*": ["../*"],
+      // compiler-cli specific mapping is present to allow deep importing into the compiler code.
       "@angular/compiler-cli": ["../compiler-cli"],
       "@angular/compiler-cli/*": ["../compiler-cli/*"]
     }
