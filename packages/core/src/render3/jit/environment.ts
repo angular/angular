@@ -21,15 +21,6 @@ import * as r3 from '../index';
  */
 export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵattribute': r3.ɵɵattribute,
-  'ɵɵattributeInterpolate1': r3.ɵɵattributeInterpolate1,
-  'ɵɵattributeInterpolate2': r3.ɵɵattributeInterpolate2,
-  'ɵɵattributeInterpolate3': r3.ɵɵattributeInterpolate3,
-  'ɵɵattributeInterpolate4': r3.ɵɵattributeInterpolate4,
-  'ɵɵattributeInterpolate5': r3.ɵɵattributeInterpolate5,
-  'ɵɵattributeInterpolate6': r3.ɵɵattributeInterpolate6,
-  'ɵɵattributeInterpolate7': r3.ɵɵattributeInterpolate7,
-  'ɵɵattributeInterpolate8': r3.ɵɵattributeInterpolate8,
-  'ɵɵattributeInterpolateV': r3.ɵɵattributeInterpolateV,
   'ɵɵdefineComponent': r3.ɵɵdefineComponent,
   'ɵɵdefineDirective': r3.ɵɵdefineDirective,
   'ɵɵdefineInjectable': ɵɵdefineInjectable,
