@@ -14,14 +14,13 @@ import {
   linkedSignal,
   assertInInjectionContext,
   signal,
-  ResourceStatus,
   computed,
-  Resource,
-  WritableSignal,
   ResourceStreamItem,
   type ValueEqualityFn,
+  ɵRuntimeError,
+  ɵRuntimeErrorCode,
 } from '@angular/core';
-import {Subscription} from 'rxjs';
+import type {Subscription} from 'rxjs';
 
 import {HttpRequest} from './request';
 import {HttpClient} from './client';
@@ -363,7 +362,12 @@ class HttpResourceImpl<T>
           },
           complete: () => {
             if (resolve) {
-              send({error: new Error('Resource completed before producing a value')});
+              send({
+                error: new ɵRuntimeError(
+                  ɵRuntimeErrorCode.RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE,
+                  ngDevMode && 'Resource completed before producing a value',
+                ),
+              });
             }
             abortSignal.removeEventListener('abort', onAbort);
           },
