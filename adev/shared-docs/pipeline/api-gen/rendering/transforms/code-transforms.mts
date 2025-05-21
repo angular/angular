@@ -34,7 +34,11 @@ import {
 import {CodeLineRenderable} from '../entities/renderables.mjs';
 import {HasModuleName, HasRenderableToc} from '../entities/traits.mjs';
 import {getModuleName} from '../symbol-context.mjs';
-import {codeToHtml, replaceKeywordFromShikiHtml} from '../shiki/shiki.mjs';
+import {
+  codeToHtml,
+  insertParenthesesForDecoratorInShikiHtml,
+  replaceKeywordFromShikiHtml,
+} from '../shiki/shiki.mjs';
 
 import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transforms.mjs';
 import {getLinkToModule} from './url-transforms.mjs';
@@ -76,21 +80,32 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
 
   // For now we only format functions with prettier
   let formattedCode: string | null = null;
-  if (entry.entryType === EntryType.Function) {
+  if (entry.entryType === EntryType.Function || entry.entryType === EntryType.Decorator) {
     formattedCode = await formatJs(metadata.contents);
   }
 
   let codeWithSyntaxHighlighting = codeToHtml(formattedCode ?? metadata?.contents, 'typescript');
 
-  if (isDecoratorEntry(entry)) {
+  if (isDecoratorEntry(entry) || entry.entryType === EntryType.InterfaceLikeDecorator) {
     // Shiki requires a keyword for correct formating of Decorators
     // We use an interface and then replace it with a '@'
     codeWithSyntaxHighlighting = replaceKeywordFromShikiHtml(
-      'interface|function',
+      'class|function',
       codeWithSyntaxHighlighting,
       '@',
     );
+    if (entry.entryType === EntryType.InterfaceLikeDecorator) {
+      // We need to add parentheses around the curly braces for this kind of decorators
+      codeWithSyntaxHighlighting = insertParenthesesForDecoratorInShikiHtml(
+        codeWithSyntaxHighlighting,
+      );
+    }
   }
+
+  // Note: Don't expect enum value in signatures to be linked correctly
+  // as shiki already splits them into separate span blocks.
+  // Only the enum itself will recieve a link
+  codeWithSyntaxHighlighting = addApiLinksToHtml(codeWithSyntaxHighlighting);
 
   // shiki returns the lines wrapped by 2 node : 1 pre node, 1 code node.
   // As leveraging jsdom isn't trivial here, we rely on a regex to extract the line nodes
@@ -109,12 +124,7 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   const insideCode = match[2];
   const afterCode = match[3];
 
-  // Note: Don't expect enum value in signatures to be linked correctly
-  // as skihi already splits them into separate span blocks.
-  // Only the enum itself will recieve a link
-  const codeWithLinks = addApiLinksToHtml(insideCode);
-
-  const lines = splitLines(codeWithLinks);
+  const lines = splitLines(insideCode);
   const groups = groupCodeLines(lines, metadata, entry);
 
   return {
@@ -147,18 +157,27 @@ function groupCodeLines(lines: string[], metadata: CodeTableOfContentsData, entr
   }, new Map<string, CodeLineRenderable[]>());
 }
 
-export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
+function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   const isDeprecated = isDeprecatedEntry(entry);
   const deprecatedLineNumbers = isDeprecated ? [0] : [];
 
   if (isClassEntry(entry)) {
-    const members = filterLifecycleMethods(mergeGettersAndSetters(entry.members));
+    const members = filterLifecycleMethods(mergeGettersAndSetters(entry.members!));
     return getCodeTocData(members, isDeprecated);
   }
 
   if (isDecoratorEntry(entry)) {
-    const skipNewLine = entry.members[0] && (entry.members[0] as any).entryType === 'function';
-    return getCodeTocData(entry.members, isDeprecated, skipNewLine);
+    return {
+      contents: entry.signatures
+        .map((sig) =>
+          sig.parameters
+            .map((param) => `${param.name}${param.isOptional ? '?' : ''}: ${param.type}`)
+            .join(', '),
+        )
+        .join(LN_BREAK),
+      codeLineNumbersWithIdentifiers: new Map<number, string>(),
+      deprecatedLineNumbers: [],
+    };
   }
 
   if (isConstantEntry(entry)) {
@@ -193,12 +212,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
         (acc: CodeTableOfContentsData, curr: FunctionSignatureMetadata, index: number) => {
           const lineNumber = index;
           acc.codeLineNumbersWithIdentifiers.set(lineNumber, `${curr.name}_${index}`);
-          acc.contents += getFunctionCodeLine(
-            curr,
-            [],
-            /* displayParamsInNewLines */ hasSingleSignature &&
-              entry.signatures[0].params.length > 0,
-          );
+          acc.contents += getFunctionCodeLine(curr, []);
 
           // We don't want to add line break after the last item
           if (!hasSingleSignature && index < entry.signatures.length - 1) {
@@ -295,11 +309,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
 // TODO(matthieu): This whole part should be refactored to rely on a formatter (like prettier)
 // to handle formatting (See also #59211)
 /** Generate code ToC data for list of members. */
-function getCodeTocData(
-  members: MemberEntry[],
-  isDeprecated: boolean,
-  skipNewLine: boolean = false,
-): CodeTableOfContentsData {
+function getCodeTocData(members: MemberEntry[], isDeprecated: boolean): CodeTableOfContentsData {
   const initialMetadata: CodeTableOfContentsData = {
     contents: '',
     codeLineNumbersWithIdentifiers: new Map<number, string>(),
@@ -309,7 +319,7 @@ function getCodeTocData(
 
   return members.reduce((acc: CodeTableOfContentsData, curr: MemberEntry, index: number) => {
     const setTocData = (entry: DocEntry | MemberEntry, content: string) => {
-      acc.contents += `${skipNewLine ? '' : INDENTED_NEW_LINE}${content}`;
+      acc.contents += `${INDENTED_NEW_LINE}${content}`;
       acc.codeLineNumbersWithIdentifiers.set(lineNumber, entry.name);
       if (isDeprecatedEntry(entry)) {
         acc.deprecatedLineNumbers.push(lineNumber);
@@ -354,26 +364,17 @@ function getPropertyCodeLine(member: PropertyEntry): string {
 }
 
 /** Map method entry to text */
-function getMethodCodeLine(
-  member: FunctionSignatureMetadata,
-  memberTags: MemberTags[],
-  displayParamsInNewLines = false,
-): string {
+function getMethodCodeLine(member: FunctionSignatureMetadata, memberTags: MemberTags[]): string {
   const generics = makeGenericsText(member.generics);
   return (
     `${memberTags.join(SPACE)}${memberTags.length ? ' ' : ''}${member.name}${generics}(` +
-    `${displayParamsInNewLines ? '\n' + INDENT : ''}` +
-    `${member.params.map((param) => mapParamEntry(param)).join(`,${displayParamsInNewLines ? '\n' + INDENT : SPACE}`)}` +
-    `${displayParamsInNewLines ? '\n' : ''}): ${member.returnType};`
+    `${member.params.map((param) => mapParamEntry(param)).join(`, `)}` +
+    `): ${member.returnType};`
   );
 }
 
-function getFunctionCodeLine(
-  member: FunctionSignatureMetadata,
-  memberTags: MemberTags[],
-  displayParamsInNewLines: boolean,
-) {
-  return `function ${getMethodCodeLine(member, memberTags, displayParamsInNewLines).trim()}`;
+function getFunctionCodeLine(member: FunctionSignatureMetadata, memberTags: MemberTags[]) {
+  return `function ${getMethodCodeLine(member, memberTags).trim()}`;
 }
 
 function mapParamEntry(entry: ParameterEntry) {
@@ -500,21 +501,11 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
   }
 
   if (isDecoratorEntry(entry)) {
-    // Shiki requires valid TS to generate correct syntax highlighting
-    // For now we consider a decorator as an interface or a function depending
-
-    const decoratorArgumentIsObject = !codeTocData.contents.trim().startsWith('(');
-    if (decoratorArgumentIsObject) {
-      // ex: @Component({...}) => interface Component { selector: string, ... }
-      if (codeTocData.contents !== '') {
-        appendFirstAndLastLines(codeTocData, `interface ${entry.name}({`, '\n})');
-      } else {
-        // ex @Self() => function Self()
-        appendFirstAndLastLines(codeTocData, `function ${entry.name}(`, ')');
-      }
+    let lines = splitLines(codeTocData.contents);
+    if (lines.length === 0) {
+      codeTocData.contents = `function ${entry.name}()`;
     } else {
-      // ex @ViewChild('foo', {..}) => function('foo': string, opts: {...})
-      appendFirstAndLastLines(codeTocData, `function ${entry.name}`, '');
+      codeTocData.contents = lines.map((line) => `function ${entry.name}(${line})`).join('\n');
     }
   }
 }
@@ -531,11 +522,11 @@ export function addApiLinksToHtml(htmlString: string): string {
     //                                         The captured content ==>  vvvvvvvv
     /(?<!<a[^>]*>)(<(?:(?:span)|(?:code))(?!\sdata-skip-anchor)[^>]*>\s*)([^<]*?)(\s*<\/(?:span|code)>)/g,
     (type: string, span1: string, potentialSymbolName: string, span2: string) => {
-      let [symbol, subSymbol] = potentialSymbolName.split(/(?:#|\.)/) as [string, string?];
+      const [symbol, subSymbol] = potentialSymbolName.split(/(?:#|\.)/) as [string, string?];
 
       // mySymbol() => mySymbol
       const symbolWithoutInvocation = symbol.replace(/\([^)]*\);?/g, '');
-      const moduleName = getModuleName(symbolWithoutInvocation)!;
+      const moduleName = getModuleName(symbolWithoutInvocation);
 
       if (moduleName) {
         return `${span1}<a href="${getLinkToModule(moduleName, symbol, subSymbol)}">${potentialSymbolName}</a>${span2}`;
@@ -544,7 +535,6 @@ export function addApiLinksToHtml(htmlString: string): string {
       return type;
     },
   );
-
   return result;
 }
 

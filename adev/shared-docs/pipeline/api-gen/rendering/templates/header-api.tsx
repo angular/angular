@@ -30,6 +30,8 @@ export function HeaderApi(props: {
 
   const sourceUrl = sourceUrlForEntry(entry);
 
+  const entryType = entry.entryType === 'interface_like_decorator' ? 'decorator' : entry.entryType;
+
   return (
     <header className={HEADER_CLASS_NAME}>
       <span className={HEADER_ENTRY_CATEGORY}>{entry.moduleName}</span>
@@ -37,11 +39,11 @@ export function HeaderApi(props: {
       <div className={HEADER_ENTRY_TITLE}>
         <div>
           <h1>{entry.name}</h1>
-          <div className={`${HEADER_ENTRY_LABEL} type-${entry.entryType.toLowerCase()} full`}>
-            {getEntryTypeDisplayName(entry.entryType)}
+          <div className={`${HEADER_ENTRY_LABEL} type-${entryType.toLowerCase()} full`}>
+            {getEntryTypeDisplayName(entryType)}
           </div>
           {statusTag(entry)}
-          {entry.entryType === EntryType.Pipe && !(entry as PipeEntry).isPure && (
+          {entryType === EntryType.Pipe && !(entry as PipeEntry).isPure && (
             <div className={`${HEADER_ENTRY_LABEL} type-impure-pipe full`}>Impure</div>
           )}
         </div>

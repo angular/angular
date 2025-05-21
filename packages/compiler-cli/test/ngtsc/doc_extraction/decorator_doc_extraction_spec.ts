@@ -50,13 +50,14 @@ runInEachFileSystem(() => {
       const decoratorEntry = docs[0] as DecoratorEntry;
       expect(decoratorEntry.name).toBe('Component');
       expect(decoratorEntry.description).toBe('The description.');
-      expect(decoratorEntry.entryType).toBe(EntryType.Decorator);
+      expect(decoratorEntry.entryType).toBe(EntryType.InterfaceLikeDecorator);
       expect(decoratorEntry.decoratorType).toBe(DecoratorType.Class);
 
-      expect(decoratorEntry.members.length).toBe(1);
-      expect(decoratorEntry.members[0].name).toBe('template');
-      expect(decoratorEntry.members[0].type).toBe('string');
-      expect(decoratorEntry.members[0].description).toBe('The template.');
+      expect(decoratorEntry.members!.length).toBe(1);
+      expect(decoratorEntry.members![0].name).toBe('template');
+      expect(decoratorEntry.members![0].type).toBe('string');
+      expect(decoratorEntry.members![0].description).toBe('The template.');
+      expect(decoratorEntry.signatures).toEqual([]);
     });
 
     it('should extract property decorators', () => {
@@ -88,10 +89,11 @@ runInEachFileSystem(() => {
       expect(decoratorEntry.entryType).toBe(EntryType.Decorator);
       expect(decoratorEntry.decoratorType).toBe(DecoratorType.Member);
 
-      expect(decoratorEntry.members.length).toBe(1);
-      expect(decoratorEntry.members[0].name).toBe('alias');
-      expect(decoratorEntry.members[0].type).toBe('string');
-      expect(decoratorEntry.members[0].description).toBe('The alias.');
+      expect(decoratorEntry.members).toBe(null);
+      const param1 = decoratorEntry.signatures[0].parameters[0];
+      expect(param1.name).toBe('alias');
+      expect(param1.type).toBe('string');
+      expect(param1.description).toBe('');
     });
 
     it('should extract property decorators with a type alias', () => {
@@ -129,9 +131,15 @@ runInEachFileSystem(() => {
       expect(decoratorEntry.entryType).toBe(EntryType.Decorator);
       expect(decoratorEntry.decoratorType).toBe(DecoratorType.Member);
 
-      expect(decoratorEntry.members.length).toBe(1);
-      expect(decoratorEntry.members[0].name).toBe('');
-      expect(decoratorEntry.members[0].description).toBe('The description.');
+      expect(decoratorEntry.members).toBe(null);
+      expect(decoratorEntry.signatures[0].parameters.length).toBe(2);
+      const param1 = decoratorEntry.signatures[0].parameters[0];
+      expect(param1.name).toBe('selector');
+      expect(param1.type).toBe('string');
+
+      const param2 = decoratorEntry.signatures[0].parameters[1];
+      expect(param2.name).toBe('opts');
+      expect(param2.type).toBe('{ read?: any; emitDistinctChangesOnly?: boolean; }');
     });
 
     it('should extract param decorators', () => {
@@ -163,10 +171,11 @@ runInEachFileSystem(() => {
       expect(decoratorEntry.entryType).toBe(EntryType.Decorator);
       expect(decoratorEntry.decoratorType).toBe(DecoratorType.Parameter);
 
-      expect(decoratorEntry.members.length).toBe(1);
-      expect(decoratorEntry.members[0].name).toBe('token');
-      expect(decoratorEntry.members[0].type).toBe('string');
-      expect(decoratorEntry.members[0].description).toBe('The token.');
+      expect(decoratorEntry.members).toBe(null);
+      const param1 = decoratorEntry.signatures[0].parameters[0];
+      expect(param1.name).toBe('token');
+      expect(param1.type).toBe('string');
+      expect(param1.description).toBe('');
     });
   });
 });

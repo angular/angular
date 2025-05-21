@@ -12,6 +12,7 @@ import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
 import {getApiUrl} from '../helpers/manifest.helper';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
 import {ApiManifest} from '../interfaces/api-manifest';
+import {ApiItemType} from '../interfaces/api-item-type';
 
 const manifest = API_MANIFEST_JSON as ApiManifest;
 
@@ -31,7 +32,7 @@ export class ApiReferenceManager {
         items: module.entries.map((api) => {
           const url = getApiUrl(module, api.name);
           const apiItem = {
-            itemType: api.type,
+            itemType: mapType(api.type),
             title: api.name,
             deprecated: api.deprecated,
             developerPreview: api.developerPreview,
@@ -47,4 +48,12 @@ export class ApiReferenceManager {
 
     return groups;
   }
+}
+
+function mapType(type: string): ApiItemType {
+  if (type === 'interface_like_decorator') {
+    return ApiItemType.DECORATOR;
+  }
+
+  return type as ApiItemType;
 }
