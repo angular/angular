@@ -1,3 +1,34 @@
+<a name="19.2.12"></a>
+# 19.2.12 (2025-05-21)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [126efc9972](https://github.com/angular/angular/commit/126efc9972e18806e71977d51a55f8ec2f0514d6) | fix | cancel reader when app is destroyed ([#61528](https://github.com/angular/angular/pull/61528)) |
+| [efda872453](https://github.com/angular/angular/commit/efda8724535a8560a64b28cc2bf81df5931af686) | fix | prevent reading chunks if app is destroyed ([#61354](https://github.com/angular/angular/pull/61354)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [44bb328eae](https://github.com/angular/angular/commit/44bb328eaea028524206d0d2b9f12702c9bf3861) | fix | avoid conflicts between HMR code and local symbols ([#61550](https://github.com/angular/angular/pull/61550)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [107180260f](https://github.com/angular/angular/commit/107180260f2ac4ca8e8995e123f36944c8bec2f3) | fix | Always retain prior results for all files ([#61487](https://github.com/angular/angular/pull/61487)) |
+| [1191e62d70](https://github.com/angular/angular/commit/1191e62d70ee16f3b083b635dd60a9f2e0c2d4c7) | fix | avoid ECMAScript private field metadata emit ([#61227](https://github.com/angular/angular/pull/61227)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b1b14f4d3](https://github.com/angular/angular/commit/2b1b14f4d3751b9b3c351ddc412ecdcb2aea4781) | fix | cleanup `rxResource` abort listener ([#58306](https://github.com/angular/angular/pull/58306)) |
+| [8f9b05eaaa](https://github.com/angular/angular/commit/8f9b05eaaabf14d7570fde16e26a73d69f78dc14) | fix | cleanup testability subscriptions ([#61261](https://github.com/angular/angular/pull/61261)) |
+| [eb53bda470](https://github.com/angular/angular/commit/eb53bda470312d449039ef9b1494e3b6cc081e42) | fix | enable stashing only when `withEventReplay()` is invoked ([#61352](https://github.com/angular/angular/pull/61352)) |
+| [94f5a4b4d6](https://github.com/angular/angular/commit/94f5a4b4d6ee195e05e7d2683ab386ee02d60a06) | fix | Testing should not throw when Zone does not patch test FW APIs ([#61376](https://github.com/angular/angular/pull/61376)) |
+| [c0c69a5abc](https://github.com/angular/angular/commit/c0c69a5abc7262887eaa1f0b84a6ec22be225994) | fix | unregister `onDestroy` in `toSignal`. ([#61514](https://github.com/angular/angular/pull/61514)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8edafd0559](https://github.com/angular/angular/commit/8edafd05599b402f383e36879f76f2d5507450e8) | perf | speed up resolution of base ([#61392](https://github.com/angular/angular/pull/61392)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0-rc.1"></a>
 # 20.0.0-rc.1 (2025-05-15)
 ### compiler
