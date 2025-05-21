@@ -40,6 +40,7 @@ export interface DataEntry {
 
 export class FormFieldManager {
   constructor(readonly injector: Injector) {}
+
   readonly nodes = new Set<FieldNode>();
 
   createFieldManagementEffect(root: FieldNode): void {
@@ -127,53 +128,72 @@ export class FieldNode implements FieldState<unknown> {
    */
   private _fieldContext: FieldContext<unknown> | undefined = undefined;
 
+  private readonly resolveCache = new WeakMap<FieldPath<unknown>, Field<unknown>>();
+
   /**
    * Value of the "context" argument passed to all logic functions, which supports e.g. resolving
    * paths in relation to this field.
    */
   get fieldContext(): FieldContext<unknown> {
+    const resolve = <U>(target: FieldPath<U>): Field<U> => {
+      if (this.resolveCache.has(target)) {
+        return this.resolveCache.get(target) as Field<U>;
+      }
+      const currentPathKeys = this.pathKeys;
+      const targetPathNode = FieldPathNode.unwrapFieldPath(target);
+
+      if (!(this.root.logicPath instanceof FieldRootPathNode)) {
+        throw Error('Expected root of FieldNode tree to have a FieldRootPathNode.');
+      }
+      const prefix = this.root.logicPath.subroots.get(targetPathNode.root);
+      if (!prefix) {
+        throw Error('Path is not part of this field tree.');
+      }
+
+      const targetPathKeys = [...prefix, ...targetPathNode.keys];
+
+      // Navigate from `currentPath` to `targetPath`. As an example, suppose that:
+      // currentPath = [A, B, C, D]
+      // targetPath = [A, B, X, Y, Z]
+
+      // Firstly, find the length of the shared prefix between the two paths. In our example, this
+      // is the prefix [A, B], so we would expect a `sharedPrefixLength` of 2.
+      const sharedPrefixLength = lengthOfSharedPrefix(currentPathKeys, targetPathNode.keys);
+
+      // Walk up the graph until we arrive at the common ancestor, which could be the root node if
+      // there is no shared prefix. In our example, this will require 2 up steps, navigating from
+      // D to B.
+      let requiredUpSteps = currentPathKeys.length - sharedPrefixLength;
+      let field: FieldNode = this;
+      while (requiredUpSteps-- > 0) {
+        field = field.parent!;
+      }
+
+      // Now, we can navigate from the closest ancestor to the target, e.g. from B through X, Y,
+      // and then to Z.
+      for (let idx = sharedPrefixLength; idx < targetPathKeys.length; idx++) {
+        const property =
+          targetPathKeys[idx] === DYNAMIC ? currentPathKeys[idx] : targetPathKeys[idx];
+        field = field.getChild(property)!;
+      }
+
+      this.resolveCache.set(target, field.fieldProxy);
+      return field.fieldProxy as Field<U>;
+    };
     return (this._fieldContext ??= {
       value: this.value,
-      resolve: <U>(target: FieldPath<U>): Field<U> => {
-        const currentPathKeys = this.pathKeys;
-        const targetPathNode = FieldPathNode.unwrapFieldPath(target);
-
-        if (!(this.root.logicPath instanceof FieldRootPathNode)) {
-          throw Error('Expected root of FieldNode tree to have a FieldRootPathNode.');
-        }
-        const prefix = this.root.logicPath.subroots.get(targetPathNode.root);
-        if (!prefix) {
-          throw Error('Path is not part of this field tree.');
-        }
-
-        const targetPathKeys = [...prefix, ...targetPathNode.keys];
-
-        // Navigate from `currentPath` to `targetPath`. As an example, suppose that:
-        // currentPath = [A, B, C, D]
-        // targetPath = [A, B, X, Y, Z]
-
-        // Firstly, find the length of the shared prefix between the two paths. In our example, this
-        // is the prefix [A, B], so we would expect a `sharedPrefixLength` of 2.
-        const sharedPrefixLength = lengthOfSharedPrefix(currentPathKeys, targetPathNode.keys);
-
-        // Walk up the graph until we arrive at the common ancestor, which could be the root node if
-        // there is no shared prefix. In our example, this will require 2 up steps, navigating from
-        // D to B.
-        let requiredUpSteps = currentPathKeys.length - sharedPrefixLength;
-        let field: FieldNode = this;
-        while (requiredUpSteps-- > 0) {
-          field = field.parent!;
-        }
-
-        // Now, we can navigate from the closest ancestor to the target, e.g. from B through X, Y,
-        // and then to Z.
-        for (let idx = sharedPrefixLength; idx < targetPathKeys.length; idx++) {
-          const property =
-            targetPathKeys[idx] === DYNAMIC ? currentPathKeys[idx] : targetPathKeys[idx];
-          field = field.getChild(property)!;
-        }
-
-        return field.fieldProxy as Field<U>;
+      // TODO: Drop resolve and data
+      resolve,
+      state: this,
+      field: this.fieldProxy,
+      stateOf<P>(p: FieldPath<P>) {
+        return resolve(p).$state;
+      },
+      fieldOf<P>(p: FieldPath<P>) {
+        return resolve(p);
+      },
+      valueOf<P>(p: FieldPath<P>) {
+        return resolve(p).$state.value();
       },
 
       data: <D>(key: DataKey<D>): D => {
