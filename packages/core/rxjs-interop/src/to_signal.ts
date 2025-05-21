@@ -168,6 +168,7 @@ export function toSignal<T, U = undefined>(
     next: (value) => state.set({kind: StateKind.Value, value}),
     error: (error) => {
       state.set({kind: StateKind.Error, error});
+      destroyUnregisterFn?.();
     },
     complete: () => {
       destroyUnregisterFn?.();
