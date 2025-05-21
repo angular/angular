@@ -1,6 +1,6 @@
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("//tools:defaults.bzl", "pkg_npm")
-load("//tools:defaults2.bzl", "ts_config", "ts_project")
+load("//tools:defaults2.bzl", "ts_config")
 
 exports_files([
     "tsconfig.json",
@@ -27,17 +27,6 @@ ts_config(
     ],
 )
 
-ts_project(
-    name = "schematics",
-    srcs = [
-        "index.ts",
-    ],
-    visibility = ["//packages/language-service:__subpackages__"],
-    deps = [
-        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
-    ],
-)
-
 pkg_npm(
     name = "npm_package",
     srcs = [
@@ -57,7 +46,6 @@ pkg_npm(
     visibility = ["//packages/core:__pkg__"],
     deps = [
         ":bundles",
-        ":schematics",
     ],
 )
 
