@@ -1,3 +1,53 @@
+<a name="20.0.0-rc.2"></a>
+# 20.0.0-rc.2 (2025-05-21)
+## Deprecations
+### platform-browser
+- All entries of the `@angular/platform-browser-dynamic`
+## Breaking Changes
+### core
+- `Resource.value()` now returns a default value when in a loading state after reloading the error state
+- `Resource.value()` now throws an error when it's in an error state. Previously it returned `undefined`.
+- `Resource.error` now has a type of `Signal<Error | undefined>` instead of `Signal<unknown>`
+- `Resource.reload` has been moved to `WritableResource.reload`.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [af7881abac](https://github.com/angular/angular/commit/af7881abac268d2a6d93bbc2b64fa4a33ce3de31) | fix | cancel reader when app is destroyed ([#61528](https://github.com/angular/angular/pull/61528)) |
+| [966df84351](https://github.com/angular/angular/commit/966df843516fd7758c988b99bdf262fa1e3fc1fc) | fix | prevent reading chunks if app is destroyed ([#61354](https://github.com/angular/angular/pull/61354)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e74266b108](https://github.com/angular/angular/commit/e74266b10881261eec540bcdbe1875f7696181c5) | fix | avoid conflicts between HMR code and local symbols ([#61550](https://github.com/angular/angular/pull/61550)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b57084267e](https://github.com/angular/angular/commit/b57084267e3f737e035cc6c62e349a0b6f77407c) | fix | Always retain prior results for all files ([#61487](https://github.com/angular/angular/pull/61487)) |
+| [7a3a41f33f](https://github.com/angular/angular/commit/7a3a41f33f1c24bb985eee253b6dbe4ebeb1db73) | fix | avoid ECMAScript private field metadata emit ([#61227](https://github.com/angular/angular/pull/61227)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7efb3384a7](https://github.com/angular/angular/commit/7efb3384a74cde41f36a4ed8675ac1af676d227b) | fix | cleanup `rxResource` abort listener ([#58306](https://github.com/angular/angular/pull/58306)) |
+| [b90160d10a](https://github.com/angular/angular/commit/b90160d10a25f3ca77804377a937f637396a606a) | fix | cleanup testability subscriptions ([#61261](https://github.com/angular/angular/pull/61261)) |
+| [3ba39bc28f](https://github.com/angular/angular/commit/3ba39bc28f93c208f7b50fcb878fe1aa1bc0413d) | fix | getting resource value throws an error instead of returning undefined ([#61441](https://github.com/angular/angular/pull/61441)) |
+| [ca6295e90b](https://github.com/angular/angular/commit/ca6295e90b72b352319ebf77d969b33783b284ed) | fix | handle different DI token types in Chrome DevTools integration ([#61333](https://github.com/angular/angular/pull/61333)) |
+| [d62379bb13](https://github.com/angular/angular/commit/d62379bb13f08e9e0fe9c7b93fe7c6ef46f8f181) | fix | move reload method from Resource to WritableResource ([#61441](https://github.com/angular/angular/pull/61441)) |
+| [a89f1cff24](https://github.com/angular/angular/commit/a89f1cff2465cca383765e9f9d7e719970a3a6e4) | fix | narrow error type for resources API ([#61441](https://github.com/angular/angular/pull/61441)) |
+| [6e79eaf739](https://github.com/angular/angular/commit/6e79eaf7399170611bcbefda0082947b629f2693) | fix | reading resource value after reload in the error state ([#61441](https://github.com/angular/angular/pull/61441)) |
+| [350776b412](https://github.com/angular/angular/commit/350776b4128271760008c4f1430c9a44c8b83234) | fix | TestBed.tick should ensure test components are synchronized ([#61382](https://github.com/angular/angular/pull/61382)) |
+| [648d42fe65](https://github.com/angular/angular/commit/648d42fe6511198c8027a20c1be0728e6f963335) | fix | Testing should not throw when Zone does not patch test FW APIs ([#61376](https://github.com/angular/angular/pull/61376)) |
+| [5dbeb42308](https://github.com/angular/angular/commit/5dbeb423087206e57c51c5e4f935fcdf45068a8b) | fix | unregister `onDestroy` in `toSignal`. ([#61514](https://github.com/angular/angular/pull/61514)) |
+| [30e081287d](https://github.com/angular/angular/commit/30e081287da68d6801f8ebd5a00d495b51d4c68d) | fix | update min Node.js support to 20.19, 22.12, and 24.0 ([#61500](https://github.com/angular/angular/pull/61500)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bc2cab747f](https://github.com/angular/angular/commit/bc2cab747f23e517128bdefedd7d5296a1c9ebbc) | refactor | Deprecate the `platform-browser-dynamic` package ([#61043](https://github.com/angular/angular/pull/61043)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6d8e57d131](https://github.com/angular/angular/commit/6d8e57d13151759d16a6296b6db78e4e018415a4) | perf | speed up resolution of base ([#61392](https://github.com/angular/angular/pull/61392)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.12"></a>
 # 19.2.12 (2025-05-21)
 ### common
