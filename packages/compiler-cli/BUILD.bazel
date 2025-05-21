@@ -128,7 +128,6 @@ pkg_npm(
     ],
     visibility = [
         "//adev:__pkg__",
-        "//adev/shared-docs/pipeline/api-gen:__subpackages__",
         "//integration:__subpackages__",
         "//modules/benchmarks:__subpackages__",
         "//modules/playground:__subpackages__",
@@ -149,11 +148,6 @@ pkg_npm(
 npm_package(
     name = "pkg",
     srcs = [":npm_package"],
-    data = [
-        # Needed because compiler is a dev dependency (to satisfy the peer dependency)
-        # and `rules_js` only makes transitive production dependencies available.
-        ":node_modules/@angular/compiler",
-    ],
     replace_prefixes = {
         "npm_package/": "",
     },

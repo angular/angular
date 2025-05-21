@@ -1,9 +1,9 @@
-load("//tools:defaults.bzl", "ng_package", "ts_library", "tsec_test")
-load("//tools:defaults2.bzl", "npm_package")
+load("//tools:defaults.bzl", "ng_package", "pkg_npm", "tsec_test")
+load("//tools:defaults2.bzl", "npm_package", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "compiler",
     srcs = glob(
         [
@@ -37,7 +37,10 @@ ng_package(
         "//integration:__subpackages__",
         "//modules/ssr-benchmarks:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/core/test/bundling:__subpackages__",
+        "//packages/core/test/playground/zone-signal-input:__pkg__",
         "//packages/language-service/test:__pkg__",
+        "@npm//@angular/build-tooling/shared-scripts:__subpackages__",
     ],
     deps = [
         ":compiler",
@@ -52,6 +55,14 @@ npm_package(
     replace_prefixes = {
         "npm_package_nosub/": "",
     },
+)
+
+# TODO(devversion): Temporary linkable `pkg_npm` for making compiler usable with the rules_nodejs linker.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+pkg_npm(
+    name = "linkable_npm_package",
+    package_name = "@angular/compiler",
+    nested_packages = [":npm_package"],
 )
 
 filegroup(
