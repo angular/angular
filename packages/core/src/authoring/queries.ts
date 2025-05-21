@@ -259,7 +259,7 @@ export interface ContentChildFunction {
  * }
  * ```
  *
- * Note: By default `descendants` is `true` which means the query will not traverse all descendants in the same template.
+ * Note: By default `descendants` is `true` which means the query will traverse all descendants in the same template.
  *
  * @initializerApiFunction
  * @publicApi 19.0
