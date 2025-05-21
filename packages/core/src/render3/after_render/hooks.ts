@@ -216,7 +216,10 @@ export function afterEveryRender(
         'callback inside the component constructor`.',
     );
 
-  !options?.injector && assertInInjectionContext(afterEveryRender);
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(afterEveryRender);
+  }
+
   const injector = options?.injector ?? inject(Injector);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
