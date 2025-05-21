@@ -60,9 +60,6 @@
       "optional": true
     }
   },
-  "devDependencies": {
-    "@angular/compiler": "workspace:*"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git",
