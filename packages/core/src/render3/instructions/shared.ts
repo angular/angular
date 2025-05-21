@@ -77,7 +77,11 @@ import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {renderStringify} from '../util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapLView} from '../util/view_utils';
 
-import {clearElementContents, setupStaticAttributes} from '../dom_node_manipulation';
+import {
+  clearElementContents,
+  setElementAttribute,
+  setupStaticAttributes,
+} from '../dom_node_manipulation';
 import {createComponentLView} from '../view/construction';
 import {selectIndexInternal} from './advance';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
@@ -512,25 +516,6 @@ export function elementAttributeInternal(
   }
   const element = getNativeByTNode(tNode, lView) as RElement;
   setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
-}
-
-export function setElementAttribute(
-  renderer: Renderer,
-  element: RElement,
-  namespace: string | null | undefined,
-  tagName: string | null,
-  name: string,
-  value: any,
-  sanitizer: SanitizerFn | null | undefined,
-) {
-  if (value == null) {
-    renderer.removeAttribute(element, name, namespace);
-  } else {
-    const strValue =
-      sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
-
-    renderer.setAttribute(element, name, strValue as string, namespace);
-  }
 }
 
 /**

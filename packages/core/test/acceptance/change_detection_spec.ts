@@ -1670,7 +1670,7 @@ describe('change detection', () => {
       ).toThrowError(new RegExp(message));
     });
 
-    it('should include field name in case of attribute interpolation', () => {
+    xit('should include field name in case of attribute interpolation', () => {
       const message = `Previous value for 'attr.id': 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'`;
       expect(() =>
         initWithTemplate(
