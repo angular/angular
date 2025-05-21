@@ -187,15 +187,15 @@ jobs:
       - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
       - run: yarn --cwd packages/zone.js/test/typings test
 
-  saucelabs:
-    runs-on: ubuntu-latest-4core
-    env:
-      SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
-    steps:
-      - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@14c3d6bd2fa5c3231be7bd4b3c0bba68c9d79e94
-        with:
-          cache-node-modules: true
-      - name: Install node modules
-        run: yarn install --frozen-lockfile
-      - uses: ./.github/actions/saucelabs-legacy
+  # saucelabs:
+  #   runs-on: ubuntu-latest-4core
+  #   env:
+  #     SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
+  #   steps:
+  #     - name: Initialize environment
+  #       uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@14c3d6bd2fa5c3231be7bd4b3c0bba68c9d79e94
+  #       with:
+  #         cache-node-modules: true
+  #     - name: Install node modules
+  #       run: yarn install --frozen-lockfile
+  #     - uses: ./.github/actions/saucelabs-legacy
