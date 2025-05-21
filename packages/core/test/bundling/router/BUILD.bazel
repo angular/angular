@@ -46,7 +46,6 @@ ts_project(
 jasmine_node_test(
     name = "test",
     data = [
-        ":bundle",
         ":bundle.debug.min.js",
         ":bundle.js",
         ":bundle.min.js",
