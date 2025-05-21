@@ -143,6 +143,10 @@ export const enum RuntimeErrorCode {
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
   RUNTIME_DEPS_ORPHAN_COMPONENT = 981,
 
+  // Resource errors
+  MUST_PROVIDE_STREAM_OPTION = 990,
+  RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE = 991,
+
   // Upper bounds for core runtime errors is 999
 }
 

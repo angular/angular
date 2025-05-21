@@ -122,6 +122,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MULTIPLE_PLATFORMS = 400,
     // (undocumented)
+    MUST_PROVIDE_STREAM_OPTION = 990,
+    // (undocumented)
     NO_BINDING_TARGET = 315,
     // (undocumented)
     NO_COMPONENT_FACTORY_FOUND = 917,
@@ -153,6 +155,8 @@ export const enum RuntimeErrorCode {
     REQUIRED_MODEL_NO_VALUE = 952,
     // (undocumented)
     REQUIRED_QUERY_NO_VALUE = -951,
+    // (undocumented)
+    RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE = 991,
     // (undocumented)
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
     // (undocumented)

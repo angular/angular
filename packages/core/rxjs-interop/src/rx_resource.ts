@@ -14,6 +14,8 @@ import {
   Signal,
   signal,
   BaseResourceOptions,
+  ɵRuntimeError,
+  ɵRuntimeErrorCode,
 } from '../../src/core';
 import {Observable, Subscription} from 'rxjs';
 
@@ -72,7 +74,10 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
       // TODO(alxhub): remove after g3 updated to rename loader -> stream
       const streamFn = opts.stream ?? (opts as {loader?: RxResourceOptions<T, R>['stream']}).loader;
       if (streamFn === undefined) {
-        throw new Error(`Must provide \`stream\` option.`);
+        throw new ɵRuntimeError(
+          ɵRuntimeErrorCode.MUST_PROVIDE_STREAM_OPTION,
+          ngDevMode && `Must provide \`stream\` option.`,
+        );
       }
 
       sub = streamFn(params).subscribe({
@@ -80,7 +85,12 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
         error: (error) => send({error}),
         complete: () => {
           if (resolve) {
-            send({error: new Error('Resource completed before producing a value')});
+            send({
+              error: new ɵRuntimeError(
+                ɵRuntimeErrorCode.RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE,
+                ngDevMode && 'Resource completed before producing a value',
+              ),
+            });
           }
           params.abortSignal.removeEventListener('abort', onAbort);
         },
