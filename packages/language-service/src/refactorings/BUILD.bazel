@@ -17,7 +17,6 @@ ts_project(
     ],
     deps = [
         "//:node_modules/typescript",
-        "//packages/core/schematics:schematics_rjs",
         "//packages/core/schematics/migrations/signal-migration/src:src_rjs",
         "//packages/core/schematics/migrations/signal-queries-migration:migration_rjs",
         "//packages/language-service:api_rjs",
