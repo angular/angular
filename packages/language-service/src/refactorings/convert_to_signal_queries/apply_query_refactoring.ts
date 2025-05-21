@@ -10,7 +10,7 @@ import {CompilerOptions} from '@angular/compiler-cli';
 import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import ts from 'typescript';
-import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
+import {groupReplacementsByFile} from '@angular/core/schematics';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 import {
   MigrationConfig,
