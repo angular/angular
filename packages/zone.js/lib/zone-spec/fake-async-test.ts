@@ -8,6 +8,7 @@
 
 import {ZoneType} from '../zone-impl';
 import {type ProxyZoneSpec} from './proxy';
+import {Zone as _Zone} from '../zone-impl'; // Import Zone for type checking if needed
 
 const global: any =
   (typeof window === 'object' && window) || (typeof self === 'object' && self) || globalThis.global;
@@ -794,6 +795,10 @@ function getProxyZoneSpec(): typeof ProxyZoneSpec | undefined {
   return Zone && (Zone as any)['ProxyZoneSpec'];
 }
 
+const ambientZone = Zone.current;
+let _sharedAutoProxyZoneSpec: ProxyZoneSpec | null = null;
+let _sharedProxyZone: Zone | null = null;
+
 /**
  * Clears out the shared fake async zone for a test.
  * To be called in a global `beforeEach`.
@@ -806,6 +811,9 @@ export function resetFakeAsyncZone() {
   }
   _fakeAsyncTestZoneSpec = null;
   getProxyZoneSpec()?.get()?.resetDelegate();
+  if (_sharedAutoProxyZoneSpec) {
+    _sharedAutoProxyZoneSpec.resetDelegate(); // Reset delegate if one was set
+  }
 }
 
 /**
@@ -900,23 +908,8 @@ export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...ar
   return fakeAsyncFn;
 }
 
-export function fakeAsyncAllowNewProxyZone(...args: Parameters<typeof fakeAsync>) {
-  const fakeAsyncFn = () => {
-    const proxyZoneSpec = getProxyZoneSpec();
-    if (proxyZoneSpec === undefined) {
-      throw new Error(
-        'ProxyZoneSpec is needed for the fakeAsync() test helper but could not be found. ' +
-          'Make sure that your environment includes zone-testing.js',
-      );
-    }
-
-    if (proxyZoneSpec.get() == undefined) {
-      const proxyZoneSpecInstance = new (getProxyZoneSpec() as any)() as ProxyZoneSpec;
-      const proxyZone = Zone.current.fork(proxyZoneSpecInstance);
-      return proxyZone.run(fakeAsync(...args));
-    }
-    return fakeAsync(...args)();
-  };
+export function fakeAsyncWithAutoProxy(...args: Parameters<typeof fakeAsync>) {
+  const fakeAsyncFn = () => withAutoProxy(fakeAsync(...args));
   fakeAsyncFn.isFakeAsync = true;
   return fakeAsyncFn;
 }
@@ -973,6 +966,50 @@ export function discardPeriodicTasks(): void {
 }
 
 /**
+ * Wraps a function to be executed in a shared ProxyZone.
+ * If no shared ProxyZone exists, one is created and reused for subsequent calls.
+ * Useful for wrapping test setup (beforeEach) and test execution (it) when test
+ * runner patching isn't available or desired for setting up the ProxyZone.
+ *
+ * @param fn The function to wrap.
+ * @returns A function that executes the original function within the shared ProxyZone.
+ *
+ * @experimental
+ */
+export function withAutoProxy<T extends Function>(fn: T): T {
+  const autoProxyFn: any = function (this: unknown, ...args: any[]) {
+    const proxyZoneSpec = getProxyZoneSpec();
+    if (proxyZoneSpec === undefined) {
+      throw new Error(
+        'ProxyZoneSpec is needed for the fakeAsync() test helper but could not be found. ' +
+          'Make sure that your environment includes zone-testing.js',
+      );
+    }
+
+    const proxyZone = proxyZoneSpec.get() !== undefined ? Zone.current : getOrCreateAutoProxy();
+    return proxyZone.run(fn, this, args);
+  };
+  return autoProxyFn as T;
+}
+
+function getOrCreateAutoProxy() {
+  const ProxyZoneSpec = getProxyZoneSpec();
+  if (ProxyZoneSpec === undefined) {
+    throw new Error(
+      'ProxyZoneSpec is needed for withAutoProxy but could not be found. ' +
+        'Make sure that your environment includes zone-testing.js',
+    );
+  }
+  // Ensure the shared ProxyZoneSpec instance exists
+  if (_sharedAutoProxyZoneSpec === null) {
+    _sharedAutoProxyZoneSpec = new ProxyZoneSpec() as ProxyZoneSpec;
+  }
+
+  _sharedProxyZone = ambientZone.fork(_sharedAutoProxyZoneSpec);
+  return _sharedProxyZone;
+}
+
+/**
  * Flush any pending microtasks.
  *
  * @experimental
@@ -996,7 +1033,8 @@ export function patchFakeAsyncTest(Zone: ZoneType): void {
         tick,
         flush,
         fakeAsync,
-        fakeAsyncAllowNewProxyZone,
+        fakeAsyncWithAutoProxy,
+        withAutoProxy,
       };
     },
     true,
