@@ -27,14 +27,14 @@ importers:
         specifier: 20.0.0-rc.3
         version: 20.0.0-rc.3(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.101)(chokidar@4.0.3)(karma@6.4.4)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.2)
       '@angular/cdk':
-        specifier: 20.0.0-rc.1
-        version: 20.0.0-rc.1(rxjs@7.8.2)
+        specifier: 20.0.0-rc.2
+        version: 20.0.0-rc.2(rxjs@7.8.2)
       '@angular/cli':
         specifier: 20.0.0-rc.3
         version: 20.0.0-rc.3(@types/node@18.19.101)(chokidar@4.0.3)
       '@angular/material':
-        specifier: 20.0.0-rc.1
-        version: 20.0.0-rc.1(@angular/cdk@20.0.0-rc.1)(rxjs@7.8.2)
+        specifier: 20.0.0-rc.2
+        version: 20.0.0-rc.2(@angular/cdk@20.0.0-rc.2)(rxjs@7.8.2)
       '@angular/ssr':
         specifier: 20.0.0-rc.3
         version: 20.0.0-rc.3
@@ -250,7 +250,7 @@ importers:
         version: 0.0.12
       ngx-progressbar:
         specifier: ^14.0.0
-        version: 14.0.0(@angular/cdk@20.0.0-rc.1)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@20.0.0-rc.2)(rxjs@7.8.2)
       open-in-idx:
         specifier: ^0.1.1
         version: 0.1.1
@@ -1272,8 +1272,8 @@ packages:
       - yaml
     dev: false
 
-  /@angular/cdk@20.0.0-rc.1(rxjs@7.8.2):
-    resolution: {integrity: sha512-YlY5uKCfuMm98YGGunFOcpdr8hgEtOlXSs7i6oCSnXll0IxngcbKt2OpnEWqGMSxhVbJ3/B+/SK/8goBui5tVw==, tarball: https://registry.npmjs.org/@angular/cdk/-/cdk-20.0.0-rc.1.tgz}
+  /@angular/cdk@20.0.0-rc.2(rxjs@7.8.2):
+    resolution: {integrity: sha512-jqv5621my90f9mn3iZRkAp8f7Dn1b16QyuDl6csOsH4wATySIprCE9jECcyAOtWvWGibw4fr5kocYkX+Lljlag==, tarball: https://registry.npmjs.org/@angular/cdk/-/cdk-20.0.0-rc.2.tgz}
     peerDependencies:
       '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/core': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
@@ -1322,17 +1322,17 @@ packages:
       tslib: 2.8.1
     dev: true
 
-  /@angular/material@20.0.0-rc.1(@angular/cdk@20.0.0-rc.1)(rxjs@7.8.2):
-    resolution: {integrity: sha512-chD273pzqc1ghOP5dwPXaftcfn4vwDL43VZT1Vl2CFSy9+A3Bnd1MB1O0VVrUYQe1bi38TCJ9QwZjPmCOAOzHQ==, tarball: https://registry.npmjs.org/@angular/material/-/material-20.0.0-rc.1.tgz}
+  /@angular/material@20.0.0-rc.2(@angular/cdk@20.0.0-rc.2)(rxjs@7.8.2):
+    resolution: {integrity: sha512-/ktz7f9Kc3+8NaJGDAROFlgGWMWGb0SgLio4CcxxZ2JxNH4JB2XSTnoQoFrShATTuaoBQ/D8/YaE+L5BZTPvGw==, tarball: https://registry.npmjs.org/@angular/material/-/material-20.0.0-rc.2.tgz}
     peerDependencies:
-      '@angular/cdk': 20.0.0-rc.1
+      '@angular/cdk': 20.0.0-rc.2
       '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/core': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/forms': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/platform-browser': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
-      '@angular/cdk': 20.0.0-rc.1(rxjs@7.8.2)
+      '@angular/cdk': 20.0.0-rc.2(rxjs@7.8.2)
       rxjs: 7.8.2
       tslib: 2.8.1
     dev: false
@@ -13793,7 +13793,7 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /ngx-progressbar@14.0.0(@angular/cdk@20.0.0-rc.1)(rxjs@7.8.2):
+  /ngx-progressbar@14.0.0(@angular/cdk@20.0.0-rc.2)(rxjs@7.8.2):
     resolution: {integrity: sha512-tDj7h5F2aSI4/XaJjs50FnELVe6qFqyz3vVq22acacd3oDW2EyJB4c+IYaxMf5972OdTw0WL4n6UwQ3dqC+gCA==, tarball: https://registry.npmjs.org/ngx-progressbar/-/ngx-progressbar-14.0.0.tgz}
     peerDependencies:
       '@angular/cdk': '>=17.3.0'
@@ -13801,7 +13801,7 @@ packages:
       '@angular/core': '>=17.3.0'
       rxjs: '>=7.0.0'
     dependencies:
-      '@angular/cdk': 20.0.0-rc.1(rxjs@7.8.2)
+      '@angular/cdk': 20.0.0-rc.2(rxjs@7.8.2)
       rxjs: 7.8.2
       tslib: 2.8.1
     dev: false
