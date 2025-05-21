@@ -18,7 +18,7 @@ export {
   resetFakeAsyncZone,
   discardPeriodicTasks,
   fakeAsync,
-  FakeAsyncFn,
+  withProxyZone,
   flush,
   flushMicrotasks,
   tick,

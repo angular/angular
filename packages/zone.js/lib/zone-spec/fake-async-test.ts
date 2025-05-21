@@ -811,9 +811,7 @@ export function resetFakeAsyncZone() {
   }
   _fakeAsyncTestZoneSpec = null;
   getProxyZoneSpec()?.get()?.resetDelegate();
-  if (_sharedAutoProxyZoneSpec) {
-    _sharedAutoProxyZoneSpec.resetDelegate(); // Reset delegate if one was set
-  }
+  _sharedAutoProxyZoneSpec?.resetDelegate();
 }
 
 /**
@@ -853,7 +851,7 @@ export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...ar
       throw new Error(
         'fakeAsync() requires running inside a ProxyZoneSpec.' +
           'zone-testing.js monkey patches jasmine, jest, and mocha APIs to do this automatically and ensure the same one is shared so fakeAsync can capture all timers and microtasks.' +
-          'Use `fakeAsync.allowNewProxyZone` if you want to allow creating a new one when the wrapped function is invoked.',
+          'Wrap the `fakeAsync` function in `withProxyZone` to do this manually.',
       );
     }
     if (Zone.current.get('FakeAsyncTestZoneSpec')) {
@@ -904,12 +902,6 @@ export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...ar
       resetFakeAsyncZone();
     }
   };
-  fakeAsyncFn.isFakeAsync = true;
-  return fakeAsyncFn;
-}
-
-export function fakeAsyncWithAutoProxy(...args: Parameters<typeof fakeAsync>) {
-  const fakeAsyncFn = () => withAutoProxy(fakeAsync(...args));
   fakeAsyncFn.isFakeAsync = true;
   return fakeAsyncFn;
 }
@@ -976,27 +968,27 @@ export function discardPeriodicTasks(): void {
  *
  * @experimental
  */
-export function withAutoProxy<T extends Function>(fn: T): T {
+export function withProxyZone<T extends Function>(fn: T): T {
   const autoProxyFn: any = function (this: unknown, ...args: any[]) {
     const proxyZoneSpec = getProxyZoneSpec();
     if (proxyZoneSpec === undefined) {
       throw new Error(
-        'ProxyZoneSpec is needed for the fakeAsync() test helper but could not be found. ' +
+        'ProxyZoneSpec is needed for the withProxyZone() test helper but could not be found. ' +
           'Make sure that your environment includes zone-testing.js',
       );
     }
 
-    const proxyZone = proxyZoneSpec.get() !== undefined ? Zone.current : getOrCreateAutoProxy();
+    const proxyZone = proxyZoneSpec.get() !== undefined ? Zone.current : getOrCreateRootProxy();
     return proxyZone.run(fn, this, args);
   };
   return autoProxyFn as T;
 }
 
-function getOrCreateAutoProxy() {
+function getOrCreateRootProxy() {
   const ProxyZoneSpec = getProxyZoneSpec();
   if (ProxyZoneSpec === undefined) {
     throw new Error(
-      'ProxyZoneSpec is needed for withAutoProxy but could not be found. ' +
+      'ProxyZoneSpec is needed for withProxyZone but could not be found. ' +
         'Make sure that your environment includes zone-testing.js',
     );
   }
@@ -1033,8 +1025,7 @@ export function patchFakeAsyncTest(Zone: ZoneType): void {
         tick,
         flush,
         fakeAsync,
-        fakeAsyncWithAutoProxy,
-        withAutoProxy,
+        withProxyZone,
       };
     },
     true,

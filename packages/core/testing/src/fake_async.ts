@@ -33,56 +33,57 @@ export function resetFakeAsyncZoneIfExists(): void {
     fakeAsyncTestModule.resetFakeAsyncZone();
   }
 }
-function fakeAsyncInternal(fn: Function, options?: {flush?: boolean}): (...args: any[]) => any {
+
+/**
+ * Wraps a function to be executed in the `fakeAsync` zone:
+ * - Microtasks are manually executed by calling `flushMicrotasks()`.
+ * - Timers are synchronous; `tick()` simulates the asynchronous passage of time.
+ *
+ * Can be used to wrap `inject()` calls.
+ *
+ * @param fn The function that you want to wrap in the `fakeAsync` zone.
+ * @param options
+ *   - flush: When true, will drain the macrotask queue after the test function completes.
+ *     When false, will throw an exception at the end of the function if there are pending timers.
+ *
+ * @usageNotes
+ * ### Example
+ *
+ * {@example core/testing/ts/fake_async.ts region='basic'}
+ *
+ *
+ * @returns The function wrapped to be executed in the `fakeAsync` zone.
+ * Any arguments passed when calling this returned function will be passed through to the `fn`
+ * function in the parameters when it is called.
+ *
+ * @publicApi
+ */
+export function fakeAsync(fn: Function, options?: {flush?: boolean}): (...args: any[]) => any {
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.fakeAsync(fn, options);
   }
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
 }
+
 /**
+ * Wraps a function to be executed in a shared ProxyZone.
+ *
+ * If no shared ProxyZone exists, one is created and reused for subsequent calls.
+ * Useful for wrapping test setup (beforeEach) and test execution (it) when test
+ * runner patching isn't available or desired for setting up the ProxyZone.
+ *
+ * @param fn The function to wrap.
+ * @returns A function that executes the original function within the shared ProxyZone.
+ *
+ * @experimental
  * @publicApi
  */
-export interface FakeAsyncFn {
-  /**
-   * Wraps a function to be executed in the `fakeAsync` zone:
-   * - Microtasks are manually executed by calling `flushMicrotasks()`.
-   * - Timers are synchronous; `tick()` simulates the asynchronous passage of time.
-   *
-   * Can be used to wrap `inject()` calls.
-   *
-   * @param fn The function that you want to wrap in the `fakeAsync` zone.
-   * @param options
-   *   - flush: When true, will drain the macrotask queue after the test function completes.
-   *     When false, will throw an exception at the end of the function if there are pending timers.
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * {@example core/testing/ts/fake_async.ts region='basic'}
-   *
-   *
-   * @returns The function wrapped to be executed in the `fakeAsync` zone.
-   * Any arguments passed when calling this returned function will be passed through to the `fn`
-   * function in the parameters when it is called.
-   *
-   * @publicApi
-   */
-  (fn: Function, options?: {flush?: boolean}): (...args: any[]) => any;
-
-  /**
-   * Identical to fakeAsync but creates a new ProxyZone if ProxyZone cannot be found when executed.
-   *
-   * @experimental
-   */
-  allowNewProxyZone(fn: Function, options?: {flush?: boolean}): (...args: any[]) => any;
+export function withProxyZone(fn: Function): (...args: any[]) => any {
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.withProxyZone(fn);
+  }
+  throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
 }
-
-function allowNewProxyZoneInternal(...args: Parameters<typeof fakeAsyncInternal>) {
-  return fakeAsyncInternal(...args);
-}
-
-fakeAsyncInternal.allowNewProxyZone = allowNewProxyZoneInternal;
-export const fakeAsync: FakeAsyncFn = fakeAsyncInternal;
 
 /**
  * Simulates the asynchronous passage of time for the timers in the `fakeAsync` zone.
