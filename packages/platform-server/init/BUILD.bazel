@@ -1,9 +1,10 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults.bzl", "esbuild", "ng_module", "tsec_test")
+load("//tools:defaults.bzl", "esbuild", "tsec_test")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "init",
     srcs = glob(
         [
@@ -12,7 +13,7 @@ ng_module(
         ],
         exclude = ["src/bundled-domino.d.ts"],
     ),
-    deps = [
+    interop_deps = [
         ":bundled_domino_lib",
     ],
 )
