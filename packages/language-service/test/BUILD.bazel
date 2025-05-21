@@ -1,10 +1,11 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
@@ -12,10 +13,12 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
-        "//packages/language-service/src",
-        "//packages/language-service/src/utils",
-        "//packages/language-service/testing",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/language-service/src:src_rjs",
+        "//packages/language-service/src/utils:utils_rjs",
+        "//packages/language-service/testing:testing_rjs",
     ],
 )
 
