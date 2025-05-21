@@ -366,7 +366,9 @@ export function afterRenderEffect<E = never, W = never, M = never>(
         'effect inside the component constructor`.',
     );
 
-  !options?.injector && assertInInjectionContext(afterRenderEffect);
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(afterRenderEffect);
+  }
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     return NOOP_AFTER_RENDER_REF;

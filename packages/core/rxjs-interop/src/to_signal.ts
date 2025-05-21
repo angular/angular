@@ -131,7 +131,11 @@ export function toSignal<T, U = undefined>(
     );
 
   const requiresCleanup = !options?.manualCleanup;
-  requiresCleanup && !options?.injector && assertInInjectionContext(toSignal);
+
+  if (ngDevMode && requiresCleanup && !options?.injector) {
+    assertInInjectionContext(toSignal);
+  }
+
   const cleanupRef = requiresCleanup
     ? (options?.injector?.get(DestroyRef) ?? inject(DestroyRef))
     : null;

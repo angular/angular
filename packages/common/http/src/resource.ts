@@ -230,7 +230,9 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
     request: RawRequestType,
     options?: HttpResourceOptions<TResult, TRaw>,
   ): HttpResourceRef<TResult> {
-    options?.injector || assertInInjectionContext(httpResource);
+    if (ngDevMode && !options?.injector) {
+      assertInInjectionContext(httpResource);
+    }
     const injector = options?.injector ?? inject(Injector);
     return new HttpResourceImpl(
       injector,
