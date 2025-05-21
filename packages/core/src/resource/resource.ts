@@ -58,7 +58,10 @@ export function resource<T, R>(
  */
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined> {
-  options?.injector || assertInInjectionContext(resource);
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(resource);
+  }
+
   const oldNameForParams = (
     options as ResourceOptions<T, R> & {request: ResourceOptions<T, R>['params']}
   ).request;

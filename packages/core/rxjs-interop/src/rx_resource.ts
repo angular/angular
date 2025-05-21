@@ -44,7 +44,9 @@ export function rxResource<T, R>(
  */
 export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T | undefined> {
-  opts?.injector || assertInInjectionContext(rxResource);
+  if (ngDevMode && !opts?.injector) {
+    assertInInjectionContext(rxResource);
+  }
   return resource<T, R>({
     ...opts,
     loader: undefined,
