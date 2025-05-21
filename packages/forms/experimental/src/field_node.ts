@@ -182,8 +182,6 @@ export class FieldNode implements FieldState<unknown> {
     };
     return (this._fieldContext ??= {
       value: this.value,
-      // TODO: Drop resolve and data
-      resolve,
       state: this,
       field: this.fieldProxy,
       stateOf<P>(p: FieldPath<P>) {

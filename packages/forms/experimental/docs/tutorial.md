@@ -25,8 +25,8 @@ We're going to build a feedback form with the following fields:
 * text     [feedback] disabled if rating is 5, otherwise required
 * checkbox [recommendToFriends]
 * array    [friends] only displayed/validated when recommendToFriends is true
-   * text  [name] required
-   * text  [email] required, must have @
+  * text  [name] required
+  * text  [email] required, must have @
 ```   
 
 ## Initial setup
@@ -84,7 +84,7 @@ So first, we need to create a signal with initial values:
 
 ```typescript
 // feedback.ts
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core'; // Added signal import
 
 @Component({/*...*/})
 export class FeedbackComponent {
@@ -96,7 +96,6 @@ export class FeedbackComponent {
     confirmationPassword: '',
     feedback: '',
     recommendToFriends: false,
-    recommendationText: '',
     friends: [],
   }); 
 }
@@ -130,6 +129,9 @@ import {
   form,  
   FieldDirective,
 } from 'google3/experimental/angularsignalforms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
 
 @Component({/*...*/
   imports: [
@@ -345,9 +347,9 @@ export class FeedbackComponent {
 
 Now let's write a custom validator to ensure that the password and confirmation password match.
 
-To do this, we will use the special `resolve` function provided to the validator. `resolve` takes a path segment and returns the corresponding form field instance.
+To do this, we will use the special `valueOf` function provided to the validator. `valueOf` takes a path segment and returns the corresponding form field's value.
 
-> `resolve` can be used for cross-field validation.
+> `valueOf` can be used for cross-field validation.
 
 ```typescript
 // feedback.ts
@@ -359,8 +361,8 @@ export class FeedbackComponent {
     required(path.password);
     required(path.confirmationPassword);
 
-    validate(path.confirmationPassword, ({value, resolve}) => {
-      return value() === resolve(path.password).$state.value()
+    validate(path.confirmationPassword, ({value, valueOf}) => {
+      return value() === valueOf(path.password)
         ? undefined
         : {kind: 'confirmationPassword'};
     });
@@ -397,8 +399,8 @@ To do this we'd create a constructor function, which would take a path with the 
 export function confirmationPasswordValidator(
   path: FieldPath<{password: string}>,
 ): Validator<string> {
-  return ({value, resolve}) => {
-    return value() === resolve(path.password).$state.value()
+  return ({value, valueOf}) => {
+    return value() === valueOf(path.password)
       ? undefined
       : {kind: 'confirmationPassword'};
   };
@@ -446,7 +448,7 @@ export class RatingComponent implements FormUiControl<number> {
 
 ### Displaying the stars
 This is unrelated to Forms.
-you can see full implementation [here](http://google3/experimental/users/kirjs/forms/app/feedback/rating.ts)
+you can see full implementation  [here](http://google3/experimental/users/kirjs/forms/app/feedback/rating.ts)
 
 ### Using rating in the Feedback component template
 
@@ -477,8 +479,8 @@ export class FeedbackComponent {
   /* ... */
   readonly form = form(this.data, (path) => {
     /* ... */
-    disabled(path.feedback, ({resolve}) => {
-      return resolve(path.rating).$state.value() > 4;
+    disabled(path.feedback, ({valueOf}) => {
+      return valueOf(path.rating) > 4;
     });
 
     // When a field is disabled, validation doesn't run
@@ -531,10 +533,8 @@ This code should look familiar: Both fields are required, and the email has its 
 ```typescript
 // friend.ts
 import {
-  Field,
   Schema,
   required,
-  FieldDirective,
   validate,
 } from 'google3/experimental/angularsignalforms';
 
@@ -562,7 +562,7 @@ import {
 
 export const emailValidator: Validator<string> = 
   ({value}) => {
-     return !value().includes('@') ? undefined : {kind: 'email'};
+    return !value().includes('@') ? undefined : {kind: 'email'};
   };
 ```
 Now we can use it in the schema (don't forget to use in feedback component as well).
@@ -570,15 +570,13 @@ Now we can use it in the schema (don't forget to use in feedback component as we
 ```typescript
 // friend.ts
 import {
-  Field,
   Schema,
   required,
-  FieldDirective,
   validate,
 } from 'google3/experimental/angularsignalforms';
 import {emailValidator} from './validators';
 
-// Schema is not used in this file.
+// Schema is not used in this file. 
 export const friendSchema: Schema<Friend> = (friend) => {
   required(friend.name);
   required(friend.email);
@@ -591,13 +589,8 @@ This component will display the form fields for a single friend and used in arra
 
 ```typescript
 // friend.ts
-import {
-  Field,
-  Schema,
-  required,
-  FieldDirective,
-  validate,
-} from 'google3/experimental/angularsignalforms';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core'; 
+import { Field } from 'google3/experimental/angularsignalforms'; 
 
 
 @Component({
@@ -694,10 +687,9 @@ Then, we'll display the list of friends, but only when the checkbox is checked.
         <app-friend [friend]="friend"></app-friend>
     }    
 }
-    </fieldset>
 ```
 
-### Hiding 
+### Hiding
 The current setup works, but there's a small issue.
 If we create a friend with an error, and then hide it, the validation would still run, and the form would be marked as invalid.
 
@@ -706,11 +698,12 @@ We can solve it by using `hidden` with a predicate to disabled the validation.
 ```typescript
 // feedback.ts
 import {
-  /* ... */  
+  /* ... */
   applyEach,
+  hidden
 } from 'google3/experimental/angularsignalforms';
 
-import { friendSchema } from './friend';
+import { friendSchema } from './friend'; 
 
 /* ... */
 export class FeedbackComponent {
@@ -719,13 +712,13 @@ export class FeedbackComponent {
     /* ... */
     applyEach(path.friends, friendSchema);
     // Doesn't actually hide anything in the UI.
-    hidden(path.friends, ({resolve}) => {
-      return resolve(path.recommendToFriends).$state.value() === false  ;
+    hidden(path.friends, ({valueOf}) => {
+      return valueOf(path.recommendToFriends) === false  ;
     });
   });
 }
 ```
->  it's important to note, that hidden doesn't actually hide fields in the template, just disables validation. 
+>  it's important to note, that `hidden` doesn't actually hide fields in the template, just disables validation.
 
 ### Conditionally enabling/disabling validation with applyWhen
 Sometimes we want to apply multiple rules based only if certain condition is true.
@@ -736,28 +729,28 @@ Let's look at an unrelated example, where we want to apply different rules depen
 
 ```typescript
 // unrelated-form.ts
-form(this.pet, (pet) => {
+form(this.pet, (pet: FieldPath<any>) => {
   // Applies for all pets
   required(pet.cute);
   
   // Rules that only apply for dogs.
   applyWhen(
-    path,
+    pet,
     ({value}) => value().type === 'dog',
     (pathWhenTrue) => {
       // Only required for dogs, but can be entered for cats
-      requred(pathWhenTrue.walksPerDay);
+      required(pathWhenTrue.walksPerDay);
       // Doesn't apply for dogs
       hidden(pathWhenTrue.purringIntensity);
     }
   );
 
   applyWhen(
-    path,
+    pet,
     ({value}) => value().type === 'cat',
     (pathWhenTrue) => {
       // Those rules only apply for cats. 
-      requred(pathWhenTrue.a);
+      required(pathWhenTrue.a);
       validate(pathWhenTrue.b, /* validation rules */);
       applyEach(pathWhenTrue, /* array rules */);
       applyWhen(/* we can even have nested apply whens. */);
@@ -776,6 +769,7 @@ It's also important to not use closured path, but use the one provided by the fu
 export class FeedbackComponent {
   /* ... */
   readonly form = form(this.data, (path) => {
+    /* ... other rules ... */
     applyWhen(
       path,
       ({value}) => value().recommendToFriends,
@@ -876,25 +870,31 @@ This marks the end of the tutorial. Let's take a look at the complete form defin
 /* ... */
 export class FeedbackComponent {
   /* ... */
-  readonly form = form(this.data, (path) => {
+  readonly form = form(this.data, (path: FieldPath<Feedback>) => { // Explicitly typed path
     required(path.name);
+    
+    required(path.email);
+    validate(path.email, emailValidator); 
 
-    disabled(path.feedback, ({resolve}) => {
-      return resolve(path.rating).$state.value() > 4;
+    required(path.password);
+    required(path.confirmationPassword);
+
+    disabled(path.feedback, ({valueOf}) => {
+      return valueOf(path.rating) > 4;
     });
     required(path.feedback);
 
-    validate(path.confirmationPassword, ({value, resolve}) => {
-      return value() === resolve(path.password).$state.value()
+    validate(path.confirmationPassword, ({value, valueOf}) => {
+      return value() === valueOf(path.password)
         ? undefined
         : {kind: 'confirmationPassword'};
     })
 
     applyWhen(
-      path,
-      (f) => f.value().recommendToFriends,
-      (path) => {
-        applyEach(path.friends, friendSchema);
+      path, 
+      ({value}) => value().recommendToFriends, 
+      (pathWhenTrue) => {
+        applyEach(pathWhenTrue.friends, friendSchema);
       },
     );
   });

@@ -204,10 +204,5 @@ export interface FieldContext<T> {
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
-  /**
-   * A function that gets the `Field` for a given `FieldPath`.
-   * This can be used by the `LogicFunction` to implement cross-field logic.
-   */
-  resolve: <U>(path: FieldPath<U>) => Field<U>;
   data: <D>(path: DataKey<D>) => D;
 }

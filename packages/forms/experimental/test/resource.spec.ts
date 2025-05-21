@@ -101,11 +101,11 @@ describe('resources', () => {
               return params as Cat[];
             },
           }),
-        error: (cats, {resolve}) => {
+        error: (cats, {fieldOf}) => {
           return cats.map((cat, index) => ({
             kind: 'meows_too_much',
             name: cat.name,
-            field: resolve(p)[index],
+            field: fieldOf(p)[index],
           }));
         },
       });
@@ -136,8 +136,8 @@ describe('resources', () => {
               return params as Cat[];
             },
           }),
-        error: (cats, {resolve}) => {
-          return {kind: 'meows_too_much', name: cats[0].name, field: resolve(p)[0]};
+        error: (cats, {fieldOf}) => {
+          return {kind: 'meows_too_much', name: cats[0].name, field: fieldOf(p)[0]};
         },
       });
     };
