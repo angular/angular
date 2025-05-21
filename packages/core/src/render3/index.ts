@@ -227,7 +227,7 @@ export {ɵɵresolveBody, ɵɵresolveDocument, ɵɵresolveWindow} from './util/mi
 export {ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
 export {ɵɵgetComponentDepsFactory} from './local_compilation';
 export {ɵsetClassDebugInfo} from './debug/set_debug_info';
-export {ɵɵreplaceMetadata} from './hmr';
+export {ɵɵreplaceMetadata, ɵɵgetReplaceMetadataURL} from './hmr';
 
 export {store} from './util/view_utils';
 
