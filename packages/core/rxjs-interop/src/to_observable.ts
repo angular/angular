@@ -42,7 +42,9 @@ export interface ToObservableOptions {
  * @publicApi 20.0
  */
 export function toObservable<T>(source: Signal<T>, options?: ToObservableOptions): Observable<T> {
-  !options?.injector && assertInInjectionContext(toObservable);
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(toObservable);
+  }
   const injector = options?.injector ?? inject(Injector);
   const subject = new ReplaySubject<T>(1);
 
