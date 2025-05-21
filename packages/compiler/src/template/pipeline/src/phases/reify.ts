@@ -568,6 +568,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
               op.expression.strings,
               op.expression.expressions,
               op.sanitizer,
+              op.namespace,
               op.sourceSpan,
             ),
           );

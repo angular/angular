@@ -1671,7 +1671,7 @@ describe('change detection', () => {
     });
 
     it('should include field name in case of attribute interpolation', () => {
-      const message = `Previous value for 'attr.id': 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'`;
+      const message = `Expression has changed after it was checked. Previous value: 'initial'. Current value: 'changed'`;
       expect(() =>
         initWithTemplate(
           '<div attr.id="Expressions: {{ a }} and {{ unstableStringExpression }}!"></div>',
