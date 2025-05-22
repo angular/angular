@@ -185,6 +185,7 @@ jobs:
       - run: yarn --cwd packages/zone.js promisefinallytest
       - run: yarn --cwd packages/zone.js jest:test
       - run: yarn --cwd packages/zone.js jest:nodetest
+      - run: yarn --cwd packages/zone.js vitest:test
       - run: yarn --cwd packages/zone.js electrontest
       - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
       - run: yarn --cwd packages/zone.js/test/typings test
