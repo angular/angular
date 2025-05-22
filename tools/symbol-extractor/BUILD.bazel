@@ -15,8 +15,8 @@ ts_project(
     ),
     tsconfig = "//tools:tsconfig_build",
     deps = [
-        "//:node_modules/@bazel/runfiles",
         "//:node_modules/@types/jasmine",
+        "//:node_modules/tinyglobby",
         "//:node_modules/typescript",
     ],
 )
