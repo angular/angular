@@ -1,18 +1,21 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["**/*_spec.ts"],
     ),
-    deps = [
+    interop_deps = [
         "//packages:types",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/testing",
-        "//packages/localize/tools",
-        "//packages/localize/tools/test/helpers",
+    ],
+    deps = [
+        "//packages/localize/tools:tools_rjs",
+        "//packages/localize/tools/test/helpers:helpers_rjs",
     ],
 )
 

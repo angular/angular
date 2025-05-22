@@ -1,8 +1,9 @@
-load("//tools:defaults.bzl", "generate_api_docs", "ts_library")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "localize",
     srcs = glob(
         [
@@ -10,8 +11,8 @@ ts_library(
         ],
     ),
     deps = [
-        "//packages/localize/src/utils",
-        "@npm//@types/node",
+        "//:node_modules/@types/node",
+        "//packages/localize/src/utils:utils_rjs",
     ],
 )
 
