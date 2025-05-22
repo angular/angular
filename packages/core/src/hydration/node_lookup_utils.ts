@@ -325,8 +325,9 @@ export function calcPathForNode(
   tNode: TNode,
   lView: LView,
   excludedParentNodes: Set<number> | null,
+  parent: TNode | null = null,
 ): string {
-  let parentTNode = tNode.parent;
+  let parentTNode = parent ?? tNode.parent;
   let parentIndex: number | string;
   let parentRNode: RNode;
   let referenceNodeName: string;

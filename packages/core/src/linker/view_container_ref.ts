@@ -817,6 +817,8 @@ function populateDehydratedViewsInLContainerImpl(
   tNode: TNode,
   hostLView: LView,
 ): boolean {
+  // This is failing during the hydration phase
+  debugger;
   // We already have a native element (anchor) set and the process
   // of finding dehydrated views happened (so the `lContainer[DEHYDRATED_VIEWS]`
   // is not null), exit early.

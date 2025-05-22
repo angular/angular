@@ -49,6 +49,12 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
+  ContentChild,
+  input,
+  signal,
+  effect,
+  Renderer2,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
@@ -5514,6 +5520,49 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         },
       );
+
+      fit('should not render content twice with contentChildren', async () => {
+        @Component({
+          selector: 'app-shell',
+          imports: [NgTemplateOutlet],
+          template: `
+            <ng-container [ngTemplateOutlet]="customTemplate"></ng-container>
+          `,
+        })
+        class ShellCmp {
+          @ContentChild('customTemplate', {static: true})
+          customTemplate: TemplateRef<any> | null = null;
+        }
+
+        @Component({
+          imports: [ShellCmp],
+          selector: 'app',
+          template: `
+            <app-shell>
+              <ng-template #customTemplate>
+                <p>template</p>
+              </ng-template>
+            </app-shell>
+            `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+        console.log(ssrContents);
+        debugger;
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ShellCmp);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      }, 100_000);
 
       describe('partial projection', () => {
         it('should support cases when some element nodes are not projected', async () => {
