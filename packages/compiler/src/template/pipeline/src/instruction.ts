@@ -573,10 +573,7 @@ export function attribute(
   const args: o.Expression[] = [o.literal(name)];
 
   if (expression instanceof ir.Interpolation) {
-    const interpolationArgs = collateInterpolationArgs(expression.strings, expression.expressions);
-    args.push(
-      callVariadicInstructionExpr(VALUE_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan),
-    );
+    args.push(interpolationToExpression(expression, sourceSpan));
   } else {
     args.push(expression);
   }
@@ -598,10 +595,7 @@ export function styleProp(
   const args: o.Expression[] = [o.literal(name)];
 
   if (expression instanceof ir.Interpolation) {
-    const interpolationArgs = collateInterpolationArgs(expression.strings, expression.expressions);
-    args.push(
-      callVariadicInstructionExpr(VALUE_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan),
-    );
+    args.push(interpolationToExpression(expression, sourceSpan));
   } else {
     args.push(expression);
   }
@@ -624,26 +618,22 @@ export function styleMap(
   expression: o.Expression | ir.Interpolation,
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  let value: o.Expression;
-
-  if (expression instanceof ir.Interpolation) {
-    const interpolationArgs = collateInterpolationArgs(expression.strings, expression.expressions);
-    value = callVariadicInstructionExpr(
-      VALUE_INTERPOLATE_CONFIG,
-      [],
-      interpolationArgs,
-      [],
-      sourceSpan,
-    );
-  } else {
-    value = expression;
-  }
-
+  const value =
+    expression instanceof ir.Interpolation
+      ? interpolationToExpression(expression, sourceSpan)
+      : expression;
   return call(Identifiers.styleMap, [value], sourceSpan);
 }
 
-export function classMap(expression: o.Expression, sourceSpan: ParseSourceSpan): ir.UpdateOp {
-  return call(Identifiers.classMap, [expression], sourceSpan);
+export function classMap(
+  expression: o.Expression | ir.Interpolation,
+  sourceSpan: ParseSourceSpan,
+): ir.UpdateOp {
+  const value =
+    expression instanceof ir.Interpolation
+      ? interpolationToExpression(expression, sourceSpan)
+      : expression;
+  return call(Identifiers.classMap, [value], sourceSpan);
 }
 
 const PIPE_BINDINGS: o.ExternalReference[] = [
@@ -703,22 +693,6 @@ export function propertyInterpolate(
     [o.literal(name)],
     interpolationArgs,
     extraArgs,
-    sourceSpan,
-  );
-}
-
-export function classMapInterpolate(
-  strings: string[],
-  expressions: o.Expression[],
-  sourceSpan: ParseSourceSpan,
-): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
-
-  return callVariadicInstruction(
-    CLASS_MAP_INTERPOLATE_CONFIG,
-    [],
-    interpolationArgs,
-    [],
     sourceSpan,
   );
 }
@@ -789,6 +763,23 @@ function collateInterpolationArgs(strings: string[], expressions: o.Expression[]
   }
 
   return interpolationArgs;
+}
+
+function interpolationToExpression(
+  interpolation: ir.Interpolation,
+  sourceSpan: ParseSourceSpan,
+): o.Expression {
+  const interpolationArgs = collateInterpolationArgs(
+    interpolation.strings,
+    interpolation.expressions,
+  );
+  return callVariadicInstructionExpr(
+    VALUE_INTERPOLATE_CONFIG,
+    [],
+    interpolationArgs,
+    [],
+    sourceSpan,
+  );
 }
 
 function call<OpT extends ir.CreateOp | ir.UpdateOp>(
@@ -883,30 +874,6 @@ const VALUE_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     Identifiers.interpolate8,
   ],
   variable: Identifiers.interpolateV,
-  mapping: (n) => {
-    if (n % 2 === 0) {
-      throw new Error(`Expected odd number of arguments`);
-    }
-    return (n - 1) / 2;
-  },
-};
-
-/**
- * `InterpolationConfig` for the `classMapInterpolate` instruction.
- */
-const CLASS_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
-  constant: [
-    Identifiers.classMap,
-    Identifiers.classMapInterpolate1,
-    Identifiers.classMapInterpolate2,
-    Identifiers.classMapInterpolate3,
-    Identifiers.classMapInterpolate4,
-    Identifiers.classMapInterpolate5,
-    Identifiers.classMapInterpolate6,
-    Identifiers.classMapInterpolate7,
-    Identifiers.classMapInterpolate8,
-  ],
-  variable: Identifiers.classMapInterpolateV,
   mapping: (n) => {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);
