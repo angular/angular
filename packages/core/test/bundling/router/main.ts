@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF} from '@angular/common';
-import {Component, OnInit} from '../../../src/core';
+import {Component, OnInit, provideZonelessChangeDetection} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {
   ActivatedRoute,
@@ -74,5 +74,9 @@ const ROUTES: Routes = [
 ];
 
 (window as any).waitForApp = bootstrapApplication(RootComponent, {
-  providers: [provideRouter(ROUTES), {provide: APP_BASE_HREF, useValue: ''}],
+  providers: [
+    provideZonelessChangeDetection(),
+    provideRouter(ROUTES),
+    {provide: APP_BASE_HREF, useValue: ''},
+  ],
 });
