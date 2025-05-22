@@ -10,6 +10,8 @@ import {Signal, WritableSignal} from '@angular/core';
 import {DataKey} from './data';
 import {MetadataKey} from './metadata';
 
+export type ValidationStatus = 'valid' | 'invalid' | 'pending';
+
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
@@ -103,9 +105,37 @@ export interface FieldState<T> {
    */
   readonly syncErrors: Signal<FormError[]>;
   /**
+   * A signal indicating the validation status of the field
+   */
+  readonly status: Signal<ValidationStatus>;
+  /**
    * A signal indicating whether the field's value is currently valid.
+   *
+   * Note: `valid()` is not the same as `!invalid()`.
+   * - `valid()` is `true` when there are no validation errors *and* no pending validators.
+   * - `invalid()` is `true` when there are validation errors, regardless of pending validators.
+   *
+   * Ex: consider the situation where a field has 3 validators, 2 of which have no errors and 1 of
+   * which is still pending. In this case `valid()` is `false` because of the pending validator.
+   * However `invalid()` is also `false` because there are no errors.
    */
   readonly valid: Signal<boolean>;
+  /**
+   * A signal indicating whether the field's value is currently invalid.
+   *
+   * Note: `invalid()` is not the same as `!valid()`.
+   * - `invalid()` is `true` when there are validation errors, regardless of pending validators.
+   * - `valid()` is `true` when there are no validation errors *and* no pending validators.
+   *
+   * Ex: consider the situation where a field has 3 validators, 2 of which have no errors and 1 of
+   * which is still pending. In this case `invalid()` is `false` because there are no errors.
+   * However `valid()` is also `false` because of the pending validator.
+   */
+  readonly invalid: Signal<boolean>;
+  /**
+   * Whether there are any validators still pending for this field.
+   */
+  readonly hasPendingValidators: Signal<boolean>;
   /**
    * A signal indicating whether the field's value is currently valid.
    */
