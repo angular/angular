@@ -518,14 +518,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
         break;
       case ir.OpKind.ClassMap:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.classMapInterpolate(op.expression.strings, op.expression.expressions, op.sourceSpan),
-          );
-        } else {
-          ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
         break;
       case ir.OpKind.I18nExpression:
         ir.OpList.replace(op, ng.i18nExp(op.expression, op.sourceSpan));
