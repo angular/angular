@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '../../../src/core';
+import {Component, provideZonelessChangeDetection} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 import {DeferComponent} from './defer.component';
@@ -33,4 +33,4 @@ export class AppComponent {
   isVisible = true;
 }
 
-bootstrapApplication(AppComponent);
+bootstrapApplication(AppComponent, {providers: [provideZonelessChangeDetection()]});

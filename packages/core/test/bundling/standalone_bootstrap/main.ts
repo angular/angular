@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '../../../src/core';
-import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
+import {Component, provideZonelessChangeDetection} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
   standalone: true,
-  selector: 'hello-world',
+  selector: 'app-root',
   template: 'Hello World!',
 })
 class HelloWorld {}
 
-bootstrapApplication(HelloWorld, {providers: [provideClientHydration()]});
+bootstrapApplication(HelloWorld, {providers: [provideZonelessChangeDetection()]});

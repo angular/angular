@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {animate, style, transition, trigger} from '@angular/animations';
-import {Component, NgModule, ɵNgModuleFactory as NgModuleFactory} from '../../../src/core';
-import {bootstrapApplication, BrowserModule, platformBrowser} from '@angular/platform-browser';
-import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-browser/animations';
+import {Component, provideZonelessChangeDetection} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {provideAnimations} from '@angular/platform-browser/animations';
 
 @Component({
   selector: 'app-animations',
@@ -34,4 +34,6 @@ class AnimationsComponent {
 })
 class RootComponent {}
 
-(window as any).waitForApp = bootstrapApplication(RootComponent, {providers: provideAnimations()});
+(window as any).waitForApp = bootstrapApplication(RootComponent, {
+  providers: [provideZonelessChangeDetection(), provideAnimations()],
+});

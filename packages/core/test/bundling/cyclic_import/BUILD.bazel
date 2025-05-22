@@ -1,28 +1,22 @@
-load("@npm//http-server:index.bzl", "http_server")
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_project(
-    name = "cyclic_import",
+optimize_angular_app(
+    name = "bundles",
     srcs = [
-        "index.ts",
+        "main.ts",
         "trigger.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-        "//packages/platform-browser",
-    ],
-)
-
-app_bundle(
-    name = "bundle",
-    entry_point = ":index.ts",
     deps = [
-        ":cyclic_import",
-        "//packages/core",
-        "@npm//rxjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//packages/core/test/bundling:node_modules/@angular/build",
+        "//packages/core/test/bundling:node_modules/@angular/common",
+        "//packages/core/test/bundling:node_modules/@angular/core",
+        "//packages/core/test/bundling:node_modules/@angular/platform-browser",
     ],
 )
 
@@ -43,19 +37,7 @@ ts_project(
 jasmine_node_test(
     name = "test",
     data = [
-        ":bundle.debug.min.js",
-        ":bundle.js",
-        ":bundle.min.js",
-        ":bundle.min.js.br",
+        ":bundles",
     ],
     deps = [":test_lib"],
-)
-
-http_server(
-    name = "devserver",
-    data = [
-        "index.html",
-        ":bundle.debug.min.js",
-        ":bundle.min.js",
-    ],
 )

@@ -110,8 +110,15 @@ npm_translate_lock(
         "//:package.json",
         "//:pnpm-workspace.yaml",
         "//adev/shared-docs/pipeline/api-gen:package.json",
+        "//packages/animations:package.json",
+        "//packages/common:package.json",
         "//packages/compiler:package.json",
         "//packages/compiler-cli:package.json",
+        "//packages/core:package.json",
+        "//packages/core/test/bundling:package.json",
+        "//packages/forms:package.json",
+        "//packages/platform-browser:package.json",
+        "//packages/router:package.json",
         "//tools/bazel/rules_angular_store:package.json",
     ],
     npmrc = "//:.npmrc",
@@ -274,7 +281,7 @@ setup_dependencies_2()
 
 git_repository(
     name = "rules_angular",
-    commit = "5b9b1fc545736b8b602a216f89134c1f20d3009c",
+    commit = "8952a28010d584280cf674c41f684a36c22dec08",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ng_package", "pkg_npm", "tsec_test")
+load("//tools:defaults.bzl", "ng_package", "tsec_test")
 load("//tools:defaults2.bzl", "npm_package", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -55,14 +55,6 @@ npm_package(
     replace_prefixes = {
         "npm_package_nosub/": "",
     },
-)
-
-# TODO(devversion): Temporary linkable `pkg_npm` for making compiler usable with the rules_nodejs linker.
-# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
-pkg_npm(
-    name = "linkable_npm_package",
-    package_name = "@angular/compiler",
-    nested_packages = [":npm_package"],
 )
 
 filegroup(
