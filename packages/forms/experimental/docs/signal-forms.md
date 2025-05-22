@@ -269,10 +269,8 @@ passwordForm.confirm.$state.errors(); // []
 If you need to access other fields' values but don't want to move the logic to a common parent node, you can define the logic on the desired field. The `FieldContext` provides helper functions to access the state or value of _other_ fields:
 
 - **`valueOf(otherPath: FieldPath<U>): U`**: Directly retrieves the current value of the field at `otherPath`.
-- **`fieldOf(otherPath: FieldPath<U>): Field<U>`**: Retrieves the `Field` instance for the field at `otherPath`. You can then access its `$state` (e.g., `fieldOf(otherPath).$state.value()`).
-- **`stateOf(otherPath: FieldPath<U>): FieldState<U>`**: Retrieves the `FieldState` instance for the field at `otherPath` (e.g., `stateOf(otherPath).value()`).
-
-For simply getting another field's value, `valueOf` is the most direct.
+- **`stateOf(otherPath: FieldPath<U>): FieldState<U>`**: Retrieves the `FieldState` instance for the field at `otherPath` (e.g., `stateOf(otherPath).disabled()`).
+- - **`fieldOf(otherPath: FieldPath<U>): Field<U>`**: Retrieves the `Field` instance for the field at `otherPath`. This is useful when you want to access its decendants or specific array items.
 
 Here's the same password matching validation, but associating the error with the `confirm` field instead, using `valueOf`:
 

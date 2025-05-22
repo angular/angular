@@ -349,7 +349,7 @@ Now let's write a custom validator to ensure that the password and confirmation 
 
 To do this, we will use the special `valueOf` function provided to the validator. `valueOf` takes a path segment and returns the corresponding form field's value.
 
-> `valueOf` can be used for cross-field validation.
+> Besides `valueOf`, you can also use `stateOf` and `fieldOf` can be used for cross-field validation.
 
 ```typescript
 // feedback.ts
@@ -870,7 +870,7 @@ This marks the end of the tutorial. Let's take a look at the complete form defin
 /* ... */
 export class FeedbackComponent {
   /* ... */
-  readonly form = form(this.data, (path: FieldPath<Feedback>) => { // Explicitly typed path
+  readonly form = form(this.data, (path: FieldPath<Feedback>) => {
     required(path.name);
     
     required(path.email);
