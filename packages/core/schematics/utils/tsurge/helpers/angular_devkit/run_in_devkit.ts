@@ -17,6 +17,7 @@ import {ProjectRootRelativePath} from '../../project_paths';
 import {ProgramInfo} from '../../program_info';
 import {getProjectTsConfigPaths} from '../../../../utils/project_tsconfig_paths';
 import ts from 'typescript';
+import {MigrationStats} from '../../base_migration';
 
 export enum MigrationStage {
   /** The migration is analyzing an entrypoint */
