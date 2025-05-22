@@ -68,7 +68,7 @@ esbuild(
     format = "esm",
     platform = "node",
     splitting = True,
-    target = "node12",
+    target = "node20",
     deps = PUBLIC_TARGETS,
 )
 
