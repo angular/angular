@@ -64,15 +64,13 @@ describe('DestroyRef', () => {
       expect(onDestroyCalls).toBe(2);
     });
 
-    it('should throw when trying to register destroy callback on destroyed injector', () => {
+    it('should not throw when trying to register destroy callback on destroyed injector and call it immediately', () => {
       const envInjector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
       const destroyRef = envInjector.get(DestroyRef);
-
       envInjector.destroy();
-
-      expect(() => {
-        destroyRef.onDestroy(() => {});
-      }).toThrowError('NG0205: Injector has already been destroyed.');
+      let onDestroyCalled = false;
+      destroyRef.onDestroy(() => (onDestroyCalled = true));
+      expect(onDestroyCalled).toEqual(true);
     });
   });
 

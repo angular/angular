@@ -288,7 +288,17 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   }
 
   override onDestroy(callback: () => void): () => void {
-    assertNotDestroyed(this);
+    if (this.destroyed) {
+      // Checking if injector is already destroyed before storing the `callback` enhances
+      // safety and integrity for applications.
+      // If injector is destroyed, we call the `callback` immediately to ensure that
+      // any necessary cleanup is handled gracefully.
+      // With this approach, we're providing better reliability in managing resources.
+      callback();
+      // We return a "noop" callback, which, when executed, does nothing because
+      // we haven't stored anything on the injector, and thus there's nothing to remove.
+      return () => {};
+    }
     this._onDestroyHooks.push(callback);
     return () => this.removeOnDestroy(callback);
   }
@@ -679,18 +689,11 @@ function hasDeps(
 }
 
 function hasOnDestroy(value: any): value is OnDestroy {
-  return (
-    value !== null &&
-    typeof value === 'object' &&
-    typeof (value as OnDestroy).ngOnDestroy === 'function'
-  );
+  return typeof (value as OnDestroy)?.ngOnDestroy === 'function';
 }
 
 function couldBeInjectableType(value: any): value is ProviderToken<any> {
-  return (
-    typeof value === 'function' ||
-    (typeof value === 'object' && value.ngMetadataName === 'InjectionToken')
-  );
+  return typeof value === 'function' || value?.ngMetadataName === 'InjectionToken';
 }
 
 function forEachSingleProvider(
