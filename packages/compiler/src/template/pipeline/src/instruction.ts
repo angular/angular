@@ -620,8 +620,26 @@ export function classProp(
   return call(Identifiers.classProp, [o.literal(name), expression], sourceSpan);
 }
 
-export function styleMap(expression: o.Expression, sourceSpan: ParseSourceSpan): ir.UpdateOp {
-  return call(Identifiers.styleMap, [expression], sourceSpan);
+export function styleMap(
+  expression: o.Expression | ir.Interpolation,
+  sourceSpan: ParseSourceSpan,
+): ir.UpdateOp {
+  let value: o.Expression;
+
+  if (expression instanceof ir.Interpolation) {
+    const interpolationArgs = collateInterpolationArgs(expression.strings, expression.expressions);
+    value = callVariadicInstructionExpr(
+      VALUE_INTERPOLATE_CONFIG,
+      [],
+      interpolationArgs,
+      [],
+      sourceSpan,
+    );
+  } else {
+    value = expression;
+  }
+
+  return call(Identifiers.styleMap, [value], sourceSpan);
 }
 
 export function classMap(expression: o.Expression, sourceSpan: ParseSourceSpan): ir.UpdateOp {
@@ -685,22 +703,6 @@ export function propertyInterpolate(
     [o.literal(name)],
     interpolationArgs,
     extraArgs,
-    sourceSpan,
-  );
-}
-
-export function styleMapInterpolate(
-  strings: string[],
-  expressions: o.Expression[],
-  sourceSpan: ParseSourceSpan,
-): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
-
-  return callVariadicInstruction(
-    STYLE_MAP_INTERPOLATE_CONFIG,
-    [],
-    interpolationArgs,
-    [],
     sourceSpan,
   );
 }
@@ -881,30 +883,6 @@ const VALUE_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     Identifiers.interpolate8,
   ],
   variable: Identifiers.interpolateV,
-  mapping: (n) => {
-    if (n % 2 === 0) {
-      throw new Error(`Expected odd number of arguments`);
-    }
-    return (n - 1) / 2;
-  },
-};
-
-/**
- * `InterpolationConfig` for the `styleMapInterpolate` instruction.
- */
-const STYLE_MAP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
-  constant: [
-    Identifiers.styleMap,
-    Identifiers.styleMapInterpolate1,
-    Identifiers.styleMapInterpolate2,
-    Identifiers.styleMapInterpolate3,
-    Identifiers.styleMapInterpolate4,
-    Identifiers.styleMapInterpolate5,
-    Identifiers.styleMapInterpolate6,
-    Identifiers.styleMapInterpolate7,
-    Identifiers.styleMapInterpolate8,
-  ],
-  variable: Identifiers.styleMapInterpolateV,
   mapping: (n) => {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);
