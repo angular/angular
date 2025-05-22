@@ -2,7 +2,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
 load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "tsec_test")
-load("//tools:defaults2.bzl", "ng_project", "ts_config")
+load("//tools:defaults2.bzl", "ng_project", "npm_package", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -102,6 +102,16 @@ ng_package(
         "//packages/core/rxjs-interop",
         "//packages/core/testing",
     ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making this package usable in `core/test/bundling`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )
 
 api_golden_test_npm_package(

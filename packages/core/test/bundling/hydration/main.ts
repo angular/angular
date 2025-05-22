@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '../../../src/core';
-import {bootstrapApplication} from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
 
 @Component({
   standalone: true,
@@ -16,4 +16,4 @@ import {bootstrapApplication} from '@angular/platform-browser';
 })
 class HelloWorld {}
 
-bootstrapApplication(HelloWorld);
+bootstrapApplication(HelloWorld, {providers: [provideClientHydration()]});
