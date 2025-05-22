@@ -1,22 +1,24 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "platform-browser-dynamic",
-    package_name = "@angular/platform-browser-dynamic",
     srcs = glob(
         [
             "*.ts",
             "src/**/*.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages:types",
-        "//packages/common",
         "//packages/compiler",
-        "//packages/core",
-        "//packages/platform-browser",
+    ],
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
     ],
 )
 

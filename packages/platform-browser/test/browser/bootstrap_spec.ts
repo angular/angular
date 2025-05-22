@@ -39,17 +39,14 @@ import {
   Type,
   VERSION,
   EnvironmentProviders,
-} from '@angular/core';
-import {ApplicationRef} from '@angular/core/src/application/application_ref';
-import {Console} from '@angular/core/src/console';
-import {ComponentRef} from '@angular/core/src/linker/component_factory';
-import {
-  createOrReusePlatformInjector,
+  ApplicationRef,
+  ɵConsole as Console,
+  ComponentRef,
   destroyPlatform,
   providePlatformInitializer,
-} from '@angular/core/src/platform/platform';
-import {inject, TestBed} from '@angular/core/testing';
-import {Log} from '@angular/core/testing/src/testing_internal';
+  ɵcreateOrReusePlatformInjector as createOrReusePlatformInjector,
+} from '@angular/core';
+import {ɵLog as Log, inject, TestBed} from '@angular/core/testing';
 import {BrowserModule} from '../../index';
 import {provideAnimations, provideNoopAnimations} from '../../animations';
 import {expect} from '@angular/private/testing/matchers';
