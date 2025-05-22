@@ -1,24 +1,27 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages:types",
-        "//packages/animations",
-        "//packages/animations/browser",
-        "//packages/animations/browser/testing",
-        "//packages/common",
         "//packages/compiler",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/platform-browser/animations",
-        "//packages/platform-browser/animations/async",
-        "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/animations/async:async_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
     ],
 )
 

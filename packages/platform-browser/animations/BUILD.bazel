@@ -1,10 +1,11 @@
-load("//tools:defaults.bzl", "generate_api_docs", "ng_module", "tsec_test")
+load("//tools:defaults.bzl", "generate_api_docs", "tsec_test")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
 
-ng_module(
+ng_project(
     name = "animations",
     srcs = glob(
         [
@@ -13,11 +14,11 @@ ng_module(
         ],
     ),
     deps = [
-        "//packages/animations",
-        "//packages/animations/browser",
-        "//packages/common",
-        "//packages/core",
-        "//packages/platform-browser",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
     ],
 )
 
