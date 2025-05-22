@@ -25,7 +25,8 @@ export function collapseSingletonInterpolations(job: CompilationJob): void {
       const eligibleOpKind =
         op.kind === ir.OpKind.Attribute ||
         op.kind === ir.OpKind.StyleProp ||
-        op.kind == ir.OpKind.StyleMap;
+        op.kind == ir.OpKind.StyleMap ||
+        op.kind === ir.OpKind.ClassMap;
       if (
         eligibleOpKind &&
         op.expression instanceof ir.Interpolation &&
