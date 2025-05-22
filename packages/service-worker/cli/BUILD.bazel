@@ -27,7 +27,7 @@ esbuild(
     ],
     format = "esm",
     platform = "node",
-    target = "node12",
+    target = "node20",
     deps = [
         ":cli",
     ],
