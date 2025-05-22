@@ -1,23 +1,35 @@
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
-load("//tools:defaults.bzl", "extract_types", "pkg_npm", "ts_library")
+load("//tools:defaults.bzl", "extract_types", "pkg_npm")
+load("//tools:defaults2.bzl", "ts_config", "ts_project")
 
-ts_library(
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_project(
     name = "tools",
     srcs = glob(
         [
             "**/*.ts",
         ],
     ),
-    visibility = ["//packages/localize/tools:__subpackages__"],
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/private",
-        "//packages/localize",
-        "@npm//@babel/core",
-        "@npm//@types/babel__core",
-        "@npm//@types/node",
-        "@npm//@types/yargs",
-        "@npm//tinyglobby",
+    ],
+    visibility = ["//packages/localize/tools:__subpackages__"],
+    deps = [
+        "//:node_modules/@babel/core",
+        "//:node_modules/@types/babel__core",
+        "//:node_modules/@types/node",
+        "//:node_modules/@types/yargs",
+        "//:node_modules/tinyglobby",
+        "//packages/localize:localize_rjs",
     ],
 )
 

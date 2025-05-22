@@ -1,8 +1,9 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ts_library")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "localize",
     srcs = glob(
         [
@@ -12,8 +13,8 @@ ts_library(
     ),
     module_name = "@angular/localize",
     deps = [
-        "//packages/localize/src/localize",
-        "//packages/localize/src/utils",
+        "//packages/localize/src/localize:localize_rjs",
+        "//packages/localize/src/utils:utils_rjs",
     ],
 )
 
