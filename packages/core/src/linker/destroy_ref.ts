@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {EnvironmentInjector} from '../di';
+import {EnvironmentInjector} from '../di';
 import {isDestroyed} from '../render3/interfaces/type_checks';
-import type {LView} from '../render3/interfaces/view';
+import {LView} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {removeLViewOnDestroy, storeLViewOnDestroy} from '../render3/util/view_utils';
+
+const EXECUTE_CALLBACK_IF_ALREADY_DESTROYED = false;
 
 /**
  * `DestroyRef` lets you set callbacks to run for any cleanup or destruction behavior.
@@ -65,21 +67,9 @@ export class NodeInjectorDestroyRef extends DestroyRef {
   override onDestroy(callback: () => void): () => void {
     const lView = this._lView;
 
-    // Checking if `lView` is already destroyed before storing the `callback` enhances
-    // safety and integrity for applications.
-    // If `lView` is destroyed, we call the `callback` immediately to ensure that
-    // any necessary cleanup is handled gracefully.
-    // With this approach, we're providing better reliability in managing resources.
-    // One of the use cases is `takeUntilDestroyed`, which aims to replace `takeUntil`
-    // in existing applications. While `takeUntil` can be safely called once the view
-    // is destroyed — resulting in no errors and finalizing the subscription depending
-    // on whether a subject or replay subject is used, replacing it with
-    // `takeUntilDestroyed` introduces a breaking change, as it throws an error if
-    // the `lView` is destroyed (https://github.com/angular/angular/issues/54527).
-    if (isDestroyed(lView)) {
+    // TODO(atscott): Remove once g3 cleanup is complete
+    if (EXECUTE_CALLBACK_IF_ALREADY_DESTROYED && isDestroyed(lView)) {
       callback();
-      // We return a "noop" callback, which, when executed, does nothing because
-      // we haven't stored anything on the `lView`, and thus there's nothing to remove.
       return () => {};
     }
 
