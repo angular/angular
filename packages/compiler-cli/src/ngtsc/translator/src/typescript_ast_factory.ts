@@ -34,13 +34,13 @@ enum PureAnnotation {
   TERSER = '@__PURE__',
 }
 
-const UNARY_OPERATORS: Record<UnaryOperator, ts.PrefixUnaryOperator> = {
+const UNARY_OPERATORS: Record<UnaryOperator, ts.PrefixUnaryOperator> = /* @__PURE__ */ (() => ({
   '+': ts.SyntaxKind.PlusToken,
   '-': ts.SyntaxKind.MinusToken,
   '!': ts.SyntaxKind.ExclamationToken,
-};
+}))();
 
-const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = {
+const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = /* @__PURE__ */ (() => ({
   '&&': ts.SyntaxKind.AmpersandAmpersandToken,
   '>': ts.SyntaxKind.GreaterThanToken,
   '>=': ts.SyntaxKind.GreaterThanEqualsToken,
@@ -61,13 +61,13 @@ const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = {
   '+': ts.SyntaxKind.PlusToken,
   '??': ts.SyntaxKind.QuestionQuestionToken,
   'in': ts.SyntaxKind.InKeyword,
-};
+}))();
 
-const VAR_TYPES: Record<VariableDeclarationType, ts.NodeFlags> = {
+const VAR_TYPES: Record<VariableDeclarationType, ts.NodeFlags> = /* @__PURE__ */ (() => ({
   'const': ts.NodeFlags.Const,
   'let': ts.NodeFlags.Let,
   'var': ts.NodeFlags.None,
-};
+}))();
 
 /**
  * A TypeScript flavoured implementation of the AstFactory.
