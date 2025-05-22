@@ -102,50 +102,25 @@ export class TreeNodeComponent {
     }
 
     const textMatches = this.textMatches();
-
     if (textMatches.length) {
-      // Flatten all matches to an array where the even indices
-      // represent the match start whereas odd indices represent
-      // the match end.
-      const flattenedMatchesIndices = [];
-      for (const match of textMatches) {
-        flattenedMatchesIndices.push(match.startIdx, match.endIdx);
-      }
-
-      this.buildMatchedTextElement(flattenedMatchesIndices);
+      this.buildMatchedTextElement(textMatches);
     }
   }
 
-  private buildMatchedTextElement(flattenedMatchesIndices: number[]) {
+  private buildMatchedTextElement(textMatches: NodeTextMatch[]) {
     const matchedText = this.renderer.createElement('span');
     this.renderer.addClass(matchedText, 'matched-text');
 
     const name = this.nodeNameString();
-    let textBuffer = '';
-    let matchIdx = 0;
+    let lastMatchEndIdx = 0;
 
-    for (let i = 0; i < name.length; i++) {
-      if (i === flattenedMatchesIndices[matchIdx]) {
-        const isEvenMatchIdx = matchIdx % 2 === 0; // i.e. match start
-
-        if (isEvenMatchIdx && textBuffer) {
-          // Add any text that wraps the matched text.
-          this.appendText(matchedText, textBuffer);
-          textBuffer = '';
-        } else if (!isEvenMatchIdx) {
-          // Add the matched text.
-          this.appendText(matchedText, textBuffer, true);
-          textBuffer = '';
-        }
-
-        matchIdx++;
+    for (const {startIdx, endIdx} of textMatches) {
+      if (lastMatchEndIdx < startIdx) {
+        // Filler/non-marked text
+        this.appendText(matchedText, name.slice(lastMatchEndIdx, startIdx), false);
       }
-
-      textBuffer += name[i];
-    }
-
-    if (textBuffer && matchIdx === flattenedMatchesIndices.length - 1) {
-      this.appendText(matchedText, textBuffer, true);
+      this.appendText(matchedText, name.slice(startIdx, endIdx), true);
+      lastMatchEndIdx = endIdx;
     }
 
     this.matchedText = matchedText;

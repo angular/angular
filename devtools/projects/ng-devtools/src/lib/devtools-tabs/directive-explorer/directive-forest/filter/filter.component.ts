@@ -10,10 +10,12 @@ import {Component, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatCard} from '@angular/material/card';
 
-export type FilterFn = (source: string) => {
+export type FilterMatch = {
   startIdx: number;
   endIdx: number;
-}[];
+};
+
+export type FilterFn = (source: string) => FilterMatch[];
 
 /** Describes the filtering strategy of the `ng-filter` by providing a generator for the `FilterFn`. */
 export type FilterFnGenerator = (filter: string) => FilterFn;

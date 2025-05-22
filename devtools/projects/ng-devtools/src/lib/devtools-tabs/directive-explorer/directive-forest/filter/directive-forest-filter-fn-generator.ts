@@ -6,141 +6,239 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FilterFn, FilterFnGenerator} from './filter.component';
+import {FilterFn, FilterFnGenerator, FilterMatch} from './filter.component';
 
-/**
- * Represents the parsed token type
- * - `directive` – matches only directive part of the string
- * - `component` – matches only component part of the string
- * - `generic` – a fallback; matches the whole string
- */
-type TokenType = 'component' | 'directive' | 'generic';
+//
+// Types & Constants
+//
 
-export type FilterToken = {
-  token: string;
+type TokenType =
+  | 'opening_bracket'
+  | 'closing_bracket'
+  | 'chevron_left'
+  | 'chevron_right'
+  | 'slash'
+  | 'space'
+  | 'text';
+
+interface Token {
   type: TokenType;
-  start: number;
-  end: number;
-};
-
-/** Parse a directive-forest filter text to a `FilterToken`s */
-export function directiveForestFilterParser(text: string): FilterToken[] {
-  const tokens: FilterToken[] = [];
-  let buffer = '';
-
-  // Pushes a token (i.e. empties the buffer), if there is anything to push.
-  const pushToken = (type: TokenType, end: number) => {
-    if (buffer.length) {
-      tokens.push({
-        type,
-        token: buffer,
-        start: end - buffer.length,
-        end,
-      });
-      buffer = '';
-    }
-  };
-
-  let directiveOnly = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-
-    if (char === '[') {
-      pushToken('component', i);
-      directiveOnly = true;
-    } else if (directiveOnly && char === ' ') {
-      pushToken('directive', i);
-    } else if (char === ']') {
-      pushToken('directive', i);
-      directiveOnly = false;
-    } else {
-      buffer += char;
-    }
-  }
-
-  // Empty the buffer after the loop.
-  // A generic match can be only be a single match.
-  pushToken(
-    !tokens.length && !directiveOnly ? 'generic' : directiveOnly ? 'directive' : 'component',
-    text.length,
-  );
-
-  return tokens;
+  value: string;
+  idx: number;
 }
 
-function checkForTokenMatch(
-  target: FilterToken,
-  filter: FilterToken,
-): {startIdx: number; endIdx: number} | null {
-  const startIdx = target.token.indexOf(filter.token);
+const TERMINAL_CHAR = ['[', ']', '<', '>', '/', ' '];
+const CHAR_TO_TOKEN: {[key: string]: TokenType} = {
+  '[': 'opening_bracket',
+  ']': 'closing_bracket',
+  '<': 'chevron_left',
+  '>': 'chevron_right',
+  '/': 'slash',
+  ' ': 'space',
+};
+
+interface ParsedValue {
+  value: string;
+  idx: number;
+}
+
+export interface ParsedFilter {
+  component?: ParsedValue;
+  directives: ParsedValue[];
+  element?: ParsedValue;
+}
+
+//
+// Helpers
+//
+
+function toParserValue(token: Token): ParsedValue {
+  return {
+    value: token.value,
+    idx: token.idx,
+  };
+}
+
+function checkForMatch(filter?: ParsedValue, target?: ParsedValue): FilterMatch | null {
+  if (!filter || !target) {
+    return null;
+  }
+  const startIdx = target.value.indexOf(filter.value);
 
   if (startIdx > -1) {
-    const start = startIdx + target.start;
+    const start = startIdx + target.idx;
     return {
       startIdx: start,
-      endIdx: start + filter.token.length,
+      endIdx: start + filter.value.length,
     };
   }
   return null;
 }
 
+//
+// Lexer/Tokenizer
+//
+
+export function tokenizeDirectiveForestFilter(text: string): Token[] {
+  const tokens: Token[] = [];
+  let buffer = '';
+
+  const attemptToPushToken = (i: number) => {
+    if (buffer) {
+      tokens.push({
+        value: buffer,
+        type: 'text',
+        idx: i - buffer.length,
+      });
+      buffer = '';
+    }
+  };
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+
+    if (TERMINAL_CHAR.includes(char)) {
+      attemptToPushToken(i);
+      tokens.push({
+        type: CHAR_TO_TOKEN[char],
+        value: char,
+        idx: i,
+      });
+    } else {
+      buffer += char;
+    }
+  }
+
+  attemptToPushToken(text.length);
+
+  return tokens;
+}
+
+//
+// Parser
+//
+
+export function parseDirectiveForestFilter(tokens: Token[]): ParsedFilter {
+  const filter: ParsedFilter = {
+    directives: [],
+  };
+
+  if (!tokens.length) {
+    return filter;
+  }
+
+  let tokenIdx = 0;
+  let token: Token | undefined;
+  const nextToken = () => tokens[tokenIdx++];
+  const hasTokens = () => tokenIdx < tokens.length;
+
+  const parseComponent = () => {
+    return token ? toParserValue(token) : undefined;
+  };
+
+  const parseDirectives = () => {
+    const directives = [];
+
+    while (hasTokens()) {
+      token = nextToken();
+      if (token.type === 'text') {
+        directives.push(toParserValue(token));
+      }
+      if (token.type === 'closing_bracket') {
+        break;
+      }
+    }
+
+    return directives;
+  };
+
+  const parseElement = () => {
+    while (hasTokens()) {
+      token = nextToken();
+      if (token.type === 'text') {
+        return toParserValue(token);
+      }
+    }
+    return;
+  };
+
+  while (hasTokens()) {
+    token = nextToken();
+    switch (token.type) {
+      case 'opening_bracket':
+        filter.directives = filter.directives.concat(parseDirectives());
+        break;
+      case 'text':
+        filter.component = parseComponent();
+        break;
+      case 'chevron_left':
+        filter.element = parseElement();
+        break;
+    }
+  }
+
+  return filter;
+}
+
+//
+// `FilterFn` Generator
+//
+
 /** Generates a `FilterFn`, that performs token matching, for the directive-forest filter. */
 export const directiveForestFilterFnGenerator: FilterFnGenerator = (filter: string): FilterFn => {
-  const parsedFilter = directiveForestFilterParser(filter.toLowerCase());
-  const cmpFilterTokens = parsedFilter.filter((t) => t.type === 'component');
-  const dirFilterTokens = parsedFilter.filter((t) => t.type === 'directive');
+  const filterTokens = tokenizeDirectiveForestFilter(filter.toLowerCase());
+  const parsedFilter = parseDirectiveForestFilter(filterTokens);
 
   return (target: string) => {
-    const isFirstGeneric = parsedFilter[0]?.type === 'generic';
+    if (!filter) {
+      return [];
+    }
+    if (!parsedFilter.element && !parsedFilter.component && !parsedFilter.directives.length) {
+      // Fallback – standard string search.
+      const match = checkForMatch(
+        {value: filter.toLowerCase(), idx: 0},
+        {value: target.toLowerCase(), idx: 0},
+      );
+      return match ? [match] : [];
+    }
 
-    if (!isFirstGeneric && parsedFilter.length) {
-      const matches = [];
-      const parsedTarget = directiveForestFilterParser(target.toLowerCase());
-      const typeMatchesCount: {[key in TokenType]: number} = {
-        component: 0,
-        directive: 0,
-        generic: 0, // Not a case but added as a safe guard, if the parser fails/has a bug.
-      };
+    const matches = [];
+    const targetTokens = tokenizeDirectiveForestFilter(target.toLowerCase());
+    const parsedTarget = parseDirectiveForestFilter(targetTokens);
 
-      for (const targetToken of parsedTarget) {
-        const isCmpToken = targetToken.type === 'component';
-        const isDirToken = targetToken.type === 'directive';
-        const filterTokens = isCmpToken ? cmpFilterTokens : isDirToken ? dirFilterTokens : [];
+    if (parsedFilter.element) {
+      const elementMatch = checkForMatch(parsedFilter.element, parsedTarget.element);
+      // The element cannot have component and/or directive(s).
+      if (elementMatch) {
+        return [elementMatch];
+      }
+    }
 
-        for (const filterToken of filterTokens) {
-          const match = checkForTokenMatch(targetToken, filterToken);
-          if (match) {
-            matches.push(match);
-            typeMatchesCount[filterToken.type]++;
+    if (parsedFilter.component) {
+      const componentMatch = checkForMatch(parsedFilter.component, parsedTarget.component);
+      if (!componentMatch) {
+        return [];
+      }
+      matches.push(componentMatch);
+    }
+
+    if (parsedFilter.directives.length) {
+      let matchesCount = 0;
+      for (const targetDir of parsedTarget.directives) {
+        for (const filterDir of parsedFilter.directives) {
+          const dirMatch = checkForMatch(filterDir, targetDir);
+          if (dirMatch) {
+            matches.push(dirMatch);
+            matchesCount++;
           }
         }
       }
-
-      // Do not register a match if the target doesn't completely match the filter.
-      // For example, if the search/filter string is `app-todo[Tooltip]`, it shouldn't
-      // match `app-menu[Tooltip]` nodes. Same for components: `app-todo[Tooltip]`
-      // shouldn't match `app-todo[CtxMenu]`.
-      if (
-        typeMatchesCount.component >= cmpFilterTokens.length &&
-        typeMatchesCount.directive >= dirFilterTokens.length
-      ) {
-        return matches;
+      // Should have full directives match.
+      if (matchesCount < parsedFilter.directives.length) {
+        return [];
       }
-    } else if (isFirstGeneric) {
-      // Represents a standard string search. We don't have to parse the target.
-      const match = checkForTokenMatch(
-        {
-          type: 'generic',
-          token: target.toLowerCase(),
-          start: 0,
-          end: target.length,
-        },
-        parsedFilter[0],
-      );
-
-      return match ? [match] : [];
     }
-    return [];
+
+    return matches;
   };
 };
