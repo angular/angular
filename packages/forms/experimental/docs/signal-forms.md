@@ -264,21 +264,23 @@ passwordForm.password.$state.errors(); // []
 passwordForm.confirm.$state.errors(); // []
 ```
 
-##### Approach #2: Use `resolve` to access other fields' values
+##### Approach #2: Use helper functions to access other fields' state or values
 
-If you need to access other fields' values but don't want to move the logic to a common parent node, you can define the logic on the desired field and then use the `resolve` function provided in the `FieldContext` to access the state of _other_ fields.
+If you need to access other fields' values but don't want to move the logic to a common parent node, you can define the logic on the desired field. The `FieldContext` provides helper functions to access the state or value of _other_ fields:
 
-The `resolve()` function takes another `FieldPath` from anywhere in your field structure and returns the corresponding `Field` instance for that path. You can then access its `$state` to get its value, state, etc.
+- **`valueOf(otherPath: FieldPath<U>): U`**: Directly retrieves the current value of the field at `otherPath`.
+- **`stateOf(otherPath: FieldPath<U>): FieldState<U>`**: Retrieves the `FieldState` instance for the field at `otherPath` (e.g., `stateOf(otherPath).disabled()`).
+- - **`fieldOf(otherPath: FieldPath<U>): Field<U>`**: Retrieves the `Field` instance for the field at `otherPath`. This is useful when you want to access its decendants or specific array items.
 
-Here's the same password matching validation, but associating the error with the `confirm` field instead:
+Here's the same password matching validation, but associating the error with the `confirm` field instead, using `valueOf`:
 
 ```typescript
 const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
     // Add validation on the `confirm` field that considers both the
     // `password` and `confirm` values.
-    validate(path.confirm, ({value, resolve}: FieldContext<string>) => {
-      // Get the `Field` for `path.password` and read its value.
-      const password = resolve(path.password).$state.value();
+    validate(path.confirm, ({value, valueOf}: FieldContext<string>) => {
+      // Get the value of `path.password`.
+      const password = valueOf(path.password);
       // Compare the password and confirm values, return an error if they don't match.
       if (password !== value()) {
         return {kind: 'non-matching', message: 'Password and confirm must match'};
@@ -295,7 +297,7 @@ passwordForm.password.$state.errors(); // []
 passwordForm.confirm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
 ```
 
-Note that because `value()` in `resolve(path.password).$state.value()` is a signal read, this establishes a reactive dependency on the value of `password` as well as the value of `confirm`, ensuring that the validation is recomputed if either one changes.
+Note that because `valueOf(path.password)` reads a signal internally (as does `value()` for the current field), this establishes a reactive dependency on the value of `password` as well as the value of `confirm`, ensuring that the validation is recomputed if either one changes.
 
 ### Composing logic from multiple schemas
 
@@ -360,9 +362,9 @@ const tripSchema: Schema<Trip> = (tripPath: FieldPath<Trip>) => {
   apply(tripPath.end, dateSchema);
 
   // More trip-specific date logic, will be merged with standard date logic above.
-  error(tripPath.end, ({value, resolve}: FieldContext<SimpleDate>) => {
-    const startField = resolve(tripPath.start);
-    return compareTo(value(), startField.$state.value()) < 0;
+  error(tripPath.end, ({value, valueOf}: FieldContext<SimpleDate>) => {
+    const startValue = valueOf(tripPath.start);
+    return compareTo(value(), startValue) < 0;
   }, 'Trip must end after it starts');
 };
 ```
@@ -505,8 +507,8 @@ Angular Signal Forms provides a `submit()` helper function to manage this workfl
 
 1.  **`field`**: The `Field` instance to submit. This can be the root field or any sub-field node.
 2.  **`action`**: An asynchronous function that performs the submission action. It receives the `field` being submitted as an argument and returns a `Promise`.
-    - The returned `Promise` resolves with `void` (or `undefined`, or `[]`) if the action completes successfully without server-side validation errors.
-    - It resolves with an array of `ServerError` if the submission fails due to server-side validation or other issues that need to be reported back onto the form fields. The `ServerError` structure is detailed in the next section.
+  - The returned `Promise` resolves with `void` (or `undefined`, or `[]`) if the action completes successfully without server-side validation errors.
+  - It resolves with an array of `ServerError` if the submission fails due to server-side validation or other issues that need to be reported back onto the form fields. The `ServerError` structure is detailed in the next section.
 
 All `FieldState` objects have a `submittedStatus` signal that indicates their current submit state. The status can be `'unsubmitted'`, `'submitting'`, or `'submitted'`. There is no status to indicate that the submit errored because errors are reported through the `errors()` state the same way as client validation errors. (This is discussed more in the next section). `FieldState` objects also have a `resetSubmittedStatus()` method which sets the `submittedStatus` back to `'unsubmitted'`.
 
@@ -627,4 +629,4 @@ The `[field]` directive works out-of-the-box with standard HTML form elements li
 
 It can also integrate with custom form components (including those from libraries like Angular Material - e.g., `<mat-select>`, `<mat-radio>`) provided they correctly implement Angular's `ControlValueAccessor` interface. This is the standard mechanism in Angular for components to participate in forms.
 
-<!-- TODO: add a more in depth section on how to integrate your own custom UI controls -->
+<!-- TODO: add a more in-depth section on how to integrate your own custom UI controls -->

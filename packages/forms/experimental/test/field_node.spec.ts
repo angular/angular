@@ -13,29 +13,39 @@ import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
 import {apply, applyEach, form, submit} from '../src/api/structure';
 import {FormTreeError, SchemaOrSchemaFn} from '../src/api/types';
 
-const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
+const noopSchema: SchemaOrSchemaFn<unknown> = () => {
+};
 
 describe('FieldNode', () => {
   it('is untouched initially', () => {
-    const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+    const f = form(signal({
+      a: 1,
+      b: 2
+    }), noopSchema, {injector: TestBed.inject(Injector)});
     expect(f.$state.touched()).toBe(false);
   });
 
   it('can get a child of a key that exists', () => {
-    const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+    const f = form(signal({
+      a: 1,
+      b: 2
+    }), noopSchema, {injector: TestBed.inject(Injector)});
     expect(f.a).toBeDefined();
     expect(f.a.$state.value()).toBe(1);
   });
 
   describe('instances', () => {
     it('should get the same instance when asking for a child multiple times', () => {
-      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal({
+        a: 1,
+        b: 2
+      }), noopSchema, {injector: TestBed.inject(Injector)});
       const child = f.a;
       expect(f.a).toBe(child);
     });
 
     it('should get the same instance when asking for a child multiple times', () => {
-      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
+      const value = signal<{ a: number; b?: number }>({a: 1, b: 2});
       const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
       const child = f.a;
       value.set({a: 3});
@@ -44,20 +54,29 @@ describe('FieldNode', () => {
   });
 
   it('cannot get a child of a key that does not exist', () => {
-    const f = form(signal<{a: number; b: number; c?: number}>({a: 1, b: 2}), noopSchema, {
+    const f = form(signal<{ a: number; b: number; c?: number }>({
+      a: 1,
+      b: 2
+    }), noopSchema, {
       injector: TestBed.inject(Injector),
     });
     expect(f.c).toBeUndefined();
   });
 
   it('can get a child inside of a computed', () => {
-    const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+    const f = form(signal({
+      a: 1,
+      b: 2
+    }), noopSchema, {injector: TestBed.inject(Injector)});
     const childA = computed(() => f.a);
     expect(childA()).toBeDefined();
   });
 
   it('can get a child inside of a computed', () => {
-    const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+    const f = form(signal({
+      a: 1,
+      b: 2
+    }), noopSchema, {injector: TestBed.inject(Injector)});
     const childA = computed(() => f.a);
     expect(childA()).toBeDefined();
   });
@@ -114,7 +133,10 @@ describe('FieldNode', () => {
     });
 
     it('can be marked as touched', () => {
-      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal({
+        a: 1,
+        b: 2
+      }), noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.touched()).toBe(false);
 
       f.$state.markAsTouched();
@@ -122,7 +144,10 @@ describe('FieldNode', () => {
     });
 
     it('propagates from the children', () => {
-      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal({
+        a: 1,
+        b: 2
+      }), noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.touched()).toBe(false);
 
       f.a.$state.markAsTouched();
@@ -130,7 +155,10 @@ describe('FieldNode', () => {
     });
 
     it('does not propagate down', () => {
-      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal({
+        a: 1,
+        b: 2
+      }), noopSchema, {injector: TestBed.inject(Injector)});
 
       expect(f.a.$state.touched()).toBe(false);
       f.$state.markAsTouched();
@@ -138,7 +166,7 @@ describe('FieldNode', () => {
     });
 
     it('does not consider children that get removed', () => {
-      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
+      const value = signal<{ a: number; b?: number }>({a: 1, b: 2});
       const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.touched()).toBe(false);
 
@@ -165,10 +193,10 @@ describe('FieldNode', () => {
         signal({names: [{name: 'Alex'}, {name: 'Miles'}]}),
         (p) => {
           applyEach(p.names, (a) => {
-            disabled(a.name, ({value, resolve}) => {
-              const el = resolve(a);
+            disabled(a.name, ({value, fieldOf}) => {
+              const el = fieldOf(a);
               expect(el.$state.value().name).toBe(value());
-              expect(resolve(p).names.findIndex((e) => e === el)).not.toBe(-1);
+              expect(fieldOf(p).names.findIndex((e: any) => e === el)).not.toBe(-1);
               return true;
             });
           });
@@ -482,7 +510,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -529,12 +557,12 @@ describe('FieldNode', () => {
         (tx) => {
           required(
             tx.name,
-            ({resolve}) => resolve(tx.country).$state.value() === 'USA',
+            ({valueOf}) => valueOf(tx.country) === 'USA',
             'Name is required in your country',
           );
           required(
             tx.name,
-            ({resolve}) => resolve(tx.amount).$state.value() >= 1000,
+            ({valueOf}) => valueOf(tx.amount) >= 1000,
             'Name is required for large transactions',
           );
         },
@@ -569,13 +597,13 @@ describe('FieldNode', () => {
         const f = form(
           cat,
           (p) => {
-            validateTree(p, ({value, resolve}) => {
+            validateTree(p, ({value, fieldOf}) => {
               const errors: FormTreeError[] = [];
               if (value().name.length > 8) {
-                errors.push({kind: 'long_name', field: resolve(p.name)});
+                errors.push({kind: 'long_name', field: fieldOf(p.name)});
               }
               if (value().age < 0) {
-                errors.push({kind: 'temporal_anomaly', field: resolve(p.age)});
+                errors.push({kind: 'temporal_anomaly', field: fieldOf(p.age)});
               }
               return errors;
             });
@@ -603,13 +631,13 @@ describe('FieldNode', () => {
         const f = form(
           cat,
           (p) => {
-            validateTree(p, ({value, resolve}) => {
+            validateTree(p, ({value, fieldOf}) => {
               const errors: FormTreeError[] = [];
               if (value().name.length > 8) {
-                errors.push({kind: 'long_name', field: resolve(p.name)});
+                errors.push({kind: 'long_name', field: fieldOf(p.name)});
               }
               if (value().age < 0) {
-                errors.push({kind: 'temporal_anomaly', field: resolve(p.age)});
+                errors.push({kind: 'temporal_anomaly', field: fieldOf(p.age)});
               }
               return errors;
             });
@@ -641,7 +669,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -665,7 +693,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -687,25 +715,25 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
         },
         {injector: TestBed.inject(Injector)},
       );
 
       expect(f.$state.submittedStatus()).toBe('unsubmitted');
 
-      let resolve: VoidFunction | undefined;
+      let resolvePromise: VoidFunction | undefined;
 
       const result = submit(f, () => {
         return new Promise((r) => {
-          resolve = r;
+          resolvePromise = r;
         });
       });
 
       expect(f.$state.submittedStatus()).toBe('submitting');
 
-      expect(resolve).toBeDefined();
-      resolve?.();
+      expect(resolvePromise).toBeDefined();
+      resolvePromise?.();
 
       await result;
       expect(f.$state.submittedStatus()).toBe('submitted');
@@ -721,7 +749,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({resolve}) => resolve(name.last).$state.value() !== '');
+          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -753,7 +781,7 @@ describe('FieldNode', () => {
         disabled(p.street, () => true);
       };
 
-      const data = signal<{name: string; address: Address}>({
+      const data = signal<{ name: string; address: Address }>({
         name: '',
         address: {street: '', city: ''},
       });
