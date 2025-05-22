@@ -26,6 +26,9 @@
   "peerDependenciesMeta": {
     "@angular/compiler": {
       "optional": true
+    },
+    "zone.js": {
+      "optional": true
     }
   },
   "repository": {
