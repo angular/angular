@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter} from '@angular/core';
+import {Component, output} from '@angular/core';
 
 @Component({
   selector: 'app-child',

@@ -1,11 +1,11 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 @Component({
   selector: 'app-user',
   template: `
-    <p>The user's name is {{ name }}</p>
+    <p>The user's name is {{ name() }}</p>
   `,
 })
 export class User {
-  @Input() name = '';
+  name = input<string>();
 }
