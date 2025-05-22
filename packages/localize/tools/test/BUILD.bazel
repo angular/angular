@@ -1,26 +1,29 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["**/*.ts"],
     ),
-    visibility = ["//packages/localize/tools/test:__subpackages__"],
-    deps = [
+    interop_deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/logging/testing",
-        "//packages/localize",
-        "//packages/localize/src/utils",
-        "//packages/localize/tools",
-        "//packages/localize/tools/test/helpers",
-        "@npm//@babel/generator",
-        "@npm//@types/babel__generator",
-        "@npm//fast-glob",
+    ],
+    visibility = ["//packages/localize/tools/test:__subpackages__"],
+    deps = [
+        "//:node_modules/@babel/generator",
+        "//:node_modules/@types/babel__generator",
+        "//:node_modules/fast-glob",
+        "//packages/localize:localize_rjs",
+        "//packages/localize/src/utils:utils_rjs",
+        "//packages/localize/tools:tools_rjs",
+        "//packages/localize/tools/test/helpers:helpers_rjs",
     ],
 )
 

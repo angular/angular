@@ -28,6 +28,9 @@ def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/language-service"):
         return "//packages:tsconfig_test" if testonly else "//packages/language-service:tsconfig_build"
 
+    if native.package_name().startswith("packages/localize"):
+        return "//packages:tsconfig_test" if testonly else "//packages/localize:tsconfig_build"
+
     if native.package_name().startswith("packages"):
         return "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
 
