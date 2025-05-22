@@ -212,8 +212,7 @@ class _Scanner {
   private readonly length: number;
   private peek = 0;
   private index = -1;
-  private literalInterpolationDepth = 0;
-  private braceDepth = 0;
+  private braceStack: ('interpolation' | 'expression')[] = [];
 
   constructor(private readonly input: string) {
     this.length = input.length;
@@ -341,7 +340,7 @@ class _Scanner {
   }
 
   private scanOpenBrace(start: number, code: number): Token {
-    this.braceDepth++;
+    this.braceStack.push('expression');
     this.advance();
     return newCharacterToken(start, this.index, code);
   }
@@ -349,13 +348,12 @@ class _Scanner {
   private scanCloseBrace(start: number, code: number): Token {
     this.advance();
 
-    if (this.braceDepth === 0 && this.literalInterpolationDepth > 0) {
-      this.literalInterpolationDepth--;
+    const currentBrace = this.braceStack.pop();
+    if (currentBrace === 'interpolation') {
       this.tokens.push(newOperatorToken(start, this.index, '}'));
       return this.scanTemplateLiteralPart(this.index);
     }
 
-    this.braceDepth--;
     return newCharacterToken(start, this.index, code);
   }
 
@@ -512,7 +510,7 @@ class _Scanner {
 
         // @ts-expect-error
         if (this.peek === chars.$LBRACE) {
-          this.literalInterpolationDepth++;
+          this.braceStack.push('interpolation');
           this.tokens.push(
             new StringToken(
               start,
