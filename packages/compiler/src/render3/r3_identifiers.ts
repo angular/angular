@@ -139,43 +139,6 @@ export class Identifiers {
 
   static styleProp: o.ExternalReference = {name: 'ɵɵstyleProp', moduleName: CORE};
 
-  static stylePropInterpolate1: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate1',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate2: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate2',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate3: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate3',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate4: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate4',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate5: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate5',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate6: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate6',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate7: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate7',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate8: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate8',
-    moduleName: CORE,
-  };
-  static stylePropInterpolateV: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolateV',
-    moduleName: CORE,
-  };
-
   static interpolate: o.ExternalReference = {
     name: 'ɵɵinterpolate',
     moduleName: CORE,
