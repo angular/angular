@@ -55,7 +55,6 @@ export * from './queries';
 export * from './queries_signals';
 export * from './storage';
 export * from './style_map_interpolation';
-export * from './style_prop_interpolation';
 export * from './styling';
 export * from './template';
 export * from './text';

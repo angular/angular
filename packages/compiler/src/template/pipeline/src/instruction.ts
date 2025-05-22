@@ -565,11 +565,21 @@ export function twoWayProperty(
 
 export function attribute(
   name: string,
-  expression: o.Expression,
+  expression: o.Expression | ir.Interpolation,
   sanitizer: o.Expression | null,
   namespace: string | null,
+  sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const args = [o.literal(name), expression];
+  const args: o.Expression[] = [o.literal(name)];
+
+  if (expression instanceof ir.Interpolation) {
+    const interpolationArgs = collateInterpolationArgs(expression.strings, expression.expressions);
+    args.push(
+      callVariadicInstructionExpr(VALUE_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan),
+    );
+  } else {
+    args.push(expression);
+  }
   if (sanitizer !== null || namespace !== null) {
     args.push(sanitizer ?? o.literal(null));
   }
@@ -581,11 +591,21 @@ export function attribute(
 
 export function styleProp(
   name: string,
-  expression: o.Expression,
+  expression: o.Expression | ir.Interpolation,
   unit: string | null,
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const args = [o.literal(name), expression];
+  const args: o.Expression[] = [o.literal(name)];
+
+  if (expression instanceof ir.Interpolation) {
+    const interpolationArgs = collateInterpolationArgs(expression.strings, expression.expressions);
+    args.push(
+      callVariadicInstructionExpr(VALUE_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan),
+    );
+  } else {
+    args.push(expression);
+  }
+
   if (unit !== null) {
     args.push(o.literal(unit));
   }
@@ -662,48 +682,6 @@ export function propertyInterpolate(
 
   return callVariadicInstruction(
     PROPERTY_INTERPOLATE_CONFIG,
-    [o.literal(name)],
-    interpolationArgs,
-    extraArgs,
-    sourceSpan,
-  );
-}
-
-export function attributeInterpolate(
-  name: string,
-  strings: string[],
-  expressions: o.Expression[],
-  sanitizer: o.Expression | null,
-  namespace: string | null,
-  sourceSpan: ParseSourceSpan,
-): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
-  const value = callVariadicInstructionExpr(
-    VALUE_INTERPOLATE_CONFIG,
-    [],
-    interpolationArgs,
-    [],
-    sourceSpan,
-  );
-  return attribute(name, value, sanitizer, namespace);
-}
-
-export function stylePropInterpolate(
-  name: string,
-  strings: string[],
-  expressions: o.Expression[],
-  unit: string | null,
-  sourceSpan: ParseSourceSpan,
-): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
-
-  const extraArgs: o.Expression[] = [];
-  if (unit !== null) {
-    extraArgs.push(o.literal(unit));
-  }
-
-  return callVariadicInstruction(
-    STYLE_PROP_INTERPOLATE_CONFIG,
     [o.literal(name)],
     interpolationArgs,
     extraArgs,
@@ -903,30 +881,6 @@ const VALUE_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     Identifiers.interpolate8,
   ],
   variable: Identifiers.interpolateV,
-  mapping: (n) => {
-    if (n % 2 === 0) {
-      throw new Error(`Expected odd number of arguments`);
-    }
-    return (n - 1) / 2;
-  },
-};
-
-/**
- * `InterpolationConfig` for the `stylePropInterpolate` instruction.
- */
-const STYLE_PROP_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
-  constant: [
-    Identifiers.styleProp,
-    Identifiers.stylePropInterpolate1,
-    Identifiers.stylePropInterpolate2,
-    Identifiers.stylePropInterpolate3,
-    Identifiers.stylePropInterpolate4,
-    Identifiers.stylePropInterpolate5,
-    Identifiers.stylePropInterpolate6,
-    Identifiers.stylePropInterpolate7,
-    Identifiers.stylePropInterpolate8,
-  ],
-  variable: Identifiers.stylePropInterpolateV,
   mapping: (n) => {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);

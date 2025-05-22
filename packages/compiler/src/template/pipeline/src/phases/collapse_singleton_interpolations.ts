@@ -10,8 +10,8 @@ import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
 /**
- * Attribute interpolations of the form `[attr.foo]="{{foo}}""` should be "collapsed" into a plain
- * attribute instruction, instead of an `attributeInterpolate` instruction.
+ * Attribute or style interpolations of the form `[attr.foo]="{{foo}}""` should be "collapsed"
+ * into a plain instruction, instead of an interpolated one.
  *
  * (We cannot do this for singleton property interpolations, because `propertyInterpolate`
  * stringifies its expression.)
@@ -22,12 +22,12 @@ import {CompilationJob} from '../compilation';
 export function collapseSingletonInterpolations(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
-      const eligibleOpKind = op.kind === ir.OpKind.Attribute;
+      const eligibleOpKind = op.kind === ir.OpKind.Attribute || op.kind === ir.OpKind.StyleProp;
       if (
         eligibleOpKind &&
         op.expression instanceof ir.Interpolation &&
         op.expression.strings.length === 2 &&
-        op.expression.strings.every((s: string) => s === '')
+        op.expression.strings.every((s) => s === '')
       ) {
         op.expression = op.expression.expressions[0];
       }
