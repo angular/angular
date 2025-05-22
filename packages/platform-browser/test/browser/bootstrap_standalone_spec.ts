@@ -16,9 +16,9 @@ import {
   NgModule,
   NgZone,
   PlatformRef,
+  ɵR3Injector as R3Injector,
+  ɵNoopNgZone as NoopNgZone,
 } from '@angular/core';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
-import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {withBody} from '@angular/private/testing';
 
 import {bootstrapApplication, BrowserModule} from '../../src/browser';

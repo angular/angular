@@ -38,6 +38,7 @@ export {
   destroyPlatform,
   getPlatform,
   providePlatformInitializer,
+  createOrReusePlatformInjector as ɵcreateOrReusePlatformInjector,
 } from './platform/platform';
 export {
   provideZoneChangeDetection,
