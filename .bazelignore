@@ -24,6 +24,7 @@ integration/ng_elements/node_modules
 integration/ng_update/node_modules
 integration/ng_update_migrations/node_modules
 integration/ng-add-localize/node_modules
+integration/no_ts_linker/node_modules
 integration/nodenext_resolution/node_modules
 integration/platform-server/node_modules
 integration/platform-server-zoneless/node_modules

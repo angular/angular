@@ -1,0 +1,16 @@
+{
+  "name": "angular-integration",
+  "description": "Assert that the linker has no dependency on TypeScript.",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "rxjs": "file:../../node_modules/rxjs"
+  },
+  "scripts": {
+    "test": "node ./test.mjs"
+  }
+}
