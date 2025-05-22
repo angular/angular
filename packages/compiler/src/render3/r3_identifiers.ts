@@ -61,43 +61,6 @@ export class Identifiers {
 
   static styleMap: o.ExternalReference = {name: 'ɵɵstyleMap', moduleName: CORE};
 
-  static styleMapInterpolate1: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate1',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate2: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate2',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate3: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate3',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate4: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate4',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate5: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate5',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate6: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate6',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate7: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate7',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate8: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate8',
-    moduleName: CORE,
-  };
-  static styleMapInterpolateV: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolateV',
-    moduleName: CORE,
-  };
-
   static classMap: o.ExternalReference = {name: 'ɵɵclassMap', moduleName: CORE};
 
   static classMapInterpolate1: o.ExternalReference = {

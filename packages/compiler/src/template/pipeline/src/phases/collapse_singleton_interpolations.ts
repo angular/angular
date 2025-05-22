@@ -22,7 +22,10 @@ import {CompilationJob} from '../compilation';
 export function collapseSingletonInterpolations(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.update) {
-      const eligibleOpKind = op.kind === ir.OpKind.Attribute || op.kind === ir.OpKind.StyleProp;
+      const eligibleOpKind =
+        op.kind === ir.OpKind.Attribute ||
+        op.kind === ir.OpKind.StyleProp ||
+        op.kind == ir.OpKind.StyleMap;
       if (
         eligibleOpKind &&
         op.expression instanceof ir.Interpolation &&
