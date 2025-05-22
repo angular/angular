@@ -102,18 +102,15 @@ export class TreeNodeComponent {
     }
 
     const textMatches = this.textMatches();
-
-    if (textMatches.length) {
-      // Flatten all matches to an array where the even indices
-      // represent the match start whereas odd indices represent
-      // the match end.
-      const flattenedMatchesIndices = [];
-      for (const match of textMatches) {
-        flattenedMatchesIndices.push(match.startIdx, match.endIdx);
-      }
-
-      this.buildMatchedTextElement(flattenedMatchesIndices);
+    if (!textMatches.length) {
+      return;
     }
+
+    // Flatten all matches to an array where the even indices
+    // represent the match start whereas odd indices represent
+    // the match end.
+    const flattenedMatchesIndices = textMatches.flatMap(({startIdx, endIdx}) => [startIdx, endIdx]);
+    this.buildMatchedTextElement(flattenedMatchesIndices);
   }
 
   private buildMatchedTextElement(flattenedMatchesIndices: number[]) {
