@@ -480,6 +480,7 @@ export class NgCompiler {
     this.constructionDiagnostics.push(
       ...this.adapter.constructionDiagnostics,
       ...verifyCompatibleTypeCheckOptions(this.options),
+      ...verifyEmitDeclarationOnly(this.options),
     );
 
     this.currentProgram = inputProgram;
@@ -1831,6 +1832,19 @@ ${allowedCategoryLabels.join('\n')}
       });
     }
   }
+}
+
+function verifyEmitDeclarationOnly(options: NgCompilerOptions): ts.Diagnostic[] {
+  if (!options.emitDeclarationOnly || !!options._experimentalAllowEmitDeclarationOnly) {
+    return [];
+  }
+  return [
+    makeConfigDiagnostic({
+      category: ts.DiagnosticCategory.Error,
+      code: ErrorCode.CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED,
+      messageText: 'TS compiler option "emitDeclarationOnly" is not supported.',
+    }),
+  ];
 }
 
 function makeConfigDiagnostic({
