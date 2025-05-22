@@ -28,6 +28,7 @@ import type {
   FormTreeError,
   SubmittedStatus,
   ValidationResult,
+  ValidationStatus,
 } from './api/types';
 import {DYNAMIC, FieldLogicNode} from './logic_node';
 import {FieldPathNode, FieldRootPathNode} from './path_node';
@@ -289,27 +290,6 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
-   * Whether this field is considered valid.
-   *
-   * This field considers itself valid if *all* of the following are true:
-   *  - it has no errors
-   *  - all of its children consider themselves valid
-   */
-  readonly syncValid: Signal<boolean> = computed(() => {
-    // Short-circuit checking children if validation doesn't apply to this field.
-    if (this.shouldSkipValidation()) {
-      return true;
-    }
-    return this.reduceChildren(
-      this.syncErrors().length === 0,
-      (child, value) => value && child.syncValid(),
-      shortCircuitFalse,
-    );
-  });
-
-  readonly valid = this.syncValid;
-
-  /**
    * Whether this field is considered disabled.
    *
    * This field considers itself disabled if its parent is disabled or its own logic considers it
@@ -349,9 +329,31 @@ export class FieldNode implements FieldState<unknown> {
   );
 
   /**
-   * Validation errors for this field.
-   *
-   * Computing this runs validators.
+   * All synchronous validation errors for this field *or any of its child fields* that were added
+   * by a tree validator.
+   */
+  readonly rawSyncTreeErrors: Signal<FormTreeError[]> = computed(() => {
+    if (this.shouldSkipValidation()) {
+      return [];
+    }
+
+    return [
+      ...(this.logic.syncTreeErrors.compute(this.fieldContext) ?? []).map((err) =>
+        !err.field ? {...err, field: this.fieldProxy} : err,
+      ),
+      ...(this.parent?.rawSyncTreeErrors() ?? []),
+    ];
+  });
+
+  /**
+   * All synchronous validation errors for this field that were added by a tree validator.
+   */
+  readonly syncTreeErrors: Signal<FormError[]> = computed(
+    () => this.rawSyncTreeErrors().filter((err) => err.field === this.fieldProxy) as FormError[],
+  );
+
+  /**
+   * All synchronous validation errors for this field.
    */
   readonly syncErrors: Signal<FormError[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
@@ -366,27 +368,9 @@ export class FieldNode implements FieldState<unknown> {
     ];
   });
 
-  readonly rawSyncTreeErrors: Signal<FormTreeError[]> = computed(() => {
-    if (this.shouldSkipValidation()) {
-      return [];
-    }
-
-    return [
-      ...(this.logic.syncTreeErrors.compute(this.fieldContext) ?? []).map((err) =>
-        !err.field ? {...err, field: this.fieldProxy} : err,
-      ),
-      ...(this.parent?.rawSyncTreeErrors() ?? []),
-    ];
-  });
-
-  readonly syncTreeErrors: Signal<FormError[]> = computed(
-    () => this.rawSyncTreeErrors().filter((err) => err.field === this.fieldProxy) as FormError[],
-  );
-
   /**
-   * Validation errors for this field.
-   *
-   * Computing this runs validators.
+   * All asynchronous validation errors & pending statuses for this field
+   * *or any of its child fields*.
    */
   readonly rawAsyncErrors: Signal<(FormTreeError | 'pending')[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
@@ -408,6 +392,9 @@ export class FieldNode implements FieldState<unknown> {
     ];
   });
 
+  /**
+   * All asynchronous validation errors & pending statuses for this field.
+   */
   readonly asyncErrors: Signal<(FormError | 'pending')[]> = computed(() => {
     if (this.shouldSkipValidation()) {
       return [];
@@ -417,10 +404,76 @@ export class FieldNode implements FieldState<unknown> {
     ) as Array<FormError | 'pending'>;
   });
 
+  /**
+   * All validation errors for this field.
+   */
   readonly errors = computed(() => [
     ...this.syncErrors(),
     ...this.asyncErrors().filter((err) => err !== 'pending'),
   ]);
+
+  readonly hasPendingValidators = computed(() => this.asyncErrors().includes('pending'));
+
+  /**
+   * Whether this field is considered valid by its synchronous validators.
+   *
+   * This field considers itself valid if *all* of the following are true:
+   *  - it has no errors
+   *  - all of its children consider themselves valid
+   */
+  readonly syncValid: Signal<boolean> = computed(() => {
+    // Short-circuit checking children if validation doesn't apply to this field.
+    if (this.shouldSkipValidation()) {
+      return true;
+    }
+    return this.reduceChildren(
+      this.syncErrors().length === 0,
+      (child, value) => value && child.syncValid(),
+      shortCircuitFalse,
+    );
+  });
+
+  /**
+   * The validation status of the field.
+   * - The status is 'valid' if neither the field nor any of its children has any errors or pending
+   *   validators.
+   * - The status is 'invalid' if the field or any of its children has an error
+   *   (regardless of pending validators)
+   * - The status is 'pending' if neither the field nor any of its children has any errors,
+   *   but the field or any of its children does have a pending validator.
+   *
+   * This field considers itself valid if *all* of the following are true:
+   *  - it has no errors
+   *  - all of its children consider themselves valid
+   */
+  readonly status: Signal<ValidationStatus> = computed(() => {
+    // Short-circuit checking children if validation doesn't apply to this field.
+    if (this.shouldSkipValidation()) {
+      return 'valid';
+    }
+    let ownStatus: ValidationStatus = 'valid';
+    if (this.errors().length > 0) {
+      ownStatus = 'invalid';
+    } else if (this.hasPendingValidators()) {
+      ownStatus = 'pending';
+    }
+    return this.reduceChildren<'valid' | 'invalid' | 'pending'>(
+      ownStatus,
+      (child, value) => {
+        if (value === 'invalid' || child.status() === 'invalid') {
+          return 'invalid';
+        } else if (value === 'pending' || child.status() === 'pending') {
+          return 'pending';
+        }
+        return 'valid';
+      },
+      (v) => v === 'invalid', // short-circuit on 'invalid'
+    );
+  });
+
+  readonly valid = computed(() => this.status() === 'valid');
+
+  readonly invalid = computed(() => this.status() === 'invalid');
 
   children(): Iterable<FieldNode> {
     return this.childrenMap()?.values() ?? [];
