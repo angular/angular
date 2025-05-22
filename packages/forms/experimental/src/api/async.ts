@@ -31,7 +31,7 @@ export function validateAsync<TValue, TRequest, TData>(
 
   const dataKey = defineResource(path, {
     request: (ctx) => {
-      const node = ctx.resolve(path).$state as FieldNode;
+      const node = ctx.stateOf(path) as FieldNode;
       if (node.shouldSkipValidation() || !node.syncValid()) {
         return undefined;
       }

@@ -201,7 +201,7 @@ function wrapWithPredicate<TValue, TReturn>(
     return logicFn;
   }
   return (arg: FieldContext<any>): TReturn => {
-    const predicateField = arg.resolve(predicate.path).$state as FieldNode;
+    const predicateField = arg.stateOf(predicate.path) as FieldNode;
     if (!predicate.fn(predicateField.fieldContext)) {
       // don't actually run the user function
       return defaultValue;
