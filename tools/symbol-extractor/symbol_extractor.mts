@@ -12,10 +12,18 @@ import ts from 'typescript';
 
 export class SymbolExtractor {
   public actual: string[];
+  public eagerlyLoadedRelativeSpecifiers: string[];
 
-  static parse(path: string, contents: string): string[] {
+  static parse(contents: string): {symbols: string[]; eagerlyLoadedRelativeSpecifiers: string[]} {
+    const eagerlyLoadedRelativeSpecifiers: string[] = [];
+
     const symbols: string[] = [];
-    const source: ts.SourceFile = ts.createSourceFile(path, contents, ts.ScriptTarget.Latest, true);
+    const source: ts.SourceFile = ts.createSourceFile(
+      '_test_file.js',
+      contents,
+      ts.ScriptTarget.Latest,
+      true,
+    );
     let fnRecurseDepth = 0;
     function visitor(child: ts.Node) {
       // Left for easier debugging.
@@ -45,11 +53,7 @@ export class SymbolExtractor {
           // Terser optimizes variable declarations with `undefined` as initializer
           // by omitting the initializer completely. We capture such declarations as well.
           // https://github.com/terser/terser/blob/86ea74d5c12ae51b64468/CHANGELOG.md#v540.
-          if (fnRecurseDepth !== 0) {
-            if (!isEsmInitFunction(varDecl)) {
-              symbols.push(stripSuffix(varDecl.name.getText()));
-            }
-          }
+          symbols.push(stripSuffix(varDecl.name.getText()));
           break;
         case ts.SyntaxKind.FunctionDeclaration:
           const funcDecl = child as ts.FunctionDeclaration;
@@ -59,6 +63,14 @@ export class SymbolExtractor {
           const classDecl = child as ts.ClassDeclaration;
           classDecl.name && symbols.push(stripSuffix(classDecl.name.getText()));
           break;
+        case ts.SyntaxKind.ImportDeclaration:
+          // Keep track of eagerly loaded modules, so that can determine which
+          // chunks of a set of bundles is eagerly loaded vs. lazily.
+          const {moduleSpecifier} = child as ts.ImportDeclaration;
+          if (ts.isStringLiteral(moduleSpecifier) && moduleSpecifier.text.startsWith('.')) {
+            eagerlyLoadedRelativeSpecifiers.push(moduleSpecifier.text);
+          }
+
         default:
         // Left for easier debugging.
         // console.log('###', ts.SyntaxKind[child.kind], child.getText());
@@ -66,13 +78,14 @@ export class SymbolExtractor {
     }
     visitor(source);
     symbols.sort();
-    return symbols;
+
+    return {
+      symbols,
+      eagerlyLoadedRelativeSpecifiers,
+    };
   }
 
-  static diff(actual: string[], expected: string | string[]): {[name: string]: number} {
-    if (typeof expected == 'string') {
-      expected = JSON.parse(expected) as string[];
-    }
+  static diff(actual: string[], expected: string[]): {[name: string]: number} {
     const diff: {[name: string]: number} = {};
 
     // All symbols in the golden file start out with a count corresponding to the number of symbols
@@ -92,23 +105,27 @@ export class SymbolExtractor {
     return diff;
   }
 
-  constructor(
-    private path: string,
-    private contents: string,
-  ) {
-    this.actual = SymbolExtractor.parse(path, contents);
+  constructor(contents: string) {
+    const res = SymbolExtractor.parse(contents);
+
+    this.actual = res.symbols;
+    this.eagerlyLoadedRelativeSpecifiers = res.eagerlyLoadedRelativeSpecifiers;
   }
 
   expect(expectedSymbols: string[]) {
     expect(SymbolExtractor.diff(this.actual, expectedSymbols)).toEqual({});
   }
 
-  compareAndPrintError(expected: string | string[]): boolean {
+  static compareAndPrintError(
+    goldenFilename: string,
+    expected: string[],
+    actual: string[],
+  ): boolean {
     let passed = true;
-    const diff = SymbolExtractor.diff(this.actual, expected);
+    const diff = SymbolExtractor.diff(actual, expected);
     Object.keys(diff).forEach((key) => {
       if (passed) {
-        console.error(`Expected symbols in '${this.path}' did not match gold file.`);
+        console.error(`Expected symbols in '${goldenFilename}' did not match gold file.`);
         passed = false;
       }
       const missingOrExtra = diff[key] > 0 ? 'extra' : 'missing';
@@ -123,27 +140,4 @@ export class SymbolExtractor {
 function stripSuffix(text: string): string {
   const index = text.lastIndexOf('$');
   return index > -1 ? text.substring(0, index) : text;
-}
-
-/**
- * This function detects a specific pattern that represents ESM modules
- * in the generated code. Those symbols are not really needed for the purposes
- * of symbol checking, since they only represent a module graph and all
- * nested symbols are being captured by the logic already. The pattern that
- * this function detects looks like this:
- * ```
- * var init_testability = __esm({
- *   "packages/core/src/testability/testability.mjs"() {
- *     // ...
- *   }
- * });
- * ```
- */
-function isEsmInitFunction(varDecl: ts.VariableDeclaration) {
-  return (
-    varDecl.name.getText().startsWith('init_') &&
-    varDecl.initializer &&
-    ts.isCallExpression(varDecl.initializer) &&
-    (varDecl.initializer.expression as ts.Identifier).escapedText === '___esm'
-  );
 }
