@@ -16,6 +16,16 @@ import {NgtscTestEnvironment} from './env';
 
 const testFiles = loadStandardTestFiles();
 
+const tsconfigBase = {
+  extends: '../tsconfig-base.json',
+  compilerOptions: {
+    baseUrl: '.',
+    rootDirs: ['/app'],
+    emitDeclarationOnly: true,
+    noCheck: true,
+  },
+};
+
 runInEachFileSystem(() => {
   describe('declaration-only emission', () => {
     let env!: NgtscTestEnvironment;
@@ -23,18 +33,44 @@ runInEachFileSystem(() => {
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
       const tsconfig: {[key: string]: any} = {
-        extends: '../tsconfig-base.json',
-        compilerOptions: {
-          baseUrl: '.',
-          rootDirs: ['/app'],
-          emitDeclarationOnly: true,
-          noCheck: true,
-        },
+        ...tsconfigBase,
         angularCompilerOptions: {
           _experimentalAllowEmitDeclarationOnly: true,
         },
       };
       env.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
+    });
+
+    it('fails with config diagnostic if experimental flag is not provided', () => {
+      env.write('tsconfig.json', JSON.stringify(tsconfigBase, null, 2));
+      env.write('test.ts', '');
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED));
+      expect(errors[0].messageText).toBe(
+        'TS compiler option "emitDeclarationOnly" is not supported.',
+      );
+    });
+
+    it('fails with config diagnostic if experimental flag is disabled', () => {
+      const tsconfig = {
+        ...tsconfigBase,
+        angularCompilerOptions: {
+          _experimentalAllowEmitDeclarationOnly: false,
+        },
+      };
+      env.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
+      env.write('test.ts', '');
+
+      const errors = env.driveDiagnostics();
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].code).toBe(ngErrorCode(ErrorCode.CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED));
+      expect(errors[0].messageText).toBe(
+        'TS compiler option "emitDeclarationOnly" is not supported.',
+      );
     });
 
     it('should show correct error message when using an @NgModule with an external reference in declarations', () => {
