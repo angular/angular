@@ -12,7 +12,6 @@ import {
   MigrationStats,
   ProgramInfo,
   projectFile,
-  ProjectFileID,
   Replacement,
   Serializable,
   TextUpdate,
@@ -28,8 +27,8 @@ export interface CompilationUnitData {
   /** Text changes that should be performed. */
   replacements: Replacement[];
 
-  /** Identifiers that have been removed from each file. */
-  removedIdentifiers: NodeID[];
+  /** Total number of imports that were removed. */
+  removedImports: number;
 
   /** Total number of files that were changed. */
   changedFiles: number;
@@ -44,7 +43,7 @@ interface RemovalLocations {
   partialRemovals: Map<ts.ArrayLiteralExpression, Set<ts.Expression>>;
 
   /** Text of all identifiers that have been removed. */
-  allRemovedIdentifiers: Set<ts.Identifier>;
+  allRemovedIdentifiers: Set<string>;
 }
 
 /** Tracks how identifiers are used across a single file. */
@@ -59,9 +58,6 @@ interface UsageAnalysis {
   /** Number of times each identifier string is seen within a file. */
   identifierCounts: Map<string, number>;
 }
-
-/** ID of a node based on its location. */
-type NodeID = string & {__nodeID: true};
 
 /** Migration that cleans up unused imports from a project. */
 export class UnusedImportsMigration extends TsurgeFunnelMigration<
@@ -84,7 +80,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
   override async analyze(info: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
     const nodePositions = new Map<ts.SourceFile, Set<string>>();
     const replacements: Replacement[] = [];
-    const removedIdentifiers: NodeID[] = [];
+    let removedImports = 0;
     let changedFiles = 0;
 
     info.ngCompiler?.getDiagnostics().forEach((diag) => {
@@ -102,7 +98,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
         if (!nodePositions.has(diag.file)) {
           nodePositions.set(diag.file, new Set());
         }
-        nodePositions.get(diag.file)!.add(this.getNodeID(diag.start, diag.length));
+        nodePositions.get(diag.file)!.add(this.getNodeKey(diag.start, diag.length));
       }
     });
 
@@ -111,15 +107,14 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
       const usageAnalysis = this.analyzeUsages(sourceFile, resolvedLocations);
 
       if (resolvedLocations.allRemovedIdentifiers.size > 0) {
+        removedImports += resolvedLocations.allRemovedIdentifiers.size;
         changedFiles++;
-        resolvedLocations.allRemovedIdentifiers.forEach((identifier) => {
-          removedIdentifiers.push(this.getNodeID(identifier.getStart(), identifier.getWidth()));
-        });
       }
+
       this.generateReplacements(sourceFile, resolvedLocations, usageAnalysis, info, replacements);
     });
 
-    return confirmAsSerializable({replacements, removedIdentifiers, changedFiles});
+    return confirmAsSerializable({replacements, removedImports, changedFiles});
   }
 
   override async migrate(globalData: CompilationUnitData) {
@@ -130,34 +125,10 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
     unitA: CompilationUnitData,
     unitB: CompilationUnitData,
   ): Promise<Serializable<CompilationUnitData>> {
-    const combinedReplacements: Replacement[] = [];
-    const combinedRemovedIdentifiers: NodeID[] = [];
-    const seenReplacements = new Set<string>();
-    const seenIdentifiers = new Set<NodeID>();
-    const changedFileIds = new Set<ProjectFileID>();
-
-    [unitA, unitB].forEach((unit) => {
-      for (const replacement of unit.replacements) {
-        const key = this.getReplacementID(replacement);
-        changedFileIds.add(replacement.projectFile.id);
-        if (!seenReplacements.has(key)) {
-          seenReplacements.add(key);
-          combinedReplacements.push(replacement);
-        }
-      }
-
-      for (const identifier of unit.removedIdentifiers) {
-        if (!seenIdentifiers.has(identifier)) {
-          seenIdentifiers.add(identifier);
-          combinedRemovedIdentifiers.push(identifier);
-        }
-      }
-    });
-
     return confirmAsSerializable({
-      replacements: combinedReplacements,
-      removedIdentifiers: combinedRemovedIdentifiers,
-      changedFiles: changedFileIds.size,
+      replacements: [...unitA.replacements, ...unitB.replacements],
+      removedImports: unitA.removedImports + unitB.removedImports,
+      changedFiles: unitA.changedFiles + unitB.changedFiles,
     });
   }
 
@@ -170,21 +141,15 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
   override async stats(globalMetadata: CompilationUnitData): Promise<MigrationStats> {
     return {
       counters: {
-        removedImports: globalMetadata.removedIdentifiers.length,
+        removedImports: globalMetadata.removedImports,
         changedFiles: globalMetadata.changedFiles,
       },
     };
   }
 
-  /** Gets an ID that can be used to look up a node based on its location. */
-  private getNodeID(start: number, length: number): NodeID {
-    return `${start}/${length}` as NodeID;
-  }
-
-  /** Gets a unique ID for a replacement. */
-  private getReplacementID(replacement: Replacement): string {
-    const {position, end, toInsert} = replacement.update.data;
-    return replacement.projectFile.id + '/' + position + '/' + end + '/' + toInsert;
+  /** Gets a key that can be used to look up a node based on its location. */
+  private getNodeKey(start: number, length: number): string {
+    return `${start}/${length}`;
   }
 
   /**
@@ -215,7 +180,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
         return;
       }
 
-      if (locations.has(this.getNodeID(node.getStart(), node.getWidth()))) {
+      if (locations.has(this.getNodeKey(node.getStart(), node.getWidth()))) {
         // When the entire array needs to be cleared, the diagnostic is
         // reported on the property assignment, rather than an array element.
         if (
@@ -226,7 +191,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
           result.fullRemovals.add(parent.initializer);
           parent.initializer.elements.forEach((element) => {
             if (ts.isIdentifier(element)) {
-              result.allRemovedIdentifiers.add(element);
+              result.allRemovedIdentifiers.add(element.text);
             }
           });
         } else if (ts.isArrayLiteralExpression(parent)) {
@@ -234,7 +199,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
             result.partialRemovals.set(parent, new Set());
           }
           result.partialRemovals.get(parent)!.add(node);
-          result.allRemovedIdentifiers.add(node);
+          result.allRemovedIdentifiers.add(node.text);
         }
       }
     };
@@ -365,13 +330,8 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
       names.forEach((symbolName, localName) => {
         // Note that in the `identifierCounts` lookup both zero and undefined
         // are valid and mean that the identifiers isn't being used anymore.
-        if (!identifierCounts.get(localName)) {
-          for (const identifier of allRemovedIdentifiers) {
-            if (identifier.text === localName) {
-              importManager.removeImport(sourceFile, symbolName, moduleName);
-              break;
-            }
-          }
+        if (allRemovedIdentifiers.has(localName) && !identifierCounts.get(localName)) {
+          importManager.removeImport(sourceFile, symbolName, moduleName);
         }
       });
     });

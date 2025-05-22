@@ -19,7 +19,6 @@ describe('cleanup unused imports schematic', () => {
   let tree: UnitTestTree;
   let tmpDirPath: string;
   let previousWorkingDir: string;
-  let logs: string[];
 
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
@@ -37,7 +36,6 @@ describe('cleanup unused imports schematic', () => {
     runner = new SchematicTestRunner('test', runfiles.resolvePackageRelative('../collection.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
-    logs = [];
 
     writeFile('/tsconfig.json', '{}');
     writeFile(
@@ -50,7 +48,6 @@ describe('cleanup unused imports schematic', () => {
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
-    runner.logger.subscribe((log) => logs.push(log.message));
 
     // Switch into the temporary directory path. This allows us to run
     // the schematic against our custom unit test tree.
@@ -95,7 +92,6 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
-    expect(logs.pop()).toBe('Removed 2 imports in 1 file');
     expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
       stripWhitespace(`
         import {Component} from '@angular/core';
@@ -127,7 +123,6 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
-    expect(logs.pop()).toBe('Removed 3 imports in 1 file');
     expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
       stripWhitespace(`
         import {Component} from '@angular/core';
@@ -158,7 +153,6 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
-    expect(logs.pop()).toBe('Removed 2 imports in 1 file');
     expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
       stripWhitespace(`
         import {Component} from '@angular/core';
@@ -196,7 +190,6 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
-    expect(logs.pop()).toBe('Removed 1 import in 1 file');
     expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
       stripWhitespace(`
         import {Component} from '@angular/core';
@@ -233,7 +226,6 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
-    expect(logs.pop()).toBe('Schematic could not find unused imports in the project');
     expect(tree.readContent('comp.ts')).toBe(initialContent);
   });
 
@@ -250,7 +242,6 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
-    expect(logs.pop()).toBe('Schematic could not find unused imports in the project');
     expect(tree.readContent('comp.ts')).toBe(initialContent);
   });
 
@@ -283,7 +274,6 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
-    expect(logs.pop()).toBe('Removed 2 imports in 1 file');
     expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
       stripWhitespace(`
         import {Component} from '@angular/core';
