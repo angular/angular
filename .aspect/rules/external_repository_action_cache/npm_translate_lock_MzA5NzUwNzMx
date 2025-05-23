@@ -3,7 +3,7 @@
 # This file should be checked into version control along with the pnpm-lock.yaml file.
 .npmrc=-1406867100
 package.json=-2136936515
-packages/compiler-cli/package.json=1094415146
+packages/compiler-cli/package.json=-1344632265
 packages/compiler/package.json=1190056499
 pnpm-lock.yaml=-1252788725
 pnpm-workspace.yaml=353334404

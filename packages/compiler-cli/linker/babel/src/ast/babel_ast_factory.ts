@@ -16,7 +16,7 @@ import {
   SourceMapRange,
   TemplateLiteral,
   VariableDeclarationType,
-} from '../../../../src/ngtsc/translator';
+} from '../../../../src/ngtsc/translator/src/api/ast_factory';
 
 /**
  * A Babel flavored implementation of the AstFactory.

@@ -55,6 +55,11 @@
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "typescript": ">=5.8 <5.9"
   },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@angular/compiler": "workspace:*"
   },
