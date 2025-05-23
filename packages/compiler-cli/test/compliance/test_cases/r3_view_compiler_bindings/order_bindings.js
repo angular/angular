@@ -27,8 +27,7 @@ function MyCmp_Template(rf, ctx) {
 		$r3$.ɵɵstyleProp("style1", ctx.foo);
 		$r3$.ɵɵclassProp("class1", ctx.foo);
 		$r3$.ɵɵattribute("attrInterp1", $r3$.ɵɵinterpolate1("interp ", ctx.foo));
-		$r3$.ɵɵpropertyInterpolate1("propInterp1", "interp ", ctx.foo);
-		$r3$.ɵɵproperty("prop1", ctx.foo);
+		$r3$.ɵɵproperty("propInterp1", $r3$.ɵɵinterpolate1("interp ", ctx.foo))("prop1", ctx.foo);
 		$r3$.ɵɵattribute("attr1", ctx.foo);
 	}
 }
