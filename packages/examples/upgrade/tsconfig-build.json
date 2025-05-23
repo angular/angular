@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "importHelpers": true,
-    "lib": ["dom", "es2015"],
-    "types": ["angular"]
-  }
-}
