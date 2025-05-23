@@ -1,3 +1,16 @@
+<a name="19.2.13"></a>
+# 19.2.13 (2025-05-23)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2c876b4fc5](https://github.com/angular/angular/commit/2c876b4fc5d89ce925b1403e239c7d162e39346b) | fix | avoid injecting ApplicationRef in FetchBackend ([#61649](https://github.com/angular/angular/pull/61649)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b15bddfa04](https://github.com/angular/angular/commit/b15bddfa04e11827166b466c9acbb89c77499d5d) | fix | do not register service worker if app is destroyed before it is ready to register ([#61101](https://github.com/angular/angular/pull/61101)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.12"></a>
 # 19.2.12 (2025-05-21)
 ### common
