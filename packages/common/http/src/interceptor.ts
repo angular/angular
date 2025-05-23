@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isPlatformServer} from '../../index';
 import {
   EnvironmentInjector,
   inject,
   Injectable,
   InjectionToken,
-  PLATFORM_ID,
   runInInjectionContext,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
@@ -275,15 +273,18 @@ export class HttpInterceptorHandler extends HttpHandler {
     // for an application. The logic below checks if that's the case and produces
     // a warning otherwise.
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && !fetchBackendWarningDisplayed) {
-      const isServer = isPlatformServer(injector.get(PLATFORM_ID));
-
       // This flag is necessary because provideHttpClientTesting() overrides the backend
       // even if `withFetch()` is used within the test. When the testing HTTP backend is provided,
       // no HTTP calls are actually performed during the test, so producing a warning would be
       // misleading.
       const isTestingBackend = (this.backend as any).isTestingBackend;
 
-      if (isServer && !(this.backend instanceof FetchBackend) && !isTestingBackend) {
+      if (
+        typeof ngServerMode !== 'undefined' &&
+        ngServerMode &&
+        !(this.backend instanceof FetchBackend) &&
+        !isTestingBackend
+      ) {
         fetchBackendWarningDisplayed = true;
         injector
           .get(Console)
