@@ -29,7 +29,9 @@ esbuild(
         "@schematics/*",
     ],
     format = "cjs",
+    metafile = False,
     platform = "node",
+    target = "node20",
     deps = [":ng-add"],
 )
 

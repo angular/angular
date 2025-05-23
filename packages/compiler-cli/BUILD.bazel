@@ -66,6 +66,7 @@ esbuild(
         "yargs",
     ],
     format = "esm",
+    metafile = False,
     platform = "node",
     splitting = True,
     target = "node20",
