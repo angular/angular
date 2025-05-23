@@ -1,6 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//packages/common/locales:index.bzl", "LOCALES", "generate_all_locale_files", "generate_closure_locale_file")
-load("//tools:defaults.bzl", "pkg_npm", "ts_library")
+load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,7 +24,7 @@ generate_all_locale_files(
     name = "locale_files",
 )
 
-ts_library(
+ts_project(
     name = "locales",
     # TODO(devversion): Remove glob for checked-in legacy locale files that haven't been
     # removed in the past (when CLDR has been updated). These can be removed in a major.
