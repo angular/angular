@@ -7,7 +7,7 @@
  */
 
 import 'zone.js/lib/browser/rollup-main';
-import './zone_base_setup';
+import './zone_base_setup.mjs';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
 
 import {TestBed} from '@angular/core/testing';
