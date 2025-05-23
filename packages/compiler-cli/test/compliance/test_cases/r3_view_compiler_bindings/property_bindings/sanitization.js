@@ -13,7 +13,7 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵadvance();
     $r3$.ɵɵproperty("sandbox", ctx.evil, $r3$.ɵɵvalidateIframeAttribute);
     $r3$.ɵɵadvance();
-    $r3$.ɵɵpropertyInterpolate2("href", "", ctx.evil, "", ctx.evil, "", $r3$.ɵɵsanitizeUrl);
+    $r3$.ɵɵproperty("href", $r3$.ɵɵinterpolate2("", ctx.evil, "", ctx.evil), $r3$.ɵɵsanitizeUrl);
     $r3$.ɵɵadvance();
     $r3$.ɵɵattribute("style", $r3$.ɵɵinterpolate2("", ctx.evil, "", ctx.evil), $r3$.ɵɵsanitizeStyle);
   }

@@ -487,20 +487,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
       case ir.OpKind.Property:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.propertyInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.sanitizer,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
         break;
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(

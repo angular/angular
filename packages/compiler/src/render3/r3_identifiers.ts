@@ -236,47 +236,6 @@ export class Identifiers {
 
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
 
-  static propertyInterpolate: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate',
-    moduleName: CORE,
-  };
-  static propertyInterpolate1: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate1',
-    moduleName: CORE,
-  };
-  static propertyInterpolate2: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate2',
-    moduleName: CORE,
-  };
-  static propertyInterpolate3: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate3',
-    moduleName: CORE,
-  };
-  static propertyInterpolate4: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate4',
-    moduleName: CORE,
-  };
-  static propertyInterpolate5: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate5',
-    moduleName: CORE,
-  };
-  static propertyInterpolate6: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate6',
-    moduleName: CORE,
-  };
-  static propertyInterpolate7: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate7',
-    moduleName: CORE,
-  };
-  static propertyInterpolate8: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate8',
-    moduleName: CORE,
-  };
-  static propertyInterpolateV: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolateV',
-    moduleName: CORE,
-  };
-
   static i18n: o.ExternalReference = {name: 'ɵɵi18n', moduleName: CORE};
   static i18nAttributes: o.ExternalReference = {name: 'ɵɵi18nAttributes', moduleName: CORE};
   static i18nExp: o.ExternalReference = {name: 'ɵɵi18nExp', moduleName: CORE};

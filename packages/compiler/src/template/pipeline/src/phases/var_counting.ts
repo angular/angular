@@ -109,13 +109,21 @@ export function countVariables(job: CompilationJob): void {
 function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): number {
   let slots: number;
   switch (op.kind) {
-    case ir.OpKind.Property:
-    case ir.OpKind.DomProperty:
     case ir.OpKind.Attribute:
       // All of these bindings use 1 variable slot, plus 1 slot for every interpolated expression,
       // if any.
       slots = 1;
       if (op.expression instanceof ir.Interpolation && !isSingletonInterpolation(op.expression)) {
+        slots += op.expression.expressions.length;
+      }
+      return slots;
+    case ir.OpKind.Property:
+    case ir.OpKind.DomProperty:
+      slots = 1;
+
+      // We need to assign a slot even for singleton interpolations, because the
+      // runtime needs to store both the raw value and the stringified one.
+      if (op.expression instanceof ir.Interpolation) {
         slots += op.expression.expressions.length;
       }
       return slots;

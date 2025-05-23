@@ -49,7 +49,6 @@ export * from './namespace';
 export * from './next_context';
 export * from './projection';
 export * from './property';
-export * from './property_interpolation';
 export * from './queries';
 export * from './queries_signals';
 export * from './storage';
