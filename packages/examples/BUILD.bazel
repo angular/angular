@@ -1,9 +1,37 @@
+load("//tools:defaults2.bzl", "ts_config")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "index.html",
-    "tsconfig-e2e.json",
 ])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_e2e",
+    src = "tsconfig-e2e.json",
+    deps = [
+        ":tsconfig_test",
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/@types/node",
+    ],
+)
 
 filegroup(
     name = "files_for_docgen",
