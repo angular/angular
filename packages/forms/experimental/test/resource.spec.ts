@@ -29,8 +29,8 @@ describe('resources', () => {
         });
       });
 
-      validate(p.name, ({data}) => {
-        const remote = data(res);
+      validate(p.name, ({state}) => {
+        const remote = state.data(res)!;
         if (remote.hasValue()) {
           return {kind: 'whatever', message: remote.value()!.toString()};
         } else {
@@ -63,8 +63,8 @@ describe('resources', () => {
           });
         });
 
-        validate(p.name, ({data}) => {
-          const remote = data(res);
+        validate(p.name, ({state}) => {
+          const remote = state.data(res)!;
           if (remote.hasValue()) {
             return {kind: 'whatever', message: remote.value()!.toString()};
           } else {

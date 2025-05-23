@@ -194,14 +194,6 @@ export class FieldNode implements FieldState<unknown> {
       valueOf<P>(p: FieldPath<P>) {
         return resolve(p).$state.value();
       },
-
-      data: <D>(key: DataKey<D>): D => {
-        const result = this.data(key);
-        if (result === undefined) {
-          throw new Error(`No value for data on field`);
-        }
-        return result;
-      },
     });
   }
 
