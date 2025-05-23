@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, NgModule, NgZone, PlatformRef, Testability} from '@angular/core';
+import {
+  Injector,
+  ApplicationRef,
+  NgModule,
+  NgZone,
+  PlatformRef,
+  Testability,
+  ɵNoopNgZone,
+} from '@angular/core';
 
 import {ɵangular1, ɵconstants, ɵutil} from '../common';
 
@@ -145,6 +153,7 @@ export class UpgradeModule {
   public $injector: any /*angular.IInjectorService*/;
   /** The Angular Injector **/
   public injector: Injector;
+  private readonly applicationRef: ApplicationRef;
 
   constructor(
     /** The root `Injector` for the upgrade application. */
@@ -159,6 +168,7 @@ export class UpgradeModule {
     private platformRef: PlatformRef,
   ) {
     this.injector = new NgAdapterInjector(injector);
+    this.applicationRef = this.injector.get(ApplicationRef);
   }
 
   /**
@@ -295,19 +305,28 @@ export class UpgradeModule {
           // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
           // We need to do this in the next tick so that we don't prevent the bootup stabilizing
           setTimeout(() => {
-            const subscription = this.ngZone.onMicrotaskEmpty.subscribe(() => {
-              if ($rootScope.$$phase) {
-                if (typeof ngDevMode === 'undefined' || ngDevMode) {
-                  console.warn(
-                    'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.',
-                  );
+            const synchronize = () => {
+              this.ngZone.run(() => {
+                if ($rootScope.$$phase) {
+                  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+                    console.warn(
+                      'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.',
+                    );
+                  }
+
+                  $rootScope.$evalAsync();
+                } else {
+                  $rootScope.$digest();
                 }
-
-                return $rootScope.$evalAsync();
-              }
-
-              return $rootScope.$digest();
-            });
+              });
+            };
+            const subscription =
+              // We _DO NOT_ usually want to have any code that does one thing for zoneless and another for ZoneJS.
+              // This is only here because there is not enough coverage for hybrid apps anymore so we cannot
+              // be confident that making UpgradeModule work with zoneless is a non-breaking change.
+              this.ngZone instanceof ɵNoopNgZone
+                ? (this.applicationRef as any).afterTick.subscribe(() => synchronize())
+                : this.ngZone.onMicrotaskEmpty.subscribe(() => synchronize());
             $rootScope.$on('$destroy', () => {
               subscription.unsubscribe();
             });
