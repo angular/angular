@@ -539,11 +539,18 @@ export function i18nAttributes(slot: number, i18nAttributesConfig: number): ir.C
 
 export function property(
   name: string,
-  expression: o.Expression,
+  expression: o.Expression | ir.Interpolation,
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const args = [o.literal(name), expression];
+  const args: o.Expression[] = [o.literal(name)];
+
+  if (expression instanceof ir.Interpolation) {
+    args.push(interpolationToExpression(expression, sourceSpan));
+  } else {
+    args.push(expression);
+  }
+
   if (sanitizer !== null) {
     args.push(sanitizer);
   }
@@ -672,29 +679,6 @@ export function i18nExp(expr: o.Expression, sourceSpan: ParseSourceSpan | null):
 
 export function i18nApply(slot: number, sourceSpan: ParseSourceSpan | null): ir.UpdateOp {
   return call(Identifiers.i18nApply, [o.literal(slot)], sourceSpan);
-}
-
-export function propertyInterpolate(
-  name: string,
-  strings: string[],
-  expressions: o.Expression[],
-  sanitizer: o.Expression | null,
-  sourceSpan: ParseSourceSpan,
-): ir.UpdateOp {
-  const interpolationArgs = collateInterpolationArgs(strings, expressions);
-
-  const extraArgs = [];
-  if (sanitizer !== null) {
-    extraArgs.push(sanitizer);
-  }
-
-  return callVariadicInstruction(
-    PROPERTY_INTERPOLATE_CONFIG,
-    [o.literal(name)],
-    interpolationArgs,
-    extraArgs,
-    sourceSpan,
-  );
 }
 
 export function domProperty(
@@ -829,30 +813,6 @@ const TEXT_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
     Identifiers.textInterpolate8,
   ],
   variable: Identifiers.textInterpolateV,
-  mapping: (n) => {
-    if (n % 2 === 0) {
-      throw new Error(`Expected odd number of arguments`);
-    }
-    return (n - 1) / 2;
-  },
-};
-
-/**
- * `InterpolationConfig` for the `propertyInterpolate` instruction.
- */
-const PROPERTY_INTERPOLATE_CONFIG: VariadicInstructionConfig = {
-  constant: [
-    Identifiers.propertyInterpolate,
-    Identifiers.propertyInterpolate1,
-    Identifiers.propertyInterpolate2,
-    Identifiers.propertyInterpolate3,
-    Identifiers.propertyInterpolate4,
-    Identifiers.propertyInterpolate5,
-    Identifiers.propertyInterpolate6,
-    Identifiers.propertyInterpolate7,
-    Identifiers.propertyInterpolate8,
-  ],
-  variable: Identifiers.propertyInterpolateV,
   mapping: (n) => {
     if (n % 2 === 0) {
       throw new Error(`Expected odd number of arguments`);
