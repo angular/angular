@@ -7,7 +7,6 @@ ng_project(
     srcs = glob(
         [
             "*.ts",
-            "src/dynamic/src/*.ts",
         ],
     ),
     deps = [
