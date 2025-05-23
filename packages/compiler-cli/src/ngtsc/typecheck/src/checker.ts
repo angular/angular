@@ -739,7 +739,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   ): PotentialDirective[] {
     const scope = this.getComponentScope(component);
 
-    // Don't resolve pipes for selectorless components since they're already in the file.
+    // Don't resolve directives for selectorless components since they're already in the file.
     if (scope?.kind === ComponentScopeKind.Selectorless) {
       return [];
     }
