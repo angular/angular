@@ -7,7 +7,7 @@
  */
 
 import {AsyncPipe, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {bootstrapApplication} from '@angular/platform-browser';
+import {bootstrapApplication, By} from '@angular/platform-browser';
 import {BehaviorSubject} from 'rxjs';
 import {filter, take, tap} from 'rxjs/operators';
 import {toSignal} from '../rxjs-interop';
@@ -15,11 +15,13 @@ import {
   afterEveryRender,
   afterNextRender,
   ApplicationRef,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ComponentRef,
   createComponent,
   destroyPlatform,
+  Directive,
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
@@ -836,6 +838,51 @@ describe('Angular with scheduler and ZoneJS', () => {
     expect(fixture.isStable()).toBe(false);
     await fixture.whenStable();
     expect(fixture.nativeElement.innerText).toContain('new');
+  });
+
+  it('updating signal inside an EmbeddedView in a child component with OnPush inside a parent component with Default CD', async () => {
+    const data = signal('initial');
+
+    @Directive({selector: '[dataDirective]'})
+    class DataDirective {
+      readonly templateRef = inject(TemplateRef);
+      readonly viewContainerRef = inject(ViewContainerRef);
+
+      drawTemplate() {
+        this.viewContainerRef.createEmbeddedView(this.templateRef, {$implicit: data});
+      }
+    }
+
+    @Component({
+      selector: 'child',
+      template: '<ng-container *dataDirective="let data">{{data()}}</ng-container>',
+      imports: [DataDirective],
+      changeDetection: ChangeDetectionStrategy.OnPush,
+    })
+    class ChildComponent {}
+
+    @Component({
+      template: '<child/>',
+      imports: [ChildComponent],
+      changeDetection: ChangeDetectionStrategy.Default,
+    })
+    class ParentComponent {}
+
+    const fixture = TestBed.createComponent(ParentComponent);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toBe('');
+
+    fixture.debugElement
+      .queryAllNodes(By.directive(DataDirective))[0]
+      .injector.get(DataDirective)
+      .drawTemplate();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toBe(data());
+
+    data.set('new');
+    expect(fixture.isStable()).toBe(false);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toBe(data());
   });
 
   it('updating signal in another "Angular" zone schedules update when in hybrid mode', async () => {
