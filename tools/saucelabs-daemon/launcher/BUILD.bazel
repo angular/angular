@@ -20,6 +20,7 @@ esbuild(
     name = "launcher_cjs",
     entry_point = "index.ts",
     format = "cjs",
+    metafile = False,
     output = "index.cjs",
     platform = "node",
     deps = [":launcher"],
