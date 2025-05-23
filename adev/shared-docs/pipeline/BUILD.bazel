@@ -19,6 +19,7 @@ esbuild_esm_bundle(
         "jsdom",
         "playwright-core",
     ],
+    metafile = False,
     output = "guides.mjs",
     platform = "node",
     target = "es2022",
@@ -38,6 +39,7 @@ esbuild_esm_bundle(
     external = [
         "jsdom",
     ],
+    metafile = False,
     output = "guides-no-mermaid.mjs",
     platform = "node",
     target = "es2022",
@@ -52,6 +54,7 @@ esbuild_esm_bundle(
     entry_point = "//adev/shared-docs/pipeline/examples/stackblitz:index.mts",
     # JSDOM should not be bundled because it has workers and dynamic imports.
     external = ["jsdom"],
+    metafile = False,
     output = "stackblitz.mjs",
     platform = "node",
     target = "es2022",
@@ -67,6 +70,7 @@ esbuild_esm_bundle(
     external = [
         "typescript",
     ],
+    metafile = False,
     output = "previews.mjs",
     platform = "node",
     target = "es2022",
@@ -80,6 +84,7 @@ esbuild_esm_bundle(
 esbuild_esm_bundle(
     name = "zip-bundle",
     entry_point = "//adev/shared-docs/pipeline/examples/zip:index.mts",
+    metafile = False,
     output = "zip.mjs",
     platform = "node",
     target = "es2022",
@@ -92,6 +97,7 @@ esbuild_esm_bundle(
 esbuild_esm_bundle(
     name = "playground-bundle",
     entry_point = "//adev/shared-docs/pipeline/tutorials:playground.mts",
+    metafile = False,
     output = "playground.mjs",
     platform = "node",
     target = "es2022",
@@ -104,6 +110,7 @@ esbuild_esm_bundle(
 esbuild_esm_bundle(
     name = "tutorial-bundle",
     entry_point = "//adev/shared-docs/pipeline/tutorials:tutorial.mts",
+    metafile = False,
     output = "tutorial.mjs",
     platform = "node",
     target = "es2022",
@@ -116,6 +123,7 @@ esbuild_esm_bundle(
 esbuild_esm_bundle(
     name = "navigation-bundle",
     entry_point = "//adev/shared-docs/pipeline/navigation:index.mts",
+    metafile = False,
     output = "navigation.mjs",
     platform = "node",
     target = "es2022",
