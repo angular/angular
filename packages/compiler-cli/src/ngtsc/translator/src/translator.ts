@@ -19,12 +19,12 @@ import {
 import {ImportGenerator} from './api/import_generator';
 import {Context} from './context';
 
-const UNARY_OPERATORS = new Map<o.UnaryOperator, UnaryOperator>([
+const UNARY_OPERATORS = /* @__PURE__ */ new Map<o.UnaryOperator, UnaryOperator>([
   [o.UnaryOperator.Minus, '-'],
   [o.UnaryOperator.Plus, '+'],
 ]);
 
-const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
+const BINARY_OPERATORS = /* @__PURE__ */ new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.And, '&&'],
   [o.BinaryOperator.Bigger, '>'],
   [o.BinaryOperator.BiggerEquals, '>='],

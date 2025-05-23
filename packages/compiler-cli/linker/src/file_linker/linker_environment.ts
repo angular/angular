@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system/src/types';
 import {Logger} from '../../../src/ngtsc/logging';
 import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
 import {AstFactory} from '../../../src/ngtsc/translator';
