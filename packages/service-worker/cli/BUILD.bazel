@@ -26,6 +26,7 @@ esbuild(
         "@angular/service-worker",
     ],
     format = "esm",
+    metafile = False,
     platform = "node",
     target = "node12",
     deps = [
