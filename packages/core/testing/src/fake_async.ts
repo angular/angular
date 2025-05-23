@@ -59,7 +59,7 @@ export function resetFakeAsyncZoneIfExists(): void {
  * @publicApi
  */
 export function fakeAsync(fn: Function, options?: {flush?: boolean}): (...args: any[]) => any {
-  if (fakeAsyncTestModule && (Zone as any)['ProxyZoneSpec']?.isLoaded()) {
+  if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.fakeAsync(fn, options);
   }
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
