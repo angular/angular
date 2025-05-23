@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, inject, Injectable, InjectionToken, NgZone} from '@angular/core';
+import {DestroyRef, inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -73,7 +73,14 @@ export class FetchBackend implements HttpBackend {
   private readonly fetchImpl =
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
-  private readonly appRef = inject(ApplicationRef);
+  private readonly destroyRef = inject(DestroyRef);
+  private destroyed = false;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.destroyed = true;
+    });
+  }
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
@@ -158,7 +165,7 @@ export class FetchBackend implements HttpBackend {
           // unnecessary work or triggering side effects after teardown.
           // This may happen if the app was explicitly destroyed before
           // the response returned entirely.
-          if (this.appRef.destroyed) {
+          if (this.destroyed) {
             // Streams left in a pending state (due to `break` without cancel) may
             // continue consuming or holding onto data behind the scenes.
             // Calling `reader.cancel()` allows the browser or the underlying
