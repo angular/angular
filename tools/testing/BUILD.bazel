@@ -1,22 +1,23 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "zone_base_setup_lib",
     testonly = 1,
-    srcs = ["zone_base_setup.ts"],
-    deps = [
+    srcs = ["zone_base_setup.mts"],
+    interop_deps = [
         "//packages/zone.js/lib",
         "@npm//reflect-metadata",
     ],
 )
 
-ts_library(
+ts_project(
     name = "browser",
     testonly = 1,
-    srcs = ["browser_tests.init.ts"],
-    deps = [
+    srcs = ["browser_tests.init.mts"],
+    interop_deps = [
         ":zone_base_setup_lib",
         "//packages/compiler",
         "//packages/core/testing",
@@ -26,11 +27,11 @@ ts_library(
     ],
 )
 
-ts_library(
+ts_project(
     name = "node",
     testonly = 1,
-    srcs = ["node_tests.init.ts"],
-    deps = [
+    srcs = ["node_tests.init.mts"],
+    interop_deps = [
         ":zone_base_setup_lib",
         "//packages/compiler",
         "//packages/core/testing",
@@ -41,11 +42,11 @@ ts_library(
     ],
 )
 
-ts_library(
+ts_project(
     name = "node_no_angular",
     testonly = 1,
-    srcs = ["node_no_angular_tests.init.ts"],
-    deps = [
+    srcs = ["node_no_angular_tests.init.mts"],
+    interop_deps = [
         "//packages:types",
     ],
 )
@@ -57,7 +58,7 @@ ts_library(
 # of a potential regression.
 jasmine_node_test(
     name = "fail_test",
-    srcs = ["fail.spec.js"],
+    srcs = ["fail.spec.mjs"],
     # While we force the termination of the process with an exitCode of 55 in fail.spec.js. Jasmine force it to 4.
     # see: https://github.com/jasmine/jasmine-npm/blob/eea8b26efe29176ecbb26ce3f1c4990f8bede685/lib/jasmine.js#L213
     expected_exit_code = 4,
@@ -71,7 +72,7 @@ jasmine_node_test(
 # of a potential regression.
 jasmine_node_test(
     name = "fail_bootstrap_test",
-    srcs = ["fail.spec.js"],
+    srcs = ["fail.spec.mjs"],
     bootstrap = ["//tools/testing:node"],
     data = ["//packages:package_json"],
     # While we force the termination of the process with an exitCode of 55 in fail.spec.js. Jasmine force it to 4.
