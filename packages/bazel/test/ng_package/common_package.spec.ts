@@ -23,12 +23,12 @@ describe('@angular/common ng_package', () => {
     it('/locales', () => {
       const files = shx.ls('locales').stdout.split('\n');
       expect(files.some((n) => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
-      expect(files.some((n) => n.endsWith('.mjs'))).toBe(true, `.mjs files don't exist`);
+      expect(files.some((n) => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
     });
     it('/locales/extra', () => {
       const files = shx.ls('locales/extra').stdout.split('\n');
       expect(files.some((n) => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
-      expect(files.some((n) => n.endsWith('.mjs'))).toBe(true, `.mjs files don't exist`);
+      expect(files.some((n) => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
     });
   });
 
@@ -98,7 +98,7 @@ describe('@angular/common ng_package', () => {
           typings: `./index.d.ts`,
           exports: matchesObjectWithOrder({
             './locales/global/*': {default: './locales/global/*.js'},
-            './locales/*': {types: './locales/*.d.ts', default: './locales/*.mjs'},
+            './locales/*': {types: './locales/*.d.ts', default: './locales/*.js'},
             './package.json': {default: './package.json'},
             '.': {
               types: './index.d.ts',
