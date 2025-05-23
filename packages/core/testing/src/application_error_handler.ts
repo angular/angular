@@ -6,19 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorHandler, inject, NgZone, Injectable} from '@angular/core';
+import {ErrorHandler, inject, NgZone, Injectable, EnvironmentInjector} from '../../src/core';
 
 export const RETHROW_APPLICATION_ERRORS_DEFAULT = true;
 
 @Injectable()
 export class TestBedApplicationErrorHandler {
   private readonly zone = inject(NgZone);
-  private readonly userErrorHandler = inject(ErrorHandler);
+  private readonly injector = inject(EnvironmentInjector);
+  private userErrorHandler?: ErrorHandler;
   readonly whenStableRejectFunctions: Set<(e: unknown) => void> = new Set();
 
   handleError(e: unknown) {
     try {
-      this.zone.runOutsideAngular(() => this.userErrorHandler.handleError(e));
+      this.zone.runOutsideAngular(() => {
+        this.userErrorHandler ??= this.injector.get(ErrorHandler);
+        this.userErrorHandler.handleError(e);
+      });
     } catch (userError: unknown) {
       e = userError;
     }

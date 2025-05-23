@@ -209,6 +209,7 @@
   "enterDI",
   "enterView",
   "errorContext",
+  "errorHandlerEnvironmentInitializer",
   "execFinalizer",
   "executeCheckHooks",
   "executeInitAndCheckHooks",

@@ -281,6 +281,7 @@
   "enterView",
   "eraseStyles",
   "errorContext",
+  "errorHandlerEnvironmentInitializer",
   "execFinalizer",
   "executeCheckHooks",
   "executeContentQueries",

@@ -20,6 +20,7 @@ import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zonel
 import {bootstrap} from '../platform/bootstrap';
 import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';
+import {errorHandlerEnvironmentInitializer} from '../error_handler';
 
 /**
  * Internal create application API that implements the core application creation logic and optional
@@ -53,6 +54,7 @@ export function internalCreateApplication(config: {
     const allAppProviders = [
       internalProvideZoneChangeDetection({}),
       {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+      errorHandlerEnvironmentInitializer,
       ...(appProviders || []),
     ];
     const adapter = new EnvironmentNgModuleRefAdapter({
