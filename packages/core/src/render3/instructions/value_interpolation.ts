@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getLView} from '../state';
+import {bindingUpdated} from '../bindings';
+import {getLView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
+import {renderStringify} from '../util/stringify_utils';
 import {
   interpolation1,
   interpolation2,
@@ -28,7 +30,9 @@ import {
  * @codeGenApi
  */
 export function ɵɵinterpolate(v0: any): string | NO_CHANGE {
-  return interpolation1(getLView(), '', v0, '');
+  // Avoid calling into the `interpolate` functions since
+  // we know that we don't have a prefix or suffix.
+  return bindingUpdated(getLView(), nextBindingIndex(), v0) ? renderStringify(v0) : NO_CHANGE;
 }
 
 /**

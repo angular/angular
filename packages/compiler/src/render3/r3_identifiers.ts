@@ -61,120 +61,9 @@ export class Identifiers {
 
   static styleMap: o.ExternalReference = {name: 'ɵɵstyleMap', moduleName: CORE};
 
-  static styleMapInterpolate1: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate1',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate2: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate2',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate3: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate3',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate4: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate4',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate5: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate5',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate6: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate6',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate7: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate7',
-    moduleName: CORE,
-  };
-  static styleMapInterpolate8: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolate8',
-    moduleName: CORE,
-  };
-  static styleMapInterpolateV: o.ExternalReference = {
-    name: 'ɵɵstyleMapInterpolateV',
-    moduleName: CORE,
-  };
-
   static classMap: o.ExternalReference = {name: 'ɵɵclassMap', moduleName: CORE};
 
-  static classMapInterpolate1: o.ExternalReference = {
-    name: 'ɵɵclassMapInterpolate1',
-    moduleName: CORE,
-  };
-  static classMapInterpolate2: o.ExternalReference = {
-    name: 'ɵɵclassMapInterpolate2',
-    moduleName: CORE,
-  };
-  static classMapInterpolate3: o.ExternalReference = {
-    name: 'ɵɵclassMapInterpolate3',
-    moduleName: CORE,
-  };
-  static classMapInterpolate4: o.ExternalReference = {
-    name: 'ɵɵclassMapInterpolate4',
-    moduleName: CORE,
-  };
-  static classMapInterpolate5: o.ExternalReference = {
-    name: 'ɵɵclassMapInterpolate5',
-    moduleName: CORE,
-  };
-  static classMapInterpolate6: o.ExternalReference = {
-    name: 'ɵɵclassMapInterpolate6',
-    moduleName: CORE,
-  };
-  static classMapInterpolate7: o.ExternalReference = {
-    name: 'ɵɵclassMapInterpolate7',
-    moduleName: CORE,
-  };
-  static classMapInterpolate8: o.ExternalReference = {
-    name: 'ɵɵclassMapInterpolate8',
-    moduleName: CORE,
-  };
-  static classMapInterpolateV: o.ExternalReference = {
-    name: 'ɵɵclassMapInterpolateV',
-    moduleName: CORE,
-  };
-
   static styleProp: o.ExternalReference = {name: 'ɵɵstyleProp', moduleName: CORE};
-
-  static stylePropInterpolate1: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate1',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate2: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate2',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate3: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate3',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate4: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate4',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate5: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate5',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate6: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate6',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate7: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate7',
-    moduleName: CORE,
-  };
-  static stylePropInterpolate8: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolate8',
-    moduleName: CORE,
-  };
-  static stylePropInterpolateV: o.ExternalReference = {
-    name: 'ɵɵstylePropInterpolateV',
-    moduleName: CORE,
-  };
 
   static interpolate: o.ExternalReference = {
     name: 'ɵɵinterpolate',
@@ -346,47 +235,6 @@ export class Identifiers {
   static domProperty: o.ExternalReference = {name: 'ɵɵdomProperty', moduleName: CORE};
 
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
-
-  static propertyInterpolate: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate',
-    moduleName: CORE,
-  };
-  static propertyInterpolate1: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate1',
-    moduleName: CORE,
-  };
-  static propertyInterpolate2: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate2',
-    moduleName: CORE,
-  };
-  static propertyInterpolate3: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate3',
-    moduleName: CORE,
-  };
-  static propertyInterpolate4: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate4',
-    moduleName: CORE,
-  };
-  static propertyInterpolate5: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate5',
-    moduleName: CORE,
-  };
-  static propertyInterpolate6: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate6',
-    moduleName: CORE,
-  };
-  static propertyInterpolate7: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate7',
-    moduleName: CORE,
-  };
-  static propertyInterpolate8: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolate8',
-    moduleName: CORE,
-  };
-  static propertyInterpolateV: o.ExternalReference = {
-    name: 'ɵɵpropertyInterpolateV',
-    moduleName: CORE,
-  };
 
   static i18n: o.ExternalReference = {name: 'ɵɵi18n', moduleName: CORE};
   static i18nAttributes: o.ExternalReference = {name: 'ɵɵi18nAttributes', moduleName: CORE};

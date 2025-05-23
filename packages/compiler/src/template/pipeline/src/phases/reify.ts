@@ -487,20 +487,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
       case ir.OpKind.Property:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.propertyInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.sanitizer,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
         break;
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
@@ -509,43 +496,16 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         );
         break;
       case ir.OpKind.StyleProp:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.stylePropInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.unit,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit, op.sourceSpan));
         break;
       case ir.OpKind.ClassProp:
         ir.OpList.replace(op, ng.classProp(op.name, op.expression, op.sourceSpan));
         break;
       case ir.OpKind.StyleMap:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.styleMapInterpolate(op.expression.strings, op.expression.expressions, op.sourceSpan),
-          );
-        } else {
-          ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
         break;
       case ir.OpKind.ClassMap:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.classMapInterpolate(op.expression.strings, op.expression.expressions, op.sourceSpan),
-          );
-        } else {
-          ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
         break;
       case ir.OpKind.I18nExpression:
         ir.OpList.replace(op, ng.i18nExp(op.expression, op.sourceSpan));
@@ -560,21 +520,10 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         );
         break;
       case ir.OpKind.Attribute:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.attributeInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.sanitizer,
-              op.namespace,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer, op.namespace));
-        }
+        ir.OpList.replace(
+          op,
+          ng.attribute(op.name, op.expression, op.sanitizer, op.namespace, op.sourceSpan),
+        );
         break;
       case ir.OpKind.DomProperty:
         if (op.expression instanceof ir.Interpolation) {

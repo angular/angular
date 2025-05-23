@@ -1654,15 +1654,6 @@ describe('change detection', () => {
       );
     });
 
-    it('should include field name in case of property interpolation', () => {
-      const message = `Previous value for 'id': 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'`;
-      expect(() =>
-        initWithTemplate(
-          '<div id="Expressions: {{ a }} and {{ unstableStringExpression }}!"></div>',
-        ),
-      ).toThrowError(new RegExp(message));
-    });
-
     it('should include field name in case of attribute binding', () => {
       const message = `Previous value for 'attr.id': 'initial'. Current value: 'changed'`;
       expect(() =>
