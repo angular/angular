@@ -215,7 +215,7 @@ export interface TemplateTypeChecker {
    * The different with the `getPotentialElementTags` is that the directives in the map do not need
    * to update the import statement.
    */
-  getElementInFileScope(component: ts.ClassDeclaration): Map<string, PotentialDirective | null>;
+  getElementsInFileScope(component: ts.ClassDeclaration): Map<string, PotentialDirective | null>;
 
   /**
    * Get the scope data for a directive.

@@ -787,7 +787,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     let directive: PotentialDirective | null | undefined;
 
     if (directiveCompletionDetail === undefined) {
-      const tagMap = templateTypeChecker.getElementInFileScope(this.component);
+      const tagMap = templateTypeChecker.getElementsInFileScope(this.component);
       directive = tagMap.get(entryName);
     } else {
       const {fileName, entryName: directiveName, pos} = directiveCompletionDetail;

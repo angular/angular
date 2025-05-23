@@ -874,7 +874,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     };
   }
 
-  getElementInFileScope(component: ts.ClassDeclaration): Map<string, PotentialDirective | null> {
+  getElementsInFileScope(component: ts.ClassDeclaration): Map<string, PotentialDirective | null> {
     const tagMap = new Map<string, PotentialDirective | null>();
 
     const potentialDirectives = this.getTemplateDirectiveInScope(component);
@@ -949,10 +949,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
           meta: directiveMeta,
           ref,
         });
-      }
-
-      const ngModuleMeta = this.metaReader.getNgModuleMetadata(ref);
-      if (ngModuleMeta !== null) {
+      } else {
+        const ngModuleMeta = this.metaReader.getNgModuleMetadata(ref);
+        if (ngModuleMeta === null) {
+          continue;
+        }
         for (const moduleExports of ngModuleMeta.exports) {
           const directiveMeta = this.metaReader.getDirectiveMetadata(moduleExports);
           if (directiveMeta === null) {
