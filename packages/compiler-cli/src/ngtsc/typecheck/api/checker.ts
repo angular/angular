@@ -29,7 +29,12 @@ import {Reference} from '../../imports';
 import {NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {FullSourceMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
+import {
+  FullSourceMapping,
+  GetPotentialAngularMetaOptions,
+  NgTemplateDiagnostic,
+  TypeCheckableDirectiveMeta,
+} from './api';
 import {GlobalCompletion} from './completion';
 import {PotentialDirective, PotentialImport, PotentialImportMode, PotentialPipe} from './scope';
 import {
@@ -183,8 +188,8 @@ export interface TemplateTypeChecker {
    */
   getPotentialTemplateDirectives(
     component: ts.ClassDeclaration,
-    ls: ts.LanguageService,
-    includeExternalModule: boolean | undefined,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
   ): PotentialDirective[];
 
   /**
@@ -199,8 +204,8 @@ export interface TemplateTypeChecker {
    */
   getPotentialElementTags(
     component: ts.ClassDeclaration,
-    ls: ts.LanguageService,
-    includeExternalModule: boolean | undefined,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
   ): Map<string, PotentialDirective | null>;
 
   /**
@@ -219,7 +224,7 @@ export interface TemplateTypeChecker {
     component: ts.ClassDeclaration,
     isInScope: boolean,
     data: ts.CompletionEntryData | undefined,
-    fromTsCompletionEntry: boolean | undefined,
+    isFromTsCompletionEntry: boolean,
   ): PotentialDirective | null;
 
   /**

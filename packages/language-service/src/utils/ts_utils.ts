@@ -822,3 +822,22 @@ export interface DirectiveInfoForCompletionDetail {
   fileName: string;
   pos: number;
 }
+
+/**
+ * Cache the symbol info from the completion entry details. This will be replaced when invoking
+ * the `ls.getCompletionsAtPosition`.
+ *
+ * There is no way to clear the map. The info on the map may be invalid. So only the symbol
+ * position is saved, not the symbol object.
+ */
+export class DirectiveInfoForCompletionDetailCache {
+  private cache = new Map<string, DirectiveInfoForCompletionDetail>();
+
+  replace(cache: Map<string, DirectiveInfoForCompletionDetail>) {
+    this.cache = cache;
+  }
+
+  get(key: string): DirectiveInfoForCompletionDetail | undefined {
+    return this.cache.get(key);
+  }
+}

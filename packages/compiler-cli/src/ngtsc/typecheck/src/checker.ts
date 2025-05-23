@@ -61,6 +61,7 @@ import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/
 import {
   ElementSymbol,
   FullSourceMapping,
+  GetPotentialAngularMetaOptions,
   GlobalCompletion,
   NgTemplateDiagnostic,
   OptimizeFor,
@@ -733,8 +734,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getPotentialTemplateDirectives(
     component: ts.ClassDeclaration,
-    ls: ts.LanguageService,
-    includeExternalModule: boolean | undefined,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
   ): PotentialDirective[] {
     const scope = this.getComponentScope(component);
 
@@ -745,7 +746,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
     const directivesInScope = this.getTemplateDirectiveInScope(component);
-    const directiveInGlobal = this.getElementInGlobal(component, ls, includeExternalModule);
+    const directiveInGlobal = this.getElementInGlobal(component, tsLs, options);
     for (const directive of [...directivesInScope, ...directiveInGlobal]) {
       if (resultingDirectives.has(directive.ref.node)) {
         continue;
@@ -865,7 +866,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return null;
     }
 
-    return {...withScope, isInScope, tsCompletionEntryData: data, fromTsCompletionEntry};
+    return {
+      ...withScope,
+      isInScope,
+      tsCompletionEntryData: data,
+      isFromTsCompletionEntry: fromTsCompletionEntry,
+    };
   }
 
   getElementInFileScope(component: ts.ClassDeclaration): Map<string, PotentialDirective | null> {
@@ -894,13 +900,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getElementInGlobal(
     component: ts.ClassDeclaration,
-    ls: ts.LanguageService,
-    includeExternalModule: boolean | undefined,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
   ): PotentialDirective[] {
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
     const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
 
-    const currentComponentFileName = component.getSourceFile().fileName;
     // Add the additional directives from the global registry, which are not in scope and in different file with the current
     // component file.
     //
@@ -908,16 +913,19 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const tsContext = this.getGlobalTsContext(component);
 
     if (tsContext === null) {
-      return Array.from(resultingDirectives.values());
+      return [];
     }
 
-    const entries = includeExternalModule
-      ? ls.getCompletionsAtPosition(tsContext.tcbPath, tsContext.positionInFile, {
-          includeSymbol: true,
-          includeCompletionsForModuleExports: true,
-        })?.entries
-      : undefined;
+    if (!options.includeExternalModule) {
+      return [];
+    }
 
+    const entries = tsLs.getCompletionsAtPosition(tsContext.tcbPath, tsContext.positionInFile, {
+      includeSymbol: true,
+      includeCompletionsForModuleExports: true,
+    })?.entries;
+
+    const currentComponentFileName = component.getSourceFile().fileName;
     for (const {symbol, data} of entries ?? []) {
       if (symbol?.declarations?.[0]?.getSourceFile().fileName === currentComponentFileName) {
         continue;
@@ -971,7 +979,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
           ...withScope,
           isInScope: false,
           tsCompletionEntryData: data,
-          fromTsCompletionEntry: true,
+          isFromTsCompletionEntry: true,
         });
       }
     }
@@ -980,8 +988,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getPotentialElementTags(
     component: ts.ClassDeclaration,
-    ls: ts.LanguageService,
-    includeExternalModule: boolean | undefined,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
   ): Map<string, PotentialDirective | null> {
     if (this.elementTagCache.has(component)) {
       return this.elementTagCache.get(component)!;
@@ -993,11 +1001,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       tagMap.set(tag, null);
     }
 
-    const potentialDirectives = this.getPotentialTemplateDirectives(
-      component,
-      ls,
-      includeExternalModule,
-    );
+    const potentialDirectives = this.getPotentialTemplateDirectives(component, tsLs, options);
 
     for (const directive of potentialDirectives) {
       if (directive.selector === null) {

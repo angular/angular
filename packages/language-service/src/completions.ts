@@ -63,6 +63,7 @@ import {
 import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
 import {
   DirectiveInfoForCompletionDetail,
+  DirectiveInfoForCompletionDetailCache,
   findTightestNode,
   getCodeActionToImportTheDirectiveDeclaration,
   getModuleSpecifierFromImportStatement,
@@ -139,6 +140,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     private readonly component: ts.ClassDeclaration,
     private readonly node: N,
     private readonly targetDetails: TemplateTarget,
+    private readonly directiveInfoForCompletionDetailCache: DirectiveInfoForCompletionDetailCache,
   ) {
     this.typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
     this.templateTypeChecker = this.compiler.getTemplateTypeChecker();
@@ -153,12 +155,11 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
    */
   getCompletionsAtPosition(
     options: ts.GetCompletionsAtPositionOptions | undefined,
-    setDirectivePosMap: (directiveMap: Map<string, DirectiveInfoForCompletionDetail>) => void,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     if (this.isPropertyExpressionCompletion()) {
       return this.getPropertyExpressionCompletion(options);
     } else if (this.isElementTagCompletion()) {
-      return this.getElementTagCompletion(options, setDirectivePosMap);
+      return this.getElementTagCompletion(options);
     } else if (this.isElementAttributeCompletion()) {
       if (this.isAnimationCompletion()) {
         return this.getAnimationCompletions();
@@ -311,7 +312,6 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     formatOptions: ts.FormatCodeOptions | ts.FormatCodeSettings | undefined,
     preferences: ts.UserPreferences | undefined,
     data: ts.CompletionEntryData | undefined,
-    directiveCompletionDetailMap: Map<string, DirectiveInfoForCompletionDetail>,
   ): ts.CompletionEntryDetails | undefined {
     if (this.isPropertyExpressionCompletion()) {
       return this.getPropertyExpressionCompletionDetails(
@@ -321,12 +321,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
         data,
       );
     } else if (this.isElementTagCompletion()) {
-      return this.getElementTagCompletionDetails(
-        entryName,
-        data,
-        preferences,
-        directiveCompletionDetailMap,
-      );
+      return this.getElementTagCompletionDetails(entryName, data, preferences);
     } else if (this.isElementAttributeCompletion()) {
       return this.getElementAttributeCompletionDetails(entryName, preferences);
     }
@@ -715,7 +710,6 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
   private getElementTagCompletion(
     this: CompletionBuilder<TmplAstElement | TmplAstText>,
     options: ts.GetCompletionsAtPositionOptions | undefined,
-    setDirectivePosMap: (directiveMap: Map<string, DirectiveInfoForCompletionDetail>) => void,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     const templateTypeChecker = this.compiler.getTemplateTypeChecker();
 
@@ -736,11 +730,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     const replacementSpan: ts.TextSpan = {start, length};
 
     let potentialTags = Array.from(
-      templateTypeChecker.getPotentialElementTags(
-        this.component,
-        this.tsLS,
-        options?.includeCompletionsForModuleExports,
-      ),
+      templateTypeChecker.getPotentialElementTags(this.component, this.tsLS, {
+        includeExternalModule: options?.includeCompletionsForModuleExports,
+      }),
     );
     // Don't provide non-Angular tags (directive === null) because we expect other extensions
     // (i.e. Emmet) to provide those for HTML files.
@@ -749,7 +741,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
     const entries: ts.CompletionEntry[] = [];
     for (let [tag, directive] of potentialTags) {
-      if (directive?.fromTsCompletionEntry) {
+      if (directive?.isFromTsCompletionEntry) {
         directiveCompletionDetailMap.set(tag, {
           fileName: directive.ref.node.getSourceFile().fileName,
           entryName: directive.tsSymbol.name,
@@ -766,7 +758,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       });
     }
 
-    setDirectivePosMap(directiveCompletionDetailMap);
+    this.directiveInfoForCompletionDetailCache.replace(directiveCompletionDetailMap);
     return {
       entries,
       isGlobalCompletion: false,
@@ -788,10 +780,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     entryName: string,
     data: ts.CompletionEntryData | undefined,
     options: ts.GetCompletionsAtPositionOptions | undefined,
-    directiveCompletionDetailMap: Map<string, DirectiveInfoForCompletionDetail>,
   ): ts.CompletionEntryDetails | undefined {
     const templateTypeChecker = this.compiler.getTemplateTypeChecker();
-    const directiveCompletionDetail = directiveCompletionDetailMap.get(entryName);
+    const directiveCompletionDetail = this.directiveInfoForCompletionDetailCache.get(entryName);
 
     let directive: PotentialDirective | null | undefined;
 
@@ -864,7 +855,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
   ): ts.Symbol | undefined {
     const templateTypeChecker = this.compiler.getTemplateTypeChecker();
 
-    const tagMap = templateTypeChecker.getPotentialElementTags(this.component, this.tsLS, true);
+    const tagMap = templateTypeChecker.getPotentialElementTags(this.component, this.tsLS, {
+      includeExternalModule: true,
+    });
     if (!tagMap.has(entryName)) {
       return undefined;
     }

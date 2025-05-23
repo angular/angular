@@ -42,7 +42,7 @@ interface TsCompletionEntryInfo {
    * If the value is `true,` it means the directive is retrieved from the completion list
    * returned by `ls.getCompletionsAtPosition`.
    */
-  fromTsCompletionEntry?: boolean;
+  isFromTsCompletionEntry?: boolean;
 }
 
 /**

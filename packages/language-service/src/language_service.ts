@@ -42,7 +42,7 @@ import {
   TargetNodeKind,
 } from './template_target';
 import {
-  DirectiveInfoForCompletionDetail,
+  DirectiveInfoForCompletionDetailCache,
   findTightestNode,
   getClassDeclFromDecoratorProp,
   getParentClassDeclaration,
@@ -70,15 +70,7 @@ export class LanguageService {
   private readonly codeFixes: CodeFixes;
   private readonly activeRefactorings = new Map<string, ActiveRefactoring>();
 
-  /**
-   * Cache the symbol info from the completion entry details. This will be replaced when invoking
-   * the `ls.getCompletionsAtPosition`.
-   *
-   * There is no way to clear the map. The info on the map may be invalid. So only the symbol
-   * position is saved, not the symbol object.
-   */
-  private directiveInfoForCompletionDetailMap: Map<string, DirectiveInfoForCompletionDetail> =
-    new Map();
+  private directiveInfoForCompletionDetailMap = new DirectiveInfoForCompletionDetailCache();
 
   constructor(
     private readonly project: ts.server.Project,
@@ -298,6 +290,7 @@ export class LanguageService {
       typeCheckInfo.declaration,
       node,
       positionDetails,
+      this.directiveInfoForCompletionDetailMap,
     );
   }
 
@@ -325,9 +318,7 @@ export class LanguageService {
     if (builder === null) {
       return undefined;
     }
-    return builder.getCompletionsAtPosition(options, (cache) => {
-      this.directiveInfoForCompletionDetailMap = cache;
-    });
+    return builder.getCompletionsAtPosition(options);
   }
 
   getCompletionEntryDetails(
@@ -347,13 +338,7 @@ export class LanguageService {
       if (builder === null) {
         return undefined;
       }
-      return builder.getCompletionEntryDetails(
-        entryName,
-        formatOptions,
-        preferences,
-        data,
-        this.directiveInfoForCompletionDetailMap,
-      );
+      return builder.getCompletionEntryDetails(entryName, formatOptions, preferences, data);
     });
   }
 

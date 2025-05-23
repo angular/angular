@@ -61,7 +61,9 @@ function getCodeActions({typeCheckInfo, start, compiler, tsLs, preferences}: Cod
     const allPossibleDirectives = checker.getPotentialTemplateDirectives(
       typeCheckInfo.declaration,
       tsLs,
-      preferences.includeCompletionsForModuleExports,
+      {
+        includeExternalModule: preferences.includeCompletionsForModuleExports,
+      },
     );
     matches = getDirectiveMatchesForElementTag(target.context.node, allPossibleDirectives);
   } else if (
