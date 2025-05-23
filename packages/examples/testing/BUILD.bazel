@@ -1,14 +1,14 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "testing_examples",
+    testonly = True,
     srcs = glob(["**/*.ts"]),
-    tsconfig = "//packages:tsconfig-test",
     deps = [
-        "@npm//@types/jasmine",
-        "@npm//@types/node",
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
     ],
 )
 
