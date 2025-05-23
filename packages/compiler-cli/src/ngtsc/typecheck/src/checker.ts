@@ -903,9 +903,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     tsLs: ts.LanguageService,
     options: GetPotentialAngularMetaOptions,
   ): PotentialDirective[] {
-    const typeChecker = this.programDriver.getProgram().getTypeChecker();
-    const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
-
     // Add the additional directives from the global registry, which are not in scope and in different file with the current
     // component file.
     //
@@ -925,6 +922,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       includeCompletionsForModuleExports: true,
     })?.entries;
 
+    const typeChecker = this.programDriver.getProgram().getTypeChecker();
+    const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
     const currentComponentFileName = component.getSourceFile().fileName;
     for (const {symbol, data} of entries ?? []) {
       if (symbol?.declarations?.[0]?.getSourceFile().fileName === currentComponentFileName) {
