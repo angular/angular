@@ -180,7 +180,12 @@ const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(me
 
 const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string) => {
   const router: any = getRouterInstance();
-  router.navigateByUrl(path);
+  // If the router is not found or the navigateByUrl method is not available, we can't navigate
+  if (router && router.navigateByUrl) {
+    router.navigateByUrl(path);
+  } else {
+    console.warn('Router not found or navigateByUrl method not available');
+  }
 };
 
 /**
