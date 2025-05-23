@@ -1,23 +1,19 @@
-load("//tools:defaults.bzl", "esbuild", "jasmine_node_test", "ts_config", "ts_library")
+load("//tools:defaults.bzl", "esbuild", "jasmine_node_test", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_config(
-    name = "tsconfig",
-    src = "tsconfig-build.json",
-    deps = ["//packages:tsconfig-build.json"],
-)
-
-ts_library(
+ts_project(
     name = "ng-add",
     srcs = [
         "index.ts",
         "schema.d.ts",
     ],
-    tsconfig = ":tsconfig",
+    extends = "//packages:tsconfig_build",
+    tsconfig = "tsconfig-build.json",
     deps = [
-        "@npm//@angular-devkit/schematics",
-        "@npm//@schematics/angular",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@schematics/angular",
     ],
 )
 

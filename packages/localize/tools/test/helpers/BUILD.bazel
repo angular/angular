@@ -1,14 +1,14 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "helpers",
     testonly = True,
     srcs = glob(
         ["**/*.ts"],
     ),
-    visibility = ["//packages/localize/tools/test:__subpackages__"],
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
     ],
+    visibility = ["//packages/localize/tools/test:__subpackages__"],
 )

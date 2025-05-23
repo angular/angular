@@ -35,3 +35,4 @@ export {
 } from './src/types';
 export {getSourceFileOrError} from './src/util';
 export {createFileSystemTsReadDirectoryFn} from './src/ts_read_directory';
+export {InvalidFileSystem} from './src/invalid_file_system';
