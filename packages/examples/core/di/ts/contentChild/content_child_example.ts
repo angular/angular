@@ -19,7 +19,7 @@ export class Pane {
 
 @Component({
   selector: 'tab',
-  template: ` <div>pane: {{ pane?.id }}</div> `,
+  template: ` <div>pane: {{ pane.id }}</div> `,
   standalone: false,
 })
 export class Tab {
