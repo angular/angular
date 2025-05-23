@@ -7,7 +7,7 @@
  */
 
 import 'zone.js/lib/node/rollup-main';
-import './zone_base_setup';
+import './zone_base_setup.mjs';
 
 (global as any).isNode = true;
 (global as any).isBrowser = false;
@@ -15,11 +15,8 @@ import './zone_base_setup';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
 // Init TestBed
 import {TestBed} from '@angular/core/testing';
-import {
-  ServerTestingModule,
-  platformServerTesting,
-} from '@angular/platform-server/testing/src/server';
-import {DominoAdapter} from '@angular/platform-server/src/domino_adapter';
+import {ServerTestingModule, platformServerTesting} from '@angular/platform-server/testing';
+import {ɵDominoAdapter as DominoAdapter} from '@angular/platform-server';
 import domino from '../../packages/platform-server/src/bundled-domino';
 
 TestBed.initTestEnvironment(ServerTestingModule, platformServerTesting());
