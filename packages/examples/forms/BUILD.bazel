@@ -1,34 +1,39 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "esbuild", "http_server", "protractor_web_test_suite")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "forms_examples",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*_spec.ts"],
     ),
-    deps = [
-        "//packages/core",
-        "//packages/forms",
+    interop_deps = [
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
-        "//packages/router",
         "//packages/zone.js/lib",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/core:core_rjs",
+        "//packages/forms:forms_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "forms_e2e_tests_lib",
     testonly = True,
     srcs = glob(["**/e2e_test/*_spec.ts"]),
-    tsconfig = "//packages/examples:tsconfig-e2e.json",
-    deps = [
-        "//packages/examples/test-utils",
+    interop_deps = [
         "//packages/private/testing",
-        "@npm//@types/jasminewd2",
-        "@npm//protractor",
+    ],
+    tsconfig = "//packages/examples:tsconfig_e2e",
+    deps = [
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/protractor",
+        "//packages/examples/test-utils:test-utils_rjs",
     ],
 )
 

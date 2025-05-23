@@ -1,7 +1,29 @@
+load("//tools:defaults2.bzl", "ts_config")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
-    "tsconfig-build.json",
+    "tsconfig.json",
     "start-server.js",
     "index.html",
 ])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/angular",
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/tslib",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_e2e",
+    src = "tsconfig-e2e.json",
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/@types/node",
+    ],
+)
