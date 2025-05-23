@@ -8,6 +8,8 @@
 
 import 'reflect-metadata';
 
+import {} from 'zone.js';
+
 import {patchLongStackTrace} from 'zone.js/lib/zone-spec/long-stack-trace';
 import {patchTaskTracking} from 'zone.js/lib/zone-spec/task-tracking';
 import {patchProxyZoneSpec} from 'zone.js/lib/zone-spec/proxy';
