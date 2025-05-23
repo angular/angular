@@ -471,7 +471,6 @@
   "isNodeMatchingSelectorList",
   "isNotFound",
   "isOptionsObj",
-  "isPlatformServer",
   "isPositive",
   "isPresent",
   "isPromise",

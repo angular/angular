@@ -1006,8 +1006,16 @@ describe('AppRef', () => {
     describe('unstable', () => {
       let unstableCalled = false;
 
+      beforeEach(() => {
+        globalThis['ngServerMode'] = isNode;
+      });
+
       afterEach(() => {
         expect(unstableCalled).toBe(true, 'isStable did not emit false on unstable');
+      });
+
+      afterEach(() => {
+        globalThis['ngServerMode'] = undefined;
       });
 
       function expectUnstable(appRef: ApplicationRef) {

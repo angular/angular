@@ -101,6 +101,14 @@ describe('renderer factory lifecycle', () => {
   }
 
   beforeEach(() => {
+    globalThis['ngServerMode'] = isNode;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
+  beforeEach(() => {
     logs = [];
 
     TestBed.configureTestingModule({

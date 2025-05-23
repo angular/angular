@@ -377,7 +377,6 @@
   "isNodeMatchingSelector",
   "isNodeMatchingSelectorList",
   "isNotFound",
-  "isPlatformServer",
   "isPositive",
   "isPromise",
   "isRefreshingViews",
