@@ -1,18 +1,21 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module")
+load("//tools:defaults.bzl", "esbuild", "http_server")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "router_activated_route_examples",
     srcs = glob(
         ["**/*.ts"],
     ),
-    deps = [
-        "//packages/core",
-        "//packages/platform-browser",
-        "//packages/router",
+    interop_deps = [
         "//packages/zone.js/lib",
-        "@npm//rxjs",
+        "//packages/platform-browser",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/core:core_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
