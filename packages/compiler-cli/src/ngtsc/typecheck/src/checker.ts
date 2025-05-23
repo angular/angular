@@ -746,7 +746,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
     const directivesInScope = this.getTemplateDirectiveInScope(component);
-    const directiveInGlobal = this.getElementInGlobal(component, tsLs, options);
+    const directiveInGlobal = this.getElementsInGlobal(component, tsLs, options);
     for (const directive of [...directivesInScope, ...directiveInGlobal]) {
       if (resultingDirectives.has(directive.ref.node)) {
         continue;
@@ -898,7 +898,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return tagMap;
   }
 
-  getElementInGlobal(
+  getElementsInGlobal(
     component: ts.ClassDeclaration,
     tsLs: ts.LanguageService,
     options: GetPotentialAngularMetaOptions,
