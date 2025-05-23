@@ -10,6 +10,7 @@ esbuild_esm_bundle(
     external = [
         "@angular/compiler-cli",
     ],
+    metafile = False,
     output = "bin.mjs",
     platform = "node",
     target = "es2022",
