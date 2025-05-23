@@ -453,6 +453,13 @@ describe('parser', () => {
         checkBinding('`hello ${(name | capitalize)}!!!`', '`hello ${((name | capitalize))}!!!`');
       });
 
+      it('should parse template literals in objects literals', () => {
+        checkBinding('{"a": `${name}`}');
+        checkBinding('{"a": `hello ${name}!`}');
+        checkBinding('{"a": `hello ${`hello ${`hello`}`}!`}');
+        checkBinding('{"a": `hello ${{"b": `hello`}}`}');
+      });
+
       it('should report error if interpolation is empty', () => {
         expectBindingError(
           '`hello ${}`',

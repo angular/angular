@@ -588,6 +588,20 @@ describe('lexer', () => {
         expectStringToken(tokens[8], 29, 33, '!!!', StringTokenKind.TemplateLiteralEnd);
       });
 
+      it('should tokenize a template literal in an literal object value', () => {
+        const tokens: Token[] = lex('{foo: `${name}`}');
+        expect(tokens.length).toBe(9);
+        expectCharacterToken(tokens[0], 0, 1, '{');
+        expectIdentifierToken(tokens[1], 1, 4, 'foo');
+        expectCharacterToken(tokens[2], 4, 5, ':');
+        expectStringToken(tokens[3], 6, 7, '', StringTokenKind.TemplateLiteralPart);
+        expectOperatorToken(tokens[4], 7, 9, '${');
+        expectIdentifierToken(tokens[5], 9, 13, 'name');
+        expectOperatorToken(tokens[6], 13, 14, '}');
+        expectStringToken(tokens[7], 14, 15, '', StringTokenKind.TemplateLiteralEnd);
+        expectCharacterToken(tokens[8], 15, 16, '}');
+      });
+
       it('should produce an error if a template literal is not terminated', () => {
         expectErrorToken(
           lex('`hello')[0],
