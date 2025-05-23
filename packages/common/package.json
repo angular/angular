@@ -17,7 +17,7 @@
     },
     "./locales/*": {
       "types": "./locales/*.d.ts",
-      "default": "./locales/*.mjs"
+      "default": "./locales/*.js"
     }
   },
   "peerDependencies": {
