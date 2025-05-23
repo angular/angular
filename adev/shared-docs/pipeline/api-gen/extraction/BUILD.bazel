@@ -11,6 +11,7 @@ esbuild_esm_bundle(
         "@angular/compiler-cli",
         "typescript",
     ],
+    metafile = False,
     output = "bin.mjs",
     platform = "node",
     target = "es2022",
