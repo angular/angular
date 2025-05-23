@@ -239,6 +239,24 @@ describe('DestroyRef', () => {
     expect(onDestroyCalls).toBe(2);
   });
 
+  it('should throw when trying to register destroy callback on destroyed LView', () => {
+    @Component({
+      selector: 'test',
+      template: ``,
+    })
+    class TestCmp {
+      constructor(public destroyRef: DestroyRef) {}
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    const destroyRef = fixture.componentRef.instance.destroyRef;
+    fixture.componentRef.destroy();
+
+    expect(() => {
+      destroyRef.onDestroy(() => {});
+    }).toThrowError('NG0911: View has already been destroyed.');
+  });
+
   it('should allow unregistration while destroying', () => {
     const destroyedLog: string[] = [];
 
