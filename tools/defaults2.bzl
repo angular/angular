@@ -31,6 +31,9 @@ def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/localize/tools"):
         return "//packages:tsconfig_test" if testonly else "//packages/localize/tools:tsconfig_build"
 
+    if native.package_name().startswith("packages/common/locales/generate-locales-tool"):
+        return "//packages:tsconfig_test" if testonly else "//packages/common/locales/generate-locales-tool:tsconfig_build"
+
     if native.package_name().startswith("packages"):
         return "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
 
