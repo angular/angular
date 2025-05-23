@@ -31,6 +31,9 @@ def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages"):
         return "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
 
+    if native.package_name().startswith("tools"):
+        return "//tools:tsconfig_test" if testonly else "//tools:tsconfig_build"
+
     fail("Failing... a tsconfig value must be provided.")
 
 def ts_project(

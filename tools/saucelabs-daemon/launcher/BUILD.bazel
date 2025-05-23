@@ -1,14 +1,15 @@
-load("//tools:defaults.bzl", "esbuild", "ts_library")
+load("//tools:defaults.bzl", "esbuild")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "launcher",
     srcs = [
         "index.ts",
         "launcher.ts",
     ],
-    deps = [
+    interop_deps = [
         "//tools/saucelabs-daemon",
         "@npm//@types/node",
     ],
