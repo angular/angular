@@ -28,6 +28,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing:diffing_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs:breadcrumbs_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter:directive-forest-filter-fn-generator_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter:filter_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/tree-node:tree-node_rjs",

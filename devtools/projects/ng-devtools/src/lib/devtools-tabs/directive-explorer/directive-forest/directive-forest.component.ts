@@ -35,6 +35,7 @@ import {getFullNodeNameString, isChildOf, parentCollapsed} from './directive-for
 import {IndexedNode} from './index-forest';
 import {FilterComponent, FilterFn} from './filter/filter.component';
 import {TreeNodeComponent, NodeTextMatch} from './tree-node/tree-node.component';
+import {directiveForestFilterFnGenerator} from './filter/directive-forest-filter-fn-generator';
 
 const NODE_ITEM_HEIGHT = 18; // px; Required for CDK Virtual Scroll
 
@@ -72,7 +73,7 @@ export class DirectiveForestComponent {
 
   readonly selectedNode = signal<FlatNode | null>(null);
   readonly highlightIdInTreeFromElement = signal<number | null>(null);
-  readonly matchedNodes = signal<Map<number, NodeTextMatch>>(new Map()); // Node index, NodeTextMatch
+  readonly matchedNodes = signal<Map<number, NodeTextMatch[]>>(new Map()); // Node index, NodeTextMatch
   readonly matchesCount = computed(() => this.matchedNodes().size);
   readonly currentlyMatchedIndex = signal<number>(-1);
 
@@ -82,6 +83,7 @@ export class DirectiveForestComponent {
   );
   readonly dataSource = new ComponentDataSource(this.treeControl);
   readonly itemHeight = NODE_ITEM_HEIGHT;
+  readonly filterGenerator = directiveForestFilterFnGenerator;
 
   private parents!: FlatNode[];
   private initialized = false;
@@ -263,12 +265,12 @@ export class DirectiveForestComponent {
     for (let i = 0; i < this.dataSource.data.length; i++) {
       const node = this.dataSource.data[i];
       const fullName = getFullNodeNameString(node);
-      const match = filterFn(fullName);
+      const matches = filterFn(fullName);
 
-      if (match) {
+      if (matches.length) {
         this.matchedNodes.update((matched) => {
           const map = new Map(matched);
-          map.set(i, match);
+          map.set(i, matches);
           return map;
         });
       }

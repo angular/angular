@@ -4,6 +4,7 @@
   (prevMatched)="navigateMatchedNode('prev')"
   [matchesCount]="matchesCount()"
   [currentMatch]="currentlyMatchedIndex() + 1"
+  [filterFnGenerator]="filterGenerator"
 />
 <cdk-virtual-scroll-viewport class="tree-wrapper" [itemSize]="itemHeight">
   <ng-tree-node
@@ -12,7 +13,7 @@
     [selectedNode]="selectedNode()"
     [highlightedId]="highlightIdInTreeFromElement()"
     [treeControl]="treeControl"
-    [textMatch]="matchedNodes().get(idx)"
+    [textMatches]="matchedNodes().get(idx) ?? []"
     (selectNode)="selectAndEnsureVisible($event)"
     (selectDomElement)="handleSelectDomElement($event)"
     (highlightNode)="highlightNode($event)"
