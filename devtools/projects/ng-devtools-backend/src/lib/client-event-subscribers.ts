@@ -51,9 +51,9 @@ import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} 
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
 import {parseRoutes} from './router-tree';
-import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
+import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
-import {serializeDirectiveState} from './state-serializer/state-serializer';
+import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 import {getSupportedApis} from './ng-debug-api/supported-apis';
@@ -97,6 +97,8 @@ export const subscribeToClientEvents = (
   messageBus.on('log', ({message, level}) => {
     console[level](`[Angular DevTools]: ${message}`);
   });
+
+  messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
@@ -550,4 +552,36 @@ const logProvider = (
   }
 
   console.groupEnd();
+};
+const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: ElementPosition) => {
+  const ng = ngDebugClient();
+
+  // get injector from position
+  const node = queryDirectiveForest(
+    element,
+    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+  );
+  if (!node) {
+    return;
+  }
+
+  const injector = getInjectorFromElementNode(node.nativeElement!);
+
+  if (!injector) {
+    return;
+  }
+
+  const graph = ng.ɵgetSignalGraph?.(injector);
+  if (graph) {
+    const nodes = graph.nodes.map((node) => {
+      return {
+        id: node.id,
+        kind: node.kind,
+        label: node.label,
+        epoch: node.epoch,
+        preview: serializeValue(node.value),
+      };
+    });
+    messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
+  }
 };
