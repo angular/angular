@@ -10,7 +10,6 @@
     border-style: solid;
     margin-block: 1.5rem;
     border-image: var(--callout-theme) 1;
-    position: relative;
 
     // Removes bottom line if followed by another callout
     // Prevents too many lines/visual noise
@@ -21,8 +20,7 @@
     &::before {
       font-family: var(--icons);
       // content: icon is defined in each docs-alert class below...
-      position: absolute;
-      right: 0;
+      float: right;
       margin-top: 1.35rem;
       color: var(--alert-accent);
       font-size: 1.3rem;
@@ -41,6 +39,7 @@
       max-width: fit-content;
     }
   }
+
   .docs-viewer .docs-callout h3 {
     font-size: 0.875rem;
     margin-block: 1.6rem;
@@ -48,6 +47,7 @@
 
   .docs-callout-helpful {
     --callout-theme: var(--purple-to-blue-horizontal-gradient);
+
     &::before {
       content: 'check_circle';
       color: var(--bright-blue);
@@ -56,6 +56,7 @@
 
   .docs-callout-critical {
     --callout-theme: var(--red-to-orange-horizontal-gradient);
+
     &::before {
       content: 'warning';
       color: var(--orange-red);
@@ -64,6 +65,7 @@
 
   .docs-callout-important {
     --callout-theme: var(--pink-to-purple-horizontal-gradient);
+
     &::before {
       content: 'priority_high';
       color: var(--electric-violet);
