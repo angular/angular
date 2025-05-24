@@ -42,6 +42,7 @@ import {
   TargetNodeKind,
 } from './template_target';
 import {
+  DirectiveInfoForCompletionDetailCache,
   findTightestNode,
   getClassDeclFromDecoratorProp,
   getParentClassDeclaration,
@@ -68,6 +69,8 @@ export class LanguageService {
   readonly compilerFactory: CompilerFactory;
   private readonly codeFixes: CodeFixes;
   private readonly activeRefactorings = new Map<string, ActiveRefactoring>();
+
+  private directiveInfoForCompletionDetailMap = new DirectiveInfoForCompletionDetailCache();
 
   constructor(
     private readonly project: ts.server.Project,
@@ -287,6 +290,7 @@ export class LanguageService {
       typeCheckInfo.declaration,
       node,
       positionDetails,
+      this.directiveInfoForCompletionDetailMap,
     );
   }
 

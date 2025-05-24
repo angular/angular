@@ -62,7 +62,11 @@ import {
 } from './utils/display_parts';
 import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
 import {
+  DirectiveInfoForCompletionDetail,
+  DirectiveInfoForCompletionDetailCache,
+  findTightestNode,
   getCodeActionToImportTheDirectiveDeclaration,
+  getModuleSpecifierFromImportStatement,
   standaloneTraitOrNgModule,
 } from './utils/ts_utils';
 import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
@@ -136,6 +140,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     private readonly component: ts.ClassDeclaration,
     private readonly node: N,
     private readonly targetDetails: TemplateTarget,
+    private readonly directiveInfoForCompletionDetailCache: DirectiveInfoForCompletionDetailCache,
   ) {
     this.typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
     this.templateTypeChecker = this.compiler.getTemplateTypeChecker();
@@ -154,7 +159,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     if (this.isPropertyExpressionCompletion()) {
       return this.getPropertyExpressionCompletion(options);
     } else if (this.isElementTagCompletion()) {
-      return this.getElementTagCompletion();
+      return this.getElementTagCompletion(options);
     } else if (this.isElementAttributeCompletion()) {
       if (this.isAnimationCompletion()) {
         return this.getAnimationCompletions();
@@ -316,9 +321,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
         data,
       );
     } else if (this.isElementTagCompletion()) {
-      return this.getElementTagCompletionDetails(entryName);
+      return this.getElementTagCompletionDetails(entryName, data, preferences);
     } else if (this.isElementAttributeCompletion()) {
-      return this.getElementAttributeCompletionDetails(entryName);
+      return this.getElementAttributeCompletionDetails(entryName, preferences);
     }
     return undefined;
   }
@@ -704,6 +709,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
   private getElementTagCompletion(
     this: CompletionBuilder<TmplAstElement | TmplAstText>,
+    options: ts.GetCompletionsAtPositionOptions | undefined,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     const templateTypeChecker = this.compiler.getTemplateTypeChecker();
 
@@ -723,18 +729,37 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
     const replacementSpan: ts.TextSpan = {start, length};
 
-    let potentialTags = Array.from(templateTypeChecker.getPotentialElementTags(this.component));
+    let potentialTags = Array.from(
+      templateTypeChecker.getPotentialElementTags(this.component, this.tsLS, {
+        includeExternalModule: options?.includeCompletionsForModuleExports ?? false,
+      }),
+    );
     // Don't provide non-Angular tags (directive === null) because we expect other extensions
     // (i.e. Emmet) to provide those for HTML files.
     potentialTags = potentialTags.filter(([_, directive]) => directive !== null);
-    const entries: ts.CompletionEntry[] = potentialTags.map(([tag, directive]) => ({
-      kind: tagCompletionKind(directive),
-      name: tag,
-      sortText: tag,
-      replacementSpan,
-      hasAction: directive?.isInScope === true ? undefined : true,
-    }));
+    const directiveCompletionDetailMap = new Map<string, DirectiveInfoForCompletionDetail>();
 
+    const entries: ts.CompletionEntry[] = [];
+    for (let [tag, directive] of potentialTags) {
+      if (directive?.tsCompletionEntryInfo != null) {
+        directiveCompletionDetailMap.set(tag, {
+          fileName: directive.ref.node.getSourceFile().fileName,
+          entryName: directive.tsSymbol.name,
+          pos: directive.ref.node.getStart(),
+          symbolFileName: directive.tsCompletionEntryInfo.tsCompletionEntrySymbolFileName,
+        });
+      }
+      entries.push({
+        kind: tagCompletionKind(directive),
+        name: tag,
+        sortText: tag,
+        replacementSpan,
+        hasAction: directive?.isInScope === true ? undefined : true,
+        data: directive?.tsCompletionEntryInfo?.tsCompletionEntryData,
+      });
+    }
+
+    this.directiveInfoForCompletionDetailCache.replace(directiveCompletionDetailMap);
     return {
       entries,
       isGlobalCompletion: false,
@@ -743,38 +768,82 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     };
   }
 
+  private getTsNodeAtPosition(filePath: string, position: number): ts.Node | null {
+    const sf = this.compiler.getCurrentProgram().getSourceFile(filePath);
+    if (!sf) {
+      return null;
+    }
+    return findTightestNode(sf, position) ?? null;
+  }
+
   private getElementTagCompletionDetails(
     this: CompletionBuilder<TmplAstElement | TmplAstText>,
     entryName: string,
+    data: ts.CompletionEntryData | undefined,
+    options: ts.GetCompletionsAtPositionOptions | undefined,
   ): ts.CompletionEntryDetails | undefined {
     const templateTypeChecker = this.compiler.getTemplateTypeChecker();
+    const directiveCompletionDetail = this.directiveInfoForCompletionDetailCache.get(entryName);
 
-    const tagMap = templateTypeChecker.getPotentialElementTags(this.component);
-    if (!tagMap.has(entryName)) {
+    let directive: PotentialDirective | null | undefined;
+
+    if (directiveCompletionDetail === undefined) {
+      const tagMap = templateTypeChecker.getElementsInFileScope(this.component);
+      directive = tagMap.get(entryName);
+    } else {
+      const {fileName, entryName: directiveName, pos} = directiveCompletionDetail;
+      const node = this.getTsNodeAtPosition(fileName, pos)?.parent;
+      if (
+        node !== undefined &&
+        ts.isClassDeclaration(node) &&
+        node.name?.getText() === directiveName
+      ) {
+        directive = templateTypeChecker.getDirectiveScopeData(node, false, {
+          tsCompletionEntrySymbolFileName: directiveCompletionDetail.symbolFileName,
+          tsCompletionEntryData: data,
+        });
+      }
+    }
+
+    if (directive === undefined || directive === null) {
       return undefined;
     }
 
-    const directive = tagMap.get(entryName)!;
-    let displayParts: ts.SymbolDisplayPart[];
-    let documentation: ts.SymbolDisplayPart[] | undefined = undefined;
-    let tags: ts.JSDocTagInfo[] | undefined = undefined;
-    if (directive === null) {
-      displayParts = [];
-    } else {
-      const displayInfo = getDirectiveDisplayInfo(this.tsLS, directive);
-      displayParts = displayInfo.displayParts;
-      documentation = displayInfo.documentation;
-      tags = displayInfo.tags;
-    }
+    const displayInfo = getDirectiveDisplayInfo(this.tsLS, directive);
+    const displayParts = displayInfo.displayParts;
+    const documentation = displayInfo.documentation;
+    const tags = displayInfo.tags;
 
     let codeActions: ts.CodeAction[] | undefined;
-
     if (!directive.isInScope) {
+      const importStatement = getModuleSpecifierFromImportStatement(
+        directive,
+        this.templateTypeChecker,
+        this.component,
+        this.tsLS,
+        data,
+        options?.includeCompletionsForModuleExports,
+      );
       const importOn = standaloneTraitOrNgModule(templateTypeChecker, this.component);
 
-      codeActions =
+      const codeActionsCache =
         importOn !== null
-          ? getCodeActionToImportTheDirectiveDeclaration(this.compiler, importOn, directive)
+          ? getCodeActionToImportTheDirectiveDeclaration(
+              this.compiler,
+              importOn,
+              directive,
+              importStatement !== undefined && directiveCompletionDetail !== undefined
+                ? {
+                    symbolFileName: directiveCompletionDetail.symbolFileName,
+                    moduleSpecifier: importStatement,
+                  }
+                : null,
+            )
+          : undefined;
+
+      codeActions =
+        codeActionsCache !== undefined && codeActionsCache.length > 0
+          ? [codeActionsCache[0]]
           : undefined;
     }
 
@@ -795,7 +864,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
   ): ts.Symbol | undefined {
     const templateTypeChecker = this.compiler.getTemplateTypeChecker();
 
-    const tagMap = templateTypeChecker.getPotentialElementTags(this.component);
+    const tagMap = templateTypeChecker.getPotentialElementTags(this.component, this.tsLS, {
+      includeExternalModule: true,
+    });
     if (!tagMap.has(entryName)) {
       return undefined;
     }
@@ -967,6 +1038,8 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       this.component,
       element,
       this.compiler.getTemplateTypeChecker(),
+      this.tsLS,
+      options?.includeCompletionsForModuleExports,
     );
 
     let entries: ts.CompletionEntry[] = [];
@@ -1041,6 +1114,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
   private getElementAttributeCompletionDetails(
     this: ElementAttributeCompletionBuilder,
     entryName: string,
+    preferences: ts.UserPreferences | undefined,
   ): ts.CompletionEntryDetails | undefined {
     // `entryName` here may be `foo` or `[foo]`, depending on which suggested completion the user
     // chose. Strip off any binding syntax to get the real attribute name.
@@ -1063,6 +1137,8 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       this.component,
       element,
       this.compiler.getTemplateTypeChecker(),
+      this.tsLS,
+      preferences?.includeCompletionsForModuleExports,
     );
 
     if (!attrTable.has(name)) {
@@ -1154,6 +1230,8 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       this.component,
       element,
       this.compiler.getTemplateTypeChecker(),
+      this.tsLS,
+      true,
     );
 
     if (!attrTable.has(name)) {
