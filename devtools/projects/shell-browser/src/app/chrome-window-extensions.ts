@@ -17,6 +17,10 @@ import {
 import {ElementPosition, SignalNodePosition} from '../../../protocol';
 import {ngDebugClient} from '../../../ng-devtools-backend/src/lib/ng-debug-api/ng-debug-api';
 
+declare namespace globalThis {
+  export function inspect(value: unknown): void;
+}
+
 export const initializeExtendedWindowOperations = () => {
   extendWindowOperations(globalThis, {inspectedApplication: chromeWindowExtensions});
 };
@@ -66,9 +70,11 @@ const chromeWindowExtensions = {
     }
     return node.nativeElement;
   },
-  findSignalNodeByPosition: (args: any): any => {
+  inspectSignalNodeByPosition: ({
+    element,
+    signalId,
+  }: SignalNodePosition): void => {
     const ng = ngDebugClient();
-    const {element, signalId} = JSON.parse(args) as SignalNodePosition;
     const node = queryDirectiveForest(element, buildDirectiveForest());
     if (node === null) {
       console.error(`Cannot find element associated with node ${element}`);
@@ -87,7 +93,8 @@ const chromeWindowExtensions = {
     if (!signal) {
       return;
     }
-    return signal.debuggableFn;
+    
+    globalThis.inspect(signal.debuggableFn);
   },
   findPropertyByPosition: (args: any): any => {
     const {directivePosition, objectPath} = JSON.parse(args) as {

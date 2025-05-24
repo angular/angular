@@ -57,9 +57,9 @@ export class ChromeApplicationOperations extends ApplicationOperations {
   }
 
   override inspectSignal(position: SignalNodePosition, target: Frame): void {
-    const inspectSignal = `inspect(inspectedApplication.findSignalNodeByPosition('${JSON.stringify(
+    const inspectSignal = `inspectedApplication.inspectSignalNodeByPosition(${JSON.stringify(
       position,
-    )}'))`;
+    )})`;
     this.runInInspectedWindow(inspectSignal, target);
   }
 }
