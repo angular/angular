@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, effect, inject, Injectable, signal} from '../../src/core';
+import {NodeInjector} from '../../../core/src/render3/di';
+import {getDirectives} from '../../../core/src/render3/util/discovery_utils';
+import {
+  Component,
+  Directive,
+  computed,
+  effect,
+  inject,
+  Injectable,
+  signal,
+  Injector,
+} from '../../src/core';
 import {
   getFrameworkDIDebugData,
   setupFrameworkInjectorProfiler,
@@ -302,4 +313,39 @@ describe('getSignalGraph', () => {
       producer: fourFiveSixNode,
     });
   }));
+
+  it('should return no nodes or edges for a NodeInjector that only has directives and no component', () => {
+    @Directive({
+      selector: '[myDirective]',
+    })
+    class MyDirective {
+      injector = inject(Injector);
+    }
+
+    @Component({
+      selector: 'component-with-directive',
+      template: `<div id="element-with-directive" myDirective></div>`,
+      imports: [MyDirective],
+    })
+    class WithDirective {}
+
+    TestBed.configureTestingModule({imports: [WithDirective]});
+    const fixture = TestBed.createComponent(WithDirective);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement.querySelector('#element-with-directive');
+    // get the directive instance
+    const directiveInstances = getDirectives(element);
+    expect(directiveInstances.length).toBe(1);
+    const directiveInstance = directiveInstances[0];
+    expect(directiveInstance).toBeInstanceOf(MyDirective);
+    const injector = (directiveInstance as MyDirective).injector;
+    expect(injector).toBeInstanceOf(NodeInjector);
+    const signalGraph = getSignalGraph(injector);
+    expect(signalGraph).toBeDefined();
+
+    const {nodes, edges} = signalGraph;
+    expect(nodes.length).toBe(0);
+    expect(edges.length).toBe(0);
+  });
 });
