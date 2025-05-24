@@ -1,0 +1,56 @@
+<svg #component></svg>
+@if (selectedNode()) {
+  <div class="overlay">
+    <div class="header">
+      <button mat-flat-button (click)="gotoSource()">
+        <mat-icon> arrow_outward </mat-icon>
+        View Source
+      </button>
+      <button mat-flat-button (click)="toggleLogging()">
+        <mat-icon> terminal </mat-icon>
+        Log Signal
+      </button>
+    </div>
+
+    <div class="signal-metadata">
+      @if (selectedNode()?.label) {
+        <div class="metadata-field">
+          <div class="metadata-field-label">Name:</div>
+          <div>{{selectedNode()!.label}}</div>
+        </div>
+      }
+      <div class="metadata-field">
+        <div class="metadata-field-label">Type:</div>
+        <div>{{selectedNode()!.kind}}</div>
+      </div>
+      <div class="metadata-field">
+        <div class="metadata-field-label">Epoch:</div>
+        <div>{{selectedNode()!.epoch}}</div>
+      </div>
+    </div>
+
+    @if (selectedNode()) {
+      @switch (selectedNode()!.kind) {
+        @case ('computed') {
+          @if (selectedNode()?.preview?.preview === 'undefined') {
+            Computed signal value is undefined.
+          } @else {
+            <ng-signals-value-tree [dataSource]="dataSource()!" [treeControl]="treeControl()" />
+          }
+        }
+
+        @case ('signal') {
+          @if (selectedNode()?.preview?.preview === 'undefined') {
+            Signal value is undefined.
+          } @else {
+            <ng-signals-value-tree [dataSource]="dataSource()!" [treeControl]="treeControl()" />
+          }
+        }
+      }
+    }
+  </div>
+}
+@if (empty()) {
+  <div class="no-signals">No signals in this component</div>
+}
+<button mat-icon-button (click)="close.emit()" class="close"><mat-icon>close</mat-icon></button>

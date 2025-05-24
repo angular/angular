@@ -1,0 +1,43 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "button_component_styles",
+    src = "button.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "button",
+    srcs = ["button.component.ts"],
+    angular_assets = [
+        ":button_component_styles",
+    ],
+    interop_deps = [
+        "//packages/core",
+    ],
+)
+
+ts_test_library(
+    name = "button_test",
+    srcs = ["button.component.spec.ts"],
+    interop_deps = [
+        ":button",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":button_test",
+    ],
+)

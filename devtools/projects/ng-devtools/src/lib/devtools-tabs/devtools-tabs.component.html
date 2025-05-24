@@ -76,6 +76,7 @@
         [isHydrationEnabled]="isHydrationEnabled()"
         [class.hidden]="activeTab() !== 'Components'"
         (toggleInspector)="toggleInspector()"
+        [signals]="signalGraphEnabled()"
       />
       <ng-profiler [class.hidden]="activeTab() !== 'Profiler'" />
       <ng-router-tree
@@ -121,6 +122,16 @@
           (change)="setRouterGraph($event.checked)"
         >
           Enable Router Graph</mat-slide-toggle
+        >
+      </label>
+    }
+    @if (supportedApis().signals) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle
+          [checked]="signalGraphEnabled()"
+          (change)="setSignalGraph($event.checked)"
+        >
+          Enable Signal Graph</mat-slide-toggle
         >
       </label>
     }
