@@ -138,36 +138,6 @@ export interface Console {
 const _global: {[name: string]: any} = globalThis;
 export {_global as global};
 
-export function newArray<T = any>(size: number): T[];
-export function newArray<T>(size: number, value: T): T[];
-export function newArray<T>(size: number, value?: T): T[] {
-  const list: T[] = [];
-  for (let i = 0; i < size; i++) {
-    list.push(value!);
-  }
-  return list;
-}
-
-/**
- * Partitions a given array into 2 arrays, based on a boolean value returned by the condition
- * function.
- *
- * @param arr Input array that should be partitioned
- * @param conditionFn Condition function that is called for each item in a given array and returns a
- * boolean value.
- */
-export function partitionArray<T, F = T>(
-  arr: (T | F)[],
-  conditionFn: (value: T | F) => boolean,
-): [T[], F[]] {
-  const truthy: T[] = [];
-  const falsy: F[] = [];
-  for (const item of arr) {
-    (conditionFn(item) ? truthy : falsy).push(item as any);
-  }
-  return [truthy, falsy];
-}
-
 const V1_TO_18 = /^([1-9]|1[0-8])\./;
 
 export function getJitStandaloneDefaultForVersion(version: string): boolean {

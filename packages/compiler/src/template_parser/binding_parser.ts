@@ -26,7 +26,6 @@ import {
   ParsedVariable,
   ParserError,
   PropertyRead,
-  RecursiveAstVisitor,
   TemplateBinding,
   ThisReceiver,
   VariableBinding,
@@ -835,16 +834,6 @@ export class BindingParser {
     }
 
     return false;
-  }
-}
-
-export class PipeCollector extends RecursiveAstVisitor {
-  pipes = new Map<string, BindingPipe>();
-  override visitPipe(ast: BindingPipe, context: any): any {
-    this.pipes.set(ast.name, ast);
-    ast.exp.visit(this);
-    this.visitAll(ast.args, context);
-    return null;
   }
 }
 
