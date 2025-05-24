@@ -13,6 +13,52 @@ import {By} from '@angular/platform-browser';
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {ResponsiveSplitConfig, ResponsiveSplitDirective} from './responsive-split.directive';
 
+//
+// Mock the `ResizeObserver` and `setTimeout` since `responsive-split` relies on them.
+//
+
+type ResizeObserverEntry = {
+  contentBoxSize: {
+    inlineSize: number;
+    blockSize: number;
+  }[];
+};
+
+interface ResizeObserverMock {
+  trigger: (width: number, height: number) => void;
+}
+
+const RESIZE_OBSERVER_INSTANCE = Symbol('RESIZE_OBSERVER_INSTANCE');
+
+const getResizeObserver = () => {
+  // The `ResizeObserver` instance is kept in the global object.
+  const instance = (globalThis as any)[RESIZE_OBSERVER_INSTANCE] as ResizeObserverMock | undefined;
+  if (!instance) {
+    throw new Error('The ResizeObserver mock is not instantiated.');
+  }
+  return instance;
+};
+
+(globalThis as any).ResizeObserver = class implements ResizeObserverMock, ResizeObserver {
+  constructor(private readonly cb: (e: ResizeObserverEntry[]) => void) {
+    (globalThis as any)[RESIZE_OBSERVER_INSTANCE] = this;
+  }
+
+  trigger(width: number, height: number) {
+    this.cb([{contentBoxSize: [{inlineSize: width, blockSize: height}]}]);
+  }
+
+  disconnect() {}
+
+  observe() {}
+
+  unobserve() {}
+};
+
+// Drop any timeouts by mocking `setTimeout` and simply executing the callback.
+(globalThis as any).setTimeout = (cb: () => void) => cb();
+
+// Test component
 @Component({
   selector: 'ng-test-cmp',
   imports: [SplitComponent, SplitAreaDirective, ResponsiveSplitDirective],
@@ -46,20 +92,22 @@ function initTestComponent(
     imports: [TestComponent, SplitComponent, SplitAreaDirective, ResponsiveSplitDirective],
   });
   const fixture = TestBed.createComponent(TestComponent);
+  fixture.detectChanges();
 
   const host = fixture.debugElement.query(By.css('as-split'));
   const split = host.componentInstance;
 
-  host.nativeElement.style.width = width + 'px';
-  host.nativeElement.style.height = height + 'px';
-
-  fixture.detectChanges();
+  getResizeObserver().trigger(width, height);
 
   return {
     host,
     split,
   };
 }
+
+//
+// Tests
+//
 
 describe('responsive-split', () => {
   it('should use horizontal direction (ratio == 1)', () => {
