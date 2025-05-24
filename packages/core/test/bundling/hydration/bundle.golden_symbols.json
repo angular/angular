@@ -225,6 +225,7 @@
   "createStyleElement",
   "createTView",
   "createTextNode",
+  "createTokenWithInjectionMarker",
   "deepForEach",
   "deepForEachProvider",
   "detachMovedView",

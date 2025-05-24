@@ -300,6 +300,7 @@
   "createPlatformFactory",
   "createStyleElement",
   "createTView",
+  "createTokenWithInjectionMarker",
   "deepForEach",
   "deepForEachProvider",
   "defaultEquals",
