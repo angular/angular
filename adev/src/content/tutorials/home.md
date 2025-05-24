@@ -12,4 +12,7 @@ Welcome to the Angular tutorials! These tutorials will guide you through the cor
   <docs-card title="Deferrable views" link="Start coding" href="tutorials/deferrable-views" imgSrc="adev/src/assets/images/ang_illustrations-04.svg">
     via the Playground
   </docs-card>
+  <docs-card title="Zoneless migration" link="Start coding" href="tutorials/zoneless-migration" imgSrc="adev/src/assets/images/ang_illustrations-04.svg">
+    via the Playground
+  </docs-card>
 </docs-card-container>

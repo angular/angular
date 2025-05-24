@@ -1,0 +1,5 @@
+{
+  "openFiles": ["src/app/app.spec.ts", "src/app/app.ts", "src/app/app.html"],
+  "title": "Make components OnPush compatible",
+  "type": "editor"
+}

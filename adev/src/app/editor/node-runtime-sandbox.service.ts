@@ -111,8 +111,14 @@ export class NodeRuntimeSandbox {
       await this.startInteractiveTerminal(webContainer);
       this.terminalHandler.clearTerminals();
 
-      const startDevServer = this.embeddedTutorialManager.type() !== TutorialType.CLI;
-      await this.initProject(startDevServer);
+      if (
+        this.embeddedTutorialManager.type() === TutorialType.CLI ||
+        this.embeddedTutorialManager.type() === TutorialType.TEST
+      ) {
+        await this.initProject(false);
+      } else {
+        await this.initProject(true);
+      }
 
       console.timeEnd('Load time');
     } catch (error: any) {

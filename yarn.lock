@@ -453,10 +453,10 @@
     semver "7.7.2"
     yargs "17.7.2"
 
-"@angular/core@^13.0.0 || ^14.0.0-0":
-  version "14.3.0"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-14.3.0.tgz#7f44c59b6e866fa4cee7221495040c1ead433895"
-  integrity sha512-wYiwItc0Uyn4FWZ/OAx/Ubp2/WrD3EgUJ476y1XI7yATGPF8n9Ld5iCXT08HOvc4eBcYlDfh90kTXR6/MfhzdQ==
+"@angular/core@20.0.0-next.9", "@angular/core@^13.0.0 || ^14.0.0-0":
+  version "20.0.0-next.9"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-20.0.0-next.9.tgz#4b715973631be703a7bd5cca27446325980ae070"
+  integrity sha512-dTcDo1mp3A0hsAAajgMHjb8DX/MweUrPqJH660iXSCZVSM5MqFUBhazrJgySt31CKCPE5F3W+ZeISN8QCi9pcQ==
   dependencies:
     tslib "^2.3.0"
 

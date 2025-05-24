@@ -1,0 +1,5 @@
+{
+  "openFiles": ["angular.json", "src/default-test-providers.ts", "src/app/example.spec.ts"],
+  "title": "Enable zoneless in your tests",
+  "type": "test"
+}
