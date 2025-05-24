@@ -731,7 +731,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
     let potentialTags = Array.from(
       templateTypeChecker.getPotentialElementTags(this.component, this.tsLS, {
-        includeExternalModule: options?.includeCompletionsForModuleExports,
+        includeExternalModule: options?.includeCompletionsForModuleExports ?? false,
       }),
     );
     // Don't provide non-Angular tags (directive === null) because we expect other extensions
@@ -741,11 +741,12 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
     const entries: ts.CompletionEntry[] = [];
     for (let [tag, directive] of potentialTags) {
-      if (directive?.isFromTsCompletionEntry) {
+      if (directive?.tsCompletionEntryInfo != null) {
         directiveCompletionDetailMap.set(tag, {
           fileName: directive.ref.node.getSourceFile().fileName,
           entryName: directive.tsSymbol.name,
           pos: directive.ref.node.getStart(),
+          symbolFileName: directive.tsCompletionEntryInfo.tsCompletionEntrySymbolFileName,
         });
       }
       entries.push({
@@ -754,7 +755,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
         sortText: tag,
         replacementSpan,
         hasAction: directive?.isInScope === true ? undefined : true,
-        data: directive?.tsCompletionEntryData,
+        data: directive?.tsCompletionEntryInfo?.tsCompletionEntryData,
       });
     }
 
@@ -797,7 +798,10 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
         ts.isClassDeclaration(node) &&
         node.name?.getText() === directiveName
       ) {
-        directive = templateTypeChecker.getDirectiveScopeData(node, false, data, true);
+        directive = templateTypeChecker.getDirectiveScopeData(node, false, {
+          tsCompletionEntrySymbolFileName: directiveCompletionDetail.symbolFileName,
+          tsCompletionEntryData: data,
+        });
       }
     }
 
@@ -828,7 +832,12 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
               this.compiler,
               importOn,
               directive,
-              importStatement,
+              importStatement !== undefined && directiveCompletionDetail !== undefined
+                ? {
+                    symbolFileName: directiveCompletionDetail.symbolFileName,
+                    moduleSpecifier: importStatement,
+                  }
+                : null,
             )
           : undefined;
 

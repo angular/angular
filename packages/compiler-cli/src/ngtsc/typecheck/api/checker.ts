@@ -36,7 +36,13 @@ import {
   TypeCheckableDirectiveMeta,
 } from './api';
 import {GlobalCompletion} from './completion';
-import {PotentialDirective, PotentialImport, PotentialImportMode, PotentialPipe} from './scope';
+import {
+  PotentialDirective,
+  PotentialImport,
+  PotentialImportMode,
+  PotentialPipe,
+  TsCompletionEntryInfo,
+} from './scope';
 import {
   ElementSymbol,
   SelectorlessComponentSymbol,
@@ -223,8 +229,7 @@ export interface TemplateTypeChecker {
   getDirectiveScopeData(
     component: ts.ClassDeclaration,
     isInScope: boolean,
-    data: ts.CompletionEntryData | undefined,
-    isFromTsCompletionEntry: boolean,
+    tsCompletionEntryInfo: TsCompletionEntryInfo | null,
   ): PotentialDirective | null;
 
   /**

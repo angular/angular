@@ -62,7 +62,7 @@ function getCodeActions({typeCheckInfo, start, compiler, tsLs, preferences}: Cod
       typeCheckInfo.declaration,
       tsLs,
       {
-        includeExternalModule: preferences.includeCompletionsForModuleExports,
+        includeExternalModule: preferences.includeCompletionsForModuleExports ?? false,
       },
     );
     matches = getDirectiveMatchesForElementTag(target.context.node, allPossibleDirectives);
@@ -90,7 +90,7 @@ function getCodeActions({typeCheckInfo, start, compiler, tsLs, preferences}: Cod
         checker,
         typeCheckInfo.declaration,
         tsLs,
-        currMatch.tsCompletionEntryData,
+        currMatch.tsCompletionEntryInfo?.tsCompletionEntryData,
         preferences.includeCompletionsForModuleExports,
       );
     }
@@ -99,7 +99,12 @@ function getCodeActions({typeCheckInfo, start, compiler, tsLs, preferences}: Cod
         compiler,
         importOn,
         currMatch,
-        moduleSpecifier,
+        moduleSpecifier !== undefined && currMatch.tsCompletionEntryInfo !== null
+          ? {
+              moduleSpecifier,
+              symbolFileName: currMatch.tsCompletionEntryInfo.tsCompletionEntrySymbolFileName,
+            }
+          : null,
       ) ?? [];
 
     codeActions.push(

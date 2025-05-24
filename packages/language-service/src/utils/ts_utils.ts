@@ -677,6 +677,11 @@ export function printNode(node: ts.Node, sourceFile: ts.SourceFile): string {
   return getOrCreatePrinter().printNode(ts.EmitHint.Unspecified, node, sourceFile);
 }
 
+interface DirectiveModuleSpecifier {
+  moduleSpecifier: string;
+  symbolFileName: string;
+}
+
 /**
  * Get the code actions to tell the vscode how to import the directive into the standalone component or ng module.
  */
@@ -684,10 +689,18 @@ export function getCodeActionToImportTheDirectiveDeclaration(
   compiler: NgCompiler,
   importOn: ts.ClassDeclaration,
   directive: PotentialDirective | PotentialPipe,
-  moduleSpecifier: string | undefined,
+  directiveModuleSpecifier: DirectiveModuleSpecifier | null,
 ): ts.CodeAction[] | undefined {
   const codeActions: ts.CodeAction[] = [];
   const currMatchSymbol = directive.tsSymbol.valueDeclaration!;
+  const moduleSpecifierSourceFile = directiveModuleSpecifier
+    ? compiler.getCurrentProgram().getSourceFile(directiveModuleSpecifier.symbolFileName)
+    : currMatchSymbol.getSourceFile();
+
+  if (moduleSpecifierSourceFile === undefined) {
+    return;
+  }
+
   const potentialImports = compiler
     .getTemplateTypeChecker()
     .getPotentialImportsFor(directive.ref, importOn, PotentialImportMode.Normal);
@@ -704,8 +717,8 @@ export function getCodeActionToImportTheDirectiveDeclaration(
         importOn.getSourceFile(),
         potentialImport.symbolName,
         declarationName,
-        moduleSpecifier ?? potentialImport.moduleSpecifier,
-        currMatchSymbol.getSourceFile(),
+        directiveModuleSpecifier?.moduleSpecifier ?? potentialImport.moduleSpecifier,
+        moduleSpecifierSourceFile,
       );
       importName = generatedImportName;
       fileImportChanges.push(...importChanges);
@@ -737,8 +750,11 @@ export function getCodeActionToImportTheDirectiveDeclaration(
     if (traitImportChanges.length === 0) continue;
 
     let description = `Import ${importName}`;
-    if (potentialImport.moduleSpecifier !== undefined || moduleSpecifier !== undefined) {
-      description += ` from '${moduleSpecifier ?? potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;
+    if (
+      potentialImport.moduleSpecifier !== undefined ||
+      directiveModuleSpecifier?.moduleSpecifier !== undefined
+    ) {
+      description += ` from '${directiveModuleSpecifier?.moduleSpecifier ?? potentialImport.moduleSpecifier}' on ${importOn.name!.text}`;
     }
     codeActions.push({
       description,
@@ -821,6 +837,15 @@ export interface DirectiveInfoForCompletionDetail {
   entryName: string;
   fileName: string;
   pos: number;
+
+  /**
+   * Sometimes, the location of the tsCompletionEntry symbol does not match the location of the Angular symbol.
+   *
+   * For example, the BarComponent is declared in `bar.ts` and exported from there. The `public_api.ts` also
+   * reexports the BarComponent from `bar.ts`, so the `tsCompletionEntrySymbolFileName` will be `public_api.ts`,
+   * and the `fileName` will be the `bar.ts`.
+   */
+  symbolFileName: string;
 }
 
 /**

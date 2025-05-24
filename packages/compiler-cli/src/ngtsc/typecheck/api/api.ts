@@ -426,5 +426,5 @@ export interface FullSourceMapping {
 }
 
 export interface GetPotentialAngularMetaOptions {
-  includeExternalModule: boolean | undefined;
+  includeExternalModule: boolean;
 }

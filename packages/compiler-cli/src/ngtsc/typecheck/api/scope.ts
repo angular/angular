@@ -32,23 +32,25 @@ export enum PotentialImportKind {
   Standalone,
 }
 
-interface TsCompletionEntryInfo {
+export interface TsCompletionEntryInfo {
+  /**
+   * Sometimes, the location of the tsCompletionEntry symbol does not match the location of the Angular symbol.
+   *
+   * For example, the BarComponent is declared in `bar.ts` and exported from there. The `public_api.ts` also
+   * reexports the BarComponent from `bar.ts`, so the `tsCompletionEntrySymbolFileName` will be `public_api.ts`.
+   */
+  tsCompletionEntrySymbolFileName: string;
   /**
    * This data is from the tsLs completion entry, and
    * will be used in the `ls.getCompletionEntryDetails`.
    */
   tsCompletionEntryData?: ts.CompletionEntryData;
-  /**
-   * If the value is `true,` it means the directive is retrieved from the completion list
-   * returned by `ls.getCompletionsAtPosition`.
-   */
-  isFromTsCompletionEntry?: boolean;
 }
 
 /**
  * Metadata on a directive which is available in a template.
  */
-export interface PotentialDirective extends TsCompletionEntryInfo {
+export interface PotentialDirective {
   ref: Reference<ClassDeclaration>;
 
   /**
@@ -80,12 +82,14 @@ export interface PotentialDirective extends TsCompletionEntryInfo {
    * Whether or not this directive is in scope.
    */
   isInScope: boolean;
+
+  tsCompletionEntryInfo: TsCompletionEntryInfo | null;
 }
 
 /**
  * Metadata for a pipe which is available in a template.
  */
-export interface PotentialPipe extends TsCompletionEntryInfo {
+export interface PotentialPipe {
   ref: Reference<ClassDeclaration>;
 
   /**
@@ -102,6 +106,8 @@ export interface PotentialPipe extends TsCompletionEntryInfo {
    * Whether or not this pipe is in scope.
    */
   isInScope: boolean;
+
+  tsCompletionEntryInfo: TsCompletionEntryInfo | null;
 }
 
 /**

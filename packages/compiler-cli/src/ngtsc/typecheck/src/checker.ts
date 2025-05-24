@@ -78,6 +78,7 @@ import {
   TemplateDiagnostic,
   TemplateSymbol,
   TemplateTypeChecker,
+  TsCompletionEntryInfo,
   TypeCheckableDirectiveMeta,
   TypeCheckingConfig,
 } from '../api';
@@ -848,8 +849,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   getDirectiveScopeData(
     component: ts.ClassDeclaration,
     isInScope: boolean,
-    data: ts.CompletionEntryData | undefined,
-    fromTsCompletionEntry: boolean | undefined,
+    tsCompletionEntryInfo: TsCompletionEntryInfo | null,
   ): PotentialDirective | null {
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
     if (!isNamedClassDeclaration(component)) {
@@ -869,8 +869,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return {
       ...withScope,
       isInScope,
-      tsCompletionEntryData: data,
-      isFromTsCompletionEntry: fromTsCompletionEntry,
+      tsCompletionEntryInfo,
     };
   }
 
@@ -926,7 +925,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
     const currentComponentFileName = component.getSourceFile().fileName;
     for (const {symbol, data} of entries ?? []) {
-      if (symbol?.declarations?.[0]?.getSourceFile().fileName === currentComponentFileName) {
+      const symbolFileName = symbol?.declarations?.[0]?.getSourceFile().fileName;
+      if (symbolFileName === undefined) {
+        continue;
+      }
+
+      if (symbolFileName === currentComponentFileName) {
         continue;
       }
 
@@ -978,8 +982,10 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         resultingDirectives.set(directiveDecl.ref.node, {
           ...withScope,
           isInScope: false,
-          tsCompletionEntryData: data,
-          isFromTsCompletionEntry: true,
+          tsCompletionEntryInfo: {
+            tsCompletionEntryData: data,
+            tsCompletionEntrySymbolFileName: symbolFileName,
+          },
         });
       }
     }
@@ -1231,6 +1237,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       selector: dep.selector,
       tsSymbol,
       ngModule,
+      tsCompletionEntryInfo: null,
     };
   }
 
@@ -1246,6 +1253,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       ref: dep.ref,
       name: dep.name,
       tsSymbol,
+      tsCompletionEntryInfo: null,
     };
   }
 }
