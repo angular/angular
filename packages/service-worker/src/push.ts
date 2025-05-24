@@ -92,7 +92,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class SwPush {
   /**
    * Emits the payloads of the received push notification messages.
