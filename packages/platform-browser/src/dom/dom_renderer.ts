@@ -300,7 +300,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     return this.doc.createTextNode(value);
   }
 
-  appendChild(parent: any, newChild: any): void {
+  appendChild(parent: HTMLElement, newChild: HTMLElement): void {
     const targetParent = isTemplateNode(parent) ? parent.content : parent;
     targetParent.appendChild(newChild);
   }

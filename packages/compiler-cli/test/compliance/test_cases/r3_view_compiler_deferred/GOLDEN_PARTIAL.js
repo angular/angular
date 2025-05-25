@@ -1060,14 +1060,17 @@ export declare class TestCmp {
 import { Component } from '@angular/core';
 import * as i0 from "@angular/core";
 class MyLazyCmp {
+    constructor() {
+        this.hi = 'Hi!';
+    }
 }
 MyLazyCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyLazyCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyLazyCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyLazyCmp, isStandalone: true, selector: "my-lazy-cmp", ngImport: i0, template: 'Hi!', isInline: true });
+MyLazyCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyLazyCmp, isStandalone: true, selector: "my-lazy-cmp", ngImport: i0, template: '{{hi}}', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyLazyCmp, decorators: [{
             type: Component,
             args: [{
                     selector: 'my-lazy-cmp',
-                    template: 'Hi!',
+                    template: '{{hi}}',
                 }]
         }] });
 class SimpleComponent {
@@ -1113,7 +1116,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 		} @error {
 			Failed to load dependencies :(
 		}
-	`
+	`,
                 }]
         }] });
 

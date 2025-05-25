@@ -1,9 +1,13 @@
 import {Component} from '@angular/core';
 
+@Component({selector: 'foo', template: ''})
+class Foo {}
+
 @Component({
   selector: 'my-component',
+  imports: [Foo],
   template: `
-		<div style=":root {color: red;}"></div>
+		<foo style=":root {color: red;}"></foo>
 	`
 })
 export class MyComponent {

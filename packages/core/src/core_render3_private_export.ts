@@ -120,6 +120,7 @@ export {
   ɵɵgetCurrentView,
   ɵɵgetInheritedFactory,
   ɵɵdomProperty,
+  ɵɵstaticHtml,
   ɵɵi18n,
   ɵɵi18nApply,
   ɵɵi18nAttributes,

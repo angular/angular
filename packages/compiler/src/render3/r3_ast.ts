@@ -682,6 +682,17 @@ export class HostElement implements Node {
   }
 }
 
+export class StaticHtml implements Node {
+  constructor(
+    public html: string,
+    public sourceSpan: ParseSourceSpan,
+  ) {}
+
+  visit<Result>(): Result {
+    throw new Error(`staticHtml cannot be visited`);
+  }
+}
+
 export interface Visitor<Result = any> {
   // Returning a truthy value from `visit()` will prevent `visitAll()` from the call to the typed
   // method and result returned will become the result included in `visitAll()`s result array.

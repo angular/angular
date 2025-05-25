@@ -27,11 +27,14 @@ function SimpleComponent_DeferError_4_Template(rf, ctx) {
 …
 
 decls: 1,
-vars: 0,
+vars: 1,
 template: function MyLazyCmp_Template(rf, ctx) {
 	if (rf & 1) {
-		$r3$.ɵɵtext(0, "Hi!");
+		$r3$.ɵɵtext(0);
+	} if (rf & 2) {
+		$r3$.ɵɵtextInterpolate(ctx.hi);
 	}
+
 }
 
 …

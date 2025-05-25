@@ -344,18 +344,27 @@ export declare class MyModule {
  ****************************************************************************************************/
 import { Component } from '@angular/core';
 import * as i0 from "@angular/core";
+class Foo {
+}
+Foo.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Foo, deps: [], target: i0.ɵɵFactoryTarget.Component });
+Foo.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Foo, isStandalone: true, selector: "foo", ngImport: i0, template: '', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Foo, decorators: [{
+            type: Component,
+            args: [{ selector: 'foo', template: '' }]
+        }] });
 export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", ngImport: i0, template: `
-		<div style=":root {color: red;}"></div>
-	`, isInline: true });
+		<foo style=":root {color: red;}"></foo>
+	`, isInline: true, dependencies: [{ kind: "component", type: Foo, selector: "foo" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
                     selector: 'my-component',
+                    imports: [Foo],
                     template: `
-		<div style=":root {color: red;}"></div>
+		<foo style=":root {color: red;}"></foo>
 	`
                 }]
         }] });
@@ -374,18 +383,27 @@ export declare class MyComponent {
  ****************************************************************************************************/
 import { Component } from '@angular/core';
 import * as i0 from "@angular/core";
+export class Foo {
+}
+Foo.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Foo, deps: [], target: i0.ɵɵFactoryTarget.Component });
+Foo.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Foo, isStandalone: true, selector: "foo", ngImport: i0, template: '', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Foo, decorators: [{
+            type: Component,
+            args: [{ selector: 'foo', template: '' }]
+        }] });
 export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", ngImport: i0, template: `
-    <div style="width: 1px; width: 10px;" class="cls1 cls1"></div>
-  `, isInline: true });
+    <foo style="width: 1px; width: 10px;" class="cls1 cls1"></foo>
+  `, isInline: true, dependencies: [{ kind: "component", type: Foo, selector: "foo" }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
                     selector: 'my-component',
+                    imports: [Foo],
                     template: `
-    <div style="width: 1px; width: 10px;" class="cls1 cls1"></div>
+    <foo style="width: 1px; width: 10px;" class="cls1 cls1"></foo>
   `,
                 }]
         }] });
@@ -394,6 +412,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  * PARTIAL FILE: duplicate_style_bindings.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
+export declare class Foo {
+    static ɵfac: i0.ɵɵFactoryDeclaration<Foo, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<Foo, "foo", never, {}, {}, never, never, true, never>;
+}
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;

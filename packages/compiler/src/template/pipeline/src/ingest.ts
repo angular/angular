@@ -233,6 +233,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestLetDeclaration(unit, node);
     } else if (node instanceof t.Component) {
       // TODO(crisbeto): account for selectorless nodes.
+    } else if (node instanceof t.StaticHtml) {
+      ingestStaticHtml(unit, node);
     } else {
       throw new Error(`Unsupported template node: ${node.constructor.name}`);
     }
@@ -416,6 +418,12 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
 function ingestText(unit: ViewCompilationUnit, text: t.Text, icuPlaceholder: string | null): void {
   unit.create.push(
     ir.createTextOp(unit.job.allocateXrefId(), text.value, icuPlaceholder, text.sourceSpan),
+  );
+}
+
+function ingestStaticHtml(unit: ViewCompilationUnit, staticHtml: t.StaticHtml): void {
+  unit.create.push(
+    ir.createStaticHtmlOp(unit.job.allocateXrefId(), staticHtml.html, staticHtml.sourceSpan),
   );
 }
 

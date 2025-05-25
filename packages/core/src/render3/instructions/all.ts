@@ -44,6 +44,7 @@ export {
 } from './element_validation';
 export * from './get_current_view';
 export * from './dom_property';
+export * from './staticHtml';
 export * from './i18n';
 export * from './listener';
 export * from './namespace';

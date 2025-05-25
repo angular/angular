@@ -9,6 +9,7 @@
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import * as o from '../../output/output_ast';
+import * as t from '../r3_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {CssSelector} from '../../directive_matching';
 import {ShadowCss} from '../../shadow_css';
@@ -217,10 +218,16 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn = o.variable(fnName);
   }
 
+  let nodes = meta.template.nodes;
+  const replaceVisitor = new ReplaceStaticHtmlVisitor();
+  if (nodes.length > 0 && meta.isStandalone && meta.declarations.length === 0) {
+    nodes = nodes.map((node) => node.visit(replaceVisitor));
+  }
+
   // First the template is ingested into IR:
   const tpl = ingestComponent(
     meta.name,
-    meta.template.nodes,
+    nodes,
     constantPool,
     meta.relativeContextFilePath,
     meta.i18nUseExternalIds,
@@ -773,4 +780,235 @@ export function compileDeferResolverFunction(
   }
 
   return o.arrowFn([], o.literalArr(depExpressions));
+}
+
+class StaticHtmlVisitor implements t.Visitor<boolean> {
+  visitElement(element: t.Element): boolean {
+    if (
+      element.inputs.length > 0 ||
+      element.outputs.length > 0 ||
+      element.directives.length > 0 ||
+      element.references.length > 0 ||
+      element.name === 'ng-content' ||
+      element.name === 'ng-template' ||
+      element.attributes.some((att) => att.name === 'ngProjectAs' || att.i18n)
+    ) {
+      return false;
+    }
+
+    if (element.attributes.length > 0 && element.attributes[0].name.includes('xlink')) {
+      console.warn(element.attributes);
+      throw new Error(
+        `Static HTML visitor does not support xlink attributes. Found: ${element.attributes[0].name}`,
+      );
+    }
+
+    const retVal = element.children
+      .map((child) => child.visit(this))
+      .every((childResult) => {
+        return childResult === true;
+      });
+
+    return retVal;
+  }
+
+  visitText(text: t.Text): boolean {
+    return true;
+  }
+
+  visitTextAttribute(attribute: t.TextAttribute): boolean {
+    return true;
+  }
+
+  visitComponent(component: t.Component): boolean {
+    return false;
+  }
+  visitDirective(directive: t.Directive): boolean {
+    return false;
+  }
+
+  visitVariable(): boolean {
+    return false;
+  }
+
+  visitUnknownBlock(): boolean {
+    return false;
+  }
+
+  visitDeferredBlock(): boolean {
+    return false;
+  }
+
+  visitDeferredBlockPlaceholder(): boolean {
+    return false;
+  }
+
+  visitDeferredBlockLoading(): boolean {
+    return false;
+  }
+
+  visitDeferredBlockError(): boolean {
+    return false;
+  }
+
+  visitIfBlock(): boolean {
+    return false;
+  }
+
+  visitIfBlockBranch(): boolean {
+    return false;
+  }
+
+  visitForLoopBlock(): boolean {
+    return false;
+  }
+
+  visitForLoopBlockEmpty(): boolean {
+    return false;
+  }
+
+  visitSwitchBlock(): boolean {
+    return false;
+  }
+
+  visitSwitchBlockCase(): boolean {
+    return false;
+  }
+
+  visitDeferredTrigger(): boolean {
+    return false;
+  }
+
+  visitBoundEvent(): boolean {
+    return false;
+  }
+
+  visitBoundAttribute(): boolean {
+    return false;
+  }
+  visitLetDeclaration(): boolean {
+    return false;
+  }
+
+  visitIcu(icu: t.Icu): boolean {
+    return false;
+  }
+
+  visitReference(): boolean {
+    return false;
+  }
+
+  visitContent(): boolean {
+    return false;
+  }
+
+  visitBoundText(): boolean {
+    return false;
+  }
+
+  visitTemplate(): boolean {
+    return false;
+  }
+}
+
+const visitor = new StaticHtmlVisitor();
+
+
+function nodesToString(node: t.Node): string {
+  if (node instanceof t.Text) {
+    return node.value;
+  } else if (node instanceof t.Element) {
+    return node.sourceSpan.toString();
+  }
+  throw new Error(`Unexpected node type: ${node.constructor.name}`);
+  return '';
+}
+
+class ReplaceStaticHtmlVisitor implements t.Visitor<t.Node> {
+  visitElement(element: t.Element): t.Node {
+    if(element.visit(visitor)) {
+      return new t.StaticHtml(
+        nodesToString(element),
+        new ParseSourceSpan(element.sourceSpan.start, element.sourceSpan.end),
+      );
+    }
+
+    return element;
+  }
+  visitTemplate(template: t.Template): t.Node {
+    return template;
+  }
+  visitContent(content: t.Content): t.Node {
+    return content;
+  }
+  visitVariable(variable: t.Variable): t.Node {
+    return variable;
+  }
+  visitReference(reference: t.Reference): t.Node {
+    return reference;
+  }
+  visitTextAttribute(attribute: t.TextAttribute): t.Node {
+    return attribute;
+  }
+  visitBoundAttribute(attribute: t.BoundAttribute): t.Node {
+    return attribute;
+  }
+  visitBoundEvent(attribute: t.BoundEvent): t.Node {
+    return attribute;
+  }
+  visitBoundText(text: t.BoundText): t.Node {
+    return text;
+  }
+  visitIcu(icu: t.Icu): t.Node {
+    return icu;
+  }
+  visitDeferredBlock(deferred: t.DeferredBlock): t.Node {
+    return deferred;
+  }
+  visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder): t.Node {
+    return block;
+  }
+  visitDeferredBlockError(block: t.DeferredBlockError): t.Node {
+    return block;
+  }
+  visitDeferredBlockLoading(block: t.DeferredBlockLoading): t.Node {
+    return block;
+  }
+  visitDeferredTrigger(trigger: t.DeferredTrigger): t.Node {
+    return trigger;
+  }
+  visitSwitchBlock(block: t.SwitchBlock): t.Node {
+    return block;
+  }
+  visitSwitchBlockCase(block: t.SwitchBlockCase): t.Node {
+    return block;
+  }
+  visitForLoopBlock(block: t.ForLoopBlock): t.Node {
+    return block;
+  }
+  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): t.Node {
+    return block;
+  }
+  visitIfBlock(block: t.IfBlock): t.Node {
+    return block;
+  }
+  visitIfBlockBranch(block: t.IfBlockBranch): t.Node {
+    return block;
+  }
+  visitUnknownBlock(block: t.UnknownBlock): t.Node {
+    return block;
+  }
+  visitLetDeclaration(decl: t.LetDeclaration): t.Node {
+    return decl;
+  }
+  visitComponent(component: t.Component): t.Node {
+    return component;
+  }
+  visitDirective(directive: t.Directive): t.Node {
+    return directive;
+  }
+
+  visitText(text: t.Text): t.Node {
+    return text;
+  }
 }

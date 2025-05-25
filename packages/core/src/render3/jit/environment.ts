@@ -221,4 +221,6 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
 
   'ɵɵreplaceMetadata': r3.ɵɵreplaceMetadata,
   'ɵɵgetReplaceMetadataURL': r3.ɵɵgetReplaceMetadataURL,
+
+  'ɵɵstaticHtml': r3.ɵɵstaticHtml,
 }))();
