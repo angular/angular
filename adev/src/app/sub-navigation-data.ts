@@ -791,6 +791,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'best-practices/skipping-subtrees',
             contentPath: 'best-practices/runtime-performance/skipping-subtrees',
           },
+          {
+            label: 'Profiling with the Chrome DevTools',
+            path: 'best-practices/profiling-with-chrome-devtools',
+            contentPath: 'best-practices/runtime-performance/profiling-with-chrome-devtools',
+          },
           {label: 'Zoneless', path: 'guide/zoneless', contentPath: 'guide/zoneless'},
         ],
       },
