@@ -81,9 +81,9 @@ function _extractId(valueString: string): string {
  *
  * ```html
  * <select [compareWith]="compareFn"  [formControl]="selectedCountriesControl">
- *     <option *ngFor="let country of countries" [ngValue]="country">
- *         {{country.name}}
- *     </option>
+ *    @for(country of countries; track $index) {
+ *        <option[ngValue]="country">{{country.name}}</option>
+ *    }
  * </select>
  *
  * compareFn(c1: Country, c2: Country): boolean {

@@ -208,11 +208,11 @@ export class UpgradeAdapter {
    *
    * @Component({
    *   selector: 'greet',
-   *   template: '{{salutation}} {{name}}! - <ng-content></ng-content>'
+   *   template: '{{salutation()}} {{name()}}! - <ng-content></ng-content>'
    * })
    * class Greeter {
-   *   @Input() salutation: string;
-   *   @Input() name: string;
+   *   salutation = input.required<string>();
+   *   name: input.required<string>();
    * }
    *
    * @NgModule({

@@ -12,7 +12,7 @@
  *
  *  @usageNotes
  *  ```ts
- *  @Input({ transform: booleanAttribute }) status!: boolean;
+ *  status = input({ transform: booleanAttribute });
  *  ```
  * @param value Value to be transformed.
  *
@@ -30,7 +30,7 @@ export function booleanAttribute(value: unknown): boolean {
  *
  *  @usageNotes
  *  ```ts
- *  @Input({ transform: numberAttribute }) id!: number;
+ *  status = input({ transform: numberAttribute });
  *  ```
  *
  * @publicApi
