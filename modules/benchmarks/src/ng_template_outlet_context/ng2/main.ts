@@ -17,7 +17,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
   template: `<deep *ngIf="depth > 1" [depth]="depth - 1" /> Level: {{ depth }}`,
 })
 class Deep {
-  @Input({required: true}) depth: number;
+  @Input({required: true}) depth!: number;
 }
 
 @Component({

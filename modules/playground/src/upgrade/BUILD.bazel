@@ -1,25 +1,38 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "ts_library")
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//tools:defaults.bzl", "http_server")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
-# Since this test uses the AOT-incompatible version of "@angular/upgrade", we cannot
-# use the "ng_module" rule here unless we switch this example to "upgrade/static".
-ts_library(
-    name = "upgrade",
-    srcs = glob(["**/*.ts"]),
-    tsconfig = "//modules/playground:tsconfig-build.json",
+optimize_angular_app(
+    name = "bundles",
+    srcs = glob(["**/*.ts"]) + ["index.html"],
+    include_zonejs = True,
+    # This playground relies on JIT.
+    # Also it needs unmangled identifiers for AngularJS name-based injection.
+    jq_config_filter = """
+        .projects.boilerplate.architect.build.options.aot = false |
+        .projects.boilerplate.architect.build.options.optimization.scripts = false
+    """,
     deps = [
-        "//packages/core",
-        "//packages/platform-browser",
-        "//packages/upgrade",
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//modules:node_modules/@angular/build",
+        "//modules:node_modules/@angular/common",
+        "//modules:node_modules/@angular/compiler",
+        "//modules:node_modules/@angular/core",
+        "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/@angular/platform-browser-dynamic",
+        "//modules:node_modules/@angular/upgrade",
+        "//modules:node_modules/zone.js",
     ],
 )
 
-# Note: Not using `app_bundle` here because this example relies on JIT.
-esbuild(
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
     name = "app_bundle",
-    entry_point = ":index.ts",
-    deps = [":upgrade"],
+    srcs = [":bundles"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $</main.js $@",
 )
 
 http_server(
