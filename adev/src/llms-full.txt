@@ -2392,8 +2392,6 @@ If an element has multiple bindings for the same style property, Angular resolve
 
 Angular templates support control flow blocks that let you conditionally show, hide, and repeat elements.
 
-NOTE: This was previously accomplished with the *ngIf, *ngFor, and \*ngSwitch directives.
-
 ## Conditionally display content with `@if`, `@else-if` and `@else`
 
 The `@if` block conditionally displays its content when its condition expression is truthy:
@@ -2600,18 +2598,7 @@ Since `@let` declarations are not hoisted, they **cannot** be accessed by parent
   }
 }
 
-<div *ngIf="condition">
-  {{topLevel + insideDiv}} <!-- Valid -->
-
-  @let nestedNgIf = value;
-
-  <div *ngIf="condition">
-     {{topLevel + insideDiv + nestedNgIf}} <!-- Valid -->
-  </div>
-</div>
-
 {{nested}} <!-- Error, not hoisted from @if -->
-{{nestedNgIf}} <!-- Error, not hoisted from *ngIf -->
 ```
 
 ### Full syntax
@@ -3135,7 +3122,7 @@ Angular expressions additionally also support the following non-standard operato
 | Optional chaining\*             | `someObj.someProp?.nestedProp` |
 | Non-null assertion (TypeScript) | `someObj!.someProp`            |
 
-\*NOTE: Optional chaining behaves differently from the standard JavaScript version in that if the left side of Angular’s optional chaining operator is `null` or `undefined`, it returns `null` instead of `undefined`.
+NOTE: Optional chaining behaves differently from the standard JavaScript version in that if the left side of Angular’s optional chaining operator is `null` or `undefined`, it returns `null` instead of `undefined`.
 
 ### Unsupported operators
 
@@ -3491,10 +3478,11 @@ The following table provides shorthand examples:
 
 | Shorthand | How Angular interprets the syntax |
 |:--- |:--- |
-| `*ngFor="let item of [1,2,3]"` | `<ng-template ngFor let-item [ngForOf]="[1, 2, 3]">` |
-| `*ngFor="let item of [1,2,3] as items; trackBy: myTrack; index as i"` | `<ng-template ngFor let-item [ngForOf]="[1,2,3]" let-items="ngForOf" [ngForTrackBy]="myTrack" let-i="index">` |
-| `*ngIf="exp"`| `<ng-template [ngIf]="exp">` |
-| `*ngIf="exp as value"` | `<ng-template [ngIf]="exp" let-value="ngIf">` |
+| `*myDir="let item of [1,2,3]"` | `<ng-template myDir let-item [myDirOf]="[1, 2, 3]">` |
+| `*myDir="let item of [1,2,3] as items; trackBy: myTrack; index as i"` | `<ng-template myDir let-item [myDirOf]="[1,2,3]" let-items="myDirOf" [myDirTrackBy]="myTrack" let-i="index">` |
+| `*ngComponentOutlet="componentClass";` | `<ng-template [ngComponentOutlet]="componentClass">` |
+| `*ngComponentOutlet="componentClass; inputs: myInputs";` | `<ng-template [ngComponentOutlet]="componentClass" [ngComponentOutletInputs]="myInputs">` |
+| `*myDir="exp as value"` | `<ng-template [myDir]="exp" let-value="myDir">` |
 
 ## Improving template type checking for custom directives
 
@@ -6284,8 +6272,6 @@ You should maintain the relationship between the component and its token while s
 The recommended style is to use the component base name with the suffix "`Token`" to name your lightweight injection tokens: "`LibHeaderToken`."
 # RxJS interop with Angular signals
 
-IMPORTANT: The RxJS Interop package is available for [developer preview](reference/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
-
 The `@angular/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
 
 ## Create a signal from an RxJs Observable with `toSignal`
@@ -7544,7 +7530,7 @@ Add the following template HTML after the `<div>` closing the `formGroupName` el
 
 <docs-code header="src/app/profile-editor/profile-editor.component.html (aliases form array template)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.html" visibleRegion="formarrayname"/>
 
-The `*ngFor` directive iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input.
+The `@for` block iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input.
 
 Each time a new alias instance is added, the new form array instance is provided its control based on the index. This lets you track each individual control when calculating the status and value of the root control.
 
@@ -8405,7 +8391,9 @@ The following example shows how to achieve this in a template-driven form.
 <docs-code language="html">
 
 <input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator>
-<app-spinner *ngIf="model.pending"></app-spinner>
+@if(model.pending) {
+  <app-spinner />
+}
 ```
 ### Implementing a custom async validator
 
@@ -8416,7 +8404,7 @@ To validate the potential role entry, the validator must initiate an asynchronou
 The following code creates the validator class, `UniqueRoleValidator`, which implements the `AsyncValidator` interface.
 
 ```
-The `actorsService` property is initialized with an instace of the `ActorsService` token, which defines the following interface.
+The `actorsService` property is initialized with an instance of the `ActorsService` token, which defines the following interface.
 
 <docs-code language="typescript">
 interface ActorsService {
@@ -8565,7 +8553,7 @@ The form relies on a [`[formGroup]` directive](api/forms/FormGroupDirective "API
 The `DynamicFormQuestionComponent` creates form groups and populates them with controls defined in the question model, specifying display and validation rules.
 The goal of the `DynamicFormQuestionComponent` is to present question types defined in your model.
 You only have two types of questions at this point but you can imagine many more.
-The `ngSwitch` statement in the template determines which type of question to display.
+The `@switch` block in the template determines which type of question to display.
 The switch uses directives with the [`formControlName`](api/forms/FormControlName "FormControlName directive API reference") and [`formGroup`](api/forms/FormGroupDirective "FormGroupDirective API reference") selectors.
 Both directives are defined in `ReactiveFormsModule`.
 
@@ -9184,26 +9172,27 @@ To learn more about the Angular Router, see the following topics:
 HELPFUL: This content is based on [Custom Route Matching with the Angular Router](https://medium.com/@brandontroberts/custom-route-matching-with-the-angular-router-fbdd48665483), by [Brandon Roberts](https://twitter.com/brandontroberts).
 # Server and hybrid rendering
 
+Angular ships all applications as client-side rendered (CSR) by default. While this approach delivers a initial payload that's lightweight, it introduces trade-offs including slower load times, degraded performance metrics, and higher resource demands since the user's device performs most of the computations. As a result, many applications achieve significant performance improvements by integrating server-side rendering (SSR) into a hybrid rendering strategy.
+
 ## What is hybrid rendering?
 
-Hybrid rendering combines the benefits of server-side rendering (SSR), pre-rendering (also known as "static site generation" or SSG) and client-side rendering (CSR) to optimize your Angular application. It allows you to render different parts of your application using different strategies, giving you fine-grained control over how your app is delivered to users.
+Hybrid rendering allows developers to leverage the benefits of server-side rendering (SSR), pre-rendering (also known as "static site generation" or SSG) and client-side rendering (CSR) to optimize your Angular application. It gives you fine-grained control over how your different parts of your app is rendered to give your users the best experience possible.
 
 ## Setting up hybrid rendering
 
-You can create a **new** project with server-side rendering with the Angular CLI:
+You can create a **new** project with hybrid rendering by using the server-side rendering flag (i.e., `--ssr`) with the Angular CLI `ng new` command:
 
 ```shell
 ng new --ssr
 ```
 
-You can also add server-side rendering to an existing project with the `ng add` command:
+You can also enable hybrid rendering by adding server-side rendering to an existing project with the `ng add` command:
 
 ```shell
 ng add @angular/ssr
 ```
 
-NOTE: By default, Angular prerenders your entire application and generates a server file. To disable this and create a fully static app, set `outputMode` to `static`. To enable SSR, update the server routes to use `RenderMode.Server`.
-For more details, see [`Server routing`](#server-routing) and [`Generate a fully static application`](#generate-a-fully-static-application).
+NOTE: By default, Angular prerenders your entire application and generates a server file. To disable this and create a fully static app, set `outputMode` to `static`. To enable SSR, update the server routes to use `RenderMode.Server`. For more details, see [`Server routing`](#server-routing) and [`Generate a fully static application`](#generate-a-fully-static-application).
 
 ## Server routing
 
@@ -9425,6 +9414,31 @@ export const serverRoutes: ServerRoute[] = [
 ];
 ```
 
+## Authoring server-compatible components
+
+Some common browser APIs and capabilities might not be available on the server. Applications cannot make use of browser-specific global objects like `window`, `document`, `navigator`, or `location` as well as certain properties of `HTMLElement`.
+
+In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the [`afterEveryRender`](api/core/afterEveryRender) and [`afterNextRender`](api/core/afterNextRender) lifecycle hooks. These are only executed on the browser and skipped on the server.
+
+```typescript
+import { Component, ViewChild, afterNextRender } from '@angular/core';
+
+@Component({
+  selector: 'my-cmp',
+  template: `<span #content>{{ ... }}</span>`,
+})
+export class MyComponent {
+  @ViewChild('content') contentRef: ElementRef;
+
+  constructor() {
+    afterNextRender(() => {
+      // Safe to check `scrollHeight` because this will only run in the browser, not the server.
+      console.log('content height: ' + this.contentRef.nativeElement.scrollHeight);
+    });
+  }
+}
+```
+
 ## Accessing Request and Response via DI
 
 The `@angular/core` package provides several tokens for interacting with the server-side rendering environment. These tokens give you access to crucial information and objects within your Angular application during SSR.
@@ -9449,10 +9463,51 @@ export class MyComponent {
 ```
 
 IMPORTANT: The above tokens will be `null` in the following scenarios:
+
 - During the build processes.
 - When the application is rendered in the browser (CSR).
 - When performing static site generation (SSG).
 - During route extraction in development (at the time of the request).
+
+## Generate a fully static application
+
+By default, Angular prerenders your entire application and generates a server file for handling requests. This allows your app to serve pre-rendered content to users. However, if you prefer a fully static site without a server, you can opt out of this behavior by setting the `outputMode` to `static` in your `angular.json` configuration file.
+
+When `outputMode` is set to `static`, Angular generates pre-rendered HTML files for each route at build time, but it does not generate a server file or require a Node.js server to serve the app. This is useful for deploying to static hosting providers where a backend server is not needed.
+
+To configure this, update your `angular.json` file as follows:
+
+```json
+{
+  "projects": {
+    "your-app": {
+      "architect": {
+        "build": {
+          "options": {
+            "outputMode": "static"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## Caching data when using HttpClient
+
+[`HttpClient`](api/common/http/HttpClient) cached outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
+
+By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using [`withHttpTransferCacheOptions`](api/platform-browser/withHttpTransferCacheOptions) when providing hydration.
+
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideClientHydration(withHttpTransferCacheOptions({
+      includePostRequests: true
+    }))
+  ]
+});
+```
 
 ## Configuring a server
 
@@ -9505,71 +9560,6 @@ export const reqHandler = createRequestHandler(async (req: Request) => {
 
   // ...
 });
-```
-
-## Generate a fully static application
-
-By default, Angular prerenders your entire application and generates a server file for handling requests. This allows your app to serve pre-rendered content to users. However, if you prefer a fully static site without a server, you can opt out of this behavior by setting the `outputMode` to `static` in your `angular.json` configuration file.
-
-When `outputMode` is set to `static`, Angular generates pre-rendered HTML files for each route at build time, but it does not generate a server file or require a Node.js server to serve the app. This is useful for deploying to static hosting providers where a backend server is not needed.
-
-To configure this, update your `angular.json` file as follows:
-
-```json
-{
-  "projects": {
-    "your-app": {
-      "architect": {
-        "build": {
-          "options": {
-            "outputMode": "static"
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-## Caching data when using HttpClient
-
-[`HttpClient`](api/common/http/HttpClient) cached outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
-
-By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using [`withHttpTransferCacheOptions`](api/platform-browser/withHttpTransferCacheOptions) when providing hydration.
-
-```typescript
-bootstrapApplication(AppComponent, {
-  providers: [
-    provideClientHydration(withHttpTransferCacheOptions({
-      includePostRequests: true
-    }))
-  ]
-});
-```
-
-## Authoring server-compatible components
-
-Some common browser APIs and capabilities might not be available on the server. Applications cannot make use of browser-specific global objects like `window`, `document`, `navigator`, or `location` as well as certain properties of `HTMLElement`.
-
-In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the [`afterEveryRender`](api/core/afterEveryRender) and [`afterNextRender`](api/core/afterNextRender) lifecycle hooks. These are only executed on the browser and skipped on the server.
-
-```typescript
-import { Component, ViewChild, afterNextRender } from '@angular/core';
-
-@Component({
-  selector: 'my-cmp',
-  template: `<span #content>{{ ... }}</span>`,
-})
-export class MyComponent {
-  @ViewChild('content') contentRef: ElementRef;
-
-  constructor() {
-    afterNextRender(() => {
-      // Safe to check `scrollHeight` because this will only run in the browser, not the server.
-      console.log('content height: ' + this.contentRef.nativeElement.scrollHeight);
-    });
-  }
-}
 ```
 # Hydration
 
@@ -10870,7 +10860,7 @@ The `DashboardHeroComponent` is embedded in the `DashboardComponent` template li
 
 <docs-code header="app/dashboard/dashboard.component.html (excerpt)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard.component.html" visibleRegion="dashboard-hero"/>
 
-The `DashboardHeroComponent` appears in an `*ngFor` repeater, which sets each component's `hero` input property to the looping value and listens for the component's `selected` event.
+The `DashboardHeroComponent` appears in an `@for` block, which sets each component's `hero` input property to the looping value and listens for the component's `selected` event.
 
 Here's the component's full definition:
 
@@ -11021,7 +11011,7 @@ It creates an `ActivatedRoute` object with the routing information and injects i
 
 Here are the services injected into `HeroDetailComponent`:
 
-<docs-code header="app/hero/hero-detail.component.ts (inject)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="ctor"/>
+<docs-code header="app/hero/hero-detail.component.ts (inject)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.ts" visibleRegion="inject"/>
 
 The `HeroDetail` component needs the `id` parameter so it can fetch the corresponding hero using the `HeroDetailService`.
 The component has to get the `id` from the `ActivatedRoute.paramMap` property which is an `Observable`.
@@ -11546,7 +11536,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
 | `queryAll`            | Calling `queryAll(predicate: Predicate<DebugElement>)` returns all `DebugElements` that matches the [predicate](#query-predicate) at any depth in subtree.                                                                                                                                                                                                                                              |
 | `injector`            | The host dependency injector. For example, the root element's component instance injector.                                                                                                                                                                                                                                                                                                              |
 | `componentInstance`   | The element's own component instance, if it has one.                                                                                                                                                                                                                                                                                                                                                    |
-| `context`             | An object that provides parent context for this element. Often an ancestor component instance that governs this element. <br /> When an element is repeated within `*ngFor`, the context is an `NgForOf` whose `$implicit` property is the value of the row instance value. For example, the `hero` in `*ngFor="let hero of heroes"`.                                                                   |
+| `context`             | An object that provides parent context for this element. Often an ancestor component instance that governs this element. <br /> When an element is repeated within `@for` block, the context is an `RepeaterContext` whose `$implicit` property is the value of the row instance value. For example, the `hero` in `@for(hero of heroes; ...)`.                                                                   |
 | `children`            | The immediate `DebugElement` children. Walk the tree by descending through `children`.  `DebugElement` also has `childNodes`, a list of `DebugNode` objects. `DebugElement` derives from `DebugNode` objects and there are often more nodes than elements. Testers can usually ignore plain nodes.                                                                  |
 | `parent`              | The `DebugElement` parent. Null if this is the root element.                                                                                                                                                                                                                                                                                                                                            |
 | `name`                | The element tag name, if it is an element.                                                                                                                                                                                                                                                                                                                                                              |
@@ -11601,7 +11591,7 @@ Many developers can be categorized by one of the following developer type catego
 | Component harness authors   | Developers who maintain some reusable Angular components and want to create a test harness for its users to use in their tests. For example, an author of a third party Angular component library or a developer who maintains a set of common components for a large Angular application.             | [Creating component harnesses for your components](guide/testing/creating-component-harnesses)               |
 | Harness environment authors | Developers who want to add support for using component harnesses in additional testing environments. For information on supported testing environments out-of-the-box, see the [test harness environments and loaders](guide/testing/using-component-harnesses#test-harness-environments-and-loaders). | [Adding support for additional testing environments](guide/testing/component-harnesses-testing-environments) |
 
-For the full API reference, please see the [Angular CDK's component harness API reference page](/api/cdk/testing/AsyncOptionPredicate).
+For the full API reference, please see the [Angular CDK's component harness API reference page](/api#angular_cdk_testing).
 # Using component harnesses in tests
 
 ## Before you start
@@ -11861,7 +11851,7 @@ While `ComponentHarness` subclasses require only the `hostSelector` property, mo
 
 Each instance of a `ComponentHarness` subclass represents a particular instance of the corresponding component. You can access the component's host element via the `host() `method from the `ComponentHarness` base class.
 
-`ComponentHarness` also offers several methods for locating elements within the component's DOM. These methods are `locatorFor()`, `locatorForOptional()`, and `locatorForAll()`. These methods create functions that find elements, they do not directly find elements. This approach safeguards against caching references to out-of-date elements. For example, when an `ngIf` hides and then shows an element, the result is a new DOM element; using functions ensures that tests always reference the current state of the DOM.
+`ComponentHarness` also offers several methods for locating elements within the component's DOM. These methods are `locatorFor()`, `locatorForOptional()`, and `locatorForAll()`. These methods create functions that find elements, they do not directly find elements. This approach safeguards against caching references to out-of-date elements. For example, when an `@if` block hides and then shows an element, the result is a new DOM element; using functions ensures that tests always reference the current state of the DOM.
 
 See the [ComponentHarness API reference page](/api/cdk/testing/ComponentHarness) for the full list details of the different `locatorFor` methods.
 
