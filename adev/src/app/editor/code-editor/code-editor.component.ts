@@ -17,6 +17,7 @@ import {
   OnDestroy,
   afterRenderEffect,
   inject,
+  input,
   signal,
   viewChild,
 } from '@angular/core';
@@ -61,6 +62,8 @@ const ANGULAR_DEV = 'https://angular.dev';
   ],
 })
 export class CodeEditor implements AfterViewInit, OnDestroy {
+  readonly restrictedMode = input(false);
+
   readonly codeEditorWrapperRef =
     viewChild.required<ElementRef<HTMLDivElement>>('codeEditorWrapper');
   readonly matTabGroup = viewChild.required(MatTabGroup);
@@ -157,8 +160,10 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   canRenameFile = (filename: string) => this.canDeleteFile(filename);
 
   canDeleteFile(filename: string) {
-    return !REQUIRED_FILES.has(filename);
+    return !REQUIRED_FILES.has(filename) && !this.restrictedMode();
   }
+
+  canCreateFile = () => !this.restrictedMode();
 
   async deleteFile(filename: string) {
     await this.codeMirrorEditor.deleteFile(filename);
