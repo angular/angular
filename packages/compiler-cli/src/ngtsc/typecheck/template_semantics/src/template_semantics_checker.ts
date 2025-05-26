@@ -12,7 +12,7 @@ import {
   ImplicitReceiver,
   ParsedEventType,
   PropertyRead,
-  PropertyWrite,
+  Binary,
   RecursiveAstVisitor,
   TmplAstBoundEvent,
   TmplAstLetDeclaration,
@@ -76,9 +76,12 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
     super();
   }
 
-  override visitPropertyWrite(ast: PropertyWrite, context: TmplAstNode): void {
-    super.visitPropertyWrite(ast, context);
-    this.checkForIllegalWriteInEventBinding(ast, context);
+  override visitBinary(ast: Binary, context: TmplAstNode): void {
+    if (ast.operation === '=' && ast.left instanceof PropertyRead) {
+      this.checkForIllegalWriteInEventBinding(ast.left, context);
+    } else {
+      super.visitBinary(ast, context);
+    }
   }
 
   override visitPropertyRead(ast: PropertyRead, context: TmplAstNode) {
@@ -86,7 +89,7 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
     this.checkForIllegalWriteInTwoWayBinding(ast, context);
   }
 
-  private checkForIllegalWriteInEventBinding(ast: PropertyWrite, context: TmplAstNode) {
+  private checkForIllegalWriteInEventBinding(ast: PropertyRead, context: TmplAstNode) {
     if (!(context instanceof TmplAstBoundEvent) || !(ast.receiver instanceof ImplicitReceiver)) {
       return;
     }
