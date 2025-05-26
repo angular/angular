@@ -14,7 +14,6 @@ import {NgFor} from '@angular/common';
       </div>
     }
   `,
-  imports: [NgFor],
 })
 export class HeroListComponent {
   heroes: Hero[];

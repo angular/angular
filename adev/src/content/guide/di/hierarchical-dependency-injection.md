@@ -1040,7 +1040,7 @@ export class HeroTaxReturnService {
 Here is the `HeroTaxReturnComponent` that makes use of `HeroTaxReturnService`.
 
 <docs-code header="src/app/hero-tax-return.component.ts" language="typescript">
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, output } from '@angular/core';
 import { HeroTaxReturn } from './hero';
 import { HeroTaxReturnService } from './hero-tax-return.service';
 
@@ -1053,15 +1053,18 @@ import { HeroTaxReturnService } from './hero-tax-return.service';
 export class HeroTaxReturnComponent {
   message = '';
 
-  @Output() close = new EventEmitter<void>();
+  close = output<void>();
 
   get taxReturn(): HeroTaxReturn {
     return this.heroTaxReturnService.taxReturn;
   }
 
-  @Input()
-  set taxReturn(htr: HeroTaxReturn) {
-    this.heroTaxReturnService.taxReturn = htr;
+  taxReturn = input.required<HeroTaxReturn>();
+
+  constructor() {
+    effect(() => {
+      this.heroTaxReturnService.taxReturn = this.taxReturn();
+    })
   }
 
   private heroTaxReturnService = inject(HeroTaxReturnService);
@@ -1085,7 +1088,7 @@ export class HeroTaxReturnComponent {
 }
 </docs-code>
 
-The _tax-return-to-edit_ arrives by way of the `@Input()` property, which is implemented with getters and setters.
+The _tax-return-to-edit_ arrives by way of the `input` property, which is implemented with getters and setters.
 The setter initializes the component's own instance of the `HeroTaxReturnService` with the incoming return.
 The getter always returns what that service says is the current state of the hero.
 The component also asks the service to save and restore this tax return.

@@ -50,7 +50,7 @@ This flag supersedes the `fullTemplateTypeCheck` flag.
 
 In addition to the full mode behavior, Angular does the following:
 
-* Verifies that component/directive bindings are assignable to their `@Input()`s
+* Verifies that component/directive bindings are assignable to their `input()`s
 * Obeys TypeScript's `strictNullChecks` flag when validating the preceding mode
 * Infers the correct type of components/directives, including generics
 * Infers template context types where configured \(for example, allowing correct type-checking of `NgFor`\)
@@ -148,7 +148,7 @@ export interface User {
   template: '{{ user.name }}',
 })
 export class UserDetailComponent {
-  @Input() user: User;
+  user = input.required<User>();
 }
 
 </docs-code>
@@ -226,7 +226,7 @@ See [Improving template type checking for custom directives](guide/directives/st
 
 ## Input setter coercion
 
-Occasionally it is desirable for the `@Input()` of a directive or component to alter the value bound to it, typically using a getter/setter pair for the input.
+Occasionally it is desirable for the `input()` property of a directive or component to alter the value bound to it, typically using a `transform` function for the input.
 As an example, consider this custom button component:
 
 Consider the following directive:
@@ -242,16 +242,7 @@ Consider the following directive:
   `,
 })
 class SubmitButton {
-  private _disabled: boolean;
-
-  @Input()
-  get disabled(): boolean {
-    return this._disabled;
-  }
-
-  set disabled(value: boolean) {
-    this._disabled = value;
-  }
+  disabled = input.required({transform: booleanAttribute });
 }
 
 </docs-code>
