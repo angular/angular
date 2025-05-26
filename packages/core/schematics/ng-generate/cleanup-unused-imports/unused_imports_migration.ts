@@ -18,9 +18,10 @@ import {
   TsurgeFunnelMigration,
 } from '../../utils/tsurge';
 import {ErrorCode, FileSystem, ngErrorCode} from '@angular/compiler-cli';
-import {DiagnosticCategoryLabel, NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {DiagnosticCategoryLabel} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
+import {getLeadingLineWhitespaceOfNode} from '../../utils/tsurge/helpers/ast/leading_space';
 
 /** Data produced by the migration for each compilation unit. */
 export interface CompilationUnitData {
@@ -286,6 +287,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
     const {fullRemovals, partialRemovals, allRemovedIdentifiers} = removalLocations;
     const {importedSymbols, identifierCounts} = usages;
     const importManager = new ImportManager();
+    const sourceText = sourceFile.getFullText();
 
     // Replace full arrays with empty ones. This allows preserves more of the user's formatting.
     fullRemovals.forEach((node) => {
@@ -302,22 +304,15 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
     });
 
     // Filter out the unused identifiers from an array.
-    partialRemovals.forEach((toRemove, node) => {
-      const newNode = ts.factory.updateArrayLiteralExpression(
-        node,
-        node.elements.filter((el) => !toRemove.has(el)),
-      );
-
-      replacements.push(
-        new Replacement(
-          projectFile(sourceFile, info),
-          new TextUpdate({
-            position: node.getStart(),
-            end: node.getEnd(),
-            toInsert: this.printer.printNode(ts.EmitHint.Unspecified, newNode, sourceFile),
-          }),
-        ),
-      );
+    partialRemovals.forEach((toRemove, parent) => {
+      toRemove.forEach((node) => {
+        replacements.push(
+          new Replacement(
+            projectFile(sourceFile, info),
+            getArrayElementRemovalUpdate(node, parent, sourceText),
+          ),
+        );
+      });
     });
 
     // Attempt to clean up unused import declarations. Note that this isn't foolproof, because we
@@ -338,4 +333,50 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
 
     applyImportManagerChanges(importManager, replacements, [sourceFile], info);
   }
+}
+
+/** Generates a `TextUpdate` for the removal of an array element. */
+function getArrayElementRemovalUpdate(
+  node: ts.Expression,
+  parent: ts.ArrayLiteralExpression,
+  sourceText: string,
+): TextUpdate {
+  let position = node.getStart();
+  let end = node.getEnd();
+  let toInsert = '';
+  const whitespaceOrLineFeed = /\s/;
+
+  // Usually the way we'd remove the nodes would be to recreate the `parent` while excluding
+  // the nodes that should be removed. The problem with this is that it'll strip out comments
+  // inside the array which can have special meaning internally. We work around it by removing
+  // only the node's own offsets. This comes with another problem in that it won't remove the commas
+  // that separate array elements which in turn can look weird if left in place (e.g.
+  // `[One, Two, Three, Four]` can turn into `[One,,Four]`). To account for them, we start with the
+  // node's end offset and then expand it to include trailing commas, whitespace and line breaks.
+  for (let i = end; i < sourceText.length; i++) {
+    if (sourceText[i] === ',' || whitespaceOrLineFeed.test(sourceText[i])) {
+      end++;
+    } else {
+      break;
+    }
+  }
+
+  // If we're removing the last element in the array, adjust the starting offset so that
+  // it includes the previous comma on the same line. This avoids turning something like
+  // `[One, Two, Three]` into `[One,]`. We only do this within the same like, because
+  // trailing comma at the end of the line is fine.
+  if (parent.elements[parent.elements.length - 1] === node) {
+    for (let i = position - 1; i >= 0; i--) {
+      if (sourceText[i] === ',' || sourceText[i] === ' ') {
+        position--;
+      } else {
+        break;
+      }
+    }
+
+    // Replace the node with its leading whitespace to preserve the formatting.
+    toInsert = getLeadingLineWhitespaceOfNode(node);
+  }
+
+  return new TextUpdate({position, end, toInsert});
 }
