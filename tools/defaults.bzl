@@ -4,7 +4,6 @@ load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", _npm_packag
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
-load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config", _esbuild_esm_bundle = "esbuild_esm_bundle")
 load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
 load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
@@ -520,10 +519,6 @@ def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kw
         use_esm = True,
         **kwargs
     )
-
-def app_bundle(**kwargs):
-    """Default values for app_bundle"""
-    _app_bundle(**kwargs)
 
 # TODO: Consider removing this rule in favor of `esbuild` for more consistent bundling.
 def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):

@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, EventEmitter, forwardRef, Input, NgModule, Output} from '@angular/core';
+import '@angular/compiler';
+
+import {
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  NgModule,
+  NO_ERRORS_SCHEMA,
+  Output,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {UpgradeAdapter} from '@angular/upgrade';
 
@@ -55,7 +65,7 @@ ng1module.directive('ng1User', function () {
   standalone: false,
 })
 export class Pane {
-  @Input() title: string;
+  @Input() title: string = '';
 }
 
 @Component({
@@ -74,7 +84,7 @@ export class Pane {
   standalone: false,
 })
 export class UpgradeApp {
-  @Input() user: string;
+  @Input() user: string = '';
   @Output() reset = new EventEmitter();
   constructor() {}
 }
@@ -82,6 +92,7 @@ export class UpgradeApp {
 @NgModule({
   declarations: [Pane, UpgradeApp, adapter.upgradeNg1Component('ng1User')],
   imports: [BrowserModule],
+  schemas: [NO_ERRORS_SCHEMA],
 })
 export class Ng2AppModule {}
 

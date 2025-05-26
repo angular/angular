@@ -7,28 +7,28 @@
  */
 
 import {bindAction, profile} from '../../util';
-import {buildTree, emptyTree, initTreeUtils} from '../util';
+import {buildTable, emptyTable, initTableUtils} from '../util';
 
-import {TreeComponent} from './tree';
+import {TableComponent} from './table';
 
-let tree: TreeComponent;
+let table: TableComponent;
 
 function destroyDom() {
-  tree.data = emptyTree;
+  table.data = emptyTable;
 }
 
 function createDom() {
-  tree.data = buildTree();
+  table.data = buildTable();
 }
 
 function noop() {}
 
 function init() {
-  const rootEl = document.querySelector('tree');
+  const rootEl = document.querySelector('largetable')!;
   rootEl.textContent = '';
-  tree = new TreeComponent(rootEl);
+  table = new TableComponent(rootEl);
 
-  initTreeUtils();
+  initTableUtils();
 
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
