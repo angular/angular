@@ -29,11 +29,13 @@ import {expect} from '@angular/private/testing/matchers';
 import {
   Component,
   DoCheck,
+  Injector,
   NgZone,
   Renderer2,
   RendererFactory2,
   RendererStyleFlags2,
   RendererType2,
+  runInInjectionContext,
   ViewEncapsulation,
 } from '../../src/core';
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
@@ -375,10 +377,14 @@ describe('animation renderer factory', () => {
 function getRendererFactory2(document: Document): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([], fakeNgZone);
+  const sharedStylesHost = runInInjectionContext(
+    TestBed.inject(Injector),
+    () => new ɵSharedStylesHost(),
+  );
   const appId = 'app-id';
   const rendererFactory = new DomRendererFactory2(
     eventManager,
-    new ɵSharedStylesHost(document, appId),
+    sharedStylesHost,
     appId,
     true,
     document,

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {TestBed} from '@angular/core/testing';
 import {
   ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
   ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID,
@@ -17,7 +18,14 @@ import {
   ɵSharedStylesHost,
 } from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
-import {type ListenerOptions, NgZone, RendererFactory2, RendererType2} from '../../src/core';
+import {
+  Injector,
+  type ListenerOptions,
+  NgZone,
+  RendererFactory2,
+  RendererType2,
+  runInInjectionContext,
+} from '../../src/core';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 
 export class SimpleDomEventsPlugin extends EventManagerPlugin {
@@ -53,10 +61,14 @@ export class SimpleDomEventsPlugin extends EventManagerPlugin {
 export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
+  const sharedStylesHost = runInInjectionContext(
+    TestBed.inject(Injector),
+    () => new ɵSharedStylesHost(),
+  );
   const appId = 'appid';
   const rendererFactory = new ɵDomRendererFactory2(
     eventManager,
-    new ɵSharedStylesHost(document, appId),
+    sharedStylesHost,
     appId,
     true,
     document,
