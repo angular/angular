@@ -178,7 +178,11 @@ function extractSignalNodesAndEdgesFromRoots(
       continue;
     }
 
-    const producerNodes = (node.producerNode ?? []) as ReactiveNode[];
+    const producerNodes = [];
+    for (let link = node.producers; link !== undefined; link = link.nextProducer) {
+      const producer = link.producer;
+      producerNodes.push(producer);
+    }
     signalDependenciesMap.set(node, producerNodes);
     extractSignalNodesAndEdgesFromRoots(producerNodes, signalDependenciesMap);
   }
