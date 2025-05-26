@@ -86,7 +86,7 @@ The `DynamicFormQuestionComponent` creates form groups and populates them with c
 
 The goal of the `DynamicFormQuestionComponent` is to present question types defined in your model.
 You only have two types of questions at this point but you can imagine many more.
-The `ngSwitch` statement in the template determines which type of question to display.
+The `@switch` block in the template determines which type of question to display.
 The switch uses directives with the [`formControlName`](api/forms/FormControlName "FormControlName directive API reference") and [`formGroup`](api/forms/FormGroupDirective "FormGroupDirective API reference") selectors.
 Both directives are defined in `ReactiveFormsModule`.
 
