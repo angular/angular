@@ -423,10 +423,10 @@
   optionalDependencies:
     lmdb "3.3.0"
 
-"@angular/cdk@20.0.0-rc.1":
-  version "20.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-20.0.0-rc.1.tgz#f9c88a2ff59200990a640554c0d4a6b0c2423b28"
-  integrity sha512-YlY5uKCfuMm98YGGunFOcpdr8hgEtOlXSs7i6oCSnXll0IxngcbKt2OpnEWqGMSxhVbJ3/B+/SK/8goBui5tVw==
+"@angular/cdk@20.0.0-rc.2":
+  version "20.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-20.0.0-rc.2.tgz#94ad7c9c5a030a7bb6d02322780d0ee5352883de"
+  integrity sha512-jqv5621my90f9mn3iZRkAp8f7Dn1b16QyuDl6csOsH4wATySIprCE9jECcyAOtWvWGibw4fr5kocYkX+Lljlag==
   dependencies:
     parse5 "^7.1.2"
     tslib "^2.3.0"
@@ -460,17 +460,17 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/material@20.0.0-rc.1":
-  version "20.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.0.0-rc.1.tgz#c9c2c21d9b68ba7a48472136f90577166397993d"
-  integrity sha512-chD273pzqc1ghOP5dwPXaftcfn4vwDL43VZT1Vl2CFSy9+A3Bnd1MB1O0VVrUYQe1bi38TCJ9QwZjPmCOAOzHQ==
+"@angular/material@20.0.0-rc.2":
+  version "20.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.0.0-rc.2.tgz#5fb2be4a7e66e5137e1d855b237b2dc7af4a62cc"
+  integrity sha512-/ktz7f9Kc3+8NaJGDAROFlgGWMWGb0SgLio4CcxxZ2JxNH4JB2XSTnoQoFrShATTuaoBQ/D8/YaE+L5BZTPvGw==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#605518e69f05ad1cca30a4bc15367b63ea45e486":
-  version "0.0.0-ab30a094ca6bf7474d025bfcbe8b0aa14e714d2b"
-  uid "605518e69f05ad1cca30a4bc15367b63ea45e486"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#605518e69f05ad1cca30a4bc15367b63ea45e486"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#39b8cbd214dc08e81b7a69624d9dc152ce7c42db":
+  version "0.0.0-241f7bcac0f9e4e977e183e27dd041a357dcecbf"
+  uid "39b8cbd214dc08e81b7a69624d9dc152ce7c42db"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#39b8cbd214dc08e81b7a69624d9dc152ce7c42db"
   dependencies:
     "@google-cloud/spanner" "7.21.0"
     "@octokit/rest" "21.1.1"
