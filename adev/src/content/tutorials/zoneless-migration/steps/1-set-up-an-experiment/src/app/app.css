@@ -1,0 +1,145 @@
+:host {
+  display: block;
+}
+
+.todo-input-container {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.todo-input {
+  flex-grow: 1;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.todo-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.todo-input:disabled {
+  background-color: #e9ecef;
+}
+
+.app-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+  border-left: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.add-button {
+  border-radius: 0 4px 4px 0;
+}
+
+.add-button:hover {
+  background-color: #0056b3;
+}
+
+.add-button:disabled {
+  background-color: #007bff;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.todo-list li {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.todo-list li.loading { /* This class might need adjustment based on how isLoading is used per item */
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.todo-list li:last-child {
+  border-bottom: none;
+}
+
+.todo-list li:hover {
+  background-color: #f9f9f9;
+}
+
+.todo-list li.completed .todo-text {
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+.todo-checkbox {
+  margin-right: 12px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.todo-checkbox:disabled {
+  cursor: not-allowed;
+}
+
+.todo-text {
+  flex-grow: 1;
+  font-size: 16px;
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px;
+  line-height: 1;
+  transition: color 0.2s ease-in-out;
+}
+
+.remove-button:hover {
+  color: #cc0000;
+}
+
+.remove-button:disabled {
+  color: #ff4d4d;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.no-todos-message {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+.loading-message {
+  text-align: center;
+  color: #555;
+  font-style: italic;
+  padding: 20px;
+}
+
+.todo-footer {
+  text-align: right;
+  color: #777;
+  font-size: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}

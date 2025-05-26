@@ -1,0 +1,5 @@
+{
+  "openFiles": ["src/app/app.config.ts", "src/app/app.html", "src/app/app.ts"],
+  "title": "(Optional) Conditionally enable Zoneless",
+  "type": "editor"
+}

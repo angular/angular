@@ -1,0 +1,26 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title> Dynamic Rows</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="button-group">
+      <button (click)="addRow()" mat-flat-button>Add Row</button>
+      <button (click)="removeRow()" [disabled]="rowCount() === 0" mat-button>Remove Row</button>
+    </div>
+
+    <div class="info-box">
+      <zoneless-toggle />
+
+      <p><span class="font-medium">Expected Total Height:</span> {{ totalHeight() }}px</p>
+      <p><span class="font-medium">Calculated Height:</span> {{ calculatedHeight() }}px</p>
+    </div>
+
+    <div #rowContainer class="rows-outer-container">
+      @for (row of rows(); track row; let i = $index) {
+      <div class="row-item" [style.height.px]="rowHeight" [class.last-row-item]="i === rows.length - 1">
+        Row #{{ row }}
+      </div>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>
