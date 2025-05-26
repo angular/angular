@@ -1,14 +1,13 @@
-import {Component, Input} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, input} from '@angular/core';
 import {HousingLocationInfo} from '../housinglocation';
 @Component({
   selector: 'app-housing-location',
-  imports: [CommonModule],
+  imports: [],
   template: `
     <p>housing-location works!</p>
   `,
   styleUrls: ['./housing-location.css'],
 })
 export class HousingLocation {
-  @Input() housingLocation!: HousingLocationInfo;
+  housingLocation = input.required<HousingLocationInfo>();
 }

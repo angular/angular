@@ -113,7 +113,7 @@ has changed.
   /* ... */
 })
 export class UserProfile {
-  @Input() name: string = '';
+  name = input('');
 
   ngOnChanges(changes: SimpleChanges) {
     for (const inputName in changes) {
