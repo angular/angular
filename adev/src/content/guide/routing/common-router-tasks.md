@@ -11,7 +11,7 @@ To edit an item, users click an Edit button, which opens an `EditGroceryItem` co
 You want that component to retrieve the `id` for the grocery item so it can display the right information to the user.
 
 Use a route to pass this type of information to your application components.
-To do so, you use the [withComponentInputBinding](api/router/withComponentInputBinding) feature with `provideRouter` or the `bindToComponentInputs` option of `RouterModule.forRoot`.
+To do so, you use the [`withComponentInputBinding`](api/router/withComponentInputBinding) feature with `provideRouter` or the `bindToComponentInputs` option of `RouterModule.forRoot`.
 
 To get information from a route:
 
@@ -29,7 +29,7 @@ providers: [
 
 </docs-step>
 
-<docs-step title="Add an `Input` to the component">
+<docs-step title="Add an `input` to the component">
 
 Update the component to have an `input()` property matching the name of the parameter.
 
@@ -38,13 +38,29 @@ id = input.required<string>()
 hero = computed(() => this.service.getHero(id));
 ```
 
+</docs-step>
+<docs-step title="Optional: Use a default value">
+The router assigns values to all inputs based on the current route when `withComponentInputBinding` is enabled.
+The router assigns `undefined` if no route data matches the input key, such as when an optional query parameter is missing.
+You should include `undefined` in the `input`'s type when there's a possibility that an input might not be matched by the route.
+
+Provide a default value by either using the `transform` option on the input or managing a local state with a `linkedSignal`.
+
+```ts
+id = input.required({
+  transform: (maybeUndefined: string | undefined) => maybeUndefined ?? '0',
+});
+// or
+id = input<string|undefined>();
+internalId = linkedSignal(() => this.id() ?? getDefaultId());
+```
+
+</docs-step>
+</docs-workflow>
+
 NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
 If you want to use the parent components route info you will need to set the router `paramsInheritanceStrategy` option:
 `withRouterConfig({paramsInheritanceStrategy: 'always'})`
-
-</docs-step>
-
-</docs-workflow>
 
 ## Displaying a 404 page
 
