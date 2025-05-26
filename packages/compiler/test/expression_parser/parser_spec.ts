@@ -532,13 +532,13 @@ describe('parser', () => {
     it('should record property write span', () => {
       const ast = parseAction('a = b');
       expect(unparseWithSpan(ast)).toContain(['a = b', 'a = b']);
-      expect(unparseWithSpan(ast)).toContain(['a = b', '[nameSpan] a']);
+      expect(unparseWithSpan(ast)).toContain(['a', '[nameSpan] a']);
     });
 
     it('should record accessed property write span', () => {
       const ast = parseAction('a.b = c');
       expect(unparseWithSpan(ast)).toContain(['a.b = c', 'a.b = c']);
-      expect(unparseWithSpan(ast)).toContain(['a.b = c', '[nameSpan] b']);
+      expect(unparseWithSpan(ast)).toContain(['a.b', '[nameSpan] b']);
     });
 
     it('should record spans for untagged template literals with no interpolations', () => {

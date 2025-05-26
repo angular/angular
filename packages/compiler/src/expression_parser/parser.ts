@@ -29,7 +29,6 @@ import {
   ImplicitReceiver,
   Interpolation,
   KeyedRead,
-  KeyedWrite,
   LiteralArray,
   LiteralMap,
   LiteralMapKey,
@@ -40,7 +39,6 @@ import {
   ParseSpan,
   PrefixNot,
   PropertyRead,
-  PropertyWrite,
   RecursiveAstVisitor,
   SafeCall,
   SafeKeyedRead,
@@ -1214,14 +1212,13 @@ class _ParseAST {
       return id;
     });
     const nameSpan = this.sourceSpan(nameStart);
-    let receiver: AST;
 
     if (isSafe) {
       if (this.consumeOptionalOperator('=')) {
         this.error("The '?.' operator cannot be used in the assignment");
-        receiver = new EmptyExpr(this.span(start), this.sourceSpan(start));
+        return new EmptyExpr(this.span(start), this.sourceSpan(start));
       } else {
-        receiver = new SafePropertyRead(
+        return new SafePropertyRead(
           this.span(start),
           this.sourceSpan(start),
           nameSpan,
@@ -1235,18 +1232,17 @@ class _ParseAST {
           this.error('Bindings cannot contain assignments');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
         }
-
-        const value = this.parseConditional();
-        receiver = new PropertyWrite(
+        const receiver = new PropertyRead(
           this.span(start),
           this.sourceSpan(start),
           nameSpan,
           readReceiver,
           id,
-          value,
         );
+        const value = this.parseConditional();
+        return new Binary(this.span(start), this.sourceSpan(start), '=', receiver, value);
       } else {
-        receiver = new PropertyRead(
+        return new PropertyRead(
           this.span(start),
           this.sourceSpan(start),
           nameSpan,
@@ -1255,8 +1251,6 @@ class _ParseAST {
         );
       }
     }
-
-    return receiver;
   }
 
   private parseCall(receiver: AST, start: number, isSafe: boolean): AST {
@@ -1375,8 +1369,14 @@ class _ParseAST {
         if (isSafe) {
           this.error("The '?.' operator cannot be used in the assignment");
         } else {
+          const binaryReceiver = new KeyedRead(
+            this.span(start),
+            this.sourceSpan(start),
+            receiver,
+            key,
+          );
           const value = this.parseConditional();
-          return new KeyedWrite(this.span(start), this.sourceSpan(start), receiver, key, value);
+          return new Binary(this.span(start), this.sourceSpan(start), '=', binaryReceiver, value);
         }
       } else {
         return isSafe
