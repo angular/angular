@@ -7,7 +7,7 @@
  */
 
 // #docregion disabled-control
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 // #enddocregion disabled-control
 
@@ -31,7 +31,8 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 export class FormBuilderComp {
   form: FormGroup;
 
-  constructor(@Inject(FormBuilder) formBuilder: FormBuilder) {
+  constructor() {
+    const formBuilder = inject(FormBuilder);
     this.form = formBuilder.group(
       {
         name: formBuilder.group({
