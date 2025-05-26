@@ -1,14 +1,16 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "perf_lib",
     testonly = True,
     srcs = ["js-web-frameworks.perf-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
-    deps = [
+    interop_deps = [
         "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "@npm//protractor",
+    ],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//:node_modules/protractor",
     ],
 )

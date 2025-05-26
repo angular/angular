@@ -1,12 +1,13 @@
 load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "util_lib",
     srcs = ["util.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
-    deps = ["//modules/benchmarks/src:util_lib"],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = ["//modules/benchmarks/src:util_lib_rjs"],
 )
 
 ts_library(

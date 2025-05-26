@@ -40,7 +40,7 @@ export interface RowData {
 })
 export class JsWebFrameworksComponent {
   data: Array<RowData> = [];
-  selected: number | null;
+  selected: number | null = null;
 
   constructor(private _appRef: ApplicationRef) {}
 

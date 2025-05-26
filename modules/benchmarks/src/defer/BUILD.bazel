@@ -1,18 +1,18 @@
-load("//tools:defaults.bzl", "ng_module", "ts_library")
+load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "shared_lib",
     srcs = [
         "init.ts",
         "util.ts",
     ],
-    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    tsconfig = "//modules/benchmarks:tsconfig_build",
     deps = [
-        "//modules/benchmarks/src:util_lib",
-        "//packages/core",
-        "//packages/platform-browser",
+        "//modules/benchmarks/src:util_lib_rjs",
+        "//packages/core:core_rjs",
     ],
 )
 
