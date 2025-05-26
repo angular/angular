@@ -166,10 +166,11 @@ The following table provides shorthand examples:
 
 | Shorthand | How Angular interprets the syntax |
 |:--- |:--- |
-| `*ngFor="let item of [1,2,3]"` | `<ng-template ngFor let-item [ngForOf]="[1, 2, 3]">` |
-| `*ngFor="let item of [1,2,3] as items; trackBy: myTrack; index as i"` | `<ng-template ngFor let-item [ngForOf]="[1,2,3]" let-items="ngForOf" [ngForTrackBy]="myTrack" let-i="index">` |
-| `*ngIf="exp"`| `<ng-template [ngIf]="exp">` |
-| `*ngIf="exp as value"` | `<ng-template [ngIf]="exp" let-value="ngIf">` |
+| `*myDir="let item of [1,2,3]"` | `<ng-template myDir let-item [myDirOf]="[1, 2, 3]">` |
+| `*myDir="let item of [1,2,3] as items; trackBy: myTrack; index as i"` | `<ng-template myDir let-item [myDirOf]="[1,2,3]" let-items="myDirOf" [myDirTrackBy]="myTrack" let-i="index">` |
+| `*ngComponentOutlet="componentClass";` | `<ng-template [ngComponentOutlet]="componentClass">` |
+| `*ngComponentOutlet="componentClass; inputs: myInputs";` | `<ng-template [ngComponentOutlet]="componentClass" [ngComponentOutletInputs]="myInputs">` |
+| `*myDir="exp as value"` | `<ng-template [myDir]="exp" let-value="myDir">` |
 
 ## Improving template type checking for custom directives
 

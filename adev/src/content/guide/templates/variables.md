@@ -81,18 +81,7 @@ Since `@let` declarations are not hoisted, they **cannot** be accessed by parent
   }
 }
 
-<div *ngIf="condition">
-  {{topLevel + insideDiv}} <!-- Valid -->
-
-  @let nestedNgIf = value;
-
-  <div *ngIf="condition">
-     {{topLevel + insideDiv + nestedNgIf}} <!-- Valid -->
-  </div>
-</div>
-
 {{nested}} <!-- Error, not hoisted from @if -->
-{{nestedNgIf}} <!-- Error, not hoisted from *ngIf -->
 ```
 
 ### Full syntax
