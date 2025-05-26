@@ -30,7 +30,6 @@
       "NAMESPACE_URIS",
       "NoneEncapsulationDomRenderer",
       "PLATFORM_BROWSER_ID",
-      "PLATFORM_SERVER_ID",
       "REMOVE_STYLES_ON_COMPONENT_DESTROY",
       "REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT",
       "ShadowDomRenderer",
@@ -49,7 +48,6 @@
       "getBaseElementHref",
       "getDOM",
       "initDomAdapter",
-      "isPlatformServer",
       "isTemplateNode",
       "parseCookieValue",
       "relativePath",
@@ -60,7 +58,6 @@
       "shimStylesContent"
     ],
     "lazy": [
-      "DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "APP_BOOTSTRAP_LISTENER",
       "APP_ID",
@@ -380,7 +377,8 @@
       "createTView",
       "createTextNode",
       "createViewBlueprint",
-      "templateCreate",
+      "declareDirectiveHostTemplate",
+      "declareNoDirectiveHostTemplate",
       "decreaseElementDepthCount",
       "deepForEach",
       "deepForEachProvider",
@@ -400,10 +398,8 @@
       "detectChangesInViewWhileDirty",
       "detectChangesInternal",
       "diPublicInInjector",
-      "declareDirectiveHostTemplate",
-      "declareNoDirectiveHostTemplate",
-      "directiveHostFirstCreatePass",
       "directiveHostEndFirstCreatePass",
+      "directiveHostFirstCreatePass",
       "elementLikeEndShared",
       "elementLikeStartShared",
       "enterDI",
@@ -513,13 +509,13 @@
       "hasApplyArgsData",
       "hasClassInput",
       "hasDeps",
+      "hasHydrateTriggers",
       "hasInSkipHydrationBlockFlag",
       "hasLift",
       "hasOnDestroy",
       "hasParentInjector",
       "hasStyleInput",
       "hasTagAndTypeMatch",
-      "hasHydrateTriggers",
       "icuContainerIterate",
       "identity",
       "importProvidersFrom",
@@ -728,6 +724,7 @@
       "stringifyCSSSelectorList",
       "stringifyForError",
       "syncViewWithBlueprint",
+      "templateCreate",
       "throwCyclicDependencyError",
       "throwError",
       "throwInvalidWriteToSignalErrorFn",
@@ -749,7 +746,8 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput"
+      "writeToDirectiveInput",
+      "DeferComponent"
     ]
   }
 }
