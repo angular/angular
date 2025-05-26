@@ -297,4 +297,78 @@ describe('cleanup unused imports schematic', () => {
     `),
     );
   });
+
+  it('should preserve comments when removing unused imports', async () => {
+    writeFile(
+      'comp.ts',
+      `
+        import {Component} from '@angular/core';
+        import {One, Two, Three} from './directives';
+
+        @Component({
+          imports: [
+            // Start
+            Three,
+            One,
+            Two,
+            // End
+          ],
+          template: '<div one></div>',
+        })
+        export class Comp {}
+      `,
+    );
+
+    await runMigration();
+
+    expect(logs.pop()).toBe('Removed 2 imports in 1 file');
+    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
+      stripWhitespace(`
+        import {Component} from '@angular/core';
+        import {One} from './directives';
+
+        @Component({
+          imports: [
+            // Start
+            One,
+            // End
+          ],
+          template: '<div one></div>',
+        })
+        export class Comp {}
+    `),
+    );
+  });
+
+  it('should preserve inline comments and strip trailing comma when removing imports from same line', async () => {
+    writeFile(
+      'comp.ts',
+      `
+        import {Component} from '@angular/core';
+        import {One, Two, Three} from './directives';
+
+        @Component({
+          imports: [/* Start */ Three, One, Two /* End */],
+          template: '<div one></div>',
+        })
+        export class Comp {}
+      `,
+    );
+
+    await runMigration();
+
+    expect(logs.pop()).toBe('Removed 2 imports in 1 file');
+    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
+      stripWhitespace(`
+        import {Component} from '@angular/core';
+        import {One} from './directives';
+
+        @Component({
+          imports: [/* Start */ One /* End */],
+          template: '<div one></div>',
+        })
+        export class Comp {}
+    `),
+    );
+  });
 });
