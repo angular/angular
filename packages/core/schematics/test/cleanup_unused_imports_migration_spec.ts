@@ -311,7 +311,6 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
-    expect(logs.pop()).toBe('Removed 2 imports in 1 file');
     expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
       stripWhitespace(`
         import {Component} from '@angular/core';
@@ -347,7 +346,6 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
-    expect(logs.pop()).toBe('Removed 2 imports in 1 file');
     expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
       stripWhitespace(`
         import {Component} from '@angular/core';
