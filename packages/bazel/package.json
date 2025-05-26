@@ -34,7 +34,7 @@
     "@rollup/plugin-node-resolve": "^16.0.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-sourcemaps": "^0.6.3",
-    "rollup": "4.41.0",
+    "rollup": "4.41.1",
     "terser": "^5.9.0",
     "typescript": ">=5.8 <5.9"
   },
