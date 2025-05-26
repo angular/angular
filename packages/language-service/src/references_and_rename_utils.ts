@@ -7,10 +7,10 @@
  */
 import {
   AST,
+  Binary,
   BindingPipe,
   LiteralPrimitive,
   PropertyRead,
-  PropertyWrite,
   SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
@@ -375,11 +375,16 @@ export function getRenameTextAndSpanAtPosition(
     }
   } else if (
     node instanceof PropertyRead ||
-    node instanceof PropertyWrite ||
     node instanceof SafePropertyRead ||
     node instanceof BindingPipe
   ) {
     return {text: node.name, span: toTextSpan(node.nameSpan)};
+  } else if (
+    node instanceof Binary &&
+    node.operation === '=' &&
+    node.left instanceof PropertyRead
+  ) {
+    return getRenameTextAndSpanAtPosition(node.left, position);
   } else if (node instanceof LiteralPrimitive) {
     const span = toTextSpan(node.sourceSpan);
     const text = node.value;

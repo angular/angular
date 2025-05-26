@@ -10,10 +10,10 @@ import {
   AST,
   ASTWithName,
   ASTWithSource,
+  Binary,
   BindingPipe,
   ParseSourceSpan,
   PropertyRead,
-  PropertyWrite,
   R3Identifiers,
   SafePropertyRead,
   TmplAstBoundAttribute,
@@ -800,13 +800,16 @@ export class SymbolBuilder {
 
     let withSpan = expression.sourceSpan;
 
-    // The `name` part of a `PropertyWrite` and `ASTWithName` do not have their own
+    // The `name` part of a property write and `ASTWithName` do not have their own
     // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
     // Also skipping SafePropertyReads as it breaks nullish coalescing not nullable extended diagnostic
     if (
-      expression instanceof PropertyWrite ||
-      (expression instanceof ASTWithName && !(expression instanceof SafePropertyRead))
+      expression instanceof Binary &&
+      expression.operation === '=' &&
+      expression.left instanceof PropertyRead
     ) {
+      withSpan = expression.left.nameSpan;
+    } else if (expression instanceof ASTWithName && !(expression instanceof SafePropertyRead)) {
       withSpan = expression.nameSpan;
     }
 

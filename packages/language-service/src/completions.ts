@@ -17,7 +17,6 @@ import {
   ParsedEventType,
   ParseSourceSpan,
   PropertyRead,
-  PropertyWrite,
   SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
@@ -68,7 +67,7 @@ import {
 import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 
 type PropertyExpressionCompletionBuilder = CompletionBuilder<
-  PropertyRead | PropertyWrite | EmptyExpr | SafePropertyRead | TmplAstBoundEvent
+  PropertyRead | EmptyExpr | SafePropertyRead | TmplAstBoundEvent
 >;
 
 type ElementAttributeCompletionBuilder = CompletionBuilder<
@@ -351,7 +350,6 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     return (
       this.node instanceof PropertyRead ||
       this.node instanceof SafePropertyRead ||
-      this.node instanceof PropertyWrite ||
       this.node instanceof EmptyExpr ||
       // BoundEvent nodes only count as property completions if in an EventValue context.
       (this.node instanceof BoundEvent && this.nodeContext === CompletionNodeContext.EventValue)
@@ -1231,7 +1229,6 @@ function makeReplacementSpanFromParseSourceSpan(span: ParseSourceSpan): ts.TextS
 function makeReplacementSpanFromAst(
   node:
     | PropertyRead
-    | PropertyWrite
     | SafePropertyRead
     | BindingPipe
     | EmptyExpr

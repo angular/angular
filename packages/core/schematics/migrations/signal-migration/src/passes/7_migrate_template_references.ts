@@ -30,8 +30,17 @@ export function pass7__migrateTemplateReferences<D extends ClassFieldDescriptor>
       continue;
     }
 
+    const parent = reference.from.readAstPath.at(-2);
+    let readEndPos: number;
+
+    if (reference.from.isWrite && parent) {
+      readEndPos = parent.sourceSpan.end;
+    } else {
+      readEndPos = reference.from.read.sourceSpan.end;
+    }
+
     // Skip duplicate references. E.g. if a template is shared.
-    const fileReferenceId = `${reference.from.templateFile.id}:${reference.from.read.sourceSpan.end}`;
+    const fileReferenceId = `${reference.from.templateFile.id}:${readEndPos}`;
     if (seenFileReferences.has(fileReferenceId)) {
       continue;
     }
@@ -46,8 +55,8 @@ export function pass7__migrateTemplateReferences<D extends ClassFieldDescriptor>
       new Replacement(
         reference.from.templateFile,
         new TextUpdate({
-          position: reference.from.read.sourceSpan.end,
-          end: reference.from.read.sourceSpan.end,
+          position: readEndPos,
+          end: readEndPos,
           toInsert: appendText,
         }),
       ),

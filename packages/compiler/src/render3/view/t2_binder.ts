@@ -11,7 +11,6 @@ import {
   BindingPipe,
   ImplicitReceiver,
   PropertyRead,
-  PropertyWrite,
   SafePropertyRead,
   ThisReceiver,
 } from '../../expression_parser/ast';
@@ -985,11 +984,6 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     return super.visitSafePropertyRead(ast, context);
   }
 
-  override visitPropertyWrite(ast: PropertyWrite, context: any): any {
-    this.maybeMap(ast, ast.name);
-    return super.visitPropertyWrite(ast, context);
-  }
-
   private ingestScopedNode(node: ScopedNode) {
     const childScope = this.scope.getChildScope(node);
     const binder = new TemplateBinder(
@@ -1006,7 +1000,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     binder.ingest(node);
   }
 
-  private maybeMap(ast: PropertyRead | SafePropertyRead | PropertyWrite, name: string): void {
+  private maybeMap(ast: PropertyRead | SafePropertyRead, name: string): void {
     // If the receiver of the expression isn't the `ImplicitReceiver`, this isn't the root of an
     // `AST` expression that maps to a `Variable` or `Reference`.
     if (!(ast.receiver instanceof ImplicitReceiver) || ast.receiver instanceof ThisReceiver) {

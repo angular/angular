@@ -19,7 +19,6 @@ import {
   ParsedEventType,
   ParseSourceSpan,
   PropertyRead,
-  PropertyWrite,
   R3Identifiers,
   SafeCall,
   SafePropertyRead,
@@ -55,6 +54,7 @@ import {
   TransplantedType,
   TmplAstComponent,
   TmplAstDirective,
+  Binary,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -3115,25 +3115,31 @@ class TcbExpressionTranslator {
         }
       }
       return targetExpression;
-    } else if (ast instanceof PropertyWrite && ast.receiver instanceof ImplicitReceiver) {
-      const target = this.tcb.boundTarget.getExpressionTarget(ast);
+    } else if (
+      ast instanceof Binary &&
+      ast.operation === '=' &&
+      ast.left instanceof PropertyRead &&
+      ast.left.receiver instanceof ImplicitReceiver
+    ) {
+      const read = ast.left;
+      const target = this.tcb.boundTarget.getExpressionTarget(read);
       if (target === null) {
         return null;
       }
 
-      const targetExpression = this.getTargetNodeExpression(target, ast);
-      const expr = this.translate(ast.value);
+      const targetExpression = this.getTargetNodeExpression(target, read);
+      const expr = this.translate(ast.right);
       const result = ts.factory.createParenthesizedExpression(
         ts.factory.createBinaryExpression(targetExpression, ts.SyntaxKind.EqualsToken, expr),
       );
-      addParseSpanInfo(result, ast.sourceSpan);
+      addParseSpanInfo(result, read.sourceSpan);
 
       // Ignore diagnostics from TS produced for writes to `@let` and re-report them using
       // our own infrastructure. We can't rely on the TS reporting, because it includes
       // the name of the auto-generated TCB variable name.
       if (target instanceof TmplAstLetDeclaration) {
         markIgnoreDiagnostics(result);
-        this.tcb.oobRecorder.illegalWriteToLetDeclaration(this.tcb.id, ast, target);
+        this.tcb.oobRecorder.illegalWriteToLetDeclaration(this.tcb.id, read, target);
       }
 
       return result;

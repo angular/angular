@@ -19,7 +19,6 @@ import {
   ImplicitReceiver,
   Interpolation,
   KeyedRead,
-  KeyedWrite,
   LiteralArray,
   LiteralMap,
   LiteralPrimitive,
@@ -27,7 +26,6 @@ import {
   ParenthesizedExpression,
   PrefixNot,
   PropertyRead,
-  PropertyWrite,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
@@ -72,6 +70,7 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['>', ts.SyntaxKind.GreaterThanToken],
   ['<=', ts.SyntaxKind.LessThanEqualsToken],
   ['>=', ts.SyntaxKind.GreaterThanEqualsToken],
+  ['=', ts.SyntaxKind.EqualsToken],
   ['==', ts.SyntaxKind.EqualsEqualsToken],
   ['===', ts.SyntaxKind.EqualsEqualsEqualsToken],
   ['*', ts.SyntaxKind.AsteriskToken],
@@ -209,19 +208,6 @@ class AstTranslator implements AstVisitor {
     return node;
   }
 
-  visitKeyedWrite(ast: KeyedWrite): ts.Expression {
-    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
-    const left = ts.factory.createElementAccessExpression(receiver, this.translate(ast.key));
-    // TODO(joost): annotate `left` with the span of the element access, which is not currently
-    //  available on `ast`.
-    const right = wrapForTypeChecker(this.translate(ast.value));
-    const node = wrapForDiagnostics(
-      ts.factory.createBinaryExpression(left, ts.SyntaxKind.EqualsToken, right),
-    );
-    addParseSpanInfo(node, ast.sourceSpan);
-    return node;
-  }
-
   visitLiteralArray(ast: LiteralArray): ts.Expression {
     const elements = ast.expressions.map((expr) => this.translate(expr));
     const literal = ts.factory.createArrayLiteralExpression(elements);
@@ -301,30 +287,6 @@ class AstTranslator implements AstVisitor {
     const name = ts.factory.createPropertyAccessExpression(receiver, ast.name);
     addParseSpanInfo(name, ast.nameSpan);
     const node = wrapForDiagnostics(name);
-    addParseSpanInfo(node, ast.sourceSpan);
-    return node;
-  }
-
-  visitPropertyWrite(ast: PropertyWrite): ts.Expression {
-    const receiver = wrapForDiagnostics(this.translate(ast.receiver));
-    const left = ts.factory.createPropertyAccessExpression(receiver, ast.name);
-    addParseSpanInfo(left, ast.nameSpan);
-    // TypeScript reports assignment errors on the entire lvalue expression. Annotate the lvalue of
-    // the assignment with the sourceSpan, which includes receivers, rather than nameSpan for
-    // consistency of the diagnostic location.
-    // a.b.c = 1
-    // ^^^^^^^^^ sourceSpan
-    //     ^     nameSpan
-    const leftWithPath = wrapForDiagnostics(left);
-    addParseSpanInfo(leftWithPath, ast.sourceSpan);
-    // The right needs to be wrapped in parens as well or we cannot accurately match its
-    // span to just the RHS. For example, the span in `e = $event /*0,10*/` is ambiguous.
-    // It could refer to either the whole binary expression or just the RHS.
-    // We should instead generate `e = ($event /*0,10*/)` so we know the span 0,10 matches RHS.
-    const right = wrapForTypeChecker(this.translate(ast.value));
-    const node = wrapForDiagnostics(
-      ts.factory.createBinaryExpression(leftWithPath, ts.SyntaxKind.EqualsToken, right),
-    );
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
@@ -582,9 +544,6 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   visitKeyedRead(ast: KeyedRead): boolean {
     return false;
   }
-  visitKeyedWrite(ast: KeyedWrite): boolean {
-    return false;
-  }
   visitLiteralArray(ast: LiteralArray): boolean {
     return true;
   }
@@ -610,9 +569,6 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return ast.expression.visit(this);
   }
   visitPropertyRead(ast: PropertyRead): boolean {
-    return false;
-  }
-  visitPropertyWrite(ast: PropertyWrite): boolean {
     return false;
   }
   visitSafePropertyRead(ast: SafePropertyRead): boolean {
