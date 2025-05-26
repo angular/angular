@@ -24,8 +24,11 @@ interface Person {
   standalone: false,
 })
 export class JsonpCmp {
-  people: Person[];
+  people: Person[] = [];
+
   constructor(http: HttpClient) {
-    http.jsonp('./people.json', 'callback').subscribe((res: Person[]) => (this.people = res));
+    http.jsonp('./people.json', 'callback').subscribe((res: unknown) => {
+      this.people = res as Person[];
+    });
   }
 }

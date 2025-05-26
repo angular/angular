@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "@angular/animations": "workspace:*",
+    "@angular/build": "20.0.0-rc.1",
+    "@angular/compiler": "workspace:*",
+    "@angular/common": "workspace:*",
+    "@angular/core": "workspace:*",
+    "@angular/upgrade": "workspace:*",
+    "@angular/forms": "workspace:*",
+    "@angular/localize": "workspace:*",
+    "@angular/router": "workspace:*",
+    "@angular/platform-browser": "workspace:*",
+    "@angular/platform-browser-dynamic": "workspace:*",
+    "zone.js": "workspace:*"
+  }
+}

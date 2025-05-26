@@ -7,29 +7,49 @@
  */
 
 /* tslint:disable:no-console  */
-import {Component, Host, NgModule} from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  FormGroupDirective,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+
+import {Component, Directive, Host, NgModule} from '@angular/core';
+import {FormControl, FormGroup, FormsModule, NG_VALIDATORS, NgForm} from '@angular/forms';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
+
+/**
+ * A domain model we are binding the form controls to.
+ */
+class CheckoutModel {
+  firstName: string = '';
+  middleName: string = '';
+  lastName: string = '';
+  country: string = 'Canada';
+
+  creditCard: string = '';
+  amount: number = 0;
+  email: string = '';
+  comments: string = '';
+}
 
 /**
  * Custom validator.
  */
-function creditCardValidator(c: AbstractControl): {[key: string]: boolean} | null {
+export function creditCardValidator(c: FormControl): {[key: string]: boolean} | null {
   if (c.value && /^\d{16}$/.test(c.value)) {
     return null;
   } else {
     return {'invalidCreditCard': true};
   }
 }
+
+export const creditCardValidatorBinding = {
+  provide: NG_VALIDATORS,
+  useValue: creditCardValidator,
+  multi: true,
+};
+
+@Directive({
+  selector: '[credit-card]',
+  providers: [creditCardValidatorBinding],
+  standalone: false,
+})
+export class CreditCardValidator {}
 
 /**
  * This is a component that displays an error message.
@@ -53,11 +73,11 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} | nul
   standalone: false,
 })
 export class ShowError {
-  formDir: FormGroupDirective;
-  controlPath: string;
-  errorTypes: string[];
+  formDir: NgForm;
+  controlPath: string = '';
+  errorTypes: string[] = [];
 
-  constructor(@Host() formDir: FormGroupDirective) {
+  constructor(@Host() formDir: NgForm) {
     this.formDir = formDir;
   }
 
@@ -84,57 +104,63 @@ export class ShowError {
 }
 
 @Component({
-  selector: 'reactive-forms',
-  viewProviders: [FormBuilder],
+  selector: 'template-driven-forms',
   template: `
-    <h1>Checkout Form (Reactive)</h1>
+    <h1>Checkout Form</h1>
 
-    <form (ngSubmit)="onSubmit()" [formGroup]="form" #f="ngForm">
+    <form (ngSubmit)="onSubmit()" #f="ngForm">
       <p>
         <label for="firstName">First Name</label>
-        <input type="text" id="firstName" formControlName="firstName" />
+        <input type="text" id="firstName" name="firstName" [(ngModel)]="model.firstName" required />
         <show-error control="firstName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="middleName">Middle Name</label>
-        <input type="text" id="middleName" formControlName="middleName" />
+        <input type="text" id="middleName" name="middleName" [(ngModel)]="model.middleName" />
       </p>
 
       <p>
         <label for="lastName">Last Name</label>
-        <input type="text" id="lastName" formControlName="lastName" />
+        <input type="text" id="lastName" name="lastName" [(ngModel)]="model.lastName" required />
         <show-error control="lastName" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="country">Country</label>
-        <select id="country" formControlName="country">
+        <select id="country" name="country" [(ngModel)]="model.country">
           <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
         </select>
       </p>
 
       <p>
         <label for="creditCard">Credit Card</label>
-        <input type="text" id="creditCard" formControlName="creditCard" />
+        <input
+          type="text"
+          id="creditCard"
+          name="creditCard"
+          [(ngModel)]="model.creditCard"
+          required
+          credit-card
+        />
         <show-error control="creditCard" [errors]="['required', 'invalidCreditCard']"></show-error>
       </p>
 
       <p>
         <label for="amount">Amount</label>
-        <input type="number" id="amount" formControlName="amount" />
+        <input type="number" id="amount" name="amount" [(ngModel)]="model.amount" required />
         <show-error control="amount" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="email">Email</label>
-        <input type="email" id="email" formControlName="email" />
+        <input type="email" id="email" name="email" [(ngModel)]="model.email" required />
         <show-error control="email" [errors]="['required']"></show-error>
       </p>
 
       <p>
         <label for="comments">Comments</label>
-        <textarea id="comments" formControlName="comments"> </textarea>
+        <textarea id="comments" name="comments" [(ngModel)]="model.comments"> </textarea>
       </p>
 
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
@@ -142,33 +168,19 @@ export class ShowError {
   `,
   standalone: false,
 })
-export class ReactiveForms {
-  form: UntypedFormGroup;
+export class TemplateDrivenForms {
+  model = new CheckoutModel();
   countries = ['US', 'Canada'];
-
-  constructor(formBuilder: UntypedFormBuilder) {
-    this.form = formBuilder.group({
-      'firstName': ['', Validators.required],
-      'middleName': [''],
-      'lastName': ['', Validators.required],
-      'country': ['Canada', Validators.required],
-      'creditCard': ['', Validators.compose([Validators.required, creditCardValidator])],
-      'amount': [0, Validators.required],
-      'email': ['', Validators.required],
-      'comments': [''],
-    });
-  }
 
   onSubmit(): void {
     console.log('Submitting:');
-    console.log(this.form.value);
+    console.log(this.model);
   }
 }
-
 @NgModule({
-  bootstrap: [ReactiveForms],
-  declarations: [ShowError, ReactiveForms],
-  imports: [BrowserModule, ReactiveFormsModule],
+  declarations: [TemplateDrivenForms, CreditCardValidator, ShowError],
+  bootstrap: [TemplateDrivenForms],
+  imports: [BrowserModule, FormsModule],
 })
 export class ExampleModule {}
 

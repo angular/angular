@@ -1,33 +1,35 @@
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
-load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
+load("//tools:defaults.bzl", "http_server")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-ng_module(
-    name = "ng2_switch",
-    srcs = glob(["*.ts"]),
-    tsconfig = "//modules/benchmarks:tsconfig-build.json",
-    deps = [
-        "//modules/benchmarks/src:util_lib",
-        "//modules/benchmarks/src/largetable:util_lib",
-        "//packages/core",
-        "//packages/platform-browser",
+optimize_angular_app(
+    name = "bundles",
+    srcs = glob(["*.ts"]) + [
+        "index.html",
+        "//modules/benchmarks/src:util_lib_rjs",
+        "//modules/benchmarks/src/largetable:util_lib_rjs",
     ],
-)
-
-app_bundle(
-    name = "bundle",
-    entry_point = ":index.ts",
-    deps = [":ng2_switch"],
+    include_zonejs = True,
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//modules:node_modules/@angular/build",
+        "//modules:node_modules/@angular/common",
+        "//modules:node_modules/@angular/core",
+        "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/zone.js",
+    ],
 )
 
 # The script needs to be called `app_bundle` for easier syncing into g3.
 genrule(
     name = "app_bundle",
-    srcs = [":bundle.debug.min.js"],
+    srcs = [":bundles"],
     outs = ["app_bundle.js"],
-    cmd = "cp $< $@",
+    cmd = "cp $</main.js $@",
 )
 
 http_server(
