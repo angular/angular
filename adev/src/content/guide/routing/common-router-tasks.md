@@ -31,13 +31,11 @@ providers: [
 
 <docs-step title="Add an `Input` to the component">
 
-Update the component to have an `Input` matching the name of the parameter.
+Update the component to have an `input()` property matching the name of the parameter.
 
 ```ts
-@Input()
-set id(heroId: string) {
-  this.hero$ = this.service.getHero(heroId);
-}
+id = input.required<string>()
+hero = computed(() => this.service.getHero(heroId));
 ```
 
 NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.

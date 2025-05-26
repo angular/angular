@@ -4,7 +4,6 @@ import {FormsModule} from '@angular/forms';
 
 import {heroSwitchComponents} from './hero-switch.components';
 import {HeroComponent} from './hero.component';
-import {UnlessDirective} from './unless.directive';
 import {TrigonometryDirective} from './trigonometry.directive';
 
 import {Hero, heroes} from './hero';
@@ -13,14 +12,7 @@ import {Hero, heroes} from './hero';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  imports: [
-    CommonModule,
-    FormsModule,
-    heroSwitchComponents,
-    HeroComponent,
-    UnlessDirective,
-    TrigonometryDirective,
-  ],
+  imports: [CommonModule, FormsModule, heroSwitchComponents, HeroComponent, TrigonometryDirective],
 })
 export class AppComponent {
   heroes = heroes;

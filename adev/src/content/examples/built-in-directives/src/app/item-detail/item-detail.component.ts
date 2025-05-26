@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 import {Item} from '../item';
 
@@ -8,5 +8,5 @@ import {Item} from '../item';
   styleUrls: ['./item-detail.component.css'],
 })
 export class ItemDetailComponent {
-  @Input() item!: Item;
+  item = input<Item | undefined>();
 }

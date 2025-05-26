@@ -37,7 +37,7 @@ See the [CLI command reference](cli) and [Building and serving Angular apps](too
 ## How AOT works
 
 The Angular AOT compiler extracts **metadata** to interpret the parts of the application that Angular is supposed to manage.
-You can specify the metadata explicitly in **decorators** such as `@Component()` and `@Input()`, or implicitly in the constructor declarations of the decorated classes.
+You can specify the metadata explicitly in **decorators** such as `@Component()`, or implicitly in the constructor declarations of the decorated classes.
 The metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
 
 In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
@@ -49,7 +49,7 @@ In the following example, the `@Component()` metadata object and the class const
   template: '<div>A typical component for {{data.name}}</div>'
 })
 export class TypicalComponent {
-  @Input() data: TypicalData;
+  data = input.required<TypicalData>();
   private someService = inject(SomeService);
 }
 
@@ -189,14 +189,14 @@ Consider the following component definition:
 
 <docs-code language="typescript">
 
-const template = '<div>{{hero.name}}</div>';
+const template = '<div>{{hero().name}}</div>';
 
 @Component({
   selector: 'app-hero',
   template: template
 })
 export class HeroComponent {
-  @Input() hero: Hero;
+  hero = input.required<Hero>();
 }
 
 </docs-code>
@@ -209,10 +209,10 @@ The effect is the same as if you had written:
 
 @Component({
   selector: 'app-hero',
-  template: '<div>{{hero.name}}</div>'
+  template: '<div>{{hero().name}}</div>'
 })
 export class HeroComponent {
-  @Input() hero: Hero;
+  hero = input.required<Hero>();
 }
 
 </docs-code>
@@ -223,14 +223,14 @@ You can take this example a step further by including the `template` constant in
 
 <docs-code language="typescript">
 
-const template = '<div>{{hero.name}}</div>';
+const template = '<div>{{hero().name}}</div>';
 
 @Component({
   selector: 'app-hero',
-  template: template + '<div>{{hero.title}}</div>'
+  template: template + '<div>{{hero().title}}</div>'
 })
 export class HeroComponent {
-  @Input() hero: Hero;
+  hero = input.required<Hero>();
 }
 
 </docs-code>
@@ -283,7 +283,7 @@ The compiler understands all syntax forms that the collector supports, but it ma
 The compiler can only reference *exported symbols*.
 
 * Decorated component class members must be public or protected.
-    You cannot make an `@Input()` property private.
+    You cannot make an `input()` property private.
 
 * Data bound properties must also be public or protected
 
