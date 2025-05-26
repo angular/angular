@@ -7,13 +7,13 @@
  */
 
 import {
+  AST,
   BindingPipe,
   CssSelector,
   ParseSourceFile,
   parseTemplate,
   ParseTemplateOptions,
   PropertyRead,
-  PropertyWrite,
   R3TargetBinder,
   SelectorlessMatcher,
   SelectorMatcher,
@@ -1027,11 +1027,7 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   illegalForLoopTrackAccess(): void {}
   inaccessibleDeferredTriggerElement(): void {}
   controlFlowPreventingContentProjection(): void {}
-  illegalWriteToLetDeclaration(
-    id: TypeCheckId,
-    node: PropertyWrite,
-    target: TmplAstLetDeclaration,
-  ): void {}
+  illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration): void {}
   letUsedBeforeDefinition(
     id: TypeCheckId,
     node: PropertyRead,

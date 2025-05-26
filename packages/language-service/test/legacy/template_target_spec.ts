@@ -13,8 +13,6 @@ import {
   SafePropertyRead,
   SafeKeyedRead,
   KeyedRead,
-  PropertyWrite,
-  KeyedWrite,
   Binary,
   BindingPipe,
   SafeCall,
@@ -270,8 +268,8 @@ describe('getTargetAtPosition for template AST', () => {
     // When the template target returns a property read, we only use the LHS downstream because the
     // RHS would have its own node in the AST that would have been returned instead. The LHS of the
     // `PropertyWrite` is the same as the `PropertyRead`.
-    expect(node instanceof PropertyRead || node instanceof PropertyWrite).toBeTrue();
-    expect((node as PropertyRead | PropertyWrite).name).toBe('bar');
+    expect(node instanceof PropertyRead).toBeTrue();
+    expect((node as PropertyRead).name).toBe('bar');
   });
 
   it('should locate template bound event key', () => {
@@ -467,8 +465,8 @@ describe('getTargetAtPosition for template AST', () => {
     expect(parent instanceof BoundAttribute || parent instanceof BoundEvent).toBe(true);
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node instanceof PropertyRead || node instanceof PropertyWrite).toBeTrue();
-    expect((node as PropertyRead | PropertyWrite).name).toBe('bar');
+    expect(node instanceof PropertyRead).toBeTrue();
+    expect((node as PropertyRead).name).toBe('bar');
   });
 
   it('should locate switch value in ICUs', () => {
@@ -567,22 +565,22 @@ describe('getTargetAtPosition for expression AST', () => {
     expect(node).toBeInstanceOf(SafeKeyedRead);
   });
 
-  it('should locate property write', () => {
+  it('should locate property assignments', () => {
     const {errors, nodes, position} = parse(`<div (foo)="b¦ar=$event"></div>`);
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(PropertyWrite);
+    expect(node).toBeInstanceOf(PropertyRead);
   });
 
-  it('should locate keyed write', () => {
+  it('should locate keyed assignments', () => {
     const {errors, nodes, position} = parse(`<div (foo)="bar['baz']¦=$event"></div>`);
     expect(errors).toBe(null);
     const {context} = getTargetAtPosition(nodes, position)!;
     const {node} = context as SingleNodeTarget;
     expect(isExpressionNode(node!)).toBe(true);
-    expect(node).toBeInstanceOf(KeyedWrite);
+    expect(node).toBeInstanceOf(KeyedRead);
   });
 
   it('should locate binary', () => {
