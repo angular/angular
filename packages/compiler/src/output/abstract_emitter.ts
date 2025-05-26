@@ -247,47 +247,6 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
 
   abstract visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any;
 
-  visitWriteVarExpr(expr: o.WriteVarExpr, ctx: EmitterVisitorContext): any {
-    const lineWasEmpty = ctx.lineIsEmpty();
-    if (!lineWasEmpty) {
-      ctx.print(expr, '(');
-    }
-    ctx.print(expr, `${expr.name} = `);
-    expr.value.visitExpression(this, ctx);
-    if (!lineWasEmpty) {
-      ctx.print(expr, ')');
-    }
-    return null;
-  }
-  visitWriteKeyExpr(expr: o.WriteKeyExpr, ctx: EmitterVisitorContext): any {
-    const lineWasEmpty = ctx.lineIsEmpty();
-    if (!lineWasEmpty) {
-      ctx.print(expr, '(');
-    }
-    expr.receiver.visitExpression(this, ctx);
-    ctx.print(expr, `[`);
-    expr.index.visitExpression(this, ctx);
-    ctx.print(expr, `] = `);
-    expr.value.visitExpression(this, ctx);
-    if (!lineWasEmpty) {
-      ctx.print(expr, ')');
-    }
-    return null;
-  }
-  visitWritePropExpr(expr: o.WritePropExpr, ctx: EmitterVisitorContext): any {
-    const lineWasEmpty = ctx.lineIsEmpty();
-    if (!lineWasEmpty) {
-      ctx.print(expr, '(');
-    }
-    expr.receiver.visitExpression(this, ctx);
-    ctx.print(expr, `.${expr.name} = `);
-    expr.value.visitExpression(this, ctx);
-    if (!lineWasEmpty) {
-      ctx.print(expr, ')');
-    }
-    return null;
-  }
-
   visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): any {
     const shouldParenthesize = expr.fn instanceof o.ArrowFunctionExpr;
 
@@ -422,6 +381,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): any {
     let opStr: string;
     switch (ast.operator) {
+      case o.BinaryOperator.Assign:
+        opStr = '=';
+        break;
       case o.BinaryOperator.Equals:
         opStr = '==';
         break;

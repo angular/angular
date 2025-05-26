@@ -16,6 +16,7 @@ export const BINARY_OPERATORS = new Map([
   ['|', o.BinaryOperator.BitwiseOr],
   ['&', o.BinaryOperator.BitwiseAnd],
   ['/', o.BinaryOperator.Divide],
+  ['=', o.BinaryOperator.Assign],
   ['==', o.BinaryOperator.Equals],
   ['===', o.BinaryOperator.Identical],
   ['<', o.BinaryOperator.Lower],
