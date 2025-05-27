@@ -35,7 +35,7 @@ export {OptimizeFor} from './src/ngtsc/typecheck/api';
 // needing to use a default import. NodeJS will expose named CJS exports as named ESM exports.
 // TODO(devversion): Remove these duplicate exports once devmode&prodmode is combined/ESM.
 export {ConsoleLogger, Logger, LogLevel} from './src/ngtsc/logging';
-export {NodeJSFileSystem, absoluteFrom} from './src/ngtsc/file_system';
+export {NodeJSFileSystem, absoluteFrom, FileSystem, AbsoluteFsPath} from './src/ngtsc/file_system';
 
 // Export documentation entities for Angular-internal API doc generation.
 export * from './src/ngtsc/docs';
