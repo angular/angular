@@ -5,9 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {provideHttpClient} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {validateAsync} from '../src/api/async';
+import {isNode} from '@angular/private/testing';
+import {validateAsync, validateHttp} from '../src/api/async';
 import {define} from '../src/api/data';
 import {validate} from '../src/api/logic';
 import {applyEach, form} from '../src/api/structure';
@@ -18,9 +21,26 @@ interface Cat {
 }
 
 describe('resources', () => {
-  it('Takes a simple resource which reacts to data changes', async () => {
-    const injector = TestBed.inject(Injector);
+  let appRef: ApplicationRef;
+  let backend: HttpTestingController;
+  let injector: Injector;
 
+  beforeEach(() => {
+    globalThis['ngServerMode'] = isNode;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({providers: [provideHttpClient(), provideHttpClientTesting()]});
+    appRef = TestBed.inject(ApplicationRef);
+    backend = TestBed.inject(HttpTestingController);
+    injector = TestBed.inject(Injector);
+  });
+
+  it('Takes a simple resource which reacts to data changes', async () => {
     const s: SchemaOrSchemaFn<Cat> = function (p) {
       const res = define(p.name, ({value}) => {
         return resource({
@@ -43,17 +63,15 @@ describe('resources', () => {
 
     const f = form(cat, s, {injector});
 
-    await TestBed.inject(ApplicationRef).whenStable();
+    await appRef.whenStable();
     expect(f.name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: cat'}]);
 
     f.name.$state.value.set('dog');
-    await TestBed.inject(ApplicationRef).whenStable();
+    await appRef.whenStable();
     expect(f.name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
   });
 
   it('should create a resource per entry in an array', async () => {
-    const injector = TestBed.inject(Injector);
-
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       applyEach(p, (p) => {
         const res = define(p.name, ({value}) => {
@@ -78,19 +96,17 @@ describe('resources', () => {
 
     const f = form(cat, s, {injector});
 
-    await TestBed.inject(ApplicationRef).whenStable();
+    await appRef.whenStable();
     expect(f[0].name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: cat'}]);
     expect(f[1].name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
 
     f[0].name.$state.value.set('bunny');
-    await TestBed.inject(ApplicationRef).whenStable();
+    await appRef.whenStable();
     expect(f[0].name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: bunny'}]);
     expect(f[1].name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
   });
 
   it('should support tree validation for resources', async () => {
-    const injector = TestBed.inject(Injector);
-
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       validateAsync(p, {
         request: ({value}) => value(),
@@ -101,7 +117,7 @@ describe('resources', () => {
               return request as Cat[];
             },
           }),
-        error: (cats, {fieldOf}) => {
+        errors: (cats, {fieldOf}) => {
           return cats.map((cat, index) => ({
             kind: 'meows_too_much',
             name: cat.name,
@@ -114,7 +130,7 @@ describe('resources', () => {
     const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
     const f = form(cats, s, {injector});
 
-    await TestBed.inject(ApplicationRef).whenStable();
+    await appRef.whenStable();
     expect(f[0].$state.errors()).toEqual([
       jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
     ]);
@@ -124,8 +140,6 @@ describe('resources', () => {
   });
 
   it('should support tree validation for resources', async () => {
-    const injector = TestBed.inject(Injector);
-
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       validateAsync(p, {
         request: ({value}) => value(),
@@ -136,7 +150,7 @@ describe('resources', () => {
               return request as Cat[];
             },
           }),
-        error: (cats, {fieldOf}) => {
+        errors: (cats, {fieldOf}) => {
           return {kind: 'meows_too_much', name: cats[0].name, field: fieldOf(p)[0]};
         },
       });
@@ -145,10 +159,53 @@ describe('resources', () => {
     const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
     const f = form(cats, s, {injector});
 
-    await TestBed.inject(ApplicationRef).whenStable();
+    await appRef.whenStable();
     expect(f[0].$state.errors()).toEqual([
       jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
     ]);
     expect(f[1].$state.errors()).toEqual([]);
+  });
+
+  it('should support shorthand http validation', async () => {
+    const usernameForm = form(
+      signal('unique-user'),
+      (p) => {
+        validateHttp(p, {
+          request: ({value}) => `/api/check?username=${value()}`,
+          errors: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    const req1 = backend.expectOne('/api/check?username=unique-user');
+
+    expect(usernameForm.$state.valid()).toBe(false);
+    expect(usernameForm.$state.invalid()).toBe(false);
+    expect(usernameForm.$state.hasPendingValidators()).toBe(true);
+
+    req1.flush(true);
+    await appRef.whenStable();
+
+    expect(usernameForm.$state.valid()).toBe(true);
+    expect(usernameForm.$state.invalid()).toBe(false);
+    expect(usernameForm.$state.hasPendingValidators()).toBe(false);
+    expect(true).toBe(true);
+
+    usernameForm.$state.value.set('taken-user');
+    TestBed.tick();
+    const req2 = backend.expectOne('/api/check?username=taken-user');
+
+    expect(usernameForm.$state.valid()).toBe(false);
+    expect(usernameForm.$state.invalid()).toBe(false);
+    expect(usernameForm.$state.hasPendingValidators()).toBe(true);
+
+    req2.flush(false);
+    await appRef.whenStable();
+
+    expect(usernameForm.$state.valid()).toBe(false);
+    expect(usernameForm.$state.invalid()).toBe(true);
+    expect(usernameForm.$state.hasPendingValidators()).toBe(false);
   });
 });
