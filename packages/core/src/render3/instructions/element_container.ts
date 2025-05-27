@@ -13,22 +13,30 @@ import {
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {assertDefined, assertEqual, assertLessThan, assertNumber} from '../../util/assert';
+import {assertDefined, assertNumber} from '../../util/assert';
 import {assertTNodeCreationIndex} from '../assert';
 import {createCommentNode} from '../dom_node_manipulation';
-import {TNode, TNodeType} from '../interfaces/node';
+import {TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
+import {isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
+import {executeContentQueries} from '../queries/query_execution';
 import {
-  getBindingIndex,
   getBindingsEnabled,
   getCurrentTNode,
   getLView,
   getTView,
   lastNodeWasCreated,
 } from '../state';
-import {elementLikeEndShared, elementLikeStartShared} from './shared';
+import {directiveHostEndFirstCreatePass, directiveHostFirstCreatePass} from '../view/elements';
+import {
+  createDirectivesInstances,
+  elementLikeEndShared,
+  elementLikeStartShared,
+  findDirectiveDefMatches,
+  saveResolvedLocalsInData,
+} from './shared';
 
 /**
  * Creates a logical container for other nodes (<ng-container>) backed by a comment node in the DOM.
@@ -52,16 +60,34 @@ export function ɵɵelementContainerStart(
 ): typeof ɵɵelementContainerStart {
   const lView = getLView();
   ngDevMode && assertTNodeCreationIndex(lView, index);
-  elementLikeStartShared(
-    lView,
-    index,
-    TNodeType.ElementContainer,
-    'ng-container',
-    _locateOrCreateElementContainerNode,
-    getBindingsEnabled(),
-    attrsIndex,
-    localRefsIndex,
-  );
+
+  const tView = lView[TVIEW];
+  const adjustedIndex = index + HEADER_OFFSET;
+  const tNode = tView.firstCreatePass
+    ? directiveHostFirstCreatePass(
+        adjustedIndex,
+        lView,
+        TNodeType.ElementContainer,
+        'ng-container',
+        findDirectiveDefMatches,
+        getBindingsEnabled(),
+        attrsIndex,
+        localRefsIndex,
+      )
+    : (tView.data[adjustedIndex] as TElementContainerNode);
+
+  elementLikeStartShared(tNode, lView, index, 'ng-container', _locateOrCreateElementContainerNode);
+
+  if (isDirectiveHost(tNode)) {
+    const tView = lView[TVIEW];
+    createDirectivesInstances(tView, lView, tNode);
+    executeContentQueries(tView, tNode, lView);
+  }
+
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(lView, tNode);
+  }
+
   return ɵɵelementContainerStart;
 }
 
@@ -75,7 +101,12 @@ export function ɵɵelementContainerEnd(): typeof ɵɵelementContainerEnd {
   const tView = getTView();
   const initialTNode = getCurrentTNode()!;
   ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
-  const currentTNode = elementLikeEndShared(tView, initialTNode);
+  const currentTNode = elementLikeEndShared(initialTNode);
+
+  if (tView.firstCreatePass) {
+    directiveHostEndFirstCreatePass(tView, currentTNode);
+  }
+
   ngDevMode && assertTNodeType(currentTNode, TNodeType.ElementContainer);
   return ɵɵelementContainerEnd;
 }

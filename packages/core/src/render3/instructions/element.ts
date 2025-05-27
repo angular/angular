@@ -26,11 +26,12 @@ import {
 import {assertDefined} from '../../util/assert';
 import {assertTNodeCreationIndex} from '../assert';
 import {clearElementContents, createElementNode} from '../dom_node_manipulation';
-import {hasClassInput, hasStyleInput, TNode, TNodeType} from '../interfaces/node';
+import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
-import {isComponentHost} from '../interfaces/type_checks';
-import {HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
+import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
+import {executeContentQueries} from '../queries/query_execution';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
@@ -43,10 +44,17 @@ import {
   lastNodeWasCreated,
   leaveSkipHydrationBlock,
 } from '../state';
+import {directiveHostEndFirstCreatePass, directiveHostFirstCreatePass} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {elementLikeEndShared, elementLikeStartShared} from './shared';
+import {
+  createDirectivesInstances,
+  elementLikeEndShared,
+  elementLikeStartShared,
+  findDirectiveDefMatches,
+  saveResolvedLocalsInData,
+} from './shared';
 
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
@@ -73,16 +81,32 @@ export function ɵɵelementStart(
 
   ngDevMode && assertTNodeCreationIndex(lView, index);
 
-  const tNode = elementLikeStartShared(
-    lView,
-    index,
-    TNodeType.Element,
-    name,
-    _locateOrCreateElementNode,
-    getBindingsEnabled(),
-    attrsIndex,
-    localRefsIndex,
-  );
+  const tView = lView[TVIEW];
+  const adjustedIndex = index + HEADER_OFFSET;
+  const tNode = tView.firstCreatePass
+    ? directiveHostFirstCreatePass(
+        adjustedIndex,
+        lView,
+        TNodeType.Element,
+        name,
+        findDirectiveDefMatches,
+        getBindingsEnabled(),
+        attrsIndex,
+        localRefsIndex,
+      )
+    : (tView.data[adjustedIndex] as TElementNode);
+
+  elementLikeStartShared(tNode, lView, index, name, _locateOrCreateElementNode);
+
+  if (isDirectiveHost(tNode)) {
+    const tView = lView[TVIEW];
+    createDirectivesInstances(tView, lView, tNode);
+    executeContentQueries(tView, tNode, lView);
+  }
+
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(lView, tNode);
+  }
 
   if (ngDevMode && lView[TVIEW].firstCreatePass) {
     validateElementIsKnown(lView, tNode);
@@ -102,8 +126,12 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
   const initialTNode = getCurrentTNode()!;
   ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
 
-  const currentTNode = elementLikeEndShared(tView, initialTNode);
+  const currentTNode = elementLikeEndShared(initialTNode);
   ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode);
+
+  if (tView.firstCreatePass) {
+    directiveHostEndFirstCreatePass(tView, currentTNode);
+  }
 
   if (isSkipHydrationRootTNode(currentTNode)) {
     leaveSkipHydrationBlock();
