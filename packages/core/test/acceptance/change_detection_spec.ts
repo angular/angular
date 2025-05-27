@@ -222,6 +222,47 @@ describe('change detection', () => {
 
       expect(counter).toBe(3);
     });
+
+    it('updating signal inside an EmbeddedView in a child component with OnPush inside a parent component with Default CD', async () => {
+      const data = signal('initial');
+
+      @Component({
+        selector: 'child',
+        template: '<ng-container *viewManipulation>{{data()}}</ng-container>',
+        imports: [ViewManipulation],
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class ChildComponent {
+        data = data;
+      }
+
+      @Component({
+        template: '<child/>',
+        changeDetection: ChangeDetectionStrategy.Default,
+        imports: [ChildComponent],
+      })
+      class ParentComponent {}
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ComponentFixtureAutoDetect, useValue: true}],
+      });
+
+      const fixture = TestBed.createComponent(ParentComponent);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toBe('');
+
+      fixture.debugElement
+        .queryAllNodes(By.directive(ViewManipulation))[0]
+        .injector.get(ViewManipulation)
+        .insertIntoVcRef();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toBe(data());
+
+      data.set('new');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toBe(data());
+    });
   });
 
   describe('markForCheck', () => {
