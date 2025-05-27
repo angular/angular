@@ -175,6 +175,9 @@ export abstract class EnvironmentInjector implements Injector {
 
   abstract destroy(): void;
 
+  /** @internal */
+  abstract get destroyed(): boolean;
+
   /**
    * @internal
    */
@@ -199,7 +202,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   /**
    * Flag indicating that this injector was previously destroyed.
    */
-  get destroyed(): boolean {
+  override get destroyed(): boolean {
     return this._destroyed;
   }
   private _destroyed = false;

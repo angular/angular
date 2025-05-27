@@ -26,8 +26,12 @@ export function takeUntilDestroyed<T>(destroyRef?: DestroyRef): MonoTypeOperator
     destroyRef = inject(DestroyRef);
   }
 
-  const destroyed$ = new Observable<void>((observer) => {
-    const unregisterFn = destroyRef!.onDestroy(observer.next.bind(observer));
+  const destroyed$ = new Observable<void>((subscriber) => {
+    if ((destroyRef as unknown as {destroyed: boolean}).destroyed) {
+      subscriber.next();
+      return;
+    }
+    const unregisterFn = destroyRef!.onDestroy(subscriber.next.bind(subscriber));
     return unregisterFn;
   });
 
