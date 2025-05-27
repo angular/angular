@@ -302,12 +302,13 @@ groups:
     reviewers:
       users:
         - AleksanderBodurri
-        - devversion
+        - ~devversion
         - dgp1130
-        - josephperrott
-        - mgechev
-        - MarkTechson
-        - ~JeanMeche
+        - hawkgs
+        - jkrems
+        - ~josephperrott
+        - JeanMeche
+        - milomg
 
   # =========================================================
   #  Dev-infra
