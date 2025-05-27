@@ -30,13 +30,21 @@ import {
   QueryList,
   ɵRuntimeError as RuntimeError,
   ɵRuntimeErrorCode as RuntimeErrorCode,
+  signal,
   TemplateRef,
   Type,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
 } from '../../src/core';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '../../testing';
+import {
+  ComponentFixture,
+  ComponentFixtureAutoDetect,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '../../testing';
+import {By} from '@angular/platform-browser';
 
 describe('change detection', () => {
   it('can provide zone and zoneless (last one wins like any other provider) in TestBed', () => {
@@ -51,7 +59,6 @@ describe('change detection', () => {
     @Directive({
       selector: '[viewManipulation]',
       exportAs: 'vm',
-      standalone: false,
     })
     class ViewManipulation {
       constructor(
@@ -76,12 +83,11 @@ describe('change detection', () => {
       template: `
         <ng-template #vm="vm" viewManipulation>{{'change-detected'}}</ng-template>
       `,
-      standalone: false,
+      imports: [ViewManipulation],
     })
     class TestCmpt {}
 
     it('should detect changes for embedded views inserted through ViewContainerRef', () => {
-      TestBed.configureTestingModule({declarations: [TestCmpt, ViewManipulation]});
       const fixture = TestBed.createComponent(TestCmpt);
       const vm = fixture.debugElement.childNodes[0].references['vm'] as ViewManipulation;
 
@@ -92,7 +98,6 @@ describe('change detection', () => {
     });
 
     it('should detect changes for embedded views attached to ApplicationRef', () => {
-      TestBed.configureTestingModule({declarations: [TestCmpt, ViewManipulation]});
       const fixture = TestBed.createComponent(TestCmpt);
       const vm = fixture.debugElement.childNodes[0].references['vm'] as ViewManipulation;
 
@@ -145,7 +150,7 @@ describe('change detection', () => {
           <div>{{increment('componentView')}}</div>
           <ng-template #vm="vm" viewManipulation>{{increment('embeddedView')}}</ng-template>
         `,
-        standalone: false,
+        imports: [ViewManipulation],
       })
       class App {
         increment(counter: 'componentView' | 'embeddedView') {
@@ -153,7 +158,6 @@ describe('change detection', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [App, ViewManipulation]});
       const fixture = TestBed.createComponent(App);
       const vm: ViewManipulation = fixture.debugElement.childNodes[1].references['vm'];
       const viewRef = vm.insertIntoVcRef();
@@ -175,7 +179,7 @@ describe('change detection', () => {
       @Component({
         template: `<ng-template #vm="vm" viewManipulation></ng-template>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
-        standalone: false,
+        imports: [ViewManipulation],
       })
       class App {}
 
@@ -185,7 +189,6 @@ describe('change detection', () => {
           <div>{{increment()}}</div>
         `,
         changeDetection: ChangeDetectionStrategy.OnPush,
-        standalone: false,
       })
       class DynamicComp {
         increment() {
@@ -194,7 +197,6 @@ describe('change detection', () => {
         noop() {}
       }
 
-      TestBed.configureTestingModule({declarations: [App, ViewManipulation, DynamicComp]});
       const fixture = TestBed.createComponent(App);
       const vm: ViewManipulation = fixture.debugElement.childNodes[0].references['vm'];
       const componentRef = vm.vcRef.createComponent(DynamicComp);
