@@ -48,9 +48,12 @@ export interface SignalGetter<T> extends SignalBaseGetter<T> {
 }
 
 /**
- * Create a `Signal` that can be set or updated directly.
+ * Creates a `Signal` getter, setter, and updater function.
  */
-export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): SignalGetter<T> {
+export function createSignal<T>(
+  initialValue: T,
+  equal?: ValueEqualityFn<T>,
+): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>] {
   const node: SignalNode<T> = Object.create(SIGNAL_NODE);
   node.value = initialValue;
   if (equal !== undefined) {
@@ -64,22 +67,20 @@ export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): Si
   }
 
   runPostProducerCreatedFn(node);
-
-  return getter;
+  const set = (newValue: T) => signalSetFn(node, newValue);
+  const update = (updateFn: (value: T) => T) => signalUpdateFn(node, updateFn);
+  return [getter, set, update];
 }
 
 /**
  * Creates a `Signal` getter, setter, and updater function.
+ * @deprecated use createSignal
  */
 export function createSignalTuple<T>(
   initialValue: T,
   equal?: ValueEqualityFn<T>,
 ): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>] {
-  const getter = createSignal(initialValue, equal);
-  const node = getter[SIGNAL];
-  const set = (newValue: T) => signalSetFn(node, newValue);
-  const update = (updateFn: (value: T) => T) => signalUpdateFn(node, updateFn);
-  return [getter, set, update];
+  return createSignal(initialValue, equal);
 }
 
 export function setPostSignalSetFn(fn: ReactiveHookFn | null): ReactiveHookFn | null {
