@@ -203,7 +203,7 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            error: (errs) => errs,
+            errors: (errs) => errs,
           });
         },
         {injector},
@@ -259,7 +259,7 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            error: (errs, {fieldOf}) => errs.map((e) => ({...e, field: fieldOf(p.child)})),
+            errors: (errs, {fieldOf}) => errs.map((e) => ({...e, field: fieldOf(p.child)})),
           });
         },
         {injector},
@@ -315,7 +315,7 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            error: (errs, {fieldOf}) => errs.map((e) => ({...e, field: fieldOf(p.child)})),
+            errors: (errs, {fieldOf}) => errs.map((e) => ({...e, field: fieldOf(p.child)})),
           });
         },
         {injector},
@@ -374,7 +374,7 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            error: (errs, {fieldOf}) => errs.map((e) => ({...e, field: fieldOf(p.child)})),
+            errors: (errs, {fieldOf}) => errs.map((e) => ({...e, field: fieldOf(p.child)})),
           });
         },
         {injector},
@@ -447,7 +447,7 @@ describe('validation status', () => {
                 params,
                 loader: () => new Promise<FormTreeError[]>((r) => setTimeout(() => r([]))),
               })),
-            error: (errs) => errs,
+            errors: (errs) => errs,
           });
         },
         {injector},
@@ -476,7 +476,7 @@ describe('validation status', () => {
                 loader: () =>
                   new Promise<FormTreeError[]>((r) => setTimeout(() => r([{kind: 'error'}]))),
               })),
-            error: (errs) => errs,
+            errors: (errs) => errs,
           });
           validateAsync(p, {
             params: () => [],
@@ -485,7 +485,7 @@ describe('validation status', () => {
                 params,
                 loader: () => new Promise<FormTreeError[]>((r) => setTimeout(() => r([]), 10)),
               })),
-            error: (errs) => errs,
+            errors: (errs) => errs,
           });
         },
         {injector},
@@ -515,7 +515,7 @@ describe('validation status', () => {
                 loader: () =>
                   new Promise<FormTreeError[]>((r) => setTimeout(() => r([{kind: 'error'}]))),
               })),
-            error: (errs) => errs,
+            errors: (errs) => errs,
           });
           validateAsync(p, {
             params: () => [],
@@ -524,7 +524,7 @@ describe('validation status', () => {
                 params,
                 loader: () => new Promise<FormTreeError[]>((r) => setTimeout(() => r([]), 10)),
               })),
-            error: (errs) => errs,
+            errors: (errs) => errs,
           });
         },
         {injector},
