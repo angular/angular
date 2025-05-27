@@ -1,3 +1,30 @@
+<a name="20.0.0-rc.3"></a>
+# 20.0.0-rc.3 (2025-05-27)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2e5362a469](https://github.com/angular/angular/commit/2e5362a4695c6d0c5e130f286a52cc9d97d0f721) | feat | accept undefined inputs in NgTemplateOutlet ([#61404](https://github.com/angular/angular/pull/61404)) |
+| [aa7190d972](https://github.com/angular/angular/commit/aa7190d97235a9b46822305ac2570bbf5f097042) | fix | avoid injecting ApplicationRef in FetchBackend ([#61649](https://github.com/angular/angular/pull/61649)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ca7590666](https://github.com/angular/angular/commit/6ca7590666cffcc5b1c7715867e036ac6f4ceb34) | fix | lexer support for template literals in object literals ([#61601](https://github.com/angular/angular/pull/61601)) |
+| [e25e6c95a2](https://github.com/angular/angular/commit/e25e6c95a28e4b01a58b9988d404a4199b7d1d13) | fix | remove TypeScript from linker ([#61635](https://github.com/angular/angular/pull/61635)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c8951159ac](https://github.com/angular/angular/commit/c8951159ac1994ecd98798627333af958aeb56cf) | fix | mark `zone.js` as an optional peer dependency ([#61616](https://github.com/angular/angular/pull/61616)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eceacbc18b](https://github.com/angular/angular/commit/eceacbc18b866d79e75c57a71b8f31cc110a62cd) | fix | preserve comments when removing unused imports ([#61674](https://github.com/angular/angular/pull/61674)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [959258d8dd](https://github.com/angular/angular/commit/959258d8dd880c8d44a925d2e912acbb4c5412c3) | fix | do not register service worker if app is destroyed before it is ready to register ([#61101](https://github.com/angular/angular/pull/61101)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0-rc.2"></a>
 # 20.0.0-rc.2 (2025-05-21)
 ## Deprecations
