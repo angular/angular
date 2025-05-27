@@ -16,16 +16,15 @@ import {
   type TElementNode,
 } from '../interfaces/node';
 import {isContentQueryHost} from '../interfaces/type_checks';
-import {type LView, type TView} from '../interfaces/view';
+import {TVIEW, type LView, type TView} from '../interfaces/view';
 import {computeStaticStyling} from '../styling/static_styling';
 import {getOrCreateTNode} from '../tnode_manipulation';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 import {resolveDirectives, type DirectiveMatcherStrategy} from './directives';
 
-export function elementLikeStartFirstCreatePass(
+export function directiveHostFirstCreatePass(
   index: number,
-  tView: TView,
   lView: LView,
   type: TNodeType.Element | TNodeType.ElementContainer,
   name: string,
@@ -34,6 +33,7 @@ export function elementLikeStartFirstCreatePass(
   attrsIndex?: number | null,
   localRefsIndex?: number,
 ): TElementNode | TElementContainerNode {
+  const tView = lView[TVIEW];
   ngDevMode && assertFirstCreatePass(tView);
   const tViewConsts = tView.consts;
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
@@ -69,7 +69,7 @@ export function elementLikeStartFirstCreatePass(
   return tNode;
 }
 
-export function elementLikeEndFirstCreatePass(tView: TView, tNode: TNode) {
+export function directiveHostEndFirstCreatePass(tView: TView, tNode: TNode) {
   ngDevMode && assertFirstCreatePass(tView);
   registerPostOrderHooks(tView, tNode);
   if (isContentQueryHost(tNode)) {
