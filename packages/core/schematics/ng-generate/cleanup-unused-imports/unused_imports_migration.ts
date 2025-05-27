@@ -364,15 +364,18 @@ function getArrayElementRemovalUpdate(
   // trailing comma at the end of the line is fine.
   if (parent.elements[parent.elements.length - 1] === node) {
     for (let i = position - 1; i >= 0; i--) {
-      if (sourceText[i] === ',' || sourceText[i] === ' ') {
+      const char = sourceText[i];
+      if (char === ',' || char === ' ') {
         position--;
       } else {
+        if (whitespaceOrLineFeed.test(char)) {
+          // Replace the node with its leading whitespace to preserve the formatting.
+          // This only needs to happen if we're breaking on a newline.
+          toInsert = getLeadingLineWhitespaceOfNode(node);
+        }
         break;
       }
     }
-
-    // Replace the node with its leading whitespace to preserve the formatting.
-    toInsert = getLeadingLineWhitespaceOfNode(node);
   }
 
   return new TextUpdate({position, end, toInsert});
