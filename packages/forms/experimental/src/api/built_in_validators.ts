@@ -8,7 +8,7 @@
 
 import {metadata, validate} from './logic';
 import {MAX, MIN, REQUIRED} from './metadata';
-import {FieldPath, LogicFn, ValidationResult} from './types';
+import {FieldContext, FieldPath, LogicFn, ValidationResult} from './types';
 
 /**
  * Adds logic to a field to conditionally make it required. A required field has metadata to
@@ -22,10 +22,10 @@ import {FieldPath, LogicFn, ValidationResult} from './types';
  * @template T The data type of the field the logic is being added to.
  */
 export function required<T>(
-  path: FieldPath<T>,
-  logic: NoInfer<LogicFn<T, boolean>> = () => true,
-  message?: string | NoInfer<LogicFn<T, string>>,
-  emptyPredicate: (value: T) => boolean = (value) => value == null || value === '',
+    path: FieldPath<T>,
+    logic: NoInfer<LogicFn<T, boolean>> = () => true,
+    message?: string | NoInfer<LogicFn<T, string>>,
+    emptyPredicate: (value: T) => boolean = (value) => value == null || value === '',
 ): void {
   metadata(path, REQUIRED, logic);
   validate(path, (arg) => {
@@ -41,10 +41,20 @@ interface BaseValidatorConfig {
   errors: LogicFn<number, ValidationResult>;
 }
 
-export function min(path: FieldPath<number>, minValue: number, config?: BaseValidatorConfig) {
-  metadata(path, MIN, () => minValue);
+/**
+ * Validator requiring a field value to be greater than or equal to a minimum value.
+ *
+ * @param path Path to the target field
+ * @param minValue The minimum value, or a function returning it.
+ * @param config Optional, currently allows providing custom errors function.
+ */
+export function min(path: FieldPath<number>, minValue: (number | ((ctx: FieldContext<number>) => number)), config?: BaseValidatorConfig) {
+  const reactiveMinValue = (typeof minValue === 'number') ?
+      () => minValue : minValue;
+  metadata(path, MIN, reactiveMinValue);
   validate(path, (ctx) => {
-    if (ctx.value() <= minValue) {
+    // TODO(kirjs): Do we need to handle Null, parseFloat, NaN?
+    if (ctx.value() < reactiveMinValue(ctx)) {
       if (config?.errors) {
         return config.errors(ctx);
       } else {
@@ -56,10 +66,21 @@ export function min(path: FieldPath<number>, minValue: number, config?: BaseVali
   });
 }
 
-export function max(path: FieldPath<number>, maxValue: number, config?: BaseValidatorConfig) {
-  metadata(path, MAX, () => maxValue);
+/**
+ * Validator requiring a field value to be smaller than or equal to a maximum value.
+ *
+ * @param path Path to the target field
+ * @param maxValue The minimum value, or a function returning it.
+ * @param config Optional, currently allows providing custom errors function.
+ */
+export function max(path: FieldPath<number>, maxValue: (number | ((ctx: FieldContext<number>) => number)), config?: BaseValidatorConfig) {
+  const reactiveMaxValue = (typeof maxValue === 'number') ?
+      () => maxValue : maxValue;
+
+  metadata(path, MAX, reactiveMaxValue);
   validate(path, (ctx) => {
-    if (ctx.value() > maxValue) {
+    // TODO(kirjs): Do we need to handle Null, parseFloat, NaN?
+    if (ctx.value() > reactiveMaxValue(ctx)) {
       if (config?.errors) {
         return config.errors(ctx);
       } else {
