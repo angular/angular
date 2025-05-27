@@ -7,8 +7,8 @@
  */
 
 import {
-  DestroyRef,
   Injector,
+  ApplicationRef,
   NgModule,
   NgZone,
   PlatformRef,
@@ -153,7 +153,7 @@ export class UpgradeModule {
   public $injector: any /*angular.IInjectorService*/;
   /** The Angular Injector **/
   public injector: Injector;
-  private destroyed = false;
+  private readonly applicationRef: ApplicationRef;
 
   constructor(
     /** The root `Injector` for the upgrade application. */
@@ -168,9 +168,7 @@ export class UpgradeModule {
     private platformRef: PlatformRef,
   ) {
     this.injector = new NgAdapterInjector(injector);
-    this.injector.get(DestroyRef).onDestroy(() => {
-      this.destroyed = true;
-    });
+    this.applicationRef = this.injector.get(ApplicationRef);
   }
 
   /**
@@ -307,32 +305,25 @@ export class UpgradeModule {
           // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
           // We need to do this in the next tick so that we don't prevent the bootup stabilizing
           setTimeout(() => {
-            if (this.destroyed) {
-              return;
-            }
+            // Ideally this could be afterEveryRender but `afterTick` is a closer approximation to `onMicrotaskEmpty`
+            // and makes a difference for at least 1 use-case internally (no deeper investigation was performed).
+            const subscription = (this.applicationRef as any).afterTick.subscribe(() => {
+              this.ngZone.run(() => {
+                if ($rootScope.$$phase) {
+                  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+                    console.warn(
+                      'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.',
+                    );
+                  }
 
-            const renderRef = afterEveryRender(
-              {
-                mixedReadWrite: () => {
-                  this.ngZone.run(() => {
-                    if ($rootScope.$$phase) {
-                      if (typeof ngDevMode === 'undefined' || ngDevMode) {
-                        console.warn(
-                          'A digest was triggered while one was already in progress. This may mean that something is triggering digests outside the Angular zone.',
-                        );
-                      }
-
-                      $rootScope.$evalAsync();
-                    } else {
-                      $rootScope.$digest();
-                    }
-                  });
-                },
-              },
-              {injector: this.injector},
-            );
+                  $rootScope.$evalAsync();
+                } else {
+                  $rootScope.$digest();
+                }
+              });
+            });
             $rootScope.$on('$destroy', () => {
-              renderRef.destroy();
+              subscription.unsubscribe();
             });
           }, 0);
         },
