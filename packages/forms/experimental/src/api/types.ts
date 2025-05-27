@@ -234,5 +234,4 @@ export interface FieldContext<T> {
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
-  data: <D>(path: DataKey<D>) => D;
 }
