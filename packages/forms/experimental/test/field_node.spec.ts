@@ -8,11 +8,11 @@
 
 import {computed, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {required} from '../src/api/built_in_validators';
 import {disabled, error, readonly, validate, validateTree} from '../src/api/logic';
 import {REQUIRED} from '../src/api/metadata';
 import {apply, applyEach, form, submit} from '../src/api/structure';
 import {FormTreeError, SchemaOrSchemaFn} from '../src/api/types';
+import {required} from '../src/api/validators';
 
 const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
 
@@ -107,13 +107,19 @@ describe('FieldNode', () => {
 
   describe('dirty', () => {
     it('is not dirty initially', () => {
-      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal({
+        a: 1,
+        b: 2
+      }), noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.dirty()).toBe(false);
       expect(f.a.$state.dirty()).toBe(false);
     });
 
     it('can be marked as dirty', () => {
-      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal({
+        a: 1,
+        b: 2
+      }), noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.dirty()).toBe(false);
 
       f.$state.markAsDirty();
@@ -121,7 +127,10 @@ describe('FieldNode', () => {
     });
 
     it('propagates from the children', () => {
-      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal({
+        a: 1,
+        b: 2
+      }), noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.dirty()).toBe(false);
 
       f.a.$state.markAsDirty();
@@ -129,7 +138,10 @@ describe('FieldNode', () => {
     });
 
     it('does not propagate down', () => {
-      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal({
+        a: 1,
+        b: 2
+      }), noopSchema, {injector: TestBed.inject(Injector)});
 
       expect(f.a.$state.dirty()).toBe(false);
       f.$state.markAsDirty();
@@ -137,7 +149,7 @@ describe('FieldNode', () => {
     });
 
     it('does not consider children that get removed', () => {
-      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
+      const value = signal<{ a: number; b?: number }>({a: 1, b: 2});
       const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.dirty()).toBe(false);
 
@@ -152,7 +164,10 @@ describe('FieldNode', () => {
 
   describe('touched', () => {
     it('is untouched initially', () => {
-      const f = form(signal({a: 1, b: 2}), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal({
+        a: 1,
+        b: 2
+      }), noopSchema, {injector: TestBed.inject(Injector)});
       expect(f.$state.touched()).toBe(false);
     });
 
@@ -558,7 +573,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
+          required(name.first, {condition: ({valueOf}) => valueOf(name.last) !== ''});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -585,7 +600,7 @@ describe('FieldNode', () => {
       const f = form(
         data,
         (item) => {
-          required(item.quantity, undefined, undefined, (value) => value === 0);
+          required(item.quantity, {emptyPredicate: (value) => value === 0});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -605,13 +620,23 @@ describe('FieldNode', () => {
         (tx) => {
           required(
             tx.name,
-            ({valueOf}) => valueOf(tx.country) === 'USA',
-            'Name is required in your country',
+            {
+              condition: ({valueOf}) => valueOf(tx.country) === 'USA',
+              errors: () => ({
+                kind: 'required',
+                message: 'Name is required in your country'
+              })
+            },
           );
           required(
             tx.name,
-            ({valueOf}) => valueOf(tx.amount) >= 1000,
-            'Name is required for large transactions',
+            {
+              condition: ({valueOf}) => valueOf(tx.amount) >= 1000,
+              errors: () => ({
+                kind: 'required',
+                message: 'Name is required for large transactions',
+              })
+            },
           );
         },
         {injector: TestBed.inject(Injector)},
@@ -717,7 +742,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
+          required(name.first, {condition: ({valueOf}) => valueOf(name.last) !== ''});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -741,7 +766,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
+          required(name.first, {condition: ({valueOf}) => valueOf(name.last) !== ''});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -763,7 +788,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
+          required(name.first, {condition: ({valueOf}) => valueOf(name.last) !== ''});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -797,7 +822,9 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, ({valueOf}) => valueOf(name.last) !== '');
+          required(name.first, {
+            condition: ({valueOf}) => valueOf(name.last) !== ''
+          });
         },
         {injector: TestBed.inject(Injector)},
       );
