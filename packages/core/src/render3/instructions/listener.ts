@@ -84,6 +84,41 @@ export function ɵɵsyntheticHostListener(
   return ɵɵsyntheticHostListener;
 }
 
+/**
+ * Adds a listener for a DOM event on the current node.
+ *
+ * @param eventName Name of the event
+ * @param listenerFn The function to be called when event emits
+ * @param eventTargetResolver Function that returns global target information in case this listener
+ * should be attached to a global object like window, document or body
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomListener(
+  eventName: string,
+  listenerFn: EventCallback,
+  eventTargetResolver?: GlobalTargetResolver,
+): typeof ɵɵdomListener {
+  const lView = getLView<{} | null>();
+  const tView = getTView();
+  const tNode = getCurrentTNode()!;
+
+  if (tNode.type & TNodeType.AnyRNode || eventTargetResolver) {
+    listenToDomEvent(
+      tNode,
+      tView,
+      lView,
+      eventTargetResolver,
+      lView[RENDERER],
+      eventName,
+      listenerFn,
+      wrapListener(tNode, lView, listenerFn),
+    );
+  }
+
+  return ɵɵdomListener;
+}
+
 export function listenerInternal(
   tView: TView,
   lView: LView<{} | null>,
