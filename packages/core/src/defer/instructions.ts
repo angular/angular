@@ -14,7 +14,7 @@ import {
 } from '../hydration/interfaces';
 import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref';
 import {bindingUpdated} from '../render3/bindings';
-import {declareTemplate} from '../render3/instructions/template';
+import {declareNoDirectiveHostTemplate} from '../render3/instructions/template';
 import {DEHYDRATED_VIEWS} from '../render3/interfaces/container';
 import {HEADER_OFFSET, INJECTOR, TVIEW} from '../render3/interfaces/view';
 import {
@@ -132,7 +132,7 @@ export function ɵɵdefer(
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
-  const tNode = declareTemplate(lView, tView, index, null, 0, 0);
+  const tNode = declareNoDirectiveHostTemplate(lView, tView, index, null, 0, 0);
   const injector = lView[INJECTOR];
 
   if (tView.firstCreatePass) {
