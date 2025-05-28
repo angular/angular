@@ -12,6 +12,7 @@ ng_project(
     ],
     deps = [
         "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils:utils_rjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
     ],
 )

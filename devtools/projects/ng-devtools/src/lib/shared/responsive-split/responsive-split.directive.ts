@@ -9,8 +9,9 @@
 import {Directive, ElementRef, inject, input, NgZone, OnDestroy, output} from '@angular/core';
 import {SplitComponent} from '../../vendor/angular-split/public_api';
 import {WINDOW} from '../../application-providers/window_provider';
+import {Debouncer} from '../utils/debouncer';
 
-const RESIZE_DEBOUNCE = 50; // in milliseconds
+export const RESIZE_DEBOUNCE = 50; // in milliseconds
 
 export type Direction = 'vertical' | 'horizontal';
 
@@ -23,12 +24,8 @@ export type ResponsiveSplitConfig = {
   breakpointDirection: Direction;
 };
 
-interface ResizeObserverClass {
-  new (callback: ResizeObserverCallback): ResizeObserver;
-}
-
 interface ExtendedWindow extends Window {
-  ResizeObserver: ResizeObserverClass;
+  ResizeObserver: typeof ResizeObserver;
 }
 
 /** Make as-split direction responsive. */
@@ -40,8 +37,8 @@ export class ResponsiveSplitDirective implements OnDestroy {
   private readonly elementRef = inject(ElementRef);
   private readonly zone = inject(NgZone);
   private readonly window = inject<ExtendedWindow>(WINDOW);
-  private resizeTimeout?: ReturnType<typeof setTimeout>;
   private resizeObserver: ResizeObserver;
+  private debouncer: Debouncer;
 
   protected readonly config = input.required<ResponsiveSplitConfig>({
     alias: 'ngResponsiveSplit',
@@ -50,9 +47,9 @@ export class ResponsiveSplitDirective implements OnDestroy {
   protected readonly directionChange = output<Direction>();
 
   constructor() {
-    this.resizeObserver = new this.window.ResizeObserver(([entry]) => {
-      clearTimeout(this.resizeTimeout);
-      this.resizeTimeout = setTimeout(() => {
+    this.debouncer = new Debouncer();
+    this.resizeObserver = new this.window.ResizeObserver(
+      this.debouncer.debounce(([entry]) => {
         // Since used in a ResizeObserver which is not
         // patched by zone.js, run inside a zone.
         this.zone.run(() => {
@@ -61,15 +58,15 @@ export class ResponsiveSplitDirective implements OnDestroy {
             this.applyDirection(inlineSize, blockSize);
           }
         });
-      }, RESIZE_DEBOUNCE);
-    });
+      }, RESIZE_DEBOUNCE),
+    );
 
     this.resizeObserver.observe(this.elementRef.nativeElement);
   }
 
   ngOnDestroy() {
-    clearTimeout(this.resizeTimeout);
-    this.resizeObserver?.unobserve(this.elementRef.nativeElement);
+    this.debouncer.cancel();
+    this.resizeObserver.unobserve(this.elementRef.nativeElement);
   }
 
   private applyDirection(width: number, height: number) {

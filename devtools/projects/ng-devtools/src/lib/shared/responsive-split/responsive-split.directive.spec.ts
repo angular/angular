@@ -11,7 +11,11 @@ import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
-import {ResponsiveSplitConfig, ResponsiveSplitDirective} from './responsive-split.directive';
+import {
+  RESIZE_DEBOUNCE,
+  ResponsiveSplitConfig,
+  ResponsiveSplitDirective,
+} from './responsive-split.directive';
 import {WINDOW} from '../../application-providers/window_provider';
 
 //
@@ -77,7 +81,7 @@ function initTestComponent(
 ): {host: DebugElement; split: SplitComponent} {
   TestBed.configureTestingModule({
     imports: [TestComponent, SplitComponent, SplitAreaDirective, ResponsiveSplitDirective],
-    providers: [{provide: WINDOW, useValue: {ResizeObserver: ResizeObserverMockImpl}}],
+    providers: [{provide: WINDOW, useValue: {...window, ResizeObserver: ResizeObserverMockImpl}}],
   });
   const fixture = TestBed.createComponent(TestComponent);
   fixture.detectChanges();
@@ -88,7 +92,7 @@ function initTestComponent(
   getResizeObserver().trigger(width, height);
 
   // Should be equal or greater than the resize debounce.
-  jasmine.clock().tick(60);
+  jasmine.clock().tick(RESIZE_DEBOUNCE + 10);
 
   return {
     host,
