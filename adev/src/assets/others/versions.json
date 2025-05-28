@@ -1,11 +1,11 @@
 [
   {
-    "version": "v20",
-    "url": "https://angular.dev/overview"
-  },
-  {
     "version": "next",
     "url": "https://next.angular.dev/overview"
+  },
+  {
+    "version": "v20",
+    "url": "https://v20.angular.dev/overview"
   },
   {
     "version": "v19",
