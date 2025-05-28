@@ -1,3 +1,16 @@
+<a name="19.2.14"></a>
+# 19.2.14 (2025-05-28)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [24bab55f0c](https://github.com/angular/angular/commit/24bab55f0c89c4fe6037780fd7b2e8c8aa5429b2) | fix | lexer support for template literals in object literals ([#61601](https://github.com/angular/angular/pull/61601)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e1cd49662](https://github.com/angular/angular/commit/9e1cd4966202d89c7310ab84c50b2c4231a0213e) | fix | preserve comments when removing unused imports ([#61674](https://github.com/angular/angular/pull/61674)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0-rc.3"></a>
 # 20.0.0-rc.3 (2025-05-27)
 ### common
