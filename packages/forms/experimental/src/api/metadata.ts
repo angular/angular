@@ -23,11 +23,11 @@ export const DISABLED_REASON = new MetadataKey<readonly string[]>(
 );
 
 export const MIN = new MetadataKey<number>(
-  () => Infinity,
+  () => -Infinity,
   (prev, next) => Math.max(prev, next),
 );
 
 export const MAX = new MetadataKey<number>(
-  () => -Infinity,
+  () => +Infinity,
   (prev, next) => Math.min(prev, next),
 );
