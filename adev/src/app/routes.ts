@@ -236,6 +236,10 @@ const REDIRECT_ROUTES: Route[] = [
       },
     ],
   },
+  {
+    path: 'guide/experimental/zoneless',
+    redirectTo: '/guide/zoneless',
+  },
 ];
 
 export const routes: Route[] = [
