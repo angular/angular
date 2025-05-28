@@ -1,5 +1,8 @@
 <a name="20.0.0"></a>
 # 20.0.0 (2025-05-28)
+
+Blog post: https://blog.angular.dev/announcing-angular-v20-b5c9c06cf301
+
 ## Breaking Changes
 ### common
 - Using the `Y` formatter (week-numbering year) without also including `w` (week number) is now detected as suspicious date pattern, as `y` is typically intended.
