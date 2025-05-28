@@ -44,7 +44,11 @@ import {
   lastNodeWasCreated,
   leaveSkipHydrationBlock,
 } from '../state';
-import {directiveHostEndFirstCreatePass, directiveHostFirstCreatePass} from '../view/elements';
+import {
+  directiveHostEndFirstCreatePass,
+  directiveHostFirstCreatePass,
+  domOnlyFirstCreatePass,
+} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
@@ -181,6 +185,90 @@ export function ɵɵelement(
   ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
   return ɵɵelement;
+}
+
+/**
+ * Create DOM element that cannot have any directives.
+ *
+ * @param index Index of the element in the LView array
+ * @param name Name of the DOM Node
+ * @param attrsIndex Index of the element's attributes in the `consts` array.
+ * @param localRefsIndex Index of the element's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementStart(
+  index: number,
+  name: string,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵdomElementStart {
+  const lView = getLView();
+
+  ngDevMode && assertTNodeCreationIndex(lView, index);
+
+  const tView = lView[TVIEW];
+  const adjustedIndex = index + HEADER_OFFSET;
+  const tNode = tView.firstCreatePass
+    ? domOnlyFirstCreatePass(adjustedIndex, tView, TNodeType.Element, name, attrsIndex)
+    : (tView.data[adjustedIndex] as TElementNode);
+
+  elementLikeStartShared(tNode, lView, index, name, _locateOrCreateElementNode);
+
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(lView, tNode);
+  }
+
+  if (ngDevMode && lView[TVIEW].firstCreatePass) {
+    validateElementIsKnown(lView, tNode);
+  }
+
+  return ɵɵdomElementStart;
+}
+
+/**
+ * Mark the end of the directiveless element.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementEnd(): typeof ɵɵdomElementEnd {
+  const initialTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
+
+  const currentTNode = elementLikeEndShared(initialTNode);
+  ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode);
+
+  if (isSkipHydrationRootTNode(currentTNode)) {
+    leaveSkipHydrationBlock();
+  }
+
+  decreaseElementDepthCount();
+
+  return ɵɵdomElementEnd;
+}
+
+/**
+ * Creates an empty element using {@link domElementStart} and {@link domElementEnd}
+ *
+ * @param index Index of the element in the data array
+ * @param name Name of the DOM Node
+ * @param attrsIndex Index of the element's attributes in the `consts` array.
+ * @param localRefsIndex Index of the element's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElement(
+  index: number,
+  name: string,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵdomElement {
+  ɵɵdomElementStart(index, name, attrsIndex, localRefsIndex);
+  ɵɵdomElementEnd();
+  return ɵɵdomElement;
 }
 
 let _locateOrCreateElementNode: typeof locateOrCreateElementNodeImpl = (

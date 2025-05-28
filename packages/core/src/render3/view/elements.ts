@@ -76,3 +76,35 @@ export function directiveHostEndFirstCreatePass(tView: TView, tNode: TNode) {
     tView.queries!.elementEnd(tNode);
   }
 }
+
+export function domOnlyFirstCreatePass(
+  index: number,
+  tView: TView,
+  type: TNodeType.Element | TNodeType.ElementContainer,
+  name: string,
+  attrsIndex?: number | null,
+): TElementNode | TElementContainerNode {
+  ngDevMode && assertFirstCreatePass(tView);
+  const tViewConsts = tView.consts;
+  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
+  const tNode = getOrCreateTNode(tView, index, type, name, attrs) as
+    | TElementNode
+    | TElementContainerNode;
+
+  // Merge the template attrs last so that they have the highest priority.
+  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
+
+  if (tNode.attrs !== null) {
+    computeStaticStyling(tNode, tNode.attrs, false);
+  }
+
+  if (tNode.mergedAttrs !== null) {
+    computeStaticStyling(tNode, tNode.mergedAttrs, true);
+  }
+
+  if (tView.queries !== null) {
+    tView.queries.elementStart(tView, tNode);
+  }
+
+  return tNode;
+}
