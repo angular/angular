@@ -48,7 +48,7 @@ export interface FormOptions {
  * @example ```
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
- *   error(name.last, (value) => !/^[a-z]+$/i.test(value), 'Alphabet characters only');
+ *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
  * });
  * nameForm.$state.valid(); // false
  * nameForm.$state.value.set({first: 'John', last: 'Doe'});
@@ -87,7 +87,7 @@ export function form<T>(model: WritableSignal<T>, options?: FormOptions): Field<
  * @example ```
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
- *   error(name.last, (value) => !/^[a-z]+$/i.test(value), 'Alphabet characters only');
+ *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
  * });
  * nameForm.$state.valid(); // false
  * nameForm.$state.value.set({first: 'John', last: 'Doe'});
