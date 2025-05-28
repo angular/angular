@@ -73,7 +73,7 @@
     <div class="tab-content">
       @let componentsVisible = activeTab() === 'Components';
       <ng-directive-explorer
-        [ngVisible]="componentsVisible"
+        [hidden]="!componentsVisible"
         [showCommentNodes]="showCommentNodes()"
         [isHydrationEnabled]="isHydrationEnabled()"
         (toggleInspector)="toggleInspector()"
@@ -81,13 +81,13 @@
 
       @let profilerVisible = activeTab() === 'Profiler';
       @defer (when profilerVisible; prefetch on idle) {
-        <ng-profiler [ngVisible]="profilerVisible" />
+        <ng-profiler [hidden]="!profilerVisible" />
       }
 
       @let routerTreeVisible = activeTab() === 'Router Tree';
       @defer (when routerTreeVisible; prefetch on idle) {
         <ng-router-tree
-          [ngVisible]="routerTreeVisible"
+          [hidden]="!routerTreeVisible"
           [snapToRoot]="snapToRoot()"
           [routes]="routes()"
         />
@@ -96,7 +96,7 @@
       @let injectorTreeVisible = activeTab() === 'Injector Tree';
       @defer (when injectorTreeVisible; prefetch on idle) {
         <ng-injector-tree
-          [ngVisible]="injectorTreeVisible"
+          [hidden]="!injectorTreeVisible"
           [componentExplorerView]="componentExplorerView()"
           [providers]="providers()"
         />

@@ -31,7 +31,6 @@ import {InjectorTreeComponent} from './injector-tree/injector-tree.component';
 import {ProfilerComponent} from './profiler/profiler.component';
 import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TabUpdate} from './tab-update/index';
-import {VisibleDirective} from '../shared/visible/visible.directive';
 
 type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
 
@@ -53,7 +52,6 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
     RouterTreeComponent,
     InjectorTreeComponent,
     MatSlideToggle,
-    VisibleDirective,
   ],
   providers: [TabUpdate],
 })
