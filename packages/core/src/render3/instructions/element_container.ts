@@ -29,7 +29,11 @@ import {
   getTView,
   lastNodeWasCreated,
 } from '../state';
-import {directiveHostEndFirstCreatePass, directiveHostFirstCreatePass} from '../view/elements';
+import {
+  directiveHostEndFirstCreatePass,
+  directiveHostFirstCreatePass,
+  domOnlyFirstCreatePass,
+} from '../view/elements';
 import {
   createDirectivesInstances,
   elementLikeEndShared,
@@ -130,6 +134,81 @@ export function ɵɵelementContainer(
   ɵɵelementContainerStart(index, attrsIndex, localRefsIndex);
   ɵɵelementContainerEnd();
   return ɵɵelementContainer;
+}
+
+/**
+ * Creates a DOM-only logical container for other nodes (<ng-container>) backed by a comment node
+ * in the DOM. The host node will *not* match any directives.
+ *
+ * @param index Index of the element in the LView array
+ * @param attrsIndex Index of the container attributes in the `consts` array.
+ * @param localRefsIndex Index of the container's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementContainerStart(
+  index: number,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵdomElementContainerStart {
+  const lView = getLView();
+  ngDevMode && assertTNodeCreationIndex(lView, index);
+
+  const tView = lView[TVIEW];
+  const adjustedIndex = index + HEADER_OFFSET;
+  const tNode = tView.firstCreatePass
+    ? domOnlyFirstCreatePass(
+        adjustedIndex,
+        tView,
+        TNodeType.ElementContainer,
+        'ng-container',
+        attrsIndex,
+      )
+    : (tView.data[adjustedIndex] as TElementContainerNode);
+
+  elementLikeStartShared(tNode, lView, index, 'ng-container', _locateOrCreateElementContainerNode);
+
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(lView, tNode);
+  }
+
+  return ɵɵdomElementContainerStart;
+}
+
+/**
+ * Mark the end of a directiveless <ng-container>.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementContainerEnd(): typeof ɵɵelementContainerEnd {
+  const initialTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
+  const currentTNode = elementLikeEndShared(initialTNode);
+  ngDevMode && assertTNodeType(currentTNode, TNodeType.ElementContainer);
+  return ɵɵelementContainerEnd;
+}
+
+/**
+ * Creates an empty logical container using {@link domElementContainerStart}
+ * and {@link domElementContainerEnd}
+ *
+ * @param index Index of the element in the LView array
+ * @param attrsIndex Index of the container attributes in the `consts` array.
+ * @param localRefsIndex Index of the container's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementContainer(
+  index: number,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵdomElementContainer {
+  ɵɵdomElementContainerStart(index, attrsIndex, localRefsIndex);
+  ɵɵdomElementContainerEnd();
+  return ɵɵdomElementContainer;
 }
 
 let _locateOrCreateElementContainerNode: typeof locateOrCreateElementContainerNode = (
