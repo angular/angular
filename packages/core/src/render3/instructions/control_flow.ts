@@ -38,7 +38,7 @@ import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
-import {declareTemplate} from './template';
+import {declareNoDirectiveHostTemplate} from './template';
 import {
   addLViewToLContainer,
   detachView,
@@ -79,7 +79,7 @@ export function ɵɵconditionalCreate(
   const lView = getLView();
   const tView = getTView();
   const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
-  declareTemplate(
+  declareNoDirectiveHostTemplate(
     lView,
     tView,
     index,
@@ -128,7 +128,7 @@ export function ɵɵconditionalBranchCreate(
   const tView = getTView();
   const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
 
-  declareTemplate(
+  declareNoDirectiveHostTemplate(
     lView,
     tView,
     index,
@@ -316,7 +316,7 @@ export function ɵɵrepeaterCreate(
   const metadata = new RepeaterMetadata(hasEmptyBlock, boundTrackBy);
   hostLView[HEADER_OFFSET + index] = metadata;
 
-  declareTemplate(
+  declareNoDirectiveHostTemplate(
     lView,
     tView,
     index + 1,
@@ -334,7 +334,7 @@ export function ɵɵrepeaterCreate(
     ngDevMode &&
       assertDefined(emptyVars, 'Missing number of bindings for the empty repeater block.');
 
-    declareTemplate(
+    declareNoDirectiveHostTemplate(
       lView,
       tView,
       index + 2,
