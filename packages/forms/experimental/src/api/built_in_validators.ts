@@ -45,10 +45,10 @@ interface BaseValidatorConfig {
  * Validator requiring a field value to be greater than or equal to a minimum value.
  *
  * @param path Path to the target field
- * @param minValue The minimum value, or a function returning it.
+ * @param minValue The minimum value, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function min(path: FieldPath<number>, minValue: (number | ((ctx: FieldContext<number>) => number)), config?: BaseValidatorConfig) {
+export function min(path: FieldPath<number>, minValue: (number | LogicFn<number, number>), config?: BaseValidatorConfig) {
   const reactiveMinValue = (typeof minValue === 'number') ?
       () => minValue : minValue;
   metadata(path, MIN, reactiveMinValue);
@@ -70,10 +70,10 @@ export function min(path: FieldPath<number>, minValue: (number | ((ctx: FieldCon
  * Validator requiring a field value to be smaller than or equal to a maximum value.
  *
  * @param path Path to the target field
- * @param maxValue The minimum value, or a function returning it.
+ * @param maxValue The minimum value, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function max(path: FieldPath<number>, maxValue: (number | ((ctx: FieldContext<number>) => number)), config?: BaseValidatorConfig) {
+export function max(path: FieldPath<number>, maxValue: (number | LogicFn<number, number>), config?: BaseValidatorConfig) {
   const reactiveMaxValue = (typeof maxValue === 'number') ?
       () => maxValue : maxValue;
 
