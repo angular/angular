@@ -107,6 +107,7 @@ import {
   DtsTransformRegistry,
   ivyTransformFactory,
   TraitCompiler,
+  signalMetadataTransform,
 } from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
@@ -819,7 +820,7 @@ export class NgCompiler {
 
     const defaultImportTracker = new DefaultImportTracker();
 
-    const before = [
+    const before: ts.TransformerFactory<ts.SourceFile>[] = [
       ivyTransformFactory(
         compilation.traitCompiler,
         compilation.reflector,
@@ -859,7 +860,7 @@ export class NgCompiler {
           },
         )(ctx);
 
-        return (sourceFile) => {
+        return (sourceFile: ts.SourceFile) => {
           if (!sourceFilesWithJit.has(sourceFile.fileName)) {
             return sourceFile;
           }
@@ -867,6 +868,9 @@ export class NgCompiler {
         };
       });
     }
+
+    // Typescript transformer to add debugName metadata to signal functions.
+    before.push(signalMetadataTransform(this.inputProgram));
 
     const afterDeclarations: ts.TransformerFactory<ts.SourceFile>[] = [];
 
