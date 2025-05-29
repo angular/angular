@@ -118,7 +118,7 @@ Angular — Deliver web apps with confidence 🚀
 
 ## Others
 
-- [Zoneless](https://angular.dev/guide/experimental/zoneless)
+- [Zoneless](https://angular.dev/guide/zoneless)
 - [Error encyclopedia](https://angular.dev/errors)
 - [Extended diagnostics](https://angular.dev/extended-diagnostics)
 - [Update guide](https://angular.dev/update-guide)

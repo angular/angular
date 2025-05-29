@@ -143,3 +143,12 @@ Consider this example: The LLM provider is not responding. A potential strategy 
 * Save the response from the user to used in a retry scenario (now or at a later time)
 * Alert the user to the outage with an appropriate message that doesn't reveal sensitive information
 * Resume the conversation at a later time once the services are available again.
+
+## Docs for LLMs
+
+Angular supports the llms.txt convention for making documentation available to large language models and the applications that make use of them.
+
+Here is the list of relevant files:
+
+* [llms.txt](/llms.txt), a listing of most valuable links to understand Angular
+* [llms-full.txt](/llms-full.txt), the complete content of the forementioned files aggregated.
