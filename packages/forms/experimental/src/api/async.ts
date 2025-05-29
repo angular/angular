@@ -67,25 +67,7 @@ export function validateHttp<TValue, TData = unknown>(
   opts: {
     request: (ctx: FieldContext<TValue>) => string | undefined;
     errors: (data: TData, ctx: FieldContext<TValue>) => FormTreeError | FormTreeError[] | undefined;
-    options: HttpResourceOptions<TData, unknown> & {defaultValue: NoInfer<TData>};
-  },
-): void;
-
-export function validateHttp<TValue, TData = unknown>(
-  path: FieldPath<TValue>,
-  opts: {
-    request: (ctx: FieldContext<TValue>) => string | undefined;
-    errors: (data: TData, ctx: FieldContext<TValue>) => FormTreeError | FormTreeError[] | undefined;
     options?: HttpResourceOptions<TData, unknown>;
-  },
-): void;
-
-export function validateHttp<TValue, TData = unknown>(
-  path: FieldPath<TValue>,
-  opts: {
-    request: (ctx: FieldContext<TValue>) => HttpResourceRequest | undefined;
-    errors: (data: TData, ctx: FieldContext<TValue>) => FormTreeError | FormTreeError[] | undefined;
-    options: HttpResourceOptions<TData, unknown> & {defaultValue: NoInfer<TData>};
   },
 ): void;
 
