@@ -19,12 +19,8 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 ### Available to experiment with
 
-* [Incremental hydration](/guide/incremental-hydration)
 * [Zoneless change detection](/guide/zoneless)
-* [Hydration support for i18n blocks](/api/platform-browser/withI18nSupport)
 * [Resource API](/guide/signals/resource)
-* [Effect API](/api/core/effect)
-* [Linked Signal API](/guide/signals/linked-signal)
 
 ### Production ready
 
