@@ -397,6 +397,32 @@ export enum ErrorCode {
   UNCLAIMED_DIRECTIVE_BINDING = 8018,
 
   /**
+   * An `@defer` block with an implicit trigger does not have a placeholder, for example:
+   *
+   * ```
+   * @defer(on viewport) {
+   *   Hello
+   * }
+   * ```
+   */
+  DEFER_IMPLICIT_TRIGGER_MISSING_PLACEHOLDER = 8019,
+
+  /**
+   * The `@placeholder` for an implicit `@defer` trigger is not set up correctly, for example:
+   *
+   * ```
+   * @defer(on viewport) {
+   *   Hello
+   * } @placeholder {
+   *   <!-- Multiple root nodes. -->
+   *   <button></button>
+   *   <div></div>
+   * }
+   * ```
+   */
+  DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER = 8020,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
