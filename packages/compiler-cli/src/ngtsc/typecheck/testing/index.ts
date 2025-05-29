@@ -22,8 +22,11 @@ import {
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
+  TmplAstHoverDeferredTrigger,
+  TmplAstInteractionDeferredTrigger,
   TmplAstLetDeclaration,
   TmplAstTextAttribute,
+  TmplAstViewportDeferredTrigger,
 } from '@angular/compiler';
 import {readFileSync} from 'fs';
 import path from 'path';
@@ -1047,6 +1050,20 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   incorrectTemplateDependencyType(
     id: TypeCheckId,
     node: TmplAstComponent | TmplAstDirective,
+  ): void {}
+  deferImplicitTriggerMissingPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void {}
+  deferImplicitTriggerInvalidPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
   ): void {}
 }
 
