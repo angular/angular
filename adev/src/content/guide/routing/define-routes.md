@@ -219,7 +219,7 @@ export const routes: Routes = [
     loadComponent: () => import('./components/auth/login-page')
   },
   {
-    path: ',
+    path: '',
     loadComponent: () => import('./components/home/home-page')
   }
 ]
