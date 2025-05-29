@@ -220,12 +220,6 @@ $transition: 200ms linear;
               transform-origin: 0 302px;
               transition: transform $transition;
             }
-
-            .shield-bottom-extension {
-              transform-origin: 177px 340px;
-              transition: transform $transition;
-              transform: scale(0);
-            }
           }
 
           .letter {

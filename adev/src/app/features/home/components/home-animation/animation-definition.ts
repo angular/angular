@@ -39,7 +39,6 @@ const LOGO = `${LOGO_LAYER_ID} >> .logo`;
 const SHIELD = `${LOGO_LAYER_ID} >> .shield`;
 const SHIELD_MIDDLE = `${LOGO_LAYER_ID} >> .shield-middle`;
 const SHIELD_BOTTOM_A_ARC = `${LOGO_LAYER_ID} >> .shield-bottom-a-arc`;
-const SHIELD_BOTTOM_EXTENSION = `${LOGO_LAYER_ID} >> .shield-bottom-extension`;
 const CAPITAL_A_LETTER = `${LOGO_LAYER_ID} >> .capt-a-letter`;
 const N_LETTER = `${LOGO_LAYER_ID} >> .n-letter`;
 const G_LETTER = `${LOGO_LAYER_ID} >> .g-letter`;
@@ -211,16 +210,6 @@ export function generateHomeAnimationDefinition(
       },
       to: {
         transform: 'scaleY(0)',
-      },
-    },
-    {
-      selector: SHIELD_BOTTOM_EXTENSION,
-      timeframe: timeframe(5.5, 5.6),
-      from: {
-        transform: 'scale(0)',
-      },
-      to: {
-        transform: 'scale(1)',
       },
     },
     {
