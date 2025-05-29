@@ -12,6 +12,7 @@
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
     "rxjs": "^6.5.3 || ^7.4.0"
   },
   "repository": {

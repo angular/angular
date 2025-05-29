@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, reflectComponentType, Type} from '@angular/core';
+import {ApplicationConfig, Injector, reflectComponentType, Type} from '@angular/core';
+import {createApplication} from '@angular/platform-browser';
 import {Subscription} from 'rxjs';
 
 import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
@@ -45,7 +46,7 @@ export abstract class NgElement extends HTMLElement {
   /**
    * The strategy that controls how a component is transformed in a custom element.
    */
-  protected abstract ngElementStrategy: NgElementStrategy;
+  protected abstract ngElementStrategy: NgElementStrategy | Promise<NgElementStrategy>;
   /**
    * A subscription to change, connect, and disconnect events in the custom element.
    */
@@ -65,11 +66,13 @@ export abstract class NgElement extends HTMLElement {
     newValue: string,
     namespace?: string,
   ): void;
+
   /**
    * Prototype for a handler that responds to the insertion of the custom element in the DOM.
    * @returns Nothing.
    */
   abstract connectedCallback(): void;
+
   /**
    * Prototype for a handler that responds to the deletion of the custom element from the DOM.
    * @returns Nothing.
@@ -95,17 +98,26 @@ export type WithProperties<P> = {
  *
  * @publicApi
  */
-export interface NgElementConfig {
-  /**
-   * The injector to use for retrieving the component's factory.
-   */
-  injector: Injector;
+export type NgElementConfig = {
   /**
    * An optional custom strategy factory to use instead of the default.
    * The strategy controls how the transformation is performed.
    */
   strategyFactory?: NgElementStrategyFactory;
-}
+} & (
+  | {
+      /**
+       * The injector to use for retrieving the component's factory.
+       */
+      injector: Injector;
+    }
+  | {
+      /**
+       * The config for application.
+       */
+      applicationConfig: ApplicationConfig;
+    }
+);
 
 /**
  *  @description Creates a custom element class based on an Angular component.
@@ -151,12 +163,21 @@ export function createCustomElement<P>(
     // field externs. So using quoted access to explicitly prevent renaming.
     static readonly ['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
-    protected override get ngElementStrategy(): NgElementStrategy {
+    protected override get ngElementStrategy(): Promise<NgElementStrategy> {
       // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
       // now this is tested using a Google internal test suite.
+
       if (!this._ngElementStrategy) {
-        const strategy = (this._ngElementStrategy = strategyFactory.create(
-          this.injector || config.injector,
+        const injectorPromise = Promise.resolve(
+          this.injector ??
+            ('injector' in config ? config.injector : null) ??
+            ('applicationConfig' in config
+              ? createApplication(config.applicationConfig).then((appRef) => appRef.injector)
+              : null),
+        ) as Promise<Injector>;
+
+        const strategyPromise = (this._ngElementStrategy = injectorPromise.then((injector) =>
+          strategyFactory.create(injector),
         ));
 
         // Re-apply pre-existing input values (set as properties on the element) through the
@@ -171,14 +192,14 @@ export function createCustomElement<P>(
           // Delete the property from the DOM node and re-apply it through the strategy.
           const value = (this as any)[propName];
           delete (this as any)[propName];
-          strategy.setInputValue(propName, value, transform);
+          strategyPromise.then((strategy) => strategy.setInputValue(propName, value, transform));
         });
       }
 
       return this._ngElementStrategy!;
     }
 
-    private _ngElementStrategy?: NgElementStrategy;
+    private _ngElementStrategy?: Promise<NgElementStrategy>;
 
     constructor(private readonly injector?: Injector) {
       super();
@@ -191,7 +212,9 @@ export function createCustomElement<P>(
       namespace?: string,
     ): void {
       const [propName, transform] = attributeToPropertyInputs[attrName]!;
-      this.ngElementStrategy.setInputValue(propName, newValue, transform);
+      this.ngElementStrategy.then((strategy) =>
+        strategy.setInputValue(propName, newValue, transform),
+      );
     }
 
     override connectedCallback(): void {
@@ -203,28 +226,30 @@ export function createCustomElement<P>(
       // TODO: Consider deprecating/removing the post-connect subscription in a future major version
       //       (e.g. v11).
 
-      let subscribedToEvents = false;
+      this.ngElementStrategy.then((strategy) => {
+        let subscribedToEvents = false;
 
-      if (this.ngElementStrategy.events) {
-        // `events` are already available: Subscribe to it asap.
-        this.subscribeToEvents();
-        subscribedToEvents = true;
-      }
+        if (strategy.events) {
+          // `events` are already available: Subscribe to it asap.
+          this.subscribeToEvents(strategy);
+          subscribedToEvents = true;
+        }
 
-      this.ngElementStrategy.connect(this);
+        strategy.connect(this);
 
-      if (!subscribedToEvents) {
-        // `events` were not initialized before running `connect()`: Subscribe to them now.
-        // The events emitted during the component initialization have been missed, but at least
-        // future events will be captured.
-        this.subscribeToEvents();
-      }
+        if (!subscribedToEvents) {
+          // `events` were not initialized before running `connect()`: Subscribe to them now.
+          // The events emitted during the component initialization have been missed, but at least
+          // future events will be captured.
+          this.subscribeToEvents(strategy);
+        }
+      });
     }
 
     override disconnectedCallback(): void {
       // Not using `this.ngElementStrategy` to avoid unnecessarily creating the `NgElementStrategy`.
       if (this._ngElementStrategy) {
-        this._ngElementStrategy.disconnect();
+        this._ngElementStrategy.then((strategy) => strategy.disconnect());
       }
 
       if (this.ngElementEventsSubscription) {
@@ -233,9 +258,9 @@ export function createCustomElement<P>(
       }
     }
 
-    private subscribeToEvents(): void {
+    private subscribeToEvents(strategy: NgElementStrategy): void {
       // Listen for events from the strategy and dispatch them as custom events.
-      this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe((e) => {
+      this.ngElementEventsSubscription = strategy.events.subscribe((e) => {
         const customEvent = new CustomEvent(e.name, {detail: e.value});
         this.dispatchEvent(customEvent);
       });
