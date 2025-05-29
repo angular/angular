@@ -21,6 +21,9 @@ import {
   ɵisViewDirty as isViewDirty,
   ɵmarkForRefresh as markForRefresh,
   OutputRef,
+  reflectComponentType,
+  createComponent,
+  ComponentMirror,
 } from '@angular/core';
 import {merge, Observable, ReplaySubject} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
@@ -41,21 +44,10 @@ const DESTROY_DELAY = 10;
  * constructor's injector's factory resolver and passes that factory to each strategy.
  */
 export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
-  componentFactory: ComponentFactory<any>;
-
-  inputMap = new Map<string, string>();
-
-  constructor(component: Type<any>, injector: Injector) {
-    this.componentFactory = injector
-      .get(ComponentFactoryResolver)
-      .resolveComponentFactory(component);
-    for (const input of this.componentFactory.inputs) {
-      this.inputMap.set(input.propName, input.templateName);
-    }
-  }
+  constructor(private readonly component: Type<any>) {}
 
   create(injector: Injector) {
-    return new ComponentNgElementStrategy(this.componentFactory, injector, this.inputMap);
+    return new ComponentNgElementStrategy(this.component, injector);
   }
 }
 
@@ -95,11 +87,20 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    */
   private cdScheduler: ChangeDetectionScheduler;
 
+  private readonly inputMap = new Map<string, string>();
+
+  private readonly componentMirror: ComponentMirror<unknown>;
+
   constructor(
-    private componentFactory: ComponentFactory<any>,
+    private component: Type<any>,
     private injector: Injector,
-    private inputMap: Map<string, string>,
   ) {
+    this.componentMirror = reflectComponentType(component)!;
+
+    for (const input of this.componentMirror.inputs) {
+      this.inputMap.set(input.propName, input.templateName);
+    }
+
     this.ngZone = this.injector.get(NgZone);
     this.appRef = this.injector.get(ApplicationRef);
     this.cdScheduler = injector.get(ChangeDetectionScheduler);
@@ -198,9 +199,13 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     const childInjector = Injector.create({providers: [], parent: this.injector});
     const projectableNodes = extractProjectableNodes(
       element,
-      this.componentFactory.ngContentSelectors,
+      this.componentMirror.ngContentSelectors,
     );
-    this.componentRef = this.componentFactory.create(childInjector, projectableNodes, element);
+
+    // TODO `createComponent` can only accept EnvironmentInjector
+    const cfr = childInjector.get(ComponentFactoryResolver);
+    const componentFactory = cfr.resolveComponentFactory(this.component);
+    this.componentRef = componentFactory.create(childInjector, projectableNodes, element);
 
     this.initializeInputs();
     this.initializeOutputs(this.componentRef);
@@ -220,7 +225,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Sets up listeners for the component's outputs so that the events stream emits the events. */
   protected initializeOutputs(componentRef: ComponentRef<any>): void {
-    const eventEmitters: Observable<NgElementStrategyEvent>[] = this.componentFactory.outputs.map(
+    const eventEmitters: Observable<NgElementStrategyEvent>[] = this.componentMirror.outputs.map(
       ({propName, templateName}) => {
         const emitter: EventEmitter<any> | OutputRef<any> = componentRef.instance[propName];
         return new Observable((observer) => {

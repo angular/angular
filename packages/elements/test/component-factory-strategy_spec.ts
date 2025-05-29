@@ -11,7 +11,6 @@ import {
   Component,
   ComponentRef,
   Directive,
-  EnvironmentInjector,
   Injector,
   Input,
   NgZone,
@@ -39,7 +38,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     injector = TestBed.inject(Injector);
-    const strategyFactory = new ComponentNgElementStrategyFactory(TestComponent, injector);
+    const strategyFactory = new ComponentNgElementStrategyFactory(TestComponent);
     strategy = strategyFactory.create(injector);
   });
 
@@ -50,7 +49,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
   }
 
   it('should create a new strategy from the factory', () => {
-    const strategyFactory = new ComponentNgElementStrategyFactory(TestComponent, injector);
+    const strategyFactory = new ComponentNgElementStrategyFactory(TestComponent);
     expect(strategyFactory.create(injector)).toBeTruthy();
   });
 
