@@ -65,6 +65,7 @@ import {
   triggerPrefetching,
   triggerResourceLoading,
   shouldAttachTrigger,
+  hasHydrateTriggers,
 } from './triggering';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {Console} from '../console';
@@ -138,8 +139,13 @@ export function ɵɵdefer(
   if (tView.firstCreatePass) {
     performanceMarkFeature('NgDefer');
 
-    if (ngDevMode && typeof ngHmrMode !== 'undefined' && ngHmrMode) {
-      logHmrWarning(injector);
+    if (ngDevMode) {
+      if (typeof ngHmrMode !== 'undefined' && ngHmrMode) {
+        logHmrWarning(injector);
+      }
+      if (hasHydrateTriggers(flags)) {
+        assertIncrementalHydrationIsConfigured(injector);
+      }
     }
 
     const tDetails: TDeferBlockDetails = {
@@ -193,8 +199,6 @@ export function ɵɵdefer(
 
   let registry: DehydratedBlockRegistry | null = null;
   if (ssrUniqueId !== null) {
-    ngDevMode && assertIncrementalHydrationIsConfigured(injector);
-
     // Store this defer block in the registry, to have an access to
     // internal data structures from hydration runtime code.
     registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);
