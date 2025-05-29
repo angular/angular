@@ -259,6 +259,7 @@
   "createNotification",
   "createStyleElement",
   "createTView",
+  "createTokenWithInjectionMarker",
   "declareTemplate",
   "deepForEach",
   "deepForEachProvider",
