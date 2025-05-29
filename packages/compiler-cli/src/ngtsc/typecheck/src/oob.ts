@@ -216,6 +216,29 @@ export interface OutOfBandDiagnosticRecorder {
     directive: TmplAstDirective,
     node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
   ): void;
+
+  /**
+   * Reports that an implicit deferred trigger is set on a block that does not have a placeholder.
+   */
+  deferImplicitTriggerMissingPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void;
+
+  /**
+   * Reports that an implicit deferred trigger is set on a block whose placeholder is not set up
+   * correctly (e.g. more than one root node).
+   */
+  deferImplicitTriggerInvalidPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -736,6 +759,45 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.UNCLAIMED_DIRECTIVE_BINDING),
         errorMsg,
+      ),
+    );
+  }
+
+  deferImplicitTriggerMissingPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        trigger.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_MISSING_PLACEHOLDER),
+        'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+      ),
+    );
+  }
+
+  deferImplicitTriggerInvalidPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        trigger.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER),
+        'Trigger with no parameters can only be placed on an @defer that has a ' +
+          '@placeholder block with exactly one root element node',
       ),
     );
   }

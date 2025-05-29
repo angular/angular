@@ -1397,32 +1397,6 @@ describe('R3 template transform', () => {
         ).toThrowError(/@loading block can only have one "after" parameter/);
       });
 
-      it('should report if reference-based trigger has no reference and there is no placeholder block', () => {
-        expect(() => parse('@defer (on viewport) {hello}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/,
-        );
-      });
-
-      it('should report if reference-based trigger has no reference and the placeholder is empty', () => {
-        expect(() => parse('@defer (on viewport) {hello} @placeholder {}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/,
-        );
-      });
-
-      it('should report if reference-based trigger has no reference and the placeholder with text at the root', () => {
-        expect(() => parse('@defer (on viewport) {hello} @placeholder {placeholder}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/,
-        );
-      });
-
-      it('should report if reference-based trigger has no reference and the placeholder has multiple root elements', () => {
-        expect(() =>
-          parse('@defer (on viewport) {hello} @placeholder {<div></div><span></span>}'),
-        ).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/,
-        );
-      });
-
       it('should report parameter passed to hydrate trigger with reference-based equivalent', () => {
         expect(() =>
           parse('@defer (on interaction(button); hydrate on interaction(button)) {hello}'),
@@ -1431,18 +1405,6 @@ describe('R3 template transform', () => {
 
       it('should not report missing reference on hydrate trigger', () => {
         expect(() => parse('@defer (on immediate; hydrate on viewport) {hello}')).not.toThrow();
-      });
-
-      it('should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists', () => {
-        expect(() => parse('@defer (on viewport; hydrate on immediate) {hello}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/,
-        );
-      });
-
-      it('should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists and it is also viewport', () => {
-        expect(() => parse('@defer (on viewport; hydrate on viewport) {hello}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/,
-        );
       });
 
       it('should report never trigger used without `hydrate`', () => {

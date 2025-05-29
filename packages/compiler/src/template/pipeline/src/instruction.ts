@@ -330,7 +330,7 @@ const deferTriggerToR3TriggerInstructionsMap = new Map([
 
 export function deferOn(
   trigger: ir.DeferTriggerKind,
-  args: number[],
+  args: (number | null)[],
   modifier: ir.DeferOpModifierKind,
   sourceSpan: ParseSourceSpan | null,
 ): ir.CreateOp {

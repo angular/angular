@@ -12,7 +12,6 @@ import {
   ImplicitReceiver,
   PropertyRead,
   PropertyWrite,
-  RecursiveAstVisitor,
   SafePropertyRead,
   ThisReceiver,
 } from '../../expression_parser/ast';
@@ -1185,7 +1184,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     const name = trigger.reference;
 
     if (name === null) {
-      let trigger: Element | null = null;
+      let target: Element | null = null;
 
       if (block.placeholder !== null) {
         for (const child of block.placeholder.children) {
@@ -1197,17 +1196,17 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
 
           // We can only infer the trigger if there's one root element node. Any other
           // nodes at the root make it so that we can't infer the trigger anymore.
-          if (trigger !== null) {
+          if (target !== null) {
             return null;
           }
 
           if (child instanceof Element) {
-            trigger = child;
+            target = child;
           }
         }
       }
 
-      return trigger;
+      return target;
     }
 
     const outsideRef = this.findEntityInScope(block, name);
