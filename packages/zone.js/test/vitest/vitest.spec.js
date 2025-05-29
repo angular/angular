@@ -3,7 +3,8 @@ require('../../../../dist/bin/packages/zone.js/npm_package/bundles/zone-testing.
 
 import {expect, test, describe, beforeEach} from 'vitest';
 
-const {tick, withProxyZone, fakeAsync} = Zone[Zone.__symbol__('fakeAsyncTest')];
+const {tick, withProxyZone, fakeAsync, asyncTest} = Zone[Zone.__symbol__('fakeAsyncTest')];
+const waitForAsync = Zone[Zone.__symbol__('asyncTest')];
 
 describe('proxy zone behavior', () => {
   const spec = new Zone['ProxyZoneSpec']();
@@ -81,6 +82,16 @@ test(
       setTimeout(() => void (x = 2), 5000);
       tick(5000);
       expect(x).toBe(2);
+    }),
+  ),
+);
+
+test.each([[1, 2]])(
+  'it.each',
+  withProxyZone(
+    waitForAsync((arg1, arg2) => {
+      expect(arg1).toBe(1);
+      expect(arg2).toBe(2);
     }),
   ),
 );
