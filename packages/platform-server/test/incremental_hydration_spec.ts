@@ -2693,4 +2693,69 @@ describe('platform-server partial hydration integration', () => {
       expect(appHostNode.outerHTML).toContain(`<p id="hydrated">yup</p>`);
     });
   });
+
+  describe('misconfiguration', () => {
+    it('should throw an error when `withIncrementalHydration()` is missing in SSR setup', async () => {
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate never) {
+            <div>Hydrate never block</div>
+          }
+        `,
+      })
+      class SimpleComponent {}
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+
+      // Empty list, `withIncrementalHydration()` is not included intentionally.
+      const hydrationFeatures = () => [];
+
+      let producedError;
+      try {
+        await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      } catch (error: unknown) {
+        producedError = error;
+      }
+      expect((producedError as Error).message).toContain('NG0508');
+    });
+
+    it('should throw an error when `withIncrementalHydration()` is missing in hydration setup', async () => {
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate never) {
+            <div>Hydrate never block</div>
+          }
+        `,
+      })
+      class SimpleComponent {}
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+
+      // Internal cleanup before we do server->client transition in this test.
+      resetTViewsFor(SimpleComponent);
+
+      ////////////////////////////////
+
+      let producedError;
+      try {
+        const doc = getDocument();
+        await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+          // Empty list, `withIncrementalHydration()` is not included intentionally.
+          hydrationFeatures: () => [],
+        });
+      } catch (error: unknown) {
+        producedError = error;
+      }
+      expect((producedError as Error).message).toContain('NG0508');
+    });
+  });
 });
