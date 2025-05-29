@@ -632,6 +632,71 @@ const tripSchema = schema<Trip>((tripPath) => {
 }
 ```
 
+### Async logic
+
+In some cases, you may need to define validation or other logic that depends on an async operation. A common example of this is validation that can only be performed on the server and therefore must wait for the server response before showing the result of the validation.
+
+#### Async validation over http
+
+Server validation is one of the most common types of async logic that is required in forms, and as such Signal Forms has a convenient built in function to define server based validation. To define server based validation for a field, use the `validateHttp` logic function. This function takes a `request` and an `errors` function to map the response to a set of validation errors. Under the hood this creates an `HttpResource` for the field and runs the `errors` function to get the latest errors when it updates. `validateHttp` is a tree validator (like `validateTree`) that allows assigning errors to child fields.
+
+```ts
+const userSchema = schema<User>(userPath => {
+  validateHttp(userPath.username, {
+    request: ({value}) => `/api/check-username?${username}`,
+    errors: (data, ctx) => {
+      if (data === 'OK') {
+        return [];
+      }
+      return [{kind: 'server-error', message: data}];
+    }
+  });
+});
+```
+
+#### Async validation & validity
+
+Because async validation is asynchronous, it has a third potential state besides `valid` or `invalid`, `pending`, which needs to be considered when determining the validity of the form. Each `FieldState` has the following signals which describe the validation state of the field.
+
+| Name                   | Type                  | Meaning                                                                                                                                  |
+| ---------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `hasPendingValidators` | `Signal<boolean>`     | `true` if there are any pending validators that may produce a validation error for this field or one of its children, `false` otherwise. |
+| `valid`                | `Signal<boolean>`     | `true` if neither the field nor any of its children has any errors or pending validators, `false` otherwise.                             |
+| `invalid`              | `Signal<boolean>`     | `true` if the field or any of its children has any errors, regardless of pending validators, `false` otherwise.                          |
+| `errors`               | `Signal<FormError[]>` | The list of validation errors associated with the field.                                                                                 |
+
+Note that `!valid()` is not the same as `invalid()`, and `!invalid()` is not the same as `valid()`. Consider a field that has no current errors, but does have a pending validator. In this case `valid()` is `false` because of the pending validator, and `invalid()` is also false because there are no current errors.
+
+Also note that while the validation status is inherited from child to parent (a parent with an `invalid()` child is necissarily `invalid()`), the `errors()` for a field consists of only the errors that apply specifically to that field.
+
+#### Other async validation
+
+While async validation via `HttpResource` is the most common type of async validation, there may be situations where you need to perform other async operations as part of validation. In these cases, you can use `validateAsync`. This works similartly to `validateHttp`, but allows you to provide a factory to create any type of `Resource` you need, rather than the `HttpResource` automatically created by `validateHttp`.
+
+```ts
+const userSchema = schema<User>(userPath => {
+  validateAsync(userPath.username, {
+    params: ({value}) => `/api/check-username?${username}`,
+    factory: (params) => {
+      return rxResource({
+        params,
+        stream: ({params}) => inject(HttpClient).get(params).pipe(...)
+      });
+    }
+    errors: (data, ctx) => {
+      if (data === 'OK') {
+        return [];
+      }
+      return [{kind: 'server-error', message: data}];
+    }
+  });
+});
+```
+
+#### Async validator short-circuiting
+
+Because async validation is more typically more expensive than synchronous validation, async validators are only run when the synchronous validators report that the field is valid. This avoids sending wasteful requests to ther server.
+
 ## Submitting a form
 
 Once the user has filled out the form, the typical next step is to submit the data, often involving client-side processing or sending it to a server. During this submission process, it's common to provide user feedback on the status (pending, success, failure).
