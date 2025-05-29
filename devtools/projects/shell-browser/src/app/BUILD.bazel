@@ -63,8 +63,13 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
     ],
     deps = [
+        "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/protocol",
         "//devtools/projects/protocol:protocol_rjs",
+        "@npm//@types",
     ],
 )
 

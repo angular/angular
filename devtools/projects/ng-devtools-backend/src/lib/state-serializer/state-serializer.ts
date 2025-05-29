@@ -116,6 +116,10 @@ export function serializeDirectiveState(instance: object): Record<string, Descri
   return result;
 }
 
+export function serializeValue(value: unknown): Descriptor {
+  return levelSerializer({value}, 'value', false, 0, 0);
+}
+
 export function deeplySerializeSelectedProperties(
   instance: object,
   props: NestedProp[],
