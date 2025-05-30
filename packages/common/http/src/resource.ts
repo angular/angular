@@ -353,7 +353,7 @@ class HttpResourceImpl<T>
                 break;
             }
           },
-          error: (error) => {
+          error: (error: Error | HttpErrorResponse) => {
             if (error instanceof HttpErrorResponse) {
               this._headers.set(error.headers);
               this._statusCode.set(error.status);
