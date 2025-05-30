@@ -351,7 +351,7 @@ You can read this static data by injecting the `ActivatedRoute`. See [Reading ro
 
 ### Dynamic data with data resolvers
 
-When you need to provide dynamic data to a route, check out the [guide on route data resolvers](/guide/router/route-data-resolvers).
+When you need to provide dynamic data to a route, check out the [Resolve interface](https://angular.io/api/router/Resolve).
 
 ## Nested Routes
 
