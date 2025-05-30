@@ -312,8 +312,8 @@ const passwordSchema = schema<ConfirmedPassword>((path) => {
       if (value().length < 5) {
         return {kind: 'too-short', message: 'Password is too short'};
       }
-      // Otherwise return null to indicate no error.
-      return null;
+      // Otherwise return undefined to indicate no error.
+      return undefined;
     });
 });
 
@@ -363,8 +363,8 @@ const passwordSchema = schema<ConfirmedPassword>((path) => {
       if (password !== confirm) {
         return {kind: 'non-matching', message: 'Password and confirm must match'};
       }
-      // Otherwise return null to indicate no error.
-      return null;
+      // Otherwise return undefined to indicate no error.
+      return undefined;
     });
 });
 
@@ -402,8 +402,8 @@ const passwordSchema = schema<ConfirmedPassword>((path) => {
       if (password !== value()) {
         return {kind: 'non-matching', message: 'Password and confirm must match'};
       }
-      // Otherwise return null to indicate no error.
-      return null;
+      // Otherwise return undefined to indicate no error.
+      return undefined;
     });
 });
 
@@ -451,14 +451,14 @@ const dateSchema = schema<SimpleDate>((datePath) => {
 });
 
 // Define a schema for the trip that includes validation for its dates.
-const tripSchema: Schema<Trip> = (tripPath: FieldPath<Trip>) => {
+const tripSchema = schema<Trip>((tripPath: FieldPath<Trip>) => {
   // Define trip-specific logic.
   required(tripPath.destination);
 
   // Add in standard date logic for start and end date.
   apply(tripPath.start, dateSchema);
   apply(tripPath.end, dateSchema);
-};
+});
 
 const defaultDate: SimpleDate = {year: 0, month: 0, date: 0};
 
