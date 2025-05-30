@@ -51,6 +51,12 @@
       "factory": "./bundles/self-closing-tags-migration.cjs#migrate",
       "schema": "./ng-generate/self-closing-tags-migration/schema.json",
       "aliases": ["self-closing-tag"]
+    },
+    "control-flow-migration": {
+      "description": "Converts the entire application to block control flow syntax",
+      "factory": "./bundles/control-flow-migration.cjs#migrate",
+      "schema": "./migrations/control-flow-migration/schema.json",
+      "aliases": ["control-flow"]
     }
   }
 }

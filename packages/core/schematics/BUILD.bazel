@@ -32,6 +32,7 @@ pkg_npm(
     srcs = [
         "collection.json",
         "migrations.json",
+        "//packages/core/schematics/migrations/control-flow-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
