@@ -1,4 +1,3 @@
-load("//tools:defaults.bzl", "ts_library")
 load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -10,57 +9,59 @@ ts_project(
     deps = ["//modules/benchmarks/src:util_lib_rjs"],
 )
 
-ts_library(
+ts_project(
     name = "test_utils_lib",
     testonly = 1,
     srcs = ["test_utils.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
-    deps = [
+    interop_deps = [
         "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "@npm//protractor",
+    ],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//:node_modules/protractor",
     ],
 )
 
-ts_library(
+ts_project(
     name = "perf_tests_lib",
     testonly = 1,
     srcs = ["tree.perf-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        ":test_utils_lib",
-        "@npm//protractor",
+        ":test_utils_lib_rjs",
+        "//:node_modules/protractor",
     ],
 )
 
-ts_library(
+ts_project(
     name = "e2e_tests_lib",
     testonly = 1,
     srcs = ["tree.e2e-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        ":test_utils_lib",
-        "@npm//protractor",
+        ":test_utils_lib_rjs",
+        "//:node_modules/protractor",
     ],
 )
 
-ts_library(
+ts_project(
     name = "detect_changes_perf_tests_lib",
     testonly = 1,
     srcs = ["tree_detect_changes.perf-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        ":test_utils_lib",
-        "@npm//protractor",
+        ":test_utils_lib_rjs",
+        "//:node_modules/protractor",
     ],
 )
 
-ts_library(
+ts_project(
     name = "detect_changes_e2e_tests_lib",
     testonly = 1,
     srcs = ["tree_detect_changes.e2e-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        ":test_utils_lib",
-        "@npm//protractor",
+        ":test_utils_lib_rjs",
+        "//:node_modules/protractor",
     ],
 )
