@@ -36,7 +36,7 @@
     "@babel/core": "7.27.1",
     "@types/babel__core": "7.20.5",
     "tinyglobby": "^0.2.12",
-    "yargs": "^17.2.1"
+    "yargs": "^18.0.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
