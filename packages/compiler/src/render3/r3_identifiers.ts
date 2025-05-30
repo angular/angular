@@ -105,6 +105,7 @@ export class Identifiers {
     name: 'ɵɵinterpolateV',
     moduleName: CORE,
   };
+  static staticHtml: o.ExternalReference = {name: 'ɵɵstaticHtml', moduleName: CORE};
 
   static nextContext: o.ExternalReference = {name: 'ɵɵnextContext', moduleName: CORE};
 

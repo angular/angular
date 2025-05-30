@@ -113,6 +113,10 @@ export function elementContainerEnd(): ir.CreateOp {
   return call(Identifiers.elementContainerEnd, [], null);
 }
 
+export function staticHtml(htmlString: string, sourceSpan: ParseSourceSpan): ir.CreateOp {
+  return call(Identifiers.staticHtml, [o.literal(htmlString)], sourceSpan);
+}
+
 export function template(
   slot: number,
   templateFnRef: o.Expression,
