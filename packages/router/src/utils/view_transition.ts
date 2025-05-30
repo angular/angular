@@ -21,7 +21,7 @@ export const VIEW_TRANSITION_OPTIONS = new InjectionToken<
 /**
  * Options to configure the View Transitions integration in the Router.
  *
- * @experimental 17.0
+ * @developerPreview 20.0
  * @see withViewTransitions
  */
 export interface ViewTransitionsFeatureOptions {
@@ -43,7 +43,7 @@ export interface ViewTransitionsFeatureOptions {
  * The information passed to the `onViewTransitionCreated` function provided in the
  * `withViewTransitions` feature options.
  *
- * @experimental 17.0
+ * @developerPreview 20.0
  */
 export interface ViewTransitionInfo {
   /**
