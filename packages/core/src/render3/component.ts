@@ -60,7 +60,9 @@ import {assertComponentDef} from './errors';
  * applicationRef.attachView(componentRef.hostView);
  * componentRef.changeDetectorRef.detectChanges();
  * ```
- *
+ * 
+ * [Learn more in the Programmatic Component Rendering guide](https://angular.dev/guide/components/programmatic-rendering)
+ * 
  * @param component Component class reference.
  * @param options Set of options to use:
  *  * `environmentInjector`: An `EnvironmentInjector` instance to be used for the component.
