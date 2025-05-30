@@ -71,6 +71,14 @@ describe('HttpRequest', () => {
       const req2 = new HttpRequest('GET', '/test', {keepalive: false});
       expect(req2.keepalive).toBe(false);
     });
+    it('should allow setting priority option', () => {
+      const req = new HttpRequest('GET', '/test', {priority: 'high'});
+      expect(req.priority).toBe('high');
+    });
+    it('should allow setting cache option', () => {
+      const req = new HttpRequest('GET', '/test', {cache: 'only-if-cached'});
+      expect(req.cache).toBe('only-if-cached');
+    });
   });
   describe('clone() copies the request', () => {
     const headers = new HttpHeaders({
@@ -85,6 +93,8 @@ describe('HttpRequest', () => {
       withCredentials: true,
       transferCache: true,
       keepalive: true,
+      cache: 'only-if-cached',
+      priority: 'high',
     });
     it('in the base case', () => {
       const clone = req.clone();
@@ -98,6 +108,8 @@ describe('HttpRequest', () => {
       expect(clone.context).toBe(context);
       expect(clone.transferCache).toBe(true);
       expect(clone.keepalive).toBe(true);
+      expect(clone.cache).toBe('only-if-cached');
+      expect(clone.priority).toBe('high');
     });
     it('and updates the url', () => {
       expect(req.clone({url: '/changed'}).url).toBe('/changed');

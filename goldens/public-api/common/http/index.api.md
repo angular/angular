@@ -52,6 +52,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<ArrayBuffer>;
     delete(url: string, options: {
@@ -63,6 +65,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<Blob>;
     delete(url: string, options: {
@@ -74,6 +78,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<string>;
     delete(url: string, options: {
@@ -85,6 +91,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpEvent<ArrayBuffer>>;
     delete(url: string, options: {
@@ -96,6 +104,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpEvent<Blob>>;
     delete(url: string, options: {
@@ -107,6 +117,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpEvent<string>>;
     delete(url: string, options: {
@@ -118,6 +130,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpEvent<Object>>;
     delete<T>(url: string, options: {
@@ -129,6 +143,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpEvent<T>>;
     delete(url: string, options: {
@@ -140,6 +156,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpResponse<ArrayBuffer>>;
     delete(url: string, options: {
@@ -151,6 +169,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpResponse<Blob>>;
     delete(url: string, options: {
@@ -162,6 +182,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpResponse<string>>;
     delete(url: string, options: {
@@ -173,6 +195,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpResponse<Object>>;
     delete<T>(url: string, options: {
@@ -184,6 +208,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<HttpResponse<T>>;
     delete(url: string, options?: {
@@ -195,6 +221,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<Object>;
     delete<T>(url: string, options?: {
@@ -206,6 +234,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         body?: any | null;
     }): Observable<T>;
     get(url: string, options: {
@@ -217,6 +247,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -230,6 +262,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -243,6 +277,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -256,6 +292,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -269,6 +307,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -282,6 +322,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -295,6 +337,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -308,6 +352,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -321,6 +367,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -334,6 +382,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -347,6 +397,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -360,6 +412,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -373,6 +427,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -386,6 +442,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -399,6 +457,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -412,6 +472,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -425,6 +487,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -438,6 +502,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -451,6 +517,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -464,6 +532,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -477,6 +547,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -490,6 +562,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -503,6 +577,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -516,6 +592,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -529,6 +607,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -542,6 +622,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -555,6 +637,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -568,6 +652,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -581,6 +667,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -594,6 +682,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -609,6 +699,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<ArrayBuffer>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -619,6 +711,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<Blob>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -629,6 +723,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<string>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -639,6 +735,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<ArrayBuffer>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -649,6 +747,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<Blob>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -659,6 +759,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<string>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -669,6 +771,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<Object>>;
     options<T>(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -679,6 +783,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<T>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -689,6 +795,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<ArrayBuffer>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -699,6 +807,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<Blob>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -709,6 +819,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<string>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -719,6 +831,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<Object>>;
     options<T>(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -729,6 +843,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<T>>;
     options(url: string, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -739,6 +855,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<Object>;
     options<T>(url: string, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -749,6 +867,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<T>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -759,6 +879,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<ArrayBuffer>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -769,6 +891,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<Blob>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -779,6 +903,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<string>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -789,6 +915,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<ArrayBuffer>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -799,6 +927,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<Blob>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -809,6 +939,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<string>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -819,6 +951,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<Object>>;
     patch<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -829,6 +963,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<T>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -839,6 +975,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<ArrayBuffer>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -849,6 +987,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<Blob>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -859,6 +999,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<string>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -869,6 +1011,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<Object>>;
     patch<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -879,6 +1023,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<T>>;
     patch(url: string, body: any | null, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -889,6 +1035,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<Object>;
     patch<T>(url: string, body: any | null, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -899,6 +1047,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<T>;
     post(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -909,6 +1059,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -922,6 +1074,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -935,6 +1089,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -948,6 +1104,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -961,6 +1119,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -974,6 +1134,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -987,6 +1149,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1000,6 +1164,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1013,6 +1179,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1026,6 +1194,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1039,6 +1209,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1052,6 +1224,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1065,6 +1239,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1078,6 +1254,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1091,6 +1269,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1104,6 +1284,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<ArrayBuffer>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1114,6 +1296,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<Blob>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1124,6 +1308,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<string>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1134,6 +1320,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<ArrayBuffer>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1144,6 +1332,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<Blob>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1154,6 +1344,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<string>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1164,6 +1356,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<Object>>;
     put<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1174,6 +1368,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpEvent<T>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1184,6 +1380,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<ArrayBuffer>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1194,6 +1392,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<Blob>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1204,6 +1404,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<string>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1214,6 +1416,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<Object>>;
     put<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1224,6 +1428,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<T>>;
     put(url: string, body: any | null, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1234,6 +1440,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<Object>;
     put<T>(url: string, body: any | null, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1244,6 +1452,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<T>;
     request<R>(req: HttpRequest<any>): Observable<HttpEvent<R>>;
     request(method: string, url: string, options: {
@@ -1255,7 +1465,8 @@ export class HttpClient {
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
-        keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1270,6 +1481,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1284,6 +1497,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1298,6 +1513,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1312,6 +1529,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1326,6 +1545,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1340,6 +1561,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1354,6 +1577,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1368,6 +1593,8 @@ export class HttpClient {
         responseType: 'arraybuffer';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1382,6 +1609,8 @@ export class HttpClient {
         responseType: 'blob';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1396,6 +1625,8 @@ export class HttpClient {
         responseType: 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1410,6 +1641,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     }): Observable<HttpResponse<Object>>;
     request<R>(method: string, url: string, options: {
         body?: any;
@@ -1421,6 +1654,8 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1435,6 +1670,8 @@ export class HttpClient {
         reportProgress?: boolean;
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1449,6 +1686,8 @@ export class HttpClient {
         reportProgress?: boolean;
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1463,6 +1702,8 @@ export class HttpClient {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1692,6 +1933,8 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1704,6 +1947,8 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     });
     constructor(method: 'POST', url: string, body: T | null, init?: {
         headers?: HttpHeaders;
@@ -1713,6 +1958,8 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1725,6 +1972,8 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
     });
     constructor(method: string, url: string, body: T | null, init?: {
         headers?: HttpHeaders;
@@ -1734,11 +1983,14 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
     });
     readonly body: T | null;
+    readonly cache: RequestCache;
     // (undocumented)
     clone(): HttpRequest<T>;
     // (undocumented)
@@ -1750,6 +2002,8 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1771,6 +2025,8 @@ export class HttpRequest<T> {
         params?: HttpParams;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         keepalive?: boolean;
+        priority?: RequestPriority;
+        cache?: RequestCache;
         withCredentials?: boolean;
         transferCache?: {
             includeHeaders?: string[];
@@ -1791,6 +2047,7 @@ export class HttpRequest<T> {
     readonly keepalive: boolean;
     readonly method: string;
     readonly params: HttpParams;
+    readonly priority: RequestPriority;
     readonly reportProgress: boolean;
     readonly responseType: 'arraybuffer' | 'blob' | 'json' | 'text';
     serializeBody(): ArrayBuffer | Blob | FormData | URLSearchParams | string | null;
