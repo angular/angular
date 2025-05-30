@@ -58,6 +58,12 @@ export function ɵunwrapWritableSignal<T>(value: T | {[ɵWRITABLE_SIGNAL]: T}): 
 }
 
 /**
+ * Utility function used during type checking to write to a two-way binding that may or may
+ * not be a writable signal.
+ */
+export function ɵassignTwoWayBinding<T>(target: T | {[ɵWRITABLE_SIGNAL]: T}, value: T): void {}
+
+/**
  * Options passed to the `signal` creation function.
  */
 export interface CreateSignalOptions<T> {
