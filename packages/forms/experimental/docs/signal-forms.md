@@ -252,7 +252,7 @@ const isLoggedIn = signal(false);
 
 const passwordSchema = schema<Order>(orderPath => {
   // Hide the email field for logged in users, we'll just use the email already on record.
-  hidden(order.email, isLoggedIn);
+  hidden(orderPath.email, isLoggedIn);
 });
 ```
 
