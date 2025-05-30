@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject, input, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, linkedSignal} from '@angular/core';
 import {ExternalLink} from '../../directives';
 import {LOCAL_STORAGE} from '../../providers';
 import {IconComponent} from '../icon/icon.component';
@@ -20,7 +20,7 @@ export const STORAGE_KEY_PREFIX = 'docs-was-closed-top-banner-';
   styleUrl: './top-level-banner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TopLevelBannerComponent implements OnInit {
+export class TopLevelBannerComponent {
   private readonly localStorage = inject(LOCAL_STORAGE);
 
   /**
@@ -38,21 +38,17 @@ export class TopLevelBannerComponent implements OnInit {
   // don't have to deal with undefined signal values.
   expiry = input(new Date('3000-01-01'), {transform: parseDate});
   // Whether the user has closed the banner or the survey has expired.
-  hasClosed = signal<boolean>(false);
-
-  ngOnInit(): void {
+  hasClosed = linkedSignal(() => {
     const expired = Date.now() > this.expiry().getTime();
 
     // Needs to be in a try/catch, because some browsers will
     // throw when using `localStorage` in private mode.
     try {
-      this.hasClosed.set(
-        this.localStorage?.getItem(this.getBannerStorageKey()) === 'true' || expired,
-      );
+      return this.localStorage?.getItem(this.getBannerStorageKey()) === 'true' || expired;
     } catch {
-      this.hasClosed.set(false);
+      return false;
     }
-  }
+  });
 
   close(): void {
     this.localStorage?.setItem(this.getBannerStorageKey(), 'true');

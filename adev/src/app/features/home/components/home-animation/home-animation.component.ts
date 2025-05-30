@@ -10,6 +10,7 @@ import {
   afterNextRender,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   Injector,
@@ -59,14 +60,13 @@ type MeteorFieldData = {
   templateUrl: './home-animation.component.html',
   styleUrl: './home-animation.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [AnimationCreatorService],
 })
-export class HomeAnimationComponent implements OnDestroy {
+export class HomeAnimationComponent {
   private readonly win = inject(WINDOW);
   private readonly animCreator = inject(AnimationCreatorService);
   private readonly injector = inject(Injector);
   private readonly elementRef = inject(ElementRef);
-  private animation?: Animation;
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly animationLayers = viewChildren(AnimationLayerDirective);
 
@@ -87,10 +87,6 @@ export class HomeAnimationComponent implements OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-    this.animation?.dispose();
-  }
-
   private initAnimation() {
     // Limitation: Meteor dimensions won't change on page resize
     const meteorDimensions = this.calculateMeteorDimensions();
@@ -103,14 +99,13 @@ export class HomeAnimationComponent implements OnDestroy {
 
     afterNextRender({
       read: () => {
-        this.animation = this.animCreator
-          .createAnimation(this.animationLayers(), {
-            timestep: ANIM_TIMESTEP,
-          })
+        const animation = this.animCreator
+          .createAnimation(this.animationLayers(), {timestep: ANIM_TIMESTEP})
           .define(generateHomeAnimationDefinition(this.isUwu(), this.meteors().length))
           .addPlugin(new AnimationScrollHandler(this.elementRef, this.injector));
 
         this.ready.emit(true);
+        this.destroyRef.onDestroy(() => animation.dispose());
       },
     });
   }

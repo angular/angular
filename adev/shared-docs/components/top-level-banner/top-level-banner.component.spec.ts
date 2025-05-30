@@ -73,7 +73,11 @@ describe('TopLevelBannerComponent', () => {
   it('should set hasClosed to true if the banner was closed before', () => {
     mockLocalStorage.getItem.and.returnValue('true');
 
-    component.ngOnInit();
+    fixture = TestBed.createComponent(TopLevelBannerComponent);
+    fixture.componentRef.setInput('text', EXAMPLE_TEXT);
+    fixture.componentRef.setInput('id', EXAMPLE_ID);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
 
     expect(component.hasClosed()).toBeTrue();
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith(`${STORAGE_KEY_PREFIX}${EXAMPLE_ID}`);
@@ -82,7 +86,11 @@ describe('TopLevelBannerComponent', () => {
   it('should set hasClosed to false if the banner was not closed before', () => {
     mockLocalStorage.getItem.and.returnValue('false');
 
-    component.ngOnInit();
+    fixture = TestBed.createComponent(TopLevelBannerComponent);
+    fixture.componentRef.setInput('text', EXAMPLE_TEXT);
+    fixture.componentRef.setInput('id', EXAMPLE_ID);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
 
     expect(component.hasClosed()).toBeFalse();
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith(`${STORAGE_KEY_PREFIX}${EXAMPLE_ID}`);
@@ -90,8 +98,6 @@ describe('TopLevelBannerComponent', () => {
 
   it('should set hasClosed to false if accessing localStorage throws an error', () => {
     mockLocalStorage.getItem.and.throwError('Local storage error');
-
-    component.ngOnInit();
 
     expect(component.hasClosed()).toBeFalse();
   });

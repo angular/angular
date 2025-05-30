@@ -9,9 +9,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   Injector,
-  OnDestroy,
   afterNextRender,
   effect,
   inject,
@@ -49,7 +49,7 @@ import {RelativeLink} from '../../pipes/relative-link.pipe';
   templateUrl: './search-dialog.component.html',
   styleUrls: ['./search-dialog.component.scss'],
 })
-export class SearchDialog implements OnDestroy {
+export class SearchDialog {
   onClose = output();
   dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
   items = viewChildren(SearchItem);
@@ -74,6 +74,8 @@ export class SearchDialog implements OnDestroy {
   searchControl = new FormControl(this.searchQuery(), {nonNullable: true});
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.keyManager.destroy());
+
     this.searchControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
       this.searchQuery.set(value);
     });
@@ -117,17 +119,13 @@ export class SearchDialog implements OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.keyManager.destroy();
-  }
-
   closeSearchDialog() {
     this.dialog().nativeElement.close();
     this.onClose.emit();
   }
 
   private navigateToTheActiveItem(): void {
-    const activeItemLink: string | undefined = this.keyManager.activeItem?.item?.url;
+    const activeItemLink: string | undefined = this.keyManager.activeItem?.item()?.url;
 
     if (!activeItemLink) {
       return;
