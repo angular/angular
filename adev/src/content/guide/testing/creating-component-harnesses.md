@@ -37,11 +37,11 @@ The `hostSelector` property identifies elements in the DOM that match this harne
 class MyPopup {
   triggerText = input('');
 
-isOpen = signal(false);
+  isOpen = signal(false);
 
-toggle() {
-this.isOpen.update((value) => !value);
-}
+  toggle() {
+    this.isOpen.update((value) => !value);
+  }
 }
 </docs-code>
 
@@ -69,11 +69,11 @@ For example, the `MyPopupHarness` example discussed above could provide methods 
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 
-/\*_ Gets the trigger element _/
-getTriggerElement = this.locatorFor('button');
+  // Gets the trigger element
+  getTriggerElement = this.locatorFor('button');
 
-/\*_ Gets the content element. _/
-getContentElement = this.locatorForOptional('.my-popup-content');
+  // Gets the content element.
+  getContentElement = this.locatorForOptional('.my-popup-content');
 }
 </docs-code>
 
@@ -91,20 +91,20 @@ Instead, provide more narrow-focused methods for specific actions the end-user m
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 
-protected getTriggerElement = this.locatorFor('button');
-protected getContentElement = this.locatorForOptional('.my-popup-content');
+  protected getTriggerElement = this.locatorFor('button');
+  protected getContentElement = this.locatorForOptional('.my-popup-content');
 
-/\*_ Toggles the open state of the popup. _/
-async toggle() {
-const trigger = await this.getTriggerElement();
-return trigger.click();
-}
+  /** Toggles the open state of the popup. */
+  async toggle() {
+    const trigger = await this.getTriggerElement();
+    return trigger.click();
+  }
 
-/\*_ Checks if the popup us open. _/
-async isOpen() {
-const content = await this.getContentElement();
-return !!content;
-}
+  /** Checks if the popup us open. */
+  async isOpen() {
+    const content = await this.getContentElement();
+    return !!content;
+  }
 }
 </docs-code>
 
@@ -123,16 +123,17 @@ For example, consider a menu build using the popup from above:
 class MyMenuItem {}
 
 @Component({
-selector: 'my-menu',
-template: `     <my-popup>
+  selector: 'my-menu',
+  template: `
+    <my-popup>
       <ng-content></ng-content>
     </my-popup>
   `
 })
 class MyMenu {
-triggerText = input('');
+  triggerText = input('');
 
-@ContentChildren(MyMenuItem) items: QueryList<MyMenuItem>;
+  @ContentChildren(MyMenuItem) items: QueryList<MyMenuItem>;
 }
 </docs-code>
 
@@ -142,20 +143,20 @@ The harness for `MyMenu` can then take advantage of other harnesses for `MyPopup
 class MyMenuHarness extends ComponentHarness {
   static hostSelector = 'my-menu';
 
-protected getPopupHarness = this.locatorFor(MyPopupHarness);
+  protected getPopupHarness = this.locatorFor(MyPopupHarness);
 
-/\*_ Gets the currently shown menu items (empty list if menu is closed). _/
-getItems = this.locatorForAll(MyMenuItemHarness);
+  /** Gets the currently shown menu items (empty list if menu is closed). */
+  getItems = this.locatorForAll(MyMenuItemHarness);
 
-/\*_ Toggles open state of the menu. _/
-async toggle() {
-const popupHarness = await this.getPopupHarness();
-return popupHarness.toggle();
-}
+  /** Toggles open state of the menu. */
+  async toggle() {
+    const popupHarness = await this.getPopupHarness();
+    return popupHarness.toggle();
+  }
 }
 
 class MyMenuItemHarness extends ComponentHarness {
-static hostSelector = 'my-menu-item';
+  static hostSelector = 'my-menu-item';
 }
 </docs-code>
 
@@ -176,45 +177,45 @@ interface MyMenuHarnessFilters extends BaseHarnessFilters {
 }
 
 interface MyMenuItemHarnessFilters extends BaseHarnessFilters {
-/\*_ Filters based on the text of the menu item. _/
-text?: string | RegExp;
+  /** Filters based on the text of the menu item. */
+  text?: string | RegExp;
 }
 
 class MyMenuHarness extends ComponentHarness {
-static hostSelector = 'my-menu';
+  static hostSelector = 'my-menu';
 
-/\*_ Creates a `HarnessPredicate` used to locate a particular `MyMenuHarness`. _/
-static with(options: MyMenuHarnessFilters): HarnessPredicate<MyMenuHarness> {
-return new HarnessPredicate(MyMenuHarness, options)
-.addOption('trigger text', options.triggerText,
-(harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text));
-}
+  /** Creates a `HarnessPredicate` used to locate a particular `MyMenuHarness`. */
+  static with(options: MyMenuHarnessFilters): HarnessPredicate<MyMenuHarness> {
+    return new HarnessPredicate(MyMenuHarness, options)
+      .addOption('trigger text', options.triggerText,
+        (harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text));
+  }
 
-protected getPopupHarness = this.locatorFor(MyPopupHarness);
+  protected getPopupHarness = this.locatorFor(MyPopupHarness);
 
-/\*_ Gets the text of the menu trigger. _/
-async getTriggerText(): Promise<string> {
-const popupHarness = await this.getPopupHarness();
-return popupHarness.getTriggerText();
-}
-...
+  /** Gets the text of the menu trigger. */
+  async getTriggerText(): Promise<string> {
+    const popupHarness = await this.getPopupHarness();
+    return popupHarness.getTriggerText();
+  }
+  ...
 }
 
 class MyMenuItemHarness extends ComponentHarness {
-static hostSelector = 'my-menu-item';
+  static hostSelector = 'my-menu-item';
 
-/\*_ Creates a `HarnessPredicate` used to locate a particular `MyMenuItemHarness`. _/
-static with(options: MyMenuItemHarnessFilters): HarnessPredicate<MyMenuItemHarness> {
-return new HarnessPredicate(MyMenuItemHarness, options)
-.addOption('text', options.text,
-(harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
-}
+  /** Creates a `HarnessPredicate` used to locate a particular `MyMenuItemHarness`. */
+  static with(options: MyMenuItemHarnessFilters): HarnessPredicate<MyMenuItemHarness> {
+    return new HarnessPredicate(MyMenuItemHarness, options)
+      .addOption('text', options.text,
+        (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
+  }
 
-/\*_ Gets the text of the menu item. _/
-async getText(): Promise<string> {
-const host = await this.host();
-return host.text();
-}
+  /** Gets the text of the menu item. */
+  async getText(): Promise<string> {
+    const host = await this.host();
+    return host.text();
+  }
 }
 </docs-code>
 
@@ -224,12 +225,12 @@ You can pass a `HarnessPredicate` instead of a `ComponentHarness` class to any o
 class MyMenuHarness extends ComponentHarness {
   static hostSelector = 'my-menu';
 
-/\*_ Gets a list of items in the menu, optionally filtered based on the given criteria. _/
-async getItems(filters: MyMenuItemHarnessFilters = {}): Promise<MyMenuItemHarness[]> {
-const getFilteredItems = this.locatorForAll(MyMenuItemHarness.with(filters));
-return getFilteredItems();
-}
-...
+  /** Gets a list of items in the menu, optionally filtered based on the given criteria. */
+  async getItems(filters: MyMenuItemHarnessFilters = {}): Promise<MyMenuItemHarness[]> {
+    const getFilteredItems = this.locatorForAll(MyMenuItemHarness.with(filters));
+    return getFilteredItems();
+  }
+  ...
 }
 </docs-code>
 
@@ -259,11 +260,11 @@ Consider if the `MyPopup` component above used the CDK overlay for the popup con
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 
-/\*_ Gets a `HarnessLoader` whose root element is the popup's content element. _/
-async getHarnessLoaderForContent(): Promise<HarnessLoader> {
-const rootLocator = this.documentRootLocatorFactory();
-return rootLocator.harnessLoaderFor('my-popup-content');
-}
+  /** Gets a `HarnessLoader` whose root element is the popup's content element. */
+  async getHarnessLoaderForContent(): Promise<HarnessLoader> {
+    const rootLocator = this.documentRootLocatorFactory();
+    return rootLocator.harnessLoaderFor('my-popup-content');
+  }
 }
 </docs-code>
 
