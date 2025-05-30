@@ -1,11 +1,6 @@
 load("//tools:defaults2.bzl", "ts_config")
 
-package(default_visibility = ["//visibility:public"])
-
-exports_files([
-    "tsconfig-build.json",
-    "tsconfig-e2e.json",
-])
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
 ts_config(
     name = "tsconfig_build",

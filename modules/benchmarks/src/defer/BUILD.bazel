@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -16,24 +15,28 @@ ng_project(
     ],
 )
 
-ts_library(
+ts_project(
     name = "perf_tests_lib",
     testonly = 1,
     srcs = ["defer.perf-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
-    deps = [
+    interop_deps = [
         "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "@npm//protractor",
+    ],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//:node_modules/protractor",
     ],
 )
 
-ts_library(
+ts_project(
     name = "e2e_tests_lib",
     testonly = 1,
     srcs = ["defer.e2e-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
-    deps = [
+    interop_deps = [
         "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "@npm//protractor",
+    ],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//:node_modules/protractor",
     ],
 )

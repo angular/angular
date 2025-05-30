@@ -1,6 +1,7 @@
 load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
-load("//tools:defaults.bzl", "http_server", "ts_library")
+load("//tools:defaults.bzl", "http_server")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -31,14 +32,16 @@ genrule(
     cmd = "cp $</main.js $@",
 )
 
-ts_library(
+ts_project(
     name = "perf_lib",
     testonly = 1,
     srcs = ["expanding_rows.perf-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
-    deps = [
+    interop_deps = [
         "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "@npm//protractor",
+    ],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//:node_modules/protractor",
     ],
 )
 
