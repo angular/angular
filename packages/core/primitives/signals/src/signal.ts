@@ -38,8 +38,8 @@ export interface SignalNode<T> extends ReactiveNode {
 }
 
 export type SignalBaseGetter<T> = (() => T) & {readonly [SIGNAL]: unknown};
-type SignalSetter<T> = (newValue: T) => void;
-type SignalUpdater<T> = (updateFn: (value: T) => T) => void;
+export type SignalSetter<T> = (newValue: T) => void;
+export type SignalUpdater<T> = (updateFn: (value: T) => T) => void;
 
 // Note: Closure *requires* this to be an `interface` and not a type, which is why the
 // `SignalBaseGetter` type exists to provide the correct shape.
