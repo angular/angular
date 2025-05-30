@@ -1665,7 +1665,7 @@ has changed.
   /* ... */
 })
 export class UserProfile {
-  @Input() name: string = '';
+  name = input('');
 
   ngOnChanges(changes: SimpleChanges) {
     for (const inputName in changes) {
@@ -2896,7 +2896,7 @@ By default, the placeholder acts as the interaction element. Placeholders used t
 }
 ```
 
-Alternatively, you can specify a [template reference variable](/guide/templates/variables) in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
+Alternatively, you can specify a [template reference variable](/guide/templates/variables) in the same template as the `@defer` block as the element that is watched for interactions. This variable is passed in as a parameter on the viewport trigger.
 
 ```html
 <div #greeting>Hello!</div>
@@ -3234,17 +3234,17 @@ This section walks you through setting the highlight color while applying the `H
 
     <docs-code header="src/app/highlight.directive.ts (imports)" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.3.ts" visibleRegion="imports"/>
 
-1. Add an `appHighlight` `@Input()` property.
+1. Add an `appHighlight` `input` property.
 
     <docs-code header="src/app/highlight.directive.ts" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.3.ts" visibleRegion="input"/>
 
-    The `@Input()` decorator adds metadata to the class that makes the directive's `appHighlight` property available for binding.
+    The `input()` function adds metadata to the class that makes the directive's `appHighlight` property available for binding.
 
-1. In `app.component.ts`, add a `color` property to the `AppComponent`.
+2. In `app.component.ts`, add a `color` property to the `AppComponent`.
 
     <docs-code header="src/app/app.component.ts (class)" path="adev/src/content/examples/attribute-directives/src/app/app.component.1.ts" visibleRegion="class"/>
 
-1. To simultaneously apply the directive and the color, use property binding with the `appHighlight` directive selector, setting it equal to `color`.
+3. To simultaneously apply the directive and the color, use property binding with the `appHighlight` directive selector, setting it equal to `color`.
 
     <docs-code header="src/app/app.component.html (color)" path="adev/src/content/examples/attribute-directives/src/app/app.component.html" visibleRegion="color"/>
 
@@ -5946,7 +5946,7 @@ export class HeroTaxReturnService {
 Here is the `HeroTaxReturnComponent` that makes use of `HeroTaxReturnService`.
 
 ```
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, output } from '@angular/core';
 import { HeroTaxReturn } from './hero';
 import { HeroTaxReturnService } from './hero-tax-return.service';
 
@@ -5959,15 +5959,18 @@ import { HeroTaxReturnService } from './hero-tax-return.service';
 export class HeroTaxReturnComponent {
   message = '';
 
-  @Output() close = new EventEmitter<void>();
+  close = output<void>();
 
   get taxReturn(): HeroTaxReturn {
     return this.heroTaxReturnService.taxReturn;
   }
 
-  @Input()
-  set taxReturn(htr: HeroTaxReturn) {
-    this.heroTaxReturnService.taxReturn = htr;
+  taxReturn = input.required<HeroTaxReturn>();
+
+  constructor() {
+    effect(() => {
+      this.heroTaxReturnService.taxReturn = this.taxReturn();
+    })
   }
 
   private heroTaxReturnService = inject(HeroTaxReturnService);
@@ -5990,7 +5993,7 @@ export class HeroTaxReturnComponent {
   }
 }
 ```
-The _tax-return-to-edit_ arrives by way of the `@Input()` property, which is implemented with getters and setters.
+The _tax-return-to-edit_ arrives by way of the `input` property, which is implemented with getters and setters.
 The setter initializes the component's own instance of the `HeroTaxReturnService` with the incoming return.
 The getter always returns what that service says is the current state of the hero.
 The component also asks the service to save and restore this tax return.
@@ -6763,13 +6766,13 @@ import { AsyncPipe } from '@angular/common';
   `,
 })
 export class UserProfileComponent {
-  @Input() userId!: string;
+  userId = input.required<string>();
   user$!: Observable<User>;
 
   private userService = inject(UserService);
 
   constructor(): void {
-    this.user$ = this.userService.getUser(this.userId);
+    this.user$ = this.userService.getUser(this.userId());
   }
 }
 ```
@@ -8565,7 +8568,7 @@ In a real-world app, the service might fetch data from a backend system.
 The key point, however, is that you control the hero job-application questions entirely through the objects returned from `QuestionService`.
 To maintain the questionnaire as requirements change, you only need to add, update, and remove objects from the `questions` array.
 
-The `QuestionService` supplies a set of questions in the form of an array bound to `@Input()` questions.
+The `QuestionService` supplies a set of questions in the form of an array bound to `input()` questions.
 
 <docs-code header="src/app/question.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question.service.ts"/>
 
@@ -8595,6 +8598,1073 @@ The following figure shows the final form.
 <img alt="Dynamic-Form" src="assets/images/guide/dynamic-form/dynamic-form.png">
 
 ## Next steps
+Angular Router (`@angular/router`) is the official library for managing navigation in Angular applications and a core part of the framework. It is included by default in all projects created by Angular CLI.
+
+## Installation
+
+Angular Router is included by default in all Angular projects setup with the Angular CLI `ng new` command.
+
+### Prerequisite
+
+- Angular CLI
+
+### Add to an existing project
+
+If your project does not have routing, you can install it manually with the following command:
+
+```bash
+ng add @angular/router
+```
+
+The Angular CLI will then install all the necessary dependencies.
+
+## Why is routing necessary in a SPA?
+
+When you navigate to a URL in your web browser, the browser normally makes a network request to a web server and displays the returned HTML page. When you navigate to a different URL, such as clicking a link, the browser makes another network request and replaces the entire page with a new one.
+
+A single-page application (SPA) differs in that the browser only makes a request to a web server for the first page, the `index.html`. After that, a client-side router takes over, controlling which content displays based on the URL. When a user navigates to a different URL, the router updates the page's content in place without triggering a full-page reload.
+
+## How Angular manages routing
+
+Routing in Angular is comprised of three primary parts:
+
+1. **Routes** define which component displays when a user visits a specific URL.
+2. **Outlets** are placeholders in your templates that dynamically load and render components based on the active route.
+3. **Links** provide a way for users to navigate between different routes in your application without triggering a full page reload.
+
+In addition, the Angular Routing library offers additional functionality such as:
+
+- Nested routes
+- Programmatic navigation
+- Route params, queries and wildcards
+- Activated route information with `ActivatedRoute`
+- View transition effects
+- Navigation guards
+
+## Next steps
+
+Learn about how you can [define routes using Angular router](/guide/routing/define-routes).
+# Define routes
+
+Routes serve as the fundamental building blocks for navigation within an Angular app.
+
+## What are routes?
+
+In Angular, a **route** is an object that defines which component should render for a specific URL path or pattern, as well as additional configuration options about what happens when a user navigates to that URL.
+
+Here is a basic example of a route:
+
+```typescript
+import { AdminPage } from './app-admin/app-admin.component';
+
+const adminPage = {
+  path: 'admin',
+  component: AdminPage
+}
+```
+
+For this route, when a user visits the `/admin` path, the app will display the `AdminPage` component.
+
+### Managing routes in your application
+
+Most projects define routes in a separate file that contains `routes` in the filename.
+
+A collection of routes looks like this:
+
+```typescript
+import { Routes } from '@angular/router';
+import { HomePage } from './home-page/home-page.component';
+import { AdminPage } from './about-page/admin-page.component';
+
+export const routes: Routes = [
+  {
+    path: '',
+    component: HomePage,
+  },
+  {
+    path: 'admin',
+    component: AdminPage,
+  },
+];
+```
+
+Tip: If you generated a project with Angular CLI, your routes are defined in `src/app/app.routes.ts`.
+
+### Adding the router to your application
+
+When bootstrapping an Angular application without the Angular CLI, you can pass a configuration object that includes a `providers` array.
+
+Inside of the `providers` array, you can add the Angular router to your application by adding a `provideRouter` function call with your routes.
+
+```typescript
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    // ...
+  ]
+};
+```
+
+## Route URL Paths
+
+### Static URL Paths
+
+Static URL Paths refer to routes with predefined paths that don't change based on dynamic parameters. These are routes that match a `path` string exactly and have a fixed outcome.
+
+Examples of this include:
+
+- "/admin"
+- "/blog"
+- "/settings/account"
+
+### Define URL Paths with Route Parameters
+
+Parameterized URLs allow you to define dynamic paths that allow multiple URLs to the same component while dynamically displaying data based on parameters in the URL.
+
+You can define this type of pattern by adding parameters to your route’s `path` string and prefixing each parameter with the colon (`:`) character.
+
+IMPORTANT: Parameters are distinct from information in the URL's [query string](https://en.wikipedia.org/wiki/Query_string).
+Learn more about [query parameters in Angular in this guide](/guide/routing/read-route-state#query-parameters).
+
+The following example displays a user profile component based on the user id passed in through the URL.
+
+```typescript
+import { Routes } from '@angular/router';
+import { UserProfile } from './user-profile/user-profile;
+
+const routes: Routes = [
+  { path: 'user/:id', component: UserProfile }
+];
+```
+
+In this example, URLs such as `/user/leeroy` and `/user/jenkins` render the `UserProfile` component. This component can then read the `id` parameter and use it to perform additional work, such as fetching data. See [reading route state guide](/guide/routing/read-route-state) for details on reading route parameters.
+
+Valid route parameter names must start with a letter (a-z, A-Z) and can only contain:
+
+- Letters (a-z, A-Z)
+- Numbers (0-9)
+- Underscore (\_)
+- Hyphen (-)
+
+You can also define paths with multiple parameters:
+
+```typescript
+import { Routes } from '@angular/router';
+import { UserProfile } from './user-profile/user-profile.component';
+import { SocialMediaFeed } from './user-profile/social–media-feed.component';
+
+const routes: Routes = [
+  { path: 'user/:id/:social-media', component: SocialMediaFeed },
+  { path: 'user/:id/', component: UserProfile },
+];
+```
+
+With this new path, users can visit `/user/leeroy/youtube` and `/user/leeroy/bluesky` and see respective social media feeds based on the parameter for the user leeroy.
+
+See [Reading route state](/guide/routing/read-route-state) for details on reading route parameters.
+
+### Wildcards
+
+When you need to catch all routes for a specific path, the solution is a wildcard route which is defined with the double asterisk (`**`).
+
+A common example is defining a Page Not Found component.
+
+```typescript
+import { Home } from './home/home.component';
+import { UserProfile } from './user-profile/user-profile.component';
+import { NotFound } from './not-found/not-found.component';
+
+const routes: Routes = [
+  { path: 'home', component: Home },
+  { path: 'user/:id', component: UserProfile },
+  { path: '**', component: NotFound }
+];
+```
+
+In this routes array, the app displays the `NotFound` component when the user visits any path outside of `home` and `user/:id`.
+
+Tip: Wildcard routes are typically placed at the end of a routes array.
+
+## How Angular matches URLs
+
+When you define routes, the order is important because Angular uses a first-match wins strategy. This means that once Angular matches a URL with a route `path`, it stops checking any further routes. As a result, always put more specific routes before less specific routes.
+
+The following example shows routes defined from most-specific to least specific:
+
+```typescript
+const routes: Routes = [
+  { path: '', component: HomeComponent },              // Empty path
+  { path: 'users/new', component: NewUserComponent },  // Static, most specific
+  { path: 'users/:id', component: UserDetailComponent }, // Dynamic
+  { path: 'users', component: UsersComponent },        // Static, less specific
+  { path: '**', component: NotFoundComponent }         // Wildcard - always last
+];
+```
+
+If a user visits `/users/new`, Angular router would go through the following steps:
+
+1. Checks `''` - doesn't match
+1. Checks `users/new` - matches! Stops here
+1. Never reaches `users/:id` even though it could match
+1. Never reaches `users`
+1. Never reaches `**`
+
+## Loading Route Component Strategies
+
+Understanding how and when components load in Angular routing is crucial for building responsive web applications. Angular offers two primary strategies to control component loading behavior:
+
+1. **Eagerly loaded**: Components that are loaded immediately
+2. **Lazily loaded**: Components loaded only when needed
+
+Each approach offers distinct advantages for different scenarios.
+
+### Eagerly loaded components
+
+When you define a route with the `component` property, the referenced component is eagerly loaded as part of the same JavaScript bundle as the route configuration.
+
+```typescript
+import { Routes } from "@angular/router";
+import { HomePage } from "./components/home/home-page"
+import { LoginPage } from "./components/auth/login-page"
+
+export const routes: Routes = [
+  // HomePage and LoginPage are both directly referenced in this config,
+  // so their code is eagerly included in the same JavaScript bundle as this file.
+  {
+    path: "",
+    component: HomePage
+  },
+  {
+    path: "login",
+    component: LoginPage
+  }
+]
+```
+
+Eagerly loading route components like this means that the browser has to download and parse all of the JavaScript for these components as part of your initial page load, but the components are available to Angular immediately.
+
+While including more JavaScript in your initial page load leads to slower initial load times, this can lead to more seamless transitions as the user navigates through an application.
+
+### Lazily loaded components
+
+You can use the `loadComponent` property to lazily load the JavaScript for a route only at the point at which that route would become active.
+
+```typescript
+import { Routes } from "@angular/router";
+
+export const routes: Routes = [
+  // The HomePage and LoginPage components are loaded lazily at the point at which
+  // their corresponding routes become active.
+  {
+    path: 'login',
+    loadComponent: () => import('./components/auth/login-page')
+  },
+  {
+    path: '',
+    loadComponent: () => import('./components/home/home-page')
+  }
+]
+```
+
+The `loadComponent` property accepts a loader function that returns a Promise that resolves to an Angular component. In most cases, this function uses the standard [JavaScript dynamic import API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import). You can, however, use any arbitrary async loader function.
+
+Lazily loading routes can significantly improve the load speed of your Angular application by removing large portions of JavaScript from the initial bundle. These portions of your code compile into separate JavaScript "chunks" that the router requests only when the user visits the corresponding route.
+
+### Should I use an eager or a lazy route?
+
+There are many factors to consider when deciding on whether a route should be eager or lazy.
+
+In general, eager loading is recommended for primary landing page(s) while other pages would be lazy-loaded.
+
+Note: While lazy routes have the upfront performance benefit of reducing the amount of initial data requested by the user, it adds future data requests that could be undesirable. This is particularly true when dealing with nested lazy loading at multiple levels, which can significantly impact performance.
+
+## Redirects
+
+You can define a route that redirects to another route instead of rendering a component:
+
+```typescript
+import { BlogComponent } from './home/blog.component';
+
+const routes: Routes = [
+  {
+    path: 'articles',
+    redirectTo: '/blog',
+  },
+  {
+    path: 'blog',
+    component: BlogComponent
+  },
+];
+```
+
+If you modify or remove a route, some users may still click on out-of-date links or bookmarks to that route. You can add a redirect to direct those users to an appropriate alternative route instead of a "not found" page.
+
+## Page titles
+
+You can associate a **title** with each route. Angular automatically updates the [page title](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title) when a route activates. Always define appropriate page titles for your application, as these titles are necessary to create an accessible experience.
+
+```typescript
+import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { ProductsComponent } from './products/products.component';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: HomeComponent,
+    title: 'Home Page'
+  },
+  {
+    path: 'about',
+    component: AboutComponent,
+    title: 'About Us'
+  },
+  {
+    path: 'products',
+    component: ProductsComponent,
+    title: 'Our Products'
+  }
+];
+```
+
+## Route-level providers for dependency injection
+
+Each route has a `providers` property that lets you provide dependencies to that route's content via [dependency injection](/guide/di).
+
+Common scenarios where this can be helpful include applications that have different services based on whether the user is an admin or not.
+
+```typescript
+export const ROUTES: Route[] = [
+  {
+    path: 'admin',
+    providers: [
+      AdminService,
+      {provide: ADMIN_API_KEY, useValue: '12345'},
+    ],
+    children: [
+      {path: 'users', component: AdminUsersComponent},
+      {path: 'teams', component: AdminTeamsComponent},
+    ],
+  },
+  // ... other application routes that don't
+  //     have access to ADMIN_API_KEY or AdminService.
+];
+```
+
+In this code sample, the `admin` path contains a protected data property of `ADMIN_API_KEY` that is only available to children within its section. As a result, no other paths will be able to access the data provided via `ADMIN_AP
+
+See the [Dependency injection guide](/guide/di) for more information about providers and injection in Angular.
+
+## Associating data with routes
+
+Route data enables you to attach additional information to routes. You are able to configure how components behave based on this data.
+
+There are two ways to work with route data: static data that remains constant, and dynamic data that can change based on runtime conditions.
+
+### Static data
+
+You can associate arbitrary static data with a route via the `data` property in order to centralize things like route-specific metadata (e.g., analytics tracking, permissions, etc.):
+
+```typescript
+import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+import { ProductsComponent } from './products/products.component';
+
+const routes: Routes = [
+  {
+    path: 'about',
+    component: AboutComponent,
+    data: { analyticsId: '456' }
+  },
+  {
+    path: '',
+    component: HomeComponent,
+    data: { analyticsId: '123' }
+  }
+];
+```
+
+In this code sample, the home and about page are configured with specific `analyticsId` which would then be used in their respective components for page tracking analytics.
+
+You can read this static data by injecting the `ActivatedRoute`. See [Reading route state](/guide/routing/read-route-state) for details.
+
+### Dynamic data with data resolvers
+
+When you need to provide dynamic data to a route, check out the [guide on route data resolvers](/guide/router/route-data-resolvers).
+
+## Nested Routes
+
+Nested routes, also known as child routes, are a common technique for managing more complex navigation routes where a component has a sub-view that changes based on the URL.
+
+<img alt="Diagram to illustrate nested routes" src="assets/images/guide/router/nested-routing-diagram.svg">
+
+You can add child routes to any route definition with the `children` property:
+
+```typescript
+const routes: Routes = [
+  path: 'product/:id',
+  component: 'ProductComponent',
+  children: [
+    {
+      path: 'info',
+      component: ProductInfoComponent
+    },
+    {
+      path: 'reviews',
+      component: ProductReviewsComponent
+    }
+  ]
+]
+```
+
+The above example defines a route for a product page that allows a user to change whether the product info or reviews are displayed based on the url.
+
+The `children` property accepts an array of `Route` objects.
+
+To display child routes, the parent component (`ProductComponent` in the example above) includes its own `<router-outlet>`.
+
+```html
+<!-- ProductComponent -->
+<article>
+  <h1>Product {{ id }}</h1>
+  <router-outlet />
+</article>
+```
+
+After adding child routes to the configuration and adding a `<router-outlet>` to the component, navigation between URLs that match the child routes updates only the nested outlet.
+
+## Next steps
+
+Learn how to [display the contents of your routes with Outlets](/guide/routing/show-routes-with-outlets).
+# Show routes with outlets
+
+The `RouterOutlet` directive is a placeholder that marks the location where the router should render the component for the current URL.
+
+```html
+<app-header />
+<router-outlet />  <!-- Angular inserts your route content here -->
+<app-footer />
+```
+
+```typescript
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
+})
+export class AppComponent {}
+```
+
+In this example, if an application has the following routes defined:
+
+```typescript
+import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { ProductsComponent } from './products/products.component';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: HomeComponent,
+    title: 'Home Page'
+  },
+  {
+    path: 'products',
+    component: ProductsComponent,
+    title: 'Our Products'
+  }
+];
+```
+
+When a user visits `/products`, Angular renders the following:
+
+```html
+<app-header></app-header>
+<app-products></app-products>
+<app-footer></app-footer>
+```
+
+If the user goes back to the home page, then Angular renders:
+
+```html
+<app-header></app-header>
+<app-home></app-home>
+<app-footer></app-footer>
+```
+
+When displaying a route, the `<router-outlet>` element remains present in the DOM as a reference point for future navigations. Angular inserts routed content just after the outlet element as a sibling.
+
+```html
+<!-- Contents of the component's template -->
+<app-header />
+<router-outlet />
+<app-footer />
+```
+
+```html
+<!-- Content rendered on the page when the user visits /admin -->
+<app-header>...</app-header>
+<router-outlet></router-outlet>
+<app-admin-page>...</app-admin-page>
+<app-footer>...</app-footer>
+```
+
+## Nesting routes with child routes
+
+As your application grows more complex, you might want to create routes that are relative to a component other than your root component. This enables you to create experiences where only part of the application changes when the URL changes, as opposed to the users feeling like the entire page is refreshed.
+
+These types of nested routes are called child routes. This means you're adding a second `<router-outlet>` to your app, because it is in addition to the `<router-outlet>` in AppComponent.
+
+In this example, the `Settings` component will display the desired panel based on what the user selects. One of the unique things you’ll notice about child routes is that the component often has its own `<nav>` and `<router-outlet>`.
+
+```html
+<h1>Settings</h1>
+<nav>
+  <ul>
+    <li><a routerLink="profile">Profile</a></li>
+    <li><a routerLink="security">Security</a></li>
+  </ul>
+</nav>
+<router-outlet />
+```
+
+A child route is like any other route, in that it needs both a `path` and a `component`. The one difference is that you place child routes in a children array within the parent route.
+
+```typescript
+const routes: Routes = [
+  {
+    path: 'settings-component',
+    component: SettingsComponent, // this is the component with the <router-outlet> in the template
+    children: [
+      {
+        path: 'profile', // child route path
+        component: ProfileComponent, // child route component that the router renders
+      },
+      {
+        path: 'security',
+        component: SecurityComponent, // another child route component that the router renders
+      },
+    ],
+  },
+];
+```
+
+Once both the `routes` and `<router-outlet>` are configured correctly, your application is now using nested routes!
+
+## Secondary routes with named outlets
+
+Pages may have multiple outlets— you can assign a name to each outlet to specify which content belongs to which outlet.
+
+```html
+<app-header />
+<router-outlet />
+<router-outlet name='read-more' />
+<router-outlet name='additional-actions' />
+<app-footer />
+```
+
+Each outlet must have a unique name. The name cannot be set or changed dynamically. By default, the name is `'primary'`.
+
+Angular matches the outlet's name to the `outlet` property defined on each route:
+
+```typescript
+{
+  path: 'user/:id',
+  component: UserDetails,
+  outlet: 'additional-actions'
+}
+```
+
+## Outlet lifecycle events
+
+There are four lifecycle events that a router outlet can emit:
+
+| Event        | Description                                                              |
+| ------------ | ------------------------------------------------------------------------ |
+| `activate`   | When a new component is instantiated                                     |
+| `deactivate` | When a component is destroyed                                            |
+| `attach`     | When the `RouteReuseStrategy` instructs the outlet to attach the subtree |
+| `detach`     | When the `RouteReuseStrategy` instructs the outlet to detach the subtree |
+
+You can add event listeners with the standard event binding syntax:
+
+```html
+<router-outlet
+  (activate)='onActivate($event)'
+  (deactivate)='onDeactivate($event)'
+  (attach)='onAttach($event)'
+  (detach)='onDetach($event)'
+/>
+```
+
+Check out the [API docs for RouterOutlet](/api/router/RouterOutlet?tab=api) if you’d like to learn more.
+
+## Next steps
+
+Learn how to [navigate to routes](/guide/routing/navigate-to-routes) with Angular Router.
+# Navigate to routes
+
+The RouterLink directive is Angular's declarative approach to navigation. It allows you to use standard anchor elements (`<a>`) that seamlessly integrate with Angular's routing system.
+
+## How to use RouterLink
+
+Instead of using regular anchor elements `<a>` with an `href` attribute, you add a RouterLink directive with the appropriate path in order to leverage Angular routing.
+
+```html
+<nav>
+  <a routerLink="/user-profile">User profile</a>
+  <a routerLink="/settings">Settings</a>
+</nav>
+```
+
+### Using absolute or relative links
+
+**Relative URLs** in Angular routing allow you to define navigation paths relative to the current route's location. This is in contrast to **absolute URLs** which contain the full path with the protocol (e.g., `http://`) and the **root domain** (e.g., `google.com`).
+
+```html
+<!-- Absolute URL -->
+<a href="https://www.angular.dev/essentials">Angular Essentials Guide</a>
+
+<!-- Relative URL -->
+<a href="/essentials">Angular Essentials Guide</a>
+```
+
+In this example, the first example contains the full path with the protocol (i.e., `https://`) and the root domain (i.e., `angular.dev`) explicitly defined for the essentials page. In contrast, the second example assumes the user is already on the correct root domain for `/essentials`.
+
+Generally speaking, relative URLs are preferred because they are more maintainable across applications because they don’t need to know their absolute position within the routing hierarchy.
+
+### How relative URLs work
+
+Angular routing has two syntaxes for defining relative URLs: strings and arrays.
+
+```html
+<!-- Navigates user to /dashboard -->
+<a routerLink="dashboard">Dashboard</a>
+<a [routerLink]="['dashboard']">Dashboard</a>
+```
+
+HELPFUL: Passing a string is the most common way to define relative URLs.
+
+When you need to define dynamic parameters in a relative URL, use the array syntax:
+
+```html
+<a [routerLink]="['user', currentUserId]">Current User</a>
+```
+
+In addition, Angular routing allows you specify whether you want the path to be relative to the current URL or to the root domain based on whether the relative path is prefixed with a forward slash (`/`) or not.
+
+For example, if the user is on `example.com/settings`, here is how different relative paths can be defined for various scenarios:
+
+```html
+<!-- Navigates to /settings/notifications -->
+<a routerLink="notifications">Notifications</a>
+<a routerLink="/settings/notifications">Notifications</a>
+
+<!-- Navigates to /team/:teamId/user/:userId -->
+<a routerLink="/team/123/user/456">User 456</a>
+<a [routerLink]="['/team', teamId, 'user', userId]">Current User</a>”
+```
+
+## Programmatic navigation to routes
+
+While `RouterLink` handles declarative navigation in templates, Angular provides programmatic navigation for scenarios where you need to navigate based on logic, user actions, or application state. By injecting `Router`, you can dynamically navigate to routes, pass parameters, and control navigation behavior in your TypeScript code.
+
+### `router.navigate()`
+
+You can use the `router.navigate()` method to programmatically navigate between routes by specifying a URL path array.
+
+```typescript
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-dashboard',
+  template: `
+    <button (click)="navigateToProfile()">View Profile</button>
+  `
+})
+export class AppDashboard {
+  private router = inject(Router);
+
+  navigateToProfile() {
+    // Standard navigation
+    this.router.navigate(['/profile']);
+
+    // With route parameters
+    this.router.navigate(['/users', userId]);
+
+    // With query parameters
+    this.router.navigate(['/search'], {
+      queryParams: { category: 'books', sort: 'price' }
+    });
+  }
+}
+```
+
+`router.navigate()` supports both simple and complex routing scenarios, allowing you to pass route parameters, [query parameters](/guide/routing/read-route-state#query-parameters), and control navigation behavior.
+
+You can also build dynamic navigation paths relative to your component’s location in the routing tree using the `relativeTo` option.
+
+```typescript
+import { Router, ActivatedRoute } from '@angular/router';
+
+@Component({
+  selector: 'app-user-detail',
+  template: `
+    <button (click)="navigateToEdit()">Edit User</button>
+    <button (click)="navigateToParent()">Back to List</button>
+  `
+})
+export class UserDetailComponent {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  constructor() {}
+
+  // Navigate to a sibling route
+  navigateToEdit() {
+    // From: /users/123
+    // To:   /users/123/edit
+    this.router.navigate(['edit'], { relativeTo: this.route });
+  }
+
+  // Navigate to parent
+  navigateToParent() {
+    // From: /users/123
+    // To:   /users
+    this.router.navigate(['..'], { relativeTo: this.route });
+  }
+}
+```
+
+### `router.navigateByUrl()`
+
+The `router.navigateByUrl()` method provides a direct way to programmatically navigate using URL path strings rather than array segments. This method is ideal when you have a full URL path and need to perform absolute navigation, especially when working with externally provided URLs or deep linking scenarios.
+
+```typescript
+// Standard route navigation
+router.navigateByUrl('/products);
+
+// Navigate to nested route
+router.navigateByUrl('/products/featured');
+
+// Complete URL with parameters and fragment
+router.navigateByUrl('/products/123?view=details#reviews');
+
+// Navigate with query parameters
+router.navigateByUrl('/search?category=books&sortBy=price');
+```
+
+In the event you need to replace the current URL in history, `navigateByUrl` also accepts a configuration object that has a `replaceUrl` option.
+
+```typescript
+// Replace current URL in history
+router.navigateByUrl('/checkout', {
+  replaceUrl: true
+});
+```
+
+## Next steps
+
+Learn how to [read route state](/guide/routing/read-route-state) to create responsive and context-aware components.
+# Read route state
+
+Angular Router allows you to read and use information associated with a route to create responsive and context-aware components.
+
+## Get information about the current route with ActivatedRoute
+
+`ActivatedRoute` is a service from `@angular/router` that provides all the information associated with the current route.
+
+```typescript
+import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+
+@Component({
+  selector: 'app-product',
+})
+export class ProductComponent {
+  private activatedRoute = inject(ActivatedRoute);
+
+  constructor() {
+    console.log(this.activatedRoute);
+  }
+}
+```
+
+The `ActivatedRoute` can provide different information about the route. Some common properties include:
+
+| Property      | Details                                                                                                                           |
+| :------------ | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `url`         | An `Observable` of the route paths, represented as an array of strings for each part of the route path.                           |
+| `data`        | An `Observable` that contains the `data` object provided for the route. Also contains any resolved values from the resolve guard. |
+| `params`      | An `Observable` that contains the required and optional parameters specific to the route.                                         |
+| `queryParams` | An `Observable` that contains the query parameters available to all routes.                                                       |
+
+Check out the [`ActivatedRoute` API docs](/api/router/ActivatedRoute) for a complete list of what you can access with in the route.
+
+## Understanding route snapshots
+
+Page navigations are events over time, and you can access the router state at a given time by retrieving a route snapshot.
+
+Route snapshots contain essential information about the route, including its parameters, data, and child routes. In addition, snapshots are static and will not reflect future changes.
+
+Here’s an example of how you’d access a route snapshot:
+
+```typescript
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+
+@Component({ ... })
+export class UserProfileComponent {
+  readonly userId: string;
+  private activatedRoute = inject(ActivatedRoute);
+
+  constructor() {
+    // Example URL: https://www.angular.dev/users/123?role=admin&status=active#contact
+
+    // Access route parameters from snapshot
+    this.userId = this.route.snapshot.paramMap.get('id');
+
+    // Access multiple route elements
+    const snapshot = this.route.snapshot;
+    console.log({
+      url: snapshot.url,           // https://www.angular.dev
+      // Route parameters object: {id: '123'}
+      params: snapshot.params,
+      // Query parameters object: {role: 'admin', status: 'active'}
+      queryParams: snapshot.queryParams,  // Query parameters
+    });
+  }
+}
+```
+
+Check out the [`ActivatedRoute` API docs](/api/router/ActivatedRoute) and [`ActivatedRouteSnapshot` API docs](/api/router/ActivatedRouteSnapshot) for a complete list of all properties you can access.
+
+## Reading parameters on a route
+
+There are two types of parameters that developers can utilize from a route: route and query parameters.
+
+### Route Parameters
+
+Route parameters allow you to pass data to a component through the URL. This is useful when you want to display specific content based on an identifier in the URL, like a user ID or a product ID.
+
+You can [define route parameters](/guide/routing/define-routes#define-url-paths-with-route-parameters) by prefixing the parameter name with a colon (`:`).
+
+```typescript
+import { Routes } from '@angular/router';
+import { ProductComponent } from './product/product.component';
+
+const routes: Routes = [
+  { path: 'product/:id', component: ProductComponent }
+];
+```
+
+You can access parameters by subscribing to `route.params`.
+
+```typescript
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+
+@Component({
+  selector: 'app-product-detail',
+  template: `<h1>Product Details: {{ productId() }}</h1>`,
+})
+export class ProductDetailComponent {
+  productId = signal('');
+  private activatedRoute = inject(ActivatedRoute);
+
+  constructor() {
+    // Access route parameters
+    this.activatedRoute.params.subscribe((params) => {
+      this.productId.set(params['id']);
+    });
+  }
+}
+```
+
+### Query Parameters
+
+[Query parameters](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams) provide a flexible way to pass optional data through URLs without affecting the route structure. Unlike route parameters, query parameters can persist across navigation events and are perfect for handling filtering, sorting, pagination, and other stateful UI elements.
+
+```typescript
+// Single parameter structure
+// /products?category=electronics
+router.navigate(['/products'], {
+  queryParams: { category: 'electronics' }
+});
+
+// Multiple parameters
+// /products?category=electronics&sort=price&page=1
+router.navigate(['/products'], {
+  queryParams: {
+    category: 'electronics',
+    sort: 'price',
+    page: 1
+  }
+});
+```
+
+You can access query parameters with `route.queryParams`.
+
+Here is an example of a `ProductListComponent` that updates the query parameters that affect how it displays a list of products:
+
+```typescript
+import { ActivatedRoute, Router } from '@angular/router';
+
+@Component({
+  selector: 'app-product-list',
+  template: `
+    <div>
+      <select (change)="updateSort($event)">
+        <option value="price">Price</option>
+        <option value="name">Name</option>
+      </select>
+      <!-- Products list -->
+    </div>
+  `
+})
+export class ProductListComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  constructor() {
+    // Access query parameters reactively
+    this.route.queryParams.subscribe(params => {
+      const sort = params['sort'] || 'price';
+      const page = Number(params['page']) || 1;
+      this.loadProducts(sort, page);
+    });
+  }
+
+  updateSort(event: Event) {
+    const sort = (event.target as HTMLSelectElement).value;
+    // Update URL with new query parameter
+    this.router.navigate([], {
+      queryParams: { sort },
+      queryParamsHandling: 'merge' // Preserve other query parameters
+    });
+  }
+}
+```
+
+In this example, users can use a select element to sort the product list by name or price. The associated change handler updates the URL’s query parameters, which in turn triggers a change event that can read the updated query parameters and update the product list.
+
+For more information, check out the [official docs on QueryParamsHandling](/api/router/QueryParamsHandling).
+
+## Detect active current route with RouterLinkActive
+
+You can use the `RouterLinkActive` directive to dynamically style navigation elements based on the current active route. This is common in navigation elements to inform users what the active route is.
+
+```html
+<nav>
+  <a class="button"
+     routerLink="/about"
+     routerLinkActive="active-button"
+     ariaCurrentWhenActive="page">
+    About
+  </a> |
+  <a class="button"
+     routerLink="/settings"
+     routerLinkActive="active-button"
+     ariaCurrentWhenActive="page">
+    Settings
+  </a>
+</nav>
+```
+
+In this example, Angular Router will apply the `active-button` class to the correct anchor link and `ariaCurrentWhenActive` to `page` when the URL matches the corresponding `routerLink`.
+
+If you need to add multiple classes onto the element, you can use either a space-separated string or an array:
+
+```html
+<!-- Space-separated string syntax -->
+<a routerLink="/user/bob" routerLinkActive="class1 class2">Bob</a>
+
+<!-- Array syntax -->
+<a routerLink="/user/bob" [routerLinkActive]="['class1', 'class2']">Bob</a>
+```
+
+When you specify a value for routerLinkActive, you are also defining the same value for `ariaCurrentWhenActive`. This makes sure that visually impaired users (which may not perceive the different styling being applied) can also identify the active button.
+
+If you want to define a different value for aria, you’ll need to explicitly set the value using the `ariaCurrentWhenActive` directive.
+
+### Route matching strategy
+
+By default, `RouterLinkActive` considers any ancestors in the route a match.
+
+```html
+<a [routerLink]="['/user/jane']" routerLinkActive="active-link">
+  User
+</a>
+<a [routerLink]="['/user/jane/role/admin']" routerLinkActive="active-link">
+  Role
+</a>
+```
+
+When the user visits `/user/jane/role/admin`, both links would have the `active-link` class.
+
+### Only apply RouterLinkActive on exact route matches
+
+If you only want to apply the class on an exact match, you need to provide the `routerLinkActiveOptions` directive with a configuration object that contains the value `exact: true`.
+
+```html
+<a [routerLink]="['/user/jane']"
+  routerLinkActive="active-link"
+  [routerLinkActiveOptions]="{exact: true}"
+>
+  User
+</a>
+<a [routerLink]="['/user/jane/role/admin']"
+  routerLinkActive="active-link"
+  [routerLinkActiveOptions]="{exact: true}"
+>
+  Role
+</a>
+```
+
+If you want to be more precise in how a route is matched, it’s worth noting that `exact: true` is actually syntactic sugar for the full set of matching options:
+
+```typescript
+// `exact: true` is equivalent to
+{
+  paths: 'exact',
+  fragment: 'ignored',
+  matrixParams: 'ignored',
+  queryParams: 'exact',
+}
+
+// `exact: false` is equivalent
+{
+  paths: 'subset',
+  fragment: 'ignored',
+  matrixParams: 'ignored',
+  queryParams: 'subset',
+}
+```
+
+For more information, check out the official docs for [isActiveMatchOptions](/api/router/IsActiveMatchOptions).
+
+### Apply RouterLinkActive to an ancestor
+
+The RouterLinkActive directive can also be applied to an ancestor element in order to allow developers to style the elements as desired.
+
+```html
+<div routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+  <a routerLink="/user/jim">Jim</a>
+  <a routerLink="/user/bob">Bob</a>
+</div>
+```
+
+For more information, check out the [API docs for RouterLinkActive](/api/router/RouterLinkActive).
 # Other common Routing Tasks
 
 This guide covers some other common tasks associated with using Angular router in your application.
@@ -8628,13 +9698,11 @@ providers: [
 
 <docs-step title="Add an `Input` to the component">
 
-Update the component to have an `Input` matching the name of the parameter.
+Update the component to have an `input()` property matching the name of the parameter.
 
 ```ts
-@Input()
-set id(heroId: string) {
-  this.hero$ = this.service.getHero(heroId);
-}
+id = input.required<string>()
+hero = computed(() => this.service.getHero(heroId));
 ```
 
 NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
@@ -11675,23 +12743,27 @@ let loader: HarnessLoader;
 let rootLoader: HarnessLoader;
 
 beforeEach(() => {
-fixture = TestBed.createComponent(MyDialogButton);
-loader = TestbedHarnessEnvironment.loader(fixture);
-rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+  fixture = TestBed.createComponent(MyDialogButton);
+  loader = TestbedHarnessEnvironment.loader(fixture);
+  rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
 });
 
 it('loads harnesses', async () => {
-// Load a harness for the bootstrapped component with `harnessForFixture`
-dialogButtonHarness =
-await TestbedHarnessEnvironment.harnessForFixture(fixture, MyDialogButtonHarness);
-// The button element is inside the fixture's root element, so we use `loader`.
-const buttonHarness = await loader.getHarness(MyButtonHarness);
-// Click the button to open the dialog
-await buttonHarness.click();
-// The dialog is appended to `document.body`, outside of the fixture's root element,
-// so we use `rootLoader` in this case.
-const dialogHarness = await rootLoader.getHarness(MyDialogHarness);
-// ... make some assertions
+  // Load a harness for the bootstrapped component with `harnessForFixture`
+  dialogButtonHarness =
+    await TestbedHarnessEnvironment.harnessForFixture(fixture, MyDialogButtonHarness);
+
+  // The button element is inside the fixture's root element, so we use `loader`.
+  const buttonHarness = await loader.getHarness(MyButtonHarness);
+
+  // Click the button to open the dialog
+  await buttonHarness.click();
+
+  // The dialog is appended to `document.body`, outside of the fixture's root element,
+  // so we use `rootLoader` in this case.
+  const dialogHarness = await rootLoader.getHarness(MyDialogHarness);
+
+  // ... make some assertions
 });
 ```
 ### Harness behavior in different environments
@@ -11745,9 +12817,9 @@ As an example, the following is a test for a component that uses the [Angular Ma
 
 ```typescript
 it('should get value of slider thumb', async () => {
-    const slider = await loader.getHarness(MatSliderHarness);
-    const thumb = await slider.getEndThumb();
-    expect(await thumb.getValue()).toBe(50);
+  const slider = await loader.getHarness(MatSliderHarness);
+  const thumb = await slider.getEndThumb();
+  expect(await thumb.getValue()).toBe(50);
 });
 ```
 ## Interop with Angular change detection
@@ -11831,11 +12903,11 @@ The `hostSelector` property identifies elements in the DOM that match this harne
 class MyPopup {
   triggerText = input('');
 
-isOpen = signal(false);
+  isOpen = signal(false);
 
-toggle() {
-this.isOpen.update((value) => !value);
-}
+  toggle() {
+    this.isOpen.update((value) => !value);
+  }
 }
 ```
 In this case, a minimal harness for the component would look like the following:
@@ -11861,11 +12933,11 @@ For example, the `MyPopupHarness` example discussed above could provide methods 
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 
-/\*_ Gets the trigger element _/
-getTriggerElement = this.locatorFor('button');
+  // Gets the trigger element
+  getTriggerElement = this.locatorFor('button');
 
-/\*_ Gets the content element. _/
-getContentElement = this.locatorForOptional('.my-popup-content');
+  // Gets the content element.
+  getContentElement = this.locatorForOptional('.my-popup-content');
 }
 ```
 ## Working with `TestElement` instances
@@ -11882,20 +12954,20 @@ Instead, provide more narrow-focused methods for specific actions the end-user m
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 
-protected getTriggerElement = this.locatorFor('button');
-protected getContentElement = this.locatorForOptional('.my-popup-content');
+  protected getTriggerElement = this.locatorFor('button');
+  protected getContentElement = this.locatorForOptional('.my-popup-content');
 
-/\*_ Toggles the open state of the popup. _/
-async toggle() {
-const trigger = await this.getTriggerElement();
-return trigger.click();
-}
+  /** Toggles the open state of the popup. */
+  async toggle() {
+    const trigger = await this.getTriggerElement();
+    return trigger.click();
+  }
 
-/\*_ Checks if the popup us open. _/
-async isOpen() {
-const content = await this.getContentElement();
-return !!content;
-}
+  /** Checks if the popup us open. */
+  async isOpen() {
+    const content = await this.getContentElement();
+    return !!content;
+  }
 }
 ```
 ## Loading harnesses for subcomponents
@@ -11913,16 +12985,17 @@ For example, consider a menu build using the popup from above:
 class MyMenuItem {}
 
 @Component({
-selector: 'my-menu',
-template: `     <my-popup>
+  selector: 'my-menu',
+  template: `
+    <my-popup>
       <ng-content></ng-content>
     </my-popup>
   `
 })
 class MyMenu {
-triggerText = input('');
+  triggerText = input('');
 
-@ContentChildren(MyMenuItem) items: QueryList<MyMenuItem>;
+  @ContentChildren(MyMenuItem) items: QueryList<MyMenuItem>;
 }
 ```
 The harness for `MyMenu` can then take advantage of other harnesses for `MyPopup` and `MyMenuItem`:
@@ -11931,20 +13004,20 @@ The harness for `MyMenu` can then take advantage of other harnesses for `MyPopup
 class MyMenuHarness extends ComponentHarness {
   static hostSelector = 'my-menu';
 
-protected getPopupHarness = this.locatorFor(MyPopupHarness);
+  protected getPopupHarness = this.locatorFor(MyPopupHarness);
 
-/\*_ Gets the currently shown menu items (empty list if menu is closed). _/
-getItems = this.locatorForAll(MyMenuItemHarness);
+  /** Gets the currently shown menu items (empty list if menu is closed). */
+  getItems = this.locatorForAll(MyMenuItemHarness);
 
-/\*_ Toggles open state of the menu. _/
-async toggle() {
-const popupHarness = await this.getPopupHarness();
-return popupHarness.toggle();
-}
+  /** Toggles open state of the menu. */
+  async toggle() {
+    const popupHarness = await this.getPopupHarness();
+    return popupHarness.toggle();
+  }
 }
 
 class MyMenuItemHarness extends ComponentHarness {
-static hostSelector = 'my-menu-item';
+  static hostSelector = 'my-menu-item';
 }
 ```
 ## Filtering harness instances with `HarnessPredicate`
@@ -11964,45 +13037,45 @@ interface MyMenuHarnessFilters extends BaseHarnessFilters {
 }
 
 interface MyMenuItemHarnessFilters extends BaseHarnessFilters {
-/\*_ Filters based on the text of the menu item. _/
-text?: string | RegExp;
+  /** Filters based on the text of the menu item. */
+  text?: string | RegExp;
 }
 
 class MyMenuHarness extends ComponentHarness {
-static hostSelector = 'my-menu';
+  static hostSelector = 'my-menu';
 
-/\*_ Creates a `HarnessPredicate` used to locate a particular `MyMenuHarness`. _/
-static with(options: MyMenuHarnessFilters): HarnessPredicate<MyMenuHarness> {
-return new HarnessPredicate(MyMenuHarness, options)
-.addOption('trigger text', options.triggerText,
-(harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text));
-}
+  /** Creates a `HarnessPredicate` used to locate a particular `MyMenuHarness`. */
+  static with(options: MyMenuHarnessFilters): HarnessPredicate<MyMenuHarness> {
+    return new HarnessPredicate(MyMenuHarness, options)
+      .addOption('trigger text', options.triggerText,
+        (harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text));
+  }
 
-protected getPopupHarness = this.locatorFor(MyPopupHarness);
+  protected getPopupHarness = this.locatorFor(MyPopupHarness);
 
-/\*_ Gets the text of the menu trigger. _/
-async getTriggerText(): Promise<string> {
-const popupHarness = await this.getPopupHarness();
-return popupHarness.getTriggerText();
-}
-...
+  /** Gets the text of the menu trigger. */
+  async getTriggerText(): Promise<string> {
+    const popupHarness = await this.getPopupHarness();
+    return popupHarness.getTriggerText();
+  }
+  ...
 }
 
 class MyMenuItemHarness extends ComponentHarness {
-static hostSelector = 'my-menu-item';
+  static hostSelector = 'my-menu-item';
 
-/\*_ Creates a `HarnessPredicate` used to locate a particular `MyMenuItemHarness`. _/
-static with(options: MyMenuItemHarnessFilters): HarnessPredicate<MyMenuItemHarness> {
-return new HarnessPredicate(MyMenuItemHarness, options)
-.addOption('text', options.text,
-(harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
-}
+  /** Creates a `HarnessPredicate` used to locate a particular `MyMenuItemHarness`. */
+  static with(options: MyMenuItemHarnessFilters): HarnessPredicate<MyMenuItemHarness> {
+    return new HarnessPredicate(MyMenuItemHarness, options)
+      .addOption('text', options.text,
+        (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
+  }
 
-/\*_ Gets the text of the menu item. _/
-async getText(): Promise<string> {
-const host = await this.host();
-return host.text();
-}
+  /** Gets the text of the menu item. */
+  async getText(): Promise<string> {
+    const host = await this.host();
+    return host.text();
+  }
 }
 ```
 You can pass a `HarnessPredicate` instead of a `ComponentHarness` class to any of the APIs on `HarnessLoader`, `LocatorFactory`, or `ComponentHarness`. This allows test authors to easily target a particular component instance when creating a harness instance. It also allows the harness author to leverage the same `HarnessPredicate` to enable more powerful APIs on their harness class. For example, consider the `getItems` method on the `MyMenuHarness` shown above. Adding a filtering API allows users of the harness to search for particular menu items:
@@ -12011,12 +13084,12 @@ You can pass a `HarnessPredicate` instead of a `ComponentHarness` class to any o
 class MyMenuHarness extends ComponentHarness {
   static hostSelector = 'my-menu';
 
-/\*_ Gets a list of items in the menu, optionally filtered based on the given criteria. _/
-async getItems(filters: MyMenuItemHarnessFilters = {}): Promise<MyMenuItemHarness[]> {
-const getFilteredItems = this.locatorForAll(MyMenuItemHarness.with(filters));
-return getFilteredItems();
-}
-...
+  /** Gets a list of items in the menu, optionally filtered based on the given criteria. */
+  async getItems(filters: MyMenuItemHarnessFilters = {}): Promise<MyMenuItemHarness[]> {
+    const getFilteredItems = this.locatorForAll(MyMenuItemHarness.with(filters));
+    return getFilteredItems();
+  }
+  ...
 }
 ```
 ## Creating `HarnessLoader` for elements that use content projection
@@ -12044,11 +13117,11 @@ Consider if the `MyPopup` component above used the CDK overlay for the popup con
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 
-/\*_ Gets a `HarnessLoader` whose root element is the popup's content element. _/
-async getHarnessLoaderForContent(): Promise<HarnessLoader> {
-const rootLocator = this.documentRootLocatorFactory();
-return rootLocator.harnessLoaderFor('my-popup-content');
-}
+  /** Gets a `HarnessLoader` whose root element is the popup's content element. */
+  async getHarnessLoaderForContent(): Promise<HarnessLoader> {
+    const rootLocator = this.documentRootLocatorFactory();
+    return rootLocator.harnessLoaderFor('my-popup-content');
+  }
 }
 ```
 ## Waiting for asynchronous tasks
@@ -12797,24 +13870,16 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 ### Available to experiment with
 
-* [Incremental hydration](/guide/incremental-hydration)
 * [Zoneless change detection](/guide/zoneless)
-* [Hydration support for i18n blocks](/api/platform-browser/withI18nSupport)
 * [Resource API](/guide/signals/resource)
-* [Effect API](/api/core/effect)
-* [Linked Signal API](/guide/signals/linked-signal)
+* [httpResource](/api/common/http/httpResource)
 
 ### Production ready
 
-* [Explore Angular Signals](/guide/signals)
+* [Linked Signal API](/guide/signals/linked-signal)
+* [Incremental hydration](/guide/incremental-hydration)
+* [Effect API](/api/core/effect)
 * [Event replay with SSR](/api/platform-browser/withEventReplay)
-* [Deferrable views](/guide/defer)
-* [Built-in control flow](/guide/templates/control-flow)
-* [Local variable declaration](/guide/templates/variables)
-* [Signal inputs](/guide/signals/inputs)
-* [Model inputs](/guide/signals/model)
-* [Signal queries](/guide/signals/queries)
-* [Function-based outputs](/guide/components/outputs)
 * [Route-level render mode](/guide/ssr)
 
 ## Improving the Angular developer experience
@@ -12822,7 +13887,6 @@ Start developing with the latest Angular features from our roadmap. This list re
 ### Developer velocity
 ### Improve Angular Material and the CDK
 ### Improve tooling
-## Fast by default
 ## Future work, explorations, and prototyping
 
 This section represents explorations and prototyping of potential future projects. A reasonable outcome is to decide that our current solutions are the best options. Other projects may result in RFCs, graduating to in-progress projects, or being deprioritized as the web continues to innovate along with our framework.
