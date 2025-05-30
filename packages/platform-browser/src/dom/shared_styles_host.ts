@@ -6,16 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, isPlatformServer} from '@angular/common';
-import {
-  APP_ID,
-  CSP_NONCE,
-  Inject,
-  Injectable,
-  OnDestroy,
-  Optional,
-  PLATFORM_ID,
-} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {APP_ID, CSP_NONCE, DestroyRef, inject, Injectable} from '@angular/core';
 
 /** The style elements attribute name used to set value of `APP_ID` token. */
 const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
@@ -102,7 +94,11 @@ export function createLinkElement(url: string, doc: Document): HTMLLinkElement {
 }
 
 @Injectable()
-export class SharedStylesHost implements OnDestroy {
+export class SharedStylesHost {
+  private readonly doc = inject(DOCUMENT);
+  private readonly appId = inject(APP_ID);
+  private readonly nonce = inject(CSP_NONCE);
+
   /**
    * Provides usage information for active inline style content and associated HTML <style> elements.
    * Embedded styles typically originate from the `styles` metadata of a rendered component.
@@ -120,20 +116,16 @@ export class SharedStylesHost implements OnDestroy {
    */
   private readonly hosts = new Set<Node>();
 
-  /**
-   * Whether the application code is currently executing on a server.
-   */
-  private readonly isServer: boolean;
+  constructor() {
+    addServerStyles(this.doc, this.appId, this.inline, this.external);
+    this.hosts.add(this.doc.head);
 
-  constructor(
-    @Inject(DOCUMENT) private readonly doc: Document,
-    @Inject(APP_ID) private readonly appId: string,
-    @Inject(CSP_NONCE) @Optional() private readonly nonce?: string | null,
-    @Inject(PLATFORM_ID) platformId: object = {},
-  ) {
-    this.isServer = isPlatformServer(platformId);
-    addServerStyles(doc, appId, this.inline, this.external);
-    this.hosts.add(doc.head);
+    inject(DestroyRef).onDestroy(() => {
+      for (const [, {elements}] of [...this.inline, ...this.external]) {
+        removeElements(elements);
+      }
+      this.hosts.clear();
+    });
   }
 
   /**
@@ -203,13 +195,6 @@ export class SharedStylesHost implements OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    for (const [, {elements}] of [...this.inline, ...this.external]) {
-      removeElements(elements);
-    }
-    this.hosts.clear();
-  }
-
   /**
    * Adds a host node to the set of style hosts and adds all existing style usage to
    * the newly added host node.
@@ -239,7 +224,7 @@ export class SharedStylesHost implements OnDestroy {
     }
 
     // Add application identifier when on the server to support client-side reuse
-    if (this.isServer) {
+    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
       element.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
     }
 
