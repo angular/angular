@@ -25,7 +25,7 @@ import {
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class SwUpdate {
   /**
    * Emits a `VersionDetectedEvent` event whenever a new version is detected on the server.
