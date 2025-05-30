@@ -16,6 +16,7 @@ export enum EntryType {
   Component = 'component',
   Constant = 'constant',
   Decorator = 'decorator',
+  InterfaceLikeDecorator = 'interface_like_decorator',
   Directive = 'directive',
   Element = 'element',
   Enum = 'enum',
@@ -120,7 +121,10 @@ export interface EnumEntry extends DocEntry {
 /** Documentation entity for an Angular decorator. */
 export interface DecoratorEntry extends DocEntry {
   decoratorType: DecoratorType;
-  members: PropertyEntry[];
+  signatures: {
+    parameters: ParameterEntry[];
+    jsdocTags: JsDocTagEntry[];
+  }[];
 }
 
 /** Documentation entity for an Angular directives and components. */
