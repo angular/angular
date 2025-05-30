@@ -92,6 +92,24 @@ export class HttpXhrBackend implements HttpBackend {
       );
     }
 
+    if (req.cache && ngDevMode) {
+      console.warn(
+        formatRuntimeError(
+          RuntimeErrorCode.CACHE_NOT_SUPPORTED_WITH_XHR,
+          `Angular detected that a \`HttpClient\` request with the \`cache\` option was sent using XHR, which does not support it. To use the \`cache\` option, enable Fetch API support by passing \`withFetch()\` as an argument to \`provideHttpClient()\`.`,
+        ),
+      );
+    }
+
+    if (req.priority && ngDevMode) {
+      console.warn(
+        formatRuntimeError(
+          RuntimeErrorCode.PRIORITY_NOT_SUPPORTED_WITH_XHR,
+          `Angular detected that a \`HttpClient\` request with the \`priority\` option was sent using XHR, which does not support it. To use the \`priority\` option, enable Fetch API support by passing \`withFetch()\` as an argument to \`provideHttpClient()\`.`,
+        ),
+      );
+    }
+
     // Check whether this factory has a special function to load an XHR implementation
     // for various non-browser environments. We currently limit it to only `ServerXhr`
     // class, which needs to load an XHR implementation.
