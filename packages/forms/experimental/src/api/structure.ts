@@ -48,7 +48,46 @@ export interface FormOptions {
  * @example ```
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
- *   error(name.last, (value) => !/^[a-z]+$/i.test(value), 'Alphabet characters only');
+ *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
+ * });
+ * nameForm.$state.valid(); // false
+ * nameForm.$state.value.set({first: 'John', last: 'Doe'});
+ * nameForm.$state.valid(); // true
+ * ```
+ *
+ * @param model A writable signal that contains the model data for the form. The resulting field
+ * structure will match the shape of the model and any changes to the form data will be written to
+ * the model.
+ * @param options The form options
+ * @return A `Field` representing a form around the data model.
+ * @template The type of the data model.
+ */
+export function form<T>(model: WritableSignal<T>, options?: FormOptions): Field<T>;
+
+/**
+ * Creates a form wrapped around the given model data. A form is represented as simply a `Field` of
+ * the model data.
+ *
+ * `form` uses the given model as the source of truth and *does not* maintain its own copy of the
+ * data. This means that updating the value on a `FieldState` updates the originally passed in model
+ * as well.
+ *
+ * @example ```
+ * const nameModel = signal({first: '', last: ''});
+ * const nameForm = form(nameModel);
+ * nameForm.first.$state.value.set('John');
+ * nameForm.$state.value(); // {first: 'John', last: ''}
+ * nameModel(); // {first: 'John', last: ''}
+ * ```
+ *
+ * The form can also be created with a schema, which is a set of rules that define the logic for the
+ * form. The schema can be either a pre-defined schema created with the `schema` function, or a
+ * function that builds the schema by binding logic to a parts of the field structure.
+ *
+ * @example ```
+ * const nameForm = form(signal({first: '', last: ''}), (name) => {
+ *   required(name.first);
+ *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
  * });
  * nameForm.$state.valid(); // false
  * nameForm.$state.value.set({first: 'John', last: 'Doe'});
@@ -60,6 +99,7 @@ export interface FormOptions {
  * the model.
  * @param schema A schema or a function that binds logic to the form. This can be optionally
  * included to specify logic for the form (e.g. validation, disabled fields, etc.)
+ * @param options The form options
  * @return A `Field` representing a form around the data model.
  * @template The type of the data model.
  */
@@ -67,7 +107,24 @@ export function form<T>(
   model: WritableSignal<T>,
   schema?: NoInfer<SchemaOrSchemaFn<T>>,
   options?: FormOptions,
-): Field<T> {
+): Field<T>;
+
+export function form<T>(...args: any[]): Field<T> {
+  let model: WritableSignal<T>;
+  let schema: SchemaOrSchemaFn<T> | undefined;
+  let options: FormOptions | undefined;
+  if (args.length === 3) {
+    [model, schema, options] = args;
+  } else if (args.length === 2) {
+    if (isSchema(args[1])) {
+      [model, schema] = args;
+    } else {
+      [model, options] = args;
+    }
+  } else {
+    [model] = args;
+  }
+
   const injector = options?.injector ?? inject(Injector);
   const pathNode = new FieldRootPathNode(undefined);
   if (schema !== undefined) {
@@ -242,4 +299,8 @@ export async function submit<T>(
 
 export function schema<T>(fn: SchemaFn<T>): Schema<T> {
   return fn as unknown as Schema<T>;
+}
+
+function isSchema(obj: unknown): obj is Schema<unknown> {
+  return typeof obj === 'function';
 }

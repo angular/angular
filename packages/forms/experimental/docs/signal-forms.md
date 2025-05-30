@@ -24,17 +24,21 @@ interface User {
   username: string;
 }
 
-// Create a model containing the initial form data.
-const userModel = signal<User>({name: '', username: ''});
+@Component({...}) class MyComponent {
+  // Create a model containing the initial form data.
+  userModel = signal<User>({name: '', username: ''});
 
-// Create the form, linking it to the model.
-const userForm = form(userModel);
+  // Create the form, linking it to the model.
+  userForm = form(this.userModel);
+}
 ```
 
 This establishes the model as the source of truth for the UI values, meaning:
 
 - Any updates made to the `userModel` will update the field's value (as it reads from the same signal).
 - Any changes the user makes via the `userForm` **directly modify** the model.
+
+Note: `form()` must either be run in an injection context, or passed an injector as an additional option (e.g. `form(this.userModel, {injector: this.injector})`).
 
 ## Accessing the field state
 
@@ -57,22 +61,24 @@ interface Order {
   items: LineItem[];
 }
 
-// Create the model.
-const orderModel = signal<Order>({
-  orderId: 'ORD-123',
-  items: [
-    { description: 'Ergonomic Mouse', quantity: 1 },
-    { description: 'Mechanical Keyboard', quantity: 1 }
-  ]
-});
+@Component({...}) class MyComponent {
+  // Create the model.
+  orderModel = signal<Order>({
+    orderId: 'ORD-123',
+    items: [
+      { description: 'Ergonomic Mouse', quantity: 1 },
+      { description: 'Mechanical Keyboard', quantity: 1 }
+    ]
+  });
 
-// Create a `Field` for the order.
-const orderForm: Field<Order> = form(orderModel);
+  // Create a `Field` for the order.
+  orderForm: Field<Order> = form(this.orderModel);
 
-// Navigate the field structure to access sub-fields.
-const itemsField: Field<LineItem[]> = orderForm.items;
-const firstItemField: Field<LineItem> = orderForm.items[0];
-const firstItemQuantityField: Field<number> = orderForm.items[0].quantity;
+  // Navigate the field structure to access sub-fields.
+  itemsField: Field<LineItem[]> = this.orderForm.items;
+  firstItemField: Field<LineItem> = this.orderForm.items[0];
+  firstItemQuantityField: Field<number> = this.orderForm.items[0].quantity;
+}
 ```
 
 As you can see, navigating the `orderForm` structure (`orderForm.items[0].quantity`) directly corresponds to how you would access the data in the `orderModel` (`orderModel().items[0].quantity`). Each step in this navigation gives you a more specific `Field` instance, typed according to the part of the data model it represents (e.g., `Field<LineItem[]>`, `Field<LineItem>`, `Field<number>`).
@@ -95,16 +101,16 @@ Here's how you can use `$state` in the previous example:
 
 ```typescript
 // Update the quantity for the first item. (This updates `orderModel` as well!)
-firstItemQuantityField.$state.value.set(2);
+this.firstItemQuantityField.$state.value.set(2);
 
 // Get the value of the first item.
-firstItemField.$state.value();  // {description: 'Ergonomic Mouse', quantity: 2}
+this.firstItemField.$state.value();  // {description: 'Ergonomic Mouse', quantity: 2}
 
 // Check whether the order is disabled.
-orderForm.$state.disabled();  // false
+this.orderForm.$state.disabled();  // false
 
 // Check if there are any errors on the items list.
-itemsField.$state.errors();   // [];
+this.itemsField.$state.errors();   // [];
 ```
 
 ## Adding field logic
@@ -119,12 +125,14 @@ The mechanism for defining this declarative logic is the `Schema`. Think of a `S
 
 You define a `Schema` as a function that is generic over the data type it applies to. For example:
 
-- A schema function of type `Schema<string>` defines rules for a `Field<string>`.
-- A schema function of type `Schema<User>` defines rules for a `Field<User>`.
+- A schema of type `Schema<string>` defines rules for a `Field<string>`.
+- A schema of type `Schema<User>` defines rules for a `Field<User>`.
 
 This ensures that your logic rules align with the structure of your field and your data model.
 
 Inside the schema function, you'll define the specific validation rules, disabled conditions, and other logic for the field structure. _How_ to define these rules will be covered shortly.
+
+A `Schema` can be created by calling `schema()` and passing it schema function, or just passing a schema function directly to `form()` or other methods that expect a `Schema`.
 
 Once you have defined a schema, you associate it with your `Field` structure by passing it as the second argument to the `form()` function:
 
@@ -135,20 +143,22 @@ interface ConfirmedPassword {
   confirm: string;
 }
 
-// Create the data model.
-const passwordModel = signal<ConfirmedPassword>({password: '', confirm: ''});
-
 // Define a schema for this data type.
-const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
+const passwordSchema = schema<ConfirmedPassword>((path) => {
   // Logic rules (like validators) will be defined inside this function.
   // How to do this will be covered in the following sections.
-};
+});
 
-// Create the field structure, adding the logic from the schema.
-const passwordForm = form(passwordModel, passwordSchema);
+@Component({...}) class MyComponent {
+  // Create the data model.
+  passwordModel = signal<ConfirmedPassword>({password: '', confirm: ''});
 
-// Now, passwordForm's state (e.g. passwordForm.$state.errors)
-// will be determined by the rules defined in passwordSchema.
+  // Create the field structure, adding the logic from the schema.
+  passwordForm = form(this.passwordModel, passwordSchema);
+
+  // Now, passwordForm's state (e.g. this.passwordForm.$state.errors)
+  // will be determined by the rules defined in passwordSchema.
+}
 ```
 
 In this example, `passwordSchema` is defined but doesn't contain any specific rules yet. The key takeaway here is the structure: you define a typed schema and then link it to your `form()` instance alongside your data model signal.
@@ -162,28 +172,129 @@ The `FieldPath` acts as your tool for navigating the structure of your data mode
 You use these navigated paths as the first argument to the built-in logic binding functions to specify which part of the field structure the logic applies to. For example:
 
 ```typescript
-const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
+const passwordSchema = schema<ConfirmedPassword>((path: FieldPath<ConfirmedPassword>) => {
   // Adds validation logic to require a value for `password`.
   required(path.password);
   // Adds validation logic to require a value for `confirm`.
   required(path.confirm);
-};
+});
 ```
 
 #### Logic binding functions
 
 Angular Signal Forms provides several functions designed to be called **within the schema function** to bind logic rules to parts of your field structure. These functions all take a `FieldPath` as the first argument to indicate which field the logic applies to.
 
-The currently supported logic binding functions are:
+A brief description of the logic binding functions offered in Signal Forms is shown below. To learn more about how these functions are used in Signal Forms, see the following sections.
 
-- **`validate`**: Adds a validation rule that may add a `FormError` to the field.
-- **`required`**: Adds a validation rule that adds a `FormError` of `kind: required` to the field if a value is not provided.
-- **`error`**: Adds a validation rule that may add a `FormError` of `kind: 'custom'` to the field.
-- **`disabled`**: Defines a condition for which the field should be disabled.
-- **`hidden`**: Defines a condition for which the field should be considered hidden (useful for conditional UI rendering).
-- **`metadata`**: Attaches arbitrary static metadata to a field.
+##### `validate`
 
-_Consult the JSDoc for the exact usage of each of these logic functions._
+`validate` is used to add validation logic to a field. It specifies validation errors as a reactive function of the field's `FiledContext`. Multiple `validate` bindings can be added for different validation rules, the full list of validation errors generated by the different rules is accessible from the `FieldState`.
+
+```ts
+const emailSchema = schema<string>(emailPath => {
+  validate(emailPath, ({value}) => /\w+@\w+\.\w+/.test(value()) ? [] : [{
+    kind: 'invalid-email-format',
+    message: 'Required format: x@y.z'
+  }]);
+});
+```
+
+##### `error`
+
+`error` is a simplified version of `validate` provided for convenience that returns a boolean validity status with an optional user-facing error message.
+
+```ts
+const emailSchema = schema<string>(emailPath => {
+  error(emailPath, ({value}) => /\w+@\w+\.\w+/.test(value()), 'Required format: x@y.z');
+});
+```
+
+##### `required`
+
+`required` adds validation that requires a field to be non-empty. In addition to validation, this functions sets the `REQUIRED` metadata to `true` for the given field. This ensures that special visual treatment for required fields (such as `*`) are shown.
+
+```ts
+const nameSchema = schema<{first: string, last: string}>(namePath => {
+  required(namePath.first);
+});
+```
+
+##### `disabled`
+
+`disabled` adds logic to disable the field under certain conditions. The logic is specified as a reactive function of the `FieldContext`. The field will be disabled when the logic function returns `true` or a `string` value. If the returned value is a `string` it represents the reason for the disablement.
+
+```ts
+const passwordSchema = schema<ConfirmedPassword>(path => {
+  disabled(path.confirm, ({valueOf}) => {
+    return valueOf(path.password).length === 0 ? 'Password confirmation disabled until password is entered' : false;
+  });
+});
+```
+
+##### `readonly`
+
+`readonly` adds logic to make the field readonly under certain conditions. The logic is specified as a reactive function of the `FieldContext`. The field will be readonly when the logic function returns `true`.
+
+```ts
+const allowEdits = signal(false);
+
+const passwordSchema = schema<ConfirmedPassword>(path => {
+  readonly(path.confirm, (ctx) => !allowEdits());
+});
+```
+
+##### `hidden`
+
+`hidden` adds logic to make the field hidden under certain conditions. The logic is specified as a reactive function of the `FieldContext`. The field will be considered hidden when the logic function returns `true`. When a field is hidden it is ignored for the purposes of determining the valid, touched, and dirty states. It is recommended to use the hidden state of the field to drive the rendering of the asociated control in the UI.
+
+```ts
+const isLoggedIn = signal(false);
+
+const passwordSchema = schema<Order>(orderPath => {
+  // Hide the email field for logged in users, we'll just use the email already on record.
+  hidden(orderPath.email, isLoggedIn);
+});
+```
+
+```html
+@if (!order.$state.hidden()) {
+  <input [field]="order.email" />
+}
+```
+
+##### `validateTree`
+
+`validateTree` works like `validate`, but it allows errors to be targeted to any sub-field of the validated field. For readability and perfromance it is generally preferable to apply individual validators to the field the pertain to. However in some complex validation scenarios, you may need to validate multiple fields together and assign errors to subfields. This can be accomplished with `validateTree`.
+
+```ts
+const uniqueNamesSchema = schema<string[]>(names => {
+  validateTree(names, ({value, field}) => {
+    const errors = [];
+    const map = new Map<string, number[]>();
+    for (let i = 0; i < value().length; i++) {
+      const name = value()[i];
+      if (!map.has(name)) {
+        map.set(name, []);
+      }
+      map.get(name)!.push(i);
+    }
+    for (const indices of map.values()) {
+      if (indices.length > 1) {
+        for (const index of indices) {
+          errors.push({kind: 'duplicate-name', field: field[index]});
+        }
+      }
+    }
+    return errors;
+  });
+});
+```
+
+##### `metadata` and `define`
+
+`metadata` & `define` create logic that associates some additional data with a field. The API for these is currently still in flux.
+
+<!-- TODO: expand this section. -->
 
 #### Static definition, reactive execution
 
@@ -194,30 +305,34 @@ Therefore, you _should not_ place dynamic conditional logic (like `if` statement
 This is demonstrated in the following example:
 
 ```typescript
-const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
+const passwordSchema = schema<ConfirmedPassword>((path) => {
     // Define a reactive validation rule to check the password length.
     validate(path.password, ({value}: FieldContext<string>) => {
       // Return a FormError if the password is not long enough.
       if (value().length < 5) {
         return {kind: 'too-short', message: 'Password is too short'};
       }
-      // Otherwise return null to indicate no error.
-      return null;
+      // Otherwise return undefined to indicate no error.
+      return undefined;
     });
-};
+});
 
-const passwordForm = form(signal({password: '', confirm: ''}), passwordSchema);
+@Component({...}) class MyComponent {
+  passwordForm = form(signal({password: '', confirm: ''}), passwordSchema);
 
-// Password is currently invalid.
-passwordForm.password.$state.valid(); // false
-passwordForm.password.$state.errors(); // [{kind: 'too-short', message: 'Password is too short'}]
+  simulateUpdatePassword() {
+    // Password is currently invalid.
+    this.passwordForm.password.$state.valid(); // false
+    this.passwordForm.password.$state.errors(); // [{kind: 'too-short', message: 'Password is too short'}]
 
-// Update to a valid password.
-passwordForm.password.$state.value.set('password');
+    // Update to a valid password.
+    this.passwordForm.password.$state.value.set('password');
 
-// Password is now valid.
-passwordForm.password.$state.valid(); // true
-passwordForm.password.$state.errors(); // [];
+    // Password is now valid.
+    this.passwordForm.password.$state.valid(); // true
+    this.passwordForm.password.$state.errors(); // [];
+  }
+}
 ```
 
 The logic function passed as the second argument to `validate` in the example above receives a `FieldContext` which contains a `Signal` of the current field value. By reading this signal it sets up a reactive binding that defines the field's errors in terms of its value.
@@ -239,7 +354,7 @@ In some cases you may want to associate the logic with a common parent node in y
 Looking at the previous `ConfirmedPassword` example, password matching logic can be implemented by adding validation to the root `path`:
 
 ```typescript
-const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
+const passwordSchema = schema<ConfirmedPassword>((path) => {
     // Add validation at the root level that considers both the
     // `password` and `confirm` values.
     validate(path, ({value}: FieldContext<ConfirmedPassword>) => {
@@ -248,20 +363,22 @@ const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPass
       if (password !== confirm) {
         return {kind: 'non-matching', message: 'Password and confirm must match'};
       }
-      // Otherwise return null to indicate no error.
-      return null;
+      // Otherwise return undefined to indicate no error.
+      return undefined;
     });
-};
+});
 
-const passwordForm = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
+@Component({...}) class MyComponent {
+  passwordForm = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
+}
 ```
 
 An important thing to notice with this approach, is that the `non-matching` error is associated with the _root field_, not specifically with the `password` or `confirm` fields themselves. This might be suitable for displaying a general error message, but less ideal if you want to highlight the specific field the user needs to change.
 
 ```typescript
-passwordForm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
-passwordForm.password.$state.errors(); // []
-passwordForm.confirm.$state.errors(); // []
+this.passwordForm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
+this.passwordForm.password.$state.errors(); // []
+this.passwordForm.confirm.$state.errors(); // []
 ```
 
 ##### Approach #2: Use helper functions to access other fields' state or values
@@ -275,7 +392,7 @@ If you need to access other fields' values but don't want to move the logic to a
 Here's the same password matching validation, but associating the error with the `confirm` field instead, using `valueOf`:
 
 ```typescript
-const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPassword>) => {
+const passwordSchema = schema<ConfirmedPassword>((path) => {
     // Add validation on the `confirm` field that considers both the
     // `password` and `confirm` values.
     validate(path.confirm, ({value, valueOf}: FieldContext<string>) => {
@@ -285,16 +402,20 @@ const passwordSchema: Schema<ConfirmedPassword> = (path: FieldPath<ConfirmedPass
       if (password !== value()) {
         return {kind: 'non-matching', message: 'Password and confirm must match'};
       }
-      // Otherwise return null to indicate no error.
-      return null;
+      // Otherwise return undefined to indicate no error.
+      return undefined;
     });
-};
+});
 
-const passwordForm = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
+@Component({...}) class MyComponent {
+  passwordForm = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
 
-passwordForm.$state.errors(); // []
-passwordForm.password.$state.errors(); // []
-passwordForm.confirm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
+  checkInitialState() {
+    this.passwordForm.$state.errors(); // []
+    this.passwordForm.password.$state.errors(); // []
+    this.passwordForm.confirm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
+  }
+}
 ```
 
 Note that because `valueOf(path.password)` reads a signal internally (as does `value()` for the current field), this establishes a reactive dependency on the value of `password` as well as the value of `confirm`, ensuring that the validation is recomputed if either one changes.
@@ -324,36 +445,38 @@ interface Trip {
 }
 
 // Define a schema to validate dates.
-const dateSchema: Schema<SimpleDate> = (datePath: FieldPath<SimpleDate>) => {
+const dateSchema = schema<SimpleDate>((datePath) => {
   error(datePath.month, ({value}) => value() < 1 || value() > 12, 'Invalid month');
   error(datePath.date, ({value}) => value() < 1 || value() > 31, 'Invalid date');
-};
+});
 
 // Define a schema for the trip that includes validation for its dates.
-const tripSchema: Schema<Trip> = (tripPath: FieldPath<Trip>) => {
+const tripSchema = schema<Trip>((tripPath: FieldPath<Trip>) => {
   // Define trip-specific logic.
   required(tripPath.destination);
 
   // Add in standard date logic for start and end date.
   apply(tripPath.start, dateSchema);
   apply(tripPath.end, dateSchema);
-};
+});
 
 const defaultDate: SimpleDate = {year: 0, month: 0, date: 0};
 
-const tripModel = signal<Trip>({
-  destination: '',
-  start: defaultDate,
-  end: defaultDate,
-});
+@Component({...}) class MyComponent {
+  tripModel = signal<Trip>({
+    destination: '',
+    start: defaultDate,
+    end: defaultDate,
+  });
 
-const tripForm = form(tripModel, tripSchema);
+  tripForm = form(this.tripModel, tripSchema);
+}
 ```
 
 Because the logic is _merged_ rather than _overwritten_, the parent schema can set up additional logic for the path with the applied schema if necessary.
 
 ```typescript
-const tripSchema: Schema<Trip> = (tripPath: FieldPath<Trip>) => {
+const tripSchema = schema<Trip>((tripPath) => {
   // Trip-specific date logic, will be merged with standard date logic below.
   error(tripPath.start, ({value}) => compareToNow(value()) < 0, 'Trip must start in future');
 
@@ -366,7 +489,7 @@ const tripSchema: Schema<Trip> = (tripPath: FieldPath<Trip>) => {
     const startValue = valueOf(tripPath.start);
     return compareTo(value(), startValue) < 0;
   }, 'Trip must end after it starts');
-};
+});
 ```
 
 #### Applying schema logic to an array
@@ -388,19 +511,23 @@ interface User {
   name: string;
 }
 
-const userSchema: Schema<User> = (userPath: FieldPath<User>) => {
+const userSchema = schema<User>((userPath) => {
   disabled(userPath.username, () => true, 'Username cannot be changed');
-};
-
-const usersModel = signal<User[]>([]);
-
-const usersForm = form(usersModel, (usersPath: FieldPath<User[]>) => {
-  applyEach(usersPath, userSchema);
 });
 
-usersModel.set([{username: 'newuser', name: 'John Doe'}]);
+@Component({...}) class MyComponent {
+  usersModel = signal<User[]>([]);
 
-usersForm[0].$state.disabled(); // true
+  usersForm = form(this.usersModel, (usersPath: FieldPath<User[]>) => {
+    applyEach(usersPath, userSchema);
+  });
+
+  simulateAddUser() {
+    this.usersModel.set([{username: 'newuser', name: 'John Doe'}]);
+
+    this.usersForm[0].$state.disabled(); // true
+  }
+}
 ```
 
 #### Conditionally applying schema logic
@@ -424,29 +551,33 @@ interface Account {
   friendsAndFamily: string[];
 }
 
-const basicAccountSchema: Schema<Account> = (accountPath: FieldPath<Account>) => {
+const basicAccountSchema = schema<Account>((accountPath) => {
   error(accountPath.quality,
         ({value}) => value() === '4K', '4K not supported for basic accounts');
   error(accountPath.friendsAndFamily,
         ({value}) => value().length > 1, 'Basic account allows 1 friends & family user');
-};
+});
 
-const accountSchema: Schema<Account> = (accountPath: FieldPath<Account>) => {
+const accountSchema = schema<Account>((accountPath: FieldPath<Account>) => {
   // Apply the basic account logic only if the user is not premium.
   applyWhen(accountPath, ({value}) => !value().premiumTier, basicAccountSchema);
-};
+});
 
-const accountForm = form(signal({
-  premiumTier: true,
-  quality: '4K',
-  friendsAndFamily: []
-}), accountSchema);
+@Component({...}) class MyComponent {
+  accountForm = form(signal({
+    premiumTier: true,
+    quality: '4K',
+    friendsAndFamily: []
+  }), accountSchema);
 
-accountForm.quality.$state.valid(); // true
+  simulateUpdateTier() {
+    this.accountForm.quality.$state.valid(); // true
 
-accountForm.premiumTier.$state.value.set(false);
+    this.accountForm.premiumTier.$state.value.set(false);
 
-accountForm.quality.$state.valid(); // false
+    this.accountForm.quality.$state.valid(); // false
+  }
+}
 ```
 
 ##### Conditionally applying logic with a narrowed type
@@ -475,29 +606,96 @@ interface Trip {
 }
 
 // Define a schema to validate dates.
-const dateSchema: Schema<SimpleDate> = (datePath: FieldPath<SimpleDate>) => {
+const dateSchema = schema<SimpleDate>((datePath) => {
   error(datePath.month, ({value}) => value() < 1 || value() > 12, 'Invalid month');
   error(datePath.date, ({value}) => value() < 1 || value() > 31, 'Invalid date');
-};
+});
 
 // Define a schema for the trip that includes validation for its dates.
-const tripSchema: Schema<Trip> = (tripPath: FieldPath<Trip>) => {
+const tripSchema = schema<Trip>((tripPath) => {
   // Define trip-specific logic.
   required(tripPath.destination);
 
   // Add in standard date logic for start and end date when they are not null.
   applyWhenValue(tripPath.start, (value): value is SimpleDate => value !== null, dateSchema);
   applyWhenValue(tripPath.end, (value): value is SimpleDate => value !== null, dateSchema);
-};
-
-const tripModel = signal<Trip>({
-  destination: '',
-  start: null,
-  end: null,
 });
 
-const tripForm = form(tripModel, tripSchema);
+@Component({...}) class MyComponent {
+  tripModel = signal<Trip>({
+    destination: '',
+    start: null,
+    end: null,
+  });
+
+  tripForm = form(this.tripModel, tripSchema);
+}
 ```
+
+### Async logic
+
+In some cases, you may need to define validation or other logic that depends on an async operation. A common example of this is validation that can only be performed on the server and therefore must wait for the server response before showing the result of the validation.
+
+#### Async validation over http
+
+Server validation is one of the most common types of async logic that is required in forms, and as such Signal Forms has a convenient built in function to define server based validation. To define server based validation for a field, use the `validateHttp` logic function. This function takes a `request` and an `errors` function to map the response to a set of validation errors. Under the hood this creates an `HttpResource` for the field and runs the `errors` function to get the latest errors when it updates. `validateHttp` is a tree validator (like `validateTree`) that allows assigning errors to child fields.
+
+```ts
+const userSchema = schema<User>(userPath => {
+  validateHttp(userPath.username, {
+    request: ({value}) => `/api/check-username?${username}`,
+    errors: (data, ctx) => {
+      if (data === 'OK') {
+        return [];
+      }
+      return [{kind: 'server-error', message: data}];
+    }
+  });
+});
+```
+
+#### Async validation & validity
+
+Because async validation is asynchronous, it has a third potential state besides `valid` or `invalid`, `pending`, which needs to be considered when determining the validity of the form. Each `FieldState` has the following signals which describe the validation state of the field.
+
+| Name                   | Type                  | Meaning                                                                                                                                  |
+| ---------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `hasPendingValidators` | `Signal<boolean>`     | `true` if there are any pending validators that may produce a validation error for this field or one of its children, `false` otherwise. |
+| `valid`                | `Signal<boolean>`     | `true` if neither the field nor any of its children has any errors or pending validators, `false` otherwise.                             |
+| `invalid`              | `Signal<boolean>`     | `true` if the field or any of its children has any errors, regardless of pending validators, `false` otherwise.                          |
+| `errors`               | `Signal<FormError[]>` | The list of validation errors associated with the field.                                                                                 |
+
+Note that `!valid()` is not the same as `invalid()`, and `!invalid()` is not the same as `valid()`. Consider a field that has no current errors, but does have a pending validator. In this case `valid()` is `false` because of the pending validator, and `invalid()` is also false because there are no current errors.
+
+Also note that while the validation status is inherited from child to parent (a parent with an `invalid()` child is necissarily `invalid()`), the `errors()` for a field consists of only the errors that apply specifically to that field.
+
+#### Other async validation
+
+While async validation via `HttpResource` is the most common type of async validation, there may be situations where you need to perform other async operations as part of validation. In these cases, you can use `validateAsync`. This works similartly to `validateHttp`, but allows you to provide a factory to create any type of `Resource` you need, rather than the `HttpResource` automatically created by `validateHttp`.
+
+```ts
+const userSchema = schema<User>(userPath => {
+  validateAsync(userPath.username, {
+    params: ({value}) => `/api/check-username?${username}`,
+    factory: (params) => {
+      return rxResource({
+        params,
+        stream: ({params}) => inject(HttpClient).get(params).pipe(...)
+      });
+    }
+    errors: (data, ctx) => {
+      if (data === 'OK') {
+        return [];
+      }
+      return [{kind: 'server-error', message: data}];
+    }
+  });
+});
+```
+
+#### Async validator short-circuiting
+
+Because async validation is more typically more expensive than synchronous validation, async validators are only run when the synchronous validators report that the field is valid. This avoids sending wasteful requests to ther server.
 
 ## Submitting a form
 
@@ -507,8 +705,8 @@ Angular Signal Forms provides a `submit()` helper function to manage this workfl
 
 1.  **`field`**: The `Field` instance to submit. This can be the root field or any sub-field node.
 2.  **`action`**: An asynchronous function that performs the submission action. It receives the `field` being submitted as an argument and returns a `Promise`.
-  - The returned `Promise` resolves with `void` (or `undefined`, or `[]`) if the action completes successfully without server-side validation errors.
-  - It resolves with an array of `ServerError` if the submission fails due to server-side validation or other issues that need to be reported back onto the form fields. The `ServerError` structure is detailed in the next section.
+    - The returned `Promise` resolves with `void` (or `undefined`, or `[]`) if the action completes successfully without server-side validation errors.
+    - It resolves with an array of `ServerError` if the submission fails due to server-side validation or other issues that need to be reported back onto the form fields. The `ServerError` structure is detailed in the next section.
 
 All `FieldState` objects have a `submittedStatus` signal that indicates their current submit state. The status can be `'unsubmitted'`, `'submitting'`, or `'submitted'`. There is no status to indicate that the submit errored because errors are reported through the `errors()` state the same way as client validation errors. (This is discussed more in the next section). `FieldState` objects also have a `resetSubmittedStatus()` method which sets the `submittedStatus` back to `'unsubmitted'`.
 
@@ -516,26 +714,31 @@ When a `Field` is submitted it updates the `submittedStatus` of the field _and_ 
 
 ```typescript
 // Create the field structure.
-const userForm = form(signal({username: '', name: ''}));
-let resolve: () => void;
+@Component({...}) class MyComponent {
+  userForm = form(signal({username: '', name: ''}));
 
-userForm.$state.submittedStatus(); // 'unsubmitted'
+  simulateSubmitLifecycle() {
+    let resolve: () => void;
 
-// Start a submit action.
-const submitFinished = submit(userForm, () => new Promise<void>(r => resolve = r));
+    this.userForm.$state.submittedStatus(); // 'unsubmitted'
 
-userForm.$state.submittedStatus(); // 'submitting'
+    // Start a submit action.
+    const submitFinished = submit(this.userForm, () => new Promise<void>(r => resolve = r));
 
-// Simulate the submit finishing.
-resolve();
-await submitFinished;
+    this.userForm.$state.submittedStatus(); // 'submitting'
 
-userForm.$state.submittedStatus(); // 'submitted'
+    // Simulate the submit finishing.
+    resolve();
+    await submitFinished;
 
-// Reset to unsubmitted.
-userForm.$state.resetSubmittedStatus();
+    this.userForm.$state.submittedStatus(); // 'submitted'
 
-userForm.$state.submittedStatus(); // 'unsubmitted'
+    // Reset to unsubmitted.
+    this.userForm.$state.resetSubmittedStatus();
+
+    this.userForm.$state.submittedStatus(); // 'unsubmitted'
+  }
+}
 ```
 
 ### Adding server errors to the form
@@ -554,22 +757,26 @@ The `submit()` function takes this array of `ServerError` objects and automatica
 Its up to the developer to decide which field makes most sense to associate the error with. For a non-unique username error, associating the error with the `username` field makes sense. For a general server issue (e.g. "Internal error"), you might associate it with the field root instead.
 
 ```typescript
-const userForm = form(signal({username: '', name: ''}));
+@Component({...}) class MyComponent {
+  userForm = form(signal({username: '', name: ''}));
 
-const myClient = /* ... create server client */;
+  myClient = /* ... create server client */;
 
-await submit(userForm, async (field) => { // `field` is the same as userForm here
-  const error = await myClient.addUser(field.$state.value());
-  if (error.code === myClient.Errors.NON_UNIQUE_USERNAME) {
-    return [{
-      error: {kind: 'non-unique-username', message: 'That username is already taken'},
-      field: field.username
-    }];
+  async submitForm() {
+    await submit(this.userForm, async (field) => { // `field` is the same as userForm here
+      const error = await myClient.addUser(field.$state.value());
+      if (error.code === myClient.Errors.NON_UNIQUE_USERNAME) {
+        return [{
+          error: {kind: 'non-unique-username', message: 'That username is already taken'},
+          field: field.username
+        }];
+      }
+    });
+
+    this.userForm.$state.submittedStatus(); // 'submitted'
+    this.userForm.username.$state.errors(); // [{kind: 'non-unique-username', message: 'That username is already taken'}]
   }
-});
-
-userForm.$state.submittedStatus(); // 'submitted'
-userForm.username.$state.errors(); // [{kind: 'non-unique-username', message: 'That username is already taken'}]
+}
 ```
 
 ## Binding form fields to UI elements
