@@ -7,6 +7,8 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    CACHE_NOT_SUPPORTED_WITH_XHR = 2814,
+    // (undocumented)
     CANNOT_SPECIFY_BOTH_FROM_STRING_AND_FROM_OBJECT = 2805,
     // (undocumented)
     HEADERS_ALTERED_BY_TRANSFER_CACHE = 2802,
@@ -26,6 +28,8 @@ export const enum RuntimeErrorCode {
     MISSING_JSONP_MODULE = -2800,
     // (undocumented)
     NOT_USING_FETCH_BACKEND_IN_SSR = 2801,
+    // (undocumented)
+    PRIORITY_NOT_SUPPORTED_WITH_XHR = 2815,
     // (undocumented)
     RESPONSE_IS_NOT_A_BLOB = 2807,
     // (undocumented)

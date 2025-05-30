@@ -318,6 +318,8 @@ export class FetchBackend implements HttpBackend {
       headers,
       credentials,
       keepalive: req.keepalive,
+      cache: req.cache,
+      priority: req.priority,
     };
   }
 

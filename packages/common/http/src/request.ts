@@ -24,6 +24,8 @@ interface HttpRequestInit {
   withCredentials?: boolean;
   transferCache?: {includeHeaders?: string[]} | boolean;
   keepalive?: boolean;
+  priority?: RequestPriority;
+  cache?: RequestCache;
 }
 
 /**
@@ -170,6 +172,17 @@ export class HttpRequest<T> {
   readonly keepalive: boolean = false;
 
   /**
+   * Controls how the request will interact with the browser's HTTP cache.
+   * This affects whether a response is retrieved from the cache, how it is stored, or if it bypasses the cache altogether.
+   */
+  readonly cache!: RequestCache;
+
+  /**
+   * Indicates the relative priority of the request. This may be used by the browser to decide the order in which requests are dispatched and resources fetched.
+   */
+  readonly priority!: RequestPriority;
+
+  /**
    * The expected response type of the server.
    *
    * This is used to parse the response appropriately before returning it to
@@ -215,6 +228,8 @@ export class HttpRequest<T> {
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
       keepalive?: boolean;
+      priority?: RequestPriority;
+      cache?: RequestCache;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -237,6 +252,8 @@ export class HttpRequest<T> {
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
       keepalive?: boolean;
+      priority?: RequestPriority;
+      cache?: RequestCache;
     },
   );
   constructor(
@@ -251,6 +268,8 @@ export class HttpRequest<T> {
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
       keepalive?: boolean;
+      priority?: RequestPriority;
+      cache?: RequestCache;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -274,6 +293,8 @@ export class HttpRequest<T> {
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
       keepalive?: boolean;
+      priority?: RequestPriority;
+      cache?: RequestCache;
     },
   );
   constructor(
@@ -288,6 +309,8 @@ export class HttpRequest<T> {
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
       keepalive?: boolean;
+      priority?: RequestPriority;
+      cache?: RequestCache;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -312,6 +335,8 @@ export class HttpRequest<T> {
           responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
           withCredentials?: boolean;
           keepalive?: boolean;
+          priority?: RequestPriority;
+          cache?: RequestCache;
           transferCache?: {includeHeaders?: string[]} | boolean;
         }
       | null,
@@ -323,6 +348,8 @@ export class HttpRequest<T> {
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
       keepalive?: boolean;
+      priority?: RequestPriority;
+      cache?: RequestCache;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ) {
@@ -364,6 +391,14 @@ export class HttpRequest<T> {
 
       if (!!options.params) {
         this.params = options.params;
+      }
+
+      if (!!options.priority) {
+        this.priority = options.priority;
+      }
+
+      if (!!options.cache) {
+        this.cache = options.cache;
       }
 
       // We do want to assign transferCache even if it's falsy (false is valid value)
@@ -492,6 +527,8 @@ export class HttpRequest<T> {
     responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
     withCredentials?: boolean;
     keepalive?: boolean;
+    priority?: RequestPriority;
+    cache?: RequestCache;
     transferCache?: {includeHeaders?: string[]} | boolean;
     body?: T | null;
     method?: string;
@@ -506,6 +543,8 @@ export class HttpRequest<T> {
     params?: HttpParams;
     responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
     keepalive?: boolean;
+    priority?: RequestPriority;
+    cache?: RequestCache;
     withCredentials?: boolean;
     transferCache?: {includeHeaders?: string[]} | boolean;
     body?: V | null;
@@ -523,6 +562,8 @@ export class HttpRequest<T> {
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
       keepalive?: boolean;
+      priority?: RequestPriority;
+      cache?: RequestCache;
       transferCache?: {includeHeaders?: string[]} | boolean;
       body?: any | null;
       method?: string;
@@ -537,6 +578,8 @@ export class HttpRequest<T> {
     const url = update.url || this.url;
     const responseType = update.responseType || this.responseType;
     const keepalive = update.keepalive ?? this.keepalive;
+    const priority = update.priority || this.priority;
+    const cache = update.cache || this.cache;
     // Carefully handle the transferCache to differentiate between
     // `false` and `undefined` in the update args.
     const transferCache = update.transferCache ?? this.transferCache;
@@ -588,6 +631,8 @@ export class HttpRequest<T> {
       withCredentials,
       transferCache,
       keepalive,
+      cache,
+      priority,
     });
   }
 }
