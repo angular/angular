@@ -357,6 +357,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/common-router-tasks',
           },
           {
+            label: 'Creating custom route matches',
+            path: 'guide/routing/routing-with-urlmatcher',
+            contentPath: 'guide/routing/routing-with-urlmatcher',
+          },
+          {
             label: 'Router reference',
             path: 'guide/routing/router-reference',
             contentPath: 'guide/routing/router-reference',
