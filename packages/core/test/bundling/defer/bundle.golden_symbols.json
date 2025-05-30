@@ -519,6 +519,7 @@
       "hasParentInjector",
       "hasStyleInput",
       "hasTagAndTypeMatch",
+      "hasHydrateTriggers",
       "icuContainerIterate",
       "identity",
       "importProvidersFrom",
