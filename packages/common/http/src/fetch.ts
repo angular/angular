@@ -9,7 +9,7 @@
 import {DestroyRef, inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
-import {HttpBackend} from './backend';
+import type {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
 import {
   ACCEPT_HEADER,
