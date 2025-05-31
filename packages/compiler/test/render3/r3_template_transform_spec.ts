@@ -766,6 +766,26 @@ describe('R3 template transform', () => {
     });
   });
 
+  describe('parser errors', () => {
+    it('should only report errors on the node on which the error occurred', () => {
+      const errors = parse(
+        `
+        <input (input)="foo(12#3)">
+        <button (click)="bar()"></button>
+        <span (mousedown)="baz()"></span>
+      `,
+        {
+          ignoreError: true,
+        },
+      ).errors;
+
+      expect(errors.length).toBe(3);
+      expect(errors[0].msg).toContain('Parser Error: Missing expected )');
+      expect(errors[1].msg).toContain('Invalid character [#]');
+      expect(errors[2].msg).toContain(`Unexpected token ')'`);
+    });
+  });
+
   describe('Ignored elements', () => {
     it('should ignore <script> elements', () => {
       expectFromHtml('<script></script>a').toEqual([['Text', 'a']]);

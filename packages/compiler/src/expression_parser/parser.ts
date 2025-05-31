@@ -91,11 +91,9 @@ export const enum ParseFlags {
 }
 
 export class Parser {
-  private errors: ParserError[] = [];
-
   constructor(
-    private _lexer: Lexer,
-    private _supportsDirectPipeReferences = false,
+    private readonly _lexer: Lexer,
+    private readonly _supportsDirectPipeReferences = false,
   ) {}
 
   parseAction(
@@ -104,7 +102,8 @@ export class Parser {
     absoluteOffset: number,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): ASTWithSource {
-    this._checkNoInterpolation(input, location, interpolationConfig);
+    const errors: ParserError[] = [];
+    this._checkNoInterpolation(errors, input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     const ast = new _ParseAST(
@@ -113,12 +112,12 @@ export class Parser {
       absoluteOffset,
       tokens,
       ParseFlags.Action,
-      this.errors,
+      errors,
       0,
       this._supportsDirectPipeReferences,
     ).parseChain();
 
-    return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
+    return new ASTWithSource(ast, input, location, absoluteOffset, errors);
   }
 
   parseBinding(
@@ -127,8 +126,9 @@ export class Parser {
     absoluteOffset: number,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): ASTWithSource {
-    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
-    return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
+    const errors: ParserError[] = [];
+    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig, errors);
+    return new ASTWithSource(ast, input, location, absoluteOffset, errors);
   }
 
   private checkSimpleExpression(ast: AST): string[] {
@@ -144,20 +144,20 @@ export class Parser {
     absoluteOffset: number,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): ASTWithSource {
-    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
-    const errors = this.checkSimpleExpression(ast);
-    if (errors.length > 0) {
-      this._reportError(
-        `Host binding expression cannot contain ${errors.join(' ')}`,
-        input,
-        location,
+    const errors: ParserError[] = [];
+    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig, errors);
+    const simplExpressionErrors = this.checkSimpleExpression(ast);
+
+    if (simplExpressionErrors.length > 0) {
+      errors.push(
+        new ParserError(
+          `Host binding expression cannot contain ${simplExpressionErrors.join(' ')}`,
+          input,
+          location,
+        ),
       );
     }
-    return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
-  }
-
-  private _reportError(message: string, input: string, errLocation: string, ctxLocation?: string) {
-    this.errors.push(new ParserError(message, input, errLocation, ctxLocation));
+    return new ASTWithSource(ast, input, location, absoluteOffset, errors);
   }
 
   private _parseBindingAst(
@@ -165,8 +165,9 @@ export class Parser {
     location: string,
     absoluteOffset: number,
     interpolationConfig: InterpolationConfig,
+    errors: ParserError[],
   ): AST {
-    this._checkNoInterpolation(input, location, interpolationConfig);
+    this._checkNoInterpolation(errors, input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     return new _ParseAST(
@@ -175,7 +176,7 @@ export class Parser {
       absoluteOffset,
       tokens,
       ParseFlags.None,
-      this.errors,
+      errors,
       0,
       this._supportsDirectPipeReferences,
     ).parseChain();
@@ -215,13 +216,14 @@ export class Parser {
     absoluteValueOffset: number,
   ): TemplateBindingParseResult {
     const tokens = this._lexer.tokenize(templateValue);
+    const errors: ParserError[] = [];
     const parser = new _ParseAST(
       templateValue,
       templateUrl,
       absoluteValueOffset,
       tokens,
       ParseFlags.None,
-      this.errors,
+      errors,
       0 /* relative offset */,
       this._supportsDirectPipeReferences,
     );
@@ -238,9 +240,11 @@ export class Parser {
     interpolatedTokens: InterpolatedAttributeToken[] | InterpolatedTextToken[] | null,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): ASTWithSource | null {
+    const errors: ParserError[] = [];
     const {strings, expressions, offsets} = this.splitInterpolation(
       input,
       location,
+      errors,
       interpolatedTokens,
       interpolationConfig,
     );
@@ -258,7 +262,7 @@ export class Parser {
         absoluteOffset,
         tokens,
         ParseFlags.None,
-        this.errors,
+        errors,
         offsets[i],
         this._supportsDirectPipeReferences,
       ).parseChain();
@@ -271,6 +275,7 @@ export class Parser {
       input,
       location,
       absoluteOffset,
+      errors,
     );
   }
 
@@ -286,18 +291,26 @@ export class Parser {
   ): ASTWithSource {
     const sourceToLex = this._stripComments(expression);
     const tokens = this._lexer.tokenize(sourceToLex);
+    const errors: ParserError[] = [];
     const ast = new _ParseAST(
       expression,
       location,
       absoluteOffset,
       tokens,
       ParseFlags.None,
-      this.errors,
+      errors,
       0,
       this._supportsDirectPipeReferences,
     ).parseChain();
     const strings = ['', '']; // The prefix and suffix strings are both empty
-    return this.createInterpolationAst(strings, [ast], expression, location, absoluteOffset);
+    return this.createInterpolationAst(
+      strings,
+      [ast],
+      expression,
+      location,
+      absoluteOffset,
+      errors,
+    );
   }
 
   private createInterpolationAst(
@@ -306,6 +319,7 @@ export class Parser {
     input: string,
     location: string,
     absoluteOffset: number,
+    errors: ParserError[],
   ): ASTWithSource {
     const span = new ParseSpan(0, input.length);
     const interpolation = new Interpolation(
@@ -314,7 +328,7 @@ export class Parser {
       strings,
       expressions,
     );
-    return new ASTWithSource(interpolation, input, location, absoluteOffset, this.errors);
+    return new ASTWithSource(interpolation, input, location, absoluteOffset, errors);
   }
 
   /**
@@ -327,6 +341,7 @@ export class Parser {
   splitInterpolation(
     input: string,
     location: string,
+    errors: ParserError[],
     interpolatedTokens: InterpolatedAttributeToken[] | InterpolatedTextToken[] | null,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): SplitInterpolation {
@@ -368,11 +383,13 @@ export class Parser {
 
         const text = input.substring(exprStart, exprEnd);
         if (text.trim().length === 0) {
-          this._reportError(
-            'Blank expressions are not allowed in interpolated strings',
-            input,
-            `at column ${i} in`,
-            location,
+          errors.push(
+            new ParserError(
+              'Blank expressions are not allowed in interpolated strings',
+              input,
+              `at column ${i} in`,
+              location,
+            ),
           );
         }
         expressions.push({text, start: fullStart, end: fullEnd});
@@ -408,7 +425,7 @@ export class Parser {
       input,
       location,
       absoluteOffset,
-      this.errors,
+      [],
     );
   }
 
@@ -435,6 +452,7 @@ export class Parser {
   }
 
   private _checkNoInterpolation(
+    errors: ParserError[],
     input: string,
     location: string,
     {start, end}: InterpolationConfig,
@@ -456,11 +474,13 @@ export class Parser {
     }
 
     if (startIndex > -1 && endIndex > -1) {
-      this._reportError(
-        `Got interpolation (${start}${end}) where expression was expected`,
-        input,
-        `at column ${startIndex} in`,
-        location,
+      errors.push(
+        new ParserError(
+          `Got interpolation (${start}${end}) where expression was expected`,
+          input,
+          `at column ${startIndex} in`,
+          location,
+        ),
       );
     }
   }
