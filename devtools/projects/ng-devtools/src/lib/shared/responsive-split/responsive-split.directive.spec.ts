@@ -11,8 +11,45 @@ import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
-import {ResponsiveSplitConfig, ResponsiveSplitDirective} from './responsive-split.directive';
+import {
+  RESIZE_DEBOUNCE,
+  ResponsiveSplitConfig,
+  ResponsiveSplitDirective,
+} from './responsive-split.directive';
+import {WINDOW} from '../../application-providers/window_provider';
 
+//
+// `ResizeObserver` mock.
+//
+
+interface ResizeObserverMock extends ResizeObserver {
+  trigger: (width: number, height: number) => void;
+}
+
+let observerInstance: ResizeObserverMock | undefined;
+
+function getResizeObserver() {
+  if (!observerInstance) {
+    throw new Error('The ResizeObserver mock is not instantiated.');
+  }
+  return observerInstance;
+}
+
+class ResizeObserverMockImpl implements ResizeObserverMock {
+  constructor(private readonly cb: (e: Partial<ResizeObserverEntry>[]) => void) {
+    observerInstance = this;
+  }
+
+  trigger(width: number, height: number) {
+    this.cb([{contentBoxSize: [{inlineSize: width, blockSize: height}]}]);
+  }
+
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+}
+
+// Test component
 @Component({
   selector: 'ng-test-cmp',
   imports: [SplitComponent, SplitAreaDirective, ResponsiveSplitDirective],
@@ -44,16 +81,18 @@ function initTestComponent(
 ): {host: DebugElement; split: SplitComponent} {
   TestBed.configureTestingModule({
     imports: [TestComponent, SplitComponent, SplitAreaDirective, ResponsiveSplitDirective],
+    providers: [{provide: WINDOW, useValue: {...window, ResizeObserver: ResizeObserverMockImpl}}],
   });
   const fixture = TestBed.createComponent(TestComponent);
+  fixture.detectChanges();
 
   const host = fixture.debugElement.query(By.css('as-split'));
   const split = host.componentInstance;
 
-  host.nativeElement.style.width = width + 'px';
-  host.nativeElement.style.height = height + 'px';
+  getResizeObserver().trigger(width, height);
 
-  fixture.detectChanges();
+  // Should be equal or greater than the resize debounce.
+  jasmine.clock().tick(RESIZE_DEBOUNCE + 10);
 
   return {
     host,
@@ -61,7 +100,16 @@ function initTestComponent(
   };
 }
 
+//
+// Tests
+//
+
 describe('responsive-split', () => {
+  beforeEach(() => {
+    jasmine.clock().uninstall();
+    jasmine.clock().install();
+  });
+
   it('should use horizontal direction (ratio == 1)', () => {
     const {split} = initTestComponent(200, 200);
 

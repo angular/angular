@@ -11,6 +11,8 @@ ng_project(
         "//packages/core",
     ],
     deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils:utils_rjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
     ],
 )
@@ -25,6 +27,7 @@ ts_test_library(
     ],
     deps = [
         ":responsive-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
     ],
 )
