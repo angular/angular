@@ -117,9 +117,6 @@ export class TestRequest {
     if (this.cancelled) {
       throw new Error(`Cannot return an error for a cancelled request.`);
     }
-    if (opts.status && opts.status >= 200 && opts.status < 300) {
-      throw new Error(`error() called with a successful status.`);
-    }
     const headers =
       opts.headers instanceof HttpHeaders ? opts.headers : new HttpHeaders(opts.headers);
     this.observer.error(
