@@ -262,7 +262,9 @@ export class UserProfileComponent {
   private userService = inject(UserService);
 
   constructor(): void {
-    this.user$ = this.userService.getUser(this.userId());
+    effect(() => {
+      this.user$ = this.userService.getUser(this.userId());
+    });
   }
 }
 </docs-code>
