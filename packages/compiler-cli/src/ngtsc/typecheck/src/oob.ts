@@ -10,7 +10,7 @@ import {
   AbsoluteSourceSpan,
   BindingPipe,
   PropertyRead,
-  PropertyWrite,
+  AST,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstComponent,
@@ -172,11 +172,7 @@ export interface OutOfBandDiagnosticRecorder {
   ): void;
 
   /** Reports cases where users are writing to `@let` declarations. */
-  illegalWriteToLetDeclaration(
-    id: TypeCheckId,
-    node: PropertyWrite,
-    target: TmplAstLetDeclaration,
-  ): void;
+  illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration): void;
 
   /** Reports cases where users are accessing an `@let` before it is defined.. */
   letUsedBeforeDefinition(id: TypeCheckId, node: PropertyRead, target: TmplAstLetDeclaration): void;
@@ -651,11 +647,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
-  illegalWriteToLetDeclaration(
-    id: TypeCheckId,
-    node: PropertyWrite,
-    target: TmplAstLetDeclaration,
-  ): void {
+  illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration): void {
     const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, node.sourceSpan);
     if (sourceSpan === null) {
       throw new Error(`Assertion failure: no SourceLocation found for property write.`);

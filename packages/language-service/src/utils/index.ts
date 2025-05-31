@@ -16,7 +16,6 @@ import {
   ParseSourceSpan,
   ParseSpan,
   PropertyRead,
-  PropertyWrite,
   SelectorMatcher,
   ThisReceiver,
   TmplAstBoundAttribute,
@@ -49,12 +48,8 @@ import {findTightestNode, getParentClassDeclaration} from './ts_utils';
 export function getTextSpanOfNode(node: TmplAstNode | AST): ts.TextSpan {
   if (isTemplateNodeWithKeyAndValue(node)) {
     return toTextSpan(node.keySpan);
-  } else if (
-    node instanceof PropertyWrite ||
-    node instanceof BindingPipe ||
-    node instanceof PropertyRead
-  ) {
-    // The `name` part of a `PropertyWrite` and `BindingPipe` does not have its own AST
+  } else if (node instanceof BindingPipe || node instanceof PropertyRead) {
+    // The `name` part of a `PropertyRead` and `BindingPipe` does not have its own AST
     // so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
     return toTextSpan(node.nameSpan);
   } else {

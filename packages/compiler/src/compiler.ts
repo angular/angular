@@ -116,9 +116,6 @@ export {
   UnaryOperatorExpr,
   VoidExpr,
   WrappedNodeExpr,
-  WriteKeyExpr,
-  WritePropExpr,
-  WriteVarExpr,
 } from './output/output_ast';
 export {JitEvaluator} from './output/output_jit';
 export {SourceMap} from './output/source_map';

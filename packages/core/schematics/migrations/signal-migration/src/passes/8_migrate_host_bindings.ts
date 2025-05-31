@@ -35,7 +35,14 @@ export function pass8__migrateHostBindings<D extends ClassFieldDescriptor>(
 
     const bindingField = reference.from.hostPropertyNode;
     const expressionOffset = bindingField.getStart() + 1; // account for quotes.
-    const readEndPos = expressionOffset + reference.from.read.sourceSpan.end;
+    const parent = reference.from.readAstPath.at(-2);
+    let readEndPos: number;
+
+    if (reference.from.isWrite && parent) {
+      readEndPos = expressionOffset + parent.sourceSpan.end;
+    } else {
+      readEndPos = expressionOffset + reference.from.read.sourceSpan.end;
+    }
 
     // Skip duplicate references. Can happen if the host object is shared.
     if (seenReferences.get(bindingField)?.has(readEndPos)) {

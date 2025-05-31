@@ -12,7 +12,6 @@ import {
   ImplicitReceiver,
   LiteralPrimitive,
   PropertyRead,
-  PropertyWrite,
   SafePropertyRead,
   TmplAstLetDeclaration,
   TmplAstNode,
@@ -141,16 +140,14 @@ export class CompletionEngine {
     };
   }
 
-  getExpressionCompletionLocation(
-    expr: PropertyRead | PropertyWrite | SafePropertyRead,
-  ): TcbLocation | null {
+  getExpressionCompletionLocation(expr: PropertyRead | SafePropertyRead): TcbLocation | null {
     if (this.expressionCompletionCache.has(expr)) {
       return this.expressionCompletionCache.get(expr)!;
     }
 
     // Completion works inside property reads and method calls.
     let tsExpr: ts.PropertyAccessExpression | null = null;
-    if (expr instanceof PropertyRead || expr instanceof PropertyWrite) {
+    if (expr instanceof PropertyRead) {
       // Non-safe navigation operations are trivial: `foo.bar` or `foo.bar()`
       tsExpr = findFirstMatchingNode(this.tcb, {
         filter: ts.isPropertyAccessExpression,

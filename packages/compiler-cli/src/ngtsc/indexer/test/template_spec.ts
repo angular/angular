@@ -342,7 +342,7 @@ runInEachFileSystem(() => {
       });
     });
 
-    describe('generates identifiers for PropertyWrites', () => {
+    describe('generates identifiers for property writes', () => {
       it('should discover property writes in bound events', () => {
         const template = '<div (click)="foo=bar"></div>';
         const refs = getTemplateIdentifiers(bind(template));
