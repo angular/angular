@@ -35,7 +35,7 @@ Update the component to have an `input()` property matching the name of the para
 
 ```ts
 id = input.required<string>()
-hero = computed(() => this.service.getHero(heroId));
+hero = computed(() => this.service.getHero(id));
 ```
 
 NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
