@@ -4,7 +4,6 @@
 
 ```ts
 
-import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { ElementRef } from '@angular/core';
@@ -18,12 +17,10 @@ import { LocationStrategy } from '@angular/common';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Provider } from '@angular/core';
 import { ProviderToken } from '@angular/core';
-import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
@@ -719,7 +716,8 @@ export class Router {
     get lastSuccessfulNavigation(): Navigation | null;
     navigate(commands: readonly any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
-    navigated: boolean;
+    get navigated(): boolean;
+    set navigated(v: boolean);
     ngOnDestroy(): void;
     // @deprecated
     onSameUrlNavigation: OnSameUrlNavigation;
@@ -796,9 +794,11 @@ export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNa
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
 
 // @public
-class RouterLink implements OnChanges, OnDestroy {
+class RouterLink {
     constructor(router: Router, route: ActivatedRoute, tabIndexAttribute: string | null | undefined, renderer: Renderer2, el: ElementRef, locationStrategy?: LocationStrategy | undefined);
-    fragment?: string;
+    set fragment(v: string | undefined);
+    // (undocumented)
+    get fragment(): string | undefined;
     get href(): string | null;
     set href(value: string | null);
     info?: unknown;
@@ -808,22 +808,34 @@ class RouterLink implements OnChanges, OnDestroy {
     static ngAcceptInputType_replaceUrl: unknown;
     // (undocumented)
     static ngAcceptInputType_skipLocationChange: unknown;
-    ngOnChanges(changes?: SimpleChanges): void;
-    ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean): boolean;
-    preserveFragment: boolean;
-    queryParams?: Params | null;
-    queryParamsHandling?: QueryParamsHandling | null;
+    set preserveFragment(v: boolean);
     // (undocumented)
+    get preserveFragment(): boolean;
+    set queryParams(v: Params | null | undefined);
+    // (undocumented)
+    get queryParams(): Params | null | undefined;
+    set queryParamsHandling(v: undefined | QueryParamsHandling | null);
+    // (undocumented)
+    get queryParamsHandling(): undefined | QueryParamsHandling | null;
     protected readonly reactiveHref: i0.WritableSignal<string | null>;
-    relativeTo?: ActivatedRoute | null;
-    replaceUrl: boolean;
+    set relativeTo(v: undefined | ActivatedRoute | null);
+    // (undocumented)
+    get relativeTo(): undefined | ActivatedRoute | null;
+    set replaceUrl(v: boolean);
+    // (undocumented)
+    get replaceUrl(): boolean;
     set routerLink(commandsOrUrlTree: readonly any[] | string | UrlTree | null | undefined);
-    skipLocationChange: boolean;
+    set skipLocationChange(v: boolean);
+    // (undocumented)
+    get skipLocationChange(): boolean;
     state?: {
         [k: string]: any;
     };
-    target?: string;
+    set target(v: string | undefined);
+    // (undocumented)
+    get target(): string | undefined;
+    protected _target: i0.WritableSignal<string | undefined>;
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
@@ -835,24 +847,32 @@ export { RouterLink }
 export { RouterLink as RouterLinkWithHref }
 
 // @public
-export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
+export class RouterLinkActive {
     constructor(router: Router, element: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef, link?: RouterLink | undefined);
-    ariaCurrentWhenActive?: 'page' | 'step' | 'location' | 'date' | 'time' | true | false;
+    // (undocumented)
+    protected _ariaCurrent: i0.Signal<string | null>;
+    set ariaCurrentWhenActive(v: undefined | 'page' | 'step' | 'location' | 'date' | 'time' | true | false);
+    // (undocumented)
+    get ariaCurrentWhenActive(): undefined | 'page' | 'step' | 'location' | 'date' | 'time' | true | false;
+    protected _classBinding: i0.Signal<string[] | {
+        [k: string]: false;
+    }>;
+    // (undocumented)
+    protected _hasActiveLinks: i0.Signal<boolean>;
     // (undocumented)
     get isActive(): boolean;
     readonly isActiveChange: EventEmitter<boolean>;
     // (undocumented)
-    links: QueryList<RouterLink>;
-    ngAfterContentInit(): void;
-    ngOnChanges(changes: SimpleChanges): void;
-    ngOnDestroy(): void;
-    // (undocumented)
     set routerLinkActive(data: string[] | string);
-    routerLinkActiveOptions: {
+    set routerLinkActiveOptions(v: {
+        exact: boolean;
+    } | IsActiveMatchOptions);
+    // (undocumented)
+    get routerLinkActiveOptions(): {
         exact: boolean;
     } | IsActiveMatchOptions;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": { "alias": "routerLinkActiveOptions"; "required": false; }; "ariaCurrentWhenActive": { "alias": "ariaCurrentWhenActive"; "required": false; }; "routerLinkActive": { "alias": "routerLinkActive"; "required": false; }; }, { "isActiveChange": "isActiveChange"; }, ["links"], never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActive": { "alias": "routerLinkActive"; "required": false; }; "routerLinkActiveOptions": { "alias": "routerLinkActiveOptions"; "required": false; }; "ariaCurrentWhenActive": { "alias": "ariaCurrentWhenActive"; "required": false; }; }, { "isActiveChange": "isActiveChange"; }, ["_links"], never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkActive, [null, null, null, null, { optional: true; }]>;
 }

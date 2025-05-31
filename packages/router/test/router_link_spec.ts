@@ -312,7 +312,7 @@ describe('RouterLink', () => {
     }
     TestBed.configureTestingModule({providers: [provideRouter([])]});
 
-    const fixture = TestBed.createComponent(WithUrlTree);
-    expect(() => fixture.changeDetectorRef.detectChanges()).toThrow();
+    TestBed.createComponent(WithUrlTree);
+    expect(TestBed.tick).toThrow();
   });
 });

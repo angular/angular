@@ -8,13 +8,17 @@
 
 import {Location} from '@angular/common';
 import {
+  computed,
   ɵConsole as Console,
   EnvironmentInjector,
   inject,
   Injectable,
   ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
+  signal,
+  Signal,
   Type,
+  untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
@@ -59,6 +63,7 @@ import {
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
 import {RouterState} from './router_state';
+import {shallowEqual} from './utils/collection';
 
 /**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
@@ -98,12 +103,6 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  */
 @Injectable({providedIn: 'root'})
 export class Router {
-  private get currentUrlTree() {
-    return this.stateManager.getCurrentUrlTree();
-  }
-  private get rawUrlTree() {
-    return this.stateManager.getRawUrlTree();
-  }
   private disposed = false;
   private nonRouterCurrentEntryChangeSubscription?: SubscriptionLike;
 
@@ -118,6 +117,10 @@ export class Router {
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
   private readonly injector = inject(EnvironmentInjector);
 
+  private currentUrlTree = this.stateManager.currentUrlTree;
+  private fragment = computed(() => this.currentUrlTree().fragment);
+  private queryParams = computed(() => this.currentUrlTree().queryParams, {equal: shallowEqual});
+  private rawUrlTree = this.stateManager.rawUrlTree;
   /**
    * The private `Subject` type for the public events exposed in the getter. This is used internally
    * to push events to. The separate field allows us to expose separate types in the public API
@@ -138,14 +141,22 @@ export class Router {
    * The current state of routing in this NgModule.
    */
   get routerState(): RouterState {
-    return this.stateManager.getRouterState();
+    return untracked(this.stateManager.routerState);
   }
 
   /**
    * True if at least one navigation event has occurred,
    * false otherwise.
    */
-  navigated: boolean = false;
+  get navigated(): boolean {
+    return untracked(this._navigated);
+  }
+  /** @deprecated */
+  set navigated(v: boolean) {
+    this._navigated.set(v);
+  }
+  /** @internal */
+  _navigated = signal(false);
 
   /**
    * A strategy for re-using routes.
@@ -331,8 +342,9 @@ export class Router {
 
   /** The current URL. */
   get url(): string {
-    return this.serializeUrl(this.currentUrlTree);
+    return untracked(this._url);
   }
+  private _url = computed(() => this.serializeUrl(this.currentUrlTree()));
 
   /**
    * Returns the current `Navigation` object when the router is navigating,
@@ -443,47 +455,59 @@ export class Router {
    * ```
    */
   createUrlTree(commands: readonly any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
+    return untracked(this.createUrlTreeComputed(commands, navigationExtras));
+  }
+
+  /** @internal */
+  createUrlTreeComputed(
+    commands: readonly any[],
+    navigationExtras: UrlCreationOptions = {},
+  ): Signal<UrlTree> {
     const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
       navigationExtras;
-    const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
-    let q: Params | null = null;
-    switch (queryParamsHandling ?? this.options.defaultQueryParamsHandling) {
-      case 'merge':
-        q = {...this.currentUrlTree.queryParams, ...queryParams};
-        break;
-      case 'preserve':
-        q = this.currentUrlTree.queryParams;
-        break;
-      default:
-        q = queryParams || null;
-    }
-    if (q !== null) {
-      q = this.removeEmptyProps(q);
-    }
-
-    let relativeToUrlSegmentGroup: UrlSegmentGroup | undefined;
-    try {
-      const relativeToSnapshot = relativeTo ? relativeTo.snapshot : this.routerState.snapshot.root;
-      relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeToSnapshot);
-    } catch (e: unknown) {
-      // This is strictly for backwards compatibility with tests that create
-      // invalid `ActivatedRoute` mocks.
-      // Note: the difference between having this fallback for invalid `ActivatedRoute` setups and
-      // just throwing is ~500 test failures. Fixing all of those tests by hand is not feasible at
-      // the moment.
-      if (typeof commands[0] !== 'string' || commands[0][0] !== '/') {
-        // Navigations that were absolute in the old way of creating UrlTrees
-        // would still work because they wouldn't attempt to match the
-        // segments in the `ActivatedRoute` to the `currentUrlTree` but
-        // instead just replace the root segment with the navigation result.
-        // Non-absolute navigations would fail to apply the commands because
-        // the logic could not find the segment to replace (so they'd act like there were no
-        // commands).
-        commands = [];
+    return computed(() => {
+      const f = preserveFragment ? this.fragment() : fragment;
+      let q: Params | null = null;
+      switch (queryParamsHandling ?? this.options.defaultQueryParamsHandling) {
+        case 'merge':
+          q = {...this.queryParams(), ...queryParams};
+          break;
+        case 'preserve':
+          q = this.queryParams();
+          break;
+        default:
+          q = queryParams || null;
       }
-      relativeToUrlSegmentGroup = this.currentUrlTree.root;
-    }
-    return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, q, f ?? null);
+      if (q !== null) {
+        q = this.removeEmptyProps(q);
+      }
+
+      let relativeToUrlSegmentGroup: UrlSegmentGroup | undefined;
+      try {
+        const relativeToSnapshot = relativeTo
+          ? relativeTo.snapshot
+          : this.routerState.snapshot.root;
+        relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeToSnapshot);
+      } catch (e: unknown) {
+        // This is strictly for backwards compatibility with tests that create
+        // invalid `ActivatedRoute` mocks.
+        // Note: the difference between having this fallback for invalid `ActivatedRoute` setups and
+        // just throwing is ~500 test failures. Fixing all of those tests by hand is not feasible at
+        // the moment.
+        if (typeof commands[0] !== 'string' || commands[0][0] !== '/') {
+          // Navigations that were absolute in the old way of creating UrlTrees
+          // would still work because they wouldn't attempt to match the
+          // segments in the `ActivatedRoute` to the `currentUrlTree` but
+          // instead just replace the root segment with the navigation result.
+          // Non-absolute navigations would fail to apply the commands because
+          // the logic could not find the segment to replace (so they'd act like there were no
+          // commands).
+          commands = [];
+        }
+        relativeToUrlSegmentGroup = this.currentUrlTree().root;
+      }
+      return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, q, f ?? null);
+    });
   }
 
   /**
@@ -517,7 +541,7 @@ export class Router {
     },
   ): Promise<boolean> {
     const urlTree = isUrlTree(url) ? url : this.parseUrl(url);
-    const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
+    const mergedTree = this.urlHandlingStrategy.merge(urlTree, untracked(this.rawUrlTree));
 
     return this.scheduleNavigation(mergedTree, IMPERATIVE_NAVIGATION, null, extras);
   }
@@ -593,6 +617,10 @@ export class Router {
   /** @internal */
   isActive(url: string | UrlTree, matchOptions: boolean | IsActiveMatchOptions): boolean;
   isActive(url: string | UrlTree, matchOptions: boolean | IsActiveMatchOptions): boolean {
+    return untracked(this._isActive(url, matchOptions));
+  }
+  /** @internal */
+  _isActive(url: string | UrlTree, matchOptions: boolean | IsActiveMatchOptions): Signal<boolean> {
     let options: IsActiveMatchOptions;
     if (matchOptions === true) {
       options = {...exactMatchOptions};
@@ -601,12 +629,15 @@ export class Router {
     } else {
       options = matchOptions;
     }
-    if (isUrlTree(url)) {
-      return containsTree(this.currentUrlTree, url, options);
-    }
 
-    const urlTree = this.parseUrl(url);
-    return containsTree(this.currentUrlTree, urlTree, options);
+    return computed(() => {
+      if (isUrlTree(url)) {
+        return containsTree(this.currentUrlTree(), url, options);
+      }
+
+      const urlTree = this.parseUrl(url);
+      return containsTree(this.currentUrlTree(), urlTree, options);
+    });
   }
 
   private removeEmptyProps(params: Params): Params {
@@ -658,8 +689,8 @@ export class Router {
     this.navigationTransitions.handleNavigationRequest({
       source,
       restoredState,
-      currentUrlTree: this.currentUrlTree,
-      currentRawUrl: this.currentUrlTree,
+      currentUrlTree: untracked(this.currentUrlTree),
+      currentRawUrl: untracked(this.currentUrlTree),
       rawUrl,
       extras,
       resolve: resolve!,
