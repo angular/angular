@@ -1437,7 +1437,7 @@ function parseInterpolation(
 }
 
 function splitInterpolation(text: string, location: any = null): SplitInterpolation | null {
-  return createParser().splitInterpolation(text, location, null);
+  return createParser().splitInterpolation(text, location, [], null);
 }
 
 function parseSimpleBinding(text: string, location: any = null, offset: number = 0): ASTWithSource {
