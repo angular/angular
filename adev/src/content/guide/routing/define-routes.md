@@ -311,7 +311,7 @@ export const ROUTES: Route[] = [
 ];
 ```
 
-In this code sample, the `admin` path contains a protected data property of `ADMIN_API_KEY` that is only available to children within its section. As a result, no other paths will be able to access the data provided via `ADMIN_AP
+In this code sample, the `admin` path contains a protected data property of `ADMIN_API_KEY` that is only available to children within its section. As a result, no other paths will be able to access the data provided via `ADMIN_API_KEY`.
 
 See the [Dependency injection guide](/guide/di) for more information about providers and injection in Angular.
 
