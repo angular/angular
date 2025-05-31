@@ -41,9 +41,9 @@ export function createComputed<T>(computation: () => T, equal?: ValueEqualityFn<
 export function createLinkedSignal<S, D>(sourceFn: () => S, computationFn: ComputationFn<S, D>, equalityFn?: ValueEqualityFn<D>): LinkedSignalGetter<S, D>;
 
 // @public
-export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): SignalGetter<T>;
+export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>];
 
-// @public
+// @public @deprecated
 export function createSignalTuple<T>(initialValue: T, equal?: ValueEqualityFn<T>): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>];
 
 // @public (undocumented)
