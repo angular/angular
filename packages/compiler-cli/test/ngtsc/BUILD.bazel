@@ -1,10 +1,11 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "ngtsc_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/core:api",
@@ -19,8 +20,10 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/invalid_banana_in_box",
         "//packages/compiler-cli/src/ngtsc/util",
         "//packages/compiler-cli/test:test_utils",
-        "@npm//source-map",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/source-map",
+        "//:node_modules/typescript",
     ],
 )
 

@@ -1,10 +1,11 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = ["linked_compile_spec.ts"],
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli/linker",
         "//packages/compiler-cli/linker/babel",
         "//packages/compiler-cli/private",
@@ -12,7 +13,9 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
         "//packages/compiler-cli/test/compliance/test_helpers",
-        "@npm//@types/babel__core",
+    ],
+    deps = [
+        "//:node_modules/@types/babel__core",
     ],
 )
 
