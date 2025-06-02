@@ -1,13 +1,21 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 # Uses separate test rules to allow the tests to run in parallel
 
-ts_library(
+ts_project(
     name = "test_utils",
     testonly = True,
     srcs = [
         "mocks.ts",
         "test_support.ts",
+    ],
+    interop_deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/testing",
     ],
     visibility = [
         ":__subpackages__",
@@ -15,27 +23,24 @@ ts_library(
         "//packages/language-service/test:__subpackages__",
     ],
     deps = [
-        "//packages:types",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/testing",
-        "@npm//typescript",
+        "//:node_modules/typescript",
     ],
 )
 
 # extract_18n_spec
-ts_library(
+ts_project(
     name = "extract_i18n_lib",
     testonly = True,
     srcs = [
         "extract_i18n_spec.ts",
     ],
-    deps = [
+    interop_deps = [
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )
 
@@ -54,18 +59,20 @@ jasmine_node_test(
 )
 
 # perform_watch_spec
-ts_library(
+ts_project(
     name = "perform_watch_lib",
     testonly = True,
     srcs = [
         "perform_watch_spec.ts",
     ],
-    deps = [
+    interop_deps = [
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/private/testing",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )
 
@@ -82,17 +89,19 @@ jasmine_node_test(
 )
 
 # perform_compile_spec
-ts_library(
+ts_project(
     name = "perform_compile_lib",
     testonly = True,
     srcs = [
         "perform_compile_spec.ts",
     ],
-    deps = [
+    interop_deps = [
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )
 
@@ -108,13 +117,13 @@ jasmine_node_test(
     ],
 )
 
-ts_library(
+ts_project(
     name = "typescript_support_lib",
     testonly = True,
     srcs = [
         "typescript_support_spec.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli",
     ],
 )
@@ -128,11 +137,11 @@ jasmine_node_test(
 )
 
 # version_helpers_spec
-ts_library(
+ts_project(
     name = "version_helpers_lib",
     testonly = True,
     srcs = ["version_helpers_spec.ts"],
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli",
     ],
 )

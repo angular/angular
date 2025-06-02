@@ -10,7 +10,7 @@ npm_package = _npm_package
 ts_config = _ts_config
 
 def _determine_tsconfig(testonly):
-    if native.package_name().startswith("packages/compiler-cli/src/ngtsc"):
+    if native.package_name().startswith("packages/compiler-cli"):
         return "//packages/compiler-cli:tsconfig_test" if testonly else "//packages/compiler-cli:tsconfig_build"
 
     if native.package_name().startswith("packages/service-worker"):
