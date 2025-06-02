@@ -107,6 +107,7 @@ load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
 npm_translate_lock(
     name = "npm2",
     data = [
+        "//:.pnpmfile.cjs",
         "//:package.json",
         "//:pnpm-workspace.yaml",
         "//adev/shared-docs/pipeline/api-gen:package.json",
