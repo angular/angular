@@ -105,6 +105,7 @@ describe('httpResource', () => {
           'fast': 'yes',
         },
         withCredentials: true,
+        keepalive: true,
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -114,6 +115,7 @@ describe('httpResource', () => {
     expect(req.request.body).toEqual({message: 'Hello, backend!'});
     expect(req.request.headers.get('X-Special')).toBe('true');
     expect(req.request.withCredentials).toBe(true);
+    expect(req.request.keepalive).toBe(true);
 
     req.flush([]);
 
@@ -201,6 +203,7 @@ describe('httpResource', () => {
         reportProgress: true,
         context: new HttpContext().set(CTX_TOKEN, 'bar'),
         withCredentials: true,
+        keepalive: true,
         transferCache: {includeHeaders: ['Y-Tag']},
       }),
       {
@@ -215,6 +218,7 @@ describe('httpResource', () => {
     expect(req.request.withCredentials).toEqual(true);
     expect(req.request.context.get(CTX_TOKEN)).toEqual('bar');
     expect(req.request.reportProgress).toEqual(true);
+    expect(req.request.keepalive).toBe(true);
     expect(req.request.transferCache).toEqual({includeHeaders: ['Y-Tag']});
   });
 
