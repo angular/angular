@@ -42,11 +42,7 @@ export function performNpmReleaseBuild(): BuiltPackage[] {
  * Git HEAD SHA is included in the version (for easier debugging and back tracing).
  */
 export function performDefaultSnapshotBuild(): BuiltPackage[] {
-  return buildReleasePackages(defaultDistPath, /* isSnapshotBuild */ true, [
-    // For snapshot builds, the Bazel package is still built. We want to have
-    // GitHub snapshot builds for it.
-    '//packages/bazel:npm_package',
-  ]);
+  return buildReleasePackages(defaultDistPath, /* isSnapshotBuild */ true);
 }
 
 /**
