@@ -14,7 +14,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ts from 'typescript';
 
-import {EXT, patchNgHostWithFileNameToModuleName as patchNgHost, relativeToRootDirs} from './utils';
+import {
+  EXT,
+  patchNgHostWithFileNameToModuleName as patchNgHost,
+  relativeToRootDirs,
+} from './utils.js';
 
 // Add devmode for blaze internal
 interface BazelOptions extends tscw.BazelOptions {

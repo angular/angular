@@ -293,6 +293,9 @@ def ngc_compile_action(
         execution_requirements = {
             "supports-workers": supports_workers,
         },
+        env = {
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     if not locale and not ctx.attr.no_i18n:

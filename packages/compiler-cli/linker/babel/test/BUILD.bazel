@@ -1,14 +1,18 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("@npm2//:defs.bzl", "npm_link_all_packages")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+npm_link_all_packages()
+
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob([
         "**/*.ts",
     ]),
-    deps = [
+    interop_deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/linker",
@@ -17,15 +21,28 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/src/ngtsc/translator",
-        "@npm//@babel/generator",
-        "@npm//@types/babel__core",
-        "@npm//@types/babel__generator",
+    ],
+    deps = [
+        "//:node_modules/@babel/generator",
+        "//:node_modules/@types/babel__core",
+        "//:node_modules/@types/babel__generator",
     ],
 )
 
 jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node_no_angular"],
+    data = [
+        # Needed for testing the Babel plugin loaded from `node_modules`.
+        ":node_modules/@angular/compiler-cli",
+        # TODO(rules_js migration): Remove these deps below when using `jasmine_test` that
+        # can properly resolve transitive symlinked deps.
+        ":node_modules/@angular/compiler",
+        "//:node_modules/@jridgewell/sourcemap-codec",
+        "//:node_modules/convert-source-map",
+        "//:node_modules/@babel/core",
+        "//:node_modules/semver",
+    ],
     deps = [
         ":test_lib",
     ],
