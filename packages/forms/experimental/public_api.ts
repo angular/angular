@@ -12,7 +12,7 @@
  * Entry point for all public APIs of this package.
  */
 export * from './src/controls/interop_ng_control';
-export * from './src/controls/field';
+export * from './src/controls/control';
 export * from './src/api/structure';
 export * from './src/api/logic';
 export * from './src/api/types';
