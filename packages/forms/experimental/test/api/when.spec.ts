@@ -36,10 +36,10 @@ describe('when', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    f.$state.value.set({first: 'meow', needLastName: false, last: ''});
-    expect(f.last.$state.errors()).toEqual([]);
-    f.$state.value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last.$state.errors()).toEqual([{kind: 'required'}]);
+    f().value.set({first: 'meow', needLastName: false, last: ''});
+    expect(f.last().errors()).toEqual([]);
+    f().value.set({first: 'meow', needLastName: true, last: ''});
+    expect(f.last().errors()).toEqual([{kind: 'required'}]);
   });
 
   it('Disallows using non-local paths', () => {
@@ -83,10 +83,10 @@ describe('when', () => {
       },
       {injector: TestBed.inject(Injector)},
     );
-    f.needLastName.$state.value.set(true);
-    expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required1'}, {kind: 'required2'}]);
-    f.needLastName.$state.value.set(false);
-    expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required1'}]);
+    f.needLastName().value.set(true);
+    expect(f.items[0].last().errors()).toEqual([{kind: 'required1'}, {kind: 'required2'}]);
+    f.needLastName().value.set(false);
+    expect(f.items[0].last().errors()).toEqual([{kind: 'required1'}]);
   });
 
   it('accepts a schema', () => {
@@ -103,10 +103,10 @@ describe('when', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    f.$state.value.set({first: 'meow', needLastName: false, last: ''});
-    expect(f.last.$state.errors()).toEqual([]);
-    f.$state.value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last.$state.errors()).toEqual([{kind: 'required'}]);
+    f().value.set({first: 'meow', needLastName: false, last: ''});
+    expect(f.last().errors()).toEqual([]);
+    f().value.set({first: 'meow', needLastName: true, last: ''});
+    expect(f.last().errors()).toEqual([{kind: 'required'}]);
   });
 
   it('supports mix of conditional and non conditional validators', () => {
@@ -125,10 +125,10 @@ describe('when', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    f.$state.value.set({first: 'meow', needLastName: false, last: ''});
-    expect(f.last.$state.errors()).toEqual([{kind: 'short'}]);
-    f.$state.value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last.$state.errors()).toEqual([{kind: 'short'}, {kind: 'required'}]);
+    f().value.set({first: 'meow', needLastName: false, last: ''});
+    expect(f.last().errors()).toEqual([{kind: 'short'}]);
+    f().value.set({first: 'meow', needLastName: true, last: ''});
+    expect(f.last().errors()).toEqual([{kind: 'short'}, {kind: 'required'}]);
   });
 
   it('supports array schema', () => {
@@ -149,9 +149,9 @@ describe('when', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.items[0].last.$state.errors()).toEqual([{kind: 'required'}]);
-    f.needLastName.$state.value.set(false);
-    expect(f.items[0].last.$state.errors()).toEqual([]);
+    expect(f.items[0].last().errors()).toEqual([{kind: 'required'}]);
+    f.needLastName().value.set(false);
+    expect(f.items[0].last().errors()).toEqual([]);
   });
 });
 
@@ -172,13 +172,13 @@ describe('applyWhenValue', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.numOrNull.$state.errors()).toEqual([{kind: 'too-small'}]);
-    f.numOrNull.$state.value.set(5);
-    expect(f.numOrNull.$state.errors()).toEqual([{kind: 'too-small'}]);
-    f.numOrNull.$state.value.set(null);
-    expect(f.numOrNull.$state.errors()).toEqual([{kind: 'too-small'}]);
-    f.numOrNull.$state.value.set(15);
-    expect(f.numOrNull.$state.errors()).toEqual([]);
+    expect(f.numOrNull().errors()).toEqual([{kind: 'too-small'}]);
+    f.numOrNull().value.set(5);
+    expect(f.numOrNull().errors()).toEqual([{kind: 'too-small'}]);
+    f.numOrNull().value.set(null);
+    expect(f.numOrNull().errors()).toEqual([{kind: 'too-small'}]);
+    f.numOrNull().value.set(15);
+    expect(f.numOrNull().errors()).toEqual([]);
   });
 
   it('accepts narrowing-predicate and schema for narrowed type', () => {
@@ -197,12 +197,12 @@ describe('applyWhenValue', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.numOrNull.$state.errors()).toEqual([]);
-    f.numOrNull.$state.value.set(5);
-    expect(f.numOrNull.$state.errors()).toEqual([{kind: 'too-small'}]);
-    f.numOrNull.$state.value.set(null);
-    expect(f.numOrNull.$state.errors()).toEqual([]);
-    f.numOrNull.$state.value.set(15);
-    expect(f.numOrNull.$state.errors()).toEqual([]);
+    expect(f.numOrNull().errors()).toEqual([]);
+    f.numOrNull().value.set(5);
+    expect(f.numOrNull().errors()).toEqual([{kind: 'too-small'}]);
+    f.numOrNull().value.set(null);
+    expect(f.numOrNull().errors()).toEqual([]);
+    f.numOrNull().value.set(15);
+    expect(f.numOrNull().errors()).toEqual([]);
   });
 });

@@ -83,11 +83,11 @@ interface Order {
 
 As you can see, navigating the `orderForm` structure (`orderForm.items[0].quantity`) directly corresponds to how you would access the data in the `orderModel` (`orderModel().items[0].quantity`). Each step in this navigation gives you a more specific `Field` instance, typed according to the part of the data model it represents (e.g., `Field<LineItem[]>`, `Field<LineItem>`, `Field<number>`).
 
-However, these navigated `Field` objects only represent the _structure_ and _grouping_ of the fields. To access the state for a specific field, you use the special `$state` property to get the `FieldState` for that location in the `Field` structure.
+However, these navigated `Field` objects only represent the _structure_ and _grouping_ of the fields. To access the state for a specific field, call it as a function to get its `FieldState`.
 
 ### Getting the `FieldState` for a node
 
-Every `Field` instance, whether it's the root field or a sub-field obtained through navigation, has a `$state` property. Accessing `$state` provides you with the underlying `FieldState` instance for that specific node in the field tree.
+Every `Field` instance, whether it's the root field or a sub-field obtained through navigation, can be called as a function to access the underlying `FieldState` instance for that specific node in the field tree.
 
 The `FieldState` gives you access to the reactive state of that part of the field structure, including:
 
@@ -98,23 +98,23 @@ The `FieldState` gives you access to the reactive state of that part of the fiel
 - **`disabledReasons`**: A `Signal` indicating containing a list of reasons for the current field's disablement. Each reason consists of both the `field` that is the source of the disablement (the current field or one of its parents), as well as an optional `reason` string that may be shown to the user.
 - **`touched`**: A `Signal` indicating whether the user has interacted with the field _or any of its descendants_.
 
-Here's how you can use `$state` in the previous example:
+Here's how you can access the `FieldState` in the previous example:
 
 ```typescript
 // Update the quantity for the first item. (This updates `orderModel` as well!)
-this.firstItemQuantityField.$state.value.set(2);
+this.firstItemQuantityField().value.set(2);
 
 // Get the value of the first item.
-this.firstItemField.$state.value();  // {description: 'Ergonomic Mouse', quantity: 2}
+this.firstItemField().value();  // {description: 'Ergonomic Mouse', quantity: 2}
 
 // Check whether the order is disabled.
-this.orderForm.$state.disabled();  // false
+this.orderForm().disabled();  // false
 
 // Check the reasons why the order is disabled.
-this.orderForm.$state.disabledReasons();  // []
+this.orderForm().disabledReasons();  // []
 
 // Check if there are any errors on the items list.
-this.itemsField.$state.errors();   // [];
+this.itemsField().errors();   // [];
 ```
 
 ## Adding field logic
@@ -160,7 +160,7 @@ const passwordSchema = schema<ConfirmedPassword>((path) => {
   // Create the field structure, adding the logic from the schema.
   passwordForm = form(this.passwordModel, passwordSchema);
 
-  // Now, passwordForm's state (e.g. this.passwordForm.$state.errors)
+  // Now, passwordForm's state (e.g. this.passwordForm().errors)
   // will be determined by the rules defined in passwordSchema.
 }
 ```
@@ -261,7 +261,7 @@ const passwordSchema = schema<Order>(orderPath => {
 ```
 
 ```html
-@if (!order.$state.hidden()) {
+@if (!order().hidden()) {
   <input [control]="order.email" />
 }
 ```
@@ -326,15 +326,15 @@ const passwordSchema = schema<ConfirmedPassword>((path) => {
 
   simulateUpdatePassword() {
     // Password is currently invalid.
-    this.passwordForm.password.$state.valid(); // false
-    this.passwordForm.password.$state.errors(); // [{kind: 'too-short', message: 'Password is too short'}]
+    this.passwordForm.password().valid(); // false
+    this.passwordForm.password().errors(); // [{kind: 'too-short', message: 'Password is too short'}]
 
     // Update to a valid password.
-    this.passwordForm.password.$state.value.set('password');
+    this.passwordForm.password().value.set('password');
 
     // Password is now valid.
-    this.passwordForm.password.$state.valid(); // true
-    this.passwordForm.password.$state.errors(); // [];
+    this.passwordForm.password().valid(); // true
+    this.passwordForm.password().errors(); // [];
   }
 }
 ```
@@ -380,9 +380,9 @@ const passwordSchema = schema<ConfirmedPassword>((path) => {
 An important thing to notice with this approach, is that the `non-matching` error is associated with the _root field_, not specifically with the `password` or `confirm` fields themselves. This might be suitable for displaying a general error message, but less ideal if you want to highlight the specific field the user needs to change.
 
 ```typescript
-this.passwordForm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
-this.passwordForm.password.$state.errors(); // []
-this.passwordForm.confirm.$state.errors(); // []
+this.passwordForm().errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
+this.passwordForm.password().errors(); // []
+this.passwordForm.confirm().errors(); // []
 ```
 
 ##### Approach #2: Use helper functions to access other fields' state or values
@@ -415,9 +415,9 @@ const passwordSchema = schema<ConfirmedPassword>((path) => {
   passwordForm = form(signal({password: 'first', confirm: 'second'}), passwordSchema);
 
   checkInitialState() {
-    this.passwordForm.$state.errors(); // []
-    this.passwordForm.password.$state.errors(); // []
-    this.passwordForm.confirm.$state.errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
+    this.passwordForm().errors(); // []
+    this.passwordForm.password().errors(); // []
+    this.passwordForm.confirm().errors(); // [{kind: 'non-matching', message: 'Password and confirm must match'}]
   }
 }
 ```
@@ -529,8 +529,8 @@ const userSchema = schema<User>((userPath) => {
   simulateAddUser() {
     this.usersModel.set([{username: 'newuser', name: 'John Doe'}]);
 
-    this.usersForm[0].username.$state.disabled(); // true
-    this.usersForm[0].username.$state.disabledReasons(); // [{field: this.usersForm[0].username, reason: 'Username cannot be changed'}]
+    this.usersForm[0].username().disabled(); // true
+    this.usersForm[0].username().disabledReasons(); // [{field: this.usersForm[0].username, reason: 'Username cannot be changed'}]
   }
 }
 ```
@@ -576,11 +576,11 @@ const accountSchema = schema<Account>((accountPath: FieldPath<Account>) => {
   }), accountSchema);
 
   simulateUpdateTier() {
-    this.accountForm.quality.$state.valid(); // true
+    this.accountForm.quality().valid(); // true
 
-    this.accountForm.premiumTier.$state.value.set(false);
+    this.accountForm.premiumTier().value.set(false);
 
-    this.accountForm.quality.$state.valid(); // false
+    this.accountForm.quality().valid(); // false
   }
 }
 ```
@@ -725,23 +725,23 @@ When a `Field` is submitted it updates the `submittedStatus` of the field _and_ 
   simulateSubmitLifecycle() {
     let resolve: () => void;
 
-    this.userForm.$state.submittedStatus(); // 'unsubmitted'
+    this.userForm().submittedStatus(); // 'unsubmitted'
 
     // Start a submit action.
     const submitFinished = submit(this.userForm, () => new Promise<void>(r => resolve = r));
 
-    this.userForm.$state.submittedStatus(); // 'submitting'
+    this.userForm().submittedStatus(); // 'submitting'
 
     // Simulate the submit finishing.
     resolve();
     await submitFinished;
 
-    this.userForm.$state.submittedStatus(); // 'submitted'
+    this.userForm().submittedStatus(); // 'submitted'
 
     // Reset to unsubmitted.
-    this.userForm.$state.resetSubmittedStatus();
+    this.userForm().resetSubmittedStatus();
 
-    this.userForm.$state.submittedStatus(); // 'unsubmitted'
+    this.userForm().submittedStatus(); // 'unsubmitted'
   }
 }
 ```
@@ -769,7 +769,7 @@ Its up to the developer to decide which field makes most sense to associate the 
 
   async submitForm() {
     await submit(this.userForm, async (field) => { // `field` is the same as userForm here
-      const error = await myClient.addUser(field.$state.value());
+      const error = await myClient.addUser(field().value());
       if (error.code === myClient.Errors.NON_UNIQUE_USERNAME) {
         return [{
           error: {kind: 'non-unique-username', message: 'That username is already taken'},
@@ -778,8 +778,8 @@ Its up to the developer to decide which field makes most sense to associate the 
       }
     });
 
-    this.userForm.$state.submittedStatus(); // 'submitted'
-    this.userForm.username.$state.errors(); // [{kind: 'non-unique-username', message: 'That username is already taken'}]
+    this.userForm().submittedStatus(); // 'submitted'
+    this.userForm.username().errors(); // [{kind: 'non-unique-username', message: 'That username is already taken'}]
   }
 }
 ```
@@ -825,12 +825,12 @@ class UserFormComponent {
 The `[control]` directive handles the two-way synchronization between the `Field` node's state and the UI control, including:
 
 - **Value Synchronization:**
-  - Reads the field's current value (`fieldNode.$state.value()`) and sets the initial value of the UI control.
-  - Listens for changes from the UI control (e.g., `input` event) and updates the field's value signal (`fieldNode.$state.value.set(...)`), which in turn updates your underlying data model signal.
+  - Reads the field's current value (`fieldNode().value()`) and sets the initial value of the UI control.
+  - Listens for changes from the UI control (e.g., `input` event) and updates the field's value signal (`fieldNode().value.set(...)`), which in turn updates your underlying data model signal.
 - **Disabled State:**
-  - Reads the field's disabled status (`fieldNode.$state.disabled()`) and sets the `disabled` attribute/property on the UI control accordingly.
+  - Reads the field's disabled status (`fieldNode().disabled()`) and sets the `disabled` attribute/property on the UI control accordingly.
 - **Touched State:**
-  - Listens for interaction events (typically `blur`) on the UI control and updates the field's touched status (`fieldNode.$state.touched` becomes `true` when the control is blurred for the first time).
+  - Listens for interaction events (typically `blur`) on the UI control and updates the field's touched status (`fieldNode().touched` becomes `true` when the control is blurred for the first time).
 - **(Other States):** Depending on the control type and library features, other states like validity attributes (`aria-invalid`) might also be synchronized.
 
 This automatic synchronization significantly reduces the boilerplate code needed to connect your field logic to your template.

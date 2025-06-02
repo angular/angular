@@ -36,8 +36,8 @@ export interface FormOptions {
  * @example ```
  * const nameModel = signal({first: '', last: ''});
  * const nameForm = form(nameModel);
- * nameForm.first.$state.value.set('John');
- * nameForm.$state.value(); // {first: 'John', last: ''}
+ * nameForm.first().value.set('John');
+ * nameForm().value(); // {first: 'John', last: ''}
  * nameModel(); // {first: 'John', last: ''}
  * ```
  *
@@ -50,9 +50,9 @@ export interface FormOptions {
  *   required(name.first);
  *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
  * });
- * nameForm.$state.valid(); // false
- * nameForm.$state.value.set({first: 'John', last: 'Doe'});
- * nameForm.$state.valid(); // true
+ * nameForm().valid(); // false
+ * nameForm().value.set({first: 'John', last: 'Doe'});
+ * nameForm().valid(); // true
  * ```
  *
  * @param model A writable signal that contains the model data for the form. The resulting field
@@ -75,8 +75,8 @@ export function form<T>(model: WritableSignal<T>, options?: FormOptions): Field<
  * @example ```
  * const nameModel = signal({first: '', last: ''});
  * const nameForm = form(nameModel);
- * nameForm.first.$state.value.set('John');
- * nameForm.$state.value(); // {first: 'John', last: ''}
+ * nameForm.first().value.set('John');
+ * nameForm().value(); // {first: 'John', last: ''}
  * nameModel(); // {first: 'John', last: ''}
  * ```
  *
@@ -89,9 +89,9 @@ export function form<T>(model: WritableSignal<T>, options?: FormOptions): Field<
  *   required(name.first);
  *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
  * });
- * nameForm.$state.valid(); // false
- * nameForm.$state.value.set({first: 'John', last: 'Doe'});
- * nameForm.$state.valid(); // true
+ * nameForm().valid(); // false
+ * nameForm().value.set({first: 'John', last: 'Doe'});
+ * nameForm().valid(); // true
  * ```
  *
  * @param model A writable signal that contains the model data for the form. The resulting field
@@ -158,7 +158,7 @@ export function form<T>(...args: any[]): Field<T> {
  *   array(names, (name) => {
  *     error(
  *       name.last,
- *       (value, nameField) => value === nameField.first.$state.value(),
+ *       (value, nameField) => value === nameField.first().value(),
  *       'Last name must be different than first name',
  *     );
  *   });
@@ -263,7 +263,7 @@ export function applyWhenValue(
  *
  * @example ```
  * async function registerNewUser(registrationForm: Field<{username: string, password: string}>) {
- *   const result = await myClient.registerNewUser(registrationForm.$state.value());
+ *   const result = await myClient.registerNewUser(registrationForm().value());
  *   if (result.errorCode === myClient.ErrorCode.USERNAME_TAKEN) {
  *     return [{
  *       field: registrationForm.username,
@@ -275,9 +275,9 @@ export function applyWhenValue(
  *
  * const registrationForm = form(signal({username: 'god', password: ''}));
  * submit(registrationForm, async (f) => {
- *   return registerNewUser(registrationForm.$state.value());
+ *   return registerNewUser(registrationForm().value());
  * });
- * registrationForm.username.$state.errors(); // [{kind: 'server', message: 'Username already taken'}]
+ * registrationForm.username().errors(); // [{kind: 'server', message: 'Username already taken'}]
  * ```
  *
  * @param f The field to submit.
@@ -288,11 +288,11 @@ export async function submit<T>(
   form: Field<T>,
   action: (form: Field<T>) => Promise<ServerError[] | void>,
 ) {
-  const api = form.$state as FieldNode;
+  const api = form() as FieldNode;
   api.setSubmittedStatus('submitting');
   const errors = (await action(form)) || [];
   for (const error of errors) {
-    (error.field.$state as FieldNode).setServerErrors(error.error);
+    (error.field() as FieldNode).setServerErrors(error.error);
   }
   api.setSubmittedStatus('submitted');
 }

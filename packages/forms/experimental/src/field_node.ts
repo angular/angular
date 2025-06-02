@@ -191,13 +191,13 @@ export class FieldNode implements FieldState<unknown> {
       state: this,
       field: this.fieldProxy,
       stateOf<P>(p: FieldPath<P>) {
-        return resolve(p).$state;
+        return resolve(p)();
       },
       fieldOf<P>(p: FieldPath<P>) {
         return resolve(p);
       },
       valueOf<P>(p: FieldPath<P>) {
-        return resolve(p).$state.value();
+        return resolve(p)().value();
       },
     });
   }
@@ -499,7 +499,7 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * Proxy to this node which allows navigation of the form graph below it.
    */
-  readonly fieldProxy = new Proxy(this, FIELD_PROXY_HANDLER) as unknown as Field<any>;
+  readonly fieldProxy = new Proxy(() => this, FIELD_PROXY_HANDLER) as unknown as Field<any>;
 
   /**
    * Resets the submitted status of this field and all of its children.
@@ -704,12 +704,9 @@ function normalizeErrors(error: ValidationResult): FormError[] {
 /**
  * Proxy handler which implements `Field<T>` on top of `FieldNode`.
  */
-const FIELD_PROXY_HANDLER: ProxyHandler<FieldNode> = {
-  get(tgt: FieldNode, p: string | symbol) {
-    // From a `Field<T>`, developers can navigate to `FieldState<T>` via the special `$state` property.
-    if (p === '$state') {
-      return tgt;
-    }
+const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
+  get(getTgt: () => FieldNode, p: string | symbol) {
+    const tgt = getTgt();
 
     // First, check whether the requested property is a defined child node of this node.
     const child = tgt.getChild(p);
