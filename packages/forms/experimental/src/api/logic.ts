@@ -34,7 +34,7 @@ export function disabled<T>(
     if (typeof result === 'string') {
       return {
         field: ctx.field,
-        reason: typeof result === 'string' ? result : undefined,
+        reason: result,
       };
     }
     return {field: ctx.field};

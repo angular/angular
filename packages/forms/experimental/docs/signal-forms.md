@@ -95,6 +95,7 @@ The `FieldState` gives you access to the reactive state of that part of the fiel
 - **`valid`**: A `Signal` indicating whether the field _and its descendants_ are currently valid.
 - **`errors`**: A `Signal` containing the list of `FormError` associated with the field. (A `FormError` is any object of type `{kind: string, message?: string}`).
 - **`disabled`**: A `Signal` indicating whether the field _or any of its parents_ are disabled.
+- **`disabledReasons`**: A `Signal` indicating containing a list of reasons for the current field's disablement. Each reason consists of both the `field` that is the source of the disablement (the current field or one of its parents), as well as an optional `reason` string that may be shown to the user.
 - **`touched`**: A `Signal` indicating whether the user has interacted with the field _or any of its descendants_.
 
 Here's how you can use `$state` in the previous example:
@@ -108,6 +109,9 @@ this.firstItemField.$state.value();  // {description: 'Ergonomic Mouse', quantit
 
 // Check whether the order is disabled.
 this.orderForm.$state.disabled();  // false
+
+// Check the reasons why the order is disabled.
+this.orderForm.$state.disabledReasons();  // []
 
 // Check if there are any errors on the items list.
 this.itemsField.$state.errors();   // [];
@@ -525,7 +529,8 @@ const userSchema = schema<User>((userPath) => {
   simulateAddUser() {
     this.usersModel.set([{username: 'newuser', name: 'John Doe'}]);
 
-    this.usersForm[0].$state.disabled(); // true
+    this.usersForm[0].username.$state.disabled(); // true
+    this.usersForm[0].username.$state.disabledReasons(); // [{field: this.usersForm[0].username, reason: 'Username cannot be changed'}]
   }
 }
 ```
