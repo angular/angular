@@ -8,6 +8,6 @@ Run the schematic using the following command:
 
 <docs-code language="shell">
 
-ng update @angular/core --name=control-flow-migration
+ng generate @angular/core:control-flow
 
 </docs-code>
