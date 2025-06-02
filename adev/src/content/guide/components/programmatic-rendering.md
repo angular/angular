@@ -28,7 +28,7 @@ export class CustomDialog {
   user = input.required<User>();
 
   getBioComponent() {
-    return this.user.isAdmin ? AdminBio : StandardBio;
+    return this.user().isAdmin ? AdminBio : StandardBio;
   }
 }
 ```
