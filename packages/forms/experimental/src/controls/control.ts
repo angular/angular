@@ -33,12 +33,12 @@ import {
 import {InteropNgControl} from './interop_ng_control';
 
 @Directive({
-  selector: '[field]',
-  providers: [{provide: NgControl, useFactory: () => inject(FieldDirective).ngControl}],
+  selector: '[control]',
+  providers: [{provide: NgControl, useFactory: () => inject(Control).ngControl}],
 })
-export class FieldDirective<T> {
+export class Control<T> {
   readonly injector = inject(Injector);
-  readonly field = input.required<Field<T>>();
+  readonly field = input.required<Field<T>>({alias: 'control'});
   readonly el: ElementRef<HTMLElement> = inject(ElementRef);
   readonly cvaArray = inject<ControlValueAccessor[]>(NG_VALUE_ACCESSOR, {optional: true});
 

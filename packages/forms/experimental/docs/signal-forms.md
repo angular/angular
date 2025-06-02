@@ -258,7 +258,7 @@ const passwordSchema = schema<Order>(orderPath => {
 
 ```html
 @if (!order.$state.hidden()) {
-  <input [field]="order.email" />
+  <input [control]="order.email" />
 }
 ```
 
@@ -783,7 +783,7 @@ Its up to the developer to decide which field makes most sense to associate the 
 
 So far, we've defined the data model, the field structure with the reactive state for each field, and the declarative logic. The final piece is connecting this logical field representation to the actual UI elements (like `<input>`, `<select>`, custom components) that the user interacts with in the template.
 
-Angular Signal Forms provides the `FieldDirective` directive (`[field]`) to seamlessly bridge this gap. The `[field]` directive is how you link a specific `Field` node from your component's class to a compatible form control element in your HTML template.
+Angular Signal Forms provides the `Control` directive (`[control]`) to seamlessly bridge this gap. The `[control]` directive is how you link a specific `Field` node from your component's class to a compatible form control element in your HTML template.
 
 You apply the directive to a form control element and bind it to the corresponding `Field` instance representing that field.
 
@@ -796,12 +796,12 @@ interface User {
 
 @Component({
   selector: 'user-form',
-  imports: [FieldDirective],
+  imports: [Control],
   template: `
   <form>
-    <label>Username: <input [field]="userForm.username" /></label>
-    <label>Name: <input [field]="userForm.name" /></label>
-    <label>Age: <input type="number" [field]="userForm.age" /></label>
+    <label>Username: <input [control]="userForm.username" /></label>
+    <label>Name: <input [control]="userForm.name" /></label>
+    <label>Age: <input type="number" [control]="userForm.age" /></label>
   </form>
   `
 })
@@ -817,7 +817,7 @@ class UserFormComponent {
 
 ### Automatic State Synchronization
 
-The `[field]` directive handles the two-way synchronization between the `Field` node's state and the UI control, including:
+The `[control]` directive handles the two-way synchronization between the `Field` node's state and the UI control, including:
 
 - **Value Synchronization:**
   - Reads the field's current value (`fieldNode.$state.value()`) and sets the initial value of the UI control.
@@ -832,7 +832,7 @@ This automatic synchronization significantly reduces the boilerplate code needed
 
 ### Control compatibility
 
-The `[field]` directive works out-of-the-box with standard HTML form elements like `<input>`, `<select>`, and `<textarea>`.
+The `[control]` directive works out-of-the-box with standard HTML form elements like `<input>`, `<select>`, and `<textarea>`.
 
 It can also integrate with custom form components (including those from libraries like Angular Material - e.g., `<mat-select>`, `<mat-radio>`) provided they correctly implement Angular's `ControlValueAccessor` interface. This is the standard mechanism in Angular for components to participate in forms.
 
