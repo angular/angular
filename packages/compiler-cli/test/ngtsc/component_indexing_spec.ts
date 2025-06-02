@@ -13,7 +13,7 @@ import {
   IndexedComponent,
   TopLevelIdentifier,
 } from '../../src/ngtsc/indexer';
-import {ParseSourceFile} from '@angular/compiler/src/compiler';
+import {ParseSourceFile} from '@angular/compiler';
 
 import {NgtscTestEnvironment} from './env';
 

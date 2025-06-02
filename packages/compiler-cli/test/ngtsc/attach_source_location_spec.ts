@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {setEnableTemplateSourceLocations} from '@angular/compiler';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
-import {setEnableTemplateSourceLocations} from '@angular/compiler/src/render3/view/config';
 
 const testFiles = loadStandardTestFiles({fakeCommon: true});
 

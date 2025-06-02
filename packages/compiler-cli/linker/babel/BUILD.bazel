@@ -1,20 +1,22 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "babel",
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/linker",
         "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/translator",
-        "@npm//@babel/core",
-        "@npm//@types/babel__core",
+    ],
+    deps = [
+        "//:node_modules/@babel/core",
+        "//:node_modules/@types/babel__core",
     ],
 )

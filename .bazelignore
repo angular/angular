@@ -42,10 +42,12 @@ modules/ssr-benchmarks/node_modules
 # For rules_js
 adev/shared-docs/pipeline/api-gen/node_modules
 modules/node_modules
+packages/bazel/src/ngc-wrapped/node_modules
 packages/animations/node_modules
 packages/common/node_modules
 packages/localize/node_modules
 packages/compiler-cli/node_modules
+packages/compiler-cli/linker/babel/test/node_modules
 packages/compiler/node_modules
 packages/core/node_modules
 packages/core/test/bundling/node_modules

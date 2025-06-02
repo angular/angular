@@ -20,7 +20,7 @@ def partial_compliance_golden(filePath):
         testonly = True,
         data = data,
         visibility = [":__pkg__"],
-        entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
+        entry_point = "//packages/compiler-cli/test/compliance/partial:cli.js",
         templated_args = ["$(execpath %s)" % filePath],
     )
 
@@ -29,7 +29,7 @@ def partial_compliance_golden(filePath):
         testonly = True,
         data = data,
         visibility = [":__pkg__"],
-        entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
+        entry_point = "//packages/compiler-cli/test/compliance/partial:cli.js",
         templated_args = ["--node_options=--inspect-brk", filePath],
     )
 

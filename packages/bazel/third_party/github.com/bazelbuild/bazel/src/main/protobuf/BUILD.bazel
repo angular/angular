@@ -1,3 +1,5 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+
 # Fetched from https://github.com/bazelbuild/bazel/blob/master/src/main/protobuf/worker_protocol.proto
 licenses(["notice"])
 
@@ -10,4 +12,7 @@ filegroup(
 )
 # END-DEV-ONLY
 
-exports_files(["worker_protocol.proto"])
+copy_to_bin(
+    name = "worker_protocol",
+    srcs = ["worker_protocol.proto"],
+)

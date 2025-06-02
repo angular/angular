@@ -18,7 +18,7 @@
  * partial compilation output to npm.
  */
 
-import linkerBabelPlugin from '../../../packages/compiler-cli/linker/babel/index.mjs';
+import linkerBabelPlugin from '../../../packages/compiler-cli/linker/babel';
 import {transformAsync} from '@babel/core';
 import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {globSync} from 'tinyglobby';
