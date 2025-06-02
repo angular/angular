@@ -1082,8 +1082,13 @@ class _ParseAST {
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
       const result = this.parsePipe();
+      if (!this.consumeOptionalCharacter(chars.$RPAREN)) {
+        this.error('Missing closing parentheses');
+        // Calling into `error` above will attempt to recover up until the next closing paren.
+        // If that's the case, consume it so we can partially recover the expression.
+        this.consumeOptionalCharacter(chars.$RPAREN);
+      }
       this.rparensExpected--;
-      this.expectCharacter(chars.$RPAREN);
       return new ParenthesizedExpression(this.span(start), this.sourceSpan(start), result);
     } else if (this.next.isKeywordNull()) {
       this.advance();
