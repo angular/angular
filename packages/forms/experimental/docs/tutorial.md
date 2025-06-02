@@ -1,19 +1,20 @@
 # Signal Form Tutorial
+
 contacts:
 [@kirjs](https://moma.corp.google.com/person/kirjs)
 [@mmalerba](https://moma.corp.google.com/person/mmalerba)
 [@arick](https://moma.corp.google.com/person/arick)
 
-       
 ## 🚧🚧 This design is still work in progress
+
 > This tutorial assumes you are familiar with Angular and have an Angular app running. You could create a new one using [boq angular](http://go/boq-angular-new)
- 
+
 We're still in early stages, but wanted to get feedback as early as possible.
 
-Consult [The testing doc](https://docs.google.com/document/d/1zxMQGCOrVr6LuDkCCUrpfDl7A6A21y9_cPtpAMyxQy4/edit?resourcekey=0-WBlxniv_JZ7B7GHDprxeGA&tab=t.0) for the list of things that are not yet implemented. 
+Consult [The testing doc](https://docs.google.com/document/d/1zxMQGCOrVr6LuDkCCUrpfDl7A6A21y9_cPtpAMyxQy4/edit?resourcekey=0-WBlxniv_JZ7B7GHDprxeGA&tab=t.0) for the list of things that are not yet implemented.
 
+## The feedback form
 
-##  The feedback form
 We're going to build a feedback form with the following fields:
 
 ```
@@ -27,13 +28,15 @@ We're going to build a feedback form with the following fields:
 * array    [friends] only displayed/validated when recommendToFriends is true
   * text  [name] required
   * text  [email] required, must have @
-```   
+```
 
 ## Initial setup
+
 We assume that you have an Angular app already.
 You can see [the final app here](http://google3/experimental/users/kirjs/forms/app/feedback/)
 
 ### Defining data model
+
 First let's create an interface for our form:
 
 ```typescript
@@ -78,6 +81,7 @@ export class FeedbackComponent {
 > Wire up the component to your app, and run it.
 
 ### Creating a signal with data
+
 Signal forms don't own data; they use a user-provided signal as the source of truth.
 
 So first, we need to create a signal with initial values:
@@ -97,23 +101,25 @@ export class FeedbackComponent {
     feedback: '',
     recommendToFriends: false,
     friends: [],
-  }); 
+  });
 }
 ```
+
 ## Creating a simple form
 
 ### Creating a form instance
+
 A simple form just takes a signal with the data and produces matching field structure.
 
 ```typescript
 // feedback.ts
 import {
-  form,  
+  form,
 } from 'google3/experimental/angularsignalforms';
 
 @Component({/*...*/})
 export class FeedbackComponent {
-  readonly data = signal<Feedback>({/*...*/}); 
+  readonly data = signal<Feedback>({/*...*/});
   // Yay, we can start using the form now!
   readonly form = form(this.data);
 }
@@ -121,13 +127,13 @@ export class FeedbackComponent {
 
 ### Binding form field to an input
 
-Now in the template we can use new [field] directive.
+Now in the template we can use the new `[control]` directive.
 
 ```typescript
 // feedback.ts
 import {
-  form,  
-  FieldDirective,
+  form,
+  Control,
 } from 'google3/experimental/angularsignalforms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -135,7 +141,7 @@ import { MatInputModule } from '@angular/material/input';
 
 @Component({/*...*/
   imports: [
-    FieldDirective,
+    Control,
     // We'll also need those
     MatFormFieldModule,
     MatInputModule,
@@ -149,7 +155,7 @@ We will use a Material Input here, but the same would work with a standard input
 <!-- Add this inside the template of FeedbackComponent -->
 <mat-form-field>
     <mat-label>Name</mat-label>
-    <input [field]="form.name" matInput>
+    <input [control]="form.name" matInput>
 </mat-form-field>
 ```
 
@@ -165,18 +171,20 @@ Now we can print the value of the `data` signal and validate that it changes whe
 ```
 
 ## Adding Validation
+
 Now let's make it interesting and add some validation rules.
 
 ### Making name required:
+
 You can pass validation rules as a second argument to the `form` function.
 
 ```typescript
 // feedback.ts
 /* ... */
-export class FeedbackComponent { 
+export class FeedbackComponent {
   /* ... */
   readonly form = form(this.data, (path) => {
-    // Path is a special entity mirroring the structure of the form, 
+    // Path is a special entity mirroring the structure of the form,
     // with no acess to fields state or value.
     // We can use it to specify which fields to validate.
   });
@@ -189,7 +197,7 @@ Now let's use the built-in `required` validator.
 // feedback.ts
 import {
   form,
-  FieldDirective,
+  Control,
   // Import the required validator
   required,
 } from 'google3/experimental/angularsignalforms';
@@ -214,7 +222,7 @@ Each form field has a special `$state` property containing its value and other s
 form.name.$state.value(); // Value signal
 form.name.$state.valid(); // Boolean signal indicating validity
 form.name.$state.errors(); // Signal holding an array of validation errors
-// 💰 💰 💰 
+// 💰 💰 💰
 ```
 
 We can use these in the template:
@@ -222,7 +230,7 @@ We can use these in the template:
 ```html
 <mat-form-field>
     <mat-label>Name</mat-label>
-    <input [field]="form.name" matInput>
+    <input [control]="form.name" matInput>
     @if (!form.name.$state.valid()) {
       <mat-error>{{ form.name.$state.errors() | json }}</mat-error>
       <!-- Output might look like: [{ "kind": "required" }] after the input is touched and left empty. -->
@@ -242,25 +250,27 @@ export interface FormError {
 ```
 
 ### Displaying an actual error
+
 Throughout the tutorial, we're going to just output the error kind, but for this specific one, we'll display a nice translatable message.
 
 ```html
 <mat-form-field>
     <mat-label>Name</mat-label>
-    <input [field]="form.name" matInput>
+    <input [control]="form.name" matInput>
     @if (!form.name.$state.valid()) {
       <mat-error>
         @if (form.name.$state.errors()[0]?.kind === 'required') {
           <ng-container i18n="Error message">
           This field is required
           </ng-container>
-        } 
+        }
       </mat-error>
     }
 </mat-form-field>
 ```
 
 ### Handling email
+
 #### Making email required
 
 ```typescript
@@ -277,13 +287,14 @@ export class FeedbackComponent {
 ```
 
 #### Creating a custom email validator
+
 To create a custom validator, we'll import the `validate` function.
 
 ```typescript
 // feedback.ts
 import {
   form,
-  FieldDirective,
+  Control,
   required,
   // Import validate
   validate,
@@ -304,7 +315,7 @@ export class FeedbackComponent {
     validate(path.email, ({value}) => {
       // Value is a signal.
       return value().includes('@') ?
-        // Yay, no more nulls! 
+        // Yay, no more nulls!
         undefined :
         {kind: 'emailFormat'};
     })
@@ -319,7 +330,7 @@ export class FeedbackComponent {
 ```html
 <mat-form-field appearance="outline">
   <mat-label>Email</mat-label>
-  <input [field]="form.email" matInput>
+  <input [control]="form.email" matInput>
   @if (!form.email.$state.valid()) {
     <!--  You can display it in any way you want -->
     <mat-error>{{ form.email.$state.errors()[0].kind }}</mat-error>
@@ -328,6 +339,7 @@ export class FeedbackComponent {
 ```
 
 ### Password and confirmation password
+
 #### Validating passwords
 
 First, let's make the passwords required:
@@ -369,13 +381,14 @@ export class FeedbackComponent {
   });
 }
 ```
+
 #### Displaying password in the template
 
 ```html
 <!-- Add these fields to the template -->
 <mat-form-field appearance="outline">
   <mat-label>Password</mat-label>
-  <input [field]="form.password" matInput type="password">
+  <input [control]="form.password" matInput type="password">
   @if (!form.password.$state.valid()) {
     <mat-error>{{ form.password.$state.errors()[0]?.kind }}</mat-error>
   }
@@ -383,7 +396,7 @@ export class FeedbackComponent {
 
 <mat-form-field appearance="outline">
   <mat-label>Confirm Password</mat-label>
-  <input [field]="form.confirmationPassword" matInput type="password">
+  <input [control]="form.confirmationPassword" matInput type="password">
   @if (!form.confirmationPassword.$state.valid()) {
     <mat-error>{{ form.confirmationPassword.$state.errors()[0]?.kind }}: {{ form.confirmationPassword.$state.errors()[0]?.message ?? 'Invalid' }}</mat-error>
   }
@@ -391,6 +404,7 @@ export class FeedbackComponent {
 ```
 
 ### Moving out the confirmation password validator
+
 Let's also take a look, what would it take to the confirmation validator outside of the form.
 
 To do this we'd create a constructor function, which would take a path with the password field.
@@ -408,6 +422,7 @@ export function confirmationPasswordValidator(
 ```
 
 Now we can add it by passing relevant part of the path.
+
 ```typescript
 // feedback.ts
 /* ... */
@@ -418,26 +433,28 @@ export class FeedbackComponent {
     validate(path.confirmationPassword, confirmationPasswordValidator(path));
   });
 }
- 
+
 ```
 
 ## Break time
+
 Ok, let's take a short break ☕🍪☕ before we dive into creating custom components.
 
 ## Custom components
-Sometimes standard inputs aren't enough, so we can also use the `[field]` directive with custom components. To do this, we need to create a component that implements the `FormUiControl<T>` interface.
+
+Sometimes standard inputs aren't enough, so we can also use the `[control]` directive with custom components. To do this, we need to create a component that implements the `FormUiControl<T>` interface.
 
 In our case, we'll create a `RatingComponent` which will display stars like this: `⭐⭐☆☆☆`
 
 ```typescript
 // rating.component.ts
-import {  
+import {
   FormUiControl,
   FormError
 } from 'google3/experimental/angularsignalforms';
 import {input, model} from '@angular/core';
 
-export class RatingComponent implements FormUiControl<number> {  
+export class RatingComponent implements FormUiControl<number> {
   // If you change the value it gets updated in the form.
   readonly value = model<number>(0);
 
@@ -447,8 +464,9 @@ export class RatingComponent implements FormUiControl<number> {
 ```
 
 ### Displaying the stars
+
 This is unrelated to Forms.
-you can see full implementation  [here](http://google3/experimental/users/kirjs/forms/app/feedback/rating.ts)
+you can see full implementation [here](http://google3/experimental/users/kirjs/forms/app/feedback/rating.ts)
 
 ### Using rating in the Feedback component template
 
@@ -457,14 +475,16 @@ After importing Rating component, you can use it like this:
 ```html
 <div>
     <label>Rating</label>
-    <custom-rating [field]="form.rating"/>
+    <custom-rating [control]="form.rating"/>
 </div>
 ```
 
 ## Feedback text which is disabled if the rating is ⭐⭐⭐⭐⭐
+
 We want the feedback text field to be required, but only enabled if the rating is less than 5 stars.
 
 ### Adding disabled rule
+
 We use the `disabled` rule for this.
 
 ```typescript
@@ -492,13 +512,14 @@ export class FeedbackComponent {
 
 ### Displaying the feedback in the template
 
-This is pretty straightforward. The `[field]` directive handles passing the disabled state to standard inputs automatically.
+This is pretty straightforward. The `[control]` directive handles passing the disabled state to standard inputs automatically.
+
 > Note that the disabled state logic is defined in the form setup, not directly in the template binding.
 
 ```html
 <mat-form-field appearance="outline">
   <mat-label>Feedback</mat-label>
-  <input [field]="form.feedback" matInput>
+  <input [control]="form.feedback" matInput>
   @if (!form.feedback.$state.valid()) {
     <mat-error>
       {{ form.feedback.$state.errors()[0].kind }}
@@ -508,11 +529,13 @@ This is pretty straightforward. The `[field]` directive handles passing the disa
 ```
 
 ## Arrays and reusing parts of form (schemas)
+
 The user should be able to provide name and email information for multiple friends if they choose to recommend the service.
 
 We'll create a separate `FriendComponent` and define a reusable schema for the friend data structure.
 
 ### Friend interface
+
 Most of the work in this section will happen in a new `friend.ts`.
 
 First, let's ensure the `Friend` interface is defined:
@@ -526,6 +549,7 @@ export interface Friend {
 ```
 
 ### Create friend schema
+
 Now we need to specify `friend` part of the form. For this we will use a special type called Schema.
 
 This code should look familiar: Both fields are required, and the email has its own validator.
@@ -541,17 +565,18 @@ import {
 export const friendSchema: Schema<Friend> = (friend) => {
   required(friend.name);
   required(friend.email);
-  validate(friend.email, ({value}) => {      
-    return value().includes('@') ?        
-       undefined : 
+  validate(friend.email, ({value}) => {
+    return value().includes('@') ?
+       undefined :
        { kind: 'emailFormat' };
-  })  
+  })
 };
 ```
 
 But, uh oh, the email validation code is duplicated from our main form. Let's extract it.
 
 ### Reusing email validator
+
 We'll create a separate file for reusable validators.
 
 ```typescript
@@ -560,11 +585,12 @@ import {
   Validator
 } from 'google3/experimental/angularsignalforms';
 
-export const emailValidator: Validator<string> = 
+export const emailValidator: Validator<string> =
   ({value}) => {
     return !value().includes('@') ? undefined : {kind: 'email'};
   };
 ```
+
 Now we can use it in the schema (don't forget to use in feedback component as well).
 
 ```typescript
@@ -576,29 +602,30 @@ import {
 } from 'google3/experimental/angularsignalforms';
 import {emailValidator} from './validators';
 
-// Schema is not used in this file. 
+// Schema is not used in this file.
 export const friendSchema: Schema<Friend> = (friend) => {
   required(friend.name);
   required(friend.email);
-  validate(friend.email, emailValidator)  
+  validate(friend.email, emailValidator)
 };
 ```
 
 ### Creating Friend Component
+
 This component will display the form fields for a single friend and used in array.
 
 ```typescript
 // friend.ts
-import { Component, ChangeDetectionStrategy, input } from '@angular/core'; 
-import { Field } from 'google3/experimental/angularsignalforms'; 
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Field } from 'google3/experimental/angularsignalforms';
 
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-friend',
-  imports: [/* ... */],  
+  imports: [/* ... */],
 })
-class FriendComponent { 
+class FriendComponent {
   // We'll take the field as an input
   friend = input.required<Field<Friend>>();
 }
@@ -613,7 +640,7 @@ class FriendComponent {
 <div>
   <mat-form-field>
     <mat-label>Name</mat-label>
-    <input [field]="friend.name" matInput>
+    <input [control]="friend.name" matInput>
     @if(!friend.name.$state.valid()){
       <mat-error>{{ friend.name.$state.errors()[0].kind}}</mat-error>
     }
@@ -622,20 +649,22 @@ class FriendComponent {
 <div>
   <mat-form-field>
     <mat-label>Email</mat-label>
-    <input [field]="friend.email" matInput>
+    <input [control]="friend.email" matInput>
     @if(!friend.email.$state.valid()){
       <mat-error>{{ friend.email.$state.errors()[0].kind}}</mat-error>
     }
   </mat-form-field>
 </div>
 ```
+
 ### Applying the friend schema to Array elements
+
 We can use the `applyEach` rule within our main form definition to apply the `friendSchema` to each element of the `friends` array.
 
 ```typescript
 // feedback.ts
 import {
-  /* ... */  
+  /* ... */
   applyEach,
 } from 'google3/experimental/angularsignalforms';
 
@@ -652,6 +681,7 @@ export class FeedbackComponent {
 ```
 
 ### Displaying friend list in the template
+
 First, we need to import `FriendComponent` into `FeedbackComponent`:
 
 ```typescript
@@ -663,33 +693,35 @@ import {FriendComponent} from './friend';
   imports: [
       /* ... */
       FriendComponent
-  ], 
+  ],
 })
 export class FeedbackComponent {/* ... */}
 ```
 
 Now, let's add the UI elements to the `FeedbackComponent` template. First, the `recommendToFriends` checkbox:
 
-```html  
+```html
 <!-- feedback.component.html -->
 <label>
-    <mat-checkbox [field]="form.recommendToFriends">
+    <mat-checkbox [control]="form.recommendToFriends">
         Recommend to friends
     </mat-checkbox>
 </label>
 ```
+
 Then, we'll display the list of friends, but only when the checkbox is checked.
 
-```html  
+```html
 <!-- feedback.component.html -->
 @if (form.recommendToFriends.$state.value()) {
-    @for (friend of form.friends; track friend) {      
+    @for (friend of form.friends; track friend) {
         <app-friend [friend]="friend"></app-friend>
-    }    
+    }
 }
 ```
 
 ### Hiding
+
 The current setup works, but there's a small issue.
 If we create a friend with an error, and then hide it, the validation would still run, and the form would be marked as invalid.
 
@@ -703,7 +735,7 @@ import {
   hidden
 } from 'google3/experimental/angularsignalforms';
 
-import { friendSchema } from './friend'; 
+import { friendSchema } from './friend';
 
 /* ... */
 export class FeedbackComponent {
@@ -718,9 +750,11 @@ export class FeedbackComponent {
   });
 }
 ```
->  it's important to note, that `hidden` doesn't actually hide fields in the template, just disables validation.
+
+> it's important to note, that `hidden` doesn't actually hide fields in the template, just disables validation.
 
 ### Conditionally enabling/disabling validation with applyWhen
+
 Sometimes we want to apply multiple rules based only if certain condition is true.
 
 For this we can use `applyWhen`.
@@ -732,7 +766,7 @@ Let's look at an unrelated example, where we want to apply different rules depen
 form(this.pet, (pet: FieldPath<any>) => {
   // Applies for all pets
   required(pet.cute);
-  
+
   // Rules that only apply for dogs.
   applyWhen(
     pet,
@@ -749,7 +783,7 @@ form(this.pet, (pet: FieldPath<any>) => {
     pet,
     ({value}) => value().type === 'cat',
     (pathWhenTrue) => {
-      // Those rules only apply for cats. 
+      // Those rules only apply for cats.
       required(pathWhenTrue.a);
       validate(pathWhenTrue.b, /* validation rules */);
       applyEach(pathWhenTrue, /* array rules */);
@@ -763,6 +797,7 @@ form(this.pet, (pet: FieldPath<any>) => {
 In our case, we could use applyWhen instead of hidden (although it might be an overkill for just one rule)
 
 It's also important to not use closured path, but use the one provided by the function:
+
 ```typescript
 // feedback.ts
 /* ... */
@@ -791,21 +826,23 @@ export class FeedbackComponent {
 Now, `friendSchema` validation rules will only apply when `recommendToFriends` is true.
 
 ### Adding items to the array
+
 Let's allow the user to add a new friend to the list.
 
 ```typescript
 // feedback.ts
 export class FeedbackComponent {
-  /* ... */  
+  /* ... */
   addFriend() {
     // value is a writable signal.
     this.form.friends.$state.value.update(
         (f) => [...f, {name: '', email: ''}]
     );
   }
-}    
-  
+}
+
 ```
+
 Now, add the button to the template inside the `@if` block:
 
 ```html
@@ -822,6 +859,7 @@ Now, add the button to the template inside the `@if` block:
 ```
 
 ## Submitting the form
+
 To handle form submission, use the `submit` function, passing it your form instance and an async submission handler.
 
 ```typescript
@@ -841,10 +879,12 @@ export class FeedbackComponent {
   }
 }
 ```
+
 ### Handling submission errors
+
 You can return a list of server errors and map them to appropriate field here as well.
 
-```typescript 
+```typescript
 // feedback.ts
 /* ... */
 export class FeedbackComponent {
@@ -862,7 +902,9 @@ export class FeedbackComponent {
 }
 
 ```
+
 ## The end
+
 This marks the end of the tutorial. Let's take a look at the complete form definition consolidating all the rules we've added:
 
 ```typescript
@@ -872,9 +914,9 @@ export class FeedbackComponent {
   /* ... */
   readonly form = form(this.data, (path: FieldPath<Feedback>) => {
     required(path.name);
-    
+
     required(path.email);
-    validate(path.email, emailValidator); 
+    validate(path.email, emailValidator);
 
     required(path.password);
     required(path.confirmationPassword);
@@ -891,8 +933,8 @@ export class FeedbackComponent {
     })
 
     applyWhen(
-      path, 
-      ({value}) => value().recommendToFriends, 
+      path,
+      ({value}) => value().recommendToFriends,
       (pathWhenTrue) => {
         applyEach(pathWhenTrue.friends, friendSchema);
       },
