@@ -49,6 +49,16 @@ import {FormsModule} from '@angular/forms';
 import {Platform} from '@angular/cdk/platform';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
 import {SignalsTabComponent} from './signals-view/signals-tab.component';
+import {
+  Direction,
+  ResponsiveSplitConfig,
+  ResponsiveSplitDirective,
+} from '../../shared/responsive-split/responsive-split.directive';
+
+const FOREST_VER_SPLIT_SIZE = 30;
+const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;
+
+const HOR_SPLIT_SIZE = 50;
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -86,6 +96,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     FormsModule,
     MatSnackBarModule,
     SignalsTabComponent,
+    ResponsiveSplitDirective,
   ],
 })
 export class DirectiveExplorerComponent {
@@ -119,6 +130,15 @@ export class DirectiveExplorerComponent {
 
   private readonly platform = inject(Platform);
   private readonly snackBar = inject(MatSnackBar);
+
+  protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
+    defaultDirection: 'vertical',
+    aspectRatioBreakpoint: 1.5,
+    breakpointDirection: 'horizontal',
+  };
+
+  protected readonly forestSplitSize = signal<number>(FOREST_VER_SPLIT_SIZE);
+  protected readonly signalGraphSplitSize = signal<number>(SIGNAL_GRAPH_VER_SPLIT_SIZE);
 
   constructor() {
     afterRenderEffect((cleanup) => {
@@ -348,5 +368,15 @@ export class DirectiveExplorerComponent {
   showSignalGraph(node: PropertyFlatNode | null) {
     // TBD: Use the node argument for graph node selection/highlighting.
     this.signalsOpen.set(true);
+  }
+
+  onResponsiveSplitDirChange(direction: Direction) {
+    if (direction === 'vertical') {
+      this.forestSplitSize.set(FOREST_VER_SPLIT_SIZE);
+      this.signalGraphSplitSize.set(SIGNAL_GRAPH_VER_SPLIT_SIZE);
+    } else {
+      this.forestSplitSize.set(HOR_SPLIT_SIZE);
+      this.signalGraphSplitSize.set(HOR_SPLIT_SIZE);
+    }
   }
 }
