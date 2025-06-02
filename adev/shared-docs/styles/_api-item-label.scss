@@ -26,7 +26,8 @@
 
     &.full {
       font-size: 0.75rem;
-      &:not(:has(*)), &:not(:has(a span, span)) {
+      &:not(:has(*)),
+      &:not(:has(a span, span)) {
         // if no children, just a text node, or
         // no children with span
         padding: 0.25rem 0.5rem;
@@ -71,7 +72,8 @@
     }
 
     &.type-undecorated_class,
-    &.type-class {
+    &.type-class,
+    &.type-directive {
       --label-theme: var(--symbolic-purple);
     }
 
@@ -82,10 +84,6 @@
 
     &.type-decorator {
       --label-theme: var(--symbolic-blue);
-    }
-
-    &.type-directive {
-      --label-theme: var(--symbolic-pink);
     }
 
     &.type-element {
@@ -127,6 +125,17 @@
     &.type-developer_preview,
     &.type-deprecated {
       --label-theme: var(--hot-red);
+    }
+
+    &.type-deprecated {
+      &::before {
+        content: 'warning';
+        font-family: var(--icons);
+        display: flex;
+        align-items: center;
+        margin-left: 0.3rem;
+        margin-right: -0.2rem;
+      }
     }
   }
 }

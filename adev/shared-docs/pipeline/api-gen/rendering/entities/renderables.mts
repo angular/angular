@@ -24,11 +24,16 @@ import {
 
 import {CliCommand, CliOption} from '../cli-entities.mjs';
 
-import {HasRenderableToc} from './traits.mjs';
+import {HasDeprecatedFlag, HasRenderableToc} from './traits.mjs';
 
 /** JsDoc tag info augmented with transformed content for rendering. */
 export interface JsDocTagRenderable extends JsDocTagEntry {
   htmlComment: string;
+}
+
+export interface DeprecationInfo {
+  version: string | undefined;
+  htmlMessage: string | undefined;
 }
 
 /** A documentation entry augmented with transformed content for rendering. */
@@ -42,7 +47,7 @@ export interface DocEntryRenderable extends DocEntry {
   htmlUsageNotes: string;
 
   stable: {version: string | undefined} | undefined;
-  deprecated: {version: string | undefined} | undefined;
+  deprecated: DeprecationInfo | undefined;
   developerPreview: {version: string | undefined} | undefined;
   experimental: {version: string | undefined} | undefined;
 }
@@ -88,9 +93,8 @@ export type InterfaceEntryRenderable = ClassEntryRenderable;
 
 export type FunctionEntryRenderable = FunctionEntry &
   DocEntryRenderable &
-  HasRenderableToc & {
-    deprecationMessage: string | null;
-  };
+  HasRenderableToc &
+  HasDeprecatedFlag;
 
 export type FunctionSignatureMetadataRenderable = FunctionSignatureMetadata &
   DocEntryRenderable & {
@@ -101,8 +105,8 @@ export type FunctionSignatureMetadataRenderable = FunctionSignatureMetadata &
 export interface MemberEntryRenderable extends MemberEntry {
   htmlDescription: string;
   jsdocTags: JsDocTagRenderable[];
-  deprecationMessage: string | null;
   htmlUsageNotes: string;
+  deprecated: DeprecationInfo | undefined;
 }
 
 /** Sub-entry for a class method augmented transformed content for rendering. */

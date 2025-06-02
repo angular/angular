@@ -60,6 +60,19 @@ export function HeaderApi(props: {
         )}
       </div>
 
+      {entry.deprecated?.htmlMessage && (
+        <div class="docs-alert docs-alert-important">
+          <p className="foo">
+            <strong>IMPORTANT:</strong>{' '}
+            <span
+              dangerouslySetInnerHTML={{
+                __html: entry.deprecated?.htmlMessage.replace(/<p>(.*)<\/p>/s, '$1'),
+              }}
+            ></span>
+          </p>
+        </div>
+      )}
+
       <section
         className={'docs-reference-description'}
         dangerouslySetInnerHTML={{
@@ -79,7 +92,7 @@ function statusTag(entry: DocEntryRenderable) {
 
   if (entry.deprecated) {
     tag = (
-      <div className={`${HEADER_ENTRY_LABEL} type-stable full`}>
+      <div className={`${HEADER_ENTRY_LABEL} type-deprecated full`}>
         {tagInVersionString('deprecated', entry.deprecated)}
       </div>
     );
@@ -121,13 +134,6 @@ function tagInVersionString(label: string, tag: {version: string | undefined} | 
   }
 
   return <>{label}</>;
-}
-
-function tagInVersionTooltip(
-  label: string,
-  tag: {version: string | undefined} | undefined,
-): string {
-  return tag?.version ? `${label} since ${tag.version}` : label;
 }
 
 function getEntryTypeDisplayName(entryType: EntryType | string): string {

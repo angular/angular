@@ -98,8 +98,7 @@ export interface HasRenderableParams {
 }
 
 export interface HasDeprecatedFlag {
-  deprecated: {version: string | undefined} | undefined;
-  deprecationMessage: string | null;
+  deprecated: {version: string | undefined; htmlMessage: string | undefined} | undefined;
 }
 
 export interface HasDeveloperPreviewFlag {

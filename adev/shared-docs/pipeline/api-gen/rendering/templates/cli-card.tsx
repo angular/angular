@@ -17,7 +17,7 @@ export function CliCard(props: {card: CliCardRenderable}) {
       <div className={REFERENCE_MEMBER_CARD_BODY}>
         {props.card.items.map((item) => (
           <div class="docs-ref-content">
-            {item.deprecated ? <DeprecatedLabel entry={item} /> : <></>}
+            {item.deprecated ? <DeprecatedLabel entry={item.deprecated} /> : <></>}
             <div class="docs-ref-option-and-description">
               <div class="docs-reference-option">
                 <code>{item.name}</code>

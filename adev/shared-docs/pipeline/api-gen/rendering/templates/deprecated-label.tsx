@@ -8,22 +8,19 @@
 
 import {Fragment, h} from 'preact';
 import {PARAM_KEYWORD_CLASS_NAME} from '../styling/css-classes.mjs';
+import {DeprecationInfo} from '../entities/renderables.mjs';
 
-export function DeprecatedLabel(props: {
-  entry:
-    | {deprecated: {version: string | undefined} | undefined}
-    | {deprecationMessage: string | null};
-}) {
+export function DeprecatedLabel(props: {entry: DeprecationInfo | undefined}) {
   const entry = props.entry;
 
-  if ('deprecationMessage' in entry && entry.deprecationMessage !== null) {
+  if (entry?.htmlMessage) {
     return (
       <div className={'docs-deprecation-message'}>
         <span className={`${PARAM_KEYWORD_CLASS_NAME} docs-deprecated`}>@deprecated</span>
-        <span dangerouslySetInnerHTML={{__html: entry.deprecationMessage}}></span>
+        <span dangerouslySetInnerHTML={{__html: entry.htmlMessage}}></span>
       </div>
     );
-  } else if ('isDeprecated' in entry && entry.isDeprecated) {
+  } else if (entry) {
     return <span className={`${PARAM_KEYWORD_CLASS_NAME} docs-deprecated`}>@deprecated</span>;
   }
 

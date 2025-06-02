@@ -28,7 +28,8 @@ import {RuntimeErrorCode} from '../errors';
  * @publicApi
  *
  * @deprecated 20.0
- * The `ngFor` directive is deprecated. Use the `@for` block instead.
+ * The `ngFor` directive is deprecated. Use the built-in `@for` block instead.
+ * `@for` blocks have better performance and do not require importing `CommonModule` or `NgFor` directive.
  */
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
   constructor(
@@ -169,7 +170,8 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * @publicApi
  *
  * @deprecated 20.0
- * Use the `@for` block instead. Intent to remove in v22
+ * The `ngFor` directive is deprecated. Use the built-in `@for` block instead.
+ * `@for` blocks have better performance and do not require importing `CommonModule` or `NgFor` directive.
  */
 @Directive({
   selector: '[ngFor][ngForOf]',

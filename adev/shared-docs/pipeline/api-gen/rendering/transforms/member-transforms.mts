@@ -8,6 +8,7 @@
 
 import {MemberEntry, MemberTags, MemberType} from '../entities.mjs';
 import {isHiddenEntry} from '../entities/categorization.mjs';
+import {MemberEntryRenderable} from '../entities/renderables.mjs';
 
 import {HasMembers, HasModuleName, HasRenderableMembers, HasRepo} from '../entities/traits.mjs';
 

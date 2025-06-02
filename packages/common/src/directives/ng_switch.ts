@@ -112,7 +112,8 @@ export class SwitchView {
  * @see [Structural Directives](guide/directives/structural-directives)
  *
  * @deprecated 20.0
- * Use the @switch block instead. Intent to remove in v22
+ * The `ngSwitch` directive is deprecated. Use the built-in `@switch` block instead.
+ * `@switch` blocks do not require importing `CommonModule` or `NgSwitch` directive.
  */
 @Directive({
   selector: '[ngSwitch]',
@@ -125,7 +126,7 @@ export class NgSwitch {
   private _lastCasesMatched = false;
   private _ngSwitch: any;
 
-  /** @deprecated Use the @switch block instead. Intent to remove in v22 */
+  /** @deprecated Use the built-in `@switch` block instead. Intent to remove in v22 */
   @Input()
   set ngSwitch(newValue: any) {
     this._ngSwitch = newValue;
@@ -200,7 +201,7 @@ export class NgSwitch {
  * @see {@link NgSwitchDefault}
  *
  * @deprecated 20.0
- * Use the @case block within a @switch block instead. Intent to remove in v22
+ * The `ngSwitch` directive is deprecated. Use the built-in `@switch` block with an `@case` block instead.
  */
 @Directive({
   selector: '[ngSwitchCase]',
@@ -249,7 +250,7 @@ export class NgSwitchCase implements DoCheck {
  * @see {@link NgSwitchCase}
  *
  * @deprecated 20.0
- * Use the @default block within a @switch block instead. Intent to remove in v22
+ * The `ngSwitch` directive is deprecated. Use the built-in `@switch` block with a `@default` block instead.
  */
 @Directive({
   selector: '[ngSwitchDefault]',

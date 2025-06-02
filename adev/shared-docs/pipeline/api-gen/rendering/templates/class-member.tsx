@@ -41,9 +41,9 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
     <div className={REFERENCE_MEMBER_CARD_BODY}>
       {isClassMethodEntry(member) ? (
         renderMethod(member)
-      ) : member.htmlDescription || member.deprecationMessage ? (
+      ) : member.htmlDescription || member ? (
         <div className={REFERENCE_MEMBER_CARD_ITEM}>
-          <DeprecatedLabel entry={member} />
+          <DeprecatedLabel entry={member.deprecated} />
           <RawHtml value={member.htmlDescription} />
         </div>
       ) : (

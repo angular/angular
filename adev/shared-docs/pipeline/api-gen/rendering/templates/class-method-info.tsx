@@ -33,7 +33,7 @@ export function ClassMethodInfo(props: {
       {/* In case when method is overloaded we need to indicate which overload is deprecated */}
       {entry.deprecated ? (
         <div>
-          <DeprecatedLabel entry={entry} />
+          <DeprecatedLabel entry={entry.deprecated} />
         </div>
       ) : (
         <></>
