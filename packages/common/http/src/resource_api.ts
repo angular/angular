@@ -71,6 +71,11 @@ export interface HttpResourceRequest {
   withCredentials?: boolean;
 
   /**
+   * When using the fetch implementation and set to `true`, the browser will not abort the associated request if the page that initiated it is unloaded before the request is complete.
+   */
+  keepalive?: boolean;
+
+  /**
    * Configures the server-side rendering transfer cache for this request.
    *
    * See the documentation on the transfer cache for more information.
