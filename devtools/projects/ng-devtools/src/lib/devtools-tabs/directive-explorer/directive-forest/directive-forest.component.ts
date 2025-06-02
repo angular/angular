@@ -69,7 +69,6 @@ export class DirectiveForestComponent {
   readonly toggleInspector = output<void>();
 
   readonly viewport = viewChild.required<CdkVirtualScrollViewport>(CdkVirtualScrollViewport);
-  private readonly updateForestResult = computed(() => this.updateForest(this.forest()));
 
   readonly selectedNode = signal<FlatNode | null>(null);
   readonly highlightIdInTreeFromElement = signal<number | null>(null);
@@ -112,7 +111,8 @@ export class DirectiveForestComponent {
     this.resizeObserver.observe(this.elementRef.nativeElement);
 
     effect(() => {
-      const result = this.updateForestResult();
+      const result = this.updateForest(this.forest());
+
       const changed =
         result.movedItems.length || result.newItems.length || result.removedItems.length;
 
