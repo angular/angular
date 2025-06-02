@@ -9,6 +9,7 @@
 import {DataKey} from './api/data';
 import {MetadataKey} from './api/metadata';
 import {
+  DisabledReason,
   FormTreeError,
   type FieldContext,
   type FieldPath,
@@ -40,7 +41,7 @@ export interface DataDefinition {
  */
 export class FieldLogicNode {
   readonly hidden: BooleanOrLogic;
-  readonly disabled: BooleanOrLogic;
+  readonly disabledReasons: ArrayMergeLogic<DisabledReason>;
   readonly readonly: BooleanOrLogic;
   readonly syncErrors: ArrayMergeLogic<FormError>;
   readonly syncTreeErrors: ArrayMergeLogic<FormTreeError>;
@@ -53,7 +54,7 @@ export class FieldLogicNode {
 
   private constructor(private predicate: Predicate | undefined) {
     this.hidden = new BooleanOrLogic(predicate);
-    this.disabled = new BooleanOrLogic(predicate);
+    this.disabledReasons = new ArrayMergeLogic(predicate);
     this.readonly = new BooleanOrLogic(predicate);
     this.syncErrors = new ArrayMergeLogic<FormError>(predicate);
     this.syncTreeErrors = new ArrayMergeLogic<FormTreeError>(predicate);
@@ -84,7 +85,7 @@ export class FieldLogicNode {
   mergeIn(other: FieldLogicNode) {
     // Merge standard logic.
     this.hidden.mergeIn(other.hidden);
-    this.disabled.mergeIn(other.disabled);
+    this.disabledReasons.mergeIn(other.disabledReasons);
     this.readonly.mergeIn(other.readonly);
     this.syncErrors.mergeIn(other.syncErrors);
 

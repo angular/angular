@@ -8,11 +8,11 @@
 
 import {computed, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {required} from '../src/api/built_in_validators';
 import {disabled, error, readonly, validate, validateTree} from '../src/api/logic';
-import {DISABLED_REASON, REQUIRED} from '../src/api/metadata';
+import {REQUIRED} from '../src/api/metadata';
 import {apply, applyEach, form, submit} from '../src/api/structure';
 import {FormTreeError, SchemaOrSchemaFn} from '../src/api/types';
-import {required} from '../src/api/built_in_validators';
 
 const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
 
@@ -324,6 +324,7 @@ describe('FieldNode', () => {
       const a = f.a;
       expect(f.$state.disabled()).toBe(false);
       expect(a.$state.disabled()).toBe(true);
+      expect(a.$state.disabledReasons()).toEqual([{field: f.a}]);
 
       a.$state.value.set(2);
       expect(f.$state.disabled()).toBe(false);
@@ -340,7 +341,7 @@ describe('FieldNode', () => {
       );
 
       expect(f.a.$state.disabled()).toBe(true);
-      expect(f.a.$state.metadata(DISABLED_REASON)()).toEqual(['a cannot be changed']);
+      expect(f.a.$state.disabledReasons()).toEqual([{field: f.a, reason: 'a cannot be changed'}]);
     });
 
     it('should not have disabled reason if not disabled', () => {
@@ -353,15 +354,15 @@ describe('FieldNode', () => {
       );
 
       expect(f.a.$state.disabled()).toBe(false);
-      expect(f.a.$state.metadata(DISABLED_REASON)()).toEqual([]);
+      expect(f.a.$state.disabledReasons()).toEqual([]);
 
       f.a.$state.value.set(6);
 
       expect(f.a.$state.disabled()).toBe(true);
-      expect(f.a.$state.metadata(DISABLED_REASON)()).toEqual(['a cannot be changed']);
+      expect(f.a.$state.disabledReasons()).toEqual([{field: f.a, reason: 'a cannot be changed'}]);
     });
 
-    it('disabled reason should not propagate to children', () => {
+    it('disabled reason should propagate to children', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
@@ -371,9 +372,9 @@ describe('FieldNode', () => {
       );
 
       expect(f.$state.disabled()).toBe(true);
-      expect(f.$state.metadata(DISABLED_REASON)()).toEqual(['form unavailable']);
+      expect(f.$state.disabledReasons()).toEqual([{field: f, reason: 'form unavailable'}]);
       expect(f.a.$state.disabled()).toBe(true);
-      expect(f.a.$state.metadata(DISABLED_REASON)()).toEqual([]);
+      expect(f.a.$state.disabledReasons()).toEqual([{field: f, reason: 'form unavailable'}]);
     });
   });
 

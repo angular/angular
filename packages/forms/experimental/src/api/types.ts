@@ -22,6 +22,11 @@ declare const ɵɵTYPE: unique symbol;
  */
 export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
 
+export interface DisabledReason {
+  field: Field<unknown>;
+  reason?: string;
+}
+
 /**
  * A validation error on a form. All validation errors must have a `kind` that identifies what type
  * of error it is, and may optionally have a `message` string containing a human-readable error
@@ -92,6 +97,10 @@ export interface FieldState<T> {
    * A signal indicating whether the field is currently disabled.
    */
   readonly disabled: Signal<boolean>;
+  /**
+   * A signal containing the reasons why the field is currently disabled.
+   */
+  readonly disabledReasons: Signal<DisabledReason[]>;
   /**
    * A signal indicating whether the field is currently readonly.
    */

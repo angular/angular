@@ -20,6 +20,7 @@ import {
 import {DataKey} from './api/data';
 import {MetadataKey} from './api/metadata';
 import type {
+  DisabledReason,
   Field,
   FieldContext,
   FieldPath,
@@ -287,14 +288,20 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
+   * The reasons for this field's disablement.
+   */
+  readonly disabledReasons: Signal<DisabledReason[]> = computed(() => [
+    ...(this.parent?.disabledReasons() ?? []),
+    ...this.logic.disabledReasons.compute(this.fieldContext),
+  ]);
+
+  /**
    * Whether this field is considered disabled.
    *
    * This field considers itself disabled if its parent is disabled or its own logic considers it
    * disabled.
    */
-  readonly disabled: Signal<boolean> = computed(
-    () => (this.parent?.disabled() || this.logic.disabled.compute(this.fieldContext)) ?? false,
-  );
+  readonly disabled: Signal<boolean> = computed(() => !!this.disabledReasons().length);
 
   /**
    * Whether this field is considered readonly.

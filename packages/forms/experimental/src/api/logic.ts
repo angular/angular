@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DISABLED_REASON, MetadataKey, REQUIRED, MIN} from '../api/metadata';
+import {MetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldPath, LogicFn, TreeValidator, ValidationResult, Validator} from './types';
+import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -26,17 +26,19 @@ export function disabled<T>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const reasonFn: LogicFn<T, readonly string[]> = (ctx) => {
+  pathNode.logic.disabledReasons.push((ctx) => {
     const result = logic(ctx);
-    if (typeof result === 'string') {
-      return [result];
-    } else {
-      return [];
+    if (!result) {
+      return undefined;
     }
-  };
-
-  pathNode.logic.disabled.push((ctx) => Boolean(logic(ctx)));
-  metadata(path, DISABLED_REASON, reasonFn);
+    if (typeof result === 'string') {
+      return {
+        field: ctx.field,
+        reason: typeof result === 'string' ? result : undefined,
+      };
+    }
+    return {field: ctx.field};
+  });
 }
 
 /**
