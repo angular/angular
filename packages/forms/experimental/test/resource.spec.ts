@@ -183,14 +183,14 @@ describe('resources', () => {
 
     expect(usernameForm.$state.valid()).toBe(false);
     expect(usernameForm.$state.invalid()).toBe(false);
-    expect(usernameForm.$state.hasPendingValidators()).toBe(true);
+    expect(usernameForm.$state.pending()).toBe(true);
 
     req1.flush(true);
     await appRef.whenStable();
 
     expect(usernameForm.$state.valid()).toBe(true);
     expect(usernameForm.$state.invalid()).toBe(false);
-    expect(usernameForm.$state.hasPendingValidators()).toBe(false);
+    expect(usernameForm.$state.pending()).toBe(false);
     expect(true).toBe(true);
 
     usernameForm.$state.value.set('taken-user');
@@ -199,13 +199,13 @@ describe('resources', () => {
 
     expect(usernameForm.$state.valid()).toBe(false);
     expect(usernameForm.$state.invalid()).toBe(false);
-    expect(usernameForm.$state.hasPendingValidators()).toBe(true);
+    expect(usernameForm.$state.pending()).toBe(true);
 
     req2.flush(false);
     await appRef.whenStable();
 
     expect(usernameForm.$state.valid()).toBe(false);
     expect(usernameForm.$state.invalid()).toBe(true);
-    expect(usernameForm.$state.hasPendingValidators()).toBe(false);
+    expect(usernameForm.$state.pending()).toBe(false);
   });
 });

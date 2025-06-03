@@ -39,13 +39,11 @@ describe('validation status', () => {
         {injector},
       );
 
-      expect(f.$state.status()).toBe('valid');
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(true);
       expect(f.$state.invalid()).toBe(false);
 
       f.$state.value.set('INVALID');
-      expect(f.$state.status()).toBe('invalid');
       expect(f.$state.syncValid()).toBe(false);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(true);
@@ -60,14 +58,12 @@ describe('validation status', () => {
         {injector},
       );
 
-      expect(f.$state.status()).toBe('valid');
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(true);
       expect(f.$state.invalid()).toBe(false);
 
       f.child.$state.value.set('INVALID');
       expect(f.$state.syncValid()).toBe(false);
-      expect(f.$state.status()).toBe('invalid');
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(true);
     });
@@ -81,13 +77,11 @@ describe('validation status', () => {
         {injector},
       );
 
-      expect(f.child.$state.status()).toBe('valid');
       expect(f.child.$state.syncValid()).toBe(true);
       expect(f.child.$state.valid()).toBe(true);
       expect(f.child.$state.invalid()).toBe(false);
 
       f.child.$state.value.set('INVALID');
-      expect(f.child.$state.status()).toBe('valid');
       expect(f.child.$state.syncValid()).toBe(true);
       expect(f.child.$state.valid()).toBe(true);
       expect(f.child.$state.invalid()).toBe(false);
@@ -104,13 +98,11 @@ describe('validation status', () => {
         {injector},
       );
 
-      expect(f.$state.status()).toBe('valid');
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(true);
       expect(f.$state.invalid()).toBe(false);
 
       f.$state.value.set('INVALID');
-      expect(f.$state.status()).toBe('invalid');
       expect(f.$state.syncValid()).toBe(false);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(true);
@@ -127,13 +119,11 @@ describe('validation status', () => {
         {injector},
       );
 
-      expect(f.child.$state.status()).toBe('valid');
       expect(f.child.$state.syncValid()).toBe(true);
       expect(f.child.$state.valid()).toBe(true);
       expect(f.child.$state.invalid()).toBe(false);
 
       f.child.$state.value.set('INVALID');
-      expect(f.child.$state.status()).toBe('invalid');
       expect(f.child.$state.syncValid()).toBe(false);
       expect(f.child.$state.valid()).toBe(false);
       expect(f.child.$state.invalid()).toBe(true);
@@ -150,13 +140,11 @@ describe('validation status', () => {
         {injector},
       );
 
-      expect(f.$state.status()).toBe('valid');
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(true);
       expect(f.$state.invalid()).toBe(false);
 
       f.child.$state.value.set('INVALID');
-      expect(f.$state.status()).toBe('invalid');
       expect(f.$state.syncValid()).toBe(false);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(true);
@@ -173,13 +161,11 @@ describe('validation status', () => {
         {injector},
       );
 
-      expect(f.sibling.$state.status()).toBe('valid');
       expect(f.sibling.$state.syncValid()).toBe(true);
       expect(f.sibling.$state.valid()).toBe(true);
       expect(f.sibling.$state.invalid()).toBe(false);
 
       f.child.$state.value.set('INVALID');
-      expect(f.sibling.$state.status()).toBe('valid');
       expect(f.sibling.$state.syncValid()).toBe(true);
       expect(f.sibling.$state.valid()).toBe(true);
       expect(f.sibling.$state.invalid()).toBe(false);
@@ -211,16 +197,14 @@ describe('validation status', () => {
 
       await waitFor(() => res?.isLoading());
 
-      expect(f.$state.hasPendingValidators()).toBe(true);
-      expect(f.$state.status()).toBe('pending');
+      expect(f.$state.pending()).toBe(true);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(false);
 
       await appRef.whenStable();
 
-      expect(f.$state.hasPendingValidators()).toBe(false);
-      expect(f.$state.status()).toBe('valid');
+      expect(f.$state.pending()).toBe(false);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(true);
       expect(f.$state.invalid()).toBe(false);
@@ -228,16 +212,14 @@ describe('validation status', () => {
       f.$state.value.set('INVALID');
       await waitFor(() => res?.isLoading());
 
-      expect(f.$state.hasPendingValidators()).toBe(true);
-      expect(f.$state.status()).toBe('pending');
+      expect(f.$state.pending()).toBe(true);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(false);
 
       await appRef.whenStable();
 
-      expect(f.$state.hasPendingValidators()).toBe(false);
-      expect(f.$state.status()).toBe('invalid');
+      expect(f.$state.pending()).toBe(false);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(true);
@@ -267,16 +249,14 @@ describe('validation status', () => {
 
       await waitFor(() => res?.isLoading());
 
-      expect(f.child.$state.hasPendingValidators()).toBe(true);
-      expect(f.child.$state.status()).toBe('pending');
+      expect(f.child.$state.pending()).toBe(true);
       expect(f.child.$state.syncValid()).toBe(true);
       expect(f.child.$state.valid()).toBe(false);
       expect(f.child.$state.invalid()).toBe(false);
 
       await appRef.whenStable();
 
-      expect(f.child.$state.hasPendingValidators()).toBe(false);
-      expect(f.child.$state.status()).toBe('valid');
+      expect(f.child.$state.pending()).toBe(false);
       expect(f.child.$state.syncValid()).toBe(true);
       expect(f.child.$state.valid()).toBe(true);
       expect(f.child.$state.invalid()).toBe(false);
@@ -284,16 +264,14 @@ describe('validation status', () => {
       f.child.$state.value.set('INVALID');
       await waitFor(() => res?.isLoading());
 
-      expect(f.child.$state.hasPendingValidators()).toBe(true);
-      expect(f.child.$state.status()).toBe('pending');
+      expect(f.child.$state.pending()).toBe(true);
       expect(f.child.$state.syncValid()).toBe(true);
       expect(f.child.$state.valid()).toBe(false);
       expect(f.child.$state.invalid()).toBe(false);
 
       await appRef.whenStable();
 
-      expect(f.child.$state.hasPendingValidators()).toBe(false);
-      expect(f.child.$state.status()).toBe('invalid');
+      expect(f.child.$state.pending()).toBe(false);
       expect(f.child.$state.syncValid()).toBe(true);
       expect(f.child.$state.valid()).toBe(false);
       expect(f.child.$state.invalid()).toBe(true);
@@ -323,16 +301,14 @@ describe('validation status', () => {
 
       await waitFor(() => res?.isLoading());
 
-      expect(f.$state.hasPendingValidators()).toBe(true);
-      expect(f.$state.status()).toBe('pending');
+      expect(f.$state.pending()).toBe(true);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(false);
 
       await appRef.whenStable();
 
-      expect(f.$state.hasPendingValidators()).toBe(false);
-      expect(f.$state.status()).toBe('valid');
+      expect(f.$state.pending()).toBe(false);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(true);
       expect(f.$state.invalid()).toBe(false);
@@ -340,16 +316,14 @@ describe('validation status', () => {
       f.child.$state.value.set('INVALID');
       await waitFor(() => res?.isLoading());
 
-      expect(f.$state.hasPendingValidators()).toBe(true);
-      expect(f.$state.status()).toBe('pending');
+      expect(f.$state.pending()).toBe(true);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(false);
 
       await appRef.whenStable();
 
-      expect(f.$state.hasPendingValidators()).toBe(false);
-      expect(f.$state.status()).toBe('invalid');
+      expect(f.$state.pending()).toBe(false);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(true);
@@ -382,16 +356,14 @@ describe('validation status', () => {
 
       await waitFor(() => res?.isLoading());
 
-      expect(f.sibling.$state.hasPendingValidators()).toBe(true);
-      expect(f.sibling.$state.status()).toBe('pending');
+      expect(f.sibling.$state.pending()).toBe(true);
       expect(f.sibling.$state.syncValid()).toBe(true);
       expect(f.sibling.$state.valid()).toBe(false);
       expect(f.sibling.$state.invalid()).toBe(false);
 
       await appRef.whenStable();
 
-      expect(f.sibling.$state.hasPendingValidators()).toBe(false);
-      expect(f.sibling.$state.status()).toBe('valid');
+      expect(f.sibling.$state.pending()).toBe(false);
       expect(f.sibling.$state.syncValid()).toBe(true);
       expect(f.sibling.$state.valid()).toBe(true);
       expect(f.sibling.$state.invalid()).toBe(false);
@@ -399,16 +371,14 @@ describe('validation status', () => {
       f.child.$state.value.set('INVALID');
       await waitFor(() => res?.isLoading());
 
-      expect(f.sibling.$state.hasPendingValidators()).toBe(true);
-      expect(f.sibling.$state.status()).toBe('pending');
+      expect(f.sibling.$state.pending()).toBe(true);
       expect(f.sibling.$state.syncValid()).toBe(true);
       expect(f.sibling.$state.valid()).toBe(false);
       expect(f.sibling.$state.invalid()).toBe(false);
 
       await appRef.whenStable();
 
-      expect(f.sibling.$state.hasPendingValidators()).toBe(false);
-      expect(f.sibling.$state.status()).toBe('valid');
+      expect(f.sibling.$state.pending()).toBe(false);
       expect(f.sibling.$state.syncValid()).toBe(true);
       expect(f.sibling.$state.valid()).toBe(true);
       expect(f.sibling.$state.invalid()).toBe(false);
@@ -426,8 +396,7 @@ describe('validation status', () => {
         {injector},
       );
 
-      expect(f.$state.hasPendingValidators()).toBe(false);
-      expect(f.$state.status()).toBe('invalid');
+      expect(f.$state.pending()).toBe(false);
       expect(f.$state.syncValid()).toBe(false);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(true);
@@ -454,8 +423,7 @@ describe('validation status', () => {
       );
 
       await waitFor(() => res?.isLoading());
-      expect(f.$state.hasPendingValidators()).toBe(true);
-      expect(f.$state.status()).toBe('pending');
+      expect(f.$state.pending()).toBe(true);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(false);
@@ -492,8 +460,7 @@ describe('validation status', () => {
       );
 
       await waitFor(() => !res?.isLoading() && res2.isLoading());
-      expect(f.$state.hasPendingValidators()).toBe(true);
-      expect(f.$state.status()).toBe('invalid');
+      expect(f.$state.pending()).toBe(true);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(true);
@@ -531,8 +498,7 @@ describe('validation status', () => {
       );
 
       await waitFor(() => !res?.isLoading() && res2.isLoading());
-      expect(f.$state.hasPendingValidators()).toBe(true);
-      expect(f.$state.status()).toBe('invalid');
+      expect(f.$state.pending()).toBe(true);
       expect(f.$state.syncValid()).toBe(true);
       expect(f.$state.valid()).toBe(false);
       expect(f.$state.invalid()).toBe(true);

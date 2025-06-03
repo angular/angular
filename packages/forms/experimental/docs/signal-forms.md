@@ -663,12 +663,12 @@ const userSchema = schema<User>(userPath => {
 
 Because async validation is asynchronous, it has a third potential state besides `valid` or `invalid`, `pending`, which needs to be considered when determining the validity of the form. Each `FieldState` has the following signals which describe the validation state of the field.
 
-| Name                   | Type                  | Meaning                                                                                                                                  |
-| ---------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `hasPendingValidators` | `Signal<boolean>`     | `true` if there are any pending validators that may produce a validation error for this field or one of its children, `false` otherwise. |
-| `valid`                | `Signal<boolean>`     | `true` if neither the field nor any of its children has any errors or pending validators, `false` otherwise.                             |
-| `invalid`              | `Signal<boolean>`     | `true` if the field or any of its children has any errors, regardless of pending validators, `false` otherwise.                          |
-| `errors`               | `Signal<FormError[]>` | The list of validation errors associated with the field.                                                                                 |
+| Name      | Type                  | Meaning                                                                                                                                  |
+| --------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `pending` | `Signal<boolean>`     | `true` if there are any pending validators that may produce a validation error for this field or one of its children, `false` otherwise. |
+| `valid`   | `Signal<boolean>`     | `true` if neither the field nor any of its children has any errors or pending validators, `false` otherwise.                             |
+| `invalid` | `Signal<boolean>`     | `true` if the field or any of its children has any errors, regardless of pending validators, `false` otherwise.                          |
+| `errors`  | `Signal<FormError[]>` | The list of validation errors associated with the field.                                                                                 |
 
 Note that `!valid()` is not the same as `invalid()`, and `!invalid()` is not the same as `valid()`. Consider a field that has no current errors, but does have a pending validator. In this case `valid()` is `false` because of the pending validator, and `invalid()` is also false because there are no current errors.
 

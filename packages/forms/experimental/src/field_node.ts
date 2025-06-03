@@ -29,7 +29,6 @@ import type {
   FormTreeError,
   SubmittedStatus,
   ValidationResult,
-  ValidationStatus,
 } from './api/types';
 import {DYNAMIC, FieldLogicNode} from './logic_node';
 import {FieldPathNode, FieldRootPathNode} from './path_node';
@@ -416,7 +415,7 @@ export class FieldNode implements FieldState<unknown> {
     ...this.asyncErrors().filter((err) => err !== 'pending'),
   ]);
 
-  readonly hasPendingValidators = computed(() => this.asyncErrors().includes('pending'));
+  readonly pending = computed(() => this.asyncErrors().includes('pending'));
 
   /**
    * Whether this field is considered valid by its synchronous validators.
@@ -450,24 +449,24 @@ export class FieldNode implements FieldState<unknown> {
    *  - it has no errors
    *  - all of its children consider themselves valid
    */
-  readonly status: Signal<ValidationStatus> = computed(() => {
+  readonly status: Signal<'valid' | 'invalid' | 'unknown'> = computed(() => {
     // Short-circuit checking children if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return 'valid';
     }
-    let ownStatus: ValidationStatus = 'valid';
+    let ownStatus: 'valid' | 'invalid' | 'unknown' = 'valid';
     if (this.errors().length > 0) {
       ownStatus = 'invalid';
-    } else if (this.hasPendingValidators()) {
-      ownStatus = 'pending';
+    } else if (this.pending()) {
+      ownStatus = 'unknown';
     }
-    return this.reduceChildren<'valid' | 'invalid' | 'pending'>(
+    return this.reduceChildren<'valid' | 'invalid' | 'unknown'>(
       ownStatus,
       (child, value) => {
         if (value === 'invalid' || child.status() === 'invalid') {
           return 'invalid';
-        } else if (value === 'pending' || child.status() === 'pending') {
-          return 'pending';
+        } else if (value === 'unknown' || child.status() === 'unknown') {
+          return 'unknown';
         }
         return 'valid';
       },
