@@ -1,6 +1,6 @@
 load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_package", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -47,7 +47,6 @@ genrule(
 
 ng_package(
     name = "npm_package",
-    package_name = "@angular/service-worker",
     srcs = [
         "package.json",
         "safety-worker.js",
@@ -55,6 +54,7 @@ ng_package(
         ":ngsw_worker_renamed",
         "//packages/service-worker/config:schema.json",
     ],
+    package = "@angular/service-worker",
     tags = [
         "release-with-framework",
     ],
@@ -65,8 +65,8 @@ ng_package(
         "//modules/ssr-benchmarks:__subpackages__",
     ],
     deps = [
-        ":service-worker",
-        "//packages/service-worker/config",
+        ":service-worker_rjs",
+        "//packages/service-worker/config:config_rjs",
     ],
 )
 

@@ -1,4 +1,4 @@
-import {performCompilation} from '../../packages/compiler-cli/index.js';
+import {performCompilation} from '@angular/compiler-cli';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
@@ -33,6 +33,11 @@ async function main() {
   const testChunkStart = testChunkSize * testShardIndex;
   const shardExports = allExports.slice(testChunkStart, testChunkStart + testChunkSize);
 
+  // Sub-test directory where the first-party linked node modules end up being available.
+  const testDir = path.join(tmpDir, 'test');
+  await fs.mkdir(testDir);
+  await fs.mkdir(path.join(testDir, 'node_modules/@angular'), {recursive: true});
+
   const testFiles = shardExports.map((e) => ({
     content: `
       import {NgModule, Component} from '@angular/core';
@@ -46,15 +51,16 @@ async function main() {
       @Component({imports: [TestModule], template: ''})
       export class TestComponent {}
   `,
-    path: path.join(tmpDir, `${e.symbolName.toLowerCase()}.ts`),
+    path: path.join(testDir, `${e.symbolName.toLowerCase()}.ts`),
   }));
 
   // Prepare node modules to resolve e.g. `@angular/core`
-  await fs.symlink(path.resolve('./node_modules'), path.join(tmpDir, 'node_modules'));
+  await fs.symlink(path.resolve('./integration/node_modules'), path.join(tmpDir, 'node_modules'));
+
   // Prepare node modules to resolve e.g. `@angular/cdk`. This is possible
   // as we are inside the sandbox, inside our test runfiles directory.
   for (const {packagePath, name} of packages) {
-    await fs.symlink(path.resolve(packagePath), `./node_modules/${name}`);
+    await fs.symlink(path.resolve(packagePath), path.join(testDir, 'node_modules', name));
   }
 
   const diagnostics: ts.Diagnostic[] = [];
