@@ -207,21 +207,6 @@ groups:
       reviewed_for: required
 
   # =========================================================
-  #  Bazel
-  # =========================================================
-  bazel:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/bazel/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - devversion
-        - josephperrott
-
-  # =========================================================
   #  zone.js
   # =========================================================
   zone-js:
