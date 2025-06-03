@@ -1,9 +1,9 @@
-import {performCompilation} from '../../packages/compiler-cli';
+import {performCompilation} from '../../packages/compiler-cli/index.js';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
 import ts from 'typescript';
-import {findAllEntryPointsAndExportedModules} from './find-all-modules';
+import {findAllEntryPointsAndExportedModules} from './find-all-modules.mjs';
 
 async function main() {
   const [configPath] = process.argv.slice(2);
