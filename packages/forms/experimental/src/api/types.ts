@@ -10,8 +10,6 @@ import {Signal, WritableSignal} from '@angular/core';
 import {DataKey} from './data';
 import {MetadataKey} from './metadata';
 
-export type ValidationStatus = 'valid' | 'invalid' | 'pending';
-
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
@@ -114,10 +112,6 @@ export interface FieldState<T> {
    */
   readonly syncErrors: Signal<FormError[]>;
   /**
-   * A signal indicating the validation status of the field
-   */
-  readonly status: Signal<ValidationStatus>;
-  /**
    * A signal indicating whether the field's value is currently valid.
    *
    * Note: `valid()` is not the same as `!invalid()`.
@@ -144,7 +138,7 @@ export interface FieldState<T> {
   /**
    * Whether there are any validators still pending for this field.
    */
-  readonly hasPendingValidators: Signal<boolean>;
+  readonly pending: Signal<boolean>;
   /**
    * A signal indicating whether the field's value is currently valid.
    */
