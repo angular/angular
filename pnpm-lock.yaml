@@ -355,8 +355,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4
         version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/ssr@20.0.0)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.40.0)(tsx@4.19.4)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#0ba20dc96eb638ed8ef97b14d72854d50f0238fb
-        version: github.com/angular/dev-infra-private-ng-dev-builds/0ba20dc96eb638ed8ef97b14d72854d50f0238fb
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#237cb88aa3a27cf514fcd103ad1b5af7bdccb641
+        version: github.com/angular/dev-infra-private-ng-dev-builds/237cb88aa3a27cf514fcd103ad1b5af7bdccb641
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.27.1)
@@ -767,7 +767,7 @@ importers:
         version: 2.8.1
       vitest:
         specifier: ^3.1.3
-        version: 3.2.0(@types/node@10.17.60)(jsdom@26.1.0)(terser@5.40.0)(tsx@4.19.4)
+        version: 3.2.1(@types/node@10.17.60)(jsdom@26.1.0)(terser@5.40.0)(tsx@4.19.4)
 
   tools/bazel/rules_angular_store:
     dependencies:
@@ -3785,29 +3785,28 @@ packages:
     engines: {node: '>=18'}
     dependencies:
       '@googleapis/sqladmin': 29.0.0
-      gaxios: 6.7.1(supports-color@10.0.0)
-      google-auth-library: 9.15.1(supports-color@10.0.0)
+      gaxios: 6.7.1
+      google-auth-library: 9.15.1
       p-throttle: 7.0.0
     transitivePeerDependencies:
       - encoding
       - supports-color
     dev: true
 
-  /@google-cloud/common@5.0.2(supports-color@10.0.0):
-    resolution: {integrity: sha512-V7bmBKYQyu0eVG2BFejuUjlBt+zrya6vtsKdY+JxMM/dNntPF41vZ9+LhOshEUH01zOHEqBSvI7Dad7ZS6aUeA==, tarball: https://registry.npmjs.org/@google-cloud/common/-/common-5.0.2.tgz}
-    engines: {node: '>=14.0.0'}
+  /@google-cloud/common@6.0.0(supports-color@10.0.0):
+    resolution: {integrity: sha512-IXh04DlkLMxWgYLIUYuHHKXKOUwPDzDgke1ykkkJPe48cGIS9kkL2U/o0pm4ankHLlvzLF/ma1eO86n/bkumIA==, tarball: https://registry.npmjs.org/@google-cloud/common/-/common-6.0.0.tgz}
+    engines: {node: '>=18'}
     dependencies:
       '@google-cloud/projectify': 4.0.0
       '@google-cloud/promisify': 4.1.0
       arrify: 2.0.1
       duplexify: 4.1.3
       extend: 3.0.2
-      google-auth-library: 9.15.1(supports-color@10.0.0)
+      google-auth-library: 10.0.0-rc.3(supports-color@10.0.0)
       html-entities: 2.6.0
-      retry-request: 7.0.2(supports-color@10.0.0)
-      teeny-request: 9.0.0(supports-color@10.0.0)
+      retry-request: 8.0.0(supports-color@10.0.0)
+      teeny-request: 10.1.0(supports-color@10.0.0)
     transitivePeerDependencies:
-      - encoding
       - supports-color
     dev: true
 
@@ -3824,9 +3823,19 @@ packages:
     engines: {node: '>=14.0.0'}
     dev: true
 
+  /@google-cloud/precise-date@5.0.0:
+    resolution: {integrity: sha512-9h0Gvw92EvPdE8AK8AgZPbMnH5ftDyPtKm7/KUfcJVaPEPjwGDsJd1QV0H8esBDV4II41R/2lDWH1epBqIoKUw==, tarball: https://registry.npmjs.org/@google-cloud/precise-date/-/precise-date-5.0.0.tgz}
+    engines: {node: '>=18'}
+    dev: true
+
   /@google-cloud/projectify@4.0.0:
     resolution: {integrity: sha512-MmaX6HeSvyPbWGwFq7mXdo0uQZLGBYCwziiLIGq5JVX+/bdI3SAq6bP98trV5eTWfLuvsMcIC1YJOF2vfteLFA==, tarball: https://registry.npmjs.org/@google-cloud/projectify/-/projectify-4.0.0.tgz}
     engines: {node: '>=14.0.0'}
+    dev: true
+
+  /@google-cloud/projectify@5.0.0:
+    resolution: {integrity: sha512-XXQLaIcLrOAMWvRrzz+mlUGtN6vlVNja3XQbMqRi/V7XJTAVwib3VcKd7oRwyZPkp7rBVlHGcaqdyGRrcnkhlA==, tarball: https://registry.npmjs.org/@google-cloud/projectify/-/projectify-5.0.0.tgz}
+    engines: {node: '>=18'}
     dev: true
 
   /@google-cloud/promisify@4.0.0:
@@ -3836,6 +3845,11 @@ packages:
 
   /@google-cloud/promisify@4.1.0:
     resolution: {integrity: sha512-G/FQx5cE/+DqBbOpA5jKsegGwdPniU6PuIEMt+qxWgFxvxuFOzVmp6zYchtYuwAWV5/8Dgs0yAmjvNZv3uXLQg==, tarball: https://registry.npmjs.org/@google-cloud/promisify/-/promisify-4.1.0.tgz}
+    engines: {node: '>=18'}
+    dev: true
+
+  /@google-cloud/promisify@5.0.0:
+    resolution: {integrity: sha512-N8qS6dlORGHwk7WjGXKOSsLjIjNINCPicsOX6gyyLiYk7mq3MtII96NZ9N2ahwA2vnkLmZODOIH9rlNniYWvCQ==, tarball: https://registry.npmjs.org/@google-cloud/promisify/-/promisify-5.0.0.tgz}
     engines: {node: '>=18'}
     dev: true
 
@@ -3851,7 +3865,7 @@ packages:
       '@opentelemetry/semantic-conventions': 1.30.0
       arrify: 2.0.1
       extend: 3.0.2
-      google-auth-library: 9.15.1(supports-color@10.0.0)
+      google-auth-library: 9.15.1
       google-gax: 4.6.1
       heap-js: 2.6.0
       is-stream-ended: 0.1.4
@@ -3862,43 +3876,41 @@ packages:
       - supports-color
     dev: true
 
-  /@google-cloud/spanner@7.21.0(supports-color@10.0.0):
-    resolution: {integrity: sha512-SrlHgXmSaEbGhdimxcB0FgNsW9J931JBBveoGW43clQHVNcDJuKRoG+240inbSRZoW8JIwwEHToXYU5YGO3VGg==, tarball: https://registry.npmjs.org/@google-cloud/spanner/-/spanner-7.21.0.tgz}
-    engines: {node: '>=14.0.0'}
+  /@google-cloud/spanner@8.0.0(supports-color@10.0.0):
+    resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==, tarball: https://registry.npmjs.org/@google-cloud/spanner/-/spanner-8.0.0.tgz}
+    engines: {node: '>=18'}
     dependencies:
-      '@google-cloud/common': 5.0.2(supports-color@10.0.0)
-      '@google-cloud/precise-date': 4.0.0
-      '@google-cloud/projectify': 4.0.0
-      '@google-cloud/promisify': 4.0.0
+      '@google-cloud/common': 6.0.0(supports-color@10.0.0)
+      '@google-cloud/precise-date': 5.0.0
+      '@google-cloud/projectify': 5.0.0
+      '@google-cloud/promisify': 5.0.0
       '@grpc/proto-loader': 0.7.15
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/context-async-hooks': 1.30.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/core': 1.30.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/context-async-hooks': 2.0.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/core': 2.0.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.34.0
       '@types/big.js': 6.2.2
       '@types/stack-trace': 0.0.33
-      arrify: 2.0.1
-      big.js: 6.2.2
+      big.js: 7.0.1
       checkpoint-stream: 0.1.2
       duplexify: 4.1.3
       events-intercept: 2.0.0
       extend: 3.0.2
-      google-auth-library: 9.15.1(supports-color@10.0.0)
-      google-gax: 4.4.1(supports-color@10.0.0)
+      google-auth-library: 10.0.0-rc.3(supports-color@10.0.0)
+      google-gax: 5.0.1-rc.1(supports-color@10.0.0)
       grpc-gcp: 1.0.1
       is: 3.3.0
       lodash.snakecase: 4.1.1
       merge-stream: 2.0.0
       p-queue: 6.6.2
       protobufjs: 7.5.3
-      retry-request: 7.0.2(supports-color@10.0.0)
+      retry-request: 8.0.0(supports-color@10.0.0)
       split-array-stream: 2.0.0
       stack-trace: 0.0.10
       stream-events: 1.0.5
-      teeny-request: 9.0.0(supports-color@10.0.0)
+      teeny-request: 10.1.0(supports-color@10.0.0)
       through2: 4.0.2
     transitivePeerDependencies:
-      - encoding
       - supports-color
     dev: true
 
@@ -5108,9 +5120,9 @@ packages:
     engines: {node: '>= 18'}
     dev: true
 
-  /@octokit/auth-token@5.1.2:
-    resolution: {integrity: sha512-JcQDsBdg49Yky2w2ld20IHAlwr8d/d8N6NiOXbtuoPCqzbsiJgF633mVUw3x4mo0H5ypataQIX7SFu3yy44Mpw==, tarball: https://registry.npmjs.org/@octokit/auth-token/-/auth-token-5.1.2.tgz}
-    engines: {node: '>= 18'}
+  /@octokit/auth-token@6.0.0:
+    resolution: {integrity: sha512-P4YJBPdPSpWTQ1NU4XYdvHvXJJDxM6YwpS0FZHRgP7YFkdVxsWcpWGy/NVqlAA7PcPCnMacXlRm1y2PFZRWL/w==, tarball: https://registry.npmjs.org/@octokit/auth-token/-/auth-token-6.0.0.tgz}
+    engines: {node: '>= 20'}
     dev: true
 
   /@octokit/core@5.2.1:
@@ -5126,24 +5138,16 @@ packages:
       universal-user-agent: 6.0.1
     dev: true
 
-  /@octokit/core@6.1.5:
-    resolution: {integrity: sha512-vvmsN0r7rguA+FySiCsbaTTobSftpIDIpPW81trAmsv9TGxg3YCujAxRYp/Uy8xmDgYCzzgulG62H7KYUFmeIg==, tarball: https://registry.npmjs.org/@octokit/core/-/core-6.1.5.tgz}
-    engines: {node: '>= 18'}
+  /@octokit/core@7.0.2:
+    resolution: {integrity: sha512-ODsoD39Lq6vR6aBgvjTnA3nZGliknKboc9Gtxr7E4WDNqY24MxANKcuDQSF0jzapvGb3KWOEDrKfve4HoWGK+g==, tarball: https://registry.npmjs.org/@octokit/core/-/core-7.0.2.tgz}
+    engines: {node: '>= 20'}
     dependencies:
-      '@octokit/auth-token': 5.1.2
-      '@octokit/graphql': 8.2.2
-      '@octokit/request': 9.2.3
-      '@octokit/request-error': 6.1.8
+      '@octokit/auth-token': 6.0.0
+      '@octokit/graphql': 9.0.1
+      '@octokit/request': 10.0.2
+      '@octokit/request-error': 7.0.0
       '@octokit/types': 14.1.0
-      before-after-hook: 3.0.2
-      universal-user-agent: 7.0.3
-    dev: true
-
-  /@octokit/endpoint@10.1.4:
-    resolution: {integrity: sha512-OlYOlZIsfEVZm5HCSR8aSg02T2lbUWOsCQoPKfTXJwDzcHQBrVBGdGXb89dv2Kw2ToZaRtudp8O3ZIYoaOjKlA==, tarball: https://registry.npmjs.org/@octokit/endpoint/-/endpoint-10.1.4.tgz}
-    engines: {node: '>= 18'}
-    dependencies:
-      '@octokit/types': 14.1.0
+      before-after-hook: 4.0.0
       universal-user-agent: 7.0.3
     dev: true
 
@@ -5172,15 +5176,6 @@ packages:
       universal-user-agent: 6.0.1
     dev: true
 
-  /@octokit/graphql@8.2.2:
-    resolution: {integrity: sha512-Yi8hcoqsrXGdt0yObxbebHXFOiUA+2v3n53epuOg1QUgOB6c4XzvisBNVXJSl8RYA5KrDuSL2yq9Qmqe5N0ryA==, tarball: https://registry.npmjs.org/@octokit/graphql/-/graphql-8.2.2.tgz}
-    engines: {node: '>= 18'}
-    dependencies:
-      '@octokit/request': 9.2.3
-      '@octokit/types': 14.1.0
-      universal-user-agent: 7.0.3
-    dev: true
-
   /@octokit/graphql@9.0.1:
     resolution: {integrity: sha512-j1nQNU1ZxNFx2ZtKmL4sMrs4egy5h65OMDmSbVyuCzjOcwsHq6EaYjOTGXPQxgfiN8dJ4CriYHk6zF050WEULg==, tarball: https://registry.npmjs.org/@octokit/graphql/-/graphql-9.0.1.tgz}
     engines: {node: '>= 20'}
@@ -5202,14 +5197,14 @@ packages:
     resolution: {integrity: sha512-idsIggNXUKkk0+BExUn1dQ92sfysJrje03Q0bv0e+KPLrvyqZF8MnBpFz8UNfYDwB3Ie7Z0TByjWfzxt7vseaA==, tarball: https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-25.1.0.tgz}
     dev: true
 
-  /@octokit/plugin-paginate-rest@11.6.0(@octokit/core@6.1.5):
-    resolution: {integrity: sha512-n5KPteiF7pWKgBIBJSk8qzoZWcUkza2O6A0za97pMGVrGfPdltxrfmfF5GucHYvHGZD8BdaZmmHGz5cX/3gdpw==, tarball: https://registry.npmjs.org/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-11.6.0.tgz}
-    engines: {node: '>= 18'}
+  /@octokit/plugin-paginate-rest@13.0.1(@octokit/core@7.0.2):
+    resolution: {integrity: sha512-m1KvHlueScy4mQJWvFDCxFBTIdXS0K1SgFGLmqHyX90mZdCIv6gWBbKRhatxRjhGlONuTK/hztYdaqrTXcFZdQ==, tarball: https://registry.npmjs.org/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-13.0.1.tgz}
+    engines: {node: '>= 20'}
     peerDependencies:
       '@octokit/core': '>=6'
     dependencies:
-      '@octokit/core': 6.1.5
-      '@octokit/types': 13.10.0
+      '@octokit/core': 7.0.2
+      '@octokit/types': 14.1.0
     dev: true
 
   /@octokit/plugin-paginate-rest@9.2.2(@octokit/core@5.2.1):
@@ -5222,13 +5217,13 @@ packages:
       '@octokit/types': 12.6.0
     dev: true
 
-  /@octokit/plugin-request-log@5.3.1(@octokit/core@6.1.5):
-    resolution: {integrity: sha512-n/lNeCtq+9ofhC15xzmJCNKP2BWTv8Ih2TTy+jatNCCq/gQP/V7rK3fjIfuz0pDWDALO/o/4QY4hyOF6TQQFUw==, tarball: https://registry.npmjs.org/@octokit/plugin-request-log/-/plugin-request-log-5.3.1.tgz}
-    engines: {node: '>= 18'}
+  /@octokit/plugin-request-log@6.0.0(@octokit/core@7.0.2):
+    resolution: {integrity: sha512-UkOzeEN3W91/eBq9sPZNQ7sUBvYCqYbrrD8gTbBuGtHEuycE4/awMXcYvx6sVYo7LypPhmQwwpUe4Yyu4QZN5Q==, tarball: https://registry.npmjs.org/@octokit/plugin-request-log/-/plugin-request-log-6.0.0.tgz}
+    engines: {node: '>= 20'}
     peerDependencies:
       '@octokit/core': '>=6'
     dependencies:
-      '@octokit/core': 6.1.5
+      '@octokit/core': 7.0.2
     dev: true
 
   /@octokit/plugin-rest-endpoint-methods@10.4.1(@octokit/core@5.2.1):
@@ -5241,14 +5236,14 @@ packages:
       '@octokit/types': 12.6.0
     dev: true
 
-  /@octokit/plugin-rest-endpoint-methods@13.5.0(@octokit/core@6.1.5):
-    resolution: {integrity: sha512-9Pas60Iv9ejO3WlAX3maE1+38c5nqbJXV5GrncEfkndIpZrJ/WPMRd2xYDcPPEt5yzpxcjw9fWNoPhsSGzqKqw==, tarball: https://registry.npmjs.org/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-13.5.0.tgz}
-    engines: {node: '>= 18'}
+  /@octokit/plugin-rest-endpoint-methods@16.0.0(@octokit/core@7.0.2):
+    resolution: {integrity: sha512-kJVUQk6/dx/gRNLWUnAWKFs1kVPn5O5CYZyssyEoNYaFedqZxsfYs7DwI3d67hGz4qOwaJ1dpm07hOAD1BXx6g==, tarball: https://registry.npmjs.org/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-16.0.0.tgz}
+    engines: {node: '>= 20'}
     peerDependencies:
       '@octokit/core': '>=6'
     dependencies:
-      '@octokit/core': 6.1.5
-      '@octokit/types': 13.10.0
+      '@octokit/core': 7.0.2
+      '@octokit/types': 14.1.0
     dev: true
 
   /@octokit/request-error@5.1.1:
@@ -5258,13 +5253,6 @@ packages:
       '@octokit/types': 13.10.0
       deprecation: 2.3.1
       once: 1.4.0
-    dev: true
-
-  /@octokit/request-error@6.1.8:
-    resolution: {integrity: sha512-WEi/R0Jmq+IJKydWlKDmryPcmdYSVjL3ekaiEL1L9eo1sUnqMJ+grqmC9cjk7CA7+b2/T397tO5d8YLOH3qYpQ==, tarball: https://registry.npmjs.org/@octokit/request-error/-/request-error-6.1.8.tgz}
-    engines: {node: '>= 18'}
-    dependencies:
-      '@octokit/types': 14.1.0
     dev: true
 
   /@octokit/request-error@7.0.0:
@@ -5295,25 +5283,14 @@ packages:
       universal-user-agent: 6.0.1
     dev: true
 
-  /@octokit/request@9.2.3:
-    resolution: {integrity: sha512-Ma+pZU8PXLOEYzsWf0cn/gY+ME57Wq8f49WTXA8FMHp2Ps9djKw//xYJ1je8Hm0pR2lU9FUGeJRWOtxq6olt4w==, tarball: https://registry.npmjs.org/@octokit/request/-/request-9.2.3.tgz}
-    engines: {node: '>= 18'}
+  /@octokit/rest@22.0.0:
+    resolution: {integrity: sha512-z6tmTu9BTnw51jYGulxrlernpsQYXpui1RK21vmXn8yF5bp6iX16yfTtJYGK5Mh1qDkvDOmp2n8sRMcQmR8jiA==, tarball: https://registry.npmjs.org/@octokit/rest/-/rest-22.0.0.tgz}
+    engines: {node: '>= 20'}
     dependencies:
-      '@octokit/endpoint': 10.1.4
-      '@octokit/request-error': 6.1.8
-      '@octokit/types': 14.1.0
-      fast-content-type-parse: 2.0.1
-      universal-user-agent: 7.0.3
-    dev: true
-
-  /@octokit/rest@21.1.1:
-    resolution: {integrity: sha512-sTQV7va0IUVZcntzy1q3QqPm/r8rWtDCqpRAmb8eXXnKkjoQEtFe3Nt5GTVsHft+R6jJoHeSiVLcgcvhtue/rg==, tarball: https://registry.npmjs.org/@octokit/rest/-/rest-21.1.1.tgz}
-    engines: {node: '>= 18'}
-    dependencies:
-      '@octokit/core': 6.1.5
-      '@octokit/plugin-paginate-rest': 11.6.0(@octokit/core@6.1.5)
-      '@octokit/plugin-request-log': 5.3.1(@octokit/core@6.1.5)
-      '@octokit/plugin-rest-endpoint-methods': 13.5.0(@octokit/core@6.1.5)
+      '@octokit/core': 7.0.2
+      '@octokit/plugin-paginate-rest': 13.0.1(@octokit/core@7.0.2)
+      '@octokit/plugin-request-log': 6.0.0(@octokit/core@7.0.2)
+      '@octokit/plugin-rest-endpoint-methods': 16.0.0(@octokit/core@7.0.2)
     dev: true
 
   /@octokit/types@12.6.0:
@@ -5339,28 +5316,23 @@ packages:
     engines: {node: '>=8.0.0'}
     dev: true
 
-  /@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0):
-    resolution: {integrity: sha512-s5vvxXPVdjqS3kTLKMeBMvop9hbWkwzBpu+mUO2M7sZtlkyDJGwFe33wRKnbaYDo8ExRVBIIdwIGrqpxHuKttA==, tarball: https://registry.npmjs.org/@opentelemetry/context-async-hooks/-/context-async-hooks-1.30.1.tgz}
-    engines: {node: '>=14'}
+  /@opentelemetry/context-async-hooks@2.0.1(@opentelemetry/api@1.9.0):
+    resolution: {integrity: sha512-XuY23lSI3d4PEqKA+7SLtAgwqIfc6E/E9eAQWLN1vlpC53ybO3o6jW4BsXo1xvz9lYyyWItfQDDLzezER01mCw==, tarball: https://registry.npmjs.org/@opentelemetry/context-async-hooks/-/context-async-hooks-2.0.1.tgz}
+    engines: {node: ^18.19.0 || >=20.6.0}
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
     dependencies:
       '@opentelemetry/api': 1.9.0
     dev: true
 
-  /@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0):
-    resolution: {integrity: sha512-OOCM2C/QIURhJMuKaekP3TRBxBKxG/TWWA0TL2J6nXUtDnuCtccy49LUJF8xPFXMX+0LMcxFpCo8M9cGY1W6rQ==, tarball: https://registry.npmjs.org/@opentelemetry/core/-/core-1.30.1.tgz}
-    engines: {node: '>=14'}
+  /@opentelemetry/core@2.0.1(@opentelemetry/api@1.9.0):
+    resolution: {integrity: sha512-MaZk9SJIDgo1peKevlbhP6+IwIiNPNmswNL4AF0WaQJLbHXjr9SrZMgS12+iqr9ToV4ZVosCcc0f8Rg67LXjxw==, tarball: https://registry.npmjs.org/@opentelemetry/core/-/core-2.0.1.tgz}
+    engines: {node: ^18.19.0 || >=20.6.0}
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
     dependencies:
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/semantic-conventions': 1.28.0
-    dev: true
-
-  /@opentelemetry/semantic-conventions@1.28.0:
-    resolution: {integrity: sha512-lp4qAiMTD4sNWW4DbKLBkfiMZ4jbAboJIGOQr5DvciMRI494OapieI9qiODpOt0XBr1LjIDy1xAGAnVs5supTA==, tarball: https://registry.npmjs.org/@opentelemetry/semantic-conventions/-/semantic-conventions-1.28.0.tgz}
-    engines: {node: '>=14'}
+      '@opentelemetry/semantic-conventions': 1.34.0
     dev: true
 
   /@opentelemetry/semantic-conventions@1.30.0:
@@ -6815,6 +6787,13 @@ packages:
   /@types/long@4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==, tarball: https://registry.npmjs.org/@types/long/-/long-4.0.2.tgz}
 
+  /@types/long@5.0.0:
+    resolution: {integrity: sha512-eQs9RsucA/LNjnMoJvWG/nXa7Pot/RbBzilF/QRIU/xRl+0ApxrSUFsV5lmf01SvSlqMzJ7Zwxe440wmz2SJGA==, tarball: https://registry.npmjs.org/@types/long/-/long-5.0.0.tgz}
+    deprecated: This is a stub types definition. long provides its own type definitions, so you do not need this installed.
+    dependencies:
+      long: 5.3.2
+    dev: true
+
   /@types/mdast@4.0.4:
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==, tarball: https://registry.npmjs.org/@types/mdast/-/mdast-4.0.4.tgz}
     dependencies:
@@ -7086,18 +7065,18 @@ packages:
       vite: 6.3.5(@types/node@18.19.110)(sass@1.88.0)(terser@5.40.0)(tsx@4.19.4)
     dev: false
 
-  /@vitest/expect@3.2.0:
-    resolution: {integrity: sha512-0v4YVbhDKX3SKoy0PHWXpKhj44w+3zZkIoVES9Ex2pq+u6+Bijijbi2ua5kE+h3qT6LBWFTNZSCOEU37H8Y5sA==, tarball: https://registry.npmjs.org/@vitest/expect/-/expect-3.2.0.tgz}
+  /@vitest/expect@3.2.1:
+    resolution: {integrity: sha512-FqS/BnDOzV6+IpxrTg5GQRyLOCtcJqkwMwcS8qGCI2IyRVDwPAtutztaf1CjtPHlZlWtl1yUPCd7HM0cNiDOYw==, tarball: https://registry.npmjs.org/@vitest/expect/-/expect-3.2.1.tgz}
     dependencies:
       '@types/chai': 5.2.2
-      '@vitest/spy': 3.2.0
-      '@vitest/utils': 3.2.0
+      '@vitest/spy': 3.2.1
+      '@vitest/utils': 3.2.1
       chai: 5.2.0
       tinyrainbow: 2.0.0
     dev: true
 
-  /@vitest/mocker@3.2.0(vite@6.3.5):
-    resolution: {integrity: sha512-HFcW0lAMx3eN9vQqis63H0Pscv0QcVMo1Kv8BNysZbxcmHu3ZUYv59DS6BGYiGQ8F5lUkmsfMMlPm4DJFJdf/A==, tarball: https://registry.npmjs.org/@vitest/mocker/-/mocker-3.2.0.tgz}
+  /@vitest/mocker@3.2.1(vite@6.3.5):
+    resolution: {integrity: sha512-OXxMJnx1lkB+Vl65Re5BrsZEHc90s5NMjD23ZQ9NlU7f7nZiETGoX4NeKZSmsKjseuMq2uOYXdLOeoM0pJU+qw==, tarball: https://registry.npmjs.org/@vitest/mocker/-/mocker-3.2.1.tgz}
     peerDependencies:
       msw: ^2.4.9
       vite: ^5.0.0 || ^6.0.0 || ^7.0.0-0
@@ -7107,43 +7086,43 @@ packages:
       vite:
         optional: true
     dependencies:
-      '@vitest/spy': 3.2.0
+      '@vitest/spy': 3.2.1
       estree-walker: 3.0.3
       magic-string: 0.30.17
       vite: 6.3.5(@types/node@10.17.60)(terser@5.40.0)(tsx@4.19.4)
     dev: true
 
-  /@vitest/pretty-format@3.2.0:
-    resolution: {integrity: sha512-gUUhaUmPBHFkrqnOokmfMGRBMHhgpICud9nrz/xpNV3/4OXCn35oG+Pl8rYYsKaTNd/FAIrqRHnwpDpmYxCYZw==, tarball: https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-3.2.0.tgz}
+  /@vitest/pretty-format@3.2.1:
+    resolution: {integrity: sha512-xBh1X2GPlOGBupp6E1RcUQWIxw0w/hRLd3XyBS6H+dMdKTAqHDNsIR2AnJwPA3yYe9DFy3VUKTe3VRTrAiQ01g==, tarball: https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-3.2.1.tgz}
     dependencies:
       tinyrainbow: 2.0.0
     dev: true
 
-  /@vitest/runner@3.2.0:
-    resolution: {integrity: sha512-bXdmnHxuB7fXJdh+8vvnlwi/m1zvu+I06i1dICVcDQFhyV4iKw2RExC/acavtDn93m/dRuawUObKsrNE1gJacA==, tarball: https://registry.npmjs.org/@vitest/runner/-/runner-3.2.0.tgz}
+  /@vitest/runner@3.2.1:
+    resolution: {integrity: sha512-kygXhNTu/wkMYbwYpS3z/9tBe0O8qpdBuC3dD/AW9sWa0LE/DAZEjnHtWA9sIad7lpD4nFW1yQ+zN7mEKNH3yA==, tarball: https://registry.npmjs.org/@vitest/runner/-/runner-3.2.1.tgz}
     dependencies:
-      '@vitest/utils': 3.2.0
+      '@vitest/utils': 3.2.1
       pathe: 2.0.3
     dev: true
 
-  /@vitest/snapshot@3.2.0:
-    resolution: {integrity: sha512-z7P/EneBRMe7hdvWhcHoXjhA6at0Q4ipcoZo6SqgxLyQQ8KSMMCmvw1cSt7FHib3ozt0wnRHc37ivuUMbxzG/A==, tarball: https://registry.npmjs.org/@vitest/snapshot/-/snapshot-3.2.0.tgz}
+  /@vitest/snapshot@3.2.1:
+    resolution: {integrity: sha512-5xko/ZpW2Yc65NVK9Gpfg2y4BFvcF+At7yRT5AHUpTg9JvZ4xZoyuRY4ASlmNcBZjMslV08VRLDrBOmUe2YX3g==, tarball: https://registry.npmjs.org/@vitest/snapshot/-/snapshot-3.2.1.tgz}
     dependencies:
-      '@vitest/pretty-format': 3.2.0
+      '@vitest/pretty-format': 3.2.1
       magic-string: 0.30.17
       pathe: 2.0.3
     dev: true
 
-  /@vitest/spy@3.2.0:
-    resolution: {integrity: sha512-s3+TkCNUIEOX99S0JwNDfsHRaZDDZZR/n8F0mop0PmsEbQGKZikCGpTGZ6JRiHuONKew3Fb5//EPwCP+pUX9cw==, tarball: https://registry.npmjs.org/@vitest/spy/-/spy-3.2.0.tgz}
+  /@vitest/spy@3.2.1:
+    resolution: {integrity: sha512-Nbfib34Z2rfcJGSetMxjDCznn4pCYPZOtQYox2kzebIJcgH75yheIKd5QYSFmR8DIZf2M8fwOm66qSDIfRFFfQ==, tarball: https://registry.npmjs.org/@vitest/spy/-/spy-3.2.1.tgz}
     dependencies:
       tinyspy: 4.0.3
     dev: true
 
-  /@vitest/utils@3.2.0:
-    resolution: {integrity: sha512-gXXOe7Fj6toCsZKVQouTRLJftJwmvbhH5lKOBR6rlP950zUq9AitTUjnFoXS/CqjBC2aoejAztLPzzuva++XBw==, tarball: https://registry.npmjs.org/@vitest/utils/-/utils-3.2.0.tgz}
+  /@vitest/utils@3.2.1:
+    resolution: {integrity: sha512-KkHlGhePEKZSub5ViknBcN5KEF+u7dSUr9NW8QsVICusUojrgrOnnY3DEWWO877ax2Pyopuk2qHmt+gkNKnBVw==, tarball: https://registry.npmjs.org/@vitest/utils/-/utils-3.2.1.tgz}
     dependencies:
-      '@vitest/pretty-format': 3.2.0
+      '@vitest/pretty-format': 3.2.1
       loupe: 3.1.3
       tinyrainbow: 2.0.0
     dev: true
@@ -8194,15 +8173,15 @@ packages:
     resolution: {integrity: sha512-NzUnlZexiaH/46WDhANlyR2bXRopNg4F/zuSA3OpZnllCUgRaOF2znDioDWrmbNVsuZk6l9pMquQB38cfBZwkQ==, tarball: https://registry.npmjs.org/before-after-hook/-/before-after-hook-2.2.3.tgz}
     dev: true
 
-  /before-after-hook@3.0.2:
-    resolution: {integrity: sha512-Nik3Sc0ncrMK4UUdXQmAnRtzmNQTAAXmXIopizwZ1W1t8QmfJj+zL4OA2I7XPTPW5z5TDqv4hRo/JzouDJnX3A==, tarball: https://registry.npmjs.org/before-after-hook/-/before-after-hook-3.0.2.tgz}
+  /before-after-hook@4.0.0:
+    resolution: {integrity: sha512-q6tR3RPqIB1pMiTRMFcZwuG5T8vwp+vUvEG0vuI6B+Rikh5BfPp2fQ82c925FOs+b0lcFQ8CFrL+KbilfZFhOQ==, tarball: https://registry.npmjs.org/before-after-hook/-/before-after-hook-4.0.0.tgz}
     dev: true
 
   /big.js@5.2.2:
     resolution: {integrity: sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==, tarball: https://registry.npmjs.org/big.js/-/big.js-5.2.2.tgz}
 
-  /big.js@6.2.2:
-    resolution: {integrity: sha512-y/ie+Faknx7sZA5MfGA2xKlu0GDv8RWrXGsmlteyJQ2lvoKv9GBK/fpRMc2qlSoBAgNxrixICFCBefIq8WCQpQ==, tarball: https://registry.npmjs.org/big.js/-/big.js-6.2.2.tgz}
+  /big.js@7.0.1:
+    resolution: {integrity: sha512-iFgV784tD8kq4ccF1xtNMZnXeZzVuXWWM+ERFzKQjv+A5G9HC8CY3DuV45vgzFFcW+u2tIvmF95+AzWgs6BjCg==, tarball: https://registry.npmjs.org/big.js/-/big.js-7.0.1.tgz}
     dev: true
 
   /bignumber.js@9.3.0:
@@ -9962,6 +9941,11 @@ packages:
     dependencies:
       assert-plus: 1.0.0
 
+  /data-uri-to-buffer@4.0.1:
+    resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==, tarball: https://registry.npmjs.org/data-uri-to-buffer/-/data-uri-to-buffer-4.0.1.tgz}
+    engines: {node: '>= 12'}
+    dev: true
+
   /data-uri-to-buffer@6.0.2:
     resolution: {integrity: sha512-7hvf7/GW8e86rW0ptuwS3OcBGDjIi6SZva7hCyWC0yYry2cOPmLIjXAUHI6DK2HsnwJd9ifmt57i8eV2n4YNpw==, tarball: https://registry.npmjs.org/data-uri-to-buffer/-/data-uri-to-buffer-6.0.2.tgz}
     engines: {node: '>= 14'}
@@ -11201,10 +11185,6 @@ packages:
       color-support: 1.1.3
     dev: true
 
-  /fast-content-type-parse@2.0.1:
-    resolution: {integrity: sha512-nGqtvLrj5w0naR6tDPfB4cUmYCqouzyQiz6C5y/LtcDllJdrcc6WaWW6iXyIIOErTa/XRybj28aasdn4LkVk6Q==, tarball: https://registry.npmjs.org/fast-content-type-parse/-/fast-content-type-parse-2.0.1.tgz}
-    dev: true
-
   /fast-content-type-parse@3.0.0:
     resolution: {integrity: sha512-ZvLdcY8P+N8mGQJahJV5G4U88CSvT1rP8ApL6uETe88MBXrBHAkZlSEySdUlyztF7ccb+Znos3TFqaepHxdhBg==, tarball: https://registry.npmjs.org/fast-content-type-parse/-/fast-content-type-parse-3.0.0.tgz}
     dev: true
@@ -11293,6 +11273,14 @@ packages:
 
   /fecha@4.2.3:
     resolution: {integrity: sha512-OP2IUU6HeYKJi3i0z4A19kHMQoLVs4Hc+DPqqxI2h/DPZHTm/vjsfC6P0b4jCMy14XizLBqvndQ+UilD7707Jw==, tarball: https://registry.npmjs.org/fecha/-/fecha-4.2.3.tgz}
+    dev: true
+
+  /fetch-blob@3.2.0:
+    resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==, tarball: https://registry.npmjs.org/fetch-blob/-/fetch-blob-3.2.0.tgz}
+    engines: {node: ^12.20 || >= 14.13}
+    dependencies:
+      node-domexception: 1.0.0
+      web-streams-polyfill: 3.3.3
     dev: true
 
   /fflate@0.8.2:
@@ -11466,9 +11454,9 @@ packages:
       form-data: 4.0.2
       fs-extra: 10.1.0
       fuzzy: 0.1.3
-      gaxios: 6.7.1(supports-color@10.0.0)
+      gaxios: 6.7.1
       glob: 10.4.5
-      google-auth-library: 9.15.1(supports-color@10.0.0)
+      google-auth-library: 9.15.1
       ignore: 7.0.5
       js-yaml: 3.14.1
       jsonwebtoken: 9.0.2
@@ -11611,6 +11599,13 @@ packages:
       combined-stream: 1.0.8
       es-set-tostringtag: 2.1.0
       mime-types: 2.1.35
+
+  /formdata-polyfill@4.0.10:
+    resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==, tarball: https://registry.npmjs.org/formdata-polyfill/-/formdata-polyfill-4.0.10.tgz}
+    engines: {node: '>=12.20.0'}
+    dependencies:
+      fetch-blob: 3.2.0
+    dev: true
 
   /forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==, tarball: https://registry.npmjs.org/forwarded/-/forwarded-0.2.0.tgz}
@@ -11771,7 +11766,7 @@ packages:
     engines: {node: '>= 0.6.0'}
     dev: true
 
-  /gaxios@6.7.1(supports-color@10.0.0):
+  /gaxios@6.7.1:
     resolution: {integrity: sha512-LDODD4TMYx7XXdpwxAVRAIAuB0bzv0s+ywFonY46k126qzQHT9ygyoa9tncmOiQmmDrik65UYsEkv3lbfqQ3yQ==, tarball: https://registry.npmjs.org/gaxios/-/gaxios-6.7.1.tgz}
     engines: {node: '>=14'}
     dependencies:
@@ -11785,15 +11780,37 @@ packages:
       - supports-color
     dev: true
 
-  /gcp-metadata@6.1.1(supports-color@10.0.0):
+  /gaxios@7.0.0-rc.5(supports-color@10.0.0):
+    resolution: {integrity: sha512-s9rlpplwdb/KCq2DYevVTM/MpozeVZuR3pkzDGXtRhY7wD4fXftIYXUAerX07ZPB3J8/dHUJsX7fPnN2O4Psuw==, tarball: https://registry.npmjs.org/gaxios/-/gaxios-7.0.0-rc.5.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      extend: 3.0.2
+      https-proxy-agent: 7.0.6(supports-color@10.0.0)
+      node-fetch: 3.3.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /gcp-metadata@6.1.1:
     resolution: {integrity: sha512-a4tiq7E0/5fTjxPAaH4jpjkSv/uCaU2p5KC6HVGrvl0cDjA8iBZv4vv1gyzlmK0ZUKqwpOyQMKzZQe3lTit77A==, tarball: https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-6.1.1.tgz}
     engines: {node: '>=14'}
     dependencies:
-      gaxios: 6.7.1(supports-color@10.0.0)
+      gaxios: 6.7.1
       google-logging-utils: 0.0.2
       json-bigint: 1.0.0
     transitivePeerDependencies:
       - encoding
+      - supports-color
+    dev: true
+
+  /gcp-metadata@7.0.0-rc.1(supports-color@10.0.0):
+    resolution: {integrity: sha512-E6c+AdIaK1LNA839OyotiTca+B2IG1nDlMjnlcck8JjXn3fVgx57Ib9i6iL1/iqN7bA3EUQdcRRu+HqOCOABIg==, tarball: https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-7.0.0-rc.1.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      gaxios: 7.0.0-rc.5(supports-color@10.0.0)
+      google-logging-utils: 1.1.1
+      json-bigint: 1.0.0
+    transitivePeerDependencies:
       - supports-color
     dev: true
 
@@ -12070,15 +12087,30 @@ packages:
       sparkles: 2.1.0
     dev: true
 
-  /google-auth-library@9.15.1(supports-color@10.0.0):
+  /google-auth-library@10.0.0-rc.3(supports-color@10.0.0):
+    resolution: {integrity: sha512-WC9wfEKK0bk3seWKsDn2loduLth6JWKTsrbWftzrhPuzpwnVXb5oi2+aa0JDBxLBDdkGesLvTQ67F2nZ7leq1Q==, tarball: https://registry.npmjs.org/google-auth-library/-/google-auth-library-10.0.0-rc.3.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      base64-js: 1.5.1
+      ecdsa-sig-formatter: 1.0.11
+      gaxios: 7.0.0-rc.5(supports-color@10.0.0)
+      gcp-metadata: 7.0.0-rc.1(supports-color@10.0.0)
+      google-logging-utils: 1.1.1
+      gtoken: 8.0.0-rc.1(supports-color@10.0.0)
+      jws: 4.0.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /google-auth-library@9.15.1:
     resolution: {integrity: sha512-Jb6Z0+nvECVz+2lzSMt9u98UsoakXxA2HGHMCxh+so3n90XgYWkq5dur19JAJV7ONiJY22yBTyJB1TSkvPq9Ng==, tarball: https://registry.npmjs.org/google-auth-library/-/google-auth-library-9.15.1.tgz}
     engines: {node: '>=14'}
     dependencies:
       base64-js: 1.5.1
       ecdsa-sig-formatter: 1.0.11
-      gaxios: 6.7.1(supports-color@10.0.0)
-      gcp-metadata: 6.1.1(supports-color@10.0.0)
-      gtoken: 7.1.0(supports-color@10.0.0)
+      gaxios: 6.7.1
+      gcp-metadata: 6.1.1
+      gtoken: 7.1.0
       jws: 4.0.0
     transitivePeerDependencies:
       - encoding
@@ -12134,27 +12166,6 @@ packages:
       google-closure-compiler-windows: 20250520.0.0
     dev: true
 
-  /google-gax@4.4.1(supports-color@10.0.0):
-    resolution: {integrity: sha512-Phyp9fMfA00J3sZbJxbbB4jC55b7DBjE3F6poyL3wKMEBVKA79q6BGuHcTiM28yOzVql0NDbRL8MLLh8Iwk9Dg==, tarball: https://registry.npmjs.org/google-gax/-/google-gax-4.4.1.tgz}
-    engines: {node: '>=14'}
-    dependencies:
-      '@grpc/grpc-js': 1.13.4
-      '@grpc/proto-loader': 0.7.15
-      '@types/long': 4.0.2
-      abort-controller: 3.0.0
-      duplexify: 4.1.3
-      google-auth-library: 9.15.1(supports-color@10.0.0)
-      node-fetch: 2.7.0
-      object-hash: 3.0.0
-      proto3-json-serializer: 2.0.2
-      protobufjs: 7.5.3
-      retry-request: 7.0.2(supports-color@10.0.0)
-      uuid: 9.0.1
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-    dev: true
-
   /google-gax@4.6.1:
     resolution: {integrity: sha512-V6eky/xz2mcKfAd1Ioxyd6nmA61gao3n01C+YeuIwu3vzM9EDR6wcVzMSIbLMDXWeoi9SHYctXuKYC5uJUT3eQ==, tarball: https://registry.npmjs.org/google-gax/-/google-gax-4.6.1.tgz}
     engines: {node: '>=14'}
@@ -12164,20 +12175,45 @@ packages:
       '@types/long': 4.0.2
       abort-controller: 3.0.0
       duplexify: 4.1.3
-      google-auth-library: 9.15.1(supports-color@10.0.0)
+      google-auth-library: 9.15.1
       node-fetch: 2.7.0
       object-hash: 3.0.0
       proto3-json-serializer: 2.0.2
       protobufjs: 7.5.3
-      retry-request: 7.0.2(supports-color@10.0.0)
+      retry-request: 7.0.2
       uuid: 9.0.1
     transitivePeerDependencies:
       - encoding
       - supports-color
     dev: true
 
+  /google-gax@5.0.1-rc.1(supports-color@10.0.0):
+    resolution: {integrity: sha512-kz3HlvYvmQVBcam2C7FOphE6xrhjrlbKrRpNxvWYAmVHi+SCeMReWcKp64WJXNL7clSYAgYer3gCKVTTF/+wPA==, tarball: https://registry.npmjs.org/google-gax/-/google-gax-5.0.1-rc.1.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      '@grpc/grpc-js': 1.13.4
+      '@grpc/proto-loader': 0.7.15
+      '@types/long': 5.0.0
+      abort-controller: 3.0.0
+      duplexify: 4.1.3
+      google-auth-library: 10.0.0-rc.3(supports-color@10.0.0)
+      google-logging-utils: 1.1.1
+      node-fetch: 3.3.2
+      object-hash: 3.0.0
+      proto3-json-serializer: 3.0.0
+      protobufjs: 7.5.3
+      retry-request: 8.0.0(supports-color@10.0.0)
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /google-logging-utils@0.0.2:
     resolution: {integrity: sha512-NEgUnEcBiP5HrPzufUkBzJOD/Sxsco3rLNo1F1TNf7ieU8ryUzBhqba8r756CjLX7rn3fHl6iLEwPYuqpoKgQQ==, tarball: https://registry.npmjs.org/google-logging-utils/-/google-logging-utils-0.0.2.tgz}
+    engines: {node: '>=14'}
+    dev: true
+
+  /google-logging-utils@1.1.1:
+    resolution: {integrity: sha512-rcX58I7nqpu4mbKztFeOAObbomBbHU2oIb/d3tJfF3dizGSApqtSwYJigGCooHdnMyQBIw8BrWyK96w3YXgr6A==, tarball: https://registry.npmjs.org/google-logging-utils/-/google-logging-utils-1.1.1.tgz}
     engines: {node: '>=14'}
     dev: true
 
@@ -12189,8 +12225,8 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       extend: 3.0.2
-      gaxios: 6.7.1(supports-color@10.0.0)
-      google-auth-library: 9.15.1(supports-color@10.0.0)
+      gaxios: 6.7.1
+      google-auth-library: 9.15.1
       qs: 6.14.0
       url-template: 2.0.8
       uuid: 9.0.1
@@ -12237,14 +12273,24 @@ packages:
       '@grpc/grpc-js': 1.13.4
     dev: true
 
-  /gtoken@7.1.0(supports-color@10.0.0):
+  /gtoken@7.1.0:
     resolution: {integrity: sha512-pCcEwRi+TKpMlxAQObHDQ56KawURgyAf6jtIY046fJ5tIv3zDe/LEIubckAO8fj6JnAxLdmWkUfNyulQ2iKdEw==, tarball: https://registry.npmjs.org/gtoken/-/gtoken-7.1.0.tgz}
     engines: {node: '>=14.0.0'}
     dependencies:
-      gaxios: 6.7.1(supports-color@10.0.0)
+      gaxios: 6.7.1
       jws: 4.0.0
     transitivePeerDependencies:
       - encoding
+      - supports-color
+    dev: true
+
+  /gtoken@8.0.0-rc.1(supports-color@10.0.0):
+    resolution: {integrity: sha512-UjE/egX6ixArdcCKOkheuFQ4XN4/0gX92nd2JPVEYuRU2sWHAWuOVGnowm1fQUdQtaxqn1n8H0hOb2LCaUhJ3A==, tarball: https://registry.npmjs.org/gtoken/-/gtoken-8.0.0-rc.1.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      gaxios: 7.0.0-rc.5(supports-color@10.0.0)
+      jws: 4.0.0
+    transitivePeerDependencies:
       - supports-color
     dev: true
 
@@ -15644,6 +15690,12 @@ packages:
     resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==, tarball: https://registry.npmjs.org/node-addon-api/-/node-addon-api-7.1.1.tgz}
     optional: true
 
+  /node-domexception@1.0.0:
+    resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==, tarball: https://registry.npmjs.org/node-domexception/-/node-domexception-1.0.0.tgz}
+    engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
+    dev: true
+
   /node-emoji@2.2.0:
     resolution: {integrity: sha512-Z3lTE9pLaJF47NyMhd4ww1yFTAP8YhYI8SleJiHzM46Fgpm5cnNzSl9XfzFNqbaz+VlJrIj3fXQ4DeN1Rjm6cw==, tarball: https://registry.npmjs.org/node-emoji/-/node-emoji-2.2.0.tgz}
     engines: {node: '>=18'}
@@ -15664,6 +15716,15 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
+    dev: true
+
+  /node-fetch@3.3.2:
+    resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==, tarball: https://registry.npmjs.org/node-fetch/-/node-fetch-3.3.2.tgz}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dependencies:
+      data-uri-to-buffer: 4.0.1
+      fetch-blob: 3.2.0
+      formdata-polyfill: 4.0.10
     dev: true
 
   /node-forge@1.3.1:
@@ -16800,6 +16861,13 @@ packages:
       protobufjs: 7.5.3
     dev: true
 
+  /proto3-json-serializer@3.0.0:
+    resolution: {integrity: sha512-mHPIc7zaJc26HMpgX5J7vXjliYv4Rnn5ICUyINudz76iY4zFMQHTaQXrTFn0EoHnRsLD6BE+OuHhQHFUU93I9A==, tarball: https://registry.npmjs.org/proto3-json-serializer/-/proto3-json-serializer-3.0.0.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      protobufjs: 7.5.3
+    dev: true
+
   /protobufjs@6.8.8:
     resolution: {integrity: sha512-AAmHtD5pXgZfi7GMpllpO3q1Xw1OYldr+dMUlAnffGTAhqkg72WdmSY71uKBF/JuyiKs8psYbtKrhi0ASCD8qw==, tarball: https://registry.npmjs.org/protobufjs/-/protobufjs-6.8.8.tgz}
     hasBin: true
@@ -17496,15 +17564,26 @@ packages:
     engines: {node: '>=0.12'}
     dev: true
 
-  /retry-request@7.0.2(supports-color@10.0.0):
+  /retry-request@7.0.2:
     resolution: {integrity: sha512-dUOvLMJ0/JJYEn8NrpOaGNE7X3vpI5XlZS/u0ANjqtcZVKnIxP7IgCFwrKTxENw29emmwug53awKtaMm4i9g5w==, tarball: https://registry.npmjs.org/retry-request/-/retry-request-7.0.2.tgz}
     engines: {node: '>=14'}
     dependencies:
       '@types/request': 2.48.12
       extend: 3.0.2
-      teeny-request: 9.0.0(supports-color@10.0.0)
+      teeny-request: 9.0.0
     transitivePeerDependencies:
       - encoding
+      - supports-color
+    dev: true
+
+  /retry-request@8.0.0(supports-color@10.0.0):
+    resolution: {integrity: sha512-dJkZNmyV9C8WKUmbdj1xcvVlXBSvsUQCkg89TCK8rD72RdSn9A2jlXlS2VuYSTHoPJjJEfUHhjNYrlvuksF9cg==, tarball: https://registry.npmjs.org/retry-request/-/retry-request-8.0.0.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      '@types/request': 2.48.12
+      extend: 3.0.2
+      teeny-request: 10.1.0(supports-color@10.0.0)
+    transitivePeerDependencies:
       - supports-color
     dev: true
 
@@ -19114,7 +19193,19 @@ packages:
       - supports-color
     dev: true
 
-  /teeny-request@9.0.0(supports-color@10.0.0):
+  /teeny-request@10.1.0(supports-color@10.0.0):
+    resolution: {integrity: sha512-3ZnLvgWF29jikg1sAQ1g0o+lr5JX6sVgYvfUJazn7ZjJroDBUTWp44/+cFVX0bULjv4vci+rBD+oGVAkWqhUbw==, tarball: https://registry.npmjs.org/teeny-request/-/teeny-request-10.1.0.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      http-proxy-agent: 5.0.0(supports-color@10.0.0)
+      https-proxy-agent: 7.0.6(supports-color@10.0.0)
+      node-fetch: 3.3.2
+      stream-events: 1.0.5
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /teeny-request@9.0.0:
     resolution: {integrity: sha512-resvxdc6Mgb7YEThw6G6bExlXKkv6+YbuzGg9xuXxSgxJF7Ozs+o8Y9+2R3sArdWdW8nOokoQb1yrpFB0pQK2g==, tarball: https://registry.npmjs.org/teeny-request/-/teeny-request-9.0.0.tgz}
     engines: {node: '>=14'}
     dependencies:
@@ -20257,8 +20348,8 @@ packages:
       teex: 1.0.1
     dev: true
 
-  /vite-node@3.2.0(@types/node@10.17.60)(terser@5.40.0)(tsx@4.19.4):
-    resolution: {integrity: sha512-8Fc5Ko5Y4URIJkmMF/iFP1C0/OJyY+VGVe9Nw6WAdZyw4bTO+eVg9mwxWkQp/y8NnAoQY3o9KAvE1ZdA2v+Vmg==, tarball: https://registry.npmjs.org/vite-node/-/vite-node-3.2.0.tgz}
+  /vite-node@3.2.1(@types/node@10.17.60)(terser@5.40.0)(tsx@4.19.4):
+    resolution: {integrity: sha512-V4EyKQPxquurNJPtQJRZo8hKOoKNBRIhxcDbQFPFig0JdoWcUhwRgK8yoCXXrfYVPKS6XwirGHPszLnR8FbjCA==, tarball: https://registry.npmjs.org/vite-node/-/vite-node-3.2.1.tgz}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     dependencies:
@@ -20495,16 +20586,16 @@ packages:
       fsevents: 2.3.3
     dev: false
 
-  /vitest@3.2.0(@types/node@10.17.60)(jsdom@26.1.0)(terser@5.40.0)(tsx@4.19.4):
-    resolution: {integrity: sha512-P7Nvwuli8WBNmeMHHek7PnGW4oAZl9za1fddfRVidZar8wDZRi7hpznLKQePQ8JPLwSBEYDK11g+++j7uFJV8Q==, tarball: https://registry.npmjs.org/vitest/-/vitest-3.2.0.tgz}
+  /vitest@3.2.1(@types/node@10.17.60)(jsdom@26.1.0)(terser@5.40.0)(tsx@4.19.4):
+    resolution: {integrity: sha512-VZ40MBnlE1/V5uTgdqY3DmjUgZtIzsYq758JGlyQrv5syIsaYcabkfPkEuWML49Ph0D/SoqpVFd0dyVTr551oA==, tarball: https://registry.npmjs.org/vitest/-/vitest-3.2.1.tgz}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
       '@edge-runtime/vm': '*'
       '@types/debug': ^4.1.12
       '@types/node': ^18.0.0 || ^20.0.0 || >=22.0.0
-      '@vitest/browser': 3.2.0
-      '@vitest/ui': 3.2.0
+      '@vitest/browser': 3.2.1
+      '@vitest/ui': 3.2.1
       happy-dom: '*'
       jsdom: '*'
     peerDependenciesMeta:
@@ -20525,13 +20616,13 @@ packages:
     dependencies:
       '@types/chai': 5.2.2
       '@types/node': 10.17.60
-      '@vitest/expect': 3.2.0
-      '@vitest/mocker': 3.2.0(vite@6.3.5)
-      '@vitest/pretty-format': 3.2.0
-      '@vitest/runner': 3.2.0
-      '@vitest/snapshot': 3.2.0
-      '@vitest/spy': 3.2.0
-      '@vitest/utils': 3.2.0
+      '@vitest/expect': 3.2.1
+      '@vitest/mocker': 3.2.1(vite@6.3.5)
+      '@vitest/pretty-format': 3.2.1
+      '@vitest/runner': 3.2.1
+      '@vitest/snapshot': 3.2.1
+      '@vitest/spy': 3.2.1
+      '@vitest/utils': 3.2.1
       chai: 5.2.0
       debug: 4.4.1(supports-color@10.0.0)
       expect-type: 1.2.1
@@ -20546,7 +20637,7 @@ packages:
       tinypool: 1.1.0
       tinyrainbow: 2.0.0
       vite: 6.3.5(@types/node@10.17.60)(terser@5.40.0)(tsx@4.19.4)
-      vite-node: 3.2.0(@types/node@10.17.60)(terser@5.40.0)(tsx@4.19.4)
+      vite-node: 3.2.1(@types/node@10.17.60)(terser@5.40.0)(tsx@4.19.4)
       why-is-node-running: 2.3.0
     transitivePeerDependencies:
       - jiti
@@ -20666,6 +20757,11 @@ packages:
   /weak-lru-cache@1.2.2:
     resolution: {integrity: sha512-DEAoo25RfSYMuTGc9vPJzZcZullwIqRDSI9LOy+fkCJPi6hykCnfKaXTuPBDuXAUcqHXyOgFtHNp/kB2FjYHbw==, tarball: https://registry.npmjs.org/weak-lru-cache/-/weak-lru-cache-1.2.2.tgz}
     optional: true
+
+  /web-streams-polyfill@3.3.3:
+    resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==, tarball: https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-3.3.3.tgz}
+    engines: {node: '>= 8'}
+    dev: true
 
   /webdriver-js-extender@2.1.0:
     resolution: {integrity: sha512-lcUKrjbBfCK6MNsh7xaY2UAUmZwe+/ib03AjVOpFobX4O7+83BUveSrLfU0Qsyb1DaKJdQRbuU+kM9aZ6QUhiQ==, tarball: https://registry.npmjs.org/webdriver-js-extender/-/webdriver-js-extender-2.1.0.tgz}
@@ -21475,14 +21571,14 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/0ba20dc96eb638ed8ef97b14d72854d50f0238fb:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0ba20dc96eb638ed8ef97b14d72854d50f0238fb}
+  github.com/angular/dev-infra-private-ng-dev-builds/237cb88aa3a27cf514fcd103ad1b5af7bdccb641:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/237cb88aa3a27cf514fcd103ad1b5af7bdccb641}
     name: '@angular/ng-dev'
-    version: 0.0.0-4fa572d7c05565cfe7f8ac5969765e1cead899e1
+    version: 0.0.0-d8615e0a8fe169efadb68bddf338514f18317b9b
     hasBin: true
     dependencies:
-      '@google-cloud/spanner': 7.21.0(supports-color@10.0.0)
-      '@octokit/rest': 21.1.1
+      '@google-cloud/spanner': 8.0.0(supports-color@10.0.0)
+      '@octokit/rest': 22.0.0
       '@types/semver': 7.7.0
       '@types/supports-color': 10.0.0
       '@yarnpkg/lockfile': 1.1.0
@@ -21493,8 +21589,6 @@ packages:
       typescript: 4.9.5
       which: 5.0.0
       yaml: 2.8.0
-    transitivePeerDependencies:
-      - encoding
     dev: true
 
   github.com/angular/domino/93e720f143d0296dd2726ffbcf4fc12283363a7b:
