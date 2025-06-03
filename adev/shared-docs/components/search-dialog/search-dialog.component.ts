@@ -22,7 +22,7 @@ import {
 
 import {WINDOW} from '../../providers/index';
 import {ClickOutside} from '../../directives/index';
-import {Search} from '../../services/index';
+import {Search, SearchHistory} from '../../services/index';
 
 import {TextField} from '../text-field/text-field.component';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
@@ -33,6 +33,7 @@ import {Router, RouterLink} from '@angular/router';
 import {fromEvent} from 'rxjs';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {RelativeLink} from '../../pipes/relative-link.pipe';
+import {SearchHistoryComponent} from '../search-history/search-history.component';
 
 @Component({
   selector: 'docs-search-dialog',
@@ -45,6 +46,7 @@ import {RelativeLink} from '../../pipes/relative-link.pipe';
     AlgoliaIcon,
     RelativeLink,
     RouterLink,
+    SearchHistoryComponent,
   ],
   templateUrl: './search-dialog.component.html',
   styleUrls: ['./search-dialog.component.scss'],
@@ -55,6 +57,7 @@ export class SearchDialog {
   items = viewChildren(SearchItem);
   textField = viewChild(TextField);
 
+  readonly history = inject(SearchHistory);
   private readonly search = inject(Search);
   private readonly relativeLink = new RelativeLink();
   private readonly router = inject(Router);

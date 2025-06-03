@@ -50,6 +50,7 @@ ts_project(
         ":lib",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",
+        "//adev/shared-docs/testing",
         "//packages/common",
         "//packages/core",
         "//packages/core/testing",
