@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "strict": true,
-    "esModuleInterop": true,
-    "noImplicitAny": true,
-    "lib": ["es2015"],
-    "types": ["node"]
-  }
-}
