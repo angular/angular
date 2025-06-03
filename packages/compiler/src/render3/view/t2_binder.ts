@@ -12,6 +12,7 @@ import {
   ImplicitReceiver,
   PropertyRead,
   PropertyWrite,
+  RecursiveAstVisitor,
   SafePropertyRead,
   ThisReceiver,
 } from '../../expression_parser/ast';
