@@ -137,6 +137,24 @@ export class SwPush {
   }>;
 
   /**
+   * Emits updates to the push subscription, including both the previous (`oldSubscription`)
+   * and current (`newSubscription`) values. Either subscription may be `null`, depending on
+   * the context:
+   *
+   * - `oldSubscription` is `null` if no previous subscription existed.
+   * - `newSubscription` is `null` if the subscription was invalidated and not replaced.
+   *
+   * This stream allows clients to react to automatic changes in push subscriptions,
+   * such as those triggered by browser expiration or key rotation.
+   *
+   * [Push API]: https://w3c.github.io/push-api
+   */
+  readonly pushSubscriptionChanges: Observable<{
+    oldSubscription: PushSubscription | null;
+    newSubscription: PushSubscription | null;
+  }>;
+
+  /**
    * Emits the currently active
    * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
    * associated to the Service Worker registration or `null` if there is no subscription.
@@ -159,6 +177,7 @@ export class SwPush {
       this.messages = NEVER;
       this.notificationClicks = NEVER;
       this.notificationCloses = NEVER;
+      this.pushSubscriptionChanges = NEVER;
       this.subscription = NEVER;
       return;
     }
@@ -171,6 +190,10 @@ export class SwPush {
 
     this.notificationCloses = this.sw
       .eventsOfType('NOTIFICATION_CLOSE')
+      .pipe(map((message: any) => message.data));
+
+    this.pushSubscriptionChanges = this.sw
+      .eventsOfType('PUSH_SUBSCRIPTION_CHANGE')
       .pipe(map((message: any) => message.data));
 
     this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));

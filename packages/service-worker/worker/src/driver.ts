@@ -62,6 +62,14 @@ interface LatestEntry {
   latest: string;
 }
 
+// This is a bug in TypeScript, where they removed `PushSubscriptionChangeEvent`
+// based on the incorrect assumption that browsers don't support it.
+interface PushSubscriptionChangeEvent extends ExtendableEvent {
+  // https://w3c.github.io/push-api/#pushsubscriptionchangeeventinit-interface
+  oldSubscription: PushSubscription | null;
+  newSubscription: PushSubscription | null;
+}
+
 export enum DriverReadyState {
   // The SW is operating in a normal mode, responding to all traffic.
   NORMAL,
@@ -181,12 +189,18 @@ export class Driver implements Debuggable, UpdateSource {
       }
     });
 
-    // Handle the fetch, message, and push, notificationclick and notificationclose events.
+    // Handle the fetch, message, and push, notificationclick,
+    // notificationclose and pushsubscriptionchange events.
     this.scope.addEventListener('fetch', (event) => this.onFetch(event!));
     this.scope.addEventListener('message', (event) => this.onMessage(event!));
     this.scope.addEventListener('push', (event) => this.onPush(event!));
     this.scope.addEventListener('notificationclick', (event) => this.onClick(event));
     this.scope.addEventListener('notificationclose', (event) => this.onClose(event));
+    this.scope.addEventListener('pushsubscriptionchange', (event) =>
+      // This is a bug in TypeScript, where they removed `PushSubscriptionChangeEvent`
+      // based on the incorrect assumption that browsers don't support it.
+      this.onPushSubscriptionChange(event as PushSubscriptionChangeEvent),
+    );
 
     // The debugger generates debug pages in response to debugging requests.
     this.debugger = new DebugHandler(this, this.adapter);
@@ -382,6 +396,11 @@ export class Driver implements Debuggable, UpdateSource {
     event.waitUntil(this.handleClose(event.notification, event.action));
   }
 
+  private onPushSubscriptionChange(event: PushSubscriptionChangeEvent): void {
+    // Handle the pushsubscriptionchange event and keep the SW alive until it's handled.
+    event.waitUntil(this.handlePushSubscriptionChange(event));
+  }
+
   private async ensureInitialized(event: ExtendableEvent): Promise<void> {
     // Since the SW may have just been started, it may or may not have been initialized already.
     // `this.initialized` will be `null` if initialization has not yet been attempted, or will be a
@@ -507,6 +526,26 @@ export class Driver implements Debuggable, UpdateSource {
     await this.broadcast({
       type: 'NOTIFICATION_CLOSE',
       data: {action, notification: options},
+    });
+  }
+
+  /**
+   * Handles changes to the push subscription by capturing the old and new
+   * subscription details and broadcasting a `PUSH_SUBSCRIPTION_CHANGE` message.
+   *
+   * This method is triggered when the browser invalidates an existing push
+   * subscription and creates a new one, which can happen without user interaction.
+   * It ensures that clients listening for service worker events are informed
+   * of the subscription update.
+   *
+   * @param event - The `PushSubscriptionChangeEvent` containing the old and new subscriptions.
+   */
+  private async handlePushSubscriptionChange(event: PushSubscriptionChangeEvent): Promise<void> {
+    const {oldSubscription, newSubscription} = event;
+
+    await this.broadcast({
+      type: 'PUSH_SUBSCRIPTION_CHANGE',
+      data: {oldSubscription, newSubscription},
     });
   }
 

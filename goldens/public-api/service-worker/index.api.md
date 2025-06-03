@@ -52,6 +52,10 @@ export class SwPush {
             title: string;
         };
     }>;
+    readonly pushSubscriptionChanges: Observable<{
+        oldSubscription: PushSubscription | null;
+        newSubscription: PushSubscription | null;
+    }>;
     requestSubscription(options: {
         serverPublicKey: string;
     }): Promise<PushSubscription>;
