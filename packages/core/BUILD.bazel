@@ -1,8 +1,8 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "tsec_test")
-load("//tools:defaults2.bzl", "ng_project", "npm_package", "ts_config")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "tsec_test")
+load("//tools:defaults2.bzl", "ng_package", "ng_project", "npm_package", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -68,7 +68,6 @@ tsec_test(
 
 ng_package(
     name = "npm_package",
-    package_name = "@angular/core",
     srcs = [
         "package.json",
         ":event_dispatch_contract_binary",
@@ -76,6 +75,7 @@ ng_package(
     nested_packages = [
         "//packages/core/schematics:npm_package",
     ],
+    package = "@angular/core",
     tags = [
         "release-with-framework",
     ],
@@ -95,12 +95,12 @@ ng_package(
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        ":core",
-        "//packages/core/primitives/di",
-        "//packages/core/primitives/event-dispatch",
-        "//packages/core/primitives/signals",
-        "//packages/core/rxjs-interop",
-        "//packages/core/testing",
+        ":core_rjs",
+        "//packages/core/primitives/di:di_rjs",
+        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/rxjs-interop:rxjs-interop_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )
 

@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "tsec_test")
-load("//tools:defaults2.bzl", "ng_project", "npm_package")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "tsec_test")
+load("//tools:defaults2.bzl", "ng_package", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -35,6 +35,7 @@ ng_package(
     srcs = [
         "package.json",
     ],
+    package = "@angular/platform-browser",
     tags = [
         "release-with-framework",
     ],
@@ -48,10 +49,10 @@ ng_package(
         "//packages/compiler-cli/test:__pkg__",
     ],
     deps = [
-        ":platform-browser",
-        "//packages/platform-browser/animations",
-        "//packages/platform-browser/animations/async",
-        "//packages/platform-browser/testing",
+        ":platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/animations/async:async_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
     ],
 )
 

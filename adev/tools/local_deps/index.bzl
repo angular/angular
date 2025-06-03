@@ -29,7 +29,7 @@ def link_local_packages(all_deps):
         pkg_name = _angular_dep_to_pkg_name(dep)
         npm_link(
             name = _npm_link_name(pkg_name),
-            target = to_package_label(pkg_name),
+            target = to_package_label(pkg_name) + "__adev_link",
             package_name = pkg_name,
             package_path = native.package_name(),
             tags = ["manual"],

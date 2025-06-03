@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ng_package")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "ng_package", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,7 +18,8 @@ ng_package(
     srcs = [
         "package.json",
     ],
+    package = "@angular/common",
     deps = [
-        ":fake_common",
+        ":fake_common_rjs",
     ],
 )

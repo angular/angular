@@ -17,15 +17,11 @@ load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//typescript:index.bzl", "tsc")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
-load("//packages/bazel:index.bzl", _ng_package = "ng_package")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
-_INTERNAL_NG_PACKAGE_PACKAGER = "//packages/bazel/src/ng_package:packager"
-_INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL = "//packages/bazel/src/ng_package:rollup.config.js"
-_INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package/rollup"
 
 esbuild_config = _esbuild_config
 esbuild_esm_bundle = _esbuild_esm_bundle
@@ -114,70 +110,6 @@ def ts_library(
         # allows for resolution of the given target within the `node_modules/`.
         package_name = package_name,
         **kwargs
-    )
-
-def ng_package(name, readme_md = None, license_banner = None, license = None, deps = [], **kwargs):
-    """Default values for ng_package"""
-    if not readme_md:
-        readme_md = "//packages:README.md"
-    if not license_banner:
-        license_banner = "//packages:license-banner.txt"
-    if not license:
-        license = "//:LICENSE"
-    visibility = kwargs.pop("visibility", None)
-    tags = kwargs.pop("tags", [])
-
-    common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
-    substitutions = dict(common_substitutions, **{
-        "0.0.0-PLACEHOLDER": "0.0.0",
-    })
-    stamped_substitutions = dict(common_substitutions, **{
-        "0.0.0-PLACEHOLDER": "{STABLE_PROJECT_VERSION}",
-    })
-
-    _ng_package(
-        name = name,
-        deps = deps,
-        validate = True,
-        readme_md = readme_md,
-        license = license,
-        license_banner = license_banner,
-        substitutions = select({
-            "//:stamp": stamped_substitutions,
-            "//conditions:default": substitutions,
-        }),
-        ng_packager = _INTERNAL_NG_PACKAGE_PACKAGER,
-        rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
-        rollup = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP,
-        visibility = visibility,
-        tags = tags,
-        **kwargs
-    )
-
-    _ng_package(
-        name = "%s_nosub" % name,
-        deps = deps,
-        validate = True,
-        readme_md = readme_md,
-        license = license,
-        license_banner = license_banner,
-        substitutions = common_substitutions,
-        ng_packager = _INTERNAL_NG_PACKAGE_PACKAGER,
-        rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
-        rollup = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP,
-        visibility = visibility,
-        tags = ["manual"],
-        **kwargs
-    )
-
-    pkg_tar(
-        name = name + "_archive",
-        srcs = [":%s" % name],
-        extension = "tar.gz",
-        strip_prefix = "./%s" % name,
-        # should not be built unless it is a dependency of another rule
-        tags = ["manual"],
-        visibility = visibility,
     )
 
 def pkg_npm(name, deps = [], validate = True, **kwargs):

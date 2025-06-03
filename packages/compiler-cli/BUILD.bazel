@@ -142,6 +142,12 @@ pkg_npm(
     ],
 )
 
+# TODO(rules_js migration): Remove when adev uses pnpm workspaces.
+alias(
+    name = "npm_package__adev_link",
+    actual = ":npm_package",
+)
+
 # TODO(devversion): Temporary early `npm_package` for making compiler-cli usable in `rules_angular`.
 # Long-term, `pkg_npm` will be migrated to `npm_package` in general.
 npm_package(
