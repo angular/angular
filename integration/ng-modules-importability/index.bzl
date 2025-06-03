@@ -17,7 +17,7 @@ def module_test(name, npm_packages, skipped_entry_points = [], additional_deps =
             ":%s_config" % name,
             "//integration/ng-modules-importability:test_lib",
         ] + additional_deps + [pkg[0] for pkg in npm_packages.items()],
-        entry_point = "//integration/ng-modules-importability:index.ts",
+        entry_point = "//integration/ng-modules-importability:index.mjs",
         enable_linker = True,
         templated_args = ["$(rootpath :%s_config)" % name],
         **kwargs
