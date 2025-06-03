@@ -42,6 +42,7 @@ modules/ssr-benchmarks/node_modules
 # For rules_js
 adev/shared-docs/pipeline/api-gen/node_modules
 modules/node_modules
+integration/node_modules
 packages/animations/node_modules
 packages/common/node_modules
 packages/localize/node_modules

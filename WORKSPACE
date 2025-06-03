@@ -111,6 +111,7 @@ npm_translate_lock(
         "//:package.json",
         "//:pnpm-workspace.yaml",
         "//adev/shared-docs/pipeline/api-gen:package.json",
+        "//integration:package.json",
         "//modules:package.json",
         "//packages/animations:package.json",
         "//packages/common:package.json",

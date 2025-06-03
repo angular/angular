@@ -16,6 +16,8 @@ ng_project(
     interop_deps = [
         "//packages/platform-server:bundled_domino_lib",
     ],
+    # TODO(rules_js migration): testonly targets do not auto-compute a module name right now.
+    module_name = "@angular/private/testing",
     deps = [
         "//packages/common:common_rjs",
         "//packages/core:core_rjs",

@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "esbuild", "generate_api_docs", "ng_package", "tsec_test")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "esbuild", "generate_api_docs", "tsec_test")
+load("//tools:defaults2.bzl", "ng_package", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -59,6 +59,7 @@ ng_package(
     externals = [
         "xhr2",
     ],
+    package = "@angular/platform-server",
     side_effect_entry_points = [
         "@angular/platform-server/init",
     ],
@@ -74,9 +75,9 @@ ng_package(
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
     deps = [
-        ":platform-server",
-        "//packages/platform-server/init",
-        "//packages/platform-server/testing",
+        ":platform-server_rjs",
+        "//packages/platform-server/init:init_rjs",
+        "//packages/platform-server/testing:testing_rjs",
     ],
 )
 
