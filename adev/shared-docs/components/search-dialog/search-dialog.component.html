@@ -16,6 +16,7 @@
             <a
               [routerLink]="'/' + result.url | relativeLink: 'pathname'"
               [fragment]="result.url | relativeLink: 'hash'"
+              (click)="history.addItem(result)"
             >
               <div>
                 <div class="docs-result-icon-and-type">
@@ -44,7 +45,9 @@
           </li>
         }
       </ul>
-    } @else {
+    } @else if (!searchResults.isLoading() && (history.hasItems())) {
+      <docs-search-history />
+    } @else if (!searchResults.isLoading()) {
       <div class="docs-search-results docs-mini-scroll-track">
         @if (!searchResults.hasValue()) {
           <div class="docs-search-results__start-typing">
