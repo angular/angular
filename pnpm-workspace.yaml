@@ -2,7 +2,6 @@ packages:
   - .
   - adev/shared-docs/pipeline/api-gen
   - modules
-  - packages/bazel/src/ngc-wrapped/
   - packages/animations/
   - packages/common/
   - packages/compiler-cli/
