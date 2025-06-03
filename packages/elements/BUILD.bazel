@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_package", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -22,8 +22,8 @@ ng_project(
 
 ng_package(
     name = "npm_package",
-    package_name = "@angular/elements",
     srcs = ["package.json"],
+    package = "@angular/elements",
     tags = [
         "release-with-framework",
     ],
@@ -34,7 +34,7 @@ ng_package(
         "//modules/ssr-benchmarks:__subpackages__",
     ],
     deps = [
-        ":elements",
+        ":elements_rjs",
     ],
 )
 

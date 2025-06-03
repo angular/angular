@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
-load("//tools:defaults2.bzl", "ng_project", "npm_package")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_package", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,10 +23,10 @@ ng_project(
 
 ng_package(
     name = "npm_package",
-    package_name = "@angular/router",
     srcs = [
         "package.json",
     ],
+    package = "@angular/router",
     tags = [
         "release-with-framework",
     ],
@@ -42,9 +42,9 @@ ng_package(
         "//packages/compiler-cli/test/transformers:__pkg__",
     ],
     deps = [
-        ":router",
-        "//packages/router/testing",
-        "//packages/router/upgrade",
+        ":router_rjs",
+        "//packages/router/testing:testing_rjs",
+        "//packages/router/upgrade:upgrade_rjs",
     ],
 )
 

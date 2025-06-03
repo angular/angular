@@ -1,7 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//packages/common/locales:index.bzl", "generate_base_currencies_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
-load("//tools:defaults2.bzl", "ng_project", "npm_package")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_package", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -43,6 +43,7 @@ ng_package(
         "package.json",
     ],
     nested_packages = ["//packages/common/locales:package"],
+    package = "@angular/common",
     tags = [
         "release-with-framework",
     ],
@@ -62,11 +63,11 @@ ng_package(
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/common/http/testing",
-        "//packages/common/testing",
-        "//packages/common/upgrade",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/common/http/testing:testing_rjs",
+        "//packages/common/testing:testing_rjs",
+        "//packages/common/upgrade:upgrade_rjs",
     ],
 )
 
