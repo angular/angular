@@ -1,6 +1,5 @@
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
 load("@npm2//:defs.bzl", "npm_link_all_packages")
-load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
 load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm")
 load("//tools:defaults2.bzl", "npm_package", "ts_config", "ts_project")
 
@@ -48,7 +47,6 @@ esbuild(
         "//packages/compiler-cli:src/bin/ng_xi18n.ts",
         "//packages/compiler-cli/linker:index.ts",
         "//packages/compiler-cli/linker/babel:index.ts",
-        "//packages/compiler-cli/private:bazel.ts",
         "//packages/compiler-cli/private:localize.ts",
         "//packages/compiler-cli/private:migrations.ts",
         "//packages/compiler-cli/private:tooling.ts",
@@ -182,10 +180,4 @@ api_golden_test(
     ],
     entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/core/api/src/public_options.d.ts",
     golden = "angular/goldens/public-api/compiler-cli/compiler_options.api.md",
-)
-
-# Controls whether the Ivy compiler produces performance traces as part of each build
-ng_perf_flag(
-    name = "ng_perf",
-    build_setting_default = False,
 )

@@ -17,14 +17,12 @@ load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//typescript:index.bzl", "tsc")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
-load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
+load("//packages/bazel:index.bzl", _ng_package = "ng_package")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
-_INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
-_INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
 _INTERNAL_NG_PACKAGE_PACKAGER = "//packages/bazel/src/ng_package:packager"
 _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL = "//packages/bazel/src/ng_package:rollup.config.js"
 _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package/rollup"
@@ -115,52 +113,6 @@ def ts_library(
         # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
         # allows for resolution of the given target within the `node_modules/`.
         package_name = package_name,
-        **kwargs
-    )
-
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, **kwargs):
-    """Default values for ng_module"""
-    deps = deps + ["@npm//tslib"]
-    if testonly:
-        # Match the types[] in //packages:tsconfig-test.json
-        deps.append("@npm//@types/jasmine")
-        deps.append("@npm//@types/node")
-    if not tsconfig and testonly:
-        tsconfig = _DEFAULT_TSCONFIG_TEST
-
-    if not module_name:
-        module_name = compute_module_name(testonly)
-
-    # If no `package_name` is explicitly set, we use the default module name as package
-    # name, so that the target can be resolved within NodeJS executions, by activating
-    # the Bazel NodeJS linker. See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
-    if not package_name:
-        package_name = compute_module_name(testonly)
-
-    if not entry_point:
-        entry_point = "public_api.ts"
-
-    is_angular_core_compilation = False
-    if native.package_name().startswith("packages/core"):
-        is_angular_core_compilation = True
-
-    _ng_module(
-        name = name,
-        flat_module_out_file = name,
-        tsconfig = tsconfig,
-        entry_point = entry_point,
-        testonly = testonly,
-        deps = deps,
-        compiler = _INTERNAL_NG_MODULE_COMPILER,
-        ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
-        strict_templates = True,
-        # `module_name` is used for AMD module names within emitted JavaScript files.
-        module_name = module_name,
-        # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
-        # allows for resolution of the given target within the `node_modules/`.
-        package_name = package_name,
-        is_angular_core_compilation = is_angular_core_compilation,
-        perf_flag = "//packages/compiler-cli:ng_perf",
         **kwargs
     )
 

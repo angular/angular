@@ -113,7 +113,6 @@ npm_translate_lock(
         "//adev/shared-docs/pipeline/api-gen:package.json",
         "//modules:package.json",
         "//packages/animations:package.json",
-        "//packages/bazel/src/ngc-wrapped:package.json",
         "//packages/common:package.json",
         "//packages/compiler:package.json",
         "//packages/compiler-cli:package.json",
