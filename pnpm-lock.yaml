@@ -15,29 +15,29 @@ importers:
   .:
     dependencies:
       '@angular-devkit/build-angular':
-        specifier: 20.0.0-rc.3
-        version: 20.0.0-rc.3(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.4)(typescript@5.8.2)(vite@6.3.5)
+        specifier: 20.0.0
+        version: 20.0.0(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.4)(typescript@5.8.2)(vite@6.3.5)
       '@angular-devkit/core':
-        specifier: 20.0.0-rc.3
-        version: 20.0.0-rc.3(chokidar@4.0.3)
+        specifier: 20.0.0
+        version: 20.0.0(chokidar@4.0.3)
       '@angular-devkit/schematics':
-        specifier: 20.0.0-rc.3
-        version: 20.0.0-rc.3(chokidar@4.0.3)
+        specifier: 20.0.0
+        version: 20.0.0(chokidar@4.0.3)
       '@angular/build':
-        specifier: 20.0.0-rc.3
-        version: 20.0.0-rc.3(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.2)
+        specifier: 20.0.0
+        version: 20.0.0(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.2)
       '@angular/cdk':
-        specifier: 20.0.0-rc.2
-        version: 20.0.0-rc.2(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2)
+        specifier: 20.0.1
+        version: 20.0.1(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2)
       '@angular/cli':
-        specifier: 20.0.0-rc.3
-        version: 20.0.0-rc.3(@types/node@18.19.103)(chokidar@4.0.3)
+        specifier: 20.0.0
+        version: 20.0.0(@types/node@18.19.103)(chokidar@4.0.3)
       '@angular/material':
-        specifier: 20.0.0-rc.2
-        version: 20.0.0-rc.2(@angular/cdk@20.0.0-rc.2)(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/forms@20.0.0)(@angular/platform-browser@20.0.0)(rxjs@7.8.2)
+        specifier: 20.0.1
+        version: 20.0.1(@angular/cdk@20.0.1)(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/forms@20.0.0)(@angular/platform-browser@20.0.0)(rxjs@7.8.2)
       '@angular/ssr':
-        specifier: 20.0.0-rc.3
-        version: 20.0.0-rc.3(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
+        specifier: 20.0.0
+        version: 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
       '@babel/cli':
         specifier: 7.27.2
         version: 7.27.2(@babel/core@7.27.1)
@@ -87,8 +87,8 @@ importers:
         specifier: ^16.0.0
         version: 16.0.1(rollup@4.41.1)
       '@schematics/angular':
-        specifier: 20.0.0-rc.3
-        version: 20.0.0-rc.3(chokidar@4.0.3)
+        specifier: 20.0.0
+        version: 20.0.0(chokidar@4.0.3)
       '@stackblitz/sdk':
         specifier: ^1.11.0
         version: 1.11.0
@@ -250,7 +250,7 @@ importers:
         version: 0.0.12(@angular/common@20.0.0)(@angular/core@20.0.0)
       ngx-progressbar:
         specifier: ^14.0.0
-        version: 14.0.0(@angular/cdk@20.0.0-rc.2)(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@20.0.1)(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2)
       open-in-idx:
         specifier: ^0.1.1
         version: 0.1.1
@@ -343,14 +343,14 @@ importers:
         specifier: ^6.0.0
         version: 6.0.1
       '@angular-devkit/architect-cli':
-        specifier: 0.2000.0-rc.3
-        version: 0.2000.0-rc.3(chokidar@4.0.3)
+        specifier: 0.2000.0
+        version: 0.2000.0(chokidar@4.0.3)
       '@angular/build-tooling':
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4
-        version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/ssr@20.0.0-rc.3)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-junit-reporter@2.0.1)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(rxjs@7.8.2)(terser@5.39.2)(tsx@4.19.4)(zone.js@0.12.0)
+        version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/ssr@20.0.0)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-junit-reporter@2.0.1)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(rxjs@7.8.2)(terser@5.39.2)(tsx@4.19.4)(zone.js@0.12.0)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#39b8cbd214dc08e81b7a69624d9dc152ce7c42db
-        version: github.com/angular/dev-infra-private-ng-dev-builds/39b8cbd214dc08e81b7a69624d9dc152ce7c42db
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#0ba20dc96eb638ed8ef97b14d72854d50f0238fb
+        version: github.com/angular/dev-infra-private-ng-dev-builds/0ba20dc96eb638ed8ef97b14d72854d50f0238fb
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.27.1)
@@ -568,8 +568,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/build':
-        specifier: 20.0.0-rc.1
-        version: 20.0.0-rc.1(@angular/compiler-cli@20.0.0)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.3)
+        specifier: 20.0.0
+        version: 20.0.0(@angular/compiler-cli@20.0.0)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.3)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -685,8 +685,8 @@ importers:
         specifier: workspace:*
         version: link:../../../animations
       '@angular/build':
-        specifier: 20.0.0-rc.1
-        version: 20.0.0-rc.1(@angular/compiler-cli@20.0.0)(@angular/compiler@20.0.0)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.3)
+        specifier: 20.0.0
+        version: 20.0.0(@angular/compiler-cli@20.0.0)(@angular/compiler@20.0.0)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.3)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1014,13 +1014,13 @@ packages:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  /@angular-devkit/architect-cli@0.2000.0-rc.3(chokidar@4.0.3):
-    resolution: {integrity: sha512-C7lYr3ZeTGxZfozjWaFzhKN7DpvoZvocMSYHWhw1ijpa/JpypfPLtvnGVPNZQ23oexu35mr6Mn2pJ4nrN5kBUg==, tarball: https://registry.npmjs.org/@angular-devkit/architect-cli/-/architect-cli-0.2000.0-rc.3.tgz}
+  /@angular-devkit/architect-cli@0.2000.0(chokidar@4.0.3):
+    resolution: {integrity: sha512-/1IW8kSeQccPEc7H/SwyXVFfPVg3ZZH6eLqgHhd8eJkPRibIilN2HqJiAZUFqellWm9jSosBiAJCGySBq4zpsg==, tarball: https://registry.npmjs.org/@angular-devkit/architect-cli/-/architect-cli-0.2000.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
     dependencies:
-      '@angular-devkit/architect': 0.2000.0-rc.3(chokidar@4.0.3)
-      '@angular-devkit/core': 20.0.0-rc.3(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0(chokidar@4.0.3)
       ansi-colors: 4.1.3
       progress: 2.0.3
       yargs-parser: 21.1.1
@@ -1038,42 +1038,32 @@ packages:
       - chokidar
     dev: true
 
-  /@angular-devkit/architect@0.2000.0-rc.1(chokidar@4.0.3):
-    resolution: {integrity: sha512-KsqKwWypBKP3D7oOh51pKjD+a84Geo3sh7NyoBG6wvCLz3nvat2GubmH30TdeserLN9Shqz4i3D7qsy8j/OOVw==, tarball: https://registry.npmjs.org/@angular-devkit/architect/-/architect-0.2000.0-rc.1.tgz}
-    engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
-    dependencies:
-      '@angular-devkit/core': 20.0.0-rc.1(chokidar@4.0.3)
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - chokidar
-    dev: false
-
-  /@angular-devkit/architect@0.2000.0-rc.3(chokidar@4.0.3):
-    resolution: {integrity: sha512-BMzSdX9AHB4NUDDK26PXiY1+/+4DNxMprrvAsJwYfRj16P2yCxoN8+UjniIdc0V7woYmv9GVxjpiuuFOK/X3PA==, tarball: https://registry.npmjs.org/@angular-devkit/architect/-/architect-0.2000.0-rc.3.tgz}
+  /@angular-devkit/architect@0.2000.0(chokidar@4.0.3):
+    resolution: {integrity: sha512-6accOuvf1BY6hTO5LzYcxp2Dpl0bThgYF3KdwVWqrYF5+6PWfQLdy+rKxBiCIv0+0OngZVI79RuAtUKFowFM/A==, tarball: https://registry.npmjs.org/@angular-devkit/architect/-/architect-0.2000.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     dependencies:
-      '@angular-devkit/core': 20.0.0-rc.3(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0(chokidar@4.0.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - chokidar
 
-  /@angular-devkit/build-angular@20.0.0-rc.3(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.4)(typescript@5.8.2)(vite@6.3.5):
-    resolution: {integrity: sha512-DMqwX0ZfWPzWLPPdGB4pFxFccyEznPkS5TFZcb/Leu6XIYMcXPOEGWpvDII69rwplEECWOGVb8LIzj5cZgil9Q==, tarball: https://registry.npmjs.org/@angular-devkit/build-angular/-/build-angular-20.0.0-rc.3.tgz}
+  /@angular-devkit/build-angular@20.0.0(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.19.4)(typescript@5.8.2)(vite@6.3.5):
+    resolution: {integrity: sha512-6JAVLjGLSTy69FAXTPzi9t4SswT4b3mOiz8GPleNTO0VmxgQA8C+zUqG81fH1ZDdSZBfUZcbgim+Y47G3cORcg==, tarball: https://registry.npmjs.org/@angular-devkit/build-angular/-/build-angular-20.0.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
-      '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': ^20.0.0 || ^20.0.0-next.0
-      '@angular/localize': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
-      '@angular/service-worker': ^20.0.0 || ^20.0.0-next.0
-      '@angular/ssr': ^20.0.0-rc.3
+      '@angular/compiler-cli': ^20.0.0
+      '@angular/core': ^20.0.0
+      '@angular/localize': ^20.0.0
+      '@angular/platform-browser': ^20.0.0
+      '@angular/platform-server': ^20.0.0
+      '@angular/service-worker': ^20.0.0
+      '@angular/ssr': ^20.0.0
       '@web/test-runner': ^0.20.0
       browser-sync: ^3.0.2
       jest: ^29.5.0
       jest-environment-jsdom: ^29.5.0
       karma: ^6.3.0
-      ng-packagr: ^20.0.0 || ^20.0.0-next.0
+      ng-packagr: ^20.0.0
       protractor: ^7.0.0
       tailwindcss: ^2.0.0 || ^3.0.0 || ^4.0.0
       typescript: '>=5.8 <5.9'
@@ -1108,13 +1098,13 @@ packages:
         optional: true
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2000.0-rc.3(chokidar@4.0.3)
-      '@angular-devkit/build-webpack': 0.2000.0-rc.3(chokidar@4.0.3)(webpack-dev-server@5.2.1)(webpack@5.99.8)
-      '@angular-devkit/core': 20.0.0-rc.3(chokidar@4.0.3)
-      '@angular/build': 20.0.0-rc.3(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.1)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.2)
+      '@angular-devkit/architect': 0.2000.0(chokidar@4.0.3)
+      '@angular-devkit/build-webpack': 0.2000.0(chokidar@4.0.3)(webpack-dev-server@5.2.1)(webpack@5.99.8)
+      '@angular-devkit/core': 20.0.0(chokidar@4.0.3)
+      '@angular/build': 20.0.0(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.1)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.2)
       '@angular/core': 20.0.0(rxjs@7.8.2)(zone.js@0.12.0)
       '@angular/platform-browser': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)
-      '@angular/ssr': 20.0.0-rc.3(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
+      '@angular/ssr': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
       '@babel/core': 7.27.1
       '@babel/generator': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
@@ -1125,7 +1115,7 @@ packages:
       '@babel/preset-env': 7.27.2(@babel/core@7.27.1)
       '@babel/runtime': 7.27.1
       '@discoveryjs/json-ext': 0.6.3
-      '@ngtools/webpack': 20.0.0-rc.3(typescript@5.8.2)(webpack@5.99.8)
+      '@ngtools/webpack': 20.0.0(typescript@5.8.2)(webpack@5.99.8)
       '@vitejs/plugin-basic-ssl': 2.0.0(vite@6.3.5)
       ansi-colors: 4.1.3
       autoprefixer: 10.4.21(postcss@8.5.3)
@@ -1133,7 +1123,7 @@ packages:
       browserslist: 4.24.5
       copy-webpack-plugin: 13.0.0(webpack@5.99.8)
       css-loader: 7.1.2(webpack@5.99.8)
-      esbuild-wasm: 0.25.4
+      esbuild-wasm: 0.25.5
       fast-glob: 3.3.3
       http-proxy-middleware: 3.0.5
       istanbul-lib-instrument: 6.0.3
@@ -1146,7 +1136,7 @@ packages:
       loader-utils: 3.3.1
       mini-css-extract-plugin: 2.9.2(webpack@5.99.8)
       open: 10.1.2
-      ora: 5.4.1
+      ora: 8.2.0
       picomatch: 4.0.2
       piscina: 5.0.0
       postcss: 8.5.3
@@ -1163,13 +1153,13 @@ packages:
       tree-kill: 1.2.2
       tslib: 2.8.1
       typescript: 5.8.2
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
       webpack-dev-middleware: 7.4.2(webpack@5.99.8)
       webpack-dev-server: 5.2.1(webpack@5.99.8)
       webpack-merge: 6.0.1
       webpack-subresource-integrity: 5.1.0(webpack@5.99.8)
     optionalDependencies:
-      esbuild: 0.25.4
+      esbuild: 0.25.5
     transitivePeerDependencies:
       - '@angular/compiler'
       - '@rspack/core'
@@ -1206,16 +1196,16 @@ packages:
       webpack-sources: 1.3.0
     dev: true
 
-  /@angular-devkit/build-webpack@0.2000.0-rc.3(chokidar@4.0.3)(webpack-dev-server@5.2.1)(webpack@5.99.8):
-    resolution: {integrity: sha512-baXO/LGt5BCctPHG9z6THcLkxcmVtRApYlmKU6xXCoBEXWKXlABpHHRIIZNFel3JXKC+RiZ2JX9aug5DjcaNaA==, tarball: https://registry.npmjs.org/@angular-devkit/build-webpack/-/build-webpack-0.2000.0-rc.3.tgz}
+  /@angular-devkit/build-webpack@0.2000.0(chokidar@4.0.3)(webpack-dev-server@5.2.1)(webpack@5.99.8):
+    resolution: {integrity: sha512-bIbz6uFQLTBvmadWJo/KEF1GruqIC23HF8YcUfy/1AuSd07EjoWL8wZrpl6eY+RE8hjua3AC1XSrzWD2e+xd8w==, tarball: https://registry.npmjs.org/@angular-devkit/build-webpack/-/build-webpack-0.2000.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       webpack: ^5.30.0
       webpack-dev-server: ^5.0.2
     dependencies:
-      '@angular-devkit/architect': 0.2000.0-rc.3(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0(chokidar@4.0.3)
       rxjs: 7.8.2
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
       webpack-dev-server: 5.2.1(webpack@5.99.8)
     transitivePeerDependencies:
       - chokidar
@@ -1239,26 +1229,8 @@ packages:
       source-map: 0.7.4
     dev: true
 
-  /@angular-devkit/core@20.0.0-rc.1(chokidar@4.0.3):
-    resolution: {integrity: sha512-OQqn2ptD630wv86OGIxOt9DZHhkG+NLdhQZkA8FLqLUfA1+ISG3UuCTh1S3GfgI6fXXcfnP4I1r0xR2ZvdE64Q==, tarball: https://registry.npmjs.org/@angular-devkit/core/-/core-20.0.0-rc.1.tgz}
-    engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
-    peerDependencies:
-      chokidar: ^4.0.0
-    peerDependenciesMeta:
-      chokidar:
-        optional: true
-    dependencies:
-      ajv: 8.17.1
-      ajv-formats: 3.0.1(ajv@8.17.1)
-      chokidar: 4.0.3
-      jsonc-parser: 3.3.1
-      picomatch: 4.0.2
-      rxjs: 7.8.2
-      source-map: 0.7.4
-    dev: false
-
-  /@angular-devkit/core@20.0.0-rc.3(chokidar@4.0.3):
-    resolution: {integrity: sha512-Ji4A+UE3V6sBTDBVWGx7Yd8JwUq+h1f68rRjFXwaRb6FB1siU3zTbitHFVmb/asOzR8gl7/q6j5RJFT1wmtXcQ==, tarball: https://registry.npmjs.org/@angular-devkit/core/-/core-20.0.0-rc.3.tgz}
+  /@angular-devkit/core@20.0.0(chokidar@4.0.3):
+    resolution: {integrity: sha512-cnB/I1QQC3WoIcb+f/7hknOOkgIFjAuxd7nW1RnS+pn0qQTWyjnXjq2jocx2TBMwZRikycc7f3mlA1DgWzJUuQ==, tarball: https://registry.npmjs.org/@angular-devkit/core/-/core-20.0.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       chokidar: ^4.0.0
@@ -1274,14 +1246,14 @@ packages:
       rxjs: 7.8.2
       source-map: 0.7.4
 
-  /@angular-devkit/schematics@20.0.0-rc.3(chokidar@4.0.3):
-    resolution: {integrity: sha512-dSMbzKmaAe61f+tKV2SVvWK0NyLl76dcoUWZtRAwrgtiQrBMKFO3LzM1gcD4h2FQK5Th8c418XYKyYP6eMAurw==, tarball: https://registry.npmjs.org/@angular-devkit/schematics/-/schematics-20.0.0-rc.3.tgz}
+  /@angular-devkit/schematics@20.0.0(chokidar@4.0.3):
+    resolution: {integrity: sha512-35WbWP8ARnaqVjOzy7IOyWsY/jeyUqfVj4KgHG2O4fHAhIhaBqhP8dDDP+SwM+bToIqklg0fzHUUhFTRxzzyoQ==, tarball: https://registry.npmjs.org/@angular-devkit/schematics/-/schematics-20.0.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     dependencies:
-      '@angular-devkit/core': 20.0.0-rc.3(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0(chokidar@4.0.3)
       jsonc-parser: 3.3.1
       magic-string: 0.30.17
-      ora: 5.4.1
+      ora: 8.2.0
       rxjs: 7.8.2
     transitivePeerDependencies:
       - chokidar
@@ -1297,7 +1269,7 @@ packages:
       - zone.js
     dev: true
 
-  /@angular/build@19.1.0-rc.0(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tsx@4.19.4)(typescript@5.7.3):
+  /@angular/build@19.1.0-rc.0(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tsx@4.19.4)(typescript@5.7.3):
     resolution: {integrity: sha512-ALl+MVMYBF+E7HyAQ+1MtE6sNIOAX0o2Sfs0wdIQfM2unRl6jPsz/Ker4BjnNQIK4wRCcstyzBv5mZBDulfFIQ==, tarball: https://registry.npmjs.org/@angular/build/-/build-19.1.0-rc.0.tgz}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1332,7 +1304,7 @@ packages:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.1901.0-rc.0(chokidar@4.0.3)
-      '@angular/ssr': 20.0.0-rc.3(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
+      '@angular/ssr': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
       '@babel/core': 7.26.0
       '@babel/helper-annotate-as-pure': 7.25.9
       '@babel/helper-split-export-declaration': 7.24.7
@@ -1375,21 +1347,21 @@ packages:
       - yaml
     dev: true
 
-  /@angular/build@20.0.0-rc.1(@angular/compiler-cli@20.0.0)(@angular/compiler@20.0.0)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.3):
-    resolution: {integrity: sha512-Wyg86m0Y4yZMveqSRX8TAElKMyM/PJYAgNgU1ZAZFFqVl69i7mCGXoTGERF6zDtBa3Yo0YnFFuRzNgD6g/RJsA==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0-rc.1.tgz}
-    engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+  /@angular/build@20.0.0(@angular/compiler-cli@20.0.0)(@angular/compiler@20.0.0)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.3):
+    resolution: {integrity: sha512-b/FAvvUbsMEgr+UlvTtDz4NCv+BFi+55swtKRmaritvZ2rDfhF1x9tUmSkT6GebGXkI/Gg0kl5rJoD5iv5lY3A==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0.tgz}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
-      '@angular/compiler': ^20.0.0 || ^20.0.0-next.0
-      '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': ^20.0.0 || ^20.0.0-next.0
-      '@angular/localize': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
-      '@angular/service-worker': ^20.0.0 || ^20.0.0-next.0
-      '@angular/ssr': ^20.0.0-rc.1
+      '@angular/compiler': ^20.0.0
+      '@angular/compiler-cli': ^20.0.0
+      '@angular/core': ^20.0.0
+      '@angular/localize': ^20.0.0
+      '@angular/platform-browser': ^20.0.0
+      '@angular/platform-server': ^20.0.0
+      '@angular/service-worker': ^20.0.0
+      '@angular/ssr': ^20.0.0
       karma: ^6.4.0
       less: ^4.2.0
-      ng-packagr: ^20.0.0 || ^20.0.0-next.0
+      ng-packagr: ^20.0.0
       postcss: ^8.4.0
       tailwindcss: ^2.0.0 || ^3.0.0 || ^4.0.0
       tslib: ^2.3.0
@@ -1422,20 +1394,20 @@ packages:
         optional: true
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2000.0-rc.1(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0(chokidar@4.0.3)
       '@angular/compiler': 20.0.0
       '@angular/compiler-cli': 20.0.0(@angular/compiler@20.0.0)(typescript@5.8.3)
       '@angular/core': link:packages/core
       '@angular/platform-browser': link:packages/platform-browser
-      '@angular/ssr': 20.0.0-rc.3(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
+      '@angular/ssr': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
       '@babel/core': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
       '@babel/helper-split-export-declaration': 7.24.7
       '@inquirer/confirm': 5.1.10(@types/node@18.19.103)
       '@vitejs/plugin-basic-ssl': 2.0.0(vite@6.3.5)
-      beasties: 0.3.3
+      beasties: 0.3.4
       browserslist: 4.24.5
-      esbuild: 0.25.4
+      esbuild: 0.25.5
       https-proxy-agent: 7.0.6(supports-color@10.0.0)
       istanbul-lib-instrument: 6.0.3
       jsonc-parser: 3.3.1
@@ -1473,21 +1445,21 @@ packages:
       - yaml
     dev: false
 
-  /@angular/build@20.0.0-rc.1(@angular/compiler-cli@20.0.0)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.3):
-    resolution: {integrity: sha512-Wyg86m0Y4yZMveqSRX8TAElKMyM/PJYAgNgU1ZAZFFqVl69i7mCGXoTGERF6zDtBa3Yo0YnFFuRzNgD6g/RJsA==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0-rc.1.tgz}
-    engines: {node: ^20.11.1 || ^22.11.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+  /@angular/build@20.0.0(@angular/compiler-cli@20.0.0)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.3):
+    resolution: {integrity: sha512-b/FAvvUbsMEgr+UlvTtDz4NCv+BFi+55swtKRmaritvZ2rDfhF1x9tUmSkT6GebGXkI/Gg0kl5rJoD5iv5lY3A==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0.tgz}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
-      '@angular/compiler': ^20.0.0 || ^20.0.0-next.0
-      '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': ^20.0.0 || ^20.0.0-next.0
-      '@angular/localize': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
-      '@angular/service-worker': ^20.0.0 || ^20.0.0-next.0
-      '@angular/ssr': ^20.0.0-rc.1
+      '@angular/compiler': ^20.0.0
+      '@angular/compiler-cli': ^20.0.0
+      '@angular/core': ^20.0.0
+      '@angular/localize': ^20.0.0
+      '@angular/platform-browser': ^20.0.0
+      '@angular/platform-server': ^20.0.0
+      '@angular/service-worker': ^20.0.0
+      '@angular/ssr': ^20.0.0
       karma: ^6.4.0
       less: ^4.2.0
-      ng-packagr: ^20.0.0 || ^20.0.0-next.0
+      ng-packagr: ^20.0.0
       postcss: ^8.4.0
       tailwindcss: ^2.0.0 || ^3.0.0 || ^4.0.0
       tslib: ^2.3.0
@@ -1520,21 +1492,21 @@ packages:
         optional: true
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2000.0-rc.1(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0(chokidar@4.0.3)
       '@angular/compiler': link:packages/compiler
       '@angular/compiler-cli': 20.0.0(@angular/compiler@packages+compiler)(typescript@5.8.3)
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
       '@angular/platform-browser': link:packages/platform-browser
-      '@angular/ssr': 20.0.0-rc.3(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
+      '@angular/ssr': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
       '@babel/core': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
       '@babel/helper-split-export-declaration': 7.24.7
       '@inquirer/confirm': 5.1.10(@types/node@18.19.103)
       '@vitejs/plugin-basic-ssl': 2.0.0(vite@6.3.5)
-      beasties: 0.3.3
+      beasties: 0.3.4
       browserslist: 4.24.5
-      esbuild: 0.25.4
+      esbuild: 0.25.5
       https-proxy-agent: 7.0.6(supports-color@10.0.0)
       istanbul-lib-instrument: 6.0.3
       jsonc-parser: 3.3.1
@@ -1572,21 +1544,21 @@ packages:
       - yaml
     dev: false
 
-  /@angular/build@20.0.0-rc.3(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.1)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.2):
-    resolution: {integrity: sha512-O5OIcL5jT3MOHuPjKD3po71OcmVmSsr/JLru+eSNsN1bcfEPALqhtwbwoIVgnoT/awZxzMZVvxxMflB/uIradQ==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0-rc.3.tgz}
+  /@angular/build@20.0.0(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.1)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.2):
+    resolution: {integrity: sha512-b/FAvvUbsMEgr+UlvTtDz4NCv+BFi+55swtKRmaritvZ2rDfhF1x9tUmSkT6GebGXkI/Gg0kl5rJoD5iv5lY3A==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
-      '@angular/compiler': ^20.0.0 || ^20.0.0-next.0
-      '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': ^20.0.0 || ^20.0.0-next.0
-      '@angular/localize': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
-      '@angular/service-worker': ^20.0.0 || ^20.0.0-next.0
-      '@angular/ssr': ^20.0.0-rc.3
+      '@angular/compiler': ^20.0.0
+      '@angular/compiler-cli': ^20.0.0
+      '@angular/core': ^20.0.0
+      '@angular/localize': ^20.0.0
+      '@angular/platform-browser': ^20.0.0
+      '@angular/platform-server': ^20.0.0
+      '@angular/service-worker': ^20.0.0
+      '@angular/ssr': ^20.0.0
       karma: ^6.4.0
       less: ^4.2.0
-      ng-packagr: ^20.0.0 || ^20.0.0-next.0
+      ng-packagr: ^20.0.0
       postcss: ^8.4.0
       tailwindcss: ^2.0.0 || ^3.0.0 || ^4.0.0
       tslib: ^2.3.0
@@ -1619,18 +1591,18 @@ packages:
         optional: true
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2000.0-rc.3(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0(chokidar@4.0.3)
       '@angular/core': 20.0.0(rxjs@7.8.2)(zone.js@0.12.0)
       '@angular/platform-browser': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)
-      '@angular/ssr': 20.0.0-rc.3(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
+      '@angular/ssr': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
       '@babel/core': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
       '@babel/helper-split-export-declaration': 7.24.7
       '@inquirer/confirm': 5.1.10(@types/node@18.19.103)
       '@vitejs/plugin-basic-ssl': 2.0.0(vite@6.3.5)
-      beasties: 0.3.3
+      beasties: 0.3.4
       browserslist: 4.24.5
-      esbuild: 0.25.4
+      esbuild: 0.25.5
       https-proxy-agent: 7.0.6(supports-color@10.0.0)
       istanbul-lib-instrument: 6.0.3
       jsonc-parser: 3.3.1
@@ -1668,21 +1640,21 @@ packages:
       - yaml
     dev: false
 
-  /@angular/build@20.0.0-rc.3(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.2):
-    resolution: {integrity: sha512-O5OIcL5jT3MOHuPjKD3po71OcmVmSsr/JLru+eSNsN1bcfEPALqhtwbwoIVgnoT/awZxzMZVvxxMflB/uIradQ==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0-rc.3.tgz}
+  /@angular/build@20.0.0(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tslib@2.8.1)(tsx@4.19.4)(typescript@5.8.2):
+    resolution: {integrity: sha512-b/FAvvUbsMEgr+UlvTtDz4NCv+BFi+55swtKRmaritvZ2rDfhF1x9tUmSkT6GebGXkI/Gg0kl5rJoD5iv5lY3A==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
-      '@angular/compiler': ^20.0.0 || ^20.0.0-next.0
-      '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': ^20.0.0 || ^20.0.0-next.0
-      '@angular/localize': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-browser': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
-      '@angular/service-worker': ^20.0.0 || ^20.0.0-next.0
-      '@angular/ssr': ^20.0.0-rc.3
+      '@angular/compiler': ^20.0.0
+      '@angular/compiler-cli': ^20.0.0
+      '@angular/core': ^20.0.0
+      '@angular/localize': ^20.0.0
+      '@angular/platform-browser': ^20.0.0
+      '@angular/platform-server': ^20.0.0
+      '@angular/service-worker': ^20.0.0
+      '@angular/ssr': ^20.0.0
       karma: ^6.4.0
       less: ^4.2.0
-      ng-packagr: ^20.0.0 || ^20.0.0-next.0
+      ng-packagr: ^20.0.0
       postcss: ^8.4.0
       tailwindcss: ^2.0.0 || ^3.0.0 || ^4.0.0
       tslib: ^2.3.0
@@ -1715,18 +1687,18 @@ packages:
         optional: true
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2000.0-rc.3(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0(chokidar@4.0.3)
       '@angular/core': 20.0.0(rxjs@7.8.2)(zone.js@0.12.0)
       '@angular/platform-browser': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)
-      '@angular/ssr': 20.0.0-rc.3(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
+      '@angular/ssr': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0)
       '@babel/core': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
       '@babel/helper-split-export-declaration': 7.24.7
       '@inquirer/confirm': 5.1.10(@types/node@18.19.103)
       '@vitejs/plugin-basic-ssl': 2.0.0(vite@6.3.5)
-      beasties: 0.3.3
+      beasties: 0.3.4
       browserslist: 4.24.5
-      esbuild: 0.25.4
+      esbuild: 0.25.5
       https-proxy-agent: 7.0.6(supports-color@10.0.0)
       istanbul-lib-instrument: 6.0.3
       jsonc-parser: 3.3.1
@@ -1764,11 +1736,11 @@ packages:
       - yaml
     dev: false
 
-  /@angular/cdk@20.0.0-rc.2(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2):
-    resolution: {integrity: sha512-jqv5621my90f9mn3iZRkAp8f7Dn1b16QyuDl6csOsH4wATySIprCE9jECcyAOtWvWGibw4fr5kocYkX+Lljlag==, tarball: https://registry.npmjs.org/@angular/cdk/-/cdk-20.0.0-rc.2.tgz}
+  /@angular/cdk@20.0.1(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2):
+    resolution: {integrity: sha512-llJIyKdF9D0hJ9/PNy9A5vmayNgHr7MtQrtjpeLyPuK8qkUnxQd9Hzv5olqixRrbxxDs/Lt0l1T2ViHGy7WYhg==, tarball: https://registry.npmjs.org/@angular/cdk/-/cdk-20.0.1.tgz}
     peerDependencies:
-      '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
-      '@angular/core': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
+      '@angular/common': ^20.0.0 || ^21.0.0
+      '@angular/core': ^20.0.0 || ^21.0.0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
       '@angular/common': 20.0.0(@angular/core@20.0.0)(rxjs@7.8.2)
@@ -1778,17 +1750,17 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /@angular/cli@20.0.0-rc.3(@types/node@18.19.103)(chokidar@4.0.3):
-    resolution: {integrity: sha512-VUD5TYxWGWN+e5iTFHxHi2je98mHdUruUKbjzt+gFstb7TlXjNGjw2z0/FfcR7x88hJJy23M5W6e82g9OFWE9Q==, tarball: https://registry.npmjs.org/@angular/cli/-/cli-20.0.0-rc.3.tgz}
+  /@angular/cli@20.0.0(@types/node@18.19.103)(chokidar@4.0.3):
+    resolution: {integrity: sha512-k9EDaaLYTMWkBbayUh6Tf0PJ+E0e6jRPrjOSPsOJHRh+S5BsNdLIsKJmThGXkq2wnD35+2CKPy9UQyvfaIA5KQ==, tarball: https://registry.npmjs.org/@angular/cli/-/cli-20.0.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
     dependencies:
-      '@angular-devkit/architect': 0.2000.0-rc.3(chokidar@4.0.3)
-      '@angular-devkit/core': 20.0.0-rc.3(chokidar@4.0.3)
-      '@angular-devkit/schematics': 20.0.0-rc.3(chokidar@4.0.3)
+      '@angular-devkit/architect': 0.2000.0(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0(chokidar@4.0.3)
+      '@angular-devkit/schematics': 20.0.0(chokidar@4.0.3)
       '@inquirer/prompts': 7.5.1(@types/node@18.19.103)
       '@listr2/prompt-adapter-inquirer': 2.0.22(@inquirer/prompts@7.5.1)
-      '@schematics/angular': 20.0.0-rc.3(chokidar@4.0.3)
+      '@schematics/angular': 20.0.0(chokidar@4.0.3)
       '@yarnpkg/lockfile': 1.1.0
       ini: 5.0.0
       jsonc-parser: 3.3.1
@@ -1918,17 +1890,17 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /@angular/material@20.0.0-rc.2(@angular/cdk@20.0.0-rc.2)(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/forms@20.0.0)(@angular/platform-browser@20.0.0)(rxjs@7.8.2):
-    resolution: {integrity: sha512-/ktz7f9Kc3+8NaJGDAROFlgGWMWGb0SgLio4CcxxZ2JxNH4JB2XSTnoQoFrShATTuaoBQ/D8/YaE+L5BZTPvGw==, tarball: https://registry.npmjs.org/@angular/material/-/material-20.0.0-rc.2.tgz}
+  /@angular/material@20.0.1(@angular/cdk@20.0.1)(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/forms@20.0.0)(@angular/platform-browser@20.0.0)(rxjs@7.8.2):
+    resolution: {integrity: sha512-ip1hLYSVi2+UtMsONnRFocof0bk+0mCXErrdfH3MLg1j5ZtJ8XEOUY9TeGqWFCkVf8J37mIAI5g2TZW1YuJLUg==, tarball: https://registry.npmjs.org/@angular/material/-/material-20.0.1.tgz}
     peerDependencies:
-      '@angular/cdk': 20.0.0-rc.2
-      '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
-      '@angular/core': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
-      '@angular/forms': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
-      '@angular/platform-browser': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
+      '@angular/cdk': 20.0.1
+      '@angular/common': ^20.0.0 || ^21.0.0
+      '@angular/core': ^20.0.0 || ^21.0.0
+      '@angular/forms': ^20.0.0 || ^21.0.0
+      '@angular/platform-browser': ^20.0.0 || ^21.0.0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
-      '@angular/cdk': 20.0.0-rc.2(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2)
+      '@angular/cdk': 20.0.1(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2)
       '@angular/common': 20.0.0(@angular/core@20.0.0)(rxjs@7.8.2)
       '@angular/core': 20.0.0(rxjs@7.8.2)(zone.js@0.12.0)
       '@angular/forms': 20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/platform-browser@20.0.0)(rxjs@7.8.2)
@@ -1967,13 +1939,13 @@ packages:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  /@angular/ssr@20.0.0-rc.3(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0):
-    resolution: {integrity: sha512-i2fS6GRMlKd1WQF0Jskdgm7PKIAt6Jt8aCd7kKsRooXamYkMIT/FhzB09Mf5enNKRV+uKJkeB3EYFvKdk2BEfg==, tarball: https://registry.npmjs.org/@angular/ssr/-/ssr-20.0.0-rc.3.tgz}
+  /@angular/ssr@20.0.0(@angular/common@20.0.0)(@angular/core@20.0.0)(@angular/router@20.0.0):
+    resolution: {integrity: sha512-ezca+E3A3zRbMDmvyyclgDX38JvmXb0ZvqGkgQGURa12+5dHvwy8hnDT1eBoRxXBedp+cnIkxXxLjTzXb4/4Hw==, tarball: https://registry.npmjs.org/@angular/ssr/-/ssr-20.0.0.tgz}
     peerDependencies:
-      '@angular/common': ^20.0.0 || ^20.0.0-next.0
-      '@angular/core': ^20.0.0 || ^20.0.0-next.0
-      '@angular/platform-server': ^20.0.0 || ^20.0.0-next.0
-      '@angular/router': ^20.0.0 || ^20.0.0-next.0
+      '@angular/common': ^20.0.0
+      '@angular/core': ^20.0.0
+      '@angular/platform-server': ^20.0.0
+      '@angular/router': ^20.0.0
     peerDependenciesMeta:
       '@angular/platform-server':
         optional: true
@@ -3744,8 +3716,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/aix-ppc64@0.25.4:
-    resolution: {integrity: sha512-1VCICWypeQKhVbE9oW/sJaAmjLxhVqacdkvPLEjwlttjfwENRSClS8EjBz0KzRyFSCPDIkuXW34Je/vk7zdB7Q==, tarball: https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.25.4.tgz}
+  /@esbuild/aix-ppc64@0.25.5:
+    resolution: {integrity: sha512-9o3TMmpmftaCMepOdA5k/yDw8SfInyzWWTjYTFCX3kPSDJMROQTb8jg+h9Cnwnmm1vOzvxN7gIfB5V2ewpjtGA==, tarball: https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [ppc64]
     os: [aix]
@@ -3759,8 +3731,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/android-arm64@0.25.4:
-    resolution: {integrity: sha512-bBy69pgfhMGtCnwpC/x5QhfxAz/cBgQ9enbtwjf6V9lnPI/hMyT9iWpR1arm0l3kttTr4L0KSLpKmLp/ilKS9A==, tarball: https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.25.4.tgz}
+  /@esbuild/android-arm64@0.25.5:
+    resolution: {integrity: sha512-VGzGhj4lJO+TVGV1v8ntCZWJktV7SGCs3Pn1GRWI1SBFtRALoomm8k5E9Pmwg3HOAal2VDc2F9+PM/rEY6oIDg==, tarball: https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [android]
@@ -3774,8 +3746,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/android-arm@0.25.4:
-    resolution: {integrity: sha512-QNdQEps7DfFwE3hXiU4BZeOV68HHzYwGd0Nthhd3uCkkEKK7/R6MTgM0P7H7FAs5pU/DIWsviMmEGxEoxIZ+ZQ==, tarball: https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.25.4.tgz}
+  /@esbuild/android-arm@0.25.5:
+    resolution: {integrity: sha512-AdJKSPeEHgi7/ZhuIPtcQKr5RQdo6OO2IL87JkianiMYMPbCtot9fxPbrMiBADOWWm3T2si9stAiVsGbTQFkbA==, tarball: https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [arm]
     os: [android]
@@ -3789,8 +3761,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/android-x64@0.25.4:
-    resolution: {integrity: sha512-TVhdVtQIFuVpIIR282btcGC2oGQoSfZfmBdTip2anCaVYcqWlZXGcdcKIUklfX2wj0JklNYgz39OBqh2cqXvcQ==, tarball: https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.25.4.tgz}
+  /@esbuild/android-x64@0.25.5:
+    resolution: {integrity: sha512-D2GyJT1kjvO//drbRT3Hib9XPwQeWd9vZoBJn+bu/lVsOZ13cqNdDeqIF/xQ5/VmWvMduP6AmXvylO/PIc2isw==, tarball: https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [android]
@@ -3804,8 +3776,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/darwin-arm64@0.25.4:
-    resolution: {integrity: sha512-Y1giCfM4nlHDWEfSckMzeWNdQS31BQGs9/rouw6Ub91tkK79aIMTH3q9xHvzH8d0wDru5Ci0kWB8b3up/nl16g==, tarball: https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.4.tgz}
+  /@esbuild/darwin-arm64@0.25.5:
+    resolution: {integrity: sha512-GtaBgammVvdF7aPIgH2jxMDdivezgFu6iKpmT+48+F8Hhg5J/sfnDieg0aeG/jfSvkYQU2/pceFPDKlqZzwnfQ==, tarball: https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [darwin]
@@ -3819,8 +3791,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/darwin-x64@0.25.4:
-    resolution: {integrity: sha512-CJsry8ZGM5VFVeyUYB3cdKpd/H69PYez4eJh1W/t38vzutdjEjtP7hB6eLKBoOdxcAlCtEYHzQ/PJ/oU9I4u0A==, tarball: https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.25.4.tgz}
+  /@esbuild/darwin-x64@0.25.5:
+    resolution: {integrity: sha512-1iT4FVL0dJ76/q1wd7XDsXrSW+oLoquptvh4CLR4kITDtqi2e/xwXwdCVH8hVHU43wgJdsq7Gxuzcs6Iq/7bxQ==, tarball: https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [darwin]
@@ -3834,8 +3806,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/freebsd-arm64@0.25.4:
-    resolution: {integrity: sha512-yYq+39NlTRzU2XmoPW4l5Ifpl9fqSk0nAJYM/V/WUGPEFfek1epLHJIkTQM6bBs1swApjO5nWgvr843g6TjxuQ==, tarball: https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.4.tgz}
+  /@esbuild/freebsd-arm64@0.25.5:
+    resolution: {integrity: sha512-nk4tGP3JThz4La38Uy/gzyXtpkPW8zSAmoUhK9xKKXdBCzKODMc2adkB2+8om9BDYugz+uGV7sLmpTYzvmz6Sw==, tarball: https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [freebsd]
@@ -3849,8 +3821,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/freebsd-x64@0.25.4:
-    resolution: {integrity: sha512-0FgvOJ6UUMflsHSPLzdfDnnBBVoCDtBTVyn/MrWloUNvq/5SFmh13l3dvgRPkDihRxb77Y17MbqbCAa2strMQQ==, tarball: https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.25.4.tgz}
+  /@esbuild/freebsd-x64@0.25.5:
+    resolution: {integrity: sha512-PrikaNjiXdR2laW6OIjlbeuCPrPaAl0IwPIaRv+SMV8CiM8i2LqVUHFC1+8eORgWyY7yhQY+2U2fA55mBzReaw==, tarball: https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [freebsd]
@@ -3864,8 +3836,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-arm64@0.25.4:
-    resolution: {integrity: sha512-+89UsQTfXdmjIvZS6nUnOOLoXnkUTB9hR5QAeLrQdzOSWZvNSAXAtcRDHWtqAUtAmv7ZM1WPOOeSxDzzzMogiQ==, tarball: https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.4.tgz}
+  /@esbuild/linux-arm64@0.25.5:
+    resolution: {integrity: sha512-Z9kfb1v6ZlGbWj8EJk9T6czVEjjq2ntSYLY2cw6pAZl4oKtfgQuS4HOq41M/BcoLPzrUbNd+R4BXFyH//nHxVg==, tarball: https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [linux]
@@ -3879,8 +3851,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-arm@0.25.4:
-    resolution: {integrity: sha512-kro4c0P85GMfFYqW4TWOpvmF8rFShbWGnrLqlzp4X1TNWjRY3JMYUfDCtOxPKOIY8B0WC8HN51hGP4I4hz4AaQ==, tarball: https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.25.4.tgz}
+  /@esbuild/linux-arm@0.25.5:
+    resolution: {integrity: sha512-cPzojwW2okgh7ZlRpcBEtsX7WBuqbLrNXqLU89GxWbNt6uIg78ET82qifUy3W6OVww6ZWobWub5oqZOVtwolfw==, tarball: https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [arm]
     os: [linux]
@@ -3894,8 +3866,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-ia32@0.25.4:
-    resolution: {integrity: sha512-yTEjoapy8UP3rv8dB0ip3AfMpRbyhSN3+hY8mo/i4QXFeDxmiYbEKp3ZRjBKcOP862Ua4b1PDfwlvbuwY7hIGQ==, tarball: https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.25.4.tgz}
+  /@esbuild/linux-ia32@0.25.5:
+    resolution: {integrity: sha512-sQ7l00M8bSv36GLV95BVAdhJ2QsIbCuCjh/uYrWiMQSUuV+LpXwIqhgJDcvMTj+VsQmqAHL2yYaasENvJ7CDKA==, tarball: https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [ia32]
     os: [linux]
@@ -3909,8 +3881,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-loong64@0.25.4:
-    resolution: {integrity: sha512-NeqqYkrcGzFwi6CGRGNMOjWGGSYOpqwCjS9fvaUlX5s3zwOtn1qwg1s2iE2svBe4Q/YOG1q6875lcAoQK/F4VA==, tarball: https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.25.4.tgz}
+  /@esbuild/linux-loong64@0.25.5:
+    resolution: {integrity: sha512-0ur7ae16hDUC4OL5iEnDb0tZHDxYmuQyhKhsPBV8f99f6Z9KQM02g33f93rNH5A30agMS46u2HP6qTdEt6Q1kg==, tarball: https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [loong64]
     os: [linux]
@@ -3924,8 +3896,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-mips64el@0.25.4:
-    resolution: {integrity: sha512-IcvTlF9dtLrfL/M8WgNI/qJYBENP3ekgsHbYUIzEzq5XJzzVEV/fXY9WFPfEEXmu3ck2qJP8LG/p3Q8f7Zc2Xg==, tarball: https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.25.4.tgz}
+  /@esbuild/linux-mips64el@0.25.5:
+    resolution: {integrity: sha512-kB/66P1OsHO5zLz0i6X0RxlQ+3cu0mkxS3TKFvkb5lin6uwZ/ttOkP3Z8lfR9mJOBk14ZwZ9182SIIWFGNmqmg==, tarball: https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [mips64el]
     os: [linux]
@@ -3939,8 +3911,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-ppc64@0.25.4:
-    resolution: {integrity: sha512-HOy0aLTJTVtoTeGZh4HSXaO6M95qu4k5lJcH4gxv56iaycfz1S8GO/5Jh6X4Y1YiI0h7cRyLi+HixMR+88swag==, tarball: https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.25.4.tgz}
+  /@esbuild/linux-ppc64@0.25.5:
+    resolution: {integrity: sha512-UZCmJ7r9X2fe2D6jBmkLBMQetXPXIsZjQJCjgwpVDz+YMcS6oFR27alkgGv3Oqkv07bxdvw7fyB71/olceJhkQ==, tarball: https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [ppc64]
     os: [linux]
@@ -3954,8 +3926,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-riscv64@0.25.4:
-    resolution: {integrity: sha512-i8JUDAufpz9jOzo4yIShCTcXzS07vEgWzyX3NH2G7LEFVgrLEhjwL3ajFE4fZI3I4ZgiM7JH3GQ7ReObROvSUA==, tarball: https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.25.4.tgz}
+  /@esbuild/linux-riscv64@0.25.5:
+    resolution: {integrity: sha512-kTxwu4mLyeOlsVIFPfQo+fQJAV9mh24xL+y+Bm6ej067sYANjyEw1dNHmvoqxJUCMnkBdKpvOn0Ahql6+4VyeA==, tarball: https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [riscv64]
     os: [linux]
@@ -3969,8 +3941,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-s390x@0.25.4:
-    resolution: {integrity: sha512-jFnu+6UbLlzIjPQpWCNh5QtrcNfMLjgIavnwPQAfoGx4q17ocOU9MsQ2QVvFxwQoWpZT8DvTLooTvmOQXkO51g==, tarball: https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.25.4.tgz}
+  /@esbuild/linux-s390x@0.25.5:
+    resolution: {integrity: sha512-K2dSKTKfmdh78uJ3NcWFiqyRrimfdinS5ErLSn3vluHNeHVnBAFWC8a4X5N+7FgVE1EjXS1QDZbpqZBjfrqMTQ==, tarball: https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [s390x]
     os: [linux]
@@ -3984,8 +3956,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/linux-x64@0.25.4:
-    resolution: {integrity: sha512-6e0cvXwzOnVWJHq+mskP8DNSrKBr1bULBvnFLpc1KY+d+irZSgZ02TGse5FsafKS5jg2e4pbvK6TPXaF/A6+CA==, tarball: https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.25.4.tgz}
+  /@esbuild/linux-x64@0.25.5:
+    resolution: {integrity: sha512-uhj8N2obKTE6pSZ+aMUbqq+1nXxNjZIIjCjGLfsWvVpy7gKCOL6rsY1MhRh9zLtUtAI7vpgLMK6DxjO8Qm9lJw==, tarball: https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
@@ -3999,8 +3971,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/netbsd-arm64@0.25.4:
-    resolution: {integrity: sha512-vUnkBYxZW4hL/ie91hSqaSNjulOnYXE1VSLusnvHg2u3jewJBz3YzB9+oCw8DABeVqZGg94t9tyZFoHma8gWZQ==, tarball: https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.4.tgz}
+  /@esbuild/netbsd-arm64@0.25.5:
+    resolution: {integrity: sha512-pwHtMP9viAy1oHPvgxtOv+OkduK5ugofNTVDilIzBLpoWAM16r7b/mxBvfpuQDpRQFMfuVr5aLcn4yveGvBZvw==, tarball: https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [netbsd]
@@ -4014,8 +3986,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/netbsd-x64@0.25.4:
-    resolution: {integrity: sha512-XAg8pIQn5CzhOB8odIcAm42QsOfa98SBeKUdo4xa8OvX8LbMZqEtgeWE9P/Wxt7MlG2QqvjGths+nq48TrUiKw==, tarball: https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.25.4.tgz}
+  /@esbuild/netbsd-x64@0.25.5:
+    resolution: {integrity: sha512-WOb5fKrvVTRMfWFNCroYWWklbnXH0Q5rZppjq0vQIdlsQKuw6mdSihwSo4RV/YdQ5UCKKvBy7/0ZZYLBZKIbwQ==, tarball: https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [netbsd]
@@ -4029,8 +4001,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/openbsd-arm64@0.25.4:
-    resolution: {integrity: sha512-Ct2WcFEANlFDtp1nVAXSNBPDxyU+j7+tId//iHXU2f/lN5AmO4zLyhDcpR5Cz1r08mVxzt3Jpyt4PmXQ1O6+7A==, tarball: https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.4.tgz}
+  /@esbuild/openbsd-arm64@0.25.5:
+    resolution: {integrity: sha512-7A208+uQKgTxHd0G0uqZO8UjK2R0DDb4fDmERtARjSHWxqMTye4Erz4zZafx7Di9Cv+lNHYuncAkiGFySoD+Mw==, tarball: https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [openbsd]
@@ -4044,8 +4016,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/openbsd-x64@0.25.4:
-    resolution: {integrity: sha512-xAGGhyOQ9Otm1Xu8NT1ifGLnA6M3sJxZ6ixylb+vIUVzvvd6GOALpwQrYrtlPouMqd/vSbgehz6HaVk4+7Afhw==, tarball: https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.25.4.tgz}
+  /@esbuild/openbsd-x64@0.25.5:
+    resolution: {integrity: sha512-G4hE405ErTWraiZ8UiSoesH8DaCsMm0Cay4fsFWOOUcz8b8rC6uCvnagr+gnioEjWn0wC+o1/TAHt+It+MpIMg==, tarball: https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [openbsd]
@@ -4059,8 +4031,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/sunos-x64@0.25.4:
-    resolution: {integrity: sha512-Mw+tzy4pp6wZEK0+Lwr76pWLjrtjmJyUB23tHKqEDP74R3q95luY/bXqXZeYl4NYlvwOqoRKlInQialgCKy67Q==, tarball: https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.25.4.tgz}
+  /@esbuild/sunos-x64@0.25.5:
+    resolution: {integrity: sha512-l+azKShMy7FxzY0Rj4RCt5VD/q8mG/e+mDivgspo+yL8zW7qEwctQ6YqKX34DTEleFAvCIUviCFX1SDZRSyMQA==, tarball: https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [sunos]
@@ -4074,8 +4046,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/win32-arm64@0.25.4:
-    resolution: {integrity: sha512-AVUP428VQTSddguz9dO9ngb+E5aScyg7nOeJDrF1HPYu555gmza3bDGMPhmVXL8svDSoqPCsCPjb265yG/kLKQ==, tarball: https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.25.4.tgz}
+  /@esbuild/win32-arm64@0.25.5:
+    resolution: {integrity: sha512-O2S7SNZzdcFG7eFKgvwUEZ2VG9D/sn/eIiz8XRZ1Q/DO5a3s76Xv0mdBzVM5j5R639lXQmPmSo0iRpHqUUrsxw==, tarball: https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [win32]
@@ -4089,8 +4061,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/win32-ia32@0.25.4:
-    resolution: {integrity: sha512-i1sW+1i+oWvQzSgfRcxxG2k4I9n3O9NRqy8U+uugaT2Dy7kLO9Y7wI72haOahxceMX8hZAzgGou1FhndRldxRg==, tarball: https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.25.4.tgz}
+  /@esbuild/win32-ia32@0.25.5:
+    resolution: {integrity: sha512-onOJ02pqs9h1iMJ1PQphR+VZv8qBMQ77Klcsqv9CNW2w6yLqoURLcgERAIurY6QE63bbLuqgP9ATqajFLK5AMQ==, tarball: https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [ia32]
     os: [win32]
@@ -4104,8 +4076,8 @@ packages:
     dev: true
     optional: true
 
-  /@esbuild/win32-x64@0.25.4:
-    resolution: {integrity: sha512-nOT2vZNw6hJ+z43oP1SPea/G/6AbN6X+bGNhNuq8NtRHy4wsMhw765IKLNmnjek7GvjWBYQ8Q5VBoYTFg9y1UQ==, tarball: https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.4.tgz}
+  /@esbuild/win32-x64@0.25.5:
+    resolution: {integrity: sha512-TXv6YnJ8ZMVdX+SXWVBo/0p8LTcrUYngpWjvm91TMjjBQii7Oz11Lw5lbDV5Y0TzuhSJHwiH4hEtC1I42mMS0g==, tarball: https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.5.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
@@ -5321,16 +5293,16 @@ packages:
       - supports-color
     dev: true
 
-  /@ngtools/webpack@20.0.0-rc.3(typescript@5.8.2)(webpack@5.99.8):
-    resolution: {integrity: sha512-WIDAxFU671xqBy1IYDGNXpzca4fHtbrHeuSy64gSbjWcw6wCMUrwfdgCI2h5T6BjobBpxl+zQ9xa1AfdjkotSg==, tarball: https://registry.npmjs.org/@ngtools/webpack/-/webpack-20.0.0-rc.3.tgz}
+  /@ngtools/webpack@20.0.0(typescript@5.8.2)(webpack@5.99.8):
+    resolution: {integrity: sha512-3kT8PlLDvThhZxNbJWdG2qrZrUOg0tAjd7mnsOsg65/2tsBZ2HaR3fSzkHOG+Ly6SlWiS4owKWqPRGlgFuq1bw==, tarball: https://registry.npmjs.org/@ngtools/webpack/-/webpack-20.0.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
-      '@angular/compiler-cli': ^20.0.0 || ^20.0.0-next.0
+      '@angular/compiler-cli': ^20.0.0
       typescript: '>=5.8 <5.9'
       webpack: ^5.54.0
     dependencies:
       typescript: 5.8.2
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3:
@@ -6471,12 +6443,12 @@ packages:
       - '@types/node'
     dev: false
 
-  /@schematics/angular@20.0.0-rc.3(chokidar@4.0.3):
-    resolution: {integrity: sha512-se/dewD5g2sjY8jAseQV++jYr6HwIr8SBrQ5jEZeI1SflNbjKxf2I/yAeDInUHBMvj0H9z3sODWPzde+yv+82Q==, tarball: https://registry.npmjs.org/@schematics/angular/-/angular-20.0.0-rc.3.tgz}
+  /@schematics/angular@20.0.0(chokidar@4.0.3):
+    resolution: {integrity: sha512-lK5TvxEoeaoPnxM31qeNWhHUJ3kKMnRHknYhOfOmS8xfme78nS01FdU7TODLkg2p4GNEVVtXoxhj3FmrG3srKw==, tarball: https://registry.npmjs.org/@schematics/angular/-/angular-20.0.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     dependencies:
-      '@angular-devkit/core': 20.0.0-rc.3(chokidar@4.0.3)
-      '@angular-devkit/schematics': 20.0.0-rc.3(chokidar@4.0.3)
+      '@angular-devkit/core': 20.0.0(chokidar@4.0.3)
+      '@angular-devkit/schematics': 20.0.0(chokidar@4.0.3)
       jsonc-parser: 3.3.1
     transitivePeerDependencies:
       - chokidar
@@ -8295,7 +8267,7 @@ packages:
     dependencies:
       '@babel/core': 7.27.1
       find-up: 5.0.0
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /babel-plugin-istanbul@6.1.1:
@@ -8454,6 +8426,7 @@ packages:
 
   /base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==, tarball: https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz}
+    dev: true
 
   /base64id@2.0.0:
     resolution: {integrity: sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==, tarball: https://registry.npmjs.org/base64id/-/base64id-2.0.0.tgz}
@@ -8515,8 +8488,8 @@ packages:
       postcss-media-query-parser: 0.2.3
     dev: true
 
-  /beasties@0.3.3:
-    resolution: {integrity: sha512-Mba3V4hTPrM7P2CSidueg71JZ0G+DyK7maBqp4/uax/PQznwdFti9cOW6Z3lTxBRH84kRICN0TyQ0MSSmufaAw==, tarball: https://registry.npmjs.org/beasties/-/beasties-0.3.3.tgz}
+  /beasties@0.3.4:
+    resolution: {integrity: sha512-NmzN1zN1cvGccXFyZ73335+ASXwBlVWcUPssiUDIlFdfyatHPRRufjCd5w8oPaQPvVnf9ELklaCGb1gi9FBwIw==, tarball: https://registry.npmjs.org/beasties/-/beasties-0.3.4.tgz}
     engines: {node: '>=14.0.0'}
     dependencies:
       css-select: 5.1.0
@@ -8576,6 +8549,7 @@ packages:
       buffer: 5.7.1
       inherits: 2.0.4
       readable-stream: 3.6.2
+    dev: true
 
   /bl@5.1.0:
     resolution: {integrity: sha512-tv1ZJHLfTDnXE6tMHv73YgSJaWR2AFuPwMntBe7XL/GBFHnT0CLnsHMogfk5+GzCDC5ZWarSCYaIGATZt9dNsQ==, tarball: https://registry.npmjs.org/bl/-/bl-5.1.0.tgz}
@@ -8824,6 +8798,7 @@ packages:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
+    dev: true
 
   /buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==, tarball: https://registry.npmjs.org/buffer/-/buffer-6.0.3.tgz}
@@ -9256,6 +9231,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       restore-cursor: 3.1.0
+    dev: true
 
   /cli-cursor@5.0.0:
     resolution: {integrity: sha512-aCj4O5wKyszjMmDT4tZj93kxyydN/K5zPWSCe6/0AV/AA1pqe5ZBIw0a2ZfPQV7lL5/yb5HsUreJ6UFAF1tEQw==, tarball: https://registry.npmjs.org/cli-cursor/-/cli-cursor-5.0.0.tgz}
@@ -9352,6 +9328,7 @@ packages:
   /clone@1.0.4:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==, tarball: https://registry.npmjs.org/clone/-/clone-1.0.4.tgz}
     engines: {node: '>=0.8'}
+    dev: true
 
   /clone@2.1.2:
     resolution: {integrity: sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==, tarball: https://registry.npmjs.org/clone/-/clone-2.1.2.tgz}
@@ -9816,7 +9793,7 @@ packages:
       schema-utils: 4.3.2
       serialize-javascript: 6.0.2
       tinyglobby: 0.2.14
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /core-js-compat@3.42.0:
@@ -9964,7 +9941,7 @@ packages:
       postcss-modules-values: 4.0.0(postcss@8.5.3)
       postcss-value-parser: 4.2.0
       semver: 7.7.2
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /css-select@5.1.0:
@@ -10493,6 +10470,7 @@ packages:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==, tarball: https://registry.npmjs.org/defaults/-/defaults-1.0.4.tgz}
     dependencies:
       clone: 1.0.4
+    dev: true
 
   /defer-to-connect@2.0.1:
     resolution: {integrity: sha512-4tvttepXG1VaYGrRibk5EwJd1t4udunSOVMdLSAL6mId1ix438oPwPZMALY41FCijukO1L0twNcGsdzS7dHgDg==, tarball: https://registry.npmjs.org/defer-to-connect/-/defer-to-connect-2.0.1.tgz}
@@ -11076,8 +11054,8 @@ packages:
       when: 3.7.8
     dev: false
 
-  /esbuild-wasm@0.25.4:
-    resolution: {integrity: sha512-2HlCS6rNvKWaSKhWaG/YIyRsTsL3gUrMP2ToZMBIjw9LM7vVcIs+rz8kE2vExvTJgvM8OKPqNpcHawY/BQc/qQ==, tarball: https://registry.npmjs.org/esbuild-wasm/-/esbuild-wasm-0.25.4.tgz}
+  /esbuild-wasm@0.25.5:
+    resolution: {integrity: sha512-V/rbdOws2gDcnCAECfPrajhuafI0WY4WumUgc8ZHwOLnvmM0doLQ+dqvVFI2qkVxQsvo6880aC9IjpyDqcwwTw==, tarball: https://registry.npmjs.org/esbuild-wasm/-/esbuild-wasm-0.25.5.tgz}
     engines: {node: '>=18'}
     hasBin: true
     dev: false
@@ -11114,36 +11092,36 @@ packages:
       '@esbuild/win32-x64': 0.24.2
     dev: true
 
-  /esbuild@0.25.4:
-    resolution: {integrity: sha512-8pgjLUcUjcgDg+2Q4NYXnPbo/vncAY4UmyaCm0jZevERqCHZIaWwdJHkf8XQtu4AxSKCdvrUbT0XUr1IdZzI8Q==, tarball: https://registry.npmjs.org/esbuild/-/esbuild-0.25.4.tgz}
+  /esbuild@0.25.5:
+    resolution: {integrity: sha512-P8OtKZRv/5J5hhz0cUAdu/cLuPIKXpQl1R9pZtvmHWQvrAUVd0UNIPT4IB4W3rNOqVO0rlqHmCIbSwxh/c9yUQ==, tarball: https://registry.npmjs.org/esbuild/-/esbuild-0.25.5.tgz}
     engines: {node: '>=18'}
     hasBin: true
     optionalDependencies:
-      '@esbuild/aix-ppc64': 0.25.4
-      '@esbuild/android-arm': 0.25.4
-      '@esbuild/android-arm64': 0.25.4
-      '@esbuild/android-x64': 0.25.4
-      '@esbuild/darwin-arm64': 0.25.4
-      '@esbuild/darwin-x64': 0.25.4
-      '@esbuild/freebsd-arm64': 0.25.4
-      '@esbuild/freebsd-x64': 0.25.4
-      '@esbuild/linux-arm': 0.25.4
-      '@esbuild/linux-arm64': 0.25.4
-      '@esbuild/linux-ia32': 0.25.4
-      '@esbuild/linux-loong64': 0.25.4
-      '@esbuild/linux-mips64el': 0.25.4
-      '@esbuild/linux-ppc64': 0.25.4
-      '@esbuild/linux-riscv64': 0.25.4
-      '@esbuild/linux-s390x': 0.25.4
-      '@esbuild/linux-x64': 0.25.4
-      '@esbuild/netbsd-arm64': 0.25.4
-      '@esbuild/netbsd-x64': 0.25.4
-      '@esbuild/openbsd-arm64': 0.25.4
-      '@esbuild/openbsd-x64': 0.25.4
-      '@esbuild/sunos-x64': 0.25.4
-      '@esbuild/win32-arm64': 0.25.4
-      '@esbuild/win32-ia32': 0.25.4
-      '@esbuild/win32-x64': 0.25.4
+      '@esbuild/aix-ppc64': 0.25.5
+      '@esbuild/android-arm': 0.25.5
+      '@esbuild/android-arm64': 0.25.5
+      '@esbuild/android-x64': 0.25.5
+      '@esbuild/darwin-arm64': 0.25.5
+      '@esbuild/darwin-x64': 0.25.5
+      '@esbuild/freebsd-arm64': 0.25.5
+      '@esbuild/freebsd-x64': 0.25.5
+      '@esbuild/linux-arm': 0.25.5
+      '@esbuild/linux-arm64': 0.25.5
+      '@esbuild/linux-ia32': 0.25.5
+      '@esbuild/linux-loong64': 0.25.5
+      '@esbuild/linux-mips64el': 0.25.5
+      '@esbuild/linux-ppc64': 0.25.5
+      '@esbuild/linux-riscv64': 0.25.5
+      '@esbuild/linux-s390x': 0.25.5
+      '@esbuild/linux-x64': 0.25.5
+      '@esbuild/netbsd-arm64': 0.25.5
+      '@esbuild/netbsd-x64': 0.25.5
+      '@esbuild/openbsd-arm64': 0.25.5
+      '@esbuild/openbsd-x64': 0.25.5
+      '@esbuild/sunos-x64': 0.25.5
+      '@esbuild/win32-arm64': 0.25.5
+      '@esbuild/win32-ia32': 0.25.5
+      '@esbuild/win32-x64': 0.25.5
 
   /escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==, tarball: https://registry.npmjs.org/escalade/-/escalade-3.2.0.tgz}
@@ -13071,6 +13049,7 @@ packages:
 
   /ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==, tarball: https://registry.npmjs.org/ieee754/-/ieee754-1.2.1.tgz}
+    dev: true
 
   /ignore-walk@7.0.0:
     resolution: {integrity: sha512-T4gbf83A4NH95zvhVYZc+qWocBBGlpzUXLPGurJggw/WIOwicfXJChLDP/iBZnN5WqROSu5Bm3hhle4z8a8YGQ==, tarball: https://registry.npmjs.org/ignore-walk/-/ignore-walk-7.0.0.tgz}
@@ -13437,6 +13416,12 @@ packages:
   /is-interactive@1.0.0:
     resolution: {integrity: sha512-2HvIEKRoqS62guEC+qBjpvRubdX910WCMuJTZ+I9yvqKU2/12eSL549HMwtabb4oupdj2sMP50k+XJfB/8JE6w==, tarball: https://registry.npmjs.org/is-interactive/-/is-interactive-1.0.0.tgz}
     engines: {node: '>=8'}
+    dev: true
+
+  /is-interactive@2.0.0:
+    resolution: {integrity: sha512-qP1vozQRI+BMOPcjFzrjXuQvdak2pHNUMZoeG2eRbiSqyvbEf/wQtEOTOX1guk6E3t36RkaqiSt8A/6YElNxLQ==, tarball: https://registry.npmjs.org/is-interactive/-/is-interactive-2.0.0.tgz}
+    engines: {node: '>=12'}
+    dev: false
 
   /is-map@2.0.3:
     resolution: {integrity: sha512-1Qed0/Hr2m+YqxnM09CjA2d/i6YZNfF6R2oRAOj36eUdS6qIV/huPJNSEpKbupewFs+ZsJlxsjjPbc0/afW6Lw==, tarball: https://registry.npmjs.org/is-map/-/is-map-2.0.3.tgz}
@@ -13626,6 +13611,17 @@ packages:
   /is-unicode-supported@0.1.0:
     resolution: {integrity: sha512-knxG2q4UC3u8stRGyAVJCOdxFmv5DZiRcdlIaAQXAbSfJya+OhopNotLQrstBhququ4ZpuKbDc/8S6mgXgPFPw==, tarball: https://registry.npmjs.org/is-unicode-supported/-/is-unicode-supported-0.1.0.tgz}
     engines: {node: '>=10'}
+    dev: true
+
+  /is-unicode-supported@1.3.0:
+    resolution: {integrity: sha512-43r2mRvz+8JRIKnWJ+3j8JtjRKZ6GmjzfaE/qiBJnikNnYv/6bagRJ1kUhNk8R5EX/GkobD+r+sfxCPJsiKBLQ==, tarball: https://registry.npmjs.org/is-unicode-supported/-/is-unicode-supported-1.3.0.tgz}
+    engines: {node: '>=12'}
+    dev: false
+
+  /is-unicode-supported@2.1.0:
+    resolution: {integrity: sha512-mE00Gnza5EEB3Ds0HfMyllZzbBrmLOX3vfWoj9A9PEnTfratQ/BcaJOuMhnkhjXvb2+FkY3VuHqtAGpTPmglFQ==, tarball: https://registry.npmjs.org/is-unicode-supported/-/is-unicode-supported-2.1.0.tgz}
+    engines: {node: '>=18'}
+    dev: false
 
   /is-url@1.2.4:
     resolution: {integrity: sha512-ITvGim8FhRiYe4IQ5uHSkj7pVaPDrCTkNd3yq3cV7iZAcJdHTUMPMEHcqSOy9xZ9qFenQCvi+2wjH9a1nXqHww==, tarball: https://registry.npmjs.org/is-url/-/is-url-1.2.4.tgz}
@@ -14840,7 +14836,7 @@ packages:
         optional: true
     dependencies:
       less: 4.3.0
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /less@4.3.0:
@@ -14883,7 +14879,7 @@ packages:
       webpack:
         optional: true
     dependencies:
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
       webpack-sources: 3.3.0
     dev: false
 
@@ -15158,6 +15154,15 @@ packages:
     dependencies:
       chalk: 4.1.2
       is-unicode-supported: 0.1.0
+    dev: true
+
+  /log-symbols@6.0.0:
+    resolution: {integrity: sha512-i24m8rpwhmPIS4zscNzK6MSEhk0DUWa/8iYQWxhffV8jkI4Phvs3F+quL5xvS0gdQR0FyTCMMH33Y78dDTzzIw==, tarball: https://registry.npmjs.org/log-symbols/-/log-symbols-6.0.0.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      chalk: 5.4.1
+      is-unicode-supported: 1.3.0
+    dev: false
 
   /log-update@6.1.0:
     resolution: {integrity: sha512-9ie8ItPR6tjY5uYJh8K/Zrv/RMZ5VOlOWvtZdEHYSTFKZfIBPQa9tOAEeAWhd+AnIneLJ22w5fjOYtoutpWq5w==, tarball: https://registry.npmjs.org/log-update/-/log-update-6.1.0.tgz}
@@ -15575,7 +15580,7 @@ packages:
     dependencies:
       schema-utils: 4.3.2
       tapable: 2.2.2
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /minimalistic-assert@1.0.1:
@@ -15925,7 +15930,7 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /ngx-progressbar@14.0.0(@angular/cdk@20.0.0-rc.2)(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2):
+  /ngx-progressbar@14.0.0(@angular/cdk@20.0.1)(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2):
     resolution: {integrity: sha512-tDj7h5F2aSI4/XaJjs50FnELVe6qFqyz3vVq22acacd3oDW2EyJB4c+IYaxMf5972OdTw0WL4n6UwQ3dqC+gCA==, tarball: https://registry.npmjs.org/ngx-progressbar/-/ngx-progressbar-14.0.0.tgz}
     peerDependencies:
       '@angular/cdk': '>=17.3.0'
@@ -15933,7 +15938,7 @@ packages:
       '@angular/core': '>=17.3.0'
       rxjs: '>=7.0.0'
     dependencies:
-      '@angular/cdk': 20.0.0-rc.2(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2)
+      '@angular/cdk': 20.0.1(@angular/common@20.0.0)(@angular/core@20.0.0)(rxjs@7.8.2)
       '@angular/common': 20.0.0(@angular/core@20.0.0)(rxjs@7.8.2)
       '@angular/core': 20.0.0(rxjs@7.8.2)(zone.js@0.12.0)
       rxjs: 7.8.2
@@ -16331,6 +16336,22 @@ packages:
       log-symbols: 4.1.0
       strip-ansi: 6.0.1
       wcwidth: 1.0.1
+    dev: true
+
+  /ora@8.2.0:
+    resolution: {integrity: sha512-weP+BZ8MVNnlCm8c0Qdc1WSWq4Qn7I+9CJGm7Qali6g44e/PUzbjNqJX5NJ9ljlNMosfJvg1fKEGILklK9cwnw==, tarball: https://registry.npmjs.org/ora/-/ora-8.2.0.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      chalk: 5.4.1
+      cli-cursor: 5.0.0
+      cli-spinners: 2.9.2
+      is-interactive: 2.0.0
+      is-unicode-supported: 2.1.0
+      log-symbols: 6.0.0
+      stdin-discarder: 0.2.2
+      string-width: 7.2.0
+      strip-ansi: 7.1.0
+    dev: false
 
   /ordered-binary@1.5.3:
     resolution: {integrity: sha512-oGFr3T+pYdTGJ+YFEILMpS3es+GiIbs9h/XQrclBXUtd44ey7XwfsMzM31f64I1SQOawDoDr/D823kNCADI8TA==, tarball: https://registry.npmjs.org/ordered-binary/-/ordered-binary-1.5.3.tgz}
@@ -16908,7 +16929,7 @@ packages:
       jiti: 1.21.7
       postcss: 8.5.3
       semver: 7.7.2
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     transitivePeerDependencies:
       - typescript
     dev: false
@@ -17764,6 +17785,7 @@ packages:
     dependencies:
       onetime: 5.1.2
       signal-exit: 3.0.7
+    dev: true
 
   /restore-cursor@5.1.0:
     resolution: {integrity: sha512-oMA2dcrw6u0YfxJQXm342bFKX/E4sG9rbTzO9ptUcR/e8A33cHuvStiYOwH7fszkZlZ1z/ta9AAoPk2F4qIOHA==, tarball: https://registry.npmjs.org/restore-cursor/-/restore-cursor-5.1.0.tgz}
@@ -18132,7 +18154,7 @@ packages:
     dependencies:
       neo-async: 2.6.2
       sass: 1.88.0
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /sass@1.83.1:
@@ -18769,7 +18791,7 @@ packages:
     dependencies:
       iconv-lite: 0.6.3
       source-map-js: 1.2.1
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /source-map-resolve@0.5.3:
@@ -19004,6 +19026,11 @@ packages:
   /std-env@3.9.0:
     resolution: {integrity: sha512-UGvjygr6F6tpH7o2qyqR6QYpwraIjKSdtzyBdyytFOHmPZY917kwdwLG0RbOjWOnKmnm3PeHjaoLLMie7kPLQw==, tarball: https://registry.npmjs.org/std-env/-/std-env-3.9.0.tgz}
     dev: true
+
+  /stdin-discarder@0.2.2:
+    resolution: {integrity: sha512-UhDfHmA92YAlNnCfhmq0VeNL5bDbiZGg7sZ2IvPsXubGkiNa9EC+tUTsjBRsYUAz87btI6/1wf4XoVvQ3uRnmQ==, tarball: https://registry.npmjs.org/stdin-discarder/-/stdin-discarder-0.2.2.tgz}
+    engines: {node: '>=18'}
+    dev: false
 
   /stream-chain@2.2.5:
     resolution: {integrity: sha512-1TJmBx6aSWqZ4tx7aTpBDXK0/e2hhcNSTV8+CbFJtDjbb+I1mZ8lHit0Grw9GRT+6JbIrrDd8esncgBi8aBXGA==, tarball: https://registry.npmjs.org/stream-chain/-/stream-chain-2.2.5.tgz}
@@ -19402,7 +19429,7 @@ packages:
       streamx: 2.22.0
     dev: true
 
-  /terser-webpack-plugin@5.3.14(esbuild@0.25.4)(webpack@5.99.8):
+  /terser-webpack-plugin@5.3.14(esbuild@0.25.5)(webpack@5.99.8):
     resolution: {integrity: sha512-vkZjpUjb6OMS7dhV+tILUW6BhpDR7P2L/aQSAv+Uwk+m8KATX9EccViHTJR2qDtACKPIYndLGCyl3FMo+r2LMw==, tarball: https://registry.npmjs.org/terser-webpack-plugin/-/terser-webpack-plugin-5.3.14.tgz}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
@@ -19419,12 +19446,12 @@ packages:
         optional: true
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
-      esbuild: 0.25.4
+      esbuild: 0.25.5
       jest-worker: 27.5.1
       schema-utils: 4.3.2
       serialize-javascript: 6.0.2
       terser: 5.39.2
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /terser@5.39.1:
@@ -19876,7 +19903,7 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
-      esbuild: 0.25.4
+      esbuild: 0.25.5
       get-tsconfig: 4.10.1
     optionalDependencies:
       fsevents: 2.3.3
@@ -20644,7 +20671,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 10.17.60
-      esbuild: 0.25.4
+      esbuild: 0.25.5
       fdir: 6.4.4(picomatch@4.0.2)
       less: 4.3.0
       picomatch: 4.0.2
@@ -20698,7 +20725,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 18.19.103
-      esbuild: 0.25.4
+      esbuild: 0.25.5
       fdir: 6.4.4(picomatch@4.0.2)
       less: 4.3.0
       picomatch: 4.0.2
@@ -20753,7 +20780,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 18.19.103
-      esbuild: 0.25.4
+      esbuild: 0.25.5
       fdir: 6.4.4(picomatch@4.0.2)
       less: 4.3.0
       picomatch: 4.0.2
@@ -20933,6 +20960,7 @@ packages:
     resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==, tarball: https://registry.npmjs.org/wcwidth/-/wcwidth-1.0.1.tgz}
     dependencies:
       defaults: 1.0.4
+    dev: true
 
   /weak-lru-cache@1.2.2:
     resolution: {integrity: sha512-DEAoo25RfSYMuTGc9vPJzZcZullwIqRDSI9LOy+fkCJPi6hykCnfKaXTuPBDuXAUcqHXyOgFtHNp/kB2FjYHbw==, tarball: https://registry.npmjs.org/weak-lru-cache/-/weak-lru-cache-1.2.2.tgz}
@@ -21034,7 +21062,7 @@ packages:
       on-finished: 2.4.1
       range-parser: 1.2.1
       schema-utils: 4.3.2
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
   /webpack-dev-server@5.2.1(webpack@5.99.8):
@@ -21076,7 +21104,7 @@ packages:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
       webpack-dev-middleware: 7.4.2(webpack@5.99.8)
       ws: 8.18.2
     transitivePeerDependencies:
@@ -21118,10 +21146,10 @@ packages:
         optional: true
     dependencies:
       typed-assert: 1.0.9
-      webpack: 5.99.8(esbuild@0.25.4)
+      webpack: 5.99.8(esbuild@0.25.5)
     dev: false
 
-  /webpack@5.99.8(esbuild@0.25.4):
+  /webpack@5.99.8(esbuild@0.25.5):
     resolution: {integrity: sha512-lQ3CPiSTpfOnrEGeXDwoq5hIGzSjmwD72GdfVzF7CQAI7t47rJG9eDWvcEkEn3CUQymAElVvDg3YNTlCYj+qUQ==, tarball: https://registry.npmjs.org/webpack/-/webpack-5.99.8.tgz}
     engines: {node: '>=10.13.0'}
     hasBin: true
@@ -21152,7 +21180,7 @@ packages:
       neo-async: 2.6.2
       schema-utils: 4.3.2
       tapable: 2.2.2
-      terser-webpack-plugin: 5.3.14(esbuild@0.25.4)(webpack@5.99.8)
+      terser-webpack-plugin: 5.3.14(esbuild@0.25.5)(webpack@5.99.8)
       watchpack: 2.4.4
       webpack-sources: 3.3.0
     transitivePeerDependencies:
@@ -21682,14 +21710,14 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==, tarball: https://registry.npmjs.org/zwitch/-/zwitch-2.0.4.tgz}
     dev: true
 
-  github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/ssr@20.0.0-rc.3)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-junit-reporter@2.0.1)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(rxjs@7.8.2)(terser@5.39.2)(tsx@4.19.4)(zone.js@0.12.0):
+  github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/ssr@20.0.0)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-junit-reporter@2.0.1)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(less@4.3.0)(postcss@8.5.3)(rxjs@7.8.2)(terser@5.39.2)(tsx@4.19.4)(zone.js@0.12.0):
     resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-build-tooling-builds/tar.gz/5db176c0f3211663830fd3ff4064c1dff0eaccb4}
     id: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4
     name: '@angular/build-tooling'
     version: 0.0.0-d44be7e28087c3499d70dda9859d51c1cd3fe1bf
     dependencies:
       '@angular/benchpress': 0.3.0(rxjs@7.8.2)(zone.js@0.12.0)
-      '@angular/build': 19.1.0-rc.0(@angular/ssr@20.0.0-rc.3)(@types/node@18.19.103)(chokidar@4.0.3)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tsx@4.19.4)(typescript@5.7.3)
+      '@angular/build': 19.1.0-rc.0(@angular/ssr@20.0.0)(@types/node@18.19.103)(chokidar@4.0.3)(less@4.3.0)(postcss@8.5.3)(terser@5.39.2)(tsx@4.19.4)(typescript@5.7.3)
       '@babel/core': 7.27.1
       '@babel/plugin-proposal-async-generator-functions': 7.20.7(@babel/core@7.27.1)
       '@bazel/buildifier': 6.3.3
@@ -21755,10 +21783,10 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/39b8cbd214dc08e81b7a69624d9dc152ce7c42db:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/39b8cbd214dc08e81b7a69624d9dc152ce7c42db}
+  github.com/angular/dev-infra-private-ng-dev-builds/0ba20dc96eb638ed8ef97b14d72854d50f0238fb:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0ba20dc96eb638ed8ef97b14d72854d50f0238fb}
     name: '@angular/ng-dev'
-    version: 0.0.0-241f7bcac0f9e4e977e183e27dd041a357dcecbf
+    version: 0.0.0-4fa572d7c05565cfe7f8ac5969765e1cead899e1
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 7.21.0(supports-color@10.0.0)
