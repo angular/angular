@@ -155,7 +155,8 @@
     "webtreemap": "^2.0.1",
     "ws": "^8.15.0",
     "xhr2": "0.2.1",
-    "yargs": "^18.0.0"
+    "yargs": "^18.0.0",
+    "zone.js": "0.15.1"
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
