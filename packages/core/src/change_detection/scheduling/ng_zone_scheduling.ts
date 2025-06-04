@@ -139,8 +139,16 @@ export function internalProvideZoneChangeDetection({
         const injector = inject(EnvironmentInjector);
         let userErrorHandler: ErrorHandler;
         return (e: unknown) => {
-          userErrorHandler ??= injector.get(ErrorHandler);
-          zone.runOutsideAngular(() => userErrorHandler.handleError(e));
+          zone.runOutsideAngular(() => {
+            if (injector.destroyed && !userErrorHandler) {
+              setTimeout(() => {
+                throw e;
+              });
+            } else {
+              userErrorHandler ??= injector.get(ErrorHandler);
+              userErrorHandler.handleError(e);
+            }
+          });
         };
       },
     },
