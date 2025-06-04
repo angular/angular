@@ -10,7 +10,8 @@ export class MetadataKey<TValue> {
   constructor(
     readonly defaultValue: () => TValue,
     readonly merge: (prev: TValue, next: TValue) => TValue,
-  ) {}
+  ) {
+  }
 }
 
 export const REQUIRED = new MetadataKey(
@@ -26,4 +27,19 @@ export const MIN = new MetadataKey<number>(
 export const MAX = new MetadataKey<number>(
   () => +Infinity,
   (prev, next) => Math.min(prev, next),
+);
+
+export const MIN_LENGTH = new MetadataKey<number>(
+  () => -Infinity,
+  (prev, next) => Math.max(prev, next)
+);
+
+export const MAX_LENGTH = new MetadataKey<number>(
+  () => +Infinity,
+  (prev, next) => Math.min(prev, next)
+);
+
+export const PATTERN = new MetadataKey<string[]>(
+    () => [],
+    (prev, next) => [...prev, ...next]
 );
