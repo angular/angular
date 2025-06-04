@@ -1,3 +1,30 @@
+<a name="20.0.1"></a>
+# 20.0.1 (2025-06-04)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [66a0ec6510](https://github.com/angular/angular/commit/66a0ec6510aa7f2afc675440bd782750100f84d5) | fix | move defer trigger assertions out of parser ([#61747](https://github.com/angular/angular/pull/61747)) |
+| [8ecb1ba027](https://github.com/angular/angular/commit/8ecb1ba0275636d4ca697cd648d8c4c3a6eb27df) | fix | recover invalid parenthesized expressions ([#61815](https://github.com/angular/angular/pull/61815)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8c60cbfd1c](https://github.com/angular/angular/commit/8c60cbfd1c4fe161936ea9f3b8c126083f2eae5e) | fix | `takeUntilDestroyed` completes immediately if DestroyRef already destroyed ([#61847](https://github.com/angular/angular/pull/61847)) |
+| [b1d960d082](https://github.com/angular/angular/commit/b1d960d082c6d0e52d45d0f1ef24102c16696fa5) | fix | produce an error when incremental hydration is expected, but not configured ([#61741](https://github.com/angular/angular/pull/61741)) |
+| [b4ed62ddf6](https://github.com/angular/angular/commit/b4ed62ddf60729fc4e6cfa529a9c7a455ff956d5) | fix | properly handle the case where getSignalGraph is called on a componentless NodeInjector ([#60772](https://github.com/angular/angular/pull/60772)) |
+| [ddd22bea48](https://github.com/angular/angular/commit/ddd22bea4813b572bfdff15d4bc9c24589bef1bb) | fix | unregister `onDestroy` in `ResourceImpl` when `destroy()` is called ([#61870](https://github.com/angular/angular/pull/61870)) |
+| [5c31e7e28d](https://github.com/angular/angular/commit/5c31e7e28d519df35b52397161e9d0cedc570304) | fix | unregister `onDestroy` when observable errors in `toSignal` ([#61596](https://github.com/angular/angular/pull/61596)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e9820a6d48](https://github.com/angular/angular/commit/e9820a6d48629df004043adc5fd6d29e37e43731) | fix | avoid trailing whitespaces in unused imports migration ([#61698](https://github.com/angular/angular/pull/61698)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b93fa22f25](https://github.com/angular/angular/commit/b93fa22f2509578342343cc0dcf8225863def793) | fix | prevent duplicate fetches during concurrent update checks ([#61443](https://github.com/angular/angular/pull/61443)) |
+| [9743bd1317](https://github.com/angular/angular/commit/9743bd1317b7fb397bc1e799a0f9a117ee5d6698) | fix | update service worker to handle seeking better for videos ([#60029](https://github.com/angular/angular/pull/60029)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.0"></a>
 # 20.0.0 (2025-05-28)
 
