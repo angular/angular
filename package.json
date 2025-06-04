@@ -207,6 +207,7 @@
     "emoji-regex": "^10.3.0",
     "fflate": "^0.8.2",
     "firebase-tools": "^14.0.0",
+    "get-tsconfig": "^4.10.1",
     "gulp": "^5.0.0",
     "gulp-conventional-changelog": "^5.0.0",
     "html-entities": "^2.5.2",
