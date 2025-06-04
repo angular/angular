@@ -1,0 +1,34 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("//tools:defaults2.bzl", "ts_config", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = ["//tools:tsconfig_build"],
+)
+
+filegroup(
+    name = "llms_src",
+    srcs = ["llms-list.md"],
+    visibility = ["//visibility:public"],
+)
+
+ts_project(
+    name = "llms_lib",
+    srcs = ["llms.mts"],
+    tsconfig = ":tsconfig_build",
+    deps = [":llms_src"],
+)
+
+js_binary(
+    name = "generate_llms_full",
+    data = [
+        "llms.mjs",
+        "llms-list.md",
+        ":llms_lib_rjs",
+        "//adev/src/content:guide_files",
+    ],
+    entry_point = ":llms.mjs",
+)

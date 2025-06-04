@@ -9,3 +9,9 @@ generate_guides(
     ],
     visibility = ["//adev:__subpackages__"],
 )
+
+filegroup(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
+    visibility = ["//adev:__subpackages__"],
+)

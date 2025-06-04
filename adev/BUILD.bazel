@@ -1,3 +1,4 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("@bazel_skylib//lib:collections.bzl", "collections")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
@@ -46,6 +47,7 @@ APPLICATION_ASSETS = [
 ]
 
 APPLICATION_DEPS = [
+    "//adev/scripts/shared:generate_llms_full",
     "@npm//@angular/docs",
     "@npm//@angular/build",
     "@npm//@angular-devkit/build-angular",
@@ -178,7 +180,9 @@ http_server(
     ],
     enable_dev_ui = True,
     relax_cors = True,
-    deps = [":build"],
+    deps = [
+        ":build",
+    ],
 )
 
 architect_test(
