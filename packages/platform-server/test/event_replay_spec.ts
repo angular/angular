@@ -207,7 +207,16 @@ describe('event replay', () => {
     appRef.tick();
     const appId = appRef.injector.get(APP_ID);
 
+    // Important: This is done intentionally because `ApplicationRef` registers
+    // `onDestroy` callbacks, and we want to ensure that they execute successfully
+    // without resulting in any errors. This is necessary because the bodies of
+    // these `onDestroy` callbacks use the `ngServerMode` variable.
+    // Prior to setting this flag, the unit test was throwing a "destroyed injector"
+    // error — but we weren't capturing it because we hadn't explicitly set the flag to false.
+    globalThis['ngServerMode'] = false;
     appRef.destroy();
+    globalThis['ngServerMode'] = undefined;
+
     // This ensure that `_ejsas` for the current application is cleaned up
     // once the application is destroyed.
     expect(window._ejsas![appId]).toBeUndefined();
