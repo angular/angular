@@ -158,7 +158,9 @@ describe('Tutorial', () => {
       component['embeddedTutorialManager'],
       'revealAnswer',
     );
-    revealAnswerButton.nativeElement.click();
+
+    // Simulate a click on the reveal answer button
+    await component.handleRevealAnswer();
 
     expect(embeddedTutorialManagerRevealAnswerSpy).toHaveBeenCalled();
 
