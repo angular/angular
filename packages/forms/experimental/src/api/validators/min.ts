@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn, metadata, MIN, validate} from '@angular/forms/experimental';
-import {BaseValidatorConfig} from '@angular/forms/experimental/src/api/validators/types';
+import {metadata, validate} from "../logic";
+import { FieldPath, LogicFn } from "../types";
+import {MIN} from '@angular/forms/experimental';
+import { BaseValidatorConfig } from "./types";
+
 
 /**
  * Validator requiring a field value to be greater than or equal to a minimum value.

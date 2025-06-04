@@ -19,11 +19,6 @@ export const REQUIRED = new MetadataKey(
   (prev, next) => prev || next,
 );
 
-export const DISABLED_REASON = new MetadataKey<readonly string[]>(
-  () => [],
-  (prev, next) => [...prev, ...next],
-);
-
 export const MIN = new MetadataKey<number>(
   () => -Infinity,
   (prev, next) => Math.max(prev, next),
@@ -42,4 +37,9 @@ export const MIN_LENGTH = new MetadataKey<number>(
 export const MAX_LENGTH = new MetadataKey<number>(
   () => +Infinity,
   (prev, next) => Math.min(prev, next)
+);
+
+export const PATTERN = new MetadataKey<string[]>(
+    () => [],
+    (prev, next) => [...prev, ...next]
 );

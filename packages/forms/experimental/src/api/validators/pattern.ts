@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {metadata, validate} from '../logic';
+import { PATTERN } from '../metadata';
 import {FieldPath} from '../types';
 import {BaseValidatorConfig} from './types';
-import {PATTERN} from '@angular/forms/experimental';
 
 function strToRegexp(pattern: string) {
 
@@ -21,7 +21,6 @@ function strToRegexp(pattern: string) {
   if (pattern.charAt(pattern.length - 1) !== '$') regexStr += '$';
 
   return new RegExp(regexStr);
-
 }
 
 /*

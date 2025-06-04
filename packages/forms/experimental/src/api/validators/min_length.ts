@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn, metadata, MIN_LENGTH, validate} from '@angular/forms/experimental';
-import {BaseValidatorConfig, ValueWithLength} from '@angular/forms/experimental/src/api/validators/types';
 
+import {metadata, validate} from '../logic';
+import { MIN_LENGTH } from '../metadata';
+import {FieldPath, LogicFn} from '../types';
+import {BaseValidatorConfig, ValueWithLength } from './types';
 
 /**
  * Validator requiring a field value's length to be greater than or equal to a minimum length.
