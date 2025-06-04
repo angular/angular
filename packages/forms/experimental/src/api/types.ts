@@ -61,17 +61,16 @@ export type ValidationResult = FormError | FormError[] | undefined;
  * (e.g. fields that contain a `string` or `number`), as well as "grouping fields" that contain
  * sub-fields. `Field` objects are arranged in a tree whose structure mimics the structue of the
  * underlaying data. For example a `Field<{x: number}>` has a property `x` which contains a
- * `Field<number>`. To access the state associated with a field, use the special `$state` property.
+ * `Field<number>`. To access the state associated with a field, call it as a function.
  *
  * @template T The type of the data which the field is wrapped around.
  */
-export type Field<T> = {
-  $state: FieldState<T>;
-} & (T extends Array<infer U>
-  ? Array<Field<U>>
-  : T extends Record<PropertyKey, any>
-    ? {[K in keyof T]: Field<T[K]>}
-    : unknown);
+export type Field<T> = (() => FieldState<T>) &
+  (T extends Array<infer U>
+    ? Array<Field<U>>
+    : T extends Record<PropertyKey, any>
+      ? {[K in keyof T]: Field<T[K]>}
+      : unknown);
 
 /**
  * Contains all of the state (e.g. value, statuses, metadata) associated with a `Field`, exposed as

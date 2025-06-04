@@ -64,11 +64,11 @@ describe('resources', () => {
     const f = form(cat, s, {injector});
 
     await appRef.whenStable();
-    expect(f.name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: cat'}]);
+    expect(f.name().errors()).toEqual([{kind: 'whatever', message: 'got: cat'}]);
 
-    f.name.$state.value.set('dog');
+    f.name().value.set('dog');
     await appRef.whenStable();
-    expect(f.name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
+    expect(f.name().errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
   });
 
   it('should create a resource per entry in an array', async () => {
@@ -97,13 +97,13 @@ describe('resources', () => {
     const f = form(cat, s, {injector});
 
     await appRef.whenStable();
-    expect(f[0].name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: cat'}]);
-    expect(f[1].name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
+    expect(f[0].name().errors()).toEqual([{kind: 'whatever', message: 'got: cat'}]);
+    expect(f[1].name().errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
 
-    f[0].name.$state.value.set('bunny');
+    f[0].name().value.set('bunny');
     await appRef.whenStable();
-    expect(f[0].name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: bunny'}]);
-    expect(f[1].name.$state.errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
+    expect(f[0].name().errors()).toEqual([{kind: 'whatever', message: 'got: bunny'}]);
+    expect(f[1].name().errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
   });
 
   it('should support tree validation for resources', async () => {
@@ -131,10 +131,10 @@ describe('resources', () => {
     const f = form(cats, s, {injector});
 
     await appRef.whenStable();
-    expect(f[0].$state.errors()).toEqual([
+    expect(f[0]().errors()).toEqual([
       jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
     ]);
-    expect(f[1].$state.errors()).toEqual([
+    expect(f[1]().errors()).toEqual([
       jasmine.objectContaining({kind: 'meows_too_much', name: 'Ziggy'}),
     ]);
   });
@@ -160,10 +160,10 @@ describe('resources', () => {
     const f = form(cats, s, {injector});
 
     await appRef.whenStable();
-    expect(f[0].$state.errors()).toEqual([
+    expect(f[0]().errors()).toEqual([
       jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
     ]);
-    expect(f[1].$state.errors()).toEqual([]);
+    expect(f[1]().errors()).toEqual([]);
   });
 
   it('should support shorthand http validation', async () => {
@@ -181,31 +181,31 @@ describe('resources', () => {
     TestBed.tick();
     const req1 = backend.expectOne('/api/check?username=unique-user');
 
-    expect(usernameForm.$state.valid()).toBe(false);
-    expect(usernameForm.$state.invalid()).toBe(false);
-    expect(usernameForm.$state.pending()).toBe(true);
+    expect(usernameForm().valid()).toBe(false);
+    expect(usernameForm().invalid()).toBe(false);
+    expect(usernameForm().pending()).toBe(true);
 
     req1.flush(true);
     await appRef.whenStable();
 
-    expect(usernameForm.$state.valid()).toBe(true);
-    expect(usernameForm.$state.invalid()).toBe(false);
-    expect(usernameForm.$state.pending()).toBe(false);
+    expect(usernameForm().valid()).toBe(true);
+    expect(usernameForm().invalid()).toBe(false);
+    expect(usernameForm().pending()).toBe(false);
     expect(true).toBe(true);
 
-    usernameForm.$state.value.set('taken-user');
+    usernameForm().value.set('taken-user');
     TestBed.tick();
     const req2 = backend.expectOne('/api/check?username=taken-user');
 
-    expect(usernameForm.$state.valid()).toBe(false);
-    expect(usernameForm.$state.invalid()).toBe(false);
-    expect(usernameForm.$state.pending()).toBe(true);
+    expect(usernameForm().valid()).toBe(false);
+    expect(usernameForm().invalid()).toBe(false);
+    expect(usernameForm().pending()).toBe(true);
 
     req2.flush(false);
     await appRef.whenStable();
 
-    expect(usernameForm.$state.valid()).toBe(false);
-    expect(usernameForm.$state.invalid()).toBe(true);
-    expect(usernameForm.$state.pending()).toBe(false);
+    expect(usernameForm().valid()).toBe(false);
+    expect(usernameForm().invalid()).toBe(true);
+    expect(usernameForm().pending()).toBe(false);
   });
 });

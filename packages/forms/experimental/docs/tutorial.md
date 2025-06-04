@@ -215,13 +215,13 @@ export class FeedbackComponent {
 
 ### Displaying validation errors
 
-Each form field has a special `$state` property containing its value and other state information in signal form.
+Each form field can be called as a function to get its `FieldState`, an object containing its value and other state information in signal form.
 
 ```typescript
 // Example accessors:
-form.name.$state.value(); // Value signal
-form.name.$state.valid(); // Boolean signal indicating validity
-form.name.$state.errors(); // Signal holding an array of validation errors
+form.name().value(); // Value signal
+form.name().valid(); // Boolean signal indicating validity
+form.name().errors(); // Signal holding an array of validation errors
 // 💰 💰 💰
 ```
 
@@ -231,8 +231,8 @@ We can use these in the template:
 <mat-form-field>
     <mat-label>Name</mat-label>
     <input [control]="form.name" matInput>
-    @if (!form.name.$state.valid()) {
-      <mat-error>{{ form.name.$state.errors() | json }}</mat-error>
+    @if (!form.name().valid()) {
+      <mat-error>{{ form.name().errors() | json }}</mat-error>
       <!-- Output might look like: [{ "kind": "required" }] after the input is touched and left empty. -->
     }
 </mat-form-field>
@@ -257,9 +257,9 @@ Throughout the tutorial, we're going to just output the error kind, but for this
 <mat-form-field>
     <mat-label>Name</mat-label>
     <input [control]="form.name" matInput>
-    @if (!form.name.$state.valid()) {
+    @if (!form.name().valid()) {
       <mat-error>
-        @if (form.name.$state.errors()[0]?.kind === 'required') {
+        @if (form.name().errors()[0]?.kind === 'required') {
           <ng-container i18n="Error message">
           This field is required
           </ng-container>
@@ -331,9 +331,9 @@ export class FeedbackComponent {
 <mat-form-field appearance="outline">
   <mat-label>Email</mat-label>
   <input [control]="form.email" matInput>
-  @if (!form.email.$state.valid()) {
+  @if (!form.email().valid()) {
     <!--  You can display it in any way you want -->
-    <mat-error>{{ form.email.$state.errors()[0].kind }}</mat-error>
+    <mat-error>{{ form.email().errors()[0].kind }}</mat-error>
   }
 </mat-form-field>
 ```
@@ -389,16 +389,16 @@ export class FeedbackComponent {
 <mat-form-field appearance="outline">
   <mat-label>Password</mat-label>
   <input [control]="form.password" matInput type="password">
-  @if (!form.password.$state.valid()) {
-    <mat-error>{{ form.password.$state.errors()[0]?.kind }}</mat-error>
+  @if (!form.password().valid()) {
+    <mat-error>{{ form.password().errors()[0]?.kind }}</mat-error>
   }
 </mat-form-field>
 
 <mat-form-field appearance="outline">
   <mat-label>Confirm Password</mat-label>
   <input [control]="form.confirmationPassword" matInput type="password">
-  @if (!form.confirmationPassword.$state.valid()) {
-    <mat-error>{{ form.confirmationPassword.$state.errors()[0]?.kind }}: {{ form.confirmationPassword.$state.errors()[0]?.message ?? 'Invalid' }}</mat-error>
+  @if (!form.confirmationPassword().valid()) {
+    <mat-error>{{ form.confirmationPassword().errors()[0]?.kind }}: {{ form.confirmationPassword().errors()[0]?.message ?? 'Invalid' }}</mat-error>
   }
 </mat-form-field>
 ```
@@ -520,9 +520,9 @@ This is pretty straightforward. The `[control]` directive handles passing the di
 <mat-form-field appearance="outline">
   <mat-label>Feedback</mat-label>
   <input [control]="form.feedback" matInput>
-  @if (!form.feedback.$state.valid()) {
+  @if (!form.feedback().valid()) {
     <mat-error>
-      {{ form.feedback.$state.errors()[0].kind }}
+      {{ form.feedback().errors()[0].kind }}
     </mat-error>
   }
 </mat-form-field>
@@ -641,8 +641,8 @@ class FriendComponent {
   <mat-form-field>
     <mat-label>Name</mat-label>
     <input [control]="friend.name" matInput>
-    @if(!friend.name.$state.valid()){
-      <mat-error>{{ friend.name.$state.errors()[0].kind}}</mat-error>
+    @if(!friend.name().valid()){
+      <mat-error>{{ friend.name().errors()[0].kind}}</mat-error>
     }
   </mat-form-field>
 </div>
@@ -650,8 +650,8 @@ class FriendComponent {
   <mat-form-field>
     <mat-label>Email</mat-label>
     <input [control]="friend.email" matInput>
-    @if(!friend.email.$state.valid()){
-      <mat-error>{{ friend.email.$state.errors()[0].kind}}</mat-error>
+    @if(!friend.email().valid()){
+      <mat-error>{{ friend.email().errors()[0].kind}}</mat-error>
     }
   </mat-form-field>
 </div>
@@ -713,7 +713,7 @@ Then, we'll display the list of friends, but only when the checkbox is checked.
 
 ```html
 <!-- feedback.component.html -->
-@if (form.recommendToFriends.$state.value()) {
+@if (form.recommendToFriends().value()) {
     @for (friend of form.friends; track friend) {
         <app-friend [friend]="friend"></app-friend>
     }
@@ -835,7 +835,7 @@ export class FeedbackComponent {
   /* ... */
   addFriend() {
     // value is a writable signal.
-    this.form.friends.$state.value.update(
+    this.form.friends().value.update(
         (f) => [...f, {name: '', email: ''}]
     );
   }
@@ -847,7 +847,7 @@ Now, add the button to the template inside the `@if` block:
 
 ```html
 <!-- feedback.component.html -->
-@if (form.recommendToFriends.$state.value()) {
+@if (form.recommendToFriends().value()) {
   @for (friend of form.friends; track friend) {
     <app-friend [friend]="friend"></app-friend>
   }

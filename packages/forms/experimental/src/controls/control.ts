@@ -7,6 +7,7 @@
  */
 
 import {
+  computed,
   DestroyRef,
   Directive,
   effect,
@@ -39,15 +40,14 @@ import {InteropNgControl} from './interop_ng_control';
 export class Control<T> {
   readonly injector = inject(Injector);
   readonly field = input.required<Field<T>>({alias: 'control'});
+  readonly state = computed(() => this.field()());
   readonly el: ElementRef<HTMLElement> = inject(ElementRef);
   readonly cvaArray = inject<ControlValueAccessor[]>(NG_VALUE_ACCESSOR, {optional: true});
 
   private _ngControl: InteropNgControl | undefined;
 
   get ngControl(): NgControl {
-    return (this._ngControl ??= new InteropNgControl(
-      () => this.field().$state,
-    )) as unknown as NgControl;
+    return (this._ngControl ??= new InteropNgControl(() => this.state())) as unknown as NgControl;
   }
 
   get cva(): ControlValueAccessor | undefined {
@@ -63,17 +63,17 @@ export class Control<T> {
       const isCheckbox = i.type === 'checkbox';
 
       i.addEventListener('input', () => {
-        this.field().$state.value.set((!isCheckbox ? i.value : i.checked) as T);
-        this.field().$state.markAsDirty();
+        this.state().value.set((!isCheckbox ? i.value : i.checked) as T);
+        this.state().markAsDirty();
       });
-      i.addEventListener('blur', () => this.field().$state.markAsTouched());
+      i.addEventListener('blur', () => this.state().markAsTouched());
 
       effect(
         () => {
           if (!isCheckbox) {
-            i.value = this.field().$state.value() as string;
+            i.value = this.state().value() as string;
           } else {
-            i.checked = this.field().$state.value() as boolean;
+            i.checked = this.state().value() as boolean;
           }
         },
         {injector},
@@ -82,12 +82,12 @@ export class Control<T> {
       const cva = this.cva;
       // Binding to a Control Value Accessor
 
-      cva.registerOnChange((value: T) => this.field().$state.value.set(value));
-      cva.registerOnTouched(() => this.field().$state.markAsTouched());
+      cva.registerOnChange((value: T) => this.state().value.set(value));
+      cva.registerOnTouched(() => this.state().markAsTouched());
 
       effect(
         () => {
-          const value = this.field().$state.value();
+          const value = this.state().value();
           untracked(() => {
             cva.writeValue(value);
           });
@@ -98,28 +98,26 @@ export class Control<T> {
       // Binding to a custom UI component.
 
       // Input bindings:
-      maybeSynchronize(injector, () => this.field().$state.value(), cmp.value);
-      maybeSynchronize(injector, () => this.field().$state.disabled(), cmp.disabled);
-      maybeSynchronize(injector, () => this.field().$state.readonly(), cmp.readonly);
-      maybeSynchronize(injector, () => this.field().$state.errors(), cmp.errors);
-      maybeSynchronize(injector, () => this.field().$state.touched(), cmp.touched);
-      maybeSynchronize(injector, () => this.field().$state.valid(), cmp.valid);
+      maybeSynchronize(injector, () => this.state().value(), cmp.value);
+      maybeSynchronize(injector, () => this.state().disabled(), cmp.disabled);
+      maybeSynchronize(injector, () => this.state().readonly(), cmp.readonly);
+      maybeSynchronize(injector, () => this.state().errors(), cmp.errors);
+      maybeSynchronize(injector, () => this.state().touched(), cmp.touched);
+      maybeSynchronize(injector, () => this.state().valid(), cmp.valid);
 
       // Output bindings:
-      const cleanupValue = cmp.value.subscribe((newValue) =>
-        this.field().$state.value.set(newValue),
-      );
+      const cleanupValue = cmp.value.subscribe((newValue) => this.state().value.set(newValue));
       let cleanupTouch: OutputRefSubscription | undefined;
       let cleanupDefaultTouch: (() => void) | undefined;
       if (cmp.touch !== undefined) {
-        cleanupTouch = cmp.touch.subscribe(() => this.field().$state.markAsTouched());
+        cleanupTouch = cmp.touch.subscribe(() => this.state().markAsTouched());
       } else {
         // If the component did not give us a touch event stream, use the standard touch logic,
         // marking it touched when the focus moves from inside the host element to outside.
         const listener = (event: FocusEvent) => {
           const newActiveEl = event.relatedTarget;
           if (!this.el.nativeElement.contains(newActiveEl as Element | null)) {
-            this.field().$state.markAsTouched();
+            this.state().markAsTouched();
           }
         };
         this.el.nativeElement.addEventListener('focusout', listener);
@@ -136,7 +134,7 @@ export class Control<T> {
       throw new Error(`Unhandled control?`);
     }
     if (this.cva) {
-      this.cva.writeValue(this.field().$state.value());
+      this.cva.writeValue(this.state().value());
     }
   }
 }

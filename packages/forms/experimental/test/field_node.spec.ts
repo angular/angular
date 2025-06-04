@@ -26,7 +26,7 @@ describe('FieldNode', () => {
       noopSchema,
       {injector: TestBed.inject(Injector)},
     );
-    expect(f.$state.touched()).toBe(false);
+    expect(f().touched()).toBe(false);
   });
 
   it('can get a child of a key that exists', () => {
@@ -39,7 +39,7 @@ describe('FieldNode', () => {
       {injector: TestBed.inject(Injector)},
     );
     expect(f.a).toBeDefined();
-    expect(f.a.$state.value()).toBe(1);
+    expect(f.a().value()).toBe(1);
   });
 
   describe('instances', () => {
@@ -107,68 +107,88 @@ describe('FieldNode', () => {
 
   describe('dirty', () => {
     it('is not dirty initially', () => {
-      const f = form(signal({
-        a: 1,
-        b: 2
-      }), noopSchema, {injector: TestBed.inject(Injector)});
-      expect(f.$state.dirty()).toBe(false);
-      expect(f.a.$state.dirty()).toBe(false);
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        noopSchema,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f().dirty()).toBe(false);
+      expect(f.a().dirty()).toBe(false);
     });
 
     it('can be marked as dirty', () => {
-      const f = form(signal({
-        a: 1,
-        b: 2
-      }), noopSchema, {injector: TestBed.inject(Injector)});
-      expect(f.$state.dirty()).toBe(false);
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        noopSchema,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f().dirty()).toBe(false);
 
-      f.$state.markAsDirty();
-      expect(f.$state.dirty()).toBe(true);
+      f().markAsDirty();
+      expect(f().dirty()).toBe(true);
     });
 
     it('propagates from the children', () => {
-      const f = form(signal({
-        a: 1,
-        b: 2
-      }), noopSchema, {injector: TestBed.inject(Injector)});
-      expect(f.$state.dirty()).toBe(false);
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        noopSchema,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f().dirty()).toBe(false);
 
-      f.a.$state.markAsDirty();
-      expect(f.$state.dirty()).toBe(true);
+      f.a().markAsDirty();
+      expect(f().dirty()).toBe(true);
     });
 
     it('does not propagate down', () => {
-      const f = form(signal({
-        a: 1,
-        b: 2
-      }), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        noopSchema,
+        {injector: TestBed.inject(Injector)},
+      );
 
-      expect(f.a.$state.dirty()).toBe(false);
-      f.$state.markAsDirty();
-      expect(f.a.$state.dirty()).toBe(false);
+      expect(f.a().dirty()).toBe(false);
+      f().markAsDirty();
+      expect(f.a().dirty()).toBe(false);
     });
 
     it('does not consider children that get removed', () => {
-      const value = signal<{ a: number; b?: number }>({a: 1, b: 2});
+      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
       const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
-      expect(f.$state.dirty()).toBe(false);
+      expect(f().dirty()).toBe(false);
 
-      f.b!.$state.markAsDirty();
-      expect(f.$state.dirty()).toBe(true);
+      f.b!().markAsDirty();
+      expect(f().dirty()).toBe(true);
 
       value.set({a: 2});
-      expect(f.$state.dirty()).toBe(false);
+      expect(f().dirty()).toBe(false);
       expect(f.b).toBeUndefined();
     });
   });
 
   describe('touched', () => {
     it('is untouched initially', () => {
-      const f = form(signal({
-        a: 1,
-        b: 2
-      }), noopSchema, {injector: TestBed.inject(Injector)});
-      expect(f.$state.touched()).toBe(false);
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        noopSchema,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f().touched()).toBe(false);
     });
 
     it('can be marked as touched', () => {
@@ -180,10 +200,10 @@ describe('FieldNode', () => {
         noopSchema,
         {injector: TestBed.inject(Injector)},
       );
-      expect(f.$state.touched()).toBe(false);
+      expect(f().touched()).toBe(false);
 
-      f.$state.markAsTouched();
-      expect(f.$state.touched()).toBe(true);
+      f().markAsTouched();
+      expect(f().touched()).toBe(true);
     });
 
     it('propagates from the children', () => {
@@ -195,10 +215,10 @@ describe('FieldNode', () => {
         noopSchema,
         {injector: TestBed.inject(Injector)},
       );
-      expect(f.$state.touched()).toBe(false);
+      expect(f().touched()).toBe(false);
 
-      f.a.$state.markAsTouched();
-      expect(f.$state.touched()).toBe(true);
+      f.a().markAsTouched();
+      expect(f().touched()).toBe(true);
     });
 
     it('does not propagate down', () => {
@@ -211,21 +231,21 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.a.$state.touched()).toBe(false);
-      f.$state.markAsTouched();
-      expect(f.a.$state.touched()).toBe(false);
+      expect(f.a().touched()).toBe(false);
+      f().markAsTouched();
+      expect(f.a().touched()).toBe(false);
     });
 
     it('does not consider children that get removed', () => {
       const value = signal<{a: number; b?: number}>({a: 1, b: 2});
       const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
-      expect(f.$state.touched()).toBe(false);
+      expect(f().touched()).toBe(false);
 
-      f.b!.$state.markAsTouched();
-      expect(f.$state.touched()).toBe(true);
+      f.b!().markAsTouched();
+      expect(f().touched()).toBe(true);
 
       value.set({a: 2});
-      expect(f.$state.touched()).toBe(false);
+      expect(f().touched()).toBe(false);
       expect(f.b).toBeUndefined();
     });
   });
@@ -246,7 +266,7 @@ describe('FieldNode', () => {
           applyEach(p.names, (a) => {
             disabled(a.name, ({value, fieldOf}) => {
               const el = fieldOf(a);
-              expect(el.$state.value().name).toBe(value());
+              expect(el().value().name).toBe(value());
               expect(fieldOf(p).names.findIndex((e: any) => e === el)).not.toBe(-1);
               return true;
             });
@@ -254,8 +274,8 @@ describe('FieldNode', () => {
         },
         {injector: TestBed.inject(Injector)},
       );
-      expect(f.names[0].name.$state.disabled()).toBe(true);
-      expect(f.names[1].name.$state.disabled()).toBe(true);
+      expect(f.names[0].name().disabled()).toBe(true);
+      expect(f.names[1].name().disabled()).toBe(true);
     });
 
     it('should support element-level logic', () => {
@@ -269,9 +289,9 @@ describe('FieldNode', () => {
         },
         {injector: TestBed.inject(Injector)},
       );
-      expect(f[0].$state.disabled()).toBe(false);
-      expect(f[1].$state.disabled()).toBe(true);
-      expect(f[2].$state.disabled()).toBe(false);
+      expect(f[0]().disabled()).toBe(false);
+      expect(f[1]().disabled()).toBe(true);
+      expect(f[2]().disabled()).toBe(false);
     });
 
     it('should support dynamic elements', () => {
@@ -287,17 +307,17 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
       model.update((v) => [...v, 4]);
-      expect(f[3].$state.disabled()).toBe(true);
+      expect(f[3]().disabled()).toBe(true);
     });
 
     it('should support removing elements', () => {
       const value = signal([1, 2, 3]);
       const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
-      f[2].$state.markAsTouched();
-      expect(f.$state.touched()).toBe(true);
+      f[2]().markAsTouched();
+      expect(f().touched()).toBe(true);
 
       value.set([1, 2]);
-      expect(f.$state.touched()).toBe(false);
+      expect(f().touched()).toBe(false);
     });
 
     describe('tracking', () => {
@@ -337,13 +357,13 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
       const a = f.a;
-      expect(f.$state.disabled()).toBe(false);
-      expect(a.$state.disabled()).toBe(true);
-      expect(a.$state.disabledReasons()).toEqual([{field: f.a}]);
+      expect(f().disabled()).toBe(false);
+      expect(a().disabled()).toBe(true);
+      expect(a().disabledReasons()).toEqual([{field: f.a}]);
 
-      a.$state.value.set(2);
-      expect(f.$state.disabled()).toBe(false);
-      expect(a.$state.disabled()).toBe(false);
+      a().value.set(2);
+      expect(f().disabled()).toBe(false);
+      expect(a().disabled()).toBe(false);
     });
 
     it('should disable with reason', () => {
@@ -355,8 +375,8 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.a.$state.disabled()).toBe(true);
-      expect(f.a.$state.disabledReasons()).toEqual([{field: f.a, reason: 'a cannot be changed'}]);
+      expect(f.a().disabled()).toBe(true);
+      expect(f.a().disabledReasons()).toEqual([{field: f.a, reason: 'a cannot be changed'}]);
     });
 
     it('should not have disabled reason if not disabled', () => {
@@ -368,13 +388,13 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.a.$state.disabled()).toBe(false);
-      expect(f.a.$state.disabledReasons()).toEqual([]);
+      expect(f.a().disabled()).toBe(false);
+      expect(f.a().disabledReasons()).toEqual([]);
 
-      f.a.$state.value.set(6);
+      f.a().value.set(6);
 
-      expect(f.a.$state.disabled()).toBe(true);
-      expect(f.a.$state.disabledReasons()).toEqual([{field: f.a, reason: 'a cannot be changed'}]);
+      expect(f.a().disabled()).toBe(true);
+      expect(f.a().disabledReasons()).toEqual([{field: f.a, reason: 'a cannot be changed'}]);
     });
 
     it('disabled reason should propagate to children', () => {
@@ -386,10 +406,10 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.$state.disabled()).toBe(true);
-      expect(f.$state.disabledReasons()).toEqual([{field: f, reason: 'form unavailable'}]);
-      expect(f.a.$state.disabled()).toBe(true);
-      expect(f.a.$state.disabledReasons()).toEqual([{field: f, reason: 'form unavailable'}]);
+      expect(f().disabled()).toBe(true);
+      expect(f().disabledReasons()).toEqual([{field: f, reason: 'form unavailable'}]);
+      expect(f.a().disabled()).toBe(true);
+      expect(f.a().disabledReasons()).toEqual([{field: f, reason: 'form unavailable'}]);
     });
   });
 
@@ -403,9 +423,9 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.$state.readonly()).toBe(false);
-      expect(f.a.$state.readonly()).toBe(true);
-      expect(f.b.$state.readonly()).toBe(false);
+      expect(f().readonly()).toBe(false);
+      expect(f.a().readonly()).toBe(true);
+      expect(f.b().readonly()).toBe(false);
     });
 
     it('should allow logic to make a field conditionally readonly', () => {
@@ -417,10 +437,10 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.a.$state.readonly()).toBe(false);
+      expect(f.a().readonly()).toBe(false);
 
-      f.a.$state.value.set(11);
-      expect(f.a.$state.readonly()).toBe(true);
+      f.a().value.set(11);
+      expect(f.a().readonly()).toBe(true);
     });
 
     it('should make children of readonly parent readonly', () => {
@@ -432,9 +452,9 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.$state.readonly()).toBe(true);
-      expect(f.a.$state.readonly()).toBe(true);
-      expect(f.b.$state.readonly()).toBe(true);
+      expect(f().readonly()).toBe(true);
+      expect(f.a().readonly()).toBe(true);
+      expect(f.b().readonly()).toBe(true);
     });
 
     it('should not validate readonly fields', () => {
@@ -448,14 +468,14 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.$state.metadata(REQUIRED)()).toBe(true);
-      expect(f.$state.valid()).toBe(false);
-      expect(f.$state.readonly()).toBe(false);
+      expect(f().metadata(REQUIRED)()).toBe(true);
+      expect(f().valid()).toBe(false);
+      expect(f().readonly()).toBe(false);
 
       isReadonly.set(true);
-      expect(f.$state.metadata(REQUIRED)()).toBe(true);
-      expect(f.$state.valid()).toBe(true);
-      expect(f.$state.readonly()).toBe(true);
+      expect(f().metadata(REQUIRED)()).toBe(true);
+      expect(f().valid()).toBe(true);
+      expect(f().readonly()).toBe(true);
     });
   });
 
@@ -474,16 +494,16 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.a.$state.errors()).toEqual([]);
-      expect(f.a.$state.valid()).toBe(true);
-      expect(f.a.$state.errors()).toEqual([]);
-      expect(f.$state.valid()).toBe(true);
+      expect(f.a().errors()).toEqual([]);
+      expect(f.a().valid()).toBe(true);
+      expect(f.a().errors()).toEqual([]);
+      expect(f().valid()).toBe(true);
 
-      f.a.$state.value.set(11);
-      expect(f.a.$state.errors()).toEqual([{kind: 'too damn high'}]);
-      expect(f.a.$state.valid()).toBe(false);
-      expect(f.$state.errors()).toEqual([]);
-      expect(f.$state.valid()).toBe(false);
+      f.a().value.set(11);
+      expect(f.a().errors()).toEqual([{kind: 'too damn high'}]);
+      expect(f.a().valid()).toBe(false);
+      expect(f().errors()).toEqual([]);
+      expect(f().valid()).toBe(false);
     });
 
     it('should validate with multiple errors', () => {
@@ -500,12 +520,12 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.a.$state.errors()).toEqual([]);
-      expect(f.a.$state.valid()).toBe(true);
+      expect(f.a().errors()).toEqual([]);
+      expect(f.a().valid()).toBe(true);
 
-      f.a.$state.value.set(11);
-      expect(f.a.$state.errors()).toEqual([{kind: 'too damn high'}, {kind: 'bad'}]);
-      expect(f.a.$state.valid()).toBe(false);
+      f.a().value.set(11);
+      expect(f.a().errors()).toEqual([{kind: 'too damn high'}, {kind: 'bad'}]);
+      expect(f.a().valid()).toBe(false);
     });
 
     it('should validate with shorthand syntax', () => {
@@ -523,27 +543,27 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.a.$state.errors()).toEqual([]);
-      expect(f.a.$state.valid()).toBe(true);
+      expect(f.a().errors()).toEqual([]);
+      expect(f.a().valid()).toBe(true);
 
-      f.a.$state.value.set(2);
-      expect(f.a.$state.errors()).toEqual([{kind: 'custom'}]);
-      expect(f.a.$state.valid()).toBe(false);
+      f.a().value.set(2);
+      expect(f.a().errors()).toEqual([{kind: 'custom'}]);
+      expect(f.a().valid()).toBe(false);
 
-      f.a.$state.value.set(11);
-      expect(f.a.$state.errors()).toEqual([
+      f.a().value.set(11);
+      expect(f.a().errors()).toEqual([
         {kind: 'custom'},
         {kind: 'custom', message: 'too damn high'},
       ]);
-      expect(f.a.$state.valid()).toBe(false);
+      expect(f.a().valid()).toBe(false);
 
-      f.a.$state.value.set(101);
-      expect(f.a.$state.errors()).toEqual([
+      f.a().value.set(101);
+      expect(f.a().errors()).toEqual([
         {kind: 'custom'},
         {kind: 'custom', message: 'too damn high'},
         {kind: 'custom', message: '101 is much too high'},
       ]);
-      expect(f.a.$state.valid()).toBe(false);
+      expect(f.a().valid()).toBe(false);
     });
 
     it('should validate required field', () => {
@@ -556,15 +576,15 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.first.$state.errors()).toEqual([{kind: 'required'}]);
-      expect(f.first.$state.valid()).toBe(false);
-      expect(f.first.$state.metadata(REQUIRED)()).toBe(true);
+      expect(f.first().errors()).toEqual([{kind: 'required'}]);
+      expect(f.first().valid()).toBe(false);
+      expect(f.first().metadata(REQUIRED)()).toBe(true);
 
-      f.first.$state.value.set('Bob');
+      f.first().value.set('Bob');
 
-      expect(f.first.$state.errors()).toEqual([]);
-      expect(f.first.$state.valid()).toBe(true);
-      expect(f.first.$state.metadata(REQUIRED)()).toBe(true);
+      expect(f.first().errors()).toEqual([]);
+      expect(f.first().valid()).toBe(true);
+      expect(f.first().metadata(REQUIRED)()).toBe(true);
     });
 
     it('should validate conditionally required field', () => {
@@ -578,21 +598,21 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.first.$state.errors()).toEqual([]);
-      expect(f.first.$state.valid()).toBe(true);
-      expect(f.first.$state.metadata(REQUIRED)()).toBe(false);
+      expect(f.first().errors()).toEqual([]);
+      expect(f.first().valid()).toBe(true);
+      expect(f.first().metadata(REQUIRED)()).toBe(false);
 
-      f.last.$state.value.set('Loblaw');
+      f.last().value.set('Loblaw');
 
-      expect(f.first.$state.errors()).toEqual([{kind: 'required'}]);
-      expect(f.first.$state.valid()).toBe(false);
-      expect(f.first.$state.metadata(REQUIRED)()).toBe(true);
+      expect(f.first().errors()).toEqual([{kind: 'required'}]);
+      expect(f.first().valid()).toBe(false);
+      expect(f.first().metadata(REQUIRED)()).toBe(true);
 
-      f.first.$state.value.set('Bob');
+      f.first().value.set('Bob');
 
-      expect(f.first.$state.errors()).toEqual([]);
-      expect(f.first.$state.valid()).toBe(true);
-      expect(f.first.$state.metadata(REQUIRED)()).toBe(true);
+      expect(f.first().errors()).toEqual([]);
+      expect(f.first().valid()).toBe(true);
+      expect(f.first().metadata(REQUIRED)()).toBe(true);
     });
 
     it('should support custom empty predicate', () => {
@@ -605,12 +625,12 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.quantity.$state.metadata(REQUIRED)()).toBe(true);
-      expect(f.quantity.$state.errors()).toEqual([{kind: 'required'}]);
+      expect(f.quantity().metadata(REQUIRED)()).toBe(true);
+      expect(f.quantity().errors()).toEqual([{kind: 'required'}]);
 
-      f.quantity.$state.value.set(1);
-      expect(f.quantity.$state.metadata(REQUIRED)()).toBe(true);
-      expect(f.quantity.$state.errors()).toEqual([]);
+      f.quantity().value.set(1);
+      expect(f.quantity().metadata(REQUIRED)()).toBe(true);
+      expect(f.quantity().errors()).toEqual([]);
     });
 
     it('should link required error messages to their predicate', () => {
@@ -618,50 +638,44 @@ describe('FieldNode', () => {
       const f = form(
         data,
         (tx) => {
-          required(
-            tx.name,
-            {
-              when: ({valueOf}) => valueOf(tx.country) === 'USA',
-              errors: () => ({
-                kind: 'required',
-                message: 'Name is required in your country'
-              })
-            },
-          );
-          required(
-            tx.name,
-            {
-              when: ({valueOf}) => valueOf(tx.amount) >= 1000,
-              errors: () => ({
-                kind: 'required',
-                message: 'Name is required for large transactions',
-              })
-            },
-          );
+          required(tx.name, {
+            when: ({valueOf}) => valueOf(tx.country) === 'USA',
+            errors: () => ({
+              kind: 'required',
+              message: 'Name is required in your country',
+            }),
+          });
+          required(tx.name, {
+            when: ({valueOf}) => valueOf(tx.amount) >= 1000,
+            errors: () => ({
+              kind: 'required',
+              message: 'Name is required for large transactions',
+            }),
+          });
         },
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name.$state.errors()).toEqual([]);
+      expect(f.name().errors()).toEqual([]);
 
-      f.country.$state.value.set('USA');
-      expect(f.name.$state.errors()).toEqual([
+      f.country().value.set('USA');
+      expect(f.name().errors()).toEqual([
         {kind: 'required', message: 'Name is required in your country'},
       ]);
 
-      f.amount.$state.value.set(1000);
-      expect(f.name.$state.errors()).toEqual([
+      f.amount().value.set(1000);
+      expect(f.name().errors()).toEqual([
         {kind: 'required', message: 'Name is required in your country'},
         {kind: 'required', message: 'Name is required for large transactions'},
       ]);
 
-      f.country.$state.value.set('Canada');
-      expect(f.name.$state.errors()).toEqual([
+      f.country().value.set('Canada');
+      expect(f.name().errors()).toEqual([
         {kind: 'required', message: 'Name is required for large transactions'},
       ]);
 
-      f.amount.$state.value.set(100);
-      expect(f.name.$state.errors()).toEqual([]);
+      f.amount().value.set(100);
+      expect(f.name().errors()).toEqual([]);
     });
 
     describe('tree validation', () => {
@@ -684,19 +698,17 @@ describe('FieldNode', () => {
           {injector: TestBed.inject(Injector)},
         );
 
-        expect(f.name.$state.errors()).toEqual([]);
-        expect(f.age.$state.errors()).toEqual([]);
+        expect(f.name().errors()).toEqual([]);
+        expect(f.age().errors()).toEqual([]);
 
-        f.age.$state.value.set(-10);
+        f.age().value.set(-10);
 
-        expect(f.name.$state.errors()).toEqual([]);
-        expect(f.age.$state.errors()).toEqual([
-          jasmine.objectContaining({kind: 'temporal_anomaly'}),
-        ]);
+        expect(f.name().errors()).toEqual([]);
+        expect(f.age().errors()).toEqual([jasmine.objectContaining({kind: 'temporal_anomaly'})]);
 
         cat.set({name: 'Fluffy McFluffington', age: 10});
-        expect(f.name.$state.errors()).toEqual([jasmine.objectContaining({kind: 'long_name'})]);
-        expect(f.age.$state.errors()).toEqual([]);
+        expect(f.name().errors()).toEqual([jasmine.objectContaining({kind: 'long_name'})]);
+        expect(f.age().errors()).toEqual([]);
       });
 
       it('should push errors to children async', () => {
@@ -718,19 +730,17 @@ describe('FieldNode', () => {
           {injector: TestBed.inject(Injector)},
         );
 
-        expect(f.name.$state.errors()).toEqual([]);
-        expect(f.age.$state.errors()).toEqual([]);
+        expect(f.name().errors()).toEqual([]);
+        expect(f.age().errors()).toEqual([]);
 
-        f.age.$state.value.set(-10);
+        f.age().value.set(-10);
 
-        expect(f.name.$state.errors()).toEqual([]);
-        expect(f.age.$state.errors()).toEqual([
-          jasmine.objectContaining({kind: 'temporal_anomaly'}),
-        ]);
+        expect(f.name().errors()).toEqual([]);
+        expect(f.age().errors()).toEqual([jasmine.objectContaining({kind: 'temporal_anomaly'})]);
 
         cat.set({name: 'Fluffy McFluffington', age: 10});
-        expect(f.name.$state.errors()).toEqual([jasmine.objectContaining({kind: 'long_name'})]);
-        expect(f.age.$state.errors()).toEqual([]);
+        expect(f.name().errors()).toEqual([jasmine.objectContaining({kind: 'long_name'})]);
+        expect(f.age().errors()).toEqual([]);
       });
     });
   });
@@ -756,7 +766,7 @@ describe('FieldNode', () => {
         ]);
       });
 
-      expect(f.last.$state.errors()).toEqual([{kind: 'lastName'}]);
+      expect(f.last().errors()).toEqual([{kind: 'lastName'}]);
     });
 
     it('maps errors to a field', async () => {
@@ -774,7 +784,7 @@ describe('FieldNode', () => {
       const submitSpy = jasmine.createSpy('submit');
 
       await submit(f, (form) => {
-        submitSpy(form.$state.value());
+        submitSpy(form().value());
         return Promise.resolve();
       });
 
@@ -793,7 +803,7 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.$state.submittedStatus()).toBe('unsubmitted');
+      expect(f().submittedStatus()).toBe('unsubmitted');
 
       let resolvePromise: VoidFunction | undefined;
 
@@ -803,16 +813,16 @@ describe('FieldNode', () => {
         });
       });
 
-      expect(f.$state.submittedStatus()).toBe('submitting');
+      expect(f().submittedStatus()).toBe('submitting');
 
       expect(resolvePromise).toBeDefined();
       resolvePromise?.();
 
       await result;
-      expect(f.$state.submittedStatus()).toBe('submitted');
+      expect(f().submittedStatus()).toBe('submitted');
 
-      f.$state.resetSubmittedStatus();
-      expect(f.$state.submittedStatus()).toBe('unsubmitted');
+      f().resetSubmittedStatus();
+      expect(f().submittedStatus()).toBe('unsubmitted');
     });
 
     it('works on child fields', async () => {
@@ -823,7 +833,7 @@ describe('FieldNode', () => {
         (name) => {
           // first name required if last name specified
           required(name.first, {
-            when: ({valueOf}) => valueOf(name.last) !== ''
+            when: ({valueOf}) => valueOf(name.last) !== '',
           });
         },
         {injector: TestBed.inject(Injector)},
@@ -832,7 +842,7 @@ describe('FieldNode', () => {
       const submitSpy = jasmine.createSpy('submit');
 
       await submit(f.first, (form) => {
-        submitSpy(form.$state.value());
+        submitSpy(form().value());
         return Promise.resolve([
           {
             field: form,
@@ -869,7 +879,7 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.address.street.$state.disabled()).toBe(true);
+      expect(f.address.street().disabled()).toBe(true);
     });
   });
 });

@@ -7,11 +7,10 @@
  */
 
 import {Injector, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {MIN} from '../../../src/api/metadata';
 import {form} from '../../../src/api/structure';
 import {min} from '../../../src/api/validators';
-import {MIN} from '../../../src/api/metadata';
-import {TestBed} from '@angular/core/testing';
-
 
 describe('min validator', () => {
   it('returns min error when the value is smaller', () => {
@@ -24,7 +23,7 @@ describe('min validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age.$state.errors()).toEqual([{kind: 'min'}]);
+    expect(f.age().errors()).toEqual([{kind: 'min'}]);
   });
 
   it('is inclusive', () => {
@@ -37,9 +36,8 @@ describe('min validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age.$state.errors()).toEqual([]);
+    expect(f.age().errors()).toEqual([]);
   });
-
 
   it('returns no errors when the value is larger', () => {
     const cat = signal({name: 'pirojok-the-cat', age: 10});
@@ -51,7 +49,7 @@ describe('min validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age.$state.errors()).toEqual([]);
+    expect(f.age().errors()).toEqual([]);
   });
 
   it('returns custom errors when provided', () => {
@@ -68,14 +66,13 @@ describe('min validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age.$state.errors()).toEqual([
+    expect(f.age().errors()).toEqual([
       {
         kind: 'special-min',
         message: '3',
       },
     ]);
   });
-
 
   describe('metadata', () => {
     it('stores the metadata on min', () => {
@@ -92,7 +89,7 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age.$state.metadata(MIN)()).toBe(5);
+      expect(f.age().metadata(MIN)()).toBe(5);
     });
 
     it('merges two mins preferring the larger option', () => {
@@ -106,14 +103,14 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      f.age.$state.value.set(3);
-      expect(f.age.$state.errors()).toEqual([{kind: 'min'}, {kind: 'min'}]);
-      f.age.$state.value.set(7);
-      expect(f.age.$state.errors()).toEqual([{kind: 'min'}]);
-      f.age.$state.value.set(15);
-      expect(f.age.$state.errors()).toEqual([]);
+      f.age().value.set(3);
+      expect(f.age().errors()).toEqual([{kind: 'min'}, {kind: 'min'}]);
+      f.age().value.set(7);
+      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      f.age().value.set(15);
+      expect(f.age().errors()).toEqual([]);
 
-      expect(f.age.$state.metadata(MIN)()).toBe(10);
+      expect(f.age().metadata(MIN)()).toBe(10);
     });
 
     it('merges two mins _dynamically_ preferring the larger option', () => {
@@ -128,15 +125,15 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      f.age.$state.value.set(3);
-      expect(f.age.$state.errors()).toEqual([{kind: 'min'}, {kind: 'min'}]);
-      f.age.$state.value.set(7);
-      expect(f.age.$state.errors()).toEqual([{kind: 'min'}]);
-      f.age.$state.value.set(15);
-      expect(f.age.$state.errors()).toEqual([]);
+      f.age().value.set(3);
+      expect(f.age().errors()).toEqual([{kind: 'min'}, {kind: 'min'}]);
+      f.age().value.set(7);
+      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      f.age().value.set(15);
+      expect(f.age().errors()).toEqual([]);
       minSignal.set(30);
-      expect(f.age.$state.errors()).toEqual([{kind: 'min'}]);
-      expect(f.age.$state.metadata(MIN)()).toBe(30);
+      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().metadata(MIN)()).toBe(30);
     });
   });
 
@@ -152,9 +149,9 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age.$state.errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().errors()).toEqual([{kind: 'min'}]);
       minValue.set(2);
-      expect(f.age.$state.errors()).toEqual([]);
+      expect(f.age().errors()).toEqual([]);
     });
 
     it('handles dynamic value based on other field', () => {
@@ -170,9 +167,9 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age.$state.errors()).toEqual([{kind: 'min'}]);
-      f.name.$state.value.set('other cat');
-      expect(f.age.$state.errors()).toEqual([]);
+      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      f.name().value.set('other cat');
+      expect(f.age().errors()).toEqual([]);
     });
   });
 });

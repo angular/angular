@@ -7,10 +7,10 @@
  */
 
 import {Injector, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {MIN_LENGTH} from '../../../src/api/metadata';
 import {form} from '../../../src/api/structure';
 import {minLength} from '../../../src/api/validators';
-import {MIN_LENGTH} from '../../../src/api/metadata';
-import {TestBed} from '@angular/core/testing';
 
 describe('minLength validator', () => {
   it('returns minLength error when the length is smaller for strings', () => {
@@ -23,7 +23,7 @@ describe('minLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text.$state.errors()).toEqual([{kind: 'minLength'}]);
+    expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
   });
 
   it('returns minLength error when the length is smaller for arrays', () => {
@@ -36,9 +36,8 @@ describe('minLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.list.$state.errors()).toEqual([{kind: 'minLength'}]);
+    expect(f.list().errors()).toEqual([{kind: 'minLength'}]);
   });
-
 
   it('is inclusive (no error if length equals minLength)', () => {
     const data = signal({text: 'abcd'});
@@ -50,7 +49,7 @@ describe('minLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text.$state.errors()).toEqual([]);
+    expect(f.text().errors()).toEqual([]);
   });
 
   it('returns no errors when the length is larger', () => {
@@ -63,7 +62,7 @@ describe('minLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text.$state.errors()).toEqual([]);
+    expect(f.text().errors()).toEqual([]);
   });
 
   it('returns custom errors when provided', () => {
@@ -75,7 +74,7 @@ describe('minLength validator', () => {
           errors: ({value}) => {
             return {
               kind: 'special-minLength',
-              message: `Length is ${value().length}`
+              message: `Length is ${value().length}`,
             };
           },
         });
@@ -83,7 +82,7 @@ describe('minLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text.$state.errors()).toEqual([
+    expect(f.text().errors()).toEqual([
       {
         kind: 'special-minLength',
         message: 'Length is 2',
@@ -101,7 +100,7 @@ describe('minLength validator', () => {
             errors: ({value}) => {
               return {
                 kind: 'special-minLength',
-                message: `Length is ${value().length}`
+                message: `Length is ${value().length}`,
               };
             },
           });
@@ -109,7 +108,7 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text.$state.metadata(MIN_LENGTH)()).toBe(5);
+      expect(f.text().metadata(MIN_LENGTH)()).toBe(5);
     });
 
     it('merges two minLengths preferring the larger option', () => {
@@ -123,16 +122,16 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      f.text.$state.value.set('ab');
-      expect(f.text.$state.errors()).toEqual([{kind: 'minLength'}, {kind: 'minLength'}]);
+      f.text().value.set('ab');
+      expect(f.text().errors()).toEqual([{kind: 'minLength'}, {kind: 'minLength'}]);
 
-      f.text.$state.value.set('abcdefg');
-      expect(f.text.$state.errors()).toEqual([{kind: 'minLength'}]);
+      f.text().value.set('abcdefg');
+      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
 
-      f.text.$state.value.set('abcdefghijklmno');
-      expect(f.text.$state.errors()).toEqual([]);
+      f.text().value.set('abcdefghijklmno');
+      expect(f.text().errors()).toEqual([]);
 
-      expect(f.text.$state.metadata(MIN_LENGTH)()).toBe(10);
+      expect(f.text().metadata(MIN_LENGTH)()).toBe(10);
     });
 
     it('merges two minLengths _dynamically_ preferring the larger option', () => {
@@ -147,19 +146,19 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      f.text.$state.value.set('ab');
-      expect(f.text.$state.errors()).toEqual([{kind: 'minLength'}, {kind: 'minLength'}]);
+      f.text().value.set('ab');
+      expect(f.text().errors()).toEqual([{kind: 'minLength'}, {kind: 'minLength'}]);
 
-      f.text.$state.value.set('abcdefg');
-      expect(f.text.$state.errors()).toEqual([{kind: 'minLength'}]);
+      f.text().value.set('abcdefg');
+      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
 
-      f.text.$state.value.set('abcdefghijklmno');
-      expect(f.text.$state.errors()).toEqual([]);
+      f.text().value.set('abcdefghijklmno');
+      expect(f.text().errors()).toEqual([]);
 
       minLengthSignal.set(20);
 
-      expect(f.text.$state.errors()).toEqual([{kind: 'minLength'}]);
-      expect(f.text.$state.metadata(MIN_LENGTH)()).toBe(20);
+      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
+      expect(f.text().metadata(MIN_LENGTH)()).toBe(20);
     });
   });
 
@@ -175,9 +174,9 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text.$state.errors()).toEqual([{kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
       dynamicMinLength.set(3);
-      expect(f.text.$state.errors()).toEqual([]);
+      expect(f.text().errors()).toEqual([]);
     });
 
     it('handles dynamic minLength value based on other field', () => {
@@ -192,11 +191,10 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text.$state.errors()).toEqual([{kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
 
-      f.category.$state.value.set('B');
-      expect(f.text.$state.errors()).toEqual([]);
+      f.category().value.set('B');
+      expect(f.text().errors()).toEqual([]);
     });
   });
 });
-
