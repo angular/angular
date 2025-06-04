@@ -1,0 +1,8 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+
+js_library(
+    name = "node_loader",
+    srcs = glob(["*.mjs"]),
+    visibility = ["//visibility:public"],
+    deps = ["//:node_modules/get-tsconfig"],
+)
