@@ -568,6 +568,12 @@ importers:
         specifier: workspace:*
         version: link:../../../../packages/compiler-cli
 
+  integration:
+    dependencies:
+      '@angular/compiler-cli':
+        specifier: workspace:*
+        version: link:../packages/compiler-cli
+
   modules:
     dependencies:
       '@angular/animations':

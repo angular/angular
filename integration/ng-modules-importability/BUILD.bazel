@@ -8,13 +8,11 @@ ts_project(
     data = [
         "//packages:package_json",
     ],
-    interop_deps = [
-        "//packages/compiler-cli",
-    ],
     tsconfig = "tsconfig.json",
     deps = [
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
+        "//integration:node_modules/@angular/compiler-cli",
     ],
 )
 
