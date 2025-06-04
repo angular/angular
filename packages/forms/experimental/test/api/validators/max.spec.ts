@@ -7,10 +7,10 @@
  */
 
 import {Injector, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {MAX} from '../../../src/api/metadata';
 import {form} from '../../../src/api/structure';
 import {max} from '../../../src/api/validators';
-import {MAX} from '../../../src/api/metadata';
-import {TestBed} from '@angular/core/testing';
 
 describe('max validator', () => {
   it('returns max error when the value is larger', () => {
@@ -23,7 +23,7 @@ describe('max validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age.$state.errors()).toEqual([{kind: 'max'}]);
+    expect(f.age().errors()).toEqual([{kind: 'max'}]);
   });
 
   it('is inclusive', () => {
@@ -36,7 +36,7 @@ describe('max validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age.$state.errors()).toEqual([]);
+    expect(f.age().errors()).toEqual([]);
   });
 
   it('returns no errors when the value is smaller', () => {
@@ -49,7 +49,7 @@ describe('max validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age.$state.errors()).toEqual([]);
+    expect(f.age().errors()).toEqual([]);
   });
 
   it('returns custom errors when provided', () => {
@@ -66,7 +66,7 @@ describe('max validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age.$state.errors()).toEqual([
+    expect(f.age().errors()).toEqual([
       {
         kind: 'special-max',
         message: '6',
@@ -89,7 +89,7 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age.$state.metadata(MAX)()).toBe(5);
+      expect(f.age().metadata(MAX)()).toBe(5);
     });
 
     it('merges two maxes preferring the smaller option', () => {
@@ -103,14 +103,14 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      f.age.$state.value.set(12);
-      expect(f.age.$state.errors()).toEqual([{kind: 'max'}, {kind: 'max'}]);
-      f.age.$state.value.set(7);
-      expect(f.age.$state.errors()).toEqual([{kind: 'max'}]);
-      f.age.$state.value.set(3);
-      expect(f.age.$state.errors()).toEqual([]);
+      f.age().value.set(12);
+      expect(f.age().errors()).toEqual([{kind: 'max'}, {kind: 'max'}]);
+      f.age().value.set(7);
+      expect(f.age().errors()).toEqual([{kind: 'max'}]);
+      f.age().value.set(3);
+      expect(f.age().errors()).toEqual([]);
 
-      expect(f.age.$state.metadata(MAX)()).toBe(5);
+      expect(f.age().metadata(MAX)()).toBe(5);
     });
 
     it('merges two maxes _dynamically_ preferring the smaller option', () => {
@@ -125,19 +125,19 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      f.age.$state.value.set(12);
-      expect(f.age.$state.errors()).toEqual([{kind: 'max'}, {kind: 'max'}]);
-      f.age.$state.value.set(7);
-      expect(f.age.$state.errors()).toEqual([{kind: 'max'}]);
-      f.age.$state.value.set(3);
-      expect(f.age.$state.errors()).toEqual([]);
+      f.age().value.set(12);
+      expect(f.age().errors()).toEqual([{kind: 'max'}, {kind: 'max'}]);
+      f.age().value.set(7);
+      expect(f.age().errors()).toEqual([{kind: 'max'}]);
+      f.age().value.set(3);
+      expect(f.age().errors()).toEqual([]);
 
-      expect(f.age.$state.metadata(MAX)()).toBe(5);
+      expect(f.age().metadata(MAX)()).toBe(5);
 
       maxSignal.set(2);
-      f.age.$state.value.set(3);
-      expect(f.age.$state.errors()).toEqual([{kind: 'max'}]);
-      expect(f.age.$state.metadata(MAX)()).toBe(2);
+      f.age().value.set(3);
+      expect(f.age().errors()).toEqual([{kind: 'max'}]);
+      expect(f.age().metadata(MAX)()).toBe(2);
     });
   });
 
@@ -153,9 +153,9 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age.$state.errors()).toEqual([{kind: 'max'}]);
+      expect(f.age().errors()).toEqual([{kind: 'max'}]);
       maxValue.set(7);
-      expect(f.age.$state.errors()).toEqual([]);
+      expect(f.age().errors()).toEqual([]);
     });
 
     it('handles dynamic value based on other field', () => {
@@ -171,11 +171,11 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age.$state.errors()).toEqual([{kind: 'max'}]);
+      expect(f.age().errors()).toEqual([{kind: 'max'}]);
 
-      f.name.$state.value.set('other cat');
+      f.name().value.set('other cat');
 
-      expect(f.age.$state.errors()).toEqual([]);
+      expect(f.age().errors()).toEqual([]);
     });
   });
 });

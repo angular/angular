@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FieldContext, FieldPath, form, validate} from '@angular/forms/experimental';
 import {signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {FieldContext, FieldPath, form, validate} from '@angular/forms/experimental';
 
 function testContext<T>(
   s: WritableSignal<T>,
@@ -24,7 +24,7 @@ function testContext<T>(
       });
     });
 
-    f.$state.errors();
+    f().errors();
   });
 
   expect(isCalled).toHaveBeenCalled();
@@ -48,8 +48,8 @@ describe('Field Context', () => {
   it('field', () => {
     const cat = signal({name: 'pirojok-the-cat', age: 5});
     testContext(cat, (ctx) => {
-      expect(ctx.field.name.$state.value()).toEqual('pirojok-the-cat');
-      expect(ctx.field.age.$state.value()).toEqual(5);
+      expect(ctx.field.name().value()).toEqual('pirojok-the-cat');
+      expect(ctx.field.age().value()).toEqual(5);
     });
   });
 
@@ -72,8 +72,8 @@ describe('Field Context', () => {
   it('fieldOf', () => {
     const cat = signal({name: 'pirojok-the-cat', age: 5});
     testContext(cat, (ctx, p) => {
-      expect(ctx.fieldOf(p.name).$state.value()).toEqual('pirojok-the-cat');
-      expect(ctx.fieldOf(p.age).$state.value()).toEqual(5);
+      expect(ctx.fieldOf(p.name)().value()).toEqual('pirojok-the-cat');
+      expect(ctx.fieldOf(p.age)().value()).toEqual(5);
     });
   });
 });
