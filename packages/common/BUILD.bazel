@@ -44,6 +44,9 @@ ng_package(
     ],
     nested_packages = ["//packages/common/locales:package"],
     package = "@angular/common",
+    replace_prefixes = {
+        "locales/package": "locales/",
+    },
     tags = [
         "release-with-framework",
     ],
