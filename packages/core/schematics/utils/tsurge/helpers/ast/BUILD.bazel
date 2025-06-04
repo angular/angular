@@ -1,11 +1,11 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//packages/core/schematics/utils/tsurge:users"])
 
-ts_library(
+ts_project(
     name = "ast",
     srcs = glob(["**/*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/annotations/common",
@@ -17,6 +17,8 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/core/schematics/utils/tsurge",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/typescript",
     ],
 )

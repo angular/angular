@@ -1,9 +1,9 @@
 load("@npm//@bazel/esbuild:index.bzl", "esbuild")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "worker",
     srcs = glob(
         [
@@ -14,20 +14,16 @@ ts_library(
             "main.ts",
         ],
     ),
-    deps = ["@npm//@types/node"],
 )
 
-ts_library(
+ts_project(
     name = "main",
     srcs = ["main.ts"],
-    deps = [":worker"],
+    deps = [":worker_rjs"],
 )
 
 esbuild(
     name = "ngsw_worker",
-    args = {
-        "resolveExtensions": [".mjs"],
-    },
     entry_point = ":main.ts",
     format = "iife",
     platform = "browser",
@@ -36,6 +32,6 @@ esbuild(
     # features that are unavailable in some supported browsers. This is risky though, so we keep ES2017.
     target = "es2017",
     deps = [
-        ":main",
+        ":main_rjs",
     ],
 )

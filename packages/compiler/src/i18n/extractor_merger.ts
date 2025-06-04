@@ -130,7 +130,16 @@ class _Visitor implements html.Visitor {
     this._translations = translations;
 
     // Construct a single fake root element
-    const wrapper = new html.Element('wrapper', [], [], nodes, undefined!, undefined!, undefined);
+    const wrapper = new html.Element(
+      'wrapper',
+      [],
+      [],
+      nodes,
+      false,
+      undefined!,
+      undefined!,
+      undefined,
+    );
 
     const translatedNode = wrapper.visit(this, null);
 
@@ -367,6 +376,7 @@ class _Visitor implements html.Visitor {
           this._translateAttributes(node),
           this._translateDirectives(node),
           childNodes,
+          node.isSelfClosing,
           node.sourceSpan,
           node.startSourceSpan,
           node.endSourceSpan,
@@ -379,6 +389,7 @@ class _Visitor implements html.Visitor {
           this._translateAttributes(node),
           this._translateDirectives(node),
           childNodes,
+          node.isSelfClosing,
           node.sourceSpan,
           node.startSourceSpan,
           node.endSourceSpan,

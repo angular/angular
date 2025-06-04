@@ -1,5 +1,5 @@
 {
-  "openFiles": ["src/app/app.routes.ts", "src/app/app.component.ts", "src/app/app.config.ts"],
+  "openFiles": ["src/app/app.routes.ts", "src/app/app.ts", "src/app/app.config.ts"],
   "title": "Enabling routing",
   "type": "editor"
 }

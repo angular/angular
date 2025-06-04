@@ -13,8 +13,8 @@ import {LContainer} from '../render3/interfaces/container';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {isRootView} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
-import {makeStateKey, TransferState} from '../transfer_state';
+import {HEADER_OFFSET, HYDRATION, LView, TVIEW, TViewType} from '../render3/interfaces/view';
+import {makeStateKey, StateKey, TransferState} from '../transfer_state';
 import {assertDefined, assertEqual} from '../util/assert';
 import type {HydrationContext} from './annotate';
 
@@ -36,9 +36,12 @@ import {
 import {IS_INCREMENTAL_HYDRATION_ENABLED, JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
-import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
+import {hoverEventNames, interactionEventNames} from '../../primitives/defer/src/triggers';
 import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
 import {sharedMapFunction} from '../event_delegation_utils';
+import {isDetachedByI18n} from '../i18n/utils';
+import {isInSkipHydrationBlock} from '../render3/state';
+import {TNode} from '../render3/interfaces/node';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -49,7 +52,8 @@ const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 /**
  * Lookup key used to reference DOM hydration data (ngh) in `TransferState`.
  */
-export const NGH_DATA_KEY = makeStateKey<Array<SerializedView>>(TRANSFER_STATE_TOKEN_ID);
+export const NGH_DATA_KEY: StateKey<SerializedView[]> =
+  makeStateKey<Array<SerializedView>>(TRANSFER_STATE_TOKEN_ID);
 
 /**
  * The name of the key used in the TransferState collection,
@@ -60,9 +64,9 @@ export const TRANSFER_STATE_DEFER_BLOCKS_INFO = '__nghDeferData__';
 /**
  * Lookup key used to retrieve defer block datain `TransferState`.
  */
-export const NGH_DEFER_BLOCKS_KEY = makeStateKey<{[key: string]: SerializedDeferBlock}>(
-  TRANSFER_STATE_DEFER_BLOCKS_INFO,
-);
+export const NGH_DEFER_BLOCKS_KEY: StateKey<{[key: string]: SerializedDeferBlock}> = makeStateKey<{
+  [key: string]: SerializedDeferBlock;
+}>(TRANSFER_STATE_DEFER_BLOCKS_INFO);
 
 /**
  * The name of the attribute that would be added to host component
@@ -493,6 +497,22 @@ export function isDisconnectedNode(hydrationInfo: DehydratedView, index: number)
     hydrationInfo.disconnectedNodes = nodeIds ? new Set(nodeIds) : null;
   }
   return !!initDisconnectedNodes(hydrationInfo)?.has(index);
+}
+
+/**
+ * Checks whether a node can be hydrated.
+ * @param lView View in which the node instance is placed.
+ * @param tNode Node to be checked.
+ */
+export function canHydrateNode(lView: LView, tNode: TNode): boolean {
+  const hydrationInfo = lView[HYDRATION];
+
+  return (
+    hydrationInfo !== null &&
+    !isInSkipHydrationBlock() &&
+    !isDetachedByI18n(tNode) &&
+    !isDisconnectedNode(hydrationInfo, tNode.index - HEADER_OFFSET)
+  );
 }
 
 /**

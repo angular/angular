@@ -1,5 +1,5 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,7 +10,7 @@ sass_binary(
     deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
 )
 
-ng_module(
+ng_project(
     name = "injector-providers",
     srcs = [
         "injector-providers.component.ts",
@@ -19,12 +19,14 @@ ng_module(
         "injector-providers.component.html",
         ":injector_providers_component_styles",
     ],
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/animations",
         "//packages/common",
         "//packages/core",
-        "@npm//@angular/material",
+    ],
+    deps = [
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path:resolution-path_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )

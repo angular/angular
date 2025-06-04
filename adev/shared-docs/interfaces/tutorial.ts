@@ -140,6 +140,7 @@ export type TutorialNavigationData = {
   previousStep?: string;
   nextTutorial?: string;
   sourceCodeZipPath?: string;
+  restrictedMode: boolean;
 };
 
 export type PlaygroundRouteData = {

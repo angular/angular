@@ -1,23 +1,26 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package", "tsec_test")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "tsec_test")
+load("//tools:defaults2.bzl", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "platform-browser",
-    package_name = "@angular/platform-browser",
     srcs = glob(
         [
             "*.ts",
             "src/**/*.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages:types",
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/core",
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//@types/hammerjs",
+    ],
+    deps = [
+        "//:node_modules/@types/hammerjs",
+        "//packages:goog_types_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/core:core_rjs",
     ],
 )
 
@@ -50,6 +53,16 @@ ng_package(
         "//packages/platform-browser/animations/async",
         "//packages/platform-browser/testing",
     ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making this package usable in `core/test/bundling`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )
 
 api_golden_test_npm_package(

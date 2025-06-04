@@ -46,9 +46,9 @@ import {
 } from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
+import {FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
 import type {FormControlName} from './form_control_name';
 import type {FormArrayName, FormGroupName} from './form_group_name';
-import {FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
 
 const formDirectiveProvider: Provider = {
   provide: ControlContainer,
@@ -147,7 +147,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     this._setAsyncValidators(asyncValidators);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges): void {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this.form) {
       throw missingFormException();
@@ -161,7 +161,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy() {
     if (this.form) {
       cleanUpValidators(this.form, this);

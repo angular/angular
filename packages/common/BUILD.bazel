@@ -1,6 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//packages/common/locales:index.bzl", "generate_base_currencies_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
+load("//tools:defaults2.bzl", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,19 +20,20 @@ generated_file_test(
     generated = ":base_currencies_file_generated",
 )
 
-ng_module(
+ng_project(
     name = "common",
-    package_name = "@angular/common",
     srcs = glob(
         [
             "*.ts",
             "src/**/*.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages/core",
         "//packages/core/primitives/dom-navigation",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
     ],
 )
 
@@ -68,6 +70,16 @@ ng_package(
     ],
 )
 
+# TODO(devversion): Temporary early `npm_package` for making this package usable in `core/test/bundling`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
+)
+
 api_golden_test_npm_package(
     name = "common_api",
     data = [
@@ -102,7 +114,6 @@ generate_api_docs(
         ":files_for_docgen",
         "//packages:common_files_and_deps_for_docs",
         "//packages/platform-browser:files_for_docgen",
-        "//packages/platform-browser-dynamic:files_for_docgen",
     ],
     entry_point = ":index.ts",
     module_name = "@angular/common",

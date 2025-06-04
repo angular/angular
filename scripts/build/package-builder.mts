@@ -16,7 +16,7 @@ import sh from 'shelljs';
 sh.set('-e');
 
 /** Path to the project directory. */
-export const projectDir = join(dirname(fileURLToPath(import.meta.url)), '../..');
+export const projectDir: string = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
 /** Command that runs Bazel. */
 export const bazelCmd = process.env.BAZEL || `yarn -s bazel`;
@@ -42,11 +42,7 @@ export function performNpmReleaseBuild(): BuiltPackage[] {
  * Git HEAD SHA is included in the version (for easier debugging and back tracing).
  */
 export function performDefaultSnapshotBuild(): BuiltPackage[] {
-  return buildReleasePackages(defaultDistPath, /* isSnapshotBuild */ true, [
-    // For snapshot builds, the Bazel package is still built. We want to have
-    // GitHub snapshot builds for it.
-    '//packages/bazel:npm_package',
-  ]);
+  return buildReleasePackages(defaultDistPath, /* isSnapshotBuild */ true);
 }
 
 /**
@@ -56,7 +52,7 @@ export function performDefaultSnapshotBuild(): BuiltPackage[] {
 function buildReleasePackages(
   distPath: string,
   isSnapshotBuild: boolean,
-  additionalTargets: string[] = []
+  additionalTargets: string[] = [],
 ): BuiltPackage[] {
   console.info('######################################');
   console.info('  Building release packages...');
@@ -120,7 +116,7 @@ function getPackageNamesOfTargets(targets: string[]): string[] {
     if (matches === null) {
       throw Error(
         `Found Bazel target with "${releaseTargetTag}" tag, but could not ` +
-          `determine release output name: ${targetName}`
+          `determine release output name: ${targetName}`,
       );
     }
     return matches[1];

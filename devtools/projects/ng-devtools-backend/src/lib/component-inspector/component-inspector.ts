@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementPosition, HydrationStatus} from 'protocol';
+import {ElementPosition, HydrationStatus} from '../../../../protocol';
 
 import {findNodeInForest} from '../component-tree/component-tree';
 import {

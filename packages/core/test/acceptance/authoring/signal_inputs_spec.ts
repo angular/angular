@@ -179,7 +179,7 @@ describe('signal inputs', () => {
       template: 'input:{{input()}}',
     })
     class InputComp {
-      input = input.required<number>();
+      input = input.required<number>({debugName: 'input'});
 
       constructor() {
         this.input();
@@ -195,7 +195,7 @@ describe('signal inputs', () => {
     }
 
     expect(() => TestBed.createComponent(TestCmp)).toThrowError(
-      /Input is required but no value is available yet/,
+      /Input "input" is required but no value is available yet/,
     );
   });
 

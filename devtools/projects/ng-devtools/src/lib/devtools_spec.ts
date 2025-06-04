@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FrameManager} from './application-services/frame_manager';
 import {DevToolsComponent} from './devtools.component';
 import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
-import {MessageBus} from 'protocol';
+import {MessageBus} from '../../../protocol';
 
 @Component({
   selector: 'ng-devtools-tabs',

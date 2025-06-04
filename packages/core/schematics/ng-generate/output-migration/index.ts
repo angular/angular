@@ -57,8 +57,7 @@ export function migrate(options: Options): Rule {
       afterAnalysisFailure: () => {
         context.logger.error('Migration failed unexpectedly with no analysis data');
       },
-      whenDone: ({counters}) => {
-        const {detectedOutputs, problematicOutputs, successRate} = counters;
+      whenDone: ({detectedOutputs, problematicOutputs, successRate}) => {
         const migratedOutputs = detectedOutputs - problematicOutputs;
         const successRatePercent = (successRate * 100).toFixed(2);
 

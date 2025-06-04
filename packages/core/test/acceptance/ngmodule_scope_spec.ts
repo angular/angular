@@ -7,8 +7,7 @@
  */
 
 import {Component, destroyPlatform, NgModule, Pipe, PipeTransform} from '../../src/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
 describe('NgModule scopes', () => {
@@ -59,7 +58,7 @@ describe('NgModule scopes', () => {
       })
       class Mod {}
 
-      const ngModuleRef = await platformBrowserDynamic().bootstrapModule(Mod);
+      const ngModuleRef = await platformBrowser().bootstrapModule(Mod);
       expect(document.body.textContent).toContain('App - 6');
       ngModuleRef.destroy();
     }),

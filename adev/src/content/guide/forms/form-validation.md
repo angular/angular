@@ -25,9 +25,9 @@ Notice the following features illustrated by the example.
     `NgModel` mirrors many of the properties of its underlying `FormControl` instance, so you can use this in the template to check for control states such as `valid` and `dirty`.
     For a full list of control properties, see the [AbstractControl](api/forms/AbstractControl) API reference.
 
-  * The `*ngIf` on the `<div>` element reveals a set of nested message `divs` but only if the `name` is invalid and the control is either `dirty` or `touched`.
+  * The outermost `@if` reveals a set of nested messages but only if the `name` is invalid and the control is either `dirty` or `touched`.
 
-  * Each nested `<div>` can present a custom message for one of the possible validation errors.
+  * Each nested `@if` can present a custom message for one of the possible validation errors.
         There are messages for `required`, `minlength`, and `forbiddenName`.
 
 HELPFUL: To prevent the validator from displaying errors before the user has a chance to edit the form, you should check for either the `dirty` or `touched` states in a control.
@@ -213,7 +213,7 @@ To provide better user experience, the template shows an appropriate error messa
 
 <docs-code header="reactive/actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.html" visibleRegion="cross-validation-error-message"/>
 
-This `*ngIf` displays the error if the `FormGroup` has the cross validation error returned by the `unambiguousRoleValidator` validator, but only if the user finished [interacting with the form](#control-status-css-classes).
+This `@if` displays the error if the `FormGroup` has the cross validation error returned by the `unambiguousRoleValidator` validator, but only if the user finished [interacting with the form](#control-status-css-classes).
 
 ### Adding cross-validation to template-driven forms
 
@@ -254,8 +254,9 @@ The following example shows how to achieve this in a template-driven form.
 <docs-code language="html">
 
 <input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator>
-<app-spinner *ngIf="model.pending"></app-spinner>
-
+@if(model.pending) {
+  <app-spinner />
+}
 </docs-code>
 
 ### Implementing a custom async validator
@@ -268,7 +269,7 @@ The following code creates the validator class, `UniqueRoleValidator`, which imp
 
 <docs-code path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" visibleRegion="async-validator"/>
 
-The `actorsService` property is initialized with an instace of the `ActorsService` token, which defines the following interface.
+The `actorsService` property is initialized with an instance of the `ActorsService` token, which defines the following interface.
 
 <docs-code language="typescript">
 interface ActorsService {

@@ -1,13 +1,13 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "testing",
     srcs = glob([
         "**/*.ts",
     ]),
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli/src/ngtsc/logging",
     ],
 )

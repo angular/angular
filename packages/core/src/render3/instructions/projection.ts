@@ -31,7 +31,7 @@ import {getOrCreateTNode} from '../tnode_manipulation';
 import {addLViewToLContainer} from '../view/container';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
-import {declareTemplate} from './template';
+import {declareNoDirectiveHostTemplate} from './template';
 
 /**
  * Checks a given node against matching projection slots and returns the
@@ -162,7 +162,7 @@ export function ɵɵprojection(
   // instances of the component may or may not insert it. Also it needs to be declare *before*
   // the projection node in order to work correctly with hydration.
   if (fallbackIndex !== null) {
-    declareTemplate(
+    declareNoDirectiveHostTemplate(
       lView,
       tView,
       fallbackIndex,

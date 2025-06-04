@@ -1,11 +1,11 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "window",
     srcs = ["window_provider.ts"],
-    deps = [
+    interop_deps = [
         "//packages/core",
     ],
 )

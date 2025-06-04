@@ -77,7 +77,7 @@ def _ts_project_module_impl(ctx):
             LinkablePackageInfo(
                 package_name = ctx.attr.module_name,
                 package_path = "",
-                path = "%s/%s/%s" % (ctx.bin_dir.path, ctx.label.workspace_root, ctx.label.package),
+                path = "%s/%s" % (ctx.bin_dir.path, ctx.label.package),
                 files = info.sources,
             ),
         )
@@ -106,7 +106,8 @@ def ts_project(
         tsconfig = None,
         testonly = False,
         visibility = None,
-        ignore_strict_deps = False,
+        # TODO: Enable this for all `ts_project` targets at end of migration.
+        ignore_strict_deps = True,
         enable_runtime_rnjs_interop = True,
         rule_impl = _ts_project,
         **kwargs):

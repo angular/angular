@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, NodeJSFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TsurgeMigration} from '../migration';
 import {Replacement} from '../replacement';
 
 /**
- * Executes the migrate phase of the given migration against
+ * 1P Logic: Executes the migrate phase of the given migration against
  * the specified TypeScript project.
  *
  * This requires the global migration data, computed by the
@@ -21,12 +21,12 @@ import {Replacement} from '../replacement';
  *   absolute project directory path (to allow for applying).
  */
 export async function executeMigratePhase<UnitData, GlobalData>(
-  migration: TsurgeMigration<UnitData, GlobalData>,
+  migration: TsurgeMigration<UnitData, GlobalData, unknown>,
   globalMetadata: GlobalData,
   tsconfigAbsolutePath: string,
 ): Promise<{replacements: Replacement[]; projectRoot: AbsoluteFsPath}> {
-  const baseInfo = migration.createProgram(tsconfigAbsolutePath);
-  const info = migration.prepareProgram(baseInfo);
+  // In 1P, we never need to use a virtual file system.
+  const info = migration.createProgram(tsconfigAbsolutePath, new NodeJSFileSystem());
 
   return {
     ...(await migration.migrate(globalMetadata, info)),

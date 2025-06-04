@@ -1,11 +1,17 @@
 # Publish Angular DevTools
 
-Publishing Angular DevTools is a five step process:
-1.  Sync and update workspace.
-1.  Update extension version numbers.
-1.  Publish to Chrome.
-1.  Publish to Firefox.
-1.  Commit and merge the updated version numbers.
+Publishing Angular DevTools is achieved through the following steps:
+
+## 0. Check if there's anything to release
+
+On the `main` branch, run:
+
+```shell
+git log "HEAD...$(git log HEAD~1 --grep="release:.*Angular DevTools" --format=format:%H | head -n 1)~1" --oneline |
+    grep "(devtools):\|release:.*Angular DevTools" --color=never
+```
+
+If this displays any commits since the most recent release commit, then there's something to release.
 
 ## 1. Sync workspace
 
@@ -37,12 +43,15 @@ git push -u origin devtools-release
 Then create and merge a PR targeting `patch` with this change. Merging this PR does not
 have any automation associated with it and can be merged at any time.
 
-Once the PR is merged, pull and check out that specific commit hash on `main`.
+Once the PR is merged, pull and check out that specific commit hash on `main` and reinstall
+dependencies as they might have changed.
 
 ```shell
-git checkout main
-git pull upstream main
+git fetch upstream main
 git checkout "${MERGED_RELEASE_COMMIT}"
+
+nvm install
+yarn --immutable
 ```
 
 Note that while the steps below can technically be done without merging the release PR
@@ -135,8 +144,7 @@ Suggested note to reviewer:
 > release builds locally.
 >
 > The uploaded source is equivalent to
-> https://github.com/angular/angular/tree/${permalink to current main}/ with the single change
-> of a bumped version number in the \`manifest.json\` file.
+> https://github.com/angular/angular/tree/${RELEASE_COMMIT}/.
 
 Similar to Chrome, we need to wait for approval from Mozilla before the extension is released.
 There's no hard upper-bound on this, but historically it typically takes at least a week.

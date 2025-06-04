@@ -1,43 +1,47 @@
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "get-roots",
     srcs = ["get-roots.ts"],
 )
 
-ts_library(
+ts_project(
     name = "core-enums",
     srcs = ["core-enums.ts"],
 )
 
-ts_library(
+ts_project(
     name = "component-tree",
     srcs = ["component-tree.ts"],
-    deps = [
-        ":core-enums",
-        ":get-roots",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:property_mutation",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+    interop_deps = [
+        "//packages/core",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
-        "//devtools/projects/protocol",
-        "//packages/core",
+    ],
+    deps = [
+        ":core-enums_rjs",
+        ":get-roots_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:property_mutation_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:directive-forest_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
 ts_test_library(
     name = "test_lib",
     srcs = glob(["*.spec.ts"]),
-    deps = [
-        ":component-tree",
-        ":get-roots",
+    interop_deps = [
         "//packages/core",
-        "@npm//jasmine",
+    ],
+    deps = [
+        ":component-tree_rjs",
+        ":get-roots_rjs",
+        "//:node_modules/jasmine",
     ],
 )
 

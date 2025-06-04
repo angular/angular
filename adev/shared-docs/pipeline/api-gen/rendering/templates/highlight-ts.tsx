@@ -8,7 +8,7 @@
 
 import {h} from 'preact';
 import {RawHtml} from './raw-html';
-import {codeToHtml} from '../shiki/shiki';
+import {codeToHtml} from '../shiki/shiki.mjs';
 
 /** Component to render a header of the CLI page. */
 export function HighlightTypeScript(props: {code: string}) {

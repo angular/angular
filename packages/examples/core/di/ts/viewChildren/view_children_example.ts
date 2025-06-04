@@ -7,22 +7,32 @@
  */
 
 // #docregion Component
-import {AfterViewInit, Component, Directive, Input, QueryList, ViewChildren} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Directive,
+  input,
+  QueryList,
+  signal,
+  ViewChildren,
+} from '@angular/core';
 
 @Directive({
   selector: 'pane',
   standalone: false,
 })
 export class Pane {
-  @Input() id!: string;
+  id = input.required<string>();
 }
 
 @Component({
   selector: 'example-app',
   template: `
-    <pane id="1"></pane>
-    <pane id="2"></pane>
-    <pane id="3" *ngIf="shouldShow"></pane>
+    <pane id="1"/>
+    <pane id="2"/>
+    @if(shouldShow()) {
+      <pane id="3"/>
+    }
 
     <button (click)="show()">Show 3</button>
 
@@ -34,22 +44,22 @@ export class ViewChildrenComp implements AfterViewInit {
   @ViewChildren(Pane) panes!: QueryList<Pane>;
   serializedPanes: string = '';
 
-  shouldShow = false;
+  shouldShow = signal(false);
 
   show() {
-    this.shouldShow = true;
+    this.shouldShow.set(true);
   }
 
   ngAfterViewInit() {
     this.calculateSerializedPanes();
-    this.panes.changes.subscribe((r) => {
+    this.panes.changes.subscribe(() => {
       this.calculateSerializedPanes();
     });
   }
 
   calculateSerializedPanes() {
     setTimeout(() => {
-      this.serializedPanes = this.panes.map((p) => p.id).join(', ');
+      this.serializedPanes = this.panes.map((p) => p.id()).join(', ');
     }, 0);
   }
 }

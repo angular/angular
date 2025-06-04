@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {h, Fragment} from 'preact';
-import {EntryType, isDocEntryWithSourceInfo, PipeEntry} from '../entities';
-import {DocEntryRenderable, PipeEntryRenderable} from '../entities/renderables';
+import {Fragment, h} from 'preact';
+import {EntryType, isDocEntryWithSourceInfo, PipeEntry} from '../entities.mjs';
+import {DocEntryRenderable, PipeEntryRenderable} from '../entities/renderables.mjs';
 import {
   HEADER_CLASS_NAME,
   HEADER_ENTRY_CATEGORY,
   HEADER_ENTRY_LABEL,
   HEADER_ENTRY_TITLE,
-} from '../styling/css-classes';
+} from '../styling/css-classes.mjs';
 import {DocsPillRow} from './docs-pill-row';
 
 /** Component to render a header of the API page. */
@@ -153,6 +153,7 @@ function sourceUrlForEntry(entry: DocEntryRenderable): string | null {
     // We don't know the source path in external repos link the CLI
     return null;
   } else {
-    return `https://github.com/angular/angular/blob/main${entry.source.filePath}#L${entry.source.startLine}-L${entry.source.endLine}`;
+    const filePath = entry.source.filePath.replace(/^\//, '');
+    return `https://github.com/${entry.repo}/blob/main/${filePath}#L${entry.source.startLine}-L${entry.source.endLine}`;
   }
 }

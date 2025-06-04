@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken} from '../../di';
 import {isTypeProvider} from '../../di/provider_collection';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
@@ -81,7 +80,6 @@ function measureEnd(
     `Profiling error: expected to see ${startEvent} event but got ${top[0]}`,
   );
 
-  // Expecting TypeScript error here as overloaded types are not supported yet in TS types
   console.timeStamp(
     entryName,
     'Event_' + top[0] + '_' + top[1],
@@ -216,28 +214,34 @@ function getComponentMeasureName(instance: {}) {
 }
 
 function getProviderTokenMeasureName<T>(token: any) {
-  if (token instanceof InjectionToken) {
-    return token.toString();
-  } else if (isTypeProvider(token)) {
+  if (isTypeProvider(token)) {
     return token.name;
-  } else {
+  } else if (token.provide != null) {
     return getProviderTokenMeasureName(token.provide);
   }
+  return token.toString();
 }
 
 /**
  * Start listening to the Angular's internal performance-related events and route those to the Chrome DevTools performance panel.
  * This enables Angular-specific data visualization when recording a performance profile directly in the Chrome DevTools.
  *
+ * Note: integration is enabled in the development mode only, this operation is noop in the production mode.
+ *
+ * @experimental
+ *
  * @returns a function that can be invoked to stop sending profiling data.
  */
 export function enableProfiling() {
   performanceMarkFeature('Chrome DevTools profiling');
-  const removeInjectorProfiler = setInjectorProfiler(chromeDevToolsInjectorProfiler);
-  const removeProfiler = setProfiler(devToolsProfiler);
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    const removeInjectorProfiler = setInjectorProfiler(chromeDevToolsInjectorProfiler);
+    const removeProfiler = setProfiler(devToolsProfiler);
 
-  return () => {
-    removeInjectorProfiler();
-    removeProfiler();
-  };
+    return () => {
+      removeInjectorProfiler();
+      removeProfiler();
+    };
+  }
+  return () => {};
 }

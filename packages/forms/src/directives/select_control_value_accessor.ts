@@ -81,9 +81,9 @@ function _extractId(valueString: string): string {
  *
  * ```html
  * <select [compareWith]="compareFn"  [formControl]="selectedCountriesControl">
- *     <option *ngFor="let country of countries" [ngValue]="country">
- *         {{country.name}}
- *     </option>
+ *    @for(country of countries; track $index) {
+ *        <option[ngValue]="country">{{country.name}}</option>
+ *    }
  * </select>
  *
  * compareFn(c1: Country, c2: Country): boolean {
@@ -110,7 +110,7 @@ export class SelectControlValueAccessor
   extends BuiltInControlValueAccessor
   implements ControlValueAccessor
 {
-  /** @nodoc */
+  /** @docs-private */
   value: any;
 
   /** @internal */
@@ -139,7 +139,7 @@ export class SelectControlValueAccessor
 
   /**
    * Sets the "value" property on the select element.
-   * @nodoc
+   * @docs-private
    */
   writeValue(value: any): void {
     this.value = value;
@@ -150,7 +150,7 @@ export class SelectControlValueAccessor
 
   /**
    * Registers a function called when the control value changes.
-   * @nodoc
+   * @docs-private
    */
   override registerOnChange(fn: (value: any) => any): void {
     this.onChange = (valueString: string) => {
@@ -237,7 +237,7 @@ export class NgSelectOption implements OnDestroy {
     this._renderer.setProperty(this._element.nativeElement, 'value', value);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);

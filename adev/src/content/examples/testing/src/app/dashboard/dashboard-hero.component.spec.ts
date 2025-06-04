@@ -110,9 +110,8 @@ describe('DashboardHeroComponent when inside a test host', () => {
     TestBed.configureTestingModule({
       providers: appProviders,
       imports: [DashboardHeroComponent, TestHostComponent],
-    })
-      // #enddocregion test-host-setup
-      .compileComponents();
+    });
+    // #enddocregion test-host-setup
   }));
 
   beforeEach(() => {

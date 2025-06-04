@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Events, MessageBus} from 'protocol';
+import {Events, MessageBus} from '../../../protocol';
 
 import {subscribeToClientEvents} from './client-event-subscribers';
 

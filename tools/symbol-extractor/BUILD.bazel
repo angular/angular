@@ -1,36 +1,38 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "lib",
     testonly = True,
     srcs = glob(
-        ["**/*.ts"],
+        ["**/*.mts"],
         exclude = [
-            "**/*_spec.ts",
+            "**/*_spec.mts",
             "**/*_spec",
         ],
     ),
+    tsconfig = "//tools:tsconfig_build",
     deps = [
-        "//packages:types",
-        "@npm//@bazel/runfiles",
-        "@npm//typescript",
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/tinyglobby",
+        "//:node_modules/typescript",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = 1,
     srcs = glob(
-        ["**/*_spec.ts"],
+        ["**/*_spec.mts"],
         exclude = ["symbol_extractor_spec/**"],
     ),
+    tsconfig = "//tools:tsconfig_test",
     deps = [
-        ":lib",
-        "//packages:types",
-        "@npm//@bazel/runfiles",
-        "@npm//typescript",
+        ":lib_rjs",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/typescript",
     ],
 )
 

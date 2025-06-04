@@ -8,8 +8,8 @@
 
 import {Component, Directive, Input} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {By} from '@angular/platform-browser';
+import {expect} from '@angular/private/testing/matchers';
 
 describe('integration tests', () => {
   let fixture: ComponentFixture<TestComponent>;

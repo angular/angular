@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {ɵPLATFORM_BROWSER_ID} from '@angular/common';
 import {
   APP_INITIALIZER,
   ChangeDetectorRef,
@@ -40,16 +40,19 @@ import {
   ɵɵsetNgModuleScope as setNgModuleScope,
   ɵɵtext as text,
   DOCUMENT,
+  signal,
+  provideZonelessChangeDetection,
 } from '../src/core';
 import {DeferBlockBehavior} from '../testing';
 import {TestBed, TestBedImpl} from '../testing/src/test_bed';
 import {By} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 
 import {NgModuleType} from '../src/render3';
 import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
 import {setClassMetadataAsync} from '../src/render3/metadata';
 import {
+  ComponentFixtureAutoDetect,
   TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT,
   THROW_ON_UNKNOWN_ELEMENTS_DEFAULT,
   THROW_ON_UNKNOWN_PROPERTIES_DEFAULT,
@@ -1059,12 +1062,10 @@ describe('TestBed', () => {
         declarations: [App],
         // AppModule -> ModuleB -> ModuleA (to be overridden)
         imports: [AppModule],
-      })
-        .overrideModule(ModuleA, {
-          remove: {declarations: [CompA], exports: [CompA]},
-          add: {declarations: [MockCompA], exports: [MockCompA]},
-        })
-        .compileComponents();
+      }).overrideModule(ModuleA, {
+        remove: {declarations: [CompA], exports: [CompA]},
+        add: {declarations: [MockCompA], exports: [MockCompA]},
+      });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -1089,8 +1090,7 @@ describe('TestBed', () => {
         .overrideModule(ModuleB, {
           remove: {declarations: [CompB], exports: [CompB]},
           add: {declarations: [MockCompB], exports: [MockCompB]},
-        })
-        .compileComponents();
+        });
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -1312,25 +1312,23 @@ describe('TestBed', () => {
 
     TestBed.configureTestingModule({
       imports: [TestModule],
-    })
-      .overrideModule(TestModule, {
-        remove: {
-          providers: [
-            // Removing the cycle named "a" should result in removing the provider for "a".
-            // Note: although this removes a different instance than the one provided, metadata
-            // overrides compare objects by value, not by reference.
-            {provide: CYCLES, useValue: new Cyclic('a'), multi: true},
+    }).overrideModule(TestModule, {
+      remove: {
+        providers: [
+          // Removing the cycle named "a" should result in removing the provider for "a".
+          // Note: although this removes a different instance than the one provided, metadata
+          // overrides compare objects by value, not by reference.
+          {provide: CYCLES, useValue: new Cyclic('a'), multi: true},
 
-            // Also attempt to remove a cycle named "B" (which does not exist) to verify that
-            // objects are correctly compared by value.
-            {provide: CYCLES, useValue: new Cyclic('B'), multi: true},
-          ],
-        },
-        add: {
-          providers: [{provide: CYCLES, useValue: new Cyclic('c'), multi: true}],
-        },
-      })
-      .compileComponents();
+          // Also attempt to remove a cycle named "B" (which does not exist) to verify that
+          // objects are correctly compared by value.
+          {provide: CYCLES, useValue: new Cyclic('B'), multi: true},
+        ],
+      },
+      add: {
+        providers: [{provide: CYCLES, useValue: new Cyclic('c'), multi: true}],
+      },
+    });
 
     const values = TestBed.inject(CYCLES);
     expect(values.map((v) => v.name)).toEqual(['b', 'c']);
@@ -1676,6 +1674,7 @@ describe('TestBed', () => {
         set: {template: `Override of a nested template! <cmp-a />`},
       });
 
+      // This is only required because the components are AOT compiled and thus include setClassMetadataAsync
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(RootAotComponent);
@@ -1757,11 +1756,12 @@ describe('TestBed', () => {
 
       // Set `PLATFORM_ID` to a browser platform value to trigger defer loading
       // while running tests in Node.
-      const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
+      const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: ɵPLATFORM_BROWSER_ID}];
 
       TestBed.configureTestingModule({imports: [ParentCmp], providers: [COMMON_PROVIDERS]});
       TestBed.overrideProvider(ImportantService, {useValue: {value: 'overridden'}});
 
+      // This is only required because the component has setClassMetadataAsync
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(ParentCmp);
@@ -1787,6 +1787,7 @@ describe('TestBed', () => {
         },
       });
 
+      // This is only required because the components are AOT compiled and thus include setClassMetadataAsync
       await TestBed.compileComponents();
 
       const fixture = TestBed.createComponent(RootAotComponent);
@@ -2220,9 +2221,9 @@ describe('TestBed', () => {
       imports: [TestingModule],
       declarations: [AppComponent],
       providers: [{provide: InjectedString, useValue: {value: 'initial'}}],
-    }).compileComponents();
+    });
 
-    TestBed.overrideProvider(InjectedString, {useValue: {value: 'changed'}}).compileComponents();
+    TestBed.overrideProvider(InjectedString, {useValue: {value: 'changed'}});
 
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
@@ -2274,6 +2275,58 @@ describe('TestBed', () => {
     }
 
     expect(TestBed.runInInjectionContext(functionThatUsesInject)).toEqual(expectedValue);
+  });
+
+  describe('TestBed.tick', () => {
+    @Component({
+      template: '{{state()}}',
+    })
+    class Thing1 {
+      state = signal(1);
+    }
+
+    describe('with zone change detection', () => {
+      it('should update fixtures with autoDetect', () => {
+        TestBed.configureTestingModule({
+          providers: [{provide: ComponentFixtureAutoDetect, useValue: true}],
+        });
+        const {nativeElement, componentInstance} = TestBed.createComponent(Thing1);
+        expect(nativeElement.textContent).toBe('1');
+
+        componentInstance.state.set(2);
+        TestBed.tick();
+        expect(nativeElement.textContent).toBe('2');
+      });
+
+      it('should update fixtures without autoDetect', () => {
+        const {nativeElement, componentInstance} = TestBed.createComponent(Thing1);
+        expect(nativeElement.textContent).toBe(''); // change detection didn't run yet
+
+        componentInstance.state.set(2);
+        TestBed.tick();
+        expect(nativeElement.textContent).toBe('2');
+      });
+    });
+
+    describe('with zoneless change detection', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [provideZonelessChangeDetection()],
+        });
+      });
+
+      it('should update fixtures with zoneless', async () => {
+        const fixture = TestBed.createComponent(Thing1);
+        await fixture.whenStable();
+
+        const {nativeElement, componentInstance} = fixture;
+        expect(nativeElement.textContent).toBe('1');
+
+        componentInstance.state.set(2);
+        TestBed.tick();
+        expect(nativeElement.textContent).toBe('2');
+      });
+    });
   });
 });
 

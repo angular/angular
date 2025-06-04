@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveProfile, ElementProfile, ProfilerFrame} from 'protocol';
+import {DirectiveProfile, ElementProfile, ProfilerFrame} from '../../../../../../../protocol';
 
 export interface TimelineView<T> {
   timeline: AppEntry<T>[];
@@ -29,6 +29,10 @@ export abstract class RecordFormatter<T> {
   abstract addFrame(nodes: T | T[], elements: ElementProfile[]): number | void;
 
   getLabel(element: ElementProfile): string {
+    if (element.type === 'defer') {
+      return '@defer';
+    }
+
     const name = element.directives
       .filter((d) => d.isComponent)
       .map((c) => c.name)

@@ -10,7 +10,8 @@
         "enableI18nLegacyMessageIdFormat": true
       },
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "expectations": [
         {

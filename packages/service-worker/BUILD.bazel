@@ -1,8 +1,19 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
+load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+rules_js_tsconfig(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ng_project(
     name = "service-worker",
     srcs = glob(
         [
@@ -10,9 +21,11 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages/core",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
     ],
 )
 

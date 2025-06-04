@@ -1,27 +1,23 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library", "zone_compatible_jasmine_node_test")
-load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+load("//tools:defaults.bzl", "karma_web_test_suite", "zone_compatible_jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-circular_dependency_test(
-    name = "circular_deps_test",
-    entry_point = "angular/packages/forms/index.mjs",
-    deps = ["//packages/forms"],
-)
-
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    # Visible to //:saucelabs_unit_tests_poc target
-    visibility = ["//:__pkg__"],
-    deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/forms",
+    interop_deps = [
         "//packages/platform-browser",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@npm//rxjs",
+    ],
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/forms:forms_rjs",
     ],
 )
 

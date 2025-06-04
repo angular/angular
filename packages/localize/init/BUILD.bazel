@@ -1,21 +1,20 @@
-load("//tools:defaults.bzl", "ts_library")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
 
-ts_library(
+ts_project(
     name = "init",
     srcs = glob(
         [
             "**/*.ts",
         ],
     ),
-    module_name = "@angular/localize/init",
     deps = [
-        "//packages/localize",
-        "@npm//@types/node",
+        "//:node_modules/@types/node",
+        "//packages/localize:localize_rjs",
     ],
 )
 

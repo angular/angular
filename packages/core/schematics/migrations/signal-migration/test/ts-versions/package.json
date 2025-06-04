@@ -1,7 +1,0 @@
-{
-  "name": "ts-versions",
-  "license": "MIT",
-  "dependencies": {
-    "typescript-5.8.2": "npm:typescript@5.8.2"
-  }
-}

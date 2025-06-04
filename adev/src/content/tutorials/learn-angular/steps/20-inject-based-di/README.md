@@ -12,7 +12,7 @@ It is often helpful to initialize class properties with values provided by the D
 
 <docs-code language="ts" highlight="[3]">
 @Component({...})
-class PetCareDashboardComponent {
+class PetCareDashboard {
     petRosterService = inject(PetRosterService);
 }
 </docs-code>
@@ -21,7 +21,7 @@ class PetCareDashboardComponent {
 
 <docs-step title="Inject the `CarService`">
 
-In `app.component.ts`, using the `inject()` function inject the `CarService` and assign it to a property called `carService`
+In `app.ts`, using the `inject()` function inject the `CarService` and assign it to a property called `carService`
 
 NOTE: Notice the difference between the property `carService` and the class `CarService`.
 
@@ -31,19 +31,17 @@ NOTE: Notice the difference between the property `carService` and the class `Car
 
 Calling `inject(CarService)` gave you an instance of the `CarService` that you can use in your application, stored in the `carService` property.
 
-In the `constructor` function of the `AppComponent`, add the following implementation:
+Initialize the `display` property with the following implementation:
 
 ```ts
-constructor() {
-    this.display = this.carService.getCars().join(' ⭐️ ');
-}
+display = this.carService.getCars().join(' ⭐️ ');
 ```
 
 </docs-step>
 
-<docs-step title="Update the `AppComponent` template">
+<docs-step title="Update the `App` template">
 
-Update the component template in `app.component.ts` with the following code:
+Update the component template in `app.ts` with the following code:
 
 ```ts
 template: `<p>Car Listing: {{ display }}</p>`,
@@ -53,4 +51,4 @@ template: `<p>Car Listing: {{ display }}</p>`,
 
 </docs-workflow>
 
-You've just injected your first service into a component - fantastic effort. Before you finish this section on DI, you'll learn an alternative syntax to inject resources into your components.
+You've just injected your first service into a component - fantastic effort.

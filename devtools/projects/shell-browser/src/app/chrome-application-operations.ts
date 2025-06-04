@@ -10,8 +10,8 @@
 
 import {Platform} from '@angular/cdk/platform';
 import {inject} from '@angular/core';
-import {ApplicationOperations, Frame, TOP_LEVEL_FRAME_ID} from 'ng-devtools';
-import {DirectivePosition, ElementPosition} from 'protocol';
+import {ApplicationOperations, Frame, TOP_LEVEL_FRAME_ID} from '../../../ng-devtools';
+import {DirectivePosition, ElementPosition, SignalNodePosition} from '../../../protocol';
 
 export class ChromeApplicationOperations extends ApplicationOperations {
   platform = inject(Platform);
@@ -54,5 +54,17 @@ export class ChromeApplicationOperations extends ApplicationOperations {
       args,
     )}'))`;
     this.runInInspectedWindow(inspect, target);
+  }
+
+  override inspectSignal(position: SignalNodePosition, target: Frame): void {
+    const inspectSignal = `inspect(inspectedApplication.findSignalNodeByPosition('${JSON.stringify(
+      position,
+    )}'))`;
+    this.runInInspectedWindow(inspectSignal, target);
+  }
+
+  override viewSourceFromRouter(name: string, type: string, target: Frame): void {
+    const viewSource = `inspect(inspectedApplication.findConstructorByNameForRouter('${name}', '${type}'))`;
+    this.runInInspectedWindow(viewSource, target);
   }
 }

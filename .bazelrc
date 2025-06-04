@@ -1,5 +1,5 @@
 # Enable debugging tests with --config=debug
-test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --spawn_strategy=local
+test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --strategy=TestRunner=standalone
 
 # Do not attempt to de-flake locally.
 # On CI we might set this to `3` to run with deflaking.
@@ -8,6 +8,9 @@ test --flaky_test_attempts=1
 # Required by `rules_ts`.
 common --@aspect_rules_ts//ts:skipLibCheck=always
 common --@aspect_rules_ts//ts:default_to_tsc_transpiler
+
+# Needed as otherwise `env` of TS actions would be ignored.
+common --incompatible_merge_fixed_and_default_shell_env
 
 ###############################
 # Filesystem interactions     #

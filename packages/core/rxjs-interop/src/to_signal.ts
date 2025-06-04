@@ -131,7 +131,11 @@ export function toSignal<T, U = undefined>(
     );
 
   const requiresCleanup = !options?.manualCleanup;
-  requiresCleanup && !options?.injector && assertInInjectionContext(toSignal);
+
+  if (ngDevMode && requiresCleanup && !options?.injector) {
+    assertInInjectionContext(toSignal);
+  }
+
   const cleanupRef = requiresCleanup
     ? (options?.injector?.get(DestroyRef) ?? inject(DestroyRef))
     : null;
@@ -152,6 +156,8 @@ export function toSignal<T, U = undefined>(
     );
   }
 
+  let destroyUnregisterFn: (() => void) | undefined;
+
   // Note: This code cannot run inside a reactive context (see assertion above). If we'd support
   // this, we would subscribe to the observable outside of the current reactive context, avoiding
   // that side-effect signal reads/writes are attribute to the current consumer. The current
@@ -162,6 +168,9 @@ export function toSignal<T, U = undefined>(
     next: (value) => state.set({kind: StateKind.Value, value}),
     error: (error) => {
       state.set({kind: StateKind.Error, error});
+    },
+    complete: () => {
+      destroyUnregisterFn?.();
     },
     // Completion of the Observable is meaningless to the signal. Signals don't have a concept of
     // "complete".
@@ -176,7 +185,7 @@ export function toSignal<T, U = undefined>(
   }
 
   // Unsubscribe when the current context is destroyed, if requested.
-  cleanupRef?.onDestroy(sub.unsubscribe.bind(sub));
+  destroyUnregisterFn = cleanupRef?.onDestroy(sub.unsubscribe.bind(sub));
 
   // The actual returned signal is a `computed` of the `State` signal, which maps the various states
   // to either values or errors.

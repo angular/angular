@@ -12,27 +12,29 @@ import {
   booleanAttribute,
   Directive,
   ElementRef,
+  HostAttributeToken,
   HostBinding,
   HostListener,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
   Renderer2,
   ɵRuntimeError as RuntimeError,
+  signal,
   SimpleChanges,
-  ɵɵsanitizeUrlOrResourceUrl,
+  untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
-  inject,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
-
+import {RuntimeErrorCode} from '../errors';
 import {Event, NavigationEnd} from '../events';
 import {QueryParamsHandling} from '../models';
 import {Router} from '../router';
+import {ROUTER_CONFIGURATION} from '../router_config';
 import {ActivatedRoute} from '../router_state';
 import {Params} from '../shared';
 import {isUrlTree, UrlTree} from '../url_tree';
-import {RuntimeErrorCode} from '../errors';
 
 /**
  * @description
@@ -142,14 +144,25 @@ import {RuntimeErrorCode} from '../errors';
  */
 @Directive({
   selector: '[routerLink]',
+  host: {
+    '[attr.href]': 'reactiveHref()',
+  },
 })
 export class RouterLink implements OnChanges, OnDestroy {
+  /** @nodoc */
+  protected readonly reactiveHref = signal<string | null>(null);
   /**
    * Represents an `href` attribute value applied to a host element,
    * when a host element is an `<a>`/`<area>` tag or a compatible custom element.
    * For other tags, the value is `null`.
    */
-  href: string | null = null;
+  get href() {
+    return untracked(this.reactiveHref);
+  }
+  /** @deprecated */
+  set href(value: string | null) {
+    this.reactiveHref.set(value);
+  }
 
   /**
    * Represents the `target` attribute on a host element.
@@ -213,6 +226,7 @@ export class RouterLink implements OnChanges, OnDestroy {
   onChanges = new Subject<RouterLink>();
 
   private readonly applicationErrorHandler = inject(ɵINTERNAL_APPLICATION_ERROR_HANDLER);
+  private readonly options = inject(ROUTER_CONFIGURATION, {optional: true});
 
   constructor(
     private router: Router,
@@ -222,6 +236,8 @@ export class RouterLink implements OnChanges, OnDestroy {
     private readonly el: ElementRef,
     private locationStrategy?: LocationStrategy,
   ) {
+    // Set the initial href value to whatever exists on the host element already
+    this.reactiveHref.set(inject(new HostAttributeToken('href'), {optional: true}));
     const tagName = el.nativeElement.tagName?.toLowerCase();
     this.isAnchorElement =
       tagName === 'a' ||
@@ -238,15 +254,35 @@ export class RouterLink implements OnChanges, OnDestroy {
         )
       );
 
-    if (this.isAnchorElement) {
-      this.subscription = router.events.subscribe((s: Event) => {
-        if (s instanceof NavigationEnd) {
-          this.updateHref();
-        }
-      });
+    if (!this.isAnchorElement) {
+      this.subscribeToNavigationEventsIfNecessary();
     } else {
       this.setTabIndexIfNotOnNativeEl('0');
     }
+  }
+
+  private subscribeToNavigationEventsIfNecessary() {
+    if (this.subscription !== undefined || !this.isAnchorElement) {
+      return;
+    }
+
+    // preserving fragment in router state
+    let createSubcription = this.preserveFragment;
+    // preserving or merging with query params in router state
+    const dependsOnRouterState = (handling?: QueryParamsHandling | null) =>
+      handling === 'merge' || handling === 'preserve';
+    createSubcription ||= dependsOnRouterState(this.queryParamsHandling);
+    createSubcription ||=
+      !this.queryParamsHandling && !dependsOnRouterState(this.options?.defaultQueryParamsHandling);
+    if (!createSubcription) {
+      return;
+    }
+
+    this.subscription = this.router.events.subscribe((s: Event) => {
+      if (s instanceof NavigationEnd) {
+        this.updateHref();
+      }
+    });
   }
 
   /**
@@ -284,9 +320,9 @@ export class RouterLink implements OnChanges, OnDestroy {
     this.applyAttributeValue('tabindex', newTabIndex);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   // TODO(atscott): Remove changes parameter in major version as a breaking change.
-  ngOnChanges(changes?: SimpleChanges) {
+  ngOnChanges(changes?: SimpleChanges): void {
     if (
       ngDevMode &&
       isUrlTree(this.routerLinkInput) &&
@@ -303,6 +339,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     }
     if (this.isAnchorElement) {
       this.updateHref();
+      this.subscribeToNavigationEventsIfNecessary();
     }
     // This is subscribed to by `RouterLinkActive` so that it knows to update when there are changes
     // to the RouterLinks it's tracking.
@@ -337,7 +374,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   @HostListener('click', [
     '$event.button',
     '$event.ctrlKey',
@@ -385,37 +422,18 @@ export class RouterLink implements OnChanges, OnDestroy {
     return !this.isAnchorElement;
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): any {
     this.subscription?.unsubscribe();
   }
 
   private updateHref(): void {
     const urlTree = this.urlTree;
-    this.href =
+    this.reactiveHref.set(
       urlTree !== null && this.locationStrategy
-        ? this.locationStrategy?.prepareExternalUrl(this.router.serializeUrl(urlTree))
-        : null;
-
-    const sanitizedValue =
-      this.href === null
-        ? null
-        : // This class represents a directive that can be added to both `<a>` elements,
-          // as well as other elements. As a result, we can't define security context at
-          // compile time. So the security context is deferred to runtime.
-          // The `ɵɵsanitizeUrlOrResourceUrl` selects the necessary sanitizer function
-          // based on the tag and property names. The logic mimics the one from
-          // `packages/compiler/src/schema/dom_security_schema.ts`, which is used at compile time.
-          //
-          // Note: we should investigate whether we can switch to using `@HostBinding('attr.href')`
-          // instead of applying a value via a renderer, after a final merge of the
-          // `RouterLinkWithHref` directive.
-          ɵɵsanitizeUrlOrResourceUrl(
-            this.href,
-            this.el.nativeElement.tagName.toLowerCase(),
-            'href',
-          );
-    this.applyAttributeValue('href', sanitizedValue);
+        ? (this.locationStrategy?.prepareExternalUrl(this.router.serializeUrl(urlTree)) ?? '')
+        : null,
+    );
   }
 
   private applyAttributeValue(attrName: string, attrValue: string | null) {
@@ -451,7 +469,8 @@ export class RouterLink implements OnChanges, OnDestroy {
  * An alias for the `RouterLink` directive.
  * Deprecated since v15, use `RouterLink` directive instead.
  *
- * @deprecated use `RouterLink` directive instead.
+export { RouterLink as RouterLinkWithHref };
+nstead.
  * @publicApi
  */
 export {RouterLink as RouterLinkWithHref};

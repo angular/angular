@@ -1,5 +1,6 @@
 @use '../../../styles/links' as links;
 @use '../../../styles/anchor' as anchor;
+@use '../../../styles/media-queries' as mq;
 
 :host {
   --translate-y: clamp(5px, 0.25em, 7px);
@@ -8,21 +9,31 @@
 .docs-viewer {
   display: flex;
   flex-direction: column;
-  padding: var(--layout-padding);
-  max-width: var(--page-width);
-  width: 100%;
+  padding: 0px;
   box-sizing: border-box;
+  padding-inline: var(--layout-padding);
 
-  @media only screen and (max-width: 1430px) {
+  @include mq.for-large-desktop-down {
     container: docs-content / inline-size;
   }
 
-  // If rendered on the docs page, accommodate width for TOC
-  docs-docs & {
-    @media only screen and (min-width: 1430px) and (max-width: 1550px) {
-      width: calc(100% - 195px - var(--layout-padding));
-      max-width: var(--page-width);
-    }
+  @include mq.for-extra-large-desktop-up {
+    max-width: var(--page-width);
+  }
+
+
+  //applying styles when TOC position got translated to the top right 
+  @include mq.for-large-desktop-up {
+    // take the available space except a reserved area for TOC
+    margin-left: -16rem;
+    width: calc(100% - 16rem);
+  }
+
+  // restrict the content to be fluid until it reaches that width
+  // $screen-xl is the breakpoint where Main content stop being fluid and made fixed
+
+  >*:not(docs-table-of-contents) {
+    max-width: calc(mq.$screen-xxl - var(--secondary-nav-width) - var(--primary-nav-width) - var(--layout-padding)*2)
   }
 
   pre {
@@ -79,6 +90,7 @@
   }
 
   a:not(.docs-github-links):not(.docs-card):not(.docs-pill):not(.docs-example-github-link) {
+
     &[href^='http:'],
     &[href^='https:'] {
       @include links.external-link-with-icon();
@@ -86,6 +98,7 @@
   }
 
   &-scroll-margin-large {
+
     h2,
     h3 {
       scroll-margin: 5em;
@@ -95,7 +108,8 @@
 
 .docs-header {
   margin-block-end: 1rem;
-  & > p:first-child {
+
+  &>p:first-child {
     color: var(--quaternary-contrast);
     font-weight: 500;
     margin: 0;

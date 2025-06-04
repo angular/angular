@@ -24,6 +24,7 @@ integration/ng_elements/node_modules
 integration/ng_update/node_modules
 integration/ng_update_migrations/node_modules
 integration/ng-add-localize/node_modules
+integration/no_ts_linker/node_modules
 integration/nodenext_resolution/node_modules
 integration/platform-server/node_modules
 integration/platform-server-zoneless/node_modules
@@ -36,3 +37,24 @@ integration/trusted-types/node_modules
 integration/typings_test_rxjs7/node_modules
 integration/typings_test_ts58/node_modules
 modules/ssr-benchmarks/node_modules
+
+
+# For rules_js
+adev/shared-docs/pipeline/api-gen/node_modules
+modules/node_modules
+packages/bazel/src/ngc-wrapped/node_modules
+packages/animations/node_modules
+packages/common/node_modules
+packages/localize/node_modules
+packages/compiler-cli/node_modules
+packages/compiler-cli/linker/babel/test/node_modules
+packages/compiler/node_modules
+packages/core/node_modules
+packages/core/test/bundling/node_modules
+packages/forms/node_modules
+packages/platform-browser/node_modules
+packages/platform-browser-dynamic/node_modules
+packages/router/node_modules
+packages/zone.js/node_modules
+packages/upgrade/node_modules
+tools/bazel/rules_angular_store/node_modules

@@ -1,10 +1,10 @@
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "property-resolver",
     srcs = [
         "arrayify-props.ts",
@@ -14,15 +14,16 @@ ng_module(
         "property-data-source.ts",
         "property-expanded-directive-properties.ts",
     ],
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//@angular/cdk",
-        "@npm//@angular/material",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/material",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing:diffing_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
@@ -34,13 +35,15 @@ ts_test_library(
         "element-property-resolver.spec.ts",
         "property-data-source.spec.ts",
     ],
-    deps = [
-        ":property-resolver",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//@angular/cdk",
-        "@npm//@angular/material",
+        ":property-resolver",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

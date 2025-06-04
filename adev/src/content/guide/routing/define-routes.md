@@ -120,7 +120,7 @@ const routes: Routes = [
 
 With this new path, users can visit `/user/leeroy/youtube` and `/user/leeroy/bluesky` and see respective social media feeds based on the parameter for the user leeroy.
 
-See [Reading route state](/guide/router/reading-route-state) for details on reading route parameters.
+See [Reading route state](/guide/routing/read-route-state) for details on reading route parameters.
 
 ### Wildcards
 
@@ -219,7 +219,7 @@ export const routes: Routes = [
     loadComponent: () => import('./components/auth/login-page')
   },
   {
-    path: ',
+    path: '',
     loadComponent: () => import('./components/home/home-page')
   }
 ]
@@ -347,7 +347,7 @@ const routes: Routes = [
 
 In this code sample, the home and about page are configured with specific `analyticsId` which would then be used in their respective components for page tracking analytics.
 
-You can read this static data by injecting the `ActivatedRoute`. See [Reading route state](/guide/router/reading-route-state) for details.
+You can read this static data by injecting the `ActivatedRoute`. See [Reading route state](/guide/routing/read-route-state) for details.
 
 ### Dynamic data with data resolvers
 

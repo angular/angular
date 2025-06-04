@@ -13,8 +13,19 @@ import {
   ɵNoopAnimationStyleNormalizer,
 } from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
-import {CommonModule, DOCUMENT} from '@angular/common';
-import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
+import {
+  CommonModule,
+  DOCUMENT,
+  ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
+  ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID,
+} from '@angular/common';
+import {
+  ɵDomRendererFactory2 as DomRendererFactory2,
+  EventManager,
+  ɵSharedStylesHost,
+} from '@angular/platform-browser';
+import {isBrowser, isNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {
   Component,
   DoCheck,
@@ -28,9 +39,6 @@ import {
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 import {TestBed} from '../../testing';
-import {EventManager, ɵSharedStylesHost} from '@angular/platform-browser';
-import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
@@ -91,6 +99,14 @@ describe('renderer factory lifecycle', () => {
 
     return rendererFactory;
   }
+
+  beforeEach(() => {
+    globalThis['ngServerMode'] = isNode;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
 
   beforeEach(() => {
     logs = [];

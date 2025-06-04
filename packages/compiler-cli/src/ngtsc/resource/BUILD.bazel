@@ -1,19 +1,21 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "resource",
     srcs = ["index.ts"] + glob([
         "src/*.ts",
     ]),
-    module_name = "@angular/compiler-cli/src/ngtsc/resource",
-    deps = [
+    interop_deps = [
         "//packages:types",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/util",
-        "@npm//typescript",
+    ],
+    module_name = "@angular/compiler-cli/src/ngtsc/resource",
+    deps = [
+        "//:node_modules/typescript",
     ],
 )

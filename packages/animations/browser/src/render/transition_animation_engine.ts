@@ -141,7 +141,7 @@ class StateValue {
 }
 
 const VOID_VALUE = 'void';
-const DEFAULT_STATE_VALUE = new StateValue(VOID_VALUE);
+const DEFAULT_STATE_VALUE = /* @__PURE__ */ new StateValue(VOID_VALUE);
 
 class AnimationTransitionNamespace {
   public players: TransitionAnimationPlayer[] = [];

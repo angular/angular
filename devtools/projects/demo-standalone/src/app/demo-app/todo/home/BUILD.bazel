@@ -1,8 +1,8 @@
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "home",
     srcs = [
         "sample.pipe.ts",
@@ -10,7 +10,7 @@ ng_module(
         "todos.component.ts",
         "tooltip.directive.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/common",
         "//packages/core",
         "//packages/router",

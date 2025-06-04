@@ -3,8 +3,8 @@
   "type": "local",
   "answerSrc": "../12-forms/src",
   "openFiles": [
-    "src/app/housing-location/housing-location.component.ts",
-    "src/app/details/details.component.ts",
-    "src/app/app.component.ts"
+    "src/app/housing-location/housing-location.ts",
+    "src/app/details/details.ts",
+    "src/app/app.ts"
   ]
 }

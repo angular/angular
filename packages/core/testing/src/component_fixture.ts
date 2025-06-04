@@ -6,35 +6,36 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Subscription} from 'rxjs';
 import {
   ApplicationRef,
   ChangeDetectorRef,
   ComponentRef,
-  ɵChangeDetectionScheduler,
-  ɵNotificationSource,
   DebugElement,
+  ɵDeferBlockDetails as DeferBlockDetails,
+  ɵEffectScheduler as EffectScheduler,
   ElementRef,
   getDebugNode,
+  ɵgetDeferBlocks as getDeferBlocks,
   inject,
   NgZone,
+  ɵNoopNgZone as NoopNgZone,
   RendererFactory2,
   ViewRef,
-  ɵDeferBlockDetails as DeferBlockDetails,
-  ɵgetDeferBlocks as getDeferBlocks,
-  ɵNoopNgZone as NoopNgZone,
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
-  ɵEffectScheduler as EffectScheduler,
+  ɵChangeDetectionScheduler,
+  ɵNotificationSource,
 } from '../../src/core';
 import {PendingTasksInternal} from '../../src/pending_tasks';
-import {Subscription} from 'rxjs';
 
+import {TestBedApplicationErrorHandler} from './application_error_handler';
 import {DeferBlockFixture} from './defer';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
-import {TestBedApplicationErrorHandler} from './application_error_handler';
 
 interface TestAppRef {
-  externalTestViews: Set<ViewRef>;
-  skipCheckNoChangesForExternalTestViews: Set<ViewRef>;
+  allTestViews: Set<ViewRef>;
+  includeAllTestViews: boolean;
+  autoDetectTestViews: Set<ViewRef>;
 }
 
 /**
@@ -97,7 +98,7 @@ export class ComponentFixture<T> {
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
 
-  /** @nodoc */
+  /** @docs-private */
   constructor(public componentRef: ComponentRef<T>) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
@@ -106,13 +107,15 @@ export class ComponentFixture<T> {
     this.nativeElement = this.elementRef.nativeElement;
     this.componentRef = componentRef;
 
+    this._testAppRef.allTestViews.add(this.componentRef.hostView);
     if (this.autoDetect) {
-      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+      this._testAppRef.autoDetectTestViews.add(this.componentRef.hostView);
       this.scheduler?.notify(ɵNotificationSource.ViewAttached);
       this.scheduler?.notify(ɵNotificationSource.MarkAncestorsForTraversal);
     }
     this.componentRef.hostView.onDestroy(() => {
-      this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+      this._testAppRef.allTestViews.delete(this.componentRef.hostView);
+      this._testAppRef.autoDetectTestViews.delete(this.componentRef.hostView);
     });
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
@@ -150,12 +153,10 @@ export class ComponentFixture<T> {
 
       if (this.zonelessEnabled) {
         try {
-          this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+          this._testAppRef.includeAllTestViews = true;
           this._appRef.tick();
         } finally {
-          if (!this.autoDetect) {
-            this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
-          }
+          this._testAppRef.includeAllTestViews = false;
         }
       } else {
         // Run the change detection inside the NgZone so that any async tasks as part of the change
@@ -185,18 +186,28 @@ export class ComponentFixture<T> {
    * Also runs detectChanges once so that any existing change is detected.
    *
    * @param autoDetect Whether to autodetect changes. By default, `true`.
+   * @deprecated For `autoDetect: true`, use `autoDetectChanges()`.
+   * We have not seen a use-case for `autoDetect: false` but `changeDetectorRef.detach()` is a close equivalent.
    */
+  autoDetectChanges(autoDetect: boolean): void;
+  /**
+   * Enables automatically synchronizing the view, as it would in an application.
+   *
+   * Also runs detectChanges once so that any existing change is detected.
+   */
+  autoDetectChanges(): void;
   autoDetectChanges(autoDetect = true): void {
+    if (!autoDetect && this.zonelessEnabled) {
+      throw new Error('Cannot set autoDetect to false with zoneless change detection.');
+    }
     if (this._noZoneOptionIsSet && !this.zonelessEnabled) {
       throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
     }
 
-    if (autoDetect !== this.autoDetect) {
-      if (autoDetect) {
-        this._testAppRef.externalTestViews.add(this.componentRef.hostView);
-      } else {
-        this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
-      }
+    if (autoDetect) {
+      this._testAppRef.autoDetectTestViews.add(this.componentRef.hostView);
+    } else {
+      this._testAppRef.autoDetectTestViews.delete(this.componentRef.hostView);
     }
 
     this.autoDetect = autoDetect;
@@ -270,7 +281,8 @@ export class ComponentFixture<T> {
    */
   destroy(): void {
     this.subscriptions.unsubscribe();
-    this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+    this._testAppRef.autoDetectTestViews.delete(this.componentRef.hostView);
+    this._testAppRef.allTestViews.delete(this.componentRef.hostView);
     if (!this._isDestroyed) {
       this.componentRef.destroy();
       this._isDestroyed = true;

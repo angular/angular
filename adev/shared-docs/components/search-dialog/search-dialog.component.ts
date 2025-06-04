@@ -9,9 +9,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   Injector,
-  OnDestroy,
   afterNextRender,
   effect,
   inject,
@@ -25,7 +25,7 @@ import {ClickOutside} from '../../directives/index';
 import {Search} from '../../services/index';
 
 import {TextField} from '../text-field/text-field.component';
-import {FormsModule} from '@angular/forms';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 import {SearchItem} from '../../directives/search-item/search-item.directive';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -40,7 +40,7 @@ import {RelativeLink} from '../../pipes/relative-link.pipe';
   imports: [
     ClickOutside,
     TextField,
-    FormsModule,
+    ReactiveFormsModule,
     SearchItem,
     AlgoliaIcon,
     RelativeLink,
@@ -49,10 +49,11 @@ import {RelativeLink} from '../../pipes/relative-link.pipe';
   templateUrl: './search-dialog.component.html',
   styleUrls: ['./search-dialog.component.scss'],
 })
-export class SearchDialog implements OnDestroy {
+export class SearchDialog {
   onClose = output();
   dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
   items = viewChildren(SearchItem);
+  textField = viewChild(TextField);
 
   private readonly search = inject(Search);
   private readonly relativeLink = new RelativeLink();
@@ -67,7 +68,20 @@ export class SearchDialog implements OnDestroy {
   searchQuery = this.search.searchQuery;
   searchResults = this.search.searchResults;
 
+  // We use a FormControl instead of relying on NgModel+signal to avoid
+  // the issue https://github.com/angular/angular/issues/13568
+  // TODO: Use signal forms when available
+  searchControl = new FormControl(this.searchQuery(), {nonNullable: true});
+
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.keyManager.destroy());
+
+    this.searchControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
+      this.searchQuery.set(value);
+    });
+
+    // Thinkig about refactoring this to a single afterRenderEffect ?
+    // Answer: It won't have the same behavior
     effect(() => {
       this.items();
       afterNextRender(
@@ -87,6 +101,9 @@ export class SearchDialog implements OnDestroy {
         if (!this.dialog().nativeElement.open) {
           this.dialog().nativeElement.showModal?.();
         }
+        // We want to select the pre-existing text on opening
+        // In order to change the search input with minimal user interaction.
+        this.textField()?.input().nativeElement.select();
       },
     });
 
@@ -102,17 +119,13 @@ export class SearchDialog implements OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.keyManager.destroy();
-  }
-
   closeSearchDialog() {
     this.dialog().nativeElement.close();
     this.onClose.emit();
   }
 
   private navigateToTheActiveItem(): void {
-    const activeItemLink: string | undefined = this.keyManager.activeItem?.item?.url;
+    const activeItemLink: string | undefined = this.keyManager.activeItem?.item()?.url;
 
     if (!activeItemLink) {
       return;

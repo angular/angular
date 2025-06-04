@@ -54,7 +54,7 @@ export declare type AnimateTimings = {
  *
  * - `transition()`
  * - `sequence()`
- * - `{@link /api/animations/group group()}`
+ * - `group()`
  * - `query()`
  * - `animation()`
  * - `useAnimation()`
@@ -1280,7 +1280,7 @@ export function query(
  *
  * @usageNotes
  * In the following example, a container element wraps a list of items stamped out
- * by an `ngFor`. The container element contains an animation trigger that will later be set
+ * by an `@for` block. The container element contains an animation trigger that will later be set
  * to query for each of the inner items.
  *
  * Each time items are added, the opacity fade-in animation runs,
@@ -1293,9 +1293,9 @@ export function query(
  * <button (click)="toggle()">Show / Hide Items</button>
  * <hr />
  * <div [@listAnimation]="items.length">
- *   <div *ngFor="let item of items">
- *     {{ item }}
- *   </div>
+ *   @for(item of items; track $index) {
+ *      <div>{{ item }}</div>
+ *   }
  * </div>
  * ```
  *

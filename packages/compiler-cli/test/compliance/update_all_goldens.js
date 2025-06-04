@@ -13,11 +13,18 @@ import shelljs from 'shelljs';
 const {exec} = shelljs;
 
 process.stdout.write('Gathering all partial golden update targets');
-const queryCommand = `yarn bazel query --output label 'filter('golden.update', kind(nodejs_binary, //packages/compiler-cli/test/compliance/test_cases:*))'`;
+const queryCommand = `yarn -s bazel query --output label 'filter('golden.update', kind(nodejs_binary, //packages/compiler-cli/test/compliance/test_cases:*))'`;
 const allUpdateTargets = exec(queryCommand, {silent: true})
   .trim()
   .split('\n')
-  .map((test) => test.trim());
+  .map((target) => target.trim())
+  .filter((target) => target.length > 0);
+
+if (allUpdateTargets.length === 0) {
+  console.error(`Could not find any symbol test targets using: ${queryCommand}`);
+  process.exit(1);
+}
+
 process.stdout.clearLine();
 process.stdout.cursorTo(0);
 

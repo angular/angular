@@ -1,17 +1,17 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "utils",
     srcs = glob(["**/*.ts"]),
-    tsconfig = "//packages/core/schematics:tsconfig.json",
-    visibility = ["//packages/core/schematics:__subpackages__"],
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/file_system",
-        "@npm//@angular-devkit/core",
-        "@npm//@angular-devkit/schematics",
-        "@npm//@types/node",
-        "@npm//typescript",
+    ],
+    visibility = ["//packages/core/schematics:__subpackages__"],
+    deps = [
+        "//:node_modules/@angular-devkit/core",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
     ],
 )

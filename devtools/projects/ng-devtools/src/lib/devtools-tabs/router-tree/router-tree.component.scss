@@ -1,3 +1,5 @@
+@use '../../../styles/theme' as theme;
+
 .router-tree-wrapper {
   width: 100%;
   height: 100%;
@@ -13,5 +15,62 @@
   width: 300px;
   height: 28px;
   outline: none;
-  color: black;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.router-tree-container {
+  height: 100%;
+}
+
+.svg-container {
+  max-height: inherit;
+}
+
+.selected-node-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1.5rem;
+}
+
+.router-title {
+  width: 100%;
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.selected-node-title > h1 {
+  padding: 0px;
+  margin: 0px;
+}
+
+#route-details-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.75rem;
+}
+
+#route-details-table td,
+#route-details-table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+@include theme.dark-theme {
+  .row-title {
+    color: #ffffff;
+  }
+
+  .selected-node-title {
+    background-color: unset;
+  }
+
+  .filter-input {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.87);
+  }
 }

@@ -10,14 +10,12 @@ import {TEMPLATES} from '../../hydration/interfaces';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {
   calcSerializedContainerSize,
-  isDisconnectedNode,
+  canHydrateNode,
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {isDetachedByI18n} from '../../i18n/utils';
 import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertEqual} from '../../util/assert';
-import {assertFirstCreatePass} from '../assert';
 import {attachPatchData} from '../context_discovery';
 import {registerPostOrderHooks} from '../hooks';
 import {ComponentTemplate} from '../interfaces/definition';
@@ -37,7 +35,6 @@ import {
   getBindingsEnabled,
   getLView,
   getTView,
-  isInSkipHydrationBlock,
   lastNodeWasCreated,
   setCurrentTNode,
   wasLastNodeCreated,
@@ -55,102 +52,39 @@ import {
   saveResolvedLocalsInData,
 } from './shared';
 
-function templateFirstCreatePass(
-  index: number,
-  tView: TView,
-  lView: LView,
-  templateFn: ComponentTemplate<any> | null,
-  decls: number,
-  vars: number,
-  tagName?: string | null,
-  attrs?: TAttributes | null,
-  localRefsIndex?: number | null,
-): TContainerNode {
-  ngDevMode && assertFirstCreatePass(tView);
-  const tViewConsts = tView.consts;
-
-  // TODO(pk): refactor getOrCreateTNode to have the "create" only version
-  const tNode = getOrCreateTNode(tView, index, TNodeType.Container, tagName || null, attrs || null);
-
-  if (getBindingsEnabled()) {
-    resolveDirectives(
-      tView,
-      lView,
-      tNode,
-      getConstant<string[]>(tViewConsts, localRefsIndex),
-      findDirectiveDefMatches,
-    );
-  }
-
-  // Merge the template attrs last so that they have the highest priority.
-  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
-
-  registerPostOrderHooks(tView, tNode);
-
-  const embeddedTView = (tNode.tView = createTView(
-    TViewType.Embedded,
-    tNode,
-    templateFn,
-    decls,
-    vars,
-    tView.directiveRegistry,
-    tView.pipeRegistry,
-    null,
-    tView.schemas,
-    tViewConsts,
-    null /* ssrId */,
-  ));
-
-  if (tView.queries !== null) {
-    tView.queries.template(tView, tNode);
-    embeddedTView.queries = tView.queries.embeddedTView(tNode);
-  }
-
-  return tNode;
-}
-
-/**
- * Creates an LContainer for an embedded view.
- *
- * @param declarationLView LView in which the template was declared.
- * @param declarationTView TView in which the template wa declared.
- * @param index The index of the container in the data array
- * @param templateFn Inline template
- * @param decls The number of nodes, local refs, and pipes for this template
- * @param vars The number of bindings for this template
- * @param tagName The name of the container element, if applicable
- * @param attrsIndex Index of template attributes in the `consts` array.
- * @param localRefs Index of the local references in the `consts` array.
- * @param localRefExtractor A function which extracts local-refs values from the template.
- *        Defaults to the current element associated with the local-ref.
- */
-export function declareTemplate(
+function templateCreate(
+  tNode: TContainerNode,
   declarationLView: LView,
   declarationTView: TView,
   index: number,
   templateFn: ComponentTemplate<any> | null,
   decls: number,
   vars: number,
-  tagName?: string | null,
-  attrs?: TAttributes | null,
   flags?: TNodeFlags,
-  localRefsIndex?: number | null,
-  localRefExtractor?: LocalRefExtractor,
-): TNode {
-  const adjustedIndex = index + HEADER_OFFSET;
-  const tNode = declarationTView.firstCreatePass
-    ? templateFirstCreatePass(
-        adjustedIndex,
-        declarationTView,
-        declarationLView,
-        templateFn,
-        decls,
-        vars,
-        tagName,
-        attrs,
-        localRefsIndex,
-      )
-    : (declarationTView.data[adjustedIndex] as TContainerNode);
+) {
+  if (declarationTView.firstCreatePass) {
+    // Merge the template attrs last so that they have the highest priority.
+    tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
+
+    const embeddedTView = (tNode.tView = createTView(
+      TViewType.Embedded,
+      tNode,
+      templateFn,
+      decls,
+      vars,
+      declarationTView.directiveRegistry,
+      declarationTView.pipeRegistry,
+      null,
+      declarationTView.schemas,
+      declarationTView.consts,
+      null /* ssrId */,
+    ));
+
+    if (declarationTView.queries !== null) {
+      declarationTView.queries.template(declarationTView, tNode);
+      embeddedTView.queries = declarationTView.queries.embeddedTView(tNode);
+    }
+  }
 
   if (flags) {
     tNode.flags |= flags;
@@ -170,17 +104,124 @@ export function declareTemplate(
   attachPatchData(comment, declarationLView);
 
   const lContainer = createLContainer(comment, declarationLView, comment, tNode);
-  declarationLView[adjustedIndex] = lContainer;
+  declarationLView[index + HEADER_OFFSET] = lContainer;
   addToEndOfViewTree(declarationLView, lContainer);
 
   // If hydration is enabled, looks up dehydrated views in the DOM
   // using hydration annotation info and stores those views on LContainer.
   // In client-only mode, this function is a noop.
   populateDehydratedViewsInLContainer(lContainer, tNode, declarationLView);
+}
+
+/**
+ * Declares a new template that can have directives on its host node.
+ *
+ * @param declarationLView LView in which the template was declared.
+ * @param declarationTView TView in which the template wa declared.
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ */
+function declareDirectiveHostTemplate(
+  declarationLView: LView,
+  declarationTView: TView,
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrs?: TAttributes | null,
+  flags?: TNodeFlags,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): TNode {
+  const adjustedIndex = index + HEADER_OFFSET;
+  let tNode: TContainerNode;
+
+  if (declarationTView.firstCreatePass) {
+    // TODO(pk): refactor getOrCreateTNode to have the "create" only version
+    tNode = getOrCreateTNode(
+      declarationTView,
+      adjustedIndex,
+      TNodeType.Container,
+      tagName || null,
+      attrs || null,
+    );
+
+    if (getBindingsEnabled()) {
+      resolveDirectives(
+        declarationTView,
+        declarationLView,
+        tNode,
+        getConstant<string[]>(declarationTView.consts, localRefsIndex),
+        findDirectiveDefMatches,
+      );
+    }
+
+    registerPostOrderHooks(declarationTView, tNode);
+  } else {
+    tNode = declarationTView.data[adjustedIndex] as TContainerNode;
+  }
+
+  templateCreate(tNode, declarationLView, declarationTView, index, templateFn, decls, vars, flags);
 
   if (isDirectiveHost(tNode)) {
     createDirectivesInstances(declarationTView, declarationLView, tNode);
   }
+
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(declarationLView, tNode, localRefExtractor);
+  }
+
+  return tNode;
+}
+
+/**
+ * Declares a new template that *cannot& have directives on its host node.
+ *
+ * @param declarationLView LView in which the template was declared.
+ * @param declarationTView TView in which the template wa declared.
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ */
+export function declareNoDirectiveHostTemplate(
+  declarationLView: LView,
+  declarationTView: TView,
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrs?: TAttributes | null,
+  flags?: TNodeFlags,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): TNode {
+  const adjustedIndex = index + HEADER_OFFSET;
+  const tNode = declarationTView.firstCreatePass
+    ? getOrCreateTNode(
+        declarationTView,
+        adjustedIndex,
+        TNodeType.Container,
+        tagName || null,
+        attrs || null,
+      )
+    : (declarationTView.data[adjustedIndex] as TContainerNode);
+
+  templateCreate(tNode, declarationLView, declarationTView, index, templateFn, decls, vars, flags);
 
   if (localRefsIndex != null) {
     saveResolvedLocalsInData(declarationLView, tNode, localRefExtractor);
@@ -221,7 +262,7 @@ export function ɵɵtemplate(
   const lView = getLView();
   const tView = getTView();
   const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
-  declareTemplate(
+  declareDirectiveHostTemplate(
     lView,
     tView,
     index,
@@ -235,6 +276,50 @@ export function ɵɵtemplate(
     localRefExtractor,
   );
   return ɵɵtemplate;
+}
+
+/**
+ * Creates an LContainer for an ng-template that cannot have directives.
+ *
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomTemplate(
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): typeof ɵɵdomTemplate {
+  const lView = getLView();
+  const tView = getTView();
+  const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
+  declareDirectiveHostTemplate(
+    lView,
+    tView,
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrs,
+    undefined,
+    localRefsIndex,
+    localRefExtractor,
+  );
+  return ɵɵdomTemplate;
 }
 
 let _locateOrCreateContainerAnchor = createContainerAnchorImpl;
@@ -263,12 +348,7 @@ function locateOrCreateContainerAnchorImpl(
   tNode: TNode,
   index: number,
 ): RComment {
-  const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode =
-    !hydrationInfo ||
-    isInSkipHydrationBlock() ||
-    isDetachedByI18n(tNode) ||
-    isDisconnectedNode(hydrationInfo, index);
+  const isNodeCreationMode = !canHydrateNode(lView, tNode);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
@@ -276,6 +356,7 @@ function locateOrCreateContainerAnchorImpl(
     return createContainerAnchorImpl(tView, lView, tNode, index);
   }
 
+  const hydrationInfo = lView[HYDRATION]!;
   const ssrId = hydrationInfo.data[TEMPLATES]?.[index] ?? null;
 
   // Apply `ssrId` value to the underlying TView if it was not previously set.

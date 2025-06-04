@@ -112,7 +112,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   private linkInputChangesSubscription?: Subscription;
   private _isActive = false;
 
-  get isActive() {
+  get isActive(): boolean {
     return this._isActive;
   }
 
@@ -166,7 +166,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     });
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngAfterContentInit(): void {
     // `of(null)` is used to force subscribe body to execute once immediately (like `startWith`).
     of(this.links.changes, of(null))
@@ -197,11 +197,11 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     this.classes = classes.filter((c) => !!c);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges): void {
     this.update();
   }
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     this.routerEventsSubscription.unsubscribe();
     this.linkInputChangesSubscription?.unsubscribe();

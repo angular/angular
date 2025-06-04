@@ -1,23 +1,25 @@
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "directive-forest",
     srcs = glob(
         include = ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
-        "//devtools/projects/ng-devtools-backend/src/lib:version",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//semver-dsl",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+    ],
+    deps = [
+        "//:node_modules/semver-dsl",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:version_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
@@ -33,11 +35,12 @@ ts_test_library(
     srcs = [
         "render-tree.spec.ts",
     ],
-    deps = [
-        ":directive-forest",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
+    ],
+    deps = [
+        ":directive-forest_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
     ],
 )

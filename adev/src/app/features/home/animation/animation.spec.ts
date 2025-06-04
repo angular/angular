@@ -83,7 +83,7 @@ describe('Animation', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AnimationHost],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(AnimationHost);
     component = fixture.componentInstance;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementProfile, ProfilerFrame} from 'protocol';
+import {ElementProfile, ProfilerFrame} from '../../../../../../../../protocol';
 
 import {Theme} from '../../../../../application-services/theme_service';
 import {RecordFormatter} from '../record-formatter';
@@ -38,6 +38,7 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
       original: {
         children: [],
         directives: [],
+        type: 'element',
       },
     };
 

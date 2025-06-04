@@ -66,7 +66,7 @@ const INLINE_ELEMENTS = merge(
   ),
 );
 
-export const VALID_ELEMENTS = merge(
+export const VALID_ELEMENTS: {[k: string]: boolean} = merge(
   VOID_ELEMENTS,
   BLOCK_ELEMENTS,
   INLINE_ELEMENTS,
@@ -74,7 +74,9 @@ export const VALID_ELEMENTS = merge(
 );
 
 // Attributes that have href and hence need to be sanitized
-export const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,src,xlink:href');
+export const URI_ATTRS: {[k: string]: boolean} = tagSet(
+  'background,cite,href,itemtype,longdesc,poster,src,xlink:href',
+);
 
 const HTML_ATTRS = tagSet(
   'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
@@ -103,7 +105,7 @@ const ARIA_ATTRS = tagSet(
 // can be sanitized, but they increase security surface area without a legitimate use case, so they
 // are left out here.
 
-export const VALID_ATTRS = merge(URI_ATTRS, HTML_ATTRS, ARIA_ATTRS);
+export const VALID_ATTRS: {[k: string]: boolean} = merge(URI_ATTRS, HTML_ATTRS, ARIA_ATTRS);
 
 // Elements whose content should not be traversed/preserved, if the elements themselves are invalid.
 //

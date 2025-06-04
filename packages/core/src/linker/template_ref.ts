@@ -12,7 +12,7 @@ import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
 import {LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {createAndRenderEmbeddedLView} from '../render3/view_manipulation';
-import {ViewRef as R3_ViewRef} from '../render3/view_ref';
+import {ViewRef} from '../render3/view_ref';
 import {assertDefined} from '../util/assert';
 
 import {createElementRef, ElementRef} from './element_ref';
@@ -35,7 +35,7 @@ import {EmbeddedViewRef} from './view_ref';
  *
  * @publicApi
  */
-export abstract class TemplateRef<C> {
+export class TemplateRef<C> {
   /**
    * The anchor element in the parent view for this embedded view.
    *
@@ -47,8 +47,32 @@ export abstract class TemplateRef<C> {
    * data-binding and injection context from the original location.
    *
    */
-  // TODO(i): rename to anchor or location
-  abstract readonly elementRef: ElementRef;
+  readonly elementRef: ElementRef;
+
+  /**
+   * @internal
+   * @nocollapse
+   */
+  static __NG_ELEMENT_ID__: () => TemplateRef<any> | null = injectTemplateRef;
+
+  /** @internal */
+  constructor(
+    private _declarationLView: LView,
+    private _declarationTContainer: TContainerNode,
+    elementRef: ElementRef,
+  ) {
+    this.elementRef = elementRef;
+  }
+
+  /**
+   * Returns an `ssrId` associated with a TView, which was used to
+   * create this instance of the `TemplateRef`.
+   *
+   * @internal
+   */
+  get ssrId(): string | null {
+    return this._declarationTContainer.tView?.ssrId || null;
+  }
 
   /**
    * Instantiates an unattached embedded view based on this template.
@@ -57,7 +81,9 @@ export abstract class TemplateRef<C> {
    * @param injector Injector to be used within the embedded view.
    * @returns The new embedded view object.
    */
-  abstract createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
+  createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C> {
+    return this.createEmbeddedViewImpl(context, injector);
+  }
 
   /**
    * Implementation of the `createEmbeddedView` function.
@@ -68,71 +94,20 @@ export abstract class TemplateRef<C> {
    *
    * @internal
    */
-  abstract createEmbeddedViewImpl(
+  createEmbeddedViewImpl(
     context: C,
     injector?: Injector,
     dehydratedView?: DehydratedContainerView | null,
-  ): EmbeddedViewRef<C>;
-
-  /**
-   * Returns an `ssrId` associated with a TView, which was used to
-   * create this instance of the `TemplateRef`.
-   *
-   * @internal
-   */
-  abstract get ssrId(): string | null;
-
-  /**
-   * @internal
-   * @nocollapse
-   */
-  static __NG_ELEMENT_ID__: () => TemplateRef<any> | null = injectTemplateRef;
-}
-
-const ViewEngineTemplateRef = TemplateRef;
-
-// TODO(alxhub): combine interface and implementation. Currently this is challenging since something
-// in g3 depends on them being separate.
-const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
-  constructor(
-    private _declarationLView: LView,
-    private _declarationTContainer: TContainerNode,
-    public override elementRef: ElementRef,
-  ) {
-    super();
-  }
-
-  /**
-   * Returns an `ssrId` associated with a TView, which was used to
-   * create this instance of the `TemplateRef`.
-   *
-   * @internal
-   */
-  override get ssrId(): string | null {
-    return this._declarationTContainer.tView?.ssrId || null;
-  }
-
-  override createEmbeddedView(context: T, injector?: Injector): EmbeddedViewRef<T> {
-    return this.createEmbeddedViewImpl(context, injector);
-  }
-
-  /**
-   * @internal
-   */
-  override createEmbeddedViewImpl(
-    context: T,
-    injector?: Injector,
-    dehydratedView?: DehydratedContainerView,
-  ): EmbeddedViewRef<T> {
+  ): EmbeddedViewRef<C> {
     const embeddedLView = createAndRenderEmbeddedLView(
       this._declarationLView,
       this._declarationTContainer,
       context,
       {embeddedViewInjector: injector, dehydratedView},
     );
-    return new R3_ViewRef<T>(embeddedLView);
+    return new ViewRef<C>(embeddedLView);
   }
-};
+}
 
 /**
  * Creates a TemplateRef given a node.
@@ -153,7 +128,7 @@ export function injectTemplateRef<T>(): TemplateRef<T> | null {
 export function createTemplateRef<T>(hostTNode: TNode, hostLView: LView): TemplateRef<T> | null {
   if (hostTNode.type & TNodeType.Container) {
     ngDevMode && assertDefined(hostTNode.tView, 'TView must be allocated');
-    return new R3TemplateRef(
+    return new TemplateRef(
       hostLView,
       hostTNode as TContainerNode,
       createElementRef(hostTNode, hostLView),

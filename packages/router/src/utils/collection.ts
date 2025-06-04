@@ -48,7 +48,10 @@ export function getDataKeys(obj: Object): Array<string | symbol> {
 /**
  * Test equality for arrays of strings or a string.
  */
-export function equalArraysOrString(a: string | readonly string[], b: string | readonly string[]) {
+export function equalArraysOrString(
+  a: string | readonly string[],
+  b: string | readonly string[],
+): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
     const aSorted = [...a].sort();

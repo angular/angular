@@ -1,17 +1,20 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
-        "@npm//@angular-devkit/core",
-        "@npm//@angular-devkit/schematics",
-        "@npm//@bazel/runfiles",
-        "@npm//@types/shelljs",
-        "@npm//tslint",
+    ],
+    deps = [
+        "//:node_modules/@angular-devkit/core",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/shelljs",
+        "//:node_modules/tslint",
     ],
 )
 
@@ -21,6 +24,7 @@ jasmine_node_test(
         "//packages/core/schematics:bundles",
         "//packages/core/schematics:collection.json",
         "//packages/core/schematics:migrations.json",
+        "//packages/core/schematics/migrations/control-flow-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
@@ -31,6 +35,7 @@ jasmine_node_test(
         "//packages/core/schematics/ng-generate/signals:static_files",
         "//packages/core/schematics/ng-generate/standalone-migration:static_files",
     ],
+    shard_count = 4,
     deps = [
         ":test_lib",
         "@npm//shelljs",

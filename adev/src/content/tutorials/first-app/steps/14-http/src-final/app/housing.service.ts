@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HousingLocation} from './housinglocation';
+import {HousingLocationInfo} from './housinglocation';
 
 @Injectable({
   providedIn: 'root',
@@ -7,12 +7,12 @@ import {HousingLocation} from './housinglocation';
 export class HousingService {
   url = 'http://localhost:3000/locations';
 
-  async getAllHousingLocations(): Promise<HousingLocation[]> {
+  async getAllHousingLocations(): Promise<HousingLocationInfo[]> {
     const data = await fetch(this.url);
     return (await data.json()) ?? [];
   }
 
-  async getHousingLocationById(id: number): Promise<HousingLocation | undefined> {
+  async getHousingLocationById(id: number): Promise<HousingLocationInfo | undefined> {
     const data = await fetch(`${this.url}?id=${id}`);
     const locationJson = await data.json();
     return locationJson[0] ?? {};

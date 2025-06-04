@@ -1,5 +1,5 @@
 {
-  "openFiles": ["src/app/child.component.ts", "src/app/app.component.ts"],
-  "title": "Communicating with @Output",
+  "openFiles": ["src/app/child.ts", "src/app/app.ts"],
+  "title": "Component output properties",
   "type": "editor"
 }

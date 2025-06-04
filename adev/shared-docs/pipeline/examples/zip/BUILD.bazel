@@ -1,41 +1,41 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "zip",
     srcs = glob(
         [
-            "*.ts",
+            "*.mts",
         ],
         exclude = [
-            "index.ts",
+            "index.mts",
         ],
     ),
     deps = [
-        "//adev/shared-docs/interfaces",
-        "//adev/shared-docs/pipeline/examples/shared",
-        "//adev/shared-docs/pipeline/guides",
-        "@npm//@types/node",
-        "@npm//fflate",
-        "@npm//tinyglobby",
+        "//:node_modules/@types/node",
+        "//:node_modules/fflate",
+        "//:node_modules/tinyglobby",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/pipeline/examples/shared:shared_rjs",
+        "//adev/shared-docs/pipeline/guides:guides_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "index",
     srcs = [
-        "index.ts",
+        "index.mts",
     ],
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":zip",
-        "@npm//@types/node",
+        ":zip_rjs",
+        "//:node_modules/@types/node",
     ],
 )
 
 exports_files([
-    "index.ts",
+    "index.mts",
 ])

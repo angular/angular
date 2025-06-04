@@ -1,16 +1,18 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//packages/core/schematics:__subpackages__"])
 
-ts_library(
+ts_project(
     name = "angular_devkit",
     srcs = glob(["**/*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages/compiler-cli",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
-        "@npm//@angular-devkit/core",
-        "@npm//@angular-devkit/schematics",
-        "@npm//@types/node",
+    ],
+    deps = [
+        "//:node_modules/@angular-devkit/core",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
     ],
 )

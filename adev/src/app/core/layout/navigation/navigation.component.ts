@@ -8,14 +8,7 @@
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnInit,
-  PLATFORM_ID,
-  inject,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, PLATFORM_ID, inject} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -45,7 +38,7 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
   styleUrls: ['./navigation.component.scss', './mini-menu.scss', './nav-item.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Navigation implements OnInit {
+export class Navigation {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -94,7 +87,7 @@ export class Navigation implements OnInit {
   openedMenu: MenuType | null = null;
 
   currentDocsVersion = this.versionManager.currentDocsVersion;
-  currentDocsVersionMode = this.versionManager.currentDocsVersion()?.version;
+  currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
 
   // Set the values of the search label and title only on the client, because the label is user-agent specific.
   searchLabel = this.isBrowser
@@ -113,7 +106,7 @@ export class Navigation implements OnInit {
   isMobileNavigationOpened$ = toObservable(this.isMobileNavigationOpened);
   primaryRouteChanged$ = toObservable(this.activeRouteItem);
 
-  ngOnInit(): void {
+  constructor() {
     this.listenToRouteChange();
     this.preventToScrollContentWhenSecondaryNavIsOpened();
     this.closeMobileNavOnPrimaryRouteChange();

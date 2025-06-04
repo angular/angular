@@ -138,7 +138,7 @@ export function afterEveryRender<E = never, W = never, M = never>(
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
   },
-  options?: Omit<AfterRenderOptions, 'phase'>,
+  options?: AfterRenderOptions,
 ): AfterRenderRef;
 
 /**
@@ -216,7 +216,10 @@ export function afterEveryRender(
         'callback inside the component constructor`.',
     );
 
-  !options?.injector && assertInInjectionContext(afterEveryRender);
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(afterEveryRender);
+  }
+
   const injector = options?.injector ?? inject(Injector);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
@@ -314,7 +317,7 @@ export function afterNextRender<E = never, W = never, M = never>(
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
   },
-  options?: Omit<AfterRenderOptions, 'phase'>,
+  options?: AfterRenderOptions,
 ): AfterRenderRef;
 
 /**

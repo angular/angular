@@ -57,8 +57,8 @@ export type InputOptionsWithTransform<T, TransformT> = Required<
 > &
   InputOptions<T, TransformT>;
 
-export const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
-export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
+export const ɵINPUT_SIGNAL_BRAND_READ_TYPE: unique symbol = /* @__PURE__ */ Symbol();
+export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol = /* @__PURE__ */ Symbol();
 
 /**
  * `InputSignalWithTransform` represents a special `Signal` for a

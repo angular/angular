@@ -5,7 +5,6 @@
 ```ts
 
 import { AfterContentInit } from '@angular/core';
-import * as _angular_router from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { ElementRef } from '@angular/core';
@@ -721,7 +720,6 @@ export class Router {
     navigate(commands: readonly any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
     navigated: boolean;
-    // (undocumented)
     ngOnDestroy(): void;
     // @deprecated
     onSameUrlNavigation: OnSameUrlNavigation;
@@ -729,7 +727,7 @@ export class Router {
     resetConfig(config: Routes): void;
     // @deprecated
     routeReuseStrategy: RouteReuseStrategy;
-    get routerState(): _angular_router.RouterState;
+    get routerState(): RouterState;
     serializeUrl(url: UrlTree): string;
     setUpLocationChangeListener(): void;
     get url(): string;
@@ -801,7 +799,8 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
 class RouterLink implements OnChanges, OnDestroy {
     constructor(router: Router, route: ActivatedRoute, tabIndexAttribute: string | null | undefined, renderer: Renderer2, el: ElementRef, locationStrategy?: LocationStrategy | undefined);
     fragment?: string;
-    href: string | null;
+    get href(): string | null;
+    set href(value: string | null);
     info?: unknown;
     // (undocumented)
     static ngAcceptInputType_preserveFragment: unknown;
@@ -809,15 +808,14 @@ class RouterLink implements OnChanges, OnDestroy {
     static ngAcceptInputType_replaceUrl: unknown;
     // (undocumented)
     static ngAcceptInputType_skipLocationChange: unknown;
-    // (undocumented)
     ngOnChanges(changes?: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): any;
-    // (undocumented)
     onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean): boolean;
     preserveFragment: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
+    // (undocumented)
+    protected readonly reactiveHref: i0.WritableSignal<string | null>;
     relativeTo?: ActivatedRoute | null;
     replaceUrl: boolean;
     set routerLink(commandsOrUrlTree: readonly any[] | string | UrlTree | null | undefined);
@@ -845,11 +843,8 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     readonly isActiveChange: EventEmitter<boolean>;
     // (undocumented)
     links: QueryList<RouterLink>;
-    // (undocumented)
     ngAfterContentInit(): void;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     set routerLinkActive(data: string[] | string);
@@ -898,14 +893,10 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     get isActivated(): boolean;
     name: string;
-    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    // (undocumented)
     ngOnDestroy(): void;
-    // (undocumented)
     ngOnInit(): void;
     readonly routerOutletData: i0.InputSignal<unknown>;
-    // (undocumented)
     readonly supportsBindingToComponentInputs = true;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": { "alias": "name"; "required": false; }; "routerOutletData": { "alias": "routerOutletData"; "required": false; "isSignal": true; }; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
@@ -933,7 +924,6 @@ export interface RouterOutletContract {
 // @public
 export class RouterPreloader implements OnDestroy {
     constructor(router: Router, injector: EnvironmentInjector, preloadingStrategy: PreloadingStrategy, loader: RouterConfigLoader);
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     preload(): Observable<any>;

@@ -357,6 +357,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/common-router-tasks',
           },
           {
+            label: 'Creating custom route matches',
+            path: 'guide/routing/routing-with-urlmatcher',
+            contentPath: 'guide/routing/routing-with-urlmatcher',
+          },
+          {
             label: 'Router reference',
             path: 'guide/routing/router-reference',
             contentPath: 'guide/routing/router-reference',
@@ -502,6 +507,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/testing/utility-apis',
           },
           {
+            label: 'Experimental unit testing integration',
+            path: 'guide/testing/unit-tests',
+            contentPath: 'guide/testing/experimental-unit-test',
+          },
+          {
             label: 'Component harnesses overview',
             path: 'guide/testing/component-harnesses-overview',
             contentPath: 'guide/testing/component-harnesses-overview',
@@ -597,6 +607,26 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/animations/route-animations',
           },
         ],
+      },
+      {
+        label: 'Drag and drop',
+        path: 'guide/drag-drop',
+        contentPath: 'guide/drag-drop',
+      },
+    ],
+  },
+  {
+    label: 'Build with AI',
+    children: [
+      {
+        label: 'Get Started',
+        path: 'ai',
+        contentPath: 'ai/overview',
+      },
+      {
+        label: 'Using AI for Development',
+        path: 'ai/develop-with-ai',
+        contentPath: 'ai/develop-with-ai',
       },
     ],
   },
@@ -761,6 +791,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'best-practices/skipping-subtrees',
             contentPath: 'best-practices/runtime-performance/skipping-subtrees',
           },
+          {
+            label: 'Profiling with the Chrome DevTools',
+            path: 'best-practices/profiling-with-chrome-devtools',
+            contentPath: 'best-practices/runtime-performance/profiling-with-chrome-devtools',
+          },
           {label: 'Zoneless', path: 'guide/zoneless', contentPath: 'guide/zoneless'},
         ],
       },
@@ -892,11 +927,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Angular CDK',
-        path: 'https://material.angular.io/cdk/categories',
+        path: 'https://material.angular.dev/cdk/categories',
       },
       {
         label: 'Angular Material',
-        path: 'https://material.angular.io/',
+        path: 'https://material.angular.dev/',
       },
     ],
   },

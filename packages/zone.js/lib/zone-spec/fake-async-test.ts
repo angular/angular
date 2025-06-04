@@ -7,6 +7,7 @@
  */
 
 import {ZoneType} from '../zone-impl';
+import {type ProxyZoneSpec} from './proxy';
 
 const global: any =
   (typeof window === 'object' && window) || (typeof self === 'object' && self) || globalThis.global;
@@ -789,14 +790,12 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 
 let _fakeAsyncTestZoneSpec: FakeAsyncTestZoneSpec | null = null;
 
-type ProxyZoneSpecType = {
-  setDelegate(delegateSpec: ZoneSpec): void;
-  getDelegate(): ZoneSpec;
-  resetDelegate(): void;
-};
-function getProxyZoneSpec(): {get(): ProxyZoneSpecType; assertPresent: () => ProxyZoneSpecType} {
+function getProxyZoneSpec(): typeof ProxyZoneSpec | undefined {
   return Zone && (Zone as any)['ProxyZoneSpec'];
 }
+
+let _sharedProxyZoneSpec: ProxyZoneSpec | null = null;
+let _sharedProxyZone: Zone | null = null;
 
 /**
  * Clears out the shared fake async zone for a test.
@@ -809,8 +808,8 @@ export function resetFakeAsyncZone() {
     _fakeAsyncTestZoneSpec.unlockDatePatch();
   }
   _fakeAsyncTestZoneSpec = null;
-  // in node.js testing we may not have ProxyZoneSpec in which case there is nothing to reset.
-  getProxyZoneSpec() && getProxyZoneSpec().assertPresent().resetDelegate();
+  getProxyZoneSpec()?.get()?.resetDelegate();
+  _sharedProxyZoneSpec?.resetDelegate();
 }
 
 /**
@@ -841,8 +840,8 @@ export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...ar
     const ProxyZoneSpec = getProxyZoneSpec();
     if (!ProxyZoneSpec) {
       throw new Error(
-        'ProxyZoneSpec is needed for the async() test helper but could not be found. ' +
-          'Please make sure that your environment includes zone.js/plugins/proxy',
+        'ProxyZoneSpec is needed for the fakeAsync() test helper but could not be found. ' +
+          'Make sure that your environment includes zone-testing.js',
       );
     }
     const proxyZoneSpec = ProxyZoneSpec.assertPresent();
@@ -894,7 +893,7 @@ export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...ar
       resetFakeAsyncZone();
     }
   };
-  (fakeAsyncFn as any).isFakeAsync = true;
+  fakeAsyncFn.isFakeAsync = true;
   return fakeAsyncFn;
 }
 
@@ -950,6 +949,51 @@ export function discardPeriodicTasks(): void {
 }
 
 /**
+ * Wraps a function to be executed in a shared ProxyZone.
+ *
+ * If no shared ProxyZone exists, one is created and reused for subsequent calls.
+ * Useful for wrapping test setup (beforeEach) and test execution (it) when test
+ * runner patching isn't available or desired for setting up the ProxyZone.
+ *
+ * @param fn The function to wrap.
+ * @returns A function that executes the original function within the shared ProxyZone.
+ *
+ * @experimental
+ */
+export function withProxyZone<T extends Function>(fn: T): T {
+  const autoProxyFn: any = function (this: unknown, ...args: any[]) {
+    const proxyZoneSpec = getProxyZoneSpec();
+    if (proxyZoneSpec === undefined) {
+      throw new Error(
+        'ProxyZoneSpec is needed for the withProxyZone() test helper but could not be found. ' +
+          'Make sure that your environment includes zone-testing.js',
+      );
+    }
+
+    const proxyZone = proxyZoneSpec.get() !== undefined ? Zone.current : getOrCreateRootProxy();
+    return proxyZone.run(fn, this, args);
+  };
+  return autoProxyFn as T;
+}
+
+function getOrCreateRootProxy() {
+  const ProxyZoneSpec = getProxyZoneSpec();
+  if (ProxyZoneSpec === undefined) {
+    throw new Error(
+      'ProxyZoneSpec is needed for withProxyZone but could not be found. ' +
+        'Make sure that your environment includes zone-testing.js',
+    );
+  }
+  // Ensure the shared ProxyZoneSpec instance exists
+  if (_sharedProxyZoneSpec === null) {
+    _sharedProxyZoneSpec = new ProxyZoneSpec() as ProxyZoneSpec;
+  }
+
+  _sharedProxyZone = Zone.root.fork(_sharedProxyZoneSpec);
+  return _sharedProxyZone;
+}
+
+/**
  * Flush any pending microtasks.
  *
  * @experimental
@@ -973,6 +1017,7 @@ export function patchFakeAsyncTest(Zone: ZoneType): void {
         tick,
         flush,
         fakeAsync,
+        withProxyZone,
       };
     },
     true,

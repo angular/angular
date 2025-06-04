@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {FactoryTarget} from '../compiler_facade_interface';
 import {InjectFlags} from '../core';
 import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
@@ -63,14 +64,6 @@ export type R3FactoryMetadata =
   | R3ConstructorFactoryMetadata
   | R3DelegatedFnOrClassMetadata
   | R3ExpressionFactoryMetadata;
-
-export enum FactoryTarget {
-  Directive = 0,
-  Component = 1,
-  Injectable = 2,
-  Pipe = 3,
-  NgModule = 4,
-}
 
 export interface R3DependencyMetadata {
   /**
@@ -140,7 +133,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
 
   function makeConditionalFactory(nonCtorExpr: o.Expression): o.ReadVarExpr {
     const r = o.variable('__ngConditionalFactory__');
-    body.push(r.set(o.NULL_EXPR).toDeclStmt());
+    body.push(new o.DeclareVarStmt(r.name, o.NULL_EXPR, o.INFERRED_TYPE));
     const ctorStmt =
       ctorExpr !== null
         ? r.set(ctorExpr).toStmt()

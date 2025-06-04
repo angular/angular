@@ -1,19 +1,7 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
-load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
-
-circular_dependency_test(
-    name = "circular_deps_test",
-    entry_point = "angular/packages/core/index.mjs",
-    deps = ["//packages/core"],
-)
-
-circular_dependency_test(
-    name = "testing_circular_deps_test",
-    entry_point = "angular/packages/core/testing/index.mjs",
-    deps = ["//packages/core/testing"],
-)
 
 genrule(
     name = "downleveled_es5_fixture",
@@ -36,17 +24,19 @@ UTILS = [
     "linker/source_map_util.ts",
 ]
 
-ts_library(
+ts_project(
     name = "test_utils",
     testonly = True,
     srcs = UTILS,
-    deps = [
+    interop_deps = [
         "//packages/compiler",
-        "@npm//source-map",
+    ],
+    deps = [
+        "//:node_modules/source-map",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
@@ -56,10 +46,7 @@ ts_library(
             "reflection/es2015_inheritance_fixture.ts",
         ],
     ),
-    # Visible to //:saucelabs_unit_tests_poc target
-    visibility = ["//:__pkg__"],
-    deps = [
-        ":test_utils",
+    interop_deps = [
         "//packages/animations",
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
@@ -82,20 +69,23 @@ ts_library(
         "//packages/router",
         "//packages/router/testing",
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//rxjs",
+    ],
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        ":test_utils_rjs",
+        "//:node_modules/rxjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_node_only_lib",
     testonly = True,
     srcs = glob(
         ["**/*_node_only_spec.ts"],
         exclude = UTILS,
     ),
-    deps = [
-        ":test_lib",
-        ":test_utils",
+    interop_deps = [
         "//packages/compiler",
         "//packages/core",
         "//packages/core/src/compiler",
@@ -103,6 +93,10 @@ ts_library(
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//packages/private/testing",
+    ],
+    deps = [
+        ":test_lib_rjs",
+        ":test_utils_rjs",
     ],
 )
 

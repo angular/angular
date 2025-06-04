@@ -18,7 +18,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
 
   // Tablet / Mobile Tutorial Nav
   @include mq.for-tablet-landscape-up {
-    > .adev-tutorial-nav-container {
+    >.adev-tutorial-nav-container {
       display: none;
     }
   }
@@ -67,7 +67,6 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
 }
 
 .docs-tutorial-content {
-  max-width: var(--page-width);
   min-width: 300px;
   width: 100%;
   box-sizing: content-box;
@@ -76,7 +75,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
 
   // Desktop Tutorial Nav
   @include mq.for-tablet-landscape-down {
-    > .adev-tutorial-nav-container {
+    >.adev-tutorial-nav-container {
       display: none;
     }
   }
@@ -89,6 +88,16 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
       width: 100%;
       height: 100%;
       backdrop-filter: blur(3px);
+    }
+  }
+
+  .docs-viewer {
+
+    //applying styles when TOC position got translated to the top right 
+    @include mq.for-large-desktop-up {
+      // take the available space except a reserved area for TOC
+      margin-left: 0rem;
+      width: unset;
     }
   }
 }
@@ -134,12 +143,15 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
   min-width: 300px;
   padding-block-start: var(--layout-padding);
   height: 100vh;
+
+  // should be suprior to the tutorial content or the tooltip won't integrate properly
+  z-index: var( --z-index-nav);
 }
 
 .adev-split-tutorial {
   width: 50%;
 
-  @include mq.for-big-desktop-up {
+  @include mq.for-extra-large-desktop-up {
     width: 100%;
   }
 

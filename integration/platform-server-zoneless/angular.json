@@ -74,7 +74,7 @@
             "port": 0,
             "protractorConfig": "e2e/protractor.conf.js",
             "webdriverUpdate": false,
-            "baseUrl": "http://localhost:4206"
+            "baseUrl": "http://localhost:4209"
           }
         },
         "extract-i18n": {

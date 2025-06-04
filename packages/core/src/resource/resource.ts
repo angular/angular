@@ -33,6 +33,13 @@ import {linkedSignal} from '../render3/reactivity/linked_signal';
 import {DestroyRef} from '../linker/destroy_ref';
 
 /**
+ * Whether a `Resource.value()` should throw an error when the resource is in the error state.
+ *
+ * This internal flag is being used to gradually roll out this behavior.
+ */
+const RESOURCE_VALUE_THROWS_ERRORS_DEFAULT = true;
+
+/**
  * Constructs a `Resource` that projects a reactive request to an asynchronous operation defined by
  * a loader function, which exposes the result of the loading operation via signals.
  *
@@ -58,7 +65,10 @@ export function resource<T, R>(
  */
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined> {
-  options?.injector || assertInInjectionContext(resource);
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(resource);
+  }
+
   const oldNameForParams = (
     options as ResourceOptions<T, R> & {request: ResourceOptions<T, R>['params']}
   ).request;
@@ -69,6 +79,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     options.defaultValue,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
     options.injector ?? inject(Injector),
+    RESOURCE_VALUE_THROWS_ERRORS_DEFAULT,
   );
 }
 
@@ -98,7 +109,8 @@ type WrappedRequest = {request: unknown; reload: number};
 abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly value: WritableSignal<T>;
   abstract readonly status: Signal<ResourceStatus>;
-  abstract readonly error: Signal<unknown>;
+  abstract readonly error: Signal<Error | undefined>;
+
   abstract reload(): boolean;
 
   constructor(value: Signal<T>) {
@@ -110,6 +122,8 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
 
   abstract set(value: T): void;
 
+  private readonly isError = computed(() => this.status() === 'error');
+
   update(updateFn: (value: T) => T): void {
     this.set(updateFn(untracked(this.value)));
   }
@@ -117,6 +131,13 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
   readonly isLoading = computed(() => this.status() === 'loading' || this.status() === 'reloading');
 
   hasValue(): this is ResourceRef<Exclude<T, undefined>> {
+    // Note: we specifically read `isError()` instead of `status()` here to avoid triggering
+    // reactive consumers which read `hasValue()`. This way, if `hasValue()` is used inside of an
+    // effect, it doesn't cause the effect to rerun on every status change.
+    if (this.isError()) {
+      return false;
+    }
+
     return this.value() !== undefined;
   }
 
@@ -150,9 +171,10 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   constructor(
     request: () => R,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
-    private readonly defaultValue: T,
+    defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
     injector: Injector,
+    throwErrorsFromValue: boolean = RESOURCE_VALUE_THROWS_ERRORS_DEFAULT,
   ) {
     super(
       // Feed a computed signal for the value to `BaseWritableResource`, which will upgrade it to a
@@ -160,7 +182,25 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       computed(
         () => {
           const streamValue = this.state().stream?.();
-          return streamValue && isResolved(streamValue) ? streamValue.value : this.defaultValue;
+
+          if (!streamValue) {
+            return defaultValue;
+          }
+
+          // Prevents `hasValue()` from throwing an error when a reload happened in the error state
+          if (this.state().status === 'loading' && this.error()) {
+            return defaultValue;
+          }
+
+          if (!isResolved(streamValue)) {
+            if (throwErrorsFromValue) {
+              throw new ResourceValueError(this.error()!);
+            } else {
+              return defaultValue;
+            }
+          }
+
+          return streamValue.value;
         },
         {equal},
       ),
@@ -343,7 +383,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         extRequest,
         status: 'resolved',
         previousStatus: 'error',
-        stream: signal({error: err}),
+        stream: signal({error: encapsulateResourceError(err)}),
       });
     } finally {
       // Resolve the pending task now that the resource has a value.
@@ -378,7 +418,7 @@ function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoade
     try {
       return signal({value: await options.loader(params)});
     } catch (err) {
-      return signal({error: err});
+      return signal({error: encapsulateResourceError(err)});
     }
   };
 }
@@ -397,7 +437,7 @@ function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
     case 'loading':
       return state.extRequest.reload === 0 ? 'loading' : 'reloading';
     case 'resolved':
-      return isResolved(untracked(state.stream!)) ? 'resolved' : 'error';
+      return isResolved(state.stream!()) ? 'resolved' : 'error';
     default:
       return state.status;
   }
@@ -405,4 +445,34 @@ function projectStatusOfState(state: ResourceState<unknown>): ResourceStatus {
 
 function isResolved<T>(state: ResourceStreamItem<T>): state is {value: T} {
   return (state as {error: unknown}).error === undefined;
+}
+
+export function encapsulateResourceError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new ResourceWrappedError(error);
+}
+
+class ResourceValueError extends Error {
+  constructor(error: Error) {
+    super(
+      ngDevMode
+        ? `Resource is currently in an error state (see Error.cause for details): ${error.message}`
+        : error.message,
+      {cause: error},
+    );
+  }
+}
+
+class ResourceWrappedError extends Error {
+  constructor(error: unknown) {
+    super(
+      ngDevMode
+        ? `Resource returned an error that's not an Error instance: ${String(error)}. Check this error's .cause for the actual error.`
+        : String(error),
+      {cause: error},
+    );
+  }
 }

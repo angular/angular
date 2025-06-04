@@ -20,6 +20,7 @@ import {
   ASTWithSource,
   Binary,
   BindingPipe,
+  BindingPipeType,
   Call,
   Chain,
   Conditional,
@@ -28,7 +29,6 @@ import {
   ImplicitReceiver,
   Interpolation,
   KeyedRead,
-  KeyedWrite,
   LiteralArray,
   LiteralMap,
   LiteralMapKey,
@@ -39,7 +39,6 @@ import {
   ParseSpan,
   PrefixNot,
   PropertyRead,
-  PropertyWrite,
   RecursiveAstVisitor,
   SafeCall,
   SafeKeyedRead,
@@ -90,9 +89,10 @@ export const enum ParseFlags {
 }
 
 export class Parser {
-  private errors: ParserError[] = [];
-
-  constructor(private _lexer: Lexer) {}
+  constructor(
+    private readonly _lexer: Lexer,
+    private readonly _supportsDirectPipeReferences = false,
+  ) {}
 
   parseAction(
     input: string,
@@ -100,7 +100,8 @@ export class Parser {
     absoluteOffset: number,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): ASTWithSource {
-    this._checkNoInterpolation(input, location, interpolationConfig);
+    const errors: ParserError[] = [];
+    this._checkNoInterpolation(errors, input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     const ast = new _ParseAST(
@@ -109,11 +110,12 @@ export class Parser {
       absoluteOffset,
       tokens,
       ParseFlags.Action,
-      this.errors,
+      errors,
       0,
+      this._supportsDirectPipeReferences,
     ).parseChain();
 
-    return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
+    return new ASTWithSource(ast, input, location, absoluteOffset, errors);
   }
 
   parseBinding(
@@ -122,8 +124,9 @@ export class Parser {
     absoluteOffset: number,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): ASTWithSource {
-    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
-    return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
+    const errors: ParserError[] = [];
+    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig, errors);
+    return new ASTWithSource(ast, input, location, absoluteOffset, errors);
   }
 
   private checkSimpleExpression(ast: AST): string[] {
@@ -139,20 +142,20 @@ export class Parser {
     absoluteOffset: number,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): ASTWithSource {
-    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig);
-    const errors = this.checkSimpleExpression(ast);
-    if (errors.length > 0) {
-      this._reportError(
-        `Host binding expression cannot contain ${errors.join(' ')}`,
-        input,
-        location,
+    const errors: ParserError[] = [];
+    const ast = this._parseBindingAst(input, location, absoluteOffset, interpolationConfig, errors);
+    const simplExpressionErrors = this.checkSimpleExpression(ast);
+
+    if (simplExpressionErrors.length > 0) {
+      errors.push(
+        new ParserError(
+          `Host binding expression cannot contain ${simplExpressionErrors.join(' ')}`,
+          input,
+          location,
+        ),
       );
     }
-    return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
-  }
-
-  private _reportError(message: string, input: string, errLocation: string, ctxLocation?: string) {
-    this.errors.push(new ParserError(message, input, errLocation, ctxLocation));
+    return new ASTWithSource(ast, input, location, absoluteOffset, errors);
   }
 
   private _parseBindingAst(
@@ -160,8 +163,9 @@ export class Parser {
     location: string,
     absoluteOffset: number,
     interpolationConfig: InterpolationConfig,
+    errors: ParserError[],
   ): AST {
-    this._checkNoInterpolation(input, location, interpolationConfig);
+    this._checkNoInterpolation(errors, input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     return new _ParseAST(
@@ -170,8 +174,9 @@ export class Parser {
       absoluteOffset,
       tokens,
       ParseFlags.None,
-      this.errors,
+      errors,
       0,
+      this._supportsDirectPipeReferences,
     ).parseChain();
   }
 
@@ -209,14 +214,16 @@ export class Parser {
     absoluteValueOffset: number,
   ): TemplateBindingParseResult {
     const tokens = this._lexer.tokenize(templateValue);
+    const errors: ParserError[] = [];
     const parser = new _ParseAST(
       templateValue,
       templateUrl,
       absoluteValueOffset,
       tokens,
       ParseFlags.None,
-      this.errors,
+      errors,
       0 /* relative offset */,
+      this._supportsDirectPipeReferences,
     );
     return parser.parseTemplateBindings({
       source: templateKey,
@@ -231,9 +238,11 @@ export class Parser {
     interpolatedTokens: InterpolatedAttributeToken[] | InterpolatedTextToken[] | null,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): ASTWithSource | null {
+    const errors: ParserError[] = [];
     const {strings, expressions, offsets} = this.splitInterpolation(
       input,
       location,
+      errors,
       interpolatedTokens,
       interpolationConfig,
     );
@@ -251,8 +260,9 @@ export class Parser {
         absoluteOffset,
         tokens,
         ParseFlags.None,
-        this.errors,
+        errors,
         offsets[i],
+        this._supportsDirectPipeReferences,
       ).parseChain();
       expressionNodes.push(ast);
     }
@@ -263,6 +273,7 @@ export class Parser {
       input,
       location,
       absoluteOffset,
+      errors,
     );
   }
 
@@ -278,17 +289,26 @@ export class Parser {
   ): ASTWithSource {
     const sourceToLex = this._stripComments(expression);
     const tokens = this._lexer.tokenize(sourceToLex);
+    const errors: ParserError[] = [];
     const ast = new _ParseAST(
       expression,
       location,
       absoluteOffset,
       tokens,
       ParseFlags.None,
-      this.errors,
+      errors,
       0,
+      this._supportsDirectPipeReferences,
     ).parseChain();
     const strings = ['', '']; // The prefix and suffix strings are both empty
-    return this.createInterpolationAst(strings, [ast], expression, location, absoluteOffset);
+    return this.createInterpolationAst(
+      strings,
+      [ast],
+      expression,
+      location,
+      absoluteOffset,
+      errors,
+    );
   }
 
   private createInterpolationAst(
@@ -297,6 +317,7 @@ export class Parser {
     input: string,
     location: string,
     absoluteOffset: number,
+    errors: ParserError[],
   ): ASTWithSource {
     const span = new ParseSpan(0, input.length);
     const interpolation = new Interpolation(
@@ -305,7 +326,7 @@ export class Parser {
       strings,
       expressions,
     );
-    return new ASTWithSource(interpolation, input, location, absoluteOffset, this.errors);
+    return new ASTWithSource(interpolation, input, location, absoluteOffset, errors);
   }
 
   /**
@@ -318,6 +339,7 @@ export class Parser {
   splitInterpolation(
     input: string,
     location: string,
+    errors: ParserError[],
     interpolatedTokens: InterpolatedAttributeToken[] | InterpolatedTextToken[] | null,
     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
   ): SplitInterpolation {
@@ -359,11 +381,13 @@ export class Parser {
 
         const text = input.substring(exprStart, exprEnd);
         if (text.trim().length === 0) {
-          this._reportError(
-            'Blank expressions are not allowed in interpolated strings',
-            input,
-            `at column ${i} in`,
-            location,
+          errors.push(
+            new ParserError(
+              'Blank expressions are not allowed in interpolated strings',
+              input,
+              `at column ${i} in`,
+              location,
+            ),
           );
         }
         expressions.push({text, start: fullStart, end: fullEnd});
@@ -399,7 +423,7 @@ export class Parser {
       input,
       location,
       absoluteOffset,
-      this.errors,
+      [],
     );
   }
 
@@ -426,6 +450,7 @@ export class Parser {
   }
 
   private _checkNoInterpolation(
+    errors: ParserError[],
     input: string,
     location: string,
     {start, end}: InterpolationConfig,
@@ -447,11 +472,13 @@ export class Parser {
     }
 
     if (startIndex > -1 && endIndex > -1) {
-      this._reportError(
-        `Got interpolation (${start}${end}) where expression was expected`,
-        input,
-        `at column ${startIndex} in`,
-        location,
+      errors.push(
+        new ParserError(
+          `Got interpolation (${start}${end}) where expression was expected`,
+          input,
+          `at column ${startIndex} in`,
+          location,
+        ),
       );
     }
   }
@@ -537,6 +564,7 @@ class _ParseAST {
     private parseFlags: ParseFlags,
     private errors: ParserError[],
     private offset: number,
+    private supportsDirectPipeReferences: boolean,
   ) {}
 
   private peek(offset: number): Token {
@@ -793,12 +821,24 @@ class _ParseAST {
           // If there are additional expressions beyond the name, then the artificial end for the
           // name is no longer relevant.
         }
+        let type: BindingPipeType;
+        if (this.supportsDirectPipeReferences) {
+          const charCode = nameId.charCodeAt(0);
+          type =
+            charCode === chars.$_ || (charCode >= chars.$A && charCode <= chars.$Z)
+              ? BindingPipeType.ReferencedDirectly
+              : BindingPipeType.ReferencedByName;
+        } else {
+          type = BindingPipeType.ReferencedByName;
+        }
+
         result = new BindingPipe(
           this.span(start),
           this.sourceSpan(start, fullSpanEnd),
           result,
           nameId,
           args,
+          type,
           nameSpan,
         );
       } while (this.consumeOptionalOperator('|'));
@@ -1040,8 +1080,13 @@ class _ParseAST {
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
       const result = this.parsePipe();
+      if (!this.consumeOptionalCharacter(chars.$RPAREN)) {
+        this.error('Missing closing parentheses');
+        // Calling into `error` above will attempt to recover up until the next closing paren.
+        // If that's the case, consume it so we can partially recover the expression.
+        this.consumeOptionalCharacter(chars.$RPAREN);
+      }
       this.rparensExpected--;
-      this.expectCharacter(chars.$RPAREN);
       return new ParenthesizedExpression(this.span(start), this.sourceSpan(start), result);
     } else if (this.next.isKeywordNull()) {
       this.advance();
@@ -1167,14 +1212,13 @@ class _ParseAST {
       return id;
     });
     const nameSpan = this.sourceSpan(nameStart);
-    let receiver: AST;
 
     if (isSafe) {
       if (this.consumeOptionalOperator('=')) {
         this.error("The '?.' operator cannot be used in the assignment");
-        receiver = new EmptyExpr(this.span(start), this.sourceSpan(start));
+        return new EmptyExpr(this.span(start), this.sourceSpan(start));
       } else {
-        receiver = new SafePropertyRead(
+        return new SafePropertyRead(
           this.span(start),
           this.sourceSpan(start),
           nameSpan,
@@ -1188,18 +1232,17 @@ class _ParseAST {
           this.error('Bindings cannot contain assignments');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
         }
-
-        const value = this.parseConditional();
-        receiver = new PropertyWrite(
+        const receiver = new PropertyRead(
           this.span(start),
           this.sourceSpan(start),
           nameSpan,
           readReceiver,
           id,
-          value,
         );
+        const value = this.parseConditional();
+        return new Binary(this.span(start), this.sourceSpan(start), '=', receiver, value);
       } else {
-        receiver = new PropertyRead(
+        return new PropertyRead(
           this.span(start),
           this.sourceSpan(start),
           nameSpan,
@@ -1208,8 +1251,6 @@ class _ParseAST {
         );
       }
     }
-
-    return receiver;
   }
 
   private parseCall(receiver: AST, start: number, isSafe: boolean): AST {
@@ -1328,8 +1369,14 @@ class _ParseAST {
         if (isSafe) {
           this.error("The '?.' operator cannot be used in the assignment");
         } else {
+          const binaryReceiver = new KeyedRead(
+            this.span(start),
+            this.sourceSpan(start),
+            receiver,
+            key,
+          );
           const value = this.parseConditional();
-          return new KeyedWrite(this.span(start), this.sourceSpan(start), receiver, key, value);
+          return new Binary(this.span(start), this.sourceSpan(start), '=', binaryReceiver, value);
         }
       } else {
         return isSafe

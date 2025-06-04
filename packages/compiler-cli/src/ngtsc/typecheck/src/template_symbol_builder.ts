@@ -10,14 +10,16 @@ import {
   AST,
   ASTWithName,
   ASTWithSource,
+  Binary,
   BindingPipe,
   ParseSourceSpan,
   PropertyRead,
-  PropertyWrite,
   R3Identifiers,
   SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
+  TmplAstComponent,
+  TmplAstDirective,
   TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
@@ -45,6 +47,8 @@ import {
   OutputBindingSymbol,
   PipeSymbol,
   ReferenceSymbol,
+  SelectorlessComponentSymbol,
+  SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   TcbLocation,
@@ -88,6 +92,8 @@ export class SymbolBuilder {
   getSymbol(
     node: TmplAstReference | TmplAstVariable | TmplAstLetDeclaration,
   ): ReferenceSymbol | VariableSymbol | LetDeclarationSymbol | null;
+  getSymbol(node: TmplAstComponent): SelectorlessComponentSymbol | null;
+  getSymbol(node: TmplAstDirective): SelectorlessDirectiveSymbol | null;
   getSymbol(node: AST | TmplAstNode): Symbol | null;
   getSymbol(node: AST | TmplAstNode): Symbol | null {
     if (this.symbolCache.has(node)) {
@@ -103,6 +109,10 @@ export class SymbolBuilder {
       symbol = this.getSymbolOfBoundEvent(node);
     } else if (node instanceof TmplAstElement) {
       symbol = this.getSymbolOfElement(node);
+    } else if (node instanceof TmplAstComponent) {
+      symbol = this.getSymbolOfSelectorlessComponent(node);
+    } else if (node instanceof TmplAstDirective) {
+      symbol = this.getSymbolOfSelectorlessDirective(node);
     } else if (node instanceof TmplAstTemplate) {
       symbol = this.getSymbolOfAstTemplate(node);
     } else if (node instanceof TmplAstVariable) {
@@ -156,8 +166,52 @@ export class SymbolBuilder {
     };
   }
 
-  private getDirectivesOfNode(element: TmplAstElement | TmplAstTemplate): DirectiveSymbol[] {
-    const elementSourceSpan = element.startSourceSpan ?? element.sourceSpan;
+  private getSymbolOfSelectorlessComponent(
+    node: TmplAstComponent,
+  ): SelectorlessComponentSymbol | null {
+    const directives = this.getDirectivesOfNode(node);
+    const primaryDirective =
+      directives.find((dir) => !dir.isHostDirective && dir.isComponent) ?? null;
+
+    if (primaryDirective === null) {
+      return null;
+    }
+
+    return {
+      tsType: primaryDirective.tsType,
+      tsSymbol: primaryDirective.tsSymbol,
+      tcbLocation: primaryDirective.tcbLocation,
+      kind: SymbolKind.SelectorlessComponent,
+      directives,
+      templateNode: node,
+    };
+  }
+
+  private getSymbolOfSelectorlessDirective(
+    node: TmplAstDirective,
+  ): SelectorlessDirectiveSymbol | null {
+    const directives = this.getDirectivesOfNode(node);
+    const primaryDirective =
+      directives.find((dir) => !dir.isHostDirective && !dir.isComponent) ?? null;
+
+    if (primaryDirective === null) {
+      return null;
+    }
+
+    return {
+      tsType: primaryDirective.tsType,
+      tsSymbol: primaryDirective.tsSymbol,
+      tcbLocation: primaryDirective.tcbLocation,
+      kind: SymbolKind.SelectorlessDirective,
+      directives,
+      templateNode: node,
+    };
+  }
+
+  private getDirectivesOfNode(
+    templateNode: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+  ): DirectiveSymbol[] {
+    const elementSourceSpan = templateNode.startSourceSpan ?? templateNode.sourceSpan;
     const tcbSourceFile = this.typeCheckBlock.getSourceFile();
     // directives could be either:
     // - var _t1: TestDir /*T:D*/ = null! as TestDir;
@@ -172,6 +226,7 @@ export class SymbolBuilder {
       filter: isDirectiveDeclaration,
     });
     const symbols: DirectiveSymbol[] = [];
+    const seenDirectives = new Set<ts.ClassDeclaration>();
 
     for (const node of nodes) {
       const symbol = this.getSymbolOfTsNode(node.parent);
@@ -183,13 +238,16 @@ export class SymbolBuilder {
         continue;
       }
 
-      const meta = this.getDirectiveMeta(element, symbol.tsSymbol.valueDeclaration);
+      const declaration = symbol.tsSymbol.valueDeclaration;
+      const meta = this.getDirectiveMeta(templateNode, declaration);
 
-      if (meta !== null && meta.selector !== null) {
-        const ref = new Reference<ClassDeclaration>(symbol.tsSymbol.valueDeclaration as any);
+      // Host directives will be added as identifiers with the same offset as the host
+      // which means that they'll get added twice. De-duplicate them to avoid confusion.
+      if (meta !== null && !seenDirectives.has(declaration)) {
+        const ref = new Reference<ClassDeclaration>(declaration as ClassDeclaration);
 
         if (meta.hostDirectives !== null) {
-          this.addHostDirectiveSymbols(element, meta.hostDirectives, symbols);
+          this.addHostDirectiveSymbols(templateNode, meta.hostDirectives, symbols, seenDirectives);
         }
 
         const directiveSymbol: DirectiveSymbol = {
@@ -198,7 +256,7 @@ export class SymbolBuilder {
           tsSymbol: symbol.tsSymbol,
           selector: meta.selector,
           isComponent: meta.isComponent,
-          ngModule: this.getDirectiveModule(symbol.tsSymbol.valueDeclaration),
+          ngModule: this.getDirectiveModule(declaration),
           kind: SymbolKind.Directive,
           isStructural: meta.isStructural,
           isInScope: true,
@@ -206,6 +264,7 @@ export class SymbolBuilder {
         };
 
         symbols.push(directiveSymbol);
+        seenDirectives.add(declaration);
       }
     }
 
@@ -213,25 +272,28 @@ export class SymbolBuilder {
   }
 
   private addHostDirectiveSymbols(
-    host: TmplAstTemplate | TmplAstElement,
+    host: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
     hostDirectives: HostDirectiveMeta[],
     symbols: DirectiveSymbol[],
+    seenDirectives: Set<ts.ClassDeclaration>,
   ): void {
     for (const current of hostDirectives) {
       if (!isHostDirectiveMetaForGlobalMode(current)) {
         throw new Error('Impossible state: typecheck code path in local compilation mode.');
       }
 
-      if (!ts.isClassDeclaration(current.directive.node)) {
+      const node = current.directive.node;
+
+      if (!ts.isClassDeclaration(node) || seenDirectives.has(node)) {
         continue;
       }
 
-      const symbol = this.getSymbolOfTsNode(current.directive.node);
-      const meta = this.getDirectiveMeta(host, current.directive.node);
+      const symbol = this.getSymbolOfTsNode(node);
+      const meta = this.getDirectiveMeta(host, node);
 
       if (meta !== null && symbol !== null && isSymbolWithValueDeclaration(symbol.tsSymbol)) {
         if (meta.hostDirectives !== null) {
-          this.addHostDirectiveSymbols(host, meta.hostDirectives, symbols);
+          this.addHostDirectiveSymbols(host, meta.hostDirectives, symbols, seenDirectives);
         }
 
         const directiveSymbol: DirectiveSymbol = {
@@ -243,19 +305,20 @@ export class SymbolBuilder {
           exposedOutputs: current.outputs,
           selector: meta.selector,
           isComponent: meta.isComponent,
-          ngModule: this.getDirectiveModule(current.directive.node),
+          ngModule: this.getDirectiveModule(node),
           kind: SymbolKind.Directive,
           isStructural: meta.isStructural,
           isInScope: true,
         };
 
         symbols.push(directiveSymbol);
+        seenDirectives.add(node);
       }
     }
   }
 
   private getDirectiveMeta(
-    host: TmplAstTemplate | TmplAstElement,
+    host: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
     directiveDeclaration: ts.ClassDeclaration,
   ): TypeCheckableDirectiveMeta | null {
     let directives = this.typeCheckData.boundTarget.getDirectivesOfNode(host);
@@ -263,16 +326,20 @@ export class SymbolBuilder {
     // `getDirectivesOfNode` will not return the directives intended for an element
     // on a microsyntax template, for example `<div *ngFor="let user of users;" dir>`,
     // the `dir` will be skipped, but it's needed in language service.
-    const firstChild = host.children[0];
-    if (firstChild instanceof TmplAstElement) {
-      const isMicrosyntaxTemplate =
-        host instanceof TmplAstTemplate && sourceSpanEqual(firstChild.sourceSpan, host.sourceSpan);
-      if (isMicrosyntaxTemplate) {
-        const firstChildDirectives = this.typeCheckData.boundTarget.getDirectivesOfNode(firstChild);
-        if (firstChildDirectives !== null && directives !== null) {
-          directives = directives.concat(firstChildDirectives);
-        } else {
-          directives = directives ?? firstChildDirectives;
+    if (!(host instanceof TmplAstDirective)) {
+      const firstChild = host.children[0];
+      if (firstChild instanceof TmplAstElement) {
+        const isMicrosyntaxTemplate =
+          host instanceof TmplAstTemplate &&
+          sourceSpanEqual(firstChild.sourceSpan, host.sourceSpan);
+        if (isMicrosyntaxTemplate) {
+          const firstChildDirectives =
+            this.typeCheckData.boundTarget.getDirectivesOfNode(firstChild);
+          if (firstChildDirectives !== null && directives !== null) {
+            directives = directives.concat(firstChildDirectives);
+          } else {
+            directives = directives ?? firstChildDirectives;
+          }
         }
       }
     }
@@ -513,11 +580,7 @@ export class SymbolBuilder {
   ): DirectiveSymbol | null {
     // In all cases, `_t1["index"]` or `_t1.index`, `node.expression` is _t1.
     const tsSymbol = this.getTypeChecker().getSymbolAtLocation(fieldAccessExpr.expression);
-    if (
-      tsSymbol?.declarations === undefined ||
-      tsSymbol.declarations.length === 0 ||
-      selector === null
-    ) {
+    if (tsSymbol?.declarations === undefined || tsSymbol.declarations.length === 0) {
       return null;
     }
 
@@ -737,13 +800,16 @@ export class SymbolBuilder {
 
     let withSpan = expression.sourceSpan;
 
-    // The `name` part of a `PropertyWrite` and `ASTWithName` do not have their own
+    // The `name` part of a property write and `ASTWithName` do not have their own
     // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
     // Also skipping SafePropertyReads as it breaks nullish coalescing not nullable extended diagnostic
     if (
-      expression instanceof PropertyWrite ||
-      (expression instanceof ASTWithName && !(expression instanceof SafePropertyRead))
+      expression instanceof Binary &&
+      expression.operation === '=' &&
+      expression.left instanceof PropertyRead
     ) {
+      withSpan = expression.left.nameSpan;
+    } else if (expression instanceof ASTWithName && !(expression instanceof SafePropertyRead)) {
       withSpan = expression.nameSpan;
     }
 

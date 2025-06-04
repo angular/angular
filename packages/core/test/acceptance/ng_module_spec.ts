@@ -28,8 +28,7 @@ import {
 } from '../../src/core';
 import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '../../src/render3/instructions/element_validation';
 import {TestBed} from '../../testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
 describe('NgModule', () => {
@@ -210,7 +209,7 @@ describe('NgModule', () => {
           bootstrap: [App],
         })
         class AppModule {}
-        const ngModuleRef = await platformBrowserDynamic().bootstrapModule(AppModule);
+        const ngModuleRef = await platformBrowser().bootstrapModule(AppModule);
 
         const button = document.body.querySelector('button')!;
         expect(button.textContent).toEqual('button content');

@@ -7,7 +7,7 @@
  */
 
 import {Component, input, output} from '@angular/core';
-import {DirectivePosition} from 'protocol';
+import {DirectivePosition} from '../../../../../../protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
 import {FlatNode} from '../property-resolver/element-property-resolver';

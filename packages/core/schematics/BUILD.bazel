@@ -1,5 +1,6 @@
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "ts_config")
 
 exports_files([
     "tsconfig.json",
@@ -7,12 +8,31 @@ exports_files([
     "collection.json",
 ])
 
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    visibility = ["//packages/core/schematics:__subpackages__"],
+    deps = [
+        "//:node_modules/@types/node",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    visibility = ["//packages/core/schematics:__subpackages__"],
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+    ],
+)
+
 pkg_npm(
     name = "npm_package",
     srcs = [
         "collection.json",
         "migrations.json",
-        "package.json",
+        "//packages/core/schematics/migrations/control-flow-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",

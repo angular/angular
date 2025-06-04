@@ -56,6 +56,9 @@ import {
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
+// Needed for the global `Zone` ambient types to be available.
+import type {} from 'zone.js';
+
 let upgradeCount: number = 0;
 
 /**
@@ -205,11 +208,11 @@ export class UpgradeAdapter {
    *
    * @Component({
    *   selector: 'greet',
-   *   template: '{{salutation}} {{name}}! - <ng-content></ng-content>'
+   *   template: '{{salutation()}} {{name()}}! - <ng-content></ng-content>'
    * })
    * class Greeter {
-   *   @Input() salutation: string;
-   *   @Input() name: string;
+   *   salutation = input.required<string>();
+   *   name: input.required<string>();
    * }
    *
    * @NgModule({

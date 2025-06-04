@@ -1,8 +1,8 @@
-load("//devtools/tools:typescript.bzl", "ts_library")
+load("//devtools/tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "hooks",
     srcs = glob(
         include = ["*.ts"],
@@ -12,21 +12,21 @@ ts_library(
         ],
     ),
     deps = [
-        ":identity_tracker",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks/profiler",
-        "//devtools/projects/protocol",
+        ":identity_tracker_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks/profiler:profiler_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "identity_tracker",
     srcs = ["identity-tracker.ts"],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-        "//devtools/projects/protocol",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )

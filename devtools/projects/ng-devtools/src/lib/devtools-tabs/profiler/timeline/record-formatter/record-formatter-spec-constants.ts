@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ElementProfile} from '../../../../../../../protocol';
 import {FlamegraphNode} from './flamegraph-formatter';
 
 export const SIMPLE_RECORD = [
@@ -33,6 +34,7 @@ export const SIMPLE_RECORD = [
             changeDetected: true,
           },
         ],
+        type: 'element' as ElementProfile['type'],
       },
     ],
     directives: [
@@ -46,6 +48,7 @@ export const SIMPLE_RECORD = [
         changeDetection: 0,
       },
     ],
+    type: 'element' as ElementProfile['type'],
   },
 ];
 export const SIMPLE_FORMATTED_FLAMEGRAPH_RECORD = [
@@ -84,7 +87,7 @@ export const SIMPLE_FORMATTED_TREE_MAP_RECORD = [
     original: SIMPLE_RECORD[0],
   }),
 ];
-export const NESTED_RECORD = [
+export const NESTED_RECORD: ElementProfile[] = [
   {
     children: [
       {
@@ -121,6 +124,7 @@ export const NESTED_RECORD = [
                                         name: 'TodoComponent',
                                       },
                                     ],
+                                    type: 'element',
                                   },
                                   {
                                     children: [],
@@ -142,6 +146,7 @@ export const NESTED_RECORD = [
                                         name: 'TodoComponent',
                                       },
                                     ],
+                                    type: 'element',
                                   },
                                   {
                                     children: [],
@@ -163,6 +168,7 @@ export const NESTED_RECORD = [
                                         name: 'TodoComponent',
                                       },
                                     ],
+                                    type: 'element',
                                   },
                                 ],
                                 directives: [
@@ -175,6 +181,7 @@ export const NESTED_RECORD = [
                                     changeDetection: 0,
                                   },
                                 ],
+                                type: 'element',
                               },
                             ],
                             directives: [
@@ -187,6 +194,7 @@ export const NESTED_RECORD = [
                                 name: 'TodosComponent',
                               },
                             ],
+                            type: 'element',
                           },
                         ],
                         directives: [
@@ -199,6 +207,7 @@ export const NESTED_RECORD = [
                             changeDetection: 0,
                           },
                         ],
+                        type: 'element',
                       },
                     ],
                     directives: [
@@ -211,6 +220,7 @@ export const NESTED_RECORD = [
                         name: 'AppComponent',
                       },
                     ],
+                    type: 'element',
                   },
                 ],
                 directives: [
@@ -223,6 +233,7 @@ export const NESTED_RECORD = [
                     changeDetection: 0,
                   },
                 ],
+                type: 'element',
               },
               {
                 children: [],
@@ -236,6 +247,7 @@ export const NESTED_RECORD = [
                     name: 'HeavyComponent',
                   },
                 ],
+                type: 'element',
               },
             ],
             directives: [
@@ -248,6 +260,7 @@ export const NESTED_RECORD = [
                 name: 'DemoAppComponent',
               },
             ],
+            type: 'element',
           },
         ],
         directives: [
@@ -260,6 +273,7 @@ export const NESTED_RECORD = [
             changeDetection: 0,
           },
         ],
+        type: 'element',
       },
     ],
     directives: [
@@ -272,6 +286,7 @@ export const NESTED_RECORD = [
         name: 'AppComponent',
       },
     ],
+    type: 'element',
   },
   {
     children: [],
@@ -285,6 +300,7 @@ export const NESTED_RECORD = [
         name: 'ZippyComponent',
       },
     ],
+    type: 'element',
   },
 ];
 export const NESTED_FORMATTED_FLAMEGRAPH_RECORD: FlamegraphNode[] = [
@@ -425,6 +441,7 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD: FlamegraphNode[] = [
           name: 'ZippyComponent',
         },
       ],
+      type: 'element',
     },
   },
 ];

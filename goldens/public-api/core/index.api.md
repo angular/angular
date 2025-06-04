@@ -30,7 +30,7 @@ export function afterEveryRender<E = never, W = never, M = never>(spec: {
     write?: (...args: ɵFirstAvailable<[E]>) => W;
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
-}, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
+}, options?: AfterRenderOptions): AfterRenderRef;
 
 // @public
 export function afterEveryRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
@@ -41,13 +41,13 @@ export function afterNextRender<E = never, W = never, M = never>(spec: {
     write?: (...args: ɵFirstAvailable<[E]>) => W;
     mixedReadWrite?: (...args: ɵFirstAvailable<[W, E]>) => M;
     read?: (...args: ɵFirstAvailable<[M, W, E]>) => void;
-}, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
+}, options?: AfterRenderOptions): AfterRenderRef;
 
 // @public
 export function afterNextRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef;
 
 // @public
-export function afterRenderEffect(callback: (onCleanup: EffectCleanupRegisterFn) => void, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
+export function afterRenderEffect(callback: (onCleanup: EffectCleanupRegisterFn) => void, options?: AfterRenderOptions): AfterRenderRef;
 
 // @public
 export function afterRenderEffect<E = never, W = never, M = never>(spec: {
@@ -55,7 +55,7 @@ export function afterRenderEffect<E = never, W = never, M = never>(spec: {
     write?: (...args: [...ɵFirstAvailableSignal<[E]>, EffectCleanupRegisterFn]) => W;
     mixedReadWrite?: (...args: [...ɵFirstAvailableSignal<[W, E]>, EffectCleanupRegisterFn]) => M;
     read?: (...args: [...ɵFirstAvailableSignal<[M, W, E]>, EffectCleanupRegisterFn]) => void;
-}, options?: Omit<AfterRenderOptions, 'phase'>): AfterRenderRef;
+}, options?: AfterRenderOptions): AfterRenderRef;
 
 // @public
 export interface AfterRenderOptions {
@@ -177,6 +177,12 @@ export interface BaseResourceOptions<T, R> {
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
     params?: () => R;
+}
+
+// @public
+export interface Binding {
+    // (undocumented)
+    readonly [BINDING]: unknown;
 }
 
 // @public
@@ -668,6 +674,9 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 
 // @public
 export function enableProdMode(): void;
+
+// @public
+export function enableProfiling(): () => void;
 
 // @public @deprecated
 export const ENVIRONMENT_INITIALIZER: InjectionToken<readonly (() => void)[]>;
@@ -1598,10 +1607,9 @@ export function resolveForwardRef<T>(type: T): T;
 
 // @public
 export interface Resource<T> {
-    readonly error: Signal<unknown>;
+    readonly error: Signal<Error | undefined>;
     hasValue(): this is Resource<Exclude<T, undefined>>;
     readonly isLoading: Signal<boolean>;
-    reload(): boolean;
     readonly status: Signal<ResourceStatus>;
     readonly value: Signal<T>;
 }
@@ -1649,7 +1657,7 @@ export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => 
 export type ResourceStreamItem<T> = {
     value: T;
 } | {
-    error: unknown;
+    error: Error;
 };
 
 // @public
@@ -1773,9 +1781,9 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
 }
 
 // @public
-export abstract class TemplateRef<C> {
-    abstract createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
-    abstract readonly elementRef: ElementRef;
+export class TemplateRef<C> {
+    createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
+    readonly elementRef: ElementRef;
 }
 
 // @public
@@ -2013,6 +2021,7 @@ export interface WritableResource<T> extends Resource<T> {
     asReadonly(): Resource<T>;
     // (undocumented)
     hasValue(): this is WritableResource<Exclude<T, undefined>>;
+    reload(): boolean;
     set(value: T): void;
     update(updater: (value: T) => T): void;
     // (undocumented)

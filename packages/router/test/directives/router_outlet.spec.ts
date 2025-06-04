@@ -162,7 +162,7 @@ describe('router outlet name', () => {
     class ParentCmp {
       initDone = signal(false);
       constructor() {
-        setTimeout(() => this.initDone.set(true), 1000);
+        setTimeout(() => this.initDone.set(true), 100);
       }
     }
 
@@ -181,15 +181,15 @@ describe('router outlet name', () => {
     const router = TestBed.inject(Router);
     const fixture = await createRoot(router, ParentCmp);
 
-    await advance(fixture, 250);
+    await advance(fixture, 25);
     router.navigate(['parent/child']);
-    await advance(fixture, 250);
+    await advance(fixture, 25);
     // Not contain because initDone is still false
     expect(fixture.nativeElement.innerHTML).not.toContain('child component');
 
-    await advance(fixture, 1500);
+    await advance(fixture, 150);
     router.navigate(['parent']);
-    await advance(fixture, 1500);
+    await advance(fixture, 150);
     // Not contain because route was changed back to parent
     expect(fixture.nativeElement.innerHTML).not.toContain('child component');
   });

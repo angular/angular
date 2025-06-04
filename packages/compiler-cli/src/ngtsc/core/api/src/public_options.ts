@@ -342,6 +342,20 @@ export interface BazelAndG3Options {
    * extra imports are needed for bundling purposes in g3.
    */
   generateExtraImportsInLocalMode?: boolean;
+
+  /**
+   * Whether to allow the experimental declaration-only emission mode when the `emitDeclarationOnly`
+   * TS compiler option is enabled.
+   *
+   * The declaration-only emission mode relies on the local compilation mode for fast type
+   * declaration emission, i.e. emitting `.d.ts` files without type-checking. Certain restrictions
+   * on supported code constructs apply due to the absence of type information for external
+   * references.
+   *
+   * The mode is experimental and specifically tailored to support fast type declaration emission
+   * for the Gemini app in g3 for the initial phase of the experiment.
+   */
+  _experimentalAllowEmitDeclarationOnly?: boolean;
 }
 
 /**

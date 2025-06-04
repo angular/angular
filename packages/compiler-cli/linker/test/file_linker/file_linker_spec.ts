@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import * as o from '@angular/compiler/src/output/output_ast';
+import {outputAst as o} from '@angular/compiler';
 import ts from 'typescript';
 
 import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';

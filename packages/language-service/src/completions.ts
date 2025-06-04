@@ -17,7 +17,6 @@ import {
   ParsedEventType,
   ParseSourceSpan,
   PropertyRead,
-  PropertyWrite,
   SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
@@ -68,7 +67,7 @@ import {
 import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 
 type PropertyExpressionCompletionBuilder = CompletionBuilder<
-  PropertyRead | PropertyWrite | EmptyExpr | SafePropertyRead | TmplAstBoundEvent
+  PropertyRead | EmptyExpr | SafePropertyRead | TmplAstBoundEvent
 >;
 
 type ElementAttributeCompletionBuilder = CompletionBuilder<
@@ -351,7 +350,6 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     return (
       this.node instanceof PropertyRead ||
       this.node instanceof SafePropertyRead ||
-      this.node instanceof PropertyWrite ||
       this.node instanceof EmptyExpr ||
       // BoundEvent nodes only count as property completions if in an EventValue context.
       (this.node instanceof BoundEvent && this.nodeContext === CompletionNodeContext.EventValue)
@@ -905,10 +903,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       return undefined;
     }
     if (
-      element.endSourceSpan &&
-      isWithin(this.position, element.endSourceSpan) &&
-      // start and end spans are the same for self closing tags
-      element.endSourceSpan.start !== element.startSourceSpan.start
+      !element.isSelfClosing &&
+      element.endSourceSpan !== null &&
+      isWithin(this.position, element.endSourceSpan)
     ) {
       return undefined;
     }
@@ -1180,13 +1177,19 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     }
 
     const replacementSpan = makeReplacementSpanFromAst(this.node);
+    const entries: ts.CompletionEntry[] = [];
 
-    const entries: ts.CompletionEntry[] = pipes.map((pipe) => ({
-      name: pipe.name,
-      sortText: pipe.name,
-      kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
-      replacementSpan,
-    }));
+    for (const pipe of pipes) {
+      if (pipe.name !== null) {
+        entries.push({
+          name: pipe.name,
+          sortText: pipe.name,
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
+          replacementSpan,
+        });
+      }
+    }
+
     return {
       entries,
       isGlobalCompletion: false,
@@ -1226,7 +1229,6 @@ function makeReplacementSpanFromParseSourceSpan(span: ParseSourceSpan): ts.TextS
 function makeReplacementSpanFromAst(
   node:
     | PropertyRead
-    | PropertyWrite
     | SafePropertyRead
     | BindingPipe
     | EmptyExpr

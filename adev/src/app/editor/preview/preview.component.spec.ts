@@ -43,7 +43,7 @@ describe('Preview', () => {
           useValue: fakeNodeRuntimeState,
         },
       ],
-    }).compileComponents();
+    });
 
     const fixture = TestBed.createComponent(Preview);
 

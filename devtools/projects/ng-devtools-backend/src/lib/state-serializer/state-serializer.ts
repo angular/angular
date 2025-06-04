@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ContainerType, Descriptor, NestedProp, PropType} from 'protocol';
-import type {Signal} from '@angular/core';
+import {ContainerType, Descriptor, NestedProp, PropType} from '../../../../protocol';
 
 import {isSignal, unwrapSignal} from '../utils';
 
@@ -115,6 +114,10 @@ export function serializeDirectiveState(instance: object): Record<string, Descri
     result[prop] = levelSerializer(value, prop, isReadonly, 0, 0);
   });
   return result;
+}
+
+export function serializeValue(value: unknown): Descriptor {
+  return levelSerializer({value}, 'value', false, 0, 0);
 }
 
 export function deeplySerializeSelectedProperties(

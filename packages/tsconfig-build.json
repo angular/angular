@@ -29,7 +29,13 @@
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "inlineSources": true,
-    "importHelpers": true
+    "importHelpers": true,
+    "paths": {
+      "angular-in-memory-web-api": ["./misc/angular-in-memory-web-api/index"],
+      "zone.js": ["./zone.js/lib/zone"],
+      "@angular/*": ["./*/index"],
+      "@angular/common/locales/*": ["./common/locales/*"]
+    }
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true

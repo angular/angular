@@ -28,8 +28,7 @@ export function migrate(): Rule {
       afterAnalysisFailure: () => {
         context.logger.error('Schematic failed unexpectedly with no analysis data');
       },
-      whenDone: (stats) => {
-        const {removedImports, changedFiles} = stats.counters;
+      whenDone: ({removedImports, changedFiles}) => {
         let statsMessage: string;
 
         if (removedImports === 0) {

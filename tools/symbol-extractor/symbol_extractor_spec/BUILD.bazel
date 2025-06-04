@@ -1,16 +1,11 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
-    name = "es2015_class_output_lib",
-    srcs = ["es2015_class_output.ts"],
-)
-
-filegroup(
+ts_project(
     name = "es2015_class_output",
-    srcs = [":es2015_class_output_lib"],
-    output_group = "es6_sources",
+    srcs = ["es2015_class_output.ts"],
+    tsconfig = "tsconfig.json",
 )
 
 filegroup(

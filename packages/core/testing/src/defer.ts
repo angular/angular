@@ -23,7 +23,7 @@ import type {ComponentFixture} from './component_fixture';
  * @publicApi
  */
 export class DeferBlockFixture {
-  /** @nodoc */
+  /** @docs-private */
   constructor(
     private block: DeferBlockDetails,
     private componentFixture: ComponentFixture<unknown>,

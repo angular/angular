@@ -1,7 +1,8 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
-load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
-load("//tools:defaults.bzl", "ts_config", "ts_library")
+load("//tools:defaults.bzl", "ts_config")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,12 +11,28 @@ exports_files([
     "tsconfig.json",
 ])
 
-ts_library(
+copy_to_bin(
+    name = "package_json",
+    srcs = ["package.json"],
+)
+
+ts_project(
+    name = "goog_types",
+    srcs = ["goog.d.ts"],
+)
+
+ts_project(
     name = "types",
-    srcs = glob(["*.ts"]),
-    deps = [
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["goog.d.ts"],
+    ),
+    interop_deps = [
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//@types/hammerjs",
+    ],
+    deps = [
+        ":goog_types_rjs",
+        "//:node_modules/@types/hammerjs",
     ],
 )
 
@@ -35,7 +52,7 @@ ts_config(
 )
 
 rules_js_tsconfig(
-    name = "build-tsconfig",
+    name = "tsconfig_build",
     src = "tsconfig-build.json",
     deps = [
         "//:node_modules/tslib",
@@ -43,11 +60,12 @@ rules_js_tsconfig(
 )
 
 rules_js_tsconfig(
-    name = "test-tsconfig",
+    name = "tsconfig_test",
     src = "tsconfig-test.json",
     deps = [
-        ":build-tsconfig",
+        ":tsconfig_build",
         "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
     ],
 )
 
@@ -86,8 +104,8 @@ filegroup(
     ],
 )
 
-generate_api_manifest(
-    name = "docs_api_manifest",
+filegroup(
+    name = "docs_extracted_apis",
     srcs = [
         "//packages/animations:animations_docs_extraction",
         "//packages/animations/browser:animations_browser_docs_extraction",
@@ -125,4 +143,5 @@ generate_api_manifest(
         "//tools/manual_api_docs/blocks",
         "//tools/manual_api_docs/elements",
     ],
+    visibility = ["//visibility:public"],
 )

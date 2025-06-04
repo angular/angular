@@ -353,6 +353,22 @@ describe('ServiceWorker library', () => {
       });
     });
 
+    describe('notificationCloses', () => {
+      it('receives notification closes messages', () => {
+        const sendMessage = (type: string, action: string) =>
+          mock.sendMessage({type, data: {action}});
+
+        const receivedMessages: string[] = [];
+        push.notificationCloses.subscribe((msg: {action: string}) =>
+          receivedMessages.push(msg.action),
+        );
+
+        sendMessage('NOTIFICATION_CLOSE', 'empty_string');
+
+        expect(receivedMessages).toEqual(['empty_string']);
+      });
+    });
+
     describe('subscription', () => {
       let nextSubEmitResolve: () => void;
       let nextSubEmitPromise: Promise<void>;

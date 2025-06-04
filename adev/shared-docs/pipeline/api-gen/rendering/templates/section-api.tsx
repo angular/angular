@@ -7,10 +7,10 @@
  */
 
 import {h} from 'preact';
-import {DocEntryRenderable} from '../entities/renderables';
-import {HasRenderableToc} from '../entities/traits';
+import {DocEntryRenderable} from '../entities/renderables.mjs';
+import {HasRenderableToc} from '../entities/traits.mjs';
 import {CodeTableOfContents} from './code-table-of-contents';
-import {SECTION_CONTAINER} from '../styling/css-classes';
+import {SECTION_CONTAINER} from '../styling/css-classes.mjs';
 import {SectionHeading} from './section-heading';
 
 const API_SECTION_NAME = 'API';

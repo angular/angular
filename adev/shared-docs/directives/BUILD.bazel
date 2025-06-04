@@ -1,18 +1,18 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
-ts_library(
+ts_project(
     name = "directives",
     srcs = [
         "index.ts",
     ],
-    visibility = [
-        "//adev/shared-docs:__subpackages__",
-    ],
-    deps = [
+    interop_deps = [
         "//adev/shared-docs/directives/click-outside",
         "//adev/shared-docs/directives/external-link",
         "//adev/shared-docs/directives/search-item",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
     ],
 )

@@ -121,7 +121,6 @@ export class SpyLocation implements Location_2 {
     historyGo(relativePosition?: number): void;
     // (undocumented)
     isCurrentPathEqualTo(path: string, query?: string): boolean;
-    // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     normalize(url: string): string;

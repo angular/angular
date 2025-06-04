@@ -11,6 +11,7 @@ def partial_compliance_golden(filePath):
     data = [
         "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
         "//packages/core:npm_package",
+        "//packages:package_json",
         filePath,
     ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path, "%s/**/*.css" % path])
 
@@ -19,7 +20,7 @@ def partial_compliance_golden(filePath):
         testonly = True,
         data = data,
         visibility = [":__pkg__"],
-        entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
+        entry_point = "//packages/compiler-cli/test/compliance/partial:cli.js",
         templated_args = ["$(execpath %s)" % filePath],
     )
 
@@ -28,7 +29,7 @@ def partial_compliance_golden(filePath):
         testonly = True,
         data = data,
         visibility = [":__pkg__"],
-        entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
+        entry_point = "//packages/compiler-cli/test/compliance/partial:cli.js",
         templated_args = ["--node_options=--inspect-brk", filePath],
     )
 

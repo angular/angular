@@ -8,17 +8,18 @@
 
 import {Location} from '@angular/common';
 import {
+  ɵConsole as Console,
+  EnvironmentInjector,
   inject,
   Injectable,
-  Type,
-  ɵConsole as Console,
   ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
+  Type,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
-  EnvironmentInjector,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
+import {standardizeConfig} from './components/empty_outlet';
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
 import {INPUT_BINDER} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
@@ -57,7 +58,7 @@ import {
 } from './url_tree';
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
-import {standardizeConfig} from './components/empty_outlet';
+import {RouterState} from './router_state';
 
 /**
  * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
@@ -136,7 +137,7 @@ export class Router {
   /**
    * The current state of routing in this NgModule.
    */
-  get routerState() {
+  get routerState(): RouterState {
     return this.stateManager.getRouterState();
   }
 
@@ -371,7 +372,7 @@ export class Router {
     this.navigated = false;
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     this.dispose();
   }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DestroyRef, inject, Injectable, signal} from '@angular/core';
+import {DestroyRef, effect, inject, Injectable, signal} from '@angular/core';
 import {FileSystemTree, WebContainer, WebContainerProcess} from '@webcontainer/api';
 import {BehaviorSubject, filter, map, Subject} from 'rxjs';
 
@@ -66,6 +66,20 @@ export class NodeRuntimeSandbox {
   private devServerProcess: WebContainerProcess | undefined;
   private webContainerPromise: Promise<WebContainer> | undefined;
 
+  constructor() {
+    effect(() => {
+      const terminal = this.terminalHandler.interactiveTerminalInstance();
+      terminal.onData((data) => {
+        this.interactiveShellWriter?.write(data);
+      });
+
+      terminal.breakProcess$.subscribe(() => {
+        // Write CTRL + C into shell to break active process
+        this.interactiveShellWriter?.write('\x03');
+      });
+    });
+  }
+
   get previewUrl$() {
     return this._previewUrl$;
   }
@@ -97,11 +111,8 @@ export class NodeRuntimeSandbox {
       await this.startInteractiveTerminal(webContainer);
       this.terminalHandler.clearTerminals();
 
-      if (this.embeddedTutorialManager.type() === TutorialType.CLI) {
-        await this.initAngularCli();
-      } else {
-        await this.initProject();
-      }
+      const startDevServer = this.embeddedTutorialManager.type() !== TutorialType.CLI;
+      await this.initProject(startDevServer);
 
       console.timeEnd('Load time');
     } catch (error: any) {
@@ -163,7 +174,7 @@ export class NodeRuntimeSandbox {
   /**
    * Initialize the WebContainer for an Angular project
    */
-  private async initProject(): Promise<void> {
+  private async initProject(startDevServer: boolean): Promise<void> {
     // prevent re-initialization
     if (this._isProjectInitialized()) return;
 
@@ -185,7 +196,11 @@ export class NodeRuntimeSandbox {
     if (![PROCESS_EXIT_CODE.SIGTERM, PROCESS_EXIT_CODE.SUCCESS].includes(exitCode))
       throw new Error('Installation failed');
 
-    await Promise.all([this.loadTypes(), this.startDevServer()]);
+    await Promise.all([
+      this.loadTypes(),
+      startDevServer ? this.startDevServer() : Promise.resolve(),
+    ]);
+    this.setLoading(LoadingStep.READY);
   }
 
   private handleProjectChanges() {
@@ -233,30 +248,6 @@ export class NodeRuntimeSandbox {
     this.devServerProcess?.kill();
     await this.installDependencies();
     await Promise.all([this.loadTypes(), this.startDevServer()]);
-  }
-
-  /**
-   * Initialize the WebContainer for the Angular CLI
-   */
-  private async initAngularCli() {
-    // prevent re-initialization
-    if (this._isAngularCliInitialized()) return;
-
-    // clean up the sandbox if a project was initialized before so the CLI can
-    // be initialized without conflicts
-    if (this._isProjectInitialized()) {
-      await this.cleanup();
-      this.urlToPreview$.next(null);
-      this._isProjectInitialized.set(false);
-    }
-
-    this._isAngularCliInitialized.set(true);
-
-    this.setLoading(LoadingStep.INSTALL);
-    const exitCode = await this.installAngularCli();
-
-    if (![PROCESS_EXIT_CODE.SIGTERM, PROCESS_EXIT_CODE.SUCCESS].includes(exitCode))
-      this.setLoading(LoadingStep.READY);
   }
 
   async writeFile(path: string, content: string | Uint8Array): Promise<void> {
@@ -309,8 +300,6 @@ export class NodeRuntimeSandbox {
     // return existing shell process if it's already running
     if (this.interactiveShellProcess) return this.interactiveShellProcess;
 
-    const terminal = this.terminalHandler.interactiveTerminalInstance;
-
     // use WebContainer spawn directly so that the process isn't killed on
     // cleanup
     const shellProcess = await webContainer.spawn('bash');
@@ -324,7 +313,7 @@ export class NodeRuntimeSandbox {
       new WritableStream({
         write: (data) => {
           this.checkForOutOfMemoryError(data.toString());
-          terminal.write(data);
+          this.terminalHandler.interactiveTerminalInstance().write(data);
 
           if (data.includes('CREATE') && data.endsWith('\r\n')) {
             const match = data.match(ngGenerateTerminalOutputRegex);
@@ -339,17 +328,7 @@ export class NodeRuntimeSandbox {
       }),
     );
 
-    const input = shellProcess.input.getWriter();
-    this.interactiveShellWriter = input;
-
-    terminal.onData((data) => {
-      input.write(data);
-    });
-
-    terminal.breakProcess$.subscribe(() => {
-      // Write CTRL + C into shell to break active process
-      input.write('\x03');
-    });
+    this.interactiveShellWriter = shellProcess.input.getWriter();
 
     return shellProcess;
   }
@@ -436,38 +415,22 @@ export class NodeRuntimeSandbox {
     installProcess.output.pipeTo(
       new WritableStream({
         write: (data) => {
-          this.terminalHandler.readonlyTerminalInstance.write(data);
+          this.terminalHandler.readonlyTerminalInstance().write(data);
+          this.terminalHandler.interactiveTerminalInstance().write(data);
         },
       }),
     );
 
     // wait for install command to exit
-    return installProcess.exit;
+    const code = await installProcess.exit;
+    // Simulate pressing `Enter` in shell
+    this.interactiveShellWriter?.write('\x0D');
+    return code;
   }
 
   private async loadTypes() {
     const webContainer = await this.webContainerPromise!;
     await this.typingsLoader.retrieveTypeDefinitions(webContainer!);
-  }
-
-  private async installAngularCli(): Promise<number> {
-    // install Angular CLI
-    const installProcess = await this.spawn(PACKAGE_MANAGER, ['install', '@angular/cli@latest']);
-
-    installProcess.output.pipeTo(
-      new WritableStream({
-        write: (data) => {
-          this.terminalHandler.interactiveTerminalInstance.write(data);
-        },
-      }),
-    );
-
-    const exitCode = await installProcess.exit;
-
-    // Simulate pressing `Enter` in shell
-    this.interactiveShellWriter?.write('\x0D');
-
-    return exitCode;
   }
 
   private async startDevServer(): Promise<void> {
@@ -492,7 +455,7 @@ export class NodeRuntimeSandbox {
       this.devServerProcess.output.pipeTo(
         new WritableStream({
           write: (data) => {
-            this.terminalHandler.readonlyTerminalInstance.write(data);
+            this.terminalHandler.readonlyTerminalInstance().write(data);
 
             if (this.checkForOutOfMemoryError(data.toString())) {
               reject(new Error(data.toString()));

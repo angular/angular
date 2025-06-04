@@ -4,7 +4,6 @@ load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", _npm_packag
 load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
-load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config", _esbuild_esm_bundle = "esbuild_esm_bundle")
 load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
 load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
@@ -15,12 +14,12 @@ load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 load("@npm//typescript:index.bzl", "tsc")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
+load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
@@ -174,6 +173,7 @@ def ng_package(name, readme_md = None, license_banner = None, license = None, de
     if not license:
         license = "//:LICENSE"
     visibility = kwargs.pop("visibility", None)
+    tags = kwargs.pop("tags", [])
 
     common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
     substitutions = dict(common_substitutions, **{
@@ -198,6 +198,23 @@ def ng_package(name, readme_md = None, license_banner = None, license = None, de
         rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
         rollup = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP,
         visibility = visibility,
+        tags = tags,
+        **kwargs
+    )
+
+    _ng_package(
+        name = "%s_nosub" % name,
+        deps = deps,
+        validate = True,
+        readme_md = readme_md,
+        license = license,
+        license_banner = license_banner,
+        substitutions = common_substitutions,
+        ng_packager = _INTERNAL_NG_PACKAGE_PACKAGER,
+        rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
+        rollup = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP,
+        visibility = visibility,
+        tags = ["manual"],
         **kwargs
     )
 
@@ -484,12 +501,17 @@ def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kw
         bootstrap = bootstrap,
     )
 
+    extra_data = []
+
+    if native.package_name().startswith("packages/"):
+        extra_data.append("//packages:package_json")
+
     _jasmine_node_test(
         name = name,
         srcs = [":%s_spec_entrypoint.spec" % name],
         # Note: `deps`, `srcs` and `bootstrap` are explicitly added here as otherwise their linker
         # mappings may not be discovered, given the `bootstrap` attr not being covered by the aspect.
-        data = data + deps + srcs + bootstrap,
+        data = extra_data + data + deps + srcs + bootstrap,
         use_direct_specs = True,
         configuration_env_vars = configuration_env_vars,
         env = env,
@@ -497,10 +519,6 @@ def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kw
         use_esm = True,
         **kwargs
     )
-
-def app_bundle(**kwargs):
-    """Default values for app_bundle"""
-    _app_bundle(**kwargs)
 
 # TODO: Consider removing this rule in favor of `esbuild` for more consistent bundling.
 def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):

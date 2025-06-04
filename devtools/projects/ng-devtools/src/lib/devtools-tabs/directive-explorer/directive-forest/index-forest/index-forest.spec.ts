@@ -7,7 +7,7 @@
  */
 
 import {indexForest} from './';
-import {DevToolsNode} from 'protocol';
+import {DevToolsNode} from '../../../../../../../protocol';
 
 describe('indexForest', () => {
   it('should work with an empty forest', () => {

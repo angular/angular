@@ -21,7 +21,7 @@ Here's an example of how to use the `@for` syntax in a component:
     }
   `,
 })
-export class AppComponent {
+export class App {
   operatingSystems = [{id: 'win', name: 'Windows'}, {id: 'osx', name: 'MacOS'}, {id: 'linux', name: 'Linux'}];
 }
 ```
@@ -34,7 +34,7 @@ Two things to take note of:
 <docs-workflow>
 
 <docs-step title="Add the `users` property">
-In the `AppComponent` class, add a property called `users` that contains users and their names.
+In the `App` class, add a property called `users` that contains users and their names.
 
 ```ts
 [{id: 0, name: 'Sarah'}, {id: 1, name: 'Amy'}, {id: 2, name: 'Rachel'}, {id: 3, name: 'Jessica'}, {id: 4, name: 'Poornima'}]

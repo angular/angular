@@ -1,8 +1,20 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
 :host {
+  display: block;
+  padding-top: var(--layout-padding);
+  padding-bottom: var(--layout-padding);
+
   .docs-viewer {
     &.docs-animate-content {
       animation: fade-in 500ms;
     }
+  }
+
+  //applying styles when TOC position got translated to the top right 
+  @include mq.for-large-desktop-up{
+    display: flex;
+    justify-content: center;
   }
 }
 

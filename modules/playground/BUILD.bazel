@@ -1,4 +1,21 @@
-exports_files([
-    "tsconfig-build.json",
-    "tsconfig-e2e.json",
-])
+load("//tools:defaults2.bzl", "ts_config")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ts_config(
+    name = "tsconfig_e2e",
+    src = "tsconfig-e2e.json",
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_e2e_legacy_wd2",
+    src = "tsconfig-e2e-legacy-wd2.json",
+    deps = [
+        ":tsconfig_e2e",
+        "//:node_modules/@types/jasminewd2",
+    ],
+)

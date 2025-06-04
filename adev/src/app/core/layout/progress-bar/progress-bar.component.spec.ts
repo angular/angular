@@ -18,7 +18,7 @@ describe('ProgressBarComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProgressBarComponent, RouterTestingModule],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(ProgressBarComponent);
     component = fixture.componentInstance;

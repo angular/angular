@@ -7,13 +7,13 @@
  */
 
 import {
+  AST,
   BindingPipe,
   CssSelector,
   ParseSourceFile,
   parseTemplate,
   ParseTemplateOptions,
   PropertyRead,
-  PropertyWrite,
   R3TargetBinder,
   SelectorlessMatcher,
   SelectorMatcher,
@@ -22,8 +22,11 @@ import {
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
+  TmplAstHoverDeferredTrigger,
+  TmplAstInteractionDeferredTrigger,
   TmplAstLetDeclaration,
   TmplAstTextAttribute,
+  TmplAstViewportDeferredTrigger,
 } from '@angular/compiler';
 import {readFileSync} from 'fs';
 import path from 'path';
@@ -477,7 +480,7 @@ export interface TypeCheckingTarget {
   /**
    * A map of component class names to string templates for that component.
    */
-  templates: {[className: string]: string};
+  templates?: {[className: string]: string};
 
   /**
    * Any declarations (e.g. directives) which should be considered as part of the scope for the
@@ -518,8 +521,10 @@ export function setup(
       contents = target.source;
     } else {
       contents = `// generated from templates\n\nexport const MODULE = true;\n\n`;
-      for (const className of Object.keys(target.templates)) {
-        contents += `export class ${className} {}\n`;
+      if (target.templates) {
+        for (const className of Object.keys(target.templates)) {
+          contents += `export class ${className} {}\n`;
+        }
       }
     }
 
@@ -582,15 +587,17 @@ export function setup(
       sfExtensionData(shimSf).fileShim = {extension: 'ngtypecheck', generatedFrom: target.fileName};
     }
 
-    for (const className of Object.keys(target.templates)) {
-      const classDecl = getClass(sf, className);
-      scopeMap.set(classDecl, scope);
+    if (target.templates) {
+      for (const className of Object.keys(target.templates)) {
+        const classDecl = getClass(sf, className);
+        scopeMap.set(classDecl, scope);
+      }
     }
   }
 
   const checkAdapter = createTypeCheckAdapter((sf, ctx) => {
     for (const target of targets) {
-      if (getSourceFileOrError(program, target.fileName) !== sf) {
+      if (getSourceFileOrError(program, target.fileName) !== sf || !target.templates) {
         continue;
       }
 
@@ -1020,11 +1027,7 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   illegalForLoopTrackAccess(): void {}
   inaccessibleDeferredTriggerElement(): void {}
   controlFlowPreventingContentProjection(): void {}
-  illegalWriteToLetDeclaration(
-    id: TypeCheckId,
-    node: PropertyWrite,
-    target: TmplAstLetDeclaration,
-  ): void {}
+  illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration): void {}
   letUsedBeforeDefinition(
     id: TypeCheckId,
     node: PropertyRead,
@@ -1043,6 +1046,20 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   incorrectTemplateDependencyType(
     id: TypeCheckId,
     node: TmplAstComponent | TmplAstDirective,
+  ): void {}
+  deferImplicitTriggerMissingPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void {}
+  deferImplicitTriggerInvalidPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
   ): void {}
 }
 

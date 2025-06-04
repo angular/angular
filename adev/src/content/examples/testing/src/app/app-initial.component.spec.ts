@@ -15,7 +15,7 @@ describe('AppComponent (initial CLI version)', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [AppComponent],
-    }).compileComponents();
+    });
   }));
   it('should create the app', waitForAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);

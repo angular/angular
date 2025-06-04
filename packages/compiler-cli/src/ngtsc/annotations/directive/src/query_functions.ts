@@ -26,7 +26,7 @@ import {
 import {tryUnwrapForwardRef} from '../../common';
 
 import {validateAccessOfInitializerApiMember} from './initializer_function_access';
-import {tryParseInitializerApi} from './initializer_functions';
+import {InitializerApiFunction, tryParseInitializerApi} from './initializer_functions';
 
 /** Possible query initializer API functions. */
 export type QueryFunctionName = 'viewChild' | 'contentChild' | 'viewChildren' | 'contentChildren';
@@ -40,20 +40,21 @@ const queryFunctionNames: QueryFunctionName[] = [
 ];
 
 /** Possible query initializer API functions. */
-export const QUERY_INITIALIZER_FNS = queryFunctionNames.map((fnName) => ({
-  functionName: fnName,
-  owningModule: '@angular/core' as const,
-  // Queries are accessed from within static blocks, via the query definition functions.
-  // Conceptually, the fields could access private members— even ES private fields.
-  // Support for ES private fields requires special caution and complexity when partial
-  // output is linked— hence not supported. TS private members are allowed in static blocks.
-  allowedAccessLevels: [
-    ClassMemberAccessLevel.PublicWritable,
-    ClassMemberAccessLevel.PublicReadonly,
-    ClassMemberAccessLevel.Protected,
-    ClassMemberAccessLevel.Private,
-  ],
-}));
+export const QUERY_INITIALIZER_FNS: (InitializerApiFunction & {functionName: QueryFunctionName})[] =
+  queryFunctionNames.map((fnName) => ({
+    functionName: fnName,
+    owningModule: '@angular/core' as const,
+    // Queries are accessed from within static blocks, via the query definition functions.
+    // Conceptually, the fields could access private members— even ES private fields.
+    // Support for ES private fields requires special caution and complexity when partial
+    // output is linked— hence not supported. TS private members are allowed in static blocks.
+    allowedAccessLevels: [
+      ClassMemberAccessLevel.PublicWritable,
+      ClassMemberAccessLevel.PublicReadonly,
+      ClassMemberAccessLevel.Protected,
+      ClassMemberAccessLevel.Private,
+    ],
+  }));
 
 // The `descendants` option is enabled by default, except for content children.
 const defaultDescendantsValue = (type: QueryFunctionName) => type !== 'contentChildren';

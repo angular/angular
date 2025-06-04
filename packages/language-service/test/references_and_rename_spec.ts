@@ -16,6 +16,7 @@ import {
   humanizeDocumentSpanLike,
   LanguageServiceTestEnv,
   OpenBuffer,
+  Project,
 } from '../testing';
 
 describe('find references and rename locations', () => {
@@ -2106,6 +2107,451 @@ describe('find references and rename locations', () => {
       expect(result.canRename).toEqual(true);
       expect(result.displayName).toEqual('dir');
       expect(result.kind).toEqual('property');
+    });
+  });
+
+  describe('selectorless components', () => {
+    let project: Project;
+
+    beforeEach(() => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      project = env.addProject(
+        'test',
+        {
+          'app.ts': `
+            import {Component} from '@angular/core';
+            import {TestComponent} from './test-component';
+
+            @Component({templateUrl: './app.html'})
+            export class AppCmp {
+              stringValue = 'hello';
+              handleEvent() {}
+            }
+          `,
+          'test-component.ts': `
+            import {Component, EventEmitter, Input, Output} from '@angular/core';
+
+            @Component({template: ''})
+            export class TestComponent {
+              @Input() name!: string;
+              @Output() testEvent = new EventEmitter<string>();
+            }
+          `,
+          'app.html': 'Will be overridden',
+        },
+        {_enableSelectorless: true},
+      );
+    });
+
+    describe('references', () => {
+      it('should find references to selectorless component from source file', () => {
+        const file = project.openFile('test-component.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent/>';
+        file.moveCursorToText('export class TestComp¦onent {');
+        const refs = getReferencesAtPosition(file)!;
+        expect(refs.length).toBe(3);
+        assertTextSpans(refs, ['TestComponent', '<TestComponent/>']);
+        assertFileNames(refs, ['test-component.ts', 'app.html', 'app.ts']);
+      });
+
+      it('should find references to selectorless component from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent/>';
+        template.moveCursorToText('<TestCom¦ponent/>');
+        const refs = getReferencesAtPosition(template)!;
+        expect(refs.length).toBe(3);
+        assertTextSpans(refs, ['TestComponent', '<TestComponent/>']);
+        assertFileNames(refs, ['test-component.ts', 'app.html', 'app.ts']);
+      });
+
+      it('should find references to selectorless component inputs from source file', () => {
+        const file = project.openFile('test-component.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent [name]="stringValue"/>';
+        file.moveCursorToText('@Input() na¦me!: string;');
+        const refs = getReferencesAtPosition(file)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['name']);
+        assertFileNames(refs, ['test-component.ts', 'app.html']);
+      });
+
+      it('should find references to selectorless component inputs from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent [name]="stringValue"/>';
+        template.moveCursorToText('[na¦me]');
+        const refs = getReferencesAtPosition(template)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['name']);
+        assertFileNames(refs, ['test-component.ts', 'app.html']);
+      });
+
+      it('should find references to selectorless component outputs from source file', () => {
+        const file = project.openFile('test-component.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent (testEvent)="handleEvent()"/>';
+        file.moveCursorToText('@Output() test¦Event = new EventEmitter<string>();');
+        const refs = getReferencesAtPosition(file)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['testEvent']);
+        assertFileNames(refs, ['test-component.ts', 'app.html']);
+      });
+
+      it('should find references to selectorless component outputs from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent (testEvent)="handleEvent()"/>';
+        template.moveCursorToText('(tes¦tEvent)');
+        const refs = getReferencesAtPosition(template)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['testEvent']);
+        assertFileNames(refs, ['test-component.ts', 'app.html']);
+      });
+    });
+
+    describe('rename locations', () => {
+      it('should find rename locations of selectorless component from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent/>';
+        template.moveCursorToText('<TestCom¦ponent/>');
+        const renameLocations = getRenameLocationsAtPosition(template)!;
+
+        // There are 3 locations that need to be renamed:
+        // - Source file where the component is defined.
+        // - Self-closing tag in the template.
+        // - Import in the app component.
+        expect(renameLocations.length).toBe(3);
+        assertTextSpans(renameLocations, ['TestComponent']);
+        assertFileNames(renameLocations, ['test-component.ts', 'app.html', 'app.ts']);
+      });
+
+      it('should find rename locations for complex selectorless component', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent:a hello="world">Hello</TestComponent:a>';
+        template.moveCursorToText('<TestCom¦ponent:a');
+        const renameLocations = getRenameLocationsAtPosition(template)!;
+
+        // There are 4 locations that need to be renamed:
+        // - Source file where the component is defined.
+        // - Opening tag in the template.
+        // - Closing tag in the template.
+        // - Import in the app component.
+        expect(renameLocations.length).toBe(4);
+        assertTextSpans(renameLocations, ['TestComponent']);
+        assertFileNames(renameLocations, ['test-component.ts', 'app.html', 'app.html', 'app.ts']);
+      });
+
+      it('should find rename locations to selectorless component inputs from source file', () => {
+        const file = project.openFile('test-component.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent [name]="stringValue"/>';
+        file.moveCursorToText('@Input() na¦me!: string;');
+        const refs = getRenameLocationsAtPosition(file)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['name']);
+        assertFileNames(refs, ['test-component.ts', 'app.html']);
+      });
+
+      it('should find rename locations to selectorless component inputs from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent [name]="stringValue"/>';
+        template.moveCursorToText('[na¦me]');
+        const refs = getRenameLocationsAtPosition(template)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['name']);
+        assertFileNames(refs, ['test-component.ts', 'app.html']);
+      });
+
+      it('should find rename locations to selectorless component outputs from source file', () => {
+        const file = project.openFile('test-component.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent (testEvent)="handleEvent()"/>';
+        file.moveCursorToText('@Output() test¦Event = new EventEmitter<string>();');
+        const refs = getRenameLocationsAtPosition(file)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['testEvent']);
+        assertFileNames(refs, ['test-component.ts', 'app.html']);
+      });
+
+      it('should find rename locations to selectorless component outputs from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<TestComponent (testEvent)="handleEvent()"/>';
+        template.moveCursorToText('(tes¦tEvent)');
+        const refs = getRenameLocationsAtPosition(template)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['testEvent']);
+        assertFileNames(refs, ['test-component.ts', 'app.html']);
+      });
+
+      it('should handle rename request for selectorless component from source file', () => {
+        const file = project.openFile('test-component.ts');
+        const template = project.openFile('app.html');
+        template.contents =
+          '<TestComponent/> {{123 + 456}} <div><TestComponent>Hello</TestComponent></div>';
+        file.moveCursorToText('export class TestCom¦ponent {');
+        const renameLocations = getRenameLocationsAtPosition(file)!;
+
+        // There are 5 locations that need to be renamed:
+        // - Source file where the component is defined.
+        // - Self-closing tag in the template.
+        // - Opening tag in the template.
+        // - Closing tag in the template.
+        // - Import in the app component.
+        expect(renameLocations.length).toBe(5);
+        assertTextSpans(renameLocations, ['TestComponent']);
+        assertFileNames(renameLocations, ['test-component.ts', 'app.html', 'app.ts']);
+      });
+    });
+  });
+
+  describe('selectorless directives', () => {
+    let project: Project;
+
+    beforeEach(() => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      project = env.addProject(
+        'test',
+        {
+          'app.ts': `
+            import {Component} from '@angular/core';
+            import {TestDirective} from './test-directive';
+
+            @Component({templateUrl: './app.html'})
+            export class AppCmp {
+              numberValue!: number;
+              handleEvent() {}
+            }
+          `,
+          'test-directive.ts': `
+            import {Directive, EventEmitter, Input, Output} from '@angular/core';
+
+            @Directive()
+            export class TestDirective {
+              @Input() value!: number;
+              @Output() testEvent = new EventEmitter<number>();
+            }
+          `,
+          'app.html': 'Will be overridden',
+        },
+        {_enableSelectorless: true},
+      );
+    });
+
+    describe('references', () => {
+      it('should find references to selectorless directive from source file', () => {
+        const file = project.openFile('test-directive.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective></div>';
+        file.moveCursorToText('export class TestDir¦ective {');
+        const refs = getReferencesAtPosition(file)!;
+        expect(refs.length).toBe(3);
+        assertTextSpans(refs, ['TestDirective', '@TestDirective']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html', 'app.ts']);
+      });
+
+      it('should find references to selectorless directive from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective></div>';
+        template.moveCursorToText('<div @TestDir¦ective></div>');
+        const refs = getReferencesAtPosition(template)!;
+        expect(refs.length).toBe(3);
+        assertTextSpans(refs, ['TestDirective', '@TestDirective']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html', 'app.ts']);
+      });
+
+      it('should find references to selectorless directive inputs from source file', () => {
+        const file = project.openFile('test-directive.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective([value]="numberValue")></div>';
+        file.moveCursorToText('@Input() val¦ue!: number;');
+        const refs = getReferencesAtPosition(file)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['value']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html']);
+      });
+
+      it('should find references to selectorless directive inputs from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective([value]="numberValue")></div>';
+        template.moveCursorToText('[val¦ue]');
+        const refs = getReferencesAtPosition(template)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['value']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html']);
+      });
+
+      it('should find references to selectorless directive outputs from source file', () => {
+        const file = project.openFile('test-directive.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective((testEvent)="handleEvent()")></div>';
+        file.moveCursorToText('@Output() test¦Event = new EventEmitter<number>();');
+        const refs = getReferencesAtPosition(file)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['testEvent']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html']);
+      });
+
+      it('should find references to selectorless directive outputs from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective((testEvent)="handleEvent()")></div>';
+        template.moveCursorToText('(tes¦tEvent)');
+        const refs = getReferencesAtPosition(template)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['testEvent']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html']);
+      });
+    });
+
+    describe('rename locations', () => {
+      it('should find rename locations of selectorless directive from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective></div>';
+        template.moveCursorToText('@TestDir¦ective');
+        const renameLocations = getRenameLocationsAtPosition(template)!;
+
+        // There are 3 locations that need to be renamed:
+        // - Source file where the directive is defined.
+        // - Reference on the `div` node.
+        // - Import in the app component.
+        expect(renameLocations.length).toBe(3);
+        assertTextSpans(renameLocations, ['TestDirective']);
+        assertFileNames(renameLocations, ['test-directive.ts', 'app.html', 'app.ts']);
+      });
+
+      it('should find rename locations for selectorless directive with bindings', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective([value]="123")>Hello</div>';
+        template.moveCursorToText('@TestDir¦ective(');
+        const renameLocations = getRenameLocationsAtPosition(template)!;
+
+        // There are 3 locations that need to be renamed:
+        // - Source file where the directive is defined.
+        // - Reference on the `div` node.
+        // - Import in the app component.
+        expect(renameLocations.length).toBe(3);
+        assertTextSpans(renameLocations, ['TestDirective']);
+        assertFileNames(renameLocations, ['test-directive.ts', 'app.html', 'app.ts']);
+      });
+
+      it('should find rename locations to selectorless directive inputs from source file', () => {
+        const file = project.openFile('test-directive.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective([value]="numberValue")></div>';
+        file.moveCursorToText('@Input() val¦ue!: number;');
+        const refs = getRenameLocationsAtPosition(file)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['value']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html']);
+      });
+
+      it('should find rename locations to selectorless directive inputs from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective([value]="numberValue")></div>';
+        template.moveCursorToText('[val¦ue]');
+        const refs = getRenameLocationsAtPosition(template)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['value']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html']);
+      });
+
+      it('should find rename locations to selectorless directive outputs from source file', () => {
+        const file = project.openFile('test-directive.ts');
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective((testEvent)="handleEvent()")></div>';
+        file.moveCursorToText('@Output() test¦Event = new EventEmitter<number>();');
+        const refs = getRenameLocationsAtPosition(file)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['testEvent']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html']);
+      });
+
+      it('should find rename locations to selectorless directive outputs from template', () => {
+        const template = project.openFile('app.html');
+        template.contents = '<div @TestDirective((testEvent)="handleEvent()")></div>';
+        template.moveCursorToText('(tes¦tEvent)');
+        const refs = getRenameLocationsAtPosition(template)!;
+        expect(refs.length).toBe(2);
+        assertTextSpans(refs, ['testEvent']);
+        assertFileNames(refs, ['test-directive.ts', 'app.html']);
+      });
+
+      it('should handle rename request for selectorless component from source file', () => {
+        const file = project.openFile('test-directive.ts');
+        const template = project.openFile('app.html');
+        template.contents =
+          '<div @TestDirective><span><input @TestDirective([value]="numberValue")></span></div>';
+        file.moveCursorToText('export class TestDir¦ective {');
+        const renameLocations = getRenameLocationsAtPosition(file)!;
+
+        // There are 4 locations that need to be renamed:
+        // - Source file where the directive is defined.
+        // - Reference on the `div` node.
+        // - Refernce on the `input` node.
+        // - Import in the app component.
+        expect(renameLocations.length).toBe(4);
+        assertTextSpans(renameLocations, ['TestDirective']);
+        assertFileNames(renameLocations, ['test-directive.ts', 'app.html', 'app.ts']);
+      });
+    });
+  });
+
+  describe('aliased selectorless', () => {
+    let project: Project;
+
+    beforeEach(() => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      project = env.addProject(
+        'test',
+        {
+          'app.ts': `
+            import {Component} from '@angular/core';
+            import {TestComponent as AliasedComponent} from './test-component';
+            import {TestDirective as AliasedDirective} from './test-directive';
+
+            @Component({templateUrl: './app.html'})
+            export class AppCmp {
+              numberValue!: number;
+              handleEvent() {}
+            }
+          `,
+          'test-component.ts': `
+            import {Component, EventEmitter, Input, Output} from '@angular/core';
+
+            @Component({template: ''})
+            export class TestComponent {
+              @Input() name!: string;
+              @Output() testEvent = new EventEmitter<string>();
+            }
+          `,
+          'test-directive.ts': `
+            import {Directive, EventEmitter, Input, Output} from '@angular/core';
+
+            @Directive()
+            export class TestDirective {
+              @Input() value!: number;
+              @Output() testEvent = new EventEmitter<number>();
+            }
+          `,
+          'app.html': 'Will be overridden',
+        },
+        {_enableSelectorless: true},
+      );
+    });
+
+    it('should not rename aliased selectorless component references', () => {
+      const template = project.openFile('app.html');
+      template.contents = '<AliasedComponent/>';
+      template.moveCursorToText('<AliasedCom¦ponent/>');
+      expect(getRenameLocationsAtPosition(template)).toBeUndefined();
+    });
+
+    it('should not rename aliased selectorless directive references', () => {
+      const template = project.openFile('app.html');
+      template.contents = '<div @AliasedDirective></div>';
+      template.moveCursorToText('@AliasedDir¦ective');
+      expect(getRenameLocationsAtPosition(template)).toBeUndefined();
     });
   });
 

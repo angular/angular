@@ -91,7 +91,7 @@ export abstract class StateManager {
     return path;
   }
 
-  protected commitTransition({targetRouterState, finalUrl, initialUrl}: Navigation) {
+  protected commitTransition({targetRouterState, finalUrl, initialUrl}: Navigation): void {
     // If we are committing the transition after having a final URL and target state, we're updating
     // all pieces of the state. Otherwise, we likely skipped the transition (due to URL handling strategy)
     // and only want to update the rawUrlTree, which represents the browser URL (and doesn't necessarily match router state).
@@ -113,7 +113,7 @@ export abstract class StateManager {
 
   private stateMemento = this.createStateMemento();
 
-  protected updateStateMemento() {
+  protected updateStateMemento(): void {
     this.stateMemento = this.createStateMemento();
   }
 
@@ -209,7 +209,7 @@ export class HistoryStateManager extends StateManager {
     });
   }
 
-  override handleRouterEvent(e: Event | PrivateRouterEvents, currentTransition: Navigation) {
+  override handleRouterEvent(e: Event | PrivateRouterEvents, currentTransition: Navigation): void {
     if (e instanceof NavigationStart) {
       this.updateStateMemento();
     } else if (e instanceof NavigationSkipped) {

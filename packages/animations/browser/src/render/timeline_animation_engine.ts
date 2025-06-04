@@ -38,7 +38,7 @@ import {
   optimizeGroupPlayer,
 } from './shared';
 
-const EMPTY_INSTRUCTION_MAP = new ElementInstructionMap();
+const EMPTY_INSTRUCTION_MAP = /* @__PURE__ */ new ElementInstructionMap();
 
 export class TimelineAnimationEngine {
   private _animations = new Map<string, Ast<AnimationMetadataType>>();

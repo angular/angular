@@ -1,12 +1,14 @@
+@use '../../styles/media-queries' as mq;
+
 :host {
   display: flex;
   flex-direction: column;
   position: fixed;
-  right: 16px;
+  right: 1rem;
   top: 0;
   height: fit-content;
   width: 14rem;
-  padding-inline: 1rem;
+  padding-right: 2rem;
   max-height: 100vh;
   overflow-y: scroll;
   box-sizing: border-box;
@@ -20,7 +22,7 @@
     display: none;
   }
 
-  @media only screen and (max-width: 1430px) {
+  @include mq.for-large-desktop-down {
     position: relative;
     right: 0;
     max-height: min-content;
@@ -91,7 +93,7 @@ button {
     }
   }
 
-  @media only screen and (max-width: 1430px) {
+  @include mq.for-large-desktop-down {
     display: none;
   }
 }

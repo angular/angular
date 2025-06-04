@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatTooltip} from '@angular/material/tooltip';
-import {Events, MessageBus} from 'protocol';
+import {Events, MessageBus} from '../../../../protocol';
 import {Subject} from 'rxjs';
 
 import {ApplicationEnvironment} from '../application-environment';
@@ -33,11 +33,11 @@ describe('DevtoolsTabsComponent', () => {
   let applicationEnvironmentMock: ApplicationEnvironment;
   let comp: DevToolsTabsComponent;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     applicationEnvironmentMock = jasmine.createSpyObj('applicationEnvironment', ['environment']);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [MatTooltip, MatMenuModule, DevToolsTabsComponent],
       providers: [
         TabUpdate,
@@ -46,10 +46,12 @@ describe('DevtoolsTabsComponent', () => {
         {provide: ApplicationEnvironment, useValue: applicationEnvironmentMock},
         {provide: FrameManager, useFactory: () => FrameManager.initialize(123)},
       ],
-    }).overrideComponent(DevToolsTabsComponent, {
-      remove: {imports: [DirectiveExplorerComponent]},
-      add: {imports: [MockDirectiveExplorerComponent]},
-    });
+    })
+      .overrideComponent(DevToolsTabsComponent, {
+        remove: {imports: [DirectiveExplorerComponent]},
+        add: {imports: [MockDirectiveExplorerComponent]},
+      })
+      .compileComponents();
 
     const fixture = TestBed.createComponent(DevToolsTabsComponent);
     comp = fixture.componentInstance;

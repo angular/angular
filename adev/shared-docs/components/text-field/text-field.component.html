@@ -6,12 +6,12 @@
   type="text"
   [attr.placeholder]="placeholder()"
   [attr.name]="name()"
-  [ngModel]="value()"
-  (ngModelChange)="setValue($event)"
+  [value]="value()"
+  (input)="setValue(inputRef.value)"
   class="docs-text-field"
 />
 
-@if (resetLabel()) {
+@if (resetLabel() && inputRef.value.length > 0) {
   <button
     type="reset"
     [title]="resetLabel()"

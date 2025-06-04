@@ -1,1 +1,1801 @@
-{"moduleLabel":"@angular/cdk//selenium-webdriver","moduleName":"@angular/cdk//selenium-webdriver","normalizedModuleName":"angular_cdk__selenium-webdriver","entries":[{"name":"SeleniumWebDriverElement","isAbstract":false,"entryType":"undecorated_class","members":[{"name":"constructor","signatures":[],"implementation":{"params":[{"name":"element","description":"","type":"() => webdriver.WebElement","isOptional":false,"isRestParam":false},{"name":"_stabilize","description":"","type":"() => Promise<void>","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"SeleniumWebDriverElement","generics":[],"name":"constructor","description":"","entryType":"function","jsdocTags":[],"rawComment":""},"entryType":"function","description":"","jsdocTags":[],"rawComment":"","memberType":"method","memberTags":[]},{"name":"blur","signatures":[{"name":"blur","entryType":"function","description":"Blur the element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[],"rawComment":"/** Blur the element. */","returnType":"Promise<void>"}],"implementation":{"params":[],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"blur","description":"Blur the element.","entryType":"function","jsdocTags":[],"rawComment":"/** Blur the element. */"},"entryType":"function","description":"Blur the element.","jsdocTags":[],"rawComment":"/** Blur the element. */","memberType":"method","memberTags":[]},{"name":"clear","signatures":[{"name":"clear","entryType":"function","description":"Clear the element's input (for input and textarea elements only).","generics":[],"isNewType":false,"jsdocTags":[],"params":[],"rawComment":"/** Clear the element's input (for input and textarea elements only). */","returnType":"Promise<void>"}],"implementation":{"params":[],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"clear","description":"Clear the element's input (for input and textarea elements only).","entryType":"function","jsdocTags":[],"rawComment":"/** Clear the element's input (for input and textarea elements only). */"},"entryType":"function","description":"Clear the element's input (for input and textarea elements only).","jsdocTags":[],"rawComment":"/** Clear the element's input (for input and textarea elements only). */","memberType":"method","memberTags":[]},{"name":"click","signatures":[{"name":"click","entryType":"function","description":"Click the element at the default location for the current environment. If you need to guarantee\nthe element is clicked at a specific location, consider using `click('center')` or\n`click(x, y)` instead.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"modifiers","description":"","type":"any","isOptional":true,"isRestParam":false}],"rawComment":"/**\n   * Click the element at the default location for the current environment. If you need to guarantee\n   * the element is clicked at a specific location, consider using `click('center')` or\n   * `click(x, y)` instead.\n   */","returnType":"Promise<void>"},{"name":"click","entryType":"function","description":"Click the element at the element's center.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"location","description":"","type":"\"center\"","isOptional":false,"isRestParam":false},{"name":"modifiers","description":"","type":"any","isOptional":true,"isRestParam":false}],"rawComment":"/** Click the element at the element's center. */","returnType":"Promise<void>"},{"name":"click","entryType":"function","description":"Click the element at the specified coordinates relative to the top-left of the element.","generics":[],"isNewType":false,"jsdocTags":[{"name":"param","comment":"Coordinate within the element, along the X-axis at which to click."},{"name":"param","comment":"Coordinate within the element, along the Y-axis at which to click."},{"name":"param","comment":"Modifier keys held while clicking"}],"params":[{"name":"relativeX","description":"Coordinate within the element, along the X-axis at which to click.","type":"number","isOptional":false,"isRestParam":false},{"name":"relativeY","description":"Coordinate within the element, along the Y-axis at which to click.","type":"number","isOptional":false,"isRestParam":false},{"name":"modifiers","description":"Modifier keys held while clicking","type":"any","isOptional":true,"isRestParam":false}],"rawComment":"/**\n   * Click the element at the specified coordinates relative to the top-left of the element.\n   * @param relativeX Coordinate within the element, along the X-axis at which to click.\n   * @param relativeY Coordinate within the element, along the Y-axis at which to click.\n   * @param modifiers Modifier keys held while clicking\n   */","returnType":"Promise<void>"}],"implementation":{"params":[{"name":"args","description":"","type":"[any?] | [\"center\", any?] | [number, number, any?]","isOptional":false,"isRestParam":true}],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"click","description":"","entryType":"function","jsdocTags":[],"rawComment":""},"entryType":"function","description":"","jsdocTags":[],"rawComment":"","memberType":"method","memberTags":[]},{"name":"rightClick","signatures":[{"name":"rightClick","entryType":"function","description":"Right clicks on the element at the specified coordinates relative to the top-left of it.","generics":[],"isNewType":false,"jsdocTags":[{"name":"param","comment":"Coordinate within the element, along the X-axis at which to click."},{"name":"param","comment":"Coordinate within the element, along the Y-axis at which to click."},{"name":"param","comment":"Modifier keys held while clicking"}],"params":[{"name":"relativeX","description":"Coordinate within the element, along the X-axis at which to click.","type":"number","isOptional":false,"isRestParam":false},{"name":"relativeY","description":"Coordinate within the element, along the Y-axis at which to click.","type":"number","isOptional":false,"isRestParam":false},{"name":"modifiers","description":"Modifier keys held while clicking","type":"any","isOptional":true,"isRestParam":false}],"rawComment":"/**\n   * Right clicks on the element at the specified coordinates relative to the top-left of it.\n   * @param relativeX Coordinate within the element, along the X-axis at which to click.\n   * @param relativeY Coordinate within the element, along the Y-axis at which to click.\n   * @param modifiers Modifier keys held while clicking\n   */","returnType":"Promise<void>"}],"implementation":{"params":[{"name":"args","description":"","type":"[any?] | [\"center\", any?] | [number, number, any?]","isOptional":false,"isRestParam":true}],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"rightClick","description":"","entryType":"function","jsdocTags":[],"rawComment":""},"entryType":"function","description":"","jsdocTags":[],"rawComment":"","memberType":"method","memberTags":[]},{"name":"focus","signatures":[{"name":"focus","entryType":"function","description":"Focus the element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[],"rawComment":"/** Focus the element. */","returnType":"Promise<void>"}],"implementation":{"params":[],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"focus","description":"Focus the element.","entryType":"function","jsdocTags":[],"rawComment":"/** Focus the element. */"},"entryType":"function","description":"Focus the element.","jsdocTags":[],"rawComment":"/** Focus the element. */","memberType":"method","memberTags":[]},{"name":"getCssValue","signatures":[{"name":"getCssValue","entryType":"function","description":"Get the computed value of the given CSS property for the element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"property","description":"","type":"string","isOptional":false,"isRestParam":false}],"rawComment":"/** Get the computed value of the given CSS property for the element. */","returnType":"Promise<string>"}],"implementation":{"params":[{"name":"property","description":"","type":"string","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"Promise<string>","generics":[],"name":"getCssValue","description":"Get the computed value of the given CSS property for the element.","entryType":"function","jsdocTags":[],"rawComment":"/** Get the computed value of the given CSS property for the element. */"},"entryType":"function","description":"Get the computed value of the given CSS property for the element.","jsdocTags":[],"rawComment":"/** Get the computed value of the given CSS property for the element. */","memberType":"method","memberTags":[]},{"name":"hover","signatures":[{"name":"hover","entryType":"function","description":"Hovers the mouse over the element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[],"rawComment":"/** Hovers the mouse over the element. */","returnType":"Promise<void>"}],"implementation":{"params":[],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"hover","description":"Hovers the mouse over the element.","entryType":"function","jsdocTags":[],"rawComment":"/** Hovers the mouse over the element. */"},"entryType":"function","description":"Hovers the mouse over the element.","jsdocTags":[],"rawComment":"/** Hovers the mouse over the element. */","memberType":"method","memberTags":[]},{"name":"mouseAway","signatures":[{"name":"mouseAway","entryType":"function","description":"Moves the mouse away from the element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[],"rawComment":"/** Moves the mouse away from the element. */","returnType":"Promise<void>"}],"implementation":{"params":[],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"mouseAway","description":"Moves the mouse away from the element.","entryType":"function","jsdocTags":[],"rawComment":"/** Moves the mouse away from the element. */"},"entryType":"function","description":"Moves the mouse away from the element.","jsdocTags":[],"rawComment":"/** Moves the mouse away from the element. */","memberType":"method","memberTags":[]},{"name":"sendKeys","signatures":[{"name":"sendKeys","entryType":"function","description":"Sends the given string to the input as a series of key presses. Also fires input events\nand attempts to add the string to the Element's value.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"keys","description":"","type":"any[]","isOptional":false,"isRestParam":true}],"rawComment":"/**\n   * Sends the given string to the input as a series of key presses. Also fires input events\n   * and attempts to add the string to the Element's value.\n   */","returnType":"Promise<void>"},{"name":"sendKeys","entryType":"function","description":"Sends the given string to the input as a series of key presses. Also fires input events\nand attempts to add the string to the Element's value.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"modifiers","description":"","type":"ModifierKeys","isOptional":false,"isRestParam":false},{"name":"keys","description":"","type":"any[]","isOptional":false,"isRestParam":true}],"rawComment":"/**\n   * Sends the given string to the input as a series of key presses. Also fires input events\n   * and attempts to add the string to the Element's value.\n   */","returnType":"Promise<void>"}],"implementation":{"params":[{"name":"modifiersAndKeys","description":"","type":"any[]","isOptional":false,"isRestParam":true}],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"sendKeys","description":"","entryType":"function","jsdocTags":[],"rawComment":""},"entryType":"function","description":"","jsdocTags":[],"rawComment":"","memberType":"method","memberTags":[]},{"name":"text","signatures":[{"name":"text","entryType":"function","description":"Gets the text from the element.","generics":[],"isNewType":false,"jsdocTags":[{"name":"param","comment":"Options that affect what text is included."}],"params":[{"name":"options","description":"Options that affect what text is included.","type":"any","isOptional":true,"isRestParam":false}],"rawComment":"/**\n   * Gets the text from the element.\n   * @param options Options that affect what text is included.\n   */","returnType":"Promise<string>"}],"implementation":{"params":[{"name":"options","description":"Options that affect what text is included.","type":"any","isOptional":true,"isRestParam":false}],"isNewType":false,"returnType":"Promise<string>","generics":[],"name":"text","description":"Gets the text from the element.","entryType":"function","jsdocTags":[{"name":"param","comment":"Options that affect what text is included."}],"rawComment":"/**\n   * Gets the text from the element.\n   * @param options Options that affect what text is included.\n   */"},"entryType":"function","description":"Gets the text from the element.","jsdocTags":[{"name":"param","comment":"Options that affect what text is included."}],"rawComment":"/**\n   * Gets the text from the element.\n   * @param options Options that affect what text is included.\n   */","memberType":"method","memberTags":[]},{"name":"setContenteditableValue","signatures":[{"name":"setContenteditableValue","entryType":"function","description":"Sets the value of a `contenteditable` element.","generics":[],"isNewType":false,"jsdocTags":[{"name":"param","comment":"Value to be set on the element."}],"params":[{"name":"value","description":"Value to be set on the element.","type":"string","isOptional":false,"isRestParam":false}],"rawComment":"/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   */","returnType":"Promise<void>"}],"implementation":{"params":[{"name":"value","description":"Value to be set on the element.","type":"string","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"setContenteditableValue","description":"Sets the value of a `contenteditable` element.","entryType":"function","jsdocTags":[{"name":"param","comment":"Value to be set on the element."}],"rawComment":"/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   */"},"entryType":"function","description":"Sets the value of a `contenteditable` element.","jsdocTags":[{"name":"param","comment":"Value to be set on the element."}],"rawComment":"/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   */","memberType":"method","memberTags":[]},{"name":"getAttribute","signatures":[{"name":"getAttribute","entryType":"function","description":"Gets the value for the given attribute from the element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"name","description":"","type":"string","isOptional":false,"isRestParam":false}],"rawComment":"/** Gets the value for the given attribute from the element. */","returnType":"Promise<string | null>"}],"implementation":{"params":[{"name":"name","description":"","type":"string","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"Promise<string | null>","generics":[],"name":"getAttribute","description":"Gets the value for the given attribute from the element.","entryType":"function","jsdocTags":[],"rawComment":"/** Gets the value for the given attribute from the element. */"},"entryType":"function","description":"Gets the value for the given attribute from the element.","jsdocTags":[],"rawComment":"/** Gets the value for the given attribute from the element. */","memberType":"method","memberTags":[]},{"name":"hasClass","signatures":[{"name":"hasClass","entryType":"function","description":"Checks whether the element has the given class.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"name","description":"","type":"string","isOptional":false,"isRestParam":false}],"rawComment":"/** Checks whether the element has the given class. */","returnType":"Promise<boolean>"}],"implementation":{"params":[{"name":"name","description":"","type":"string","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"Promise<boolean>","generics":[],"name":"hasClass","description":"Checks whether the element has the given class.","entryType":"function","jsdocTags":[],"rawComment":"/** Checks whether the element has the given class. */"},"entryType":"function","description":"Checks whether the element has the given class.","jsdocTags":[],"rawComment":"/** Checks whether the element has the given class. */","memberType":"method","memberTags":[]},{"name":"getDimensions","signatures":[{"name":"getDimensions","entryType":"function","description":"Gets the dimensions of the element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[],"rawComment":"/** Gets the dimensions of the element. */","returnType":"Promise<ElementDimensions>"}],"implementation":{"params":[],"isNewType":false,"returnType":"Promise<ElementDimensions>","generics":[],"name":"getDimensions","description":"Gets the dimensions of the element.","entryType":"function","jsdocTags":[],"rawComment":"/** Gets the dimensions of the element. */"},"entryType":"function","description":"Gets the dimensions of the element.","jsdocTags":[],"rawComment":"/** Gets the dimensions of the element. */","memberType":"method","memberTags":[]},{"name":"getProperty","signatures":[{"name":"getProperty","entryType":"function","description":"Gets the value of a property of an element.","generics":[{"name":"T","default":"any"}],"isNewType":false,"jsdocTags":[],"params":[{"name":"name","description":"","type":"string","isOptional":false,"isRestParam":false}],"rawComment":"/** Gets the value of a property of an element. */","returnType":"Promise<T>"}],"implementation":{"params":[{"name":"name","description":"","type":"string","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"Promise<T>","generics":[{"name":"T","default":"any"}],"name":"getProperty","description":"Gets the value of a property of an element.","entryType":"function","jsdocTags":[],"rawComment":"/** Gets the value of a property of an element. */"},"entryType":"function","description":"Gets the value of a property of an element.","jsdocTags":[],"rawComment":"/** Gets the value of a property of an element. */","memberType":"method","memberTags":[]},{"name":"setInputValue","signatures":[{"name":"setInputValue","entryType":"function","description":"Sets the value of a property of an input.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"newValue","description":"","type":"string","isOptional":false,"isRestParam":false}],"rawComment":"/** Sets the value of a property of an input. */","returnType":"Promise<void>"}],"implementation":{"params":[{"name":"newValue","description":"","type":"string","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"setInputValue","description":"Sets the value of a property of an input.","entryType":"function","jsdocTags":[],"rawComment":"/** Sets the value of a property of an input. */"},"entryType":"function","description":"Sets the value of a property of an input.","jsdocTags":[],"rawComment":"/** Sets the value of a property of an input. */","memberType":"method","memberTags":[]},{"name":"selectOptions","signatures":[{"name":"selectOptions","entryType":"function","description":"Selects the options at the specified indexes inside of a native `select` element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"optionIndexes","description":"","type":"number[]","isOptional":false,"isRestParam":true}],"rawComment":"/** Selects the options at the specified indexes inside of a native `select` element. */","returnType":"Promise<void>"}],"implementation":{"params":[{"name":"optionIndexes","description":"","type":"number[]","isOptional":false,"isRestParam":true}],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"selectOptions","description":"Selects the options at the specified indexes inside of a native `select` element.","entryType":"function","jsdocTags":[],"rawComment":"/** Selects the options at the specified indexes inside of a native `select` element. */"},"entryType":"function","description":"Selects the options at the specified indexes inside of a native `select` element.","jsdocTags":[],"rawComment":"/** Selects the options at the specified indexes inside of a native `select` element. */","memberType":"method","memberTags":[]},{"name":"matchesSelector","signatures":[{"name":"matchesSelector","entryType":"function","description":"Checks whether this element matches the given selector.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"selector","description":"","type":"string","isOptional":false,"isRestParam":false}],"rawComment":"/** Checks whether this element matches the given selector. */","returnType":"Promise<boolean>"}],"implementation":{"params":[{"name":"selector","description":"","type":"string","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"Promise<boolean>","generics":[],"name":"matchesSelector","description":"Checks whether this element matches the given selector.","entryType":"function","jsdocTags":[],"rawComment":"/** Checks whether this element matches the given selector. */"},"entryType":"function","description":"Checks whether this element matches the given selector.","jsdocTags":[],"rawComment":"/** Checks whether this element matches the given selector. */","memberType":"method","memberTags":[]},{"name":"isFocused","signatures":[{"name":"isFocused","entryType":"function","description":"Checks whether the element is focused.","generics":[],"isNewType":false,"jsdocTags":[],"params":[],"rawComment":"/** Checks whether the element is focused. */","returnType":"Promise<boolean>"}],"implementation":{"params":[],"isNewType":false,"returnType":"Promise<boolean>","generics":[],"name":"isFocused","description":"Checks whether the element is focused.","entryType":"function","jsdocTags":[],"rawComment":"/** Checks whether the element is focused. */"},"entryType":"function","description":"Checks whether the element is focused.","jsdocTags":[],"rawComment":"/** Checks whether the element is focused. */","memberType":"method","memberTags":[]},{"name":"dispatchEvent","signatures":[{"name":"dispatchEvent","entryType":"function","description":"Dispatches an event with a particular name.","generics":[],"isNewType":false,"jsdocTags":[{"name":"param","comment":"Name of the event to be dispatched."}],"params":[{"name":"name","description":"Name of the event to be dispatched.","type":"string","isOptional":false,"isRestParam":false},{"name":"data","description":"","type":"Record<string, EventData> | undefined","isOptional":true,"isRestParam":false}],"rawComment":"/**\n   * Dispatches an event with a particular name.\n   * @param name Name of the event to be dispatched.\n   */","returnType":"Promise<void>"}],"implementation":{"params":[{"name":"name","description":"Name of the event to be dispatched.","type":"string","isOptional":false,"isRestParam":false},{"name":"data","description":"","type":"Record<string, EventData> | undefined","isOptional":true,"isRestParam":false}],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"dispatchEvent","description":"Dispatches an event with a particular name.","entryType":"function","jsdocTags":[{"name":"param","comment":"Name of the event to be dispatched."}],"rawComment":"/**\n   * Dispatches an event with a particular name.\n   * @param name Name of the event to be dispatched.\n   */"},"entryType":"function","description":"Dispatches an event with a particular name.","jsdocTags":[{"name":"param","comment":"Name of the event to be dispatched."}],"rawComment":"/**\n   * Dispatches an event with a particular name.\n   * @param name Name of the event to be dispatched.\n   */","memberType":"method","memberTags":[]}],"generics":[],"description":"A `TestElement` implementation for WebDriver.","jsdocTags":[],"rawComment":"/** A `TestElement` implementation for WebDriver. */","implements":["TestElement"],"source":{"filePath":"/src/cdk/testing/selenium-webdriver/selenium-web-driver-element.ts","startLine":17,"endLine":318}},{"name":"WebDriverHarnessEnvironmentOptions","isAbstract":false,"entryType":"interface","members":[{"name":"queryFn","type":"(selector: string, root: () => webdriver.WebElement) => Promise<webdriver.WebElement[]>","memberType":"property","memberTags":[],"description":"The query function used to find DOM elements.","jsdocTags":[]}],"generics":[],"description":"Options to configure the environment.","jsdocTags":[],"rawComment":"/** Options to configure the environment. */","implements":[],"source":{"filePath":"/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts","startLine":35,"endLine":38}},{"name":"waitForAngularReady","signatures":[{"name":"waitForAngularReady","entryType":"function","description":"Waits for angular to be ready after the page load.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"wd","description":"","type":"webdriver.WebDriver","isOptional":false,"isRestParam":false}],"rawComment":"/** Waits for angular to be ready after the page load. */","returnType":"Promise<void>"}],"implementation":{"params":[{"name":"wd","description":"","type":"webdriver.WebDriver","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"waitForAngularReady","description":"Waits for angular to be ready after the page load.","entryType":"function","jsdocTags":[],"rawComment":"/** Waits for angular to be ready after the page load. */"},"entryType":"function","description":"Waits for angular to be ready after the page load.","jsdocTags":[],"rawComment":"/** Waits for angular to be ready after the page load. */","source":{"filePath":"/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts","startLine":65,"endLine":68}},{"name":"SeleniumWebDriverHarnessEnvironment","isAbstract":false,"entryType":"undecorated_class","members":[{"name":"constructor","signatures":[],"implementation":{"params":[{"name":"rawRootElement","description":"","type":"() => webdriver.WebElement","isOptional":false,"isRestParam":false},{"name":"options","description":"","type":"WebDriverHarnessEnvironmentOptions | undefined","isOptional":true,"isRestParam":false}],"isNewType":false,"returnType":"SeleniumWebDriverHarnessEnvironment","generics":[],"name":"constructor","description":"","entryType":"function","jsdocTags":[],"rawComment":""},"entryType":"function","description":"","jsdocTags":[],"rawComment":"","memberType":"method","memberTags":["protected"]},{"name":"forceStabilize","signatures":[{"name":"forceStabilize","entryType":"function","description":"Flushes change detection and async tasks captured in the Angular zone.\nIn most cases it should not be necessary to call this manually. However, there may be some edge\ncases where it is needed to fully flush animation events.","generics":[],"isNewType":false,"jsdocTags":[],"params":[],"rawComment":"/**\n   * Flushes change detection and async tasks captured in the Angular zone.\n   * In most cases it should not be necessary to call this manually. However, there may be some edge\n   * cases where it is needed to fully flush animation events.\n   */","returnType":"Promise<void>"}],"implementation":{"params":[],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"forceStabilize","description":"Flushes change detection and async tasks captured in the Angular zone.\nIn most cases it should not be necessary to call this manually. However, there may be some edge\ncases where it is needed to fully flush animation events.","entryType":"function","jsdocTags":[],"rawComment":"/**\n   * Flushes change detection and async tasks captured in the Angular zone.\n   * In most cases it should not be necessary to call this manually. However, there may be some edge\n   * cases where it is needed to fully flush animation events.\n   */"},"entryType":"function","description":"Flushes change detection and async tasks captured in the Angular zone.\nIn most cases it should not be necessary to call this manually. However, there may be some edge\ncases where it is needed to fully flush animation events.","jsdocTags":[],"rawComment":"/**\n   * Flushes change detection and async tasks captured in the Angular zone.\n   * In most cases it should not be necessary to call this manually. However, there may be some edge\n   * cases where it is needed to fully flush animation events.\n   */","memberType":"method","memberTags":[]},{"name":"waitForTasksOutsideAngular","signatures":[{"name":"waitForTasksOutsideAngular","entryType":"function","description":"","generics":[],"isNewType":false,"jsdocTags":[{"name":"docs-private","comment":""}],"params":[],"rawComment":"/** @docs-private */","returnType":"Promise<void>"}],"implementation":{"params":[],"isNewType":false,"returnType":"Promise<void>","generics":[],"name":"waitForTasksOutsideAngular","description":"","entryType":"function","jsdocTags":[{"name":"docs-private","comment":""}],"rawComment":"/** @docs-private */"},"entryType":"function","description":"","jsdocTags":[{"name":"docs-private","comment":""}],"rawComment":"/** @docs-private */","memberType":"method","memberTags":[]},{"name":"getDocumentRoot","signatures":[{"name":"getDocumentRoot","entryType":"function","description":"Gets the root element for the document.","generics":[],"isNewType":false,"jsdocTags":[],"params":[],"rawComment":"/** Gets the root element for the document. */","returnType":"() => webdriver.WebElement"}],"implementation":{"params":[],"isNewType":false,"returnType":"() => webdriver.WebElement","generics":[],"name":"getDocumentRoot","description":"Gets the root element for the document.","entryType":"function","jsdocTags":[],"rawComment":"/** Gets the root element for the document. */"},"entryType":"function","description":"Gets the root element for the document.","jsdocTags":[],"rawComment":"/** Gets the root element for the document. */","memberType":"method","memberTags":["protected"]},{"name":"createTestElement","signatures":[{"name":"createTestElement","entryType":"function","description":"Creates a `TestElement` from a raw element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"element","description":"","type":"() => webdriver.WebElement","isOptional":false,"isRestParam":false}],"rawComment":"/** Creates a `TestElement` from a raw element. */","returnType":"TestElement"}],"implementation":{"params":[{"name":"element","description":"","type":"() => webdriver.WebElement","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"TestElement","generics":[],"name":"createTestElement","description":"Creates a `TestElement` from a raw element.","entryType":"function","jsdocTags":[],"rawComment":"/** Creates a `TestElement` from a raw element. */"},"entryType":"function","description":"Creates a `TestElement` from a raw element.","jsdocTags":[],"rawComment":"/** Creates a `TestElement` from a raw element. */","memberType":"method","memberTags":["protected"]},{"name":"createEnvironment","signatures":[{"name":"createEnvironment","entryType":"function","description":"Creates a `HarnessLoader` rooted at the given raw element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"element","description":"","type":"() => webdriver.WebElement","isOptional":false,"isRestParam":false}],"rawComment":"/** Creates a `HarnessLoader` rooted at the given raw element. */","returnType":"HarnessEnvironment<() => webdriver.WebElement>"}],"implementation":{"params":[{"name":"element","description":"","type":"() => webdriver.WebElement","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"HarnessEnvironment<() => webdriver.WebElement>","generics":[],"name":"createEnvironment","description":"Creates a `HarnessLoader` rooted at the given raw element.","entryType":"function","jsdocTags":[],"rawComment":"/** Creates a `HarnessLoader` rooted at the given raw element. */"},"entryType":"function","description":"Creates a `HarnessLoader` rooted at the given raw element.","jsdocTags":[],"rawComment":"/** Creates a `HarnessLoader` rooted at the given raw element. */","memberType":"method","memberTags":["protected"]},{"name":"getAllRawElements","signatures":[{"name":"getAllRawElements","entryType":"function","description":"Gets a list of all elements matching the given selector under this environment's root element.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"selector","description":"","type":"string","isOptional":false,"isRestParam":false}],"rawComment":"/**\n   * Gets a list of all elements matching the given selector under this environment's root element.\n   */","returnType":"Promise<(() => webdriver.WebElement)[]>"}],"implementation":{"params":[{"name":"selector","description":"","type":"string","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"Promise<(() => webdriver.WebElement)[]>","generics":[],"name":"getAllRawElements","description":"Gets a list of all elements matching the given selector under this environment's root element.","entryType":"function","jsdocTags":[],"rawComment":"/**\n   * Gets a list of all elements matching the given selector under this environment's root element.\n   */"},"entryType":"function","description":"Gets a list of all elements matching the given selector under this environment's root element.","jsdocTags":[],"rawComment":"/**\n   * Gets a list of all elements matching the given selector under this environment's root element.\n   */","memberType":"method","memberTags":["protected"]},{"name":"getNativeElement","signatures":[{"name":"getNativeElement","entryType":"function","description":"Gets the ElementFinder corresponding to the given TestElement.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"el","description":"","type":"TestElement","isOptional":false,"isRestParam":false}],"rawComment":"/** Gets the ElementFinder corresponding to the given TestElement. */","returnType":"webdriver.WebElement"}],"implementation":{"params":[{"name":"el","description":"","type":"TestElement","isOptional":false,"isRestParam":false}],"isNewType":false,"returnType":"webdriver.WebElement","generics":[],"name":"getNativeElement","description":"Gets the ElementFinder corresponding to the given TestElement.","entryType":"function","jsdocTags":[],"rawComment":"/** Gets the ElementFinder corresponding to the given TestElement. */"},"entryType":"function","description":"Gets the ElementFinder corresponding to the given TestElement.","jsdocTags":[],"rawComment":"/** Gets the ElementFinder corresponding to the given TestElement. */","memberType":"method","memberTags":["static"]},{"name":"loader","signatures":[{"name":"loader","entryType":"function","description":"Creates a `HarnessLoader` rooted at the document root.","generics":[],"isNewType":false,"jsdocTags":[],"params":[{"name":"driver","description":"","type":"webdriver.WebDriver","isOptional":false,"isRestParam":false},{"name":"options","description":"","type":"WebDriverHarnessEnvironmentOptions | undefined","isOptional":true,"isRestParam":false}],"rawComment":"/** Creates a `HarnessLoader` rooted at the document root. */","returnType":"HarnessLoader"}],"implementation":{"params":[{"name":"driver","description":"","type":"webdriver.WebDriver","isOptional":false,"isRestParam":false},{"name":"options","description":"","type":"WebDriverHarnessEnvironmentOptions | undefined","isOptional":true,"isRestParam":false}],"isNewType":false,"returnType":"HarnessLoader","generics":[],"name":"loader","description":"Creates a `HarnessLoader` rooted at the document root.","entryType":"function","jsdocTags":[],"rawComment":"/** Creates a `HarnessLoader` rooted at the document root. */"},"entryType":"function","description":"Creates a `HarnessLoader` rooted at the document root.","jsdocTags":[],"rawComment":"/** Creates a `HarnessLoader` rooted at the document root. */","memberType":"method","memberTags":["static"]}],"generics":[],"description":"A `HarnessEnvironment` implementation for WebDriver.","jsdocTags":[],"rawComment":"/** A `HarnessEnvironment` implementation for WebDriver. */","extends":"HarnessEnvironment<\n  () => webdriver.WebElement\n>","implements":[],"source":{"filePath":"/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts","startLine":71,"endLine":150}}],"symbols":[["SeleniumWebDriverElement","@angular/cdk//selenium-webdriver"],["WebDriverHarnessEnvironmentOptions","@angular/cdk//selenium-webdriver"],["waitForAngularReady","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.constructor","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.blur","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.clear","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.click","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.rightClick","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.focus","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.getCssValue","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.hover","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.mouseAway","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.sendKeys","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.text","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.setContenteditableValue","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.getAttribute","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.hasClass","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.getDimensions","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.getProperty","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.setInputValue","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.selectOptions","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.matchesSelector","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.isFocused","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverElement.dispatchEvent","@angular/cdk//selenium-webdriver"],["WebDriverHarnessEnvironmentOptions","@angular/cdk//selenium-webdriver"],["WebDriverHarnessEnvironmentOptions.queryFn","@angular/cdk//selenium-webdriver"],["waitForAngularReady","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment.constructor","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment.forceStabilize","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment.waitForTasksOutsideAngular","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment.getDocumentRoot","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment.createTestElement","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment.createEnvironment","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment.getAllRawElements","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment.getNativeElement","@angular/cdk//selenium-webdriver"],["SeleniumWebDriverHarnessEnvironment.loader","@angular/cdk//selenium-webdriver"]]}
+{
+  "repo": "angular/components",
+  "moduleLabel": "@angular/cdk/testing/selenium-webdriver",
+  "moduleName": "@angular/cdk/testing/selenium-webdriver",
+  "normalizedModuleName": "angular_cdk_testing_selenium-webdriver",
+  "entries": [
+    {
+      "name": "SeleniumWebDriverElement",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "constructor",
+          "signatures": [],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "() => webdriver.WebElement",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "_stabilize",
+                "description": "",
+                "type": "() => Promise<void>",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "SeleniumWebDriverElement",
+            "generics": [],
+            "name": "constructor",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "blur",
+          "signatures": [
+            {
+              "name": "blur",
+              "entryType": "function",
+              "description": "Blur the element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Blur the element. */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "blur",
+            "description": "Blur the element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Blur the element. */"
+          },
+          "entryType": "function",
+          "description": "Blur the element.",
+          "jsdocTags": [],
+          "rawComment": "/** Blur the element. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "clear",
+          "signatures": [
+            {
+              "name": "clear",
+              "entryType": "function",
+              "description": "Clear the element's input (for input and textarea elements only).",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Clear the element's input (for input and textarea elements only). */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "clear",
+            "description": "Clear the element's input (for input and textarea elements only).",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Clear the element's input (for input and textarea elements only). */"
+          },
+          "entryType": "function",
+          "description": "Clear the element's input (for input and textarea elements only).",
+          "jsdocTags": [],
+          "rawComment": "/** Clear the element's input (for input and textarea elements only). */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "click",
+          "signatures": [
+            {
+              "name": "click",
+              "entryType": "function",
+              "description": "Click the element at the default location for the current environment. If you need to guarantee\nthe element is clicked at a specific location, consider using `click('center')` or\n`click(x, y)` instead.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "modifiers",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Click the element at the default location for the current environment. If you need to guarantee\n   * the element is clicked at a specific location, consider using `click('center')` or\n   * `click(x, y)` instead.\n   */",
+              "returnType": "Promise<void>"
+            },
+            {
+              "name": "click",
+              "entryType": "function",
+              "description": "Click the element at the element's center.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "location",
+                  "description": "",
+                  "type": "\"center\"",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "modifiers",
+                  "description": "",
+                  "type": "any",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Click the element at the element's center. */",
+              "returnType": "Promise<void>"
+            },
+            {
+              "name": "click",
+              "entryType": "function",
+              "description": "Click the element at the specified coordinates relative to the top-left of the element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "Coordinate within the element, along the X-axis at which to click."
+                },
+                {
+                  "name": "param",
+                  "comment": "Coordinate within the element, along the Y-axis at which to click."
+                },
+                {
+                  "name": "param",
+                  "comment": "Modifier keys held while clicking"
+                }
+              ],
+              "params": [
+                {
+                  "name": "relativeX",
+                  "description": "Coordinate within the element, along the X-axis at which to click.",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "relativeY",
+                  "description": "Coordinate within the element, along the Y-axis at which to click.",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "modifiers",
+                  "description": "Modifier keys held while clicking",
+                  "type": "any",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Click the element at the specified coordinates relative to the top-left of the element.\n   * @param relativeX Coordinate within the element, along the X-axis at which to click.\n   * @param relativeY Coordinate within the element, along the Y-axis at which to click.\n   * @param modifiers Modifier keys held while clicking\n   */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "args",
+                "description": "",
+                "type": "[any?] | [\"center\", any?] | [number, number, any?]",
+                "isOptional": false,
+                "isRestParam": true
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "click",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "rightClick",
+          "signatures": [
+            {
+              "name": "rightClick",
+              "entryType": "function",
+              "description": "Right clicks on the element at the specified coordinates relative to the top-left of it.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "Coordinate within the element, along the X-axis at which to click."
+                },
+                {
+                  "name": "param",
+                  "comment": "Coordinate within the element, along the Y-axis at which to click."
+                },
+                {
+                  "name": "param",
+                  "comment": "Modifier keys held while clicking"
+                }
+              ],
+              "params": [
+                {
+                  "name": "relativeX",
+                  "description": "Coordinate within the element, along the X-axis at which to click.",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "relativeY",
+                  "description": "Coordinate within the element, along the Y-axis at which to click.",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "modifiers",
+                  "description": "Modifier keys held while clicking",
+                  "type": "any",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Right clicks on the element at the specified coordinates relative to the top-left of it.\n   * @param relativeX Coordinate within the element, along the X-axis at which to click.\n   * @param relativeY Coordinate within the element, along the Y-axis at which to click.\n   * @param modifiers Modifier keys held while clicking\n   */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "args",
+                "description": "",
+                "type": "[any?] | [\"center\", any?] | [number, number, any?]",
+                "isOptional": false,
+                "isRestParam": true
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "rightClick",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "focus",
+          "signatures": [
+            {
+              "name": "focus",
+              "entryType": "function",
+              "description": "Focus the element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Focus the element. */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "focus",
+            "description": "Focus the element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Focus the element. */"
+          },
+          "entryType": "function",
+          "description": "Focus the element.",
+          "jsdocTags": [],
+          "rawComment": "/** Focus the element. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "getCssValue",
+          "signatures": [
+            {
+              "name": "getCssValue",
+              "entryType": "function",
+              "description": "Get the computed value of the given CSS property for the element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "property",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Get the computed value of the given CSS property for the element. */",
+              "returnType": "Promise<string>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "property",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<string>",
+            "generics": [],
+            "name": "getCssValue",
+            "description": "Get the computed value of the given CSS property for the element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Get the computed value of the given CSS property for the element. */"
+          },
+          "entryType": "function",
+          "description": "Get the computed value of the given CSS property for the element.",
+          "jsdocTags": [],
+          "rawComment": "/** Get the computed value of the given CSS property for the element. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "hover",
+          "signatures": [
+            {
+              "name": "hover",
+              "entryType": "function",
+              "description": "Hovers the mouse over the element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Hovers the mouse over the element. */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "hover",
+            "description": "Hovers the mouse over the element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Hovers the mouse over the element. */"
+          },
+          "entryType": "function",
+          "description": "Hovers the mouse over the element.",
+          "jsdocTags": [],
+          "rawComment": "/** Hovers the mouse over the element. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "mouseAway",
+          "signatures": [
+            {
+              "name": "mouseAway",
+              "entryType": "function",
+              "description": "Moves the mouse away from the element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Moves the mouse away from the element. */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "mouseAway",
+            "description": "Moves the mouse away from the element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Moves the mouse away from the element. */"
+          },
+          "entryType": "function",
+          "description": "Moves the mouse away from the element.",
+          "jsdocTags": [],
+          "rawComment": "/** Moves the mouse away from the element. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "sendKeys",
+          "signatures": [
+            {
+              "name": "sendKeys",
+              "entryType": "function",
+              "description": "Sends the given string to the input as a series of key presses. Also fires input events\nand attempts to add the string to the Element's value.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "keys",
+                  "description": "",
+                  "type": "any[]",
+                  "isOptional": false,
+                  "isRestParam": true
+                }
+              ],
+              "rawComment": "/**\n   * Sends the given string to the input as a series of key presses. Also fires input events\n   * and attempts to add the string to the Element's value.\n   */",
+              "returnType": "Promise<void>"
+            },
+            {
+              "name": "sendKeys",
+              "entryType": "function",
+              "description": "Sends the given string to the input as a series of key presses. Also fires input events\nand attempts to add the string to the Element's value.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "modifiers",
+                  "description": "",
+                  "type": "ModifierKeys",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "keys",
+                  "description": "",
+                  "type": "any[]",
+                  "isOptional": false,
+                  "isRestParam": true
+                }
+              ],
+              "rawComment": "/**\n   * Sends the given string to the input as a series of key presses. Also fires input events\n   * and attempts to add the string to the Element's value.\n   */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "modifiersAndKeys",
+                "description": "",
+                "type": "any[]",
+                "isOptional": false,
+                "isRestParam": true
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "sendKeys",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "text",
+          "signatures": [
+            {
+              "name": "text",
+              "entryType": "function",
+              "description": "Gets the text from the element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "Options that affect what text is included."
+                }
+              ],
+              "params": [
+                {
+                  "name": "options",
+                  "description": "Options that affect what text is included.",
+                  "type": "any",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Gets the text from the element.\n   * @param options Options that affect what text is included.\n   */",
+              "returnType": "Promise<string>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "options",
+                "description": "Options that affect what text is included.",
+                "type": "any",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<string>",
+            "generics": [],
+            "name": "text",
+            "description": "Gets the text from the element.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "Options that affect what text is included."
+              }
+            ],
+            "rawComment": "/**\n   * Gets the text from the element.\n   * @param options Options that affect what text is included.\n   */"
+          },
+          "entryType": "function",
+          "description": "Gets the text from the element.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "Options that affect what text is included."
+            }
+          ],
+          "rawComment": "/**\n   * Gets the text from the element.\n   * @param options Options that affect what text is included.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "setContenteditableValue",
+          "signatures": [
+            {
+              "name": "setContenteditableValue",
+              "entryType": "function",
+              "description": "Sets the value of a `contenteditable` element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "Value to be set on the element."
+                }
+              ],
+              "params": [
+                {
+                  "name": "value",
+                  "description": "Value to be set on the element.",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "value",
+                "description": "Value to be set on the element.",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "setContenteditableValue",
+            "description": "Sets the value of a `contenteditable` element.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "Value to be set on the element."
+              }
+            ],
+            "rawComment": "/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   */"
+          },
+          "entryType": "function",
+          "description": "Sets the value of a `contenteditable` element.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "Value to be set on the element."
+            }
+          ],
+          "rawComment": "/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "getAttribute",
+          "signatures": [
+            {
+              "name": "getAttribute",
+              "entryType": "function",
+              "description": "Gets the value for the given attribute from the element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "name",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Gets the value for the given attribute from the element. */",
+              "returnType": "Promise<string | null>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "name",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<string | null>",
+            "generics": [],
+            "name": "getAttribute",
+            "description": "Gets the value for the given attribute from the element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Gets the value for the given attribute from the element. */"
+          },
+          "entryType": "function",
+          "description": "Gets the value for the given attribute from the element.",
+          "jsdocTags": [],
+          "rawComment": "/** Gets the value for the given attribute from the element. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "hasClass",
+          "signatures": [
+            {
+              "name": "hasClass",
+              "entryType": "function",
+              "description": "Checks whether the element has the given class.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "name",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Checks whether the element has the given class. */",
+              "returnType": "Promise<boolean>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "name",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<boolean>",
+            "generics": [],
+            "name": "hasClass",
+            "description": "Checks whether the element has the given class.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Checks whether the element has the given class. */"
+          },
+          "entryType": "function",
+          "description": "Checks whether the element has the given class.",
+          "jsdocTags": [],
+          "rawComment": "/** Checks whether the element has the given class. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "getDimensions",
+          "signatures": [
+            {
+              "name": "getDimensions",
+              "entryType": "function",
+              "description": "Gets the dimensions of the element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Gets the dimensions of the element. */",
+              "returnType": "Promise<ElementDimensions>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<ElementDimensions>",
+            "generics": [],
+            "name": "getDimensions",
+            "description": "Gets the dimensions of the element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Gets the dimensions of the element. */"
+          },
+          "entryType": "function",
+          "description": "Gets the dimensions of the element.",
+          "jsdocTags": [],
+          "rawComment": "/** Gets the dimensions of the element. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "getProperty",
+          "signatures": [
+            {
+              "name": "getProperty",
+              "entryType": "function",
+              "description": "Gets the value of a property of an element.",
+              "generics": [
+                {
+                  "name": "T",
+                  "default": "any"
+                }
+              ],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "name",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Gets the value of a property of an element. */",
+              "returnType": "Promise<T>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "name",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<T>",
+            "generics": [
+              {
+                "name": "T",
+                "default": "any"
+              }
+            ],
+            "name": "getProperty",
+            "description": "Gets the value of a property of an element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Gets the value of a property of an element. */"
+          },
+          "entryType": "function",
+          "description": "Gets the value of a property of an element.",
+          "jsdocTags": [],
+          "rawComment": "/** Gets the value of a property of an element. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "setInputValue",
+          "signatures": [
+            {
+              "name": "setInputValue",
+              "entryType": "function",
+              "description": "Sets the value of a property of an input.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "newValue",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Sets the value of a property of an input. */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "newValue",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "setInputValue",
+            "description": "Sets the value of a property of an input.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Sets the value of a property of an input. */"
+          },
+          "entryType": "function",
+          "description": "Sets the value of a property of an input.",
+          "jsdocTags": [],
+          "rawComment": "/** Sets the value of a property of an input. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "selectOptions",
+          "signatures": [
+            {
+              "name": "selectOptions",
+              "entryType": "function",
+              "description": "Selects the options at the specified indexes inside of a native `select` element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "optionIndexes",
+                  "description": "",
+                  "type": "number[]",
+                  "isOptional": false,
+                  "isRestParam": true
+                }
+              ],
+              "rawComment": "/** Selects the options at the specified indexes inside of a native `select` element. */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "optionIndexes",
+                "description": "",
+                "type": "number[]",
+                "isOptional": false,
+                "isRestParam": true
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "selectOptions",
+            "description": "Selects the options at the specified indexes inside of a native `select` element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Selects the options at the specified indexes inside of a native `select` element. */"
+          },
+          "entryType": "function",
+          "description": "Selects the options at the specified indexes inside of a native `select` element.",
+          "jsdocTags": [],
+          "rawComment": "/** Selects the options at the specified indexes inside of a native `select` element. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "matchesSelector",
+          "signatures": [
+            {
+              "name": "matchesSelector",
+              "entryType": "function",
+              "description": "Checks whether this element matches the given selector.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "selector",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Checks whether this element matches the given selector. */",
+              "returnType": "Promise<boolean>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "selector",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<boolean>",
+            "generics": [],
+            "name": "matchesSelector",
+            "description": "Checks whether this element matches the given selector.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Checks whether this element matches the given selector. */"
+          },
+          "entryType": "function",
+          "description": "Checks whether this element matches the given selector.",
+          "jsdocTags": [],
+          "rawComment": "/** Checks whether this element matches the given selector. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "isFocused",
+          "signatures": [
+            {
+              "name": "isFocused",
+              "entryType": "function",
+              "description": "Checks whether the element is focused.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Checks whether the element is focused. */",
+              "returnType": "Promise<boolean>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<boolean>",
+            "generics": [],
+            "name": "isFocused",
+            "description": "Checks whether the element is focused.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Checks whether the element is focused. */"
+          },
+          "entryType": "function",
+          "description": "Checks whether the element is focused.",
+          "jsdocTags": [],
+          "rawComment": "/** Checks whether the element is focused. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "dispatchEvent",
+          "signatures": [
+            {
+              "name": "dispatchEvent",
+              "entryType": "function",
+              "description": "Dispatches an event with a particular name.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "Name of the event to be dispatched."
+                }
+              ],
+              "params": [
+                {
+                  "name": "name",
+                  "description": "Name of the event to be dispatched.",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "data",
+                  "description": "",
+                  "type": "Record<string, EventData> | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Dispatches an event with a particular name.\n   * @param name Name of the event to be dispatched.\n   */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "name",
+                "description": "Name of the event to be dispatched.",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "data",
+                "description": "",
+                "type": "Record<string, EventData> | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "dispatchEvent",
+            "description": "Dispatches an event with a particular name.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "Name of the event to be dispatched."
+              }
+            ],
+            "rawComment": "/**\n   * Dispatches an event with a particular name.\n   * @param name Name of the event to be dispatched.\n   */"
+          },
+          "entryType": "function",
+          "description": "Dispatches an event with a particular name.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "Name of the event to be dispatched."
+            }
+          ],
+          "rawComment": "/**\n   * Dispatches an event with a particular name.\n   * @param name Name of the event to be dispatched.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "A `TestElement` implementation for WebDriver.",
+      "jsdocTags": [],
+      "rawComment": "/** A `TestElement` implementation for WebDriver. */",
+      "implements": [
+        "TestElement"
+      ],
+      "source": {
+        "filePath": "/src/cdk/testing/selenium-webdriver/selenium-web-driver-element.ts",
+        "startLine": 17,
+        "endLine": 318
+      }
+    },
+    {
+      "name": "WebDriverHarnessEnvironmentOptions",
+      "isAbstract": false,
+      "entryType": "interface",
+      "members": [
+        {
+          "name": "queryFn",
+          "type": "(selector: string, root: () => webdriver.WebElement) => Promise<webdriver.WebElement[]>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "The query function used to find DOM elements.",
+          "jsdocTags": []
+        }
+      ],
+      "generics": [],
+      "description": "Options to configure the environment.",
+      "jsdocTags": [],
+      "rawComment": "/** Options to configure the environment. */",
+      "implements": [],
+      "source": {
+        "filePath": "/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts",
+        "startLine": 35,
+        "endLine": 38
+      }
+    },
+    {
+      "name": "waitForAngularReady",
+      "signatures": [
+        {
+          "name": "waitForAngularReady",
+          "entryType": "function",
+          "description": "Waits for angular to be ready after the page load.",
+          "generics": [],
+          "isNewType": false,
+          "jsdocTags": [],
+          "params": [
+            {
+              "name": "wd",
+              "description": "",
+              "type": "webdriver.WebDriver",
+              "isOptional": false,
+              "isRestParam": false
+            }
+          ],
+          "rawComment": "/** Waits for angular to be ready after the page load. */",
+          "returnType": "Promise<void>"
+        }
+      ],
+      "implementation": {
+        "params": [
+          {
+            "name": "wd",
+            "description": "",
+            "type": "webdriver.WebDriver",
+            "isOptional": false,
+            "isRestParam": false
+          }
+        ],
+        "isNewType": false,
+        "returnType": "Promise<void>",
+        "generics": [],
+        "name": "waitForAngularReady",
+        "description": "Waits for angular to be ready after the page load.",
+        "entryType": "function",
+        "jsdocTags": [],
+        "rawComment": "/** Waits for angular to be ready after the page load. */"
+      },
+      "entryType": "function",
+      "description": "Waits for angular to be ready after the page load.",
+      "jsdocTags": [],
+      "rawComment": "/** Waits for angular to be ready after the page load. */",
+      "source": {
+        "filePath": "/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts",
+        "startLine": 65,
+        "endLine": 68
+      }
+    },
+    {
+      "name": "SeleniumWebDriverHarnessEnvironment",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "constructor",
+          "signatures": [],
+          "implementation": {
+            "params": [
+              {
+                "name": "rawRootElement",
+                "description": "",
+                "type": "() => webdriver.WebElement",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "options",
+                "description": "",
+                "type": "WebDriverHarnessEnvironmentOptions | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "SeleniumWebDriverHarnessEnvironment",
+            "generics": [],
+            "name": "constructor",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": [
+            "protected"
+          ]
+        },
+        {
+          "name": "forceStabilize",
+          "signatures": [
+            {
+              "name": "forceStabilize",
+              "entryType": "function",
+              "description": "Flushes change detection and async tasks captured in the Angular zone.\nIn most cases it should not be necessary to call this manually. However, there may be some edge\ncases where it is needed to fully flush animation events.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * Flushes change detection and async tasks captured in the Angular zone.\n   * In most cases it should not be necessary to call this manually. However, there may be some edge\n   * cases where it is needed to fully flush animation events.\n   */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "forceStabilize",
+            "description": "Flushes change detection and async tasks captured in the Angular zone.\nIn most cases it should not be necessary to call this manually. However, there may be some edge\ncases where it is needed to fully flush animation events.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Flushes change detection and async tasks captured in the Angular zone.\n   * In most cases it should not be necessary to call this manually. However, there may be some edge\n   * cases where it is needed to fully flush animation events.\n   */"
+          },
+          "entryType": "function",
+          "description": "Flushes change detection and async tasks captured in the Angular zone.\nIn most cases it should not be necessary to call this manually. However, there may be some edge\ncases where it is needed to fully flush animation events.",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Flushes change detection and async tasks captured in the Angular zone.\n   * In most cases it should not be necessary to call this manually. However, there may be some edge\n   * cases where it is needed to fully flush animation events.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "waitForTasksOutsideAngular",
+          "signatures": [
+            {
+              "name": "waitForTasksOutsideAngular",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "docs-private",
+                  "comment": ""
+                }
+              ],
+              "params": [],
+              "rawComment": "/** @docs-private */",
+              "returnType": "Promise<void>"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "Promise<void>",
+            "generics": [],
+            "name": "waitForTasksOutsideAngular",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "docs-private",
+                "comment": ""
+              }
+            ],
+            "rawComment": "/** @docs-private */"
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [
+            {
+              "name": "docs-private",
+              "comment": ""
+            }
+          ],
+          "rawComment": "/** @docs-private */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "getDocumentRoot",
+          "signatures": [
+            {
+              "name": "getDocumentRoot",
+              "entryType": "function",
+              "description": "Gets the root element for the document.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Gets the root element for the document. */",
+              "returnType": "() => webdriver.WebElement"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "() => webdriver.WebElement",
+            "generics": [],
+            "name": "getDocumentRoot",
+            "description": "Gets the root element for the document.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Gets the root element for the document. */"
+          },
+          "entryType": "function",
+          "description": "Gets the root element for the document.",
+          "jsdocTags": [],
+          "rawComment": "/** Gets the root element for the document. */",
+          "memberType": "method",
+          "memberTags": [
+            "protected"
+          ]
+        },
+        {
+          "name": "createTestElement",
+          "signatures": [
+            {
+              "name": "createTestElement",
+              "entryType": "function",
+              "description": "Creates a `TestElement` from a raw element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "() => webdriver.WebElement",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Creates a `TestElement` from a raw element. */",
+              "returnType": "TestElement"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "() => webdriver.WebElement",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "TestElement",
+            "generics": [],
+            "name": "createTestElement",
+            "description": "Creates a `TestElement` from a raw element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Creates a `TestElement` from a raw element. */"
+          },
+          "entryType": "function",
+          "description": "Creates a `TestElement` from a raw element.",
+          "jsdocTags": [],
+          "rawComment": "/** Creates a `TestElement` from a raw element. */",
+          "memberType": "method",
+          "memberTags": [
+            "protected"
+          ]
+        },
+        {
+          "name": "createEnvironment",
+          "signatures": [
+            {
+              "name": "createEnvironment",
+              "entryType": "function",
+              "description": "Creates a `HarnessLoader` rooted at the given raw element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "element",
+                  "description": "",
+                  "type": "() => webdriver.WebElement",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Creates a `HarnessLoader` rooted at the given raw element. */",
+              "returnType": "HarnessEnvironment<() => webdriver.WebElement>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "element",
+                "description": "",
+                "type": "() => webdriver.WebElement",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "HarnessEnvironment<() => webdriver.WebElement>",
+            "generics": [],
+            "name": "createEnvironment",
+            "description": "Creates a `HarnessLoader` rooted at the given raw element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Creates a `HarnessLoader` rooted at the given raw element. */"
+          },
+          "entryType": "function",
+          "description": "Creates a `HarnessLoader` rooted at the given raw element.",
+          "jsdocTags": [],
+          "rawComment": "/** Creates a `HarnessLoader` rooted at the given raw element. */",
+          "memberType": "method",
+          "memberTags": [
+            "protected"
+          ]
+        },
+        {
+          "name": "getAllRawElements",
+          "signatures": [
+            {
+              "name": "getAllRawElements",
+              "entryType": "function",
+              "description": "Gets a list of all elements matching the given selector under this environment's root element.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "selector",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Gets a list of all elements matching the given selector under this environment's root element.\n   */",
+              "returnType": "Promise<(() => webdriver.WebElement)[]>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "selector",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "Promise<(() => webdriver.WebElement)[]>",
+            "generics": [],
+            "name": "getAllRawElements",
+            "description": "Gets a list of all elements matching the given selector under this environment's root element.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Gets a list of all elements matching the given selector under this environment's root element.\n   */"
+          },
+          "entryType": "function",
+          "description": "Gets a list of all elements matching the given selector under this environment's root element.",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Gets a list of all elements matching the given selector under this environment's root element.\n   */",
+          "memberType": "method",
+          "memberTags": [
+            "protected"
+          ]
+        },
+        {
+          "name": "getNativeElement",
+          "signatures": [
+            {
+              "name": "getNativeElement",
+              "entryType": "function",
+              "description": "Gets the ElementFinder corresponding to the given TestElement.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "el",
+                  "description": "",
+                  "type": "TestElement",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Gets the ElementFinder corresponding to the given TestElement. */",
+              "returnType": "webdriver.WebElement"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "el",
+                "description": "",
+                "type": "TestElement",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "webdriver.WebElement",
+            "generics": [],
+            "name": "getNativeElement",
+            "description": "Gets the ElementFinder corresponding to the given TestElement.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Gets the ElementFinder corresponding to the given TestElement. */"
+          },
+          "entryType": "function",
+          "description": "Gets the ElementFinder corresponding to the given TestElement.",
+          "jsdocTags": [],
+          "rawComment": "/** Gets the ElementFinder corresponding to the given TestElement. */",
+          "memberType": "method",
+          "memberTags": [
+            "static"
+          ]
+        },
+        {
+          "name": "loader",
+          "signatures": [
+            {
+              "name": "loader",
+              "entryType": "function",
+              "description": "Creates a `HarnessLoader` rooted at the document root.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "driver",
+                  "description": "",
+                  "type": "webdriver.WebDriver",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "options",
+                  "description": "",
+                  "type": "WebDriverHarnessEnvironmentOptions | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Creates a `HarnessLoader` rooted at the document root. */",
+              "returnType": "HarnessLoader"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "driver",
+                "description": "",
+                "type": "webdriver.WebDriver",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "options",
+                "description": "",
+                "type": "WebDriverHarnessEnvironmentOptions | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "HarnessLoader",
+            "generics": [],
+            "name": "loader",
+            "description": "Creates a `HarnessLoader` rooted at the document root.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Creates a `HarnessLoader` rooted at the document root. */"
+          },
+          "entryType": "function",
+          "description": "Creates a `HarnessLoader` rooted at the document root.",
+          "jsdocTags": [],
+          "rawComment": "/** Creates a `HarnessLoader` rooted at the document root. */",
+          "memberType": "method",
+          "memberTags": [
+            "static"
+          ]
+        }
+      ],
+      "generics": [],
+      "description": "A `HarnessEnvironment` implementation for WebDriver.",
+      "jsdocTags": [],
+      "rawComment": "/** A `HarnessEnvironment` implementation for WebDriver. */",
+      "extends": "HarnessEnvironment<\n  () => webdriver.WebElement\n>",
+      "implements": [],
+      "source": {
+        "filePath": "/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts",
+        "startLine": 71,
+        "endLine": 150
+      }
+    }
+  ],
+  "symbols": [
+    [
+      "SeleniumWebDriverElement",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "WebDriverHarnessEnvironmentOptions",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "waitForAngularReady",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.constructor",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.blur",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.clear",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.click",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.rightClick",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.focus",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.getCssValue",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.hover",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.mouseAway",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.sendKeys",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.text",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.setContenteditableValue",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.getAttribute",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.hasClass",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.getDimensions",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.getProperty",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.setInputValue",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.selectOptions",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.matchesSelector",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.isFocused",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverElement.dispatchEvent",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "WebDriverHarnessEnvironmentOptions",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "WebDriverHarnessEnvironmentOptions.queryFn",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "waitForAngularReady",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.constructor",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.forceStabilize",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.waitForTasksOutsideAngular",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.getDocumentRoot",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.createTestElement",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.createEnvironment",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.getAllRawElements",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.getNativeElement",
+      "@angular/cdk/testing/selenium-webdriver"
+    ],
+    [
+      "SeleniumWebDriverHarnessEnvironment.loader",
+      "@angular/cdk/testing/selenium-webdriver"
+    ]
+  ]
+}

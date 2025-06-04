@@ -1,11 +1,11 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "esbuild", "generate_api_docs", "ng_module", "ng_package", "tsec_test")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "esbuild", "generate_api_docs", "ng_package", "tsec_test")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "platform-server",
-    package_name = "@angular/platform-server",
     srcs = glob(
         [
             "*.ts",
@@ -13,17 +13,19 @@ ng_module(
         ],
         exclude = ["src/bundled-domino.d.ts"],
     ),
-    deps = [
-        ":bundled_domino_lib",
+    interop_deps = [
         "//packages/common",
         "//packages/common/http",
         "//packages/compiler",
-        "//packages/core",
         "//packages/platform-browser",
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//@types/node",
-        "@npm//rxjs",
-        "@npm//xhr2",
+        ":bundled_domino_lib",
+    ],
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/rxjs",
+        "//:node_modules/xhr2",
+        "//packages/core:core_rjs",
     ],
 )
 

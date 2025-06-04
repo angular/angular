@@ -1,23 +1,30 @@
-load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//tools:defaults.bzl", "http_server")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
-ng_module(
-    name = "template_driven_forms",
-    srcs = glob(["**/*.ts"]),
-    tsconfig = "//modules/playground:tsconfig-build.json",
+optimize_angular_app(
+    name = "bundles",
+    srcs = glob(["**/*.ts"]) + ["index.html"],
+    include_zonejs = True,
     deps = [
-        "//packages/core",
-        "//packages/forms",
-        "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//modules:node_modules/@angular/build",
+        "//modules:node_modules/@angular/common",
+        "//modules:node_modules/@angular/core",
+        "//modules:node_modules/@angular/forms",
+        "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/zone.js",
     ],
 )
 
-app_bundle(
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
     name = "app_bundle",
-    entry_point = ":index.ts",
-    deps = [":template_driven_forms"],
+    srcs = [":bundles"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $</main.js $@",
 )
 
 http_server(

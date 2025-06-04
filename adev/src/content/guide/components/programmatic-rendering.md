@@ -25,10 +25,10 @@ export class StandardBio { /* ... */ }
     <ng-container *ngComponentOutlet="getBioComponent()" /> `
 })
 export class CustomDialog {
-  @Input() user: User;
+  user = input.required<User>();
 
   getBioComponent() {
-    return this.user.isAdmin ? AdminBio : StandardBio;
+    return this.user().isAdmin ? AdminBio : StandardBio;
   }
 }
 ```

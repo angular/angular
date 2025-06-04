@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {main} from './index';
+import {main} from './index.js';
 
 main(process.argv.slice(2))
   .then((exitCode) => (process.exitCode = exitCode))

@@ -23,14 +23,15 @@
           } @else {
             <a
               [routerLink]="'/' + item.path"
-              [routerLinkActiveOptions]="{
-                queryParams: 'ignored',
-                fragment: 'ignored',
-                matrixParams: 'exact',
-                paths: 'exact',
-                exact: false
-              }"
+              
+              
+              
+              
+              
+              
+              
               routerLinkActive="docs-faceted-list-item-active"
+              [routerLinkActiveOptions]="{ exact: true }"
               (click)="emitClickOnLink()"
               [matTooltip]="item.label"
               [matTooltipDisabled]="item.label.length < 27"

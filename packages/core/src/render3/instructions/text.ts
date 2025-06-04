@@ -7,19 +7,17 @@
  */
 import {validateMatchingNode} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
-import {isDisconnectedNode, markRNodeAsClaimedByHydration} from '../../hydration/utils';
-import {isDetachedByI18n} from '../../i18n/utils';
-import {assertEqual, assertIndexInRange} from '../../util/assert';
+import {canHydrateNode, markRNodeAsClaimedByHydration} from '../../hydration/utils';
+import {assertIndexInRange} from '../../util/assert';
+import {assertTNodeCreationIndex} from '../assert';
+import {createTextNode} from '../dom_node_manipulation';
 import {TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RText} from '../interfaces/renderer_dom';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
-import {createTextNode} from '../dom_node_manipulation';
 import {
-  getBindingIndex,
   getLView,
   getTView,
-  isInSkipHydrationBlock,
   lastNodeWasCreated,
   setCurrentTNode,
   wasLastNodeCreated,
@@ -39,13 +37,7 @@ export function ɵɵtext(index: number, value: string = ''): void {
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
-  ngDevMode &&
-    assertEqual(
-      getBindingIndex(),
-      tView.bindingStartIndex,
-      'text nodes should be created before any bindings',
-    );
-  ngDevMode && assertIndexInRange(lView, adjustedIndex);
+  ngDevMode && assertTNodeCreationIndex(lView, index);
 
   const tNode = tView.firstCreatePass
     ? getOrCreateTNode(tView, adjustedIndex, TNodeType.Text, value, null)
@@ -84,12 +76,7 @@ function locateOrCreateTextNodeImpl(
   value: string,
   index: number,
 ): RText {
-  const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode =
-    !hydrationInfo ||
-    isInSkipHydrationBlock() ||
-    isDetachedByI18n(tNode) ||
-    isDisconnectedNode(hydrationInfo, index);
+  const isNodeCreationMode = !canHydrateNode(lView, tNode);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
@@ -98,6 +85,7 @@ function locateOrCreateTextNodeImpl(
   }
 
   // Hydration mode, looking up an existing element in DOM.
+  const hydrationInfo = lView[HYDRATION]!;
   const textNative = locateNextRNode(hydrationInfo, tView, lView, tNode) as RText;
 
   ngDevMode && validateMatchingNode(textNative, Node.TEXT_NODE, null, lView, tNode);

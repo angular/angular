@@ -7,12 +7,19 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {afterNextRender, Component, effect, input, viewChild} from '@angular/core';
+import {afterNextRender, Component, effect, inject, input, signal, viewChild} from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
-import {Route} from 'protocol';
-import {RouterTreeVisualizer} from './router-tree-visualizer';
+import {RouterTreeD3Node, RouterTreeVisualizer} from './router-tree-visualizer';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {TreeVisualizerHostComponent} from '../tree-visualizer-host/tree-visualizer-host.component';
+import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import {ApplicationOperations} from '../../application-operations/index';
+import {RouteDetailsRowComponent} from './route-details-row.component';
+import {MatTableModule} from '@angular/material/table';
+import {FrameManager} from '../../application-services/frame_manager';
+import {Events, MessageBus, Route} from '../../../../../protocol';
 
 const DEFAULT_FILTER = /.^/;
 
@@ -20,7 +27,18 @@ const DEFAULT_FILTER = /.^/;
   selector: 'ng-router-tree',
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
-  imports: [CommonModule, MatInputModule, MatCheckboxModule, TreeVisualizerHostComponent],
+  imports: [
+    CommonModule,
+    MatInputModule,
+    MatCheckboxModule,
+    TreeVisualizerHostComponent,
+    SplitComponent,
+    SplitAreaDirective,
+    MatIconModule,
+    MatButtonModule,
+    MatTableModule,
+    RouteDetailsRowComponent,
+  ],
   standalone: true,
 })
 export class RouterTreeComponent {
@@ -29,16 +47,26 @@ export class RouterTreeComponent {
   private routerTreeVisualizer!: RouterTreeVisualizer;
   private showFullPath = false;
 
+  private readonly messageBus = inject(MessageBus) as MessageBus<Events>;
+  private readonly appOperations = inject(ApplicationOperations);
+  private readonly frameManager = inject(FrameManager);
+
+  protected selectedRoute = signal<RouterTreeD3Node | null>(null);
+
   routes = input<Route[]>([]);
   snapToRoot = input(false);
 
+  private readonly visualizerReady = signal<boolean>(false);
+
   constructor() {
-    effect(() => {
-      this.renderGraph(this.routes());
+    effect(async () => {
+      if (this.visualizerReady()) {
+        this.renderGraph(this.routes());
+      }
     });
 
-    effect(() => {
-      if (this.snapToRoot()) {
+    effect(async () => {
+      if (this.visualizerReady() && this.snapToRoot()) {
         this.routerTreeVisualizer.snapToRoot(0.6);
       }
     });
@@ -63,6 +91,8 @@ export class RouterTreeComponent {
     this.routerTreeVisualizer = new RouterTreeVisualizer(container, group, {
       nodeSeparation: () => 1,
     });
+
+    this.visualizerReady.set(true);
   }
 
   searchRoutes(event: Event) {
@@ -74,5 +104,24 @@ export class RouterTreeComponent {
 
   renderGraph(routes: Route[]): void {
     this.routerTreeVisualizer?.render(routes[0], this.filterRegex, this.showFullPath);
+    this.routerTreeVisualizer?.onNodeClick((_, node) => {
+      this.selectedRoute.set(node);
+    });
+  }
+
+  viewSourceFromRouter(className: string, type: string): void {
+    this.appOperations.viewSourceFromRouter(className, type, this.frameManager.selectedFrame()!);
+  }
+
+  viewComponentSource(component: string): void {
+    this.appOperations.viewSourceFromRouter(
+      component,
+      'component',
+      this.frameManager.selectedFrame()!,
+    );
+  }
+
+  navigateRoute(route: any): void {
+    this.messageBus.emit('navigateRoute', [route.data.path]);
   }
 }

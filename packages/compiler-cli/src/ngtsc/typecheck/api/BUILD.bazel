@@ -1,12 +1,11 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "api",
     srcs = glob(["**/*.ts"]),
-    module_name = "@angular/compiler-cli/src/ngtsc/typecheck/api",
-    deps = [
+    interop_deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
@@ -15,6 +14,9 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/util",
-        "@npm//typescript",
+    ],
+    module_name = "@angular/compiler-cli/src/ngtsc/typecheck/api",
+    deps = [
+        "//:node_modules/typescript",
     ],
 )

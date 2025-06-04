@@ -2,5 +2,5 @@
   "title": "Add dynamic values to templates",
   "type": "editor",
   "answerSrc": "../08-ngFor/src",
-  "openFiles": ["src/app/housing-location/housing-location.component.ts"]
+  "openFiles": ["src/app/housing-location/housing-location.ts"]
 }

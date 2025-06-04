@@ -24,14 +24,16 @@ import {
   AnimationDriver,
   ɵAnimationEngine,
   ɵnormalizeKeyframes as normalizeKeyframes,
+  ɵTransitionAnimationPlayer as TransitionAnimationPlayer,
+  ɵENTER_CLASSNAME as ENTER_CLASSNAME,
+  ɵLEAVE_CLASSNAME as LEAVE_CLASSNAME,
 } from '@angular/animations/browser';
-import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
 import {Component, HostBinding, ViewChild} from '../../src/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {isNode} from '@angular/private/testing';
 
 import {HostListener} from '../../src/metadata/directives';
 

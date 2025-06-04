@@ -162,7 +162,7 @@ describe('demo (with TestBed):', () => {
     // beforeEach(waitForAsync(() => {
     //   TestBed.configureTestingModule()
     //     // Compile everything in DemoModule
-    //     .compileComponents();
+    //     ;
     // }));
 
     it('should create a component with inline template', () => {
@@ -268,7 +268,7 @@ describe('demo (with TestBed):', () => {
           input.value = expectedNewName;
 
           // that change doesn't flow to the component immediately
-          expect(comp.name)
+          expect(comp.name())
             .withContext(
               `comp.name should still be ${expectedOrigName} after value change, before binding happens`,
             )
@@ -280,7 +280,7 @@ describe('demo (with TestBed):', () => {
           return fixture.whenStable();
         })
         .then(() => {
-          expect(comp.name)
+          expect(comp.name())
             .withContext(`After ngModel updates the model, comp.name should be ${expectedNewName} `)
             .toBe(expectedNewName);
         });
@@ -570,134 +570,6 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
       expect(fixture).toHaveText('Parent(Fake Child(Fake Grandchild))');
     });
-  });
-
-  describe('lifecycle hooks w/ MyIfParentComp', () => {
-    let fixture: ComponentFixture<MyIfParentComponent>;
-    let parent: MyIfParentComponent;
-    let child: MyIfChildComponent;
-
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        imports: [FormsModule, MyIfChildComponent, MyIfParentComponent],
-      });
-
-      fixture = TestBed.createComponent(MyIfParentComponent);
-      parent = fixture.componentInstance;
-    });
-
-    it('should instantiate parent component', () => {
-      expect(parent).withContext('parent component should exist').not.toBeNull();
-    });
-
-    it('parent component OnInit should NOT be called before first detectChanges()', () => {
-      expect(parent.ngOnInitCalled).toBe(false);
-    });
-
-    it('parent component OnInit should be called after first detectChanges()', () => {
-      fixture.detectChanges();
-      expect(parent.ngOnInitCalled).toBe(true);
-    });
-
-    it('child component should exist after OnInit', () => {
-      fixture.detectChanges();
-      getChild();
-      expect(child instanceof MyIfChildComponent)
-        .withContext('should create child')
-        .toBe(true);
-    });
-
-    it("should have called child component's OnInit ", () => {
-      fixture.detectChanges();
-      getChild();
-      expect(child.ngOnInitCalled).toBe(true);
-    });
-
-    it('child component called OnChanges once', () => {
-      fixture.detectChanges();
-      getChild();
-      expect(child.ngOnChangesCounter).toBe(1);
-    });
-
-    it('changed parent value flows to child', () => {
-      fixture.detectChanges();
-      getChild();
-
-      parent.parentValue = 'foo';
-      fixture.detectChanges();
-
-      expect(child.ngOnChangesCounter)
-        .withContext('expected 2 changes: initial value and changed value')
-        .toBe(2);
-      expect(child.childValue).withContext('childValue should eq changed parent value').toBe('foo');
-    });
-
-    // must be async test to see child flow to parent
-    it('changed child value flows to parent', waitForAsync(() => {
-      fixture.detectChanges();
-      getChild();
-
-      child.childValue = 'bar';
-
-      return new Promise<void>((resolve) => {
-        // Wait one JS engine turn!
-        setTimeout(() => resolve(), 0);
-      }).then(() => {
-        fixture.detectChanges();
-
-        expect(child.ngOnChangesCounter)
-          .withContext('expected 2 changes: initial value and changed value')
-          .toBe(2);
-        expect(parent.parentValue)
-          .withContext('parentValue should eq changed parent value')
-          .toBe('bar');
-      });
-    }));
-
-    it('clicking "Close Child" triggers child OnDestroy', () => {
-      fixture.detectChanges();
-      getChild();
-
-      const btn = fixture.debugElement.query(By.css('button'));
-      click(btn);
-
-      fixture.detectChanges();
-      expect(child.ngOnDestroyCalled).toBe(true);
-    });
-
-    ////// helpers ///
-    /**
-     * Get the MyIfChildComp from parent; fail w/ good message if cannot.
-     */
-    function getChild() {
-      let childDe: DebugElement; // DebugElement that should hold the MyIfChildComp
-
-      // The Hard Way: requires detailed knowledge of the parent template
-      try {
-        childDe = fixture.debugElement.children[4].children[0];
-      } catch (err) {
-        /* we'll report the error */
-      }
-
-      // DebugElement.queryAll: if we wanted all of many instances:
-      childDe = fixture.debugElement.queryAll(
-        (de) => de.componentInstance instanceof MyIfChildComponent,
-      )[0];
-
-      // WE'LL USE THIS APPROACH !
-      // DebugElement.query: find first instance (if any)
-      childDe = fixture.debugElement.query(
-        (de) => de.componentInstance instanceof MyIfChildComponent,
-      );
-
-      if (childDe && childDe.componentInstance) {
-        child = childDe.componentInstance;
-      } else {
-        fail('Unable to find MyIfChildComp within MyIfParentComp');
-      }
-
-      return child;
-    }
   });
 });
 ////////// Fakes ///////////

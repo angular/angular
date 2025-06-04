@@ -37,6 +37,7 @@ TEST_FILES = APPLICATION_FILES + [
 
 APPLICATION_ASSETS = [
     "//adev/src/assets/images",
+    "//adev/src/assets/others",
     "//adev/src/assets/previews",
     "//adev/src/assets:tutorials",
     "//adev/src/assets/icons",
@@ -61,6 +62,7 @@ APPLICATION_DEPS = [
     "@npm//@angular/router",
     "@npm//@angular/ssr",
     "@npm//@types/dom-navigation",
+    "@npm//fflate",
     "@npm//marked",
     "@npm//ngx-progressbar",
     "@npm//rxjs",

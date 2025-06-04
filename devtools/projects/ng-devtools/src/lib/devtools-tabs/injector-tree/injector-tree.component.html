@@ -2,15 +2,8 @@
   <p class="not-supported">
     This feature is only available on version 17.0.0 or higher of Angular.
   </p>
-}
-<as-split
-  [class.hidden]="!diDebugAPIsAvailable()"
-  unit="pixel"
-  direction="vertical"
-  [gutterSize]="9"
-  [disabled]="true"
->
-  <as-split-area size="50">
+} @else {
+  <div class="wrapper">
     <div class="options">
       <mat-checkbox (change)="toggleHideInjectorsWithNoProviders()">
         Hide injectors with no providers
@@ -19,12 +12,15 @@
         Hide framework injectors
       </mat-checkbox>
     </div>
-  </as-split-area>
-  <as-split-area>
-    <as-split unit="percent" direction="horizontal" [gutterSize]="9">
+    <as-split class="trees" unit="percent" direction="horizontal" [gutterSize]="9">
       <as-split-area size="60">
-        <as-split unit="percent" direction="vertical" [gutterSize]="9">
-          <as-split-area size="35">
+        <as-split
+          [ngResponsiveSplit]="responsiveSplitConfig"
+          (directionChange)="onResponsiveSplitDirChange($event)"
+          unit="percent"
+          [gutterSize]="9"
+        >
+          <as-split-area [size]="envHierarchySize()">
             <div class="injector-hierarchy">
               <h2>
                 <span>Environment Hierarchy</span>
@@ -41,7 +37,7 @@
               </section>
             </div>
           </as-split-area>
-          <as-split-area size="65">
+          <as-split-area [size]="elHierarchySize()">
             <div class="injector-hierarchy">
               <h2>
                 <span>Element Hierarchy</span>
@@ -69,5 +65,5 @@
         </as-split-area>
       }
     </as-split>
-  </as-split-area>
-</as-split>
+  </div>
+}

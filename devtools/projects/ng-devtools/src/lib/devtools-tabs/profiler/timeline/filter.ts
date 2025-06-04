@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ProfilerFrame} from 'protocol';
+import {ProfilerFrame} from '../../../../../../protocol';
 
 import {GraphNode} from './record-formatter/record-formatter';
 

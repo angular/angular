@@ -86,7 +86,7 @@ export class BrowserDomAdapter extends DomAdapter {
 
 let baseElement: HTMLElement | null = null;
 function getBaseElementHref(): string | null {
-  baseElement = baseElement || document.querySelector('base');
+  baseElement = baseElement || document.head.querySelector('base');
   return baseElement ? baseElement.getAttribute('href') : null;
 }
 

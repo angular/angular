@@ -61,8 +61,7 @@ export function migrate(options: Options): Rule {
       afterAnalysisFailure: () => {
         context.logger.error('Migration failed unexpectedly with no analysis data');
       },
-      whenDone: ({counters}) => {
-        const {sourceInputs, incompatibleInputs} = counters;
+      whenDone: ({sourceInputs, incompatibleInputs}) => {
         const migratedInputs = sourceInputs - incompatibleInputs;
 
         context.logger.info('');

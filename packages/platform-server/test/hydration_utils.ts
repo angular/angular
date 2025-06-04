@@ -13,19 +13,17 @@ import {
   Injectable,
   Provider,
   Type,
+  ɵConsole as Console,
+  ɵHydrationStatus as HydrationStatus,
+  ɵreadHydrationInfo as readHydrationInfo,
+  ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
 } from '@angular/core';
-import {Console} from '@angular/core/src/console';
-import {
-  HydrationStatus,
-  readHydrationInfo,
-  SSR_CONTENT_INTEGRITY_MARKER,
-} from '@angular/core/src/hydration/utils';
 import {
   bootstrapApplication,
   HydrationFeature,
   provideClientHydration,
+  HydrationFeatureKind,
 } from '@angular/platform-browser';
-import {HydrationFeatureKind} from '@angular/platform-browser/src/hydration';
 
 import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
@@ -42,7 +40,7 @@ export const EMPTY_TEXT_NODE_COMMENT = 'ngetn';
 export const TEXT_NODE_SEPARATOR_COMMENT = 'ngtns';
 
 export const SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
-export const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
+export const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE: string = SKIP_HYDRATION_ATTR_NAME.toLowerCase();
 
 export const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 

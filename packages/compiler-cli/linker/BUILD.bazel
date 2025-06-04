@@ -1,20 +1,22 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "linker",
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
         "//packages/compiler-cli/src/ngtsc/translator",
-        "@npm//@types/semver",
-        "@npm//semver",
-        "@npm//typescript",
+    ],
+    deps = [
+        "//:node_modules/@types/semver",
+        "//:node_modules/semver",
+        "//:node_modules/typescript",
     ],
 )

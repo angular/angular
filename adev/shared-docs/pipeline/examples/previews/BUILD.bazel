@@ -1,19 +1,19 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "index",
     srcs = [
-        "index.ts",
+        "index.mts",
     ],
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        "@npm//@types/node",
-        "@npm//tinyglobby",
-        "@npm//typescript",
+        "//:node_modules/@types/node",
+        "//:node_modules/tinyglobby",
+        "//:node_modules/typescript",
     ],
 )
 
@@ -24,6 +24,6 @@ filegroup(
 )
 
 exports_files([
-    "index.ts",
+    "index.mts",
     "previews.template",
 ])

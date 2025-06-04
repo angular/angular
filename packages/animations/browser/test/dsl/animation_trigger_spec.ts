@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {isNode} from '@angular/private/testing';
+
 import {animate, AnimationOptions, state, style, transition} from '../../../src/animations';
 import {AnimationTransitionInstruction} from '../../src/dsl/animation_transition_instruction';
 import {AnimationTrigger} from '../../src/dsl/animation_trigger';

@@ -1,5 +1,5 @@
 // ...
 if (rf & 2) {
-  $r3$.ɵɵstylePropInterpolate2("width", "a", ctx.one, "b", ctx.two, "c", "px");
+  $r3$.ɵɵstyleProp("width", $r3$.ɵɵinterpolate2("a", ctx.one, "b", ctx.two, "c"), "px");
 }
 // ...

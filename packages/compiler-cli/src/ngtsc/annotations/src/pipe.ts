@@ -14,7 +14,6 @@ import {
   FactoryTarget,
   R3ClassMetadata,
   R3PipeMetadata,
-  WrappedNodeExpr,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -53,7 +52,7 @@ import {
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
   classMetadata: R3ClassMetadata | null;
-  pipeNameExpr: ts.Expression;
+  pipeNameExpr: ts.Expression | null;
   decorator: ts.Decorator | null;
 }
 
@@ -137,61 +136,72 @@ export class PipeDecoratorHandler
         `@Pipe must be called`,
       );
     }
-    if (decorator.args.length !== 1) {
-      throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARITY_WRONG,
-        decorator.node,
-        '@Pipe must have exactly one argument',
-      );
-    }
-    const meta = unwrapExpression(decorator.args[0]);
-    if (!ts.isObjectLiteralExpression(meta)) {
-      throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ARG_NOT_LITERAL,
-        meta,
-        '@Pipe must have a literal argument',
-      );
-    }
-    const pipe = reflectObjectLiteral(meta);
 
-    if (!pipe.has('name')) {
-      throw new FatalDiagnosticError(
-        ErrorCode.PIPE_MISSING_NAME,
-        meta,
-        `@Pipe decorator is missing name field`,
-      );
-    }
-    const pipeNameExpr = pipe.get('name')!;
-    const pipeName = this.evaluator.evaluate(pipeNameExpr);
-    if (typeof pipeName !== 'string') {
-      throw createValueHasWrongTypeError(pipeNameExpr, pipeName, `@Pipe.name must be a string`);
-    }
-
+    const meta =
+      decorator.args.length === 0 ||
+      // TODO(crisbeto): temporary for testing until we've changed
+      // the pipe public API not to require a name.
+      (ts.isNonNullExpression(decorator.args[0]) &&
+        decorator.args[0].expression.kind === ts.SyntaxKind.NullKeyword)
+        ? null
+        : unwrapExpression(decorator.args[0]);
+    let pipeName: string | null = null;
+    let pipeNameExpr: ts.Expression | null = null;
     let pure = true;
-    if (pipe.has('pure')) {
-      const expr = pipe.get('pure')!;
-      const pureValue = this.evaluator.evaluate(expr);
-      if (typeof pureValue !== 'boolean') {
-        throw createValueHasWrongTypeError(expr, pureValue, `@Pipe.pure must be a boolean`);
-      }
-      pure = pureValue;
-    }
-
     let isStandalone = this.implicitStandaloneValue;
-    if (pipe.has('standalone')) {
-      const expr = pipe.get('standalone')!;
-      const resolved = this.evaluator.evaluate(expr);
-      if (typeof resolved !== 'boolean') {
-        throw createValueHasWrongTypeError(expr, resolved, `standalone flag must be a boolean`);
-      }
-      isStandalone = resolved;
 
-      if (!isStandalone && this.strictStandalone) {
+    if (meta !== null) {
+      if (!ts.isObjectLiteralExpression(meta)) {
         throw new FatalDiagnosticError(
-          ErrorCode.NON_STANDALONE_NOT_ALLOWED,
-          expr,
-          `Only standalone pipes are allowed when 'strictStandalone' is enabled.`,
+          ErrorCode.DECORATOR_ARG_NOT_LITERAL,
+          meta,
+          '@Pipe must have a literal argument',
         );
+      }
+
+      const pipe = reflectObjectLiteral(meta);
+      if (!pipe.has('name')) {
+        throw new FatalDiagnosticError(
+          ErrorCode.PIPE_MISSING_NAME,
+          meta,
+          `@Pipe decorator is missing name field`,
+        );
+      }
+      pipeNameExpr = pipe.get('name')!;
+      const evaluatedName = this.evaluator.evaluate(pipeNameExpr);
+      if (typeof evaluatedName !== 'string') {
+        throw createValueHasWrongTypeError(
+          pipeNameExpr,
+          evaluatedName,
+          `@Pipe.name must be a string`,
+        );
+      }
+      pipeName = evaluatedName;
+
+      if (pipe.has('pure')) {
+        const expr = pipe.get('pure')!;
+        const pureValue = this.evaluator.evaluate(expr);
+        if (typeof pureValue !== 'boolean') {
+          throw createValueHasWrongTypeError(expr, pureValue, `@Pipe.pure must be a boolean`);
+        }
+        pure = pureValue;
+      }
+
+      if (pipe.has('standalone')) {
+        const expr = pipe.get('standalone')!;
+        const resolved = this.evaluator.evaluate(expr);
+        if (typeof resolved !== 'boolean') {
+          throw createValueHasWrongTypeError(expr, resolved, `standalone flag must be a boolean`);
+        }
+        isStandalone = resolved;
+
+        if (!isStandalone && this.strictStandalone) {
+          throw new FatalDiagnosticError(
+            ErrorCode.NON_STANDALONE_NOT_ALLOWED,
+            expr,
+            `Only standalone pipes are allowed when 'strictStandalone' is enabled.`,
+          );
+        }
       }
     }
 
@@ -216,7 +226,7 @@ export class PipeDecoratorHandler
   }
 
   symbol(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): PipeSymbol {
-    return new PipeSymbol(node, analysis.meta.pipeName);
+    return new PipeSymbol(node, analysis.meta.pipeName ?? analysis.meta.name);
   }
 
   register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {

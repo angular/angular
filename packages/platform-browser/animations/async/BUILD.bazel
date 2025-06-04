@@ -1,11 +1,12 @@
-load("//tools:defaults.bzl", "ng_module", "tsec_test")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["package.json"])
 
-ng_module(
+ng_project(
     name = "async",
     srcs = glob(
         [
@@ -13,12 +14,14 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    deps = [
-        "//packages/animations",
-        "//packages/animations/browser",
+    interop_deps = [
         "//packages/common",
-        "//packages/core",
-        "//packages/platform-browser",
+    ],
+    deps = [
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
     ],
 )
 

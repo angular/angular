@@ -2,15 +2,32 @@
 @use '@angular/docs/styles/reference' as ref;
 
 :host {
-  display: block;
+  display: flex;
+  justify-content: center;
   width: 100%;
-  max-width: var(--page-width);
-  padding: var(--layout-padding) 0 1rem var(--layout-padding);
-  box-sizing: border-box;
 
-  @include mq.for-desktop-down {
-    padding: var(--layout-padding);
-    max-width: none;
+  padding-top: var(--layout-padding);
+  padding-bottom: var(--layout-padding);
+
+
+  //applying styles when TOC position got translated to the top right 
+  @include mq.for-large-desktop-up {
+    // take the available space except a reserved area for TOC
+    width: calc(100% - 16rem);
+  }
+
+
+  docs-viewer {
+    display: block;
+    padding-inline: var(--layout-padding);
+    width: 100%;
+
+    //applying styles when TOC position got translated to the top right 
+    @include mq.for-large-desktop-up {
+      // take the available space except a reserved area for TOC
+      max-width: var(--page-width);
+    }
+
   }
 
   &::-webkit-scrollbar-thumb {
@@ -19,24 +36,39 @@
     transition: background-color 0.3s ease;
   }
 
+  &>* {
+    padding-inline: 0px;
+
+    @include mq.for-extra-large-desktop-up {
+      width: var(--page-width);
+    }
+  }
+
   h1 {
     font-size: 1.5rem;
   }
+
   h2 {
     font-size: 1.25rem;
   }
+
   h3 {
     font-size: 1rem;
   }
+
   h4 {
     font-size: 0.95rem;
   }
+
   h5 {
     font-size: 0.875rem;
   }
+
   h6 {
     font-size: 0.6rem;
   }
+
+
 }
 
 ::ng-deep {

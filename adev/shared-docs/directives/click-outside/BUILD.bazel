@@ -1,28 +1,29 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ng_module", "ts_library")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
-ng_module(
+ng_project(
     name = "click-outside",
     srcs = [
         "click-outside.directive.ts",
     ],
-    visibility = [
-        "//adev/shared-docs/directives:__pkg__",
-    ],
-    deps = [
+    interop_deps = [
         "//packages/common",
         "//packages/core",
     ],
+    visibility = [
+        "//adev/shared-docs/directives:__pkg__",
+    ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["*.spec.ts"],
     ),
-    deps = [
+    interop_deps = [
         ":click-outside",
         "//packages/core",
         "//packages/core/testing",

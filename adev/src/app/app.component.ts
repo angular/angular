@@ -11,10 +11,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
   PLATFORM_ID,
-  input,
   signal,
+  isDevMode,
 } from '@angular/core';
 import {NavigationEnd, NavigationSkipped, Router, RouterOutlet} from '@angular/router';
 import {filter, map} from 'rxjs/operators';
@@ -51,7 +50,7 @@ import {HeaderService} from './core/services/header.service';
     '(window:keydown)': 'setSearchDialogVisibilityOnKeyPress($event)',
   },
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly headerService = inject(HeaderService);
@@ -62,7 +61,7 @@ export class AppComponent implements OnInit {
   displayFooter = signal(false);
   displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
-  ngOnInit(): void {
+  constructor() {
     this.closeSearchDialogOnNavigationSkipped();
     this.router.events
       .pipe(
@@ -96,6 +95,13 @@ export class AppComponent implements OnInit {
     if (event.key === ESCAPE && this.displaySearchDialog()) {
       event.preventDefault();
       this.displaySearchDialog.set(false);
+    }
+
+    if (isDevMode() && event.key === 'o' && (event.metaKey || event.ctrlKey)) {
+      // In debug this shortcut allows us to open the same page on adev
+      // Helpful to compare differences
+      event.preventDefault();
+      window.open(`https://angular.dev/${location.pathname}`, '_blank');
     }
   }
 

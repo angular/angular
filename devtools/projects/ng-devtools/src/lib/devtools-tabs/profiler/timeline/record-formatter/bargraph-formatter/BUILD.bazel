@@ -1,22 +1,24 @@
-load("//devtools/tools:typescript.bzl", "ts_library")
+load("//devtools/tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "bargraph-formatter",
     srcs = glob(
         include = [
             "*.ts",
         ],
     ),
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter",
-        "//devtools/projects/ng-devtools/src/lib/vendor/memo-decorator",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
-        "@npm//ngx-flamegraph",
-        "@npm//rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
+    ],
+    deps = [
+        "//:node_modules/ngx-flamegraph",
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline/record-formatter:record-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/vendor/memo-decorator:memo-decorator_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )

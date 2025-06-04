@@ -9,11 +9,17 @@
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {ResourceLoader} from '@angular/compiler';
 import {
+  BrowserModule,
+  ɵDomRendererFactory2 as DomRendererFactory2,
+} from '@angular/platform-browser';
+import type {ServerModule} from '@angular/platform-server';
+import {createTemplate, dispatchEvent, getContent, isNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
+import {
   APP_BOOTSTRAP_LISTENER,
   APP_INITIALIZER,
   ChangeDetectionStrategy,
   Compiler,
-  CompilerFactory,
   Component,
   EnvironmentInjector,
   InjectionToken,
@@ -32,21 +38,12 @@ import {
 import {ErrorHandler} from '../src/error_handler';
 import {ComponentRef} from '../src/linker/component_factory';
 import {createEnvironmentInjector, getLocaleId} from '../src/render3';
-import {BrowserModule} from '@angular/platform-browser';
-import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
-import {
-  createTemplate,
-  dispatchEvent,
-  getContent,
-} from '@angular/platform-browser/testing/src/browser_util';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
-import type {ServerModule} from '@angular/platform-server';
 
+import {take} from 'rxjs/operators';
+import {compileNgModuleFactory} from '../src/application/application_ngmodule_factory_compiler';
 import {ApplicationRef} from '../src/application/application_ref';
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
-import {take} from 'rxjs/operators';
-import {compileNgModuleFactory} from '../src/application/application_ngmodule_factory_compiler';
 
 let serverPlatformModule: Promise<Type<ServerModule>> | null = null;
 if (isNode) {
@@ -1009,8 +1006,16 @@ describe('AppRef', () => {
     describe('unstable', () => {
       let unstableCalled = false;
 
+      beforeEach(() => {
+        globalThis['ngServerMode'] = isNode;
+      });
+
       afterEach(() => {
         expect(unstableCalled).toBe(true, 'isStable did not emit false on unstable');
+      });
+
+      afterEach(() => {
+        globalThis['ngServerMode'] = undefined;
       });
 
       function expectUnstable(appRef: ApplicationRef) {

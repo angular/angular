@@ -7,8 +7,8 @@
  */
 
 import {h} from 'preact';
-import {convertSectionNameToId} from '../transforms/reference-section-id';
-import {SECTION_HEADING} from '../styling/css-classes';
+import {convertSectionNameToId} from '../transforms/reference-section-id.mjs';
+import {SECTION_HEADING} from '../styling/css-classes.mjs';
 
 /** Component to render the API section. */
 export function SectionHeading(props: {name: string}) {

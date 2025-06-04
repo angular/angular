@@ -1,7 +1,8 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "tsec_test")
+load("//tools:defaults2.bzl", "ng_project", "npm_package", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -20,7 +21,19 @@ generated_file_test(
     generated = ":base_locale_file_generated",
 )
 
-ng_module(
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig-build.json",
+    deps = ["//packages:tsconfig_build"],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    deps = ["//packages:tsconfig_test"],
+)
+
+ng_project(
     name = "core",
     srcs = glob(
         [
@@ -28,19 +41,22 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    deps = [
-        "//packages:types",
+    interop_deps = [
+        "//packages/core/primitives/defer:triggers",
         "//packages/core/primitives/di",
         "//packages/core/primitives/dom-navigation",
         "//packages/core/primitives/event-dispatch",
-        "//packages/core/primitives/signals",
-        "//packages/core/src/compiler",
-        "//packages/core/src/di/interface",
-        "//packages/core/src/interface",
-        "//packages/core/src/reflection",
-        "//packages/core/src/util",
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages:goog_types_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/src/compiler:compiler_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
+        "//packages/core/src/interface:interface_rjs",
+        "//packages/core/src/reflection:reflection_rjs",
+        "//packages/core/src/util:util_rjs",
     ],
 )
 
@@ -86,6 +102,16 @@ ng_package(
         "//packages/core/rxjs-interop",
         "//packages/core/testing",
     ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making this package usable in `core/test/bundling`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )
 
 api_golden_test_npm_package(

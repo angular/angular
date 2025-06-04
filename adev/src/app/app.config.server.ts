@@ -14,4 +14,4 @@ const serverConfig: ApplicationConfig = {
   providers: [provideServerRendering(withRoutes([{path: '**', renderMode: RenderMode.Prerender}]))],
 };
 
-export const config = mergeApplicationConfig(appConfig, serverConfig);
+export const config: ApplicationConfig = mergeApplicationConfig(appConfig, serverConfig);

@@ -1,6 +1,0 @@
-{
-  "title": "Create home component",
-  "type": "editor",
-  "answerSrc": "../03-HousingLocation/src",
-  "openFiles": ["src/app/app.component.ts"]
-}

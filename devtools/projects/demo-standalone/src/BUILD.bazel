@@ -1,7 +1,7 @@
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 load("//tools:defaults.bzl", "esbuild", "http_server")
 
@@ -38,11 +38,10 @@ copy_to_directory(
     },
 )
 
-ng_module(
+ng_project(
     name = "demo",
     srcs = ["main.ts"],
-    deps = [
-        "//devtools/projects/demo-standalone/src/app",
+    interop_deps = [
         "//devtools/src:demo_application_environment",
         "//devtools/src:demo_application_operations",
         "//packages/common",
@@ -50,8 +49,10 @@ ng_module(
         "//packages/core",
         "//packages/core/src/util",
         "//packages/platform-browser",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//devtools/projects/demo-standalone/src/app:app_rjs",
     ],
 )
 
@@ -74,6 +75,7 @@ filegroup(
         ":browser_specific_styles",
         ":demo_styles",
         ":index.html",
+        "//devtools/projects/demo-standalone/src/assets",
         "//packages/zone.js/bundles:zone.umd.js",
     ],
 )

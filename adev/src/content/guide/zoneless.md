@@ -69,7 +69,7 @@ Similarly, `NgZone.isStable` will always be `true` and should not be used as a c
 
 The `NgZone.onMicrotaskEmpty` and `NgZone.onStable` observables are most often used to wait for Angular to
 complete change detection before performing a task. Instead, these can be replaced by `afterNextRender`
-if they need to wait for a single change detection or `afterRender` if there is some condition that might span
+if they need to wait for a single change detection or `afterEveryRender` if there is some condition that might span
 several change detection rounds. In other cases, these observables were used because they happened to be
 familiar and have similar timing to what was needed. More straightforward or direct DOM APIs can be used instead,
 such as `MutationObserver` when code needs to wait for certain DOM state (rather than waiting for it indirectly

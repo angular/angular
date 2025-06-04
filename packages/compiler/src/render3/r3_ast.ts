@@ -165,6 +165,7 @@ export class Element implements Node {
     public directives: Directive[],
     public children: Node[],
     public references: Reference[],
+    public isSelfClosing: boolean,
     public sourceSpan: ParseSourceSpan,
     public startSourceSpan: ParseSourceSpan,
     public endSourceSpan: ParseSourceSpan | null,
@@ -550,6 +551,7 @@ export class Component implements Node {
     public directives: Directive[],
     public children: Node[],
     public references: Reference[],
+    public isSelfClosing: boolean,
     public sourceSpan: ParseSourceSpan,
     public startSourceSpan: ParseSourceSpan,
     public endSourceSpan: ParseSourceSpan | null,
@@ -592,6 +594,7 @@ export class Template implements Node {
     public children: Node[],
     public references: Reference[],
     public variables: Variable[],
+    public isSelfClosing: boolean,
     public sourceSpan: ParseSourceSpan,
     public startSourceSpan: ParseSourceSpan,
     public endSourceSpan: ParseSourceSpan | null,
@@ -609,6 +612,7 @@ export class Content implements Node {
     public selector: string,
     public attributes: TextAttribute[],
     public children: Node[],
+    public isSelfClosing: boolean,
     public sourceSpan: ParseSourceSpan,
     public startSourceSpan: ParseSourceSpan,
     public endSourceSpan: ParseSourceSpan | null,
@@ -797,7 +801,7 @@ export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Resul
   const result: Result[] = [];
   if (visitor.visit) {
     for (const node of nodes) {
-      visitor.visit(node) || node.visit(visitor);
+      visitor.visit(node);
     }
   } else {
     for (const node of nodes) {

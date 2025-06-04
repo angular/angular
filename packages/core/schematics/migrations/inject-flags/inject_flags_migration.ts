@@ -153,7 +153,7 @@ export class InjectFlagsMigration extends TsurgeFunnelMigration<
   }
 
   override async stats() {
-    return {counters: {}};
+    return confirmAsSerializable({});
   }
 }
 

@@ -50,11 +50,14 @@ const plugins = [
   commonjs(),
 ];
 
+/** @type {import('rollup').RollupOptions} */
 const config = {
   plugins,
   external: ['typescript', 'tslib', /@angular-devkit\/.+/],
   output: {
     exports: 'auto',
+    chunkFileNames: '[name]-[hash].cjs',
+    entryFileNames: '[name].cjs',
     banner,
   },
 };

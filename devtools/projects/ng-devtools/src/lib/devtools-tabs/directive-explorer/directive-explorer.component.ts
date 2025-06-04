@@ -27,7 +27,7 @@ import {
   MessageBus,
   PropertyQuery,
   PropertyQueryTypes,
-} from 'protocol';
+} from '../../../../../protocol';
 
 import {SplitComponent} from '../../../lib/vendor/angular-split/public_api';
 import {ApplicationOperations} from '../../application-operations/index';

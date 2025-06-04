@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, InjectionToken, NgZone} from '@angular/core';
+import {DestroyRef, inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -27,6 +27,9 @@ import {
   HttpHeaderResponse,
   HttpResponse,
 } from './response';
+
+// Needed for the global `Zone` ambient types to be available.
+import type {} from 'zone.js';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
@@ -70,6 +73,14 @@ export class FetchBackend implements HttpBackend {
   private readonly fetchImpl =
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+  private destroyed = false;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.destroyed = true;
+    });
+  }
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
@@ -143,11 +154,27 @@ export class FetchBackend implements HttpBackend {
       // when the zone is nooped.
       const reqZone = typeof Zone !== 'undefined' && Zone.current;
 
+      let canceled = false;
+
       // Perform response processing outside of Angular zone to
       // ensure no excessive change detection runs are executed
       // Here calling the async ReadableStreamDefaultReader.read() is responsible for triggering CD
       await this.ngZone.runOutsideAngular(async () => {
         while (true) {
+          // Prevent reading chunks if the app is destroyed. Otherwise, we risk doing
+          // unnecessary work or triggering side effects after teardown.
+          // This may happen if the app was explicitly destroyed before
+          // the response returned entirely.
+          if (this.destroyed) {
+            // Streams left in a pending state (due to `break` without cancel) may
+            // continue consuming or holding onto data behind the scenes.
+            // Calling `reader.cancel()` allows the browser or the underlying
+            // system to release any network or memory resources associated with the stream.
+            await reader.cancel();
+            canceled = true;
+            break;
+          }
+
           const {done, value} = await reader.read();
 
           if (done) {
@@ -175,6 +202,15 @@ export class FetchBackend implements HttpBackend {
           }
         }
       });
+
+      // We need to manage the canceled state — because the Streams API does not
+      // expose a direct `.state` property on the reader.
+      // We need to `return` because `parseBody` may not be able to parse chunks
+      // that were only partially read (due to cancellation caused by app destruction).
+      if (canceled) {
+        observer.complete();
+        return;
+      }
 
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);

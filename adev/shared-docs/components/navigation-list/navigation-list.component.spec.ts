@@ -43,7 +43,7 @@ describe('NavigationList', () => {
         {provide: NavigationState, useClass: FakeNavigationListState},
         provideZonelessChangeDetection(),
       ],
-    }).compileComponents();
+    });
     fixture = TestBed.createComponent(NavigationList);
     fixture.componentRef.setInput('navigationItems', []);
 

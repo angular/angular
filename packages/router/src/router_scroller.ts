@@ -34,7 +34,7 @@ export class RouterScroller implements OnDestroy {
   private restoredId = 0;
   private store: {[key: string]: [number, number]} = {};
 
-  /** @nodoc */
+  /** @docs-private */
   constructor(
     readonly urlSerializer: UrlSerializer,
     private transitions: NavigationTransitions,
@@ -134,8 +134,8 @@ export class RouterScroller implements OnDestroy {
     });
   }
 
-  /** @nodoc */
-  ngOnDestroy() {
+  /** @docs-private */
+  ngOnDestroy(): void {
     this.routerEventsSubscription?.unsubscribe();
     this.scrollEventsSubscription?.unsubscribe();
   }

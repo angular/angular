@@ -5,6 +5,9 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*.ts"]),
+    data = [
+        "//packages:package_json",
+    ],
     deps = [
         "//packages/compiler-cli",
         "@npm//typescript",
@@ -20,7 +23,6 @@ module_test(
         "//packages/elements:npm_package": "packages/elements/npm_package",
         "//packages/forms:npm_package": "packages/forms/npm_package",
         "//packages/localize:npm_package": "packages/localize/npm_package",
-        "//packages/platform-browser-dynamic:npm_package": "packages/platform-browser-dynamic/npm_package",
         "//packages/platform-browser:npm_package": "packages/platform-browser/npm_package",
         "//packages/router:npm_package": "packages/router/npm_package",
         "//packages/service-worker:npm_package": "packages/service-worker/npm_package",

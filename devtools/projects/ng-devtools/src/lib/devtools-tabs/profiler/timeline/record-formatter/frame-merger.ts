@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveProfile, ElementProfile, LifecycleProfile, ProfilerFrame} from 'protocol';
+import {
+  DirectiveProfile,
+  ElementProfile,
+  LifecycleProfile,
+  ProfilerFrame,
+} from '../../../../../../../protocol';
 
 const mergeProperty = (mergeInProp: number | undefined, value: number | undefined) => {
   if (mergeInProp === undefined) {
@@ -32,6 +37,7 @@ const mergeDirectives = (mergeIn: ElementProfile[], second: ElementProfile[]) =>
       mergeIn[i] = {
         children: [],
         directives: [],
+        type: 'element',
       };
     }
     second[i].directives.forEach((d, idx) => {

@@ -185,7 +185,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     );
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngAfterViewInit() {
     this._setUpdateStrategy();
   }

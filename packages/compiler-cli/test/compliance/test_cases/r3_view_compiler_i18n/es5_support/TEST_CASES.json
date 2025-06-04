@@ -7,7 +7,8 @@
         "target": "ES5"
       },
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "expectations": [
         {

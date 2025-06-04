@@ -237,6 +237,7 @@ runInEachFileSystem(() => {
       /* implicitStandaloneValue */ true,
       /* usePoisonedData */ false,
       /* typeCheckHostBindings */ true,
+      /* emitDeclarationOnly */ false,
     );
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);

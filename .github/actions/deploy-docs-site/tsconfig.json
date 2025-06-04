@@ -1,19 +1,16 @@
 {
   "compilerOptions": {
-    "module": "Node16",
-    "target": "es2020",
-    "lib": ["es2021", "dom"],
+    "module": "NodeNext",
+    "target": "ES2021",
+    "lib": ["es2021"],
     "experimentalDecorators": true,
     "strict": true,
-    "outDir": "../../../dist/tsc-non-bazel-out",
     "skipLibCheck": true,
     "noImplicitOverride": true,
-    // TODO(ESM): Remove this when Bazel also uses the Node resolution.
     "esModuleInterop": true,
     "noImplicitReturns": true,
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment"
-  },
-  "exclude": []
+    "declaration": true,
+    "sourceMap": true
+    
+  }
 }

@@ -7,7 +7,7 @@
  */
 
 import * as d3 from 'd3';
-import {SerializedInjector} from 'protocol';
+import {SerializedInjector} from '../../../../../protocol';
 
 let arrowDefId = 0;
 

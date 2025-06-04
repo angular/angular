@@ -6,6 +6,7 @@
     "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node",
+    "strict": true,
     "outDir": "../../dist/all/",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,

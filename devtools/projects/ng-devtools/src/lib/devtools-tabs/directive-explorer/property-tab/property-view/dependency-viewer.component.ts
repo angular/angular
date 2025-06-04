@@ -7,7 +7,7 @@
  */
 
 import {Component, input} from '@angular/core';
-import {SerializedInjectedService} from 'protocol';
+import {SerializedInjectedService} from '../../../../../../../protocol';
 import {ResolutionPathComponent} from '../../../dependency-injection/resolution-path/resolution-path.component';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatExpansionModule} from '@angular/material/expansion';

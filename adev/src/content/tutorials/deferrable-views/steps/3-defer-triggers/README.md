@@ -39,7 +39,7 @@ In this activity, you'll learn how to use triggers to specify the condition to l
 <docs-workflow>
 
 <docs-step title="Add `on hover` trigger">
-In your `app.component.ts`,  add an `on hover` trigger to the `@defer` block.
+In your `app.ts`,  add an `on hover` trigger to the `@defer` block.
 
 <docs-code language="angular-html" hightlight="[1]">
 @defer (on hover) {

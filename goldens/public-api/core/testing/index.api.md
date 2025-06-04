@@ -11,7 +11,9 @@ import { Subscription } from 'rxjs';
 // @public
 export class ComponentFixture<T> {
     constructor(componentRef: ComponentRef<T>);
-    autoDetectChanges(autoDetect?: boolean): void;
+    // @deprecated
+    autoDetectChanges(autoDetect: boolean): void;
+    autoDetectChanges(): void;
     changeDetectorRef: ChangeDetectorRef;
     checkNoChanges(): void;
     componentInstance: T;
@@ -115,6 +117,8 @@ export interface TestBed {
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     // (undocumented)
     execute(tokens: any[], fn: Function, context?: any): any;
+    // @deprecated
+    flushEffects(): void;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {

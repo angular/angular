@@ -1,8 +1,9 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "jasmine_node_test", "ng_module", "protractor_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "esbuild", "http_server", "jasmine_node_test", "protractor_web_test_suite")
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "core_examples",
     srcs = glob(
         ["**/*.ts"],
@@ -11,20 +12,21 @@ ng_module(
             "**/*_howto.ts",
         ],
     ),
-    deps = [
-        "//packages/animations",
-        "//packages/core",
-        "//packages/forms",
+    interop_deps = [
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
-        "//packages/router",
         "//packages/zone.js/lib",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/animations:animations_rjs",
+        "//packages/core:core_rjs",
+        "//packages/forms:forms_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "core_tests_lib",
     testonly = True,
     srcs = glob(
@@ -32,20 +34,20 @@ ts_library(
         exclude = ["**/e2e_test/*"],
     ),
     deps = [
-        "//packages/core",
-        "//packages/core/testing",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "core_e2e_tests_lib",
     testonly = True,
     srcs = glob(["**/e2e_test/*_spec.ts"]),
-    tsconfig = "//packages/examples:tsconfig-e2e.json",
+    tsconfig = "//packages/examples:tsconfig_e2e",
     deps = [
-        "//packages/examples/test-utils",
-        "@npm//@types/jasminewd2",
-        "@npm//protractor",
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/protractor",
+        "//packages/examples/test-utils:test-utils_rjs",
     ],
 )
 

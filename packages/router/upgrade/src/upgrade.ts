@@ -70,7 +70,10 @@ export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
  *
  * @publicApi
  */
-export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path' | 'hash' = 'path') {
+export function setUpLocationSync(
+  ngUpgrade: UpgradeModule,
+  urlType: 'path' | 'hash' = 'path',
+): void {
   if (!ngUpgrade.$injector) {
     throw new Error(`
         RouterUpgradeInitializer can be used only after UpgradeModule.bootstrap has been called.

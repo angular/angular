@@ -38,7 +38,7 @@ describe('AppComponent & TestModule', () => {
       }),
     )
       // #enddocregion testbed-stubs
-      .compileComponents()
+
       .then(() => {
         fixture = TestBed.createComponent(AppComponent);
         comp = fixture.componentInstance;
@@ -65,7 +65,7 @@ describe('AppComponent & NO_ERRORS_SCHEMA', () => {
       }),
     )
       // #enddocregion no-errors-schema, mixed-setup
-      .compileComponents()
+
       .then(() => {
         fixture = TestBed.createComponent(AppComponent);
         comp = fixture.componentInstance;

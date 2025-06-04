@@ -28,4 +28,13 @@ describe('TextField', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should update DOM when setting the value via the CVA', () => {
+    component.setValue('test');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('input').value).toBe('test');
+    // If we were using ngModel instead of the value binding, we would get an empty string
+    // because of https://github.com/angular/angular/issues/13568
+  });
 });

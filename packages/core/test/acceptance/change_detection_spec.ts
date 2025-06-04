@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {BehaviorSubject} from 'rxjs';
 import {
   ApplicationRef,
@@ -1654,15 +1654,6 @@ describe('change detection', () => {
       );
     });
 
-    it('should include field name in case of property interpolation', () => {
-      const message = `Previous value for 'id': 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'`;
-      expect(() =>
-        initWithTemplate(
-          '<div id="Expressions: {{ a }} and {{ unstableStringExpression }}!"></div>',
-        ),
-      ).toThrowError(new RegExp(message));
-    });
-
     it('should include field name in case of attribute binding', () => {
       const message = `Previous value for 'attr.id': 'initial'. Current value: 'changed'`;
       expect(() =>
@@ -1671,7 +1662,7 @@ describe('change detection', () => {
     });
 
     it('should include field name in case of attribute interpolation', () => {
-      const message = `Previous value for 'attr.id': 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'`;
+      const message = `Expression has changed after it was checked. Previous value: 'initial'. Current value: 'changed'`;
       expect(() =>
         initWithTemplate(
           '<div attr.id="Expressions: {{ a }} and {{ unstableStringExpression }}!"></div>',

@@ -37,5 +37,6 @@ export function ɵɵattribute(
     elementAttributeInternal(tNode, lView, name, value, sanitizer, namespace);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'attr.' + name, bindingIndex);
   }
+
   return ɵɵattribute;
 }

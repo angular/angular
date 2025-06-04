@@ -7,12 +7,12 @@
  */
 
 import {h} from 'preact';
-import {TypeAliasEntryRenderable} from '../entities/renderables';
+import {TypeAliasEntryRenderable} from '../entities/renderables.mjs';
 import {HeaderApi} from './header-api';
 import {SectionDescription} from './section-description';
 import {SectionUsageNotes} from './section-usage-notes';
 import {SectionApi} from './section-api';
-import {API_REFERENCE_CONTAINER} from '../styling/css-classes';
+import {API_REFERENCE_CONTAINER} from '../styling/css-classes.mjs';
 
 /** Component to render a type alias API reference document. */
 export function TypeAliasReference(entry: TypeAliasEntryRenderable) {

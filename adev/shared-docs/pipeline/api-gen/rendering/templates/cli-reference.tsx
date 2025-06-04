@@ -7,8 +7,8 @@
  */
 
 import {Fragment, h} from 'preact';
-import {CliCommandRenderable} from '../entities/renderables';
-import {REFERENCE_MEMBERS} from '../styling/css-classes';
+import {CliCommandRenderable} from '../entities/renderables.mjs';
+import {REFERENCE_MEMBERS} from '../styling/css-classes.mjs';
 import {CliCard} from './cli-card';
 import {HeaderCli} from './header-cli';
 import {RawHtml} from './raw-html';

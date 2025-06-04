@@ -1,18 +1,11 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//devtools/tools:typescript.bzl", "ts_library")
+load("//devtools/tools:typescript.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
-    name = "ng_devtools_backend_ts",
+ts_project(
+    name = "ng-devtools-backend",
     srcs = ["index.ts"],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src",
+        "//devtools/projects/ng-devtools-backend/src:src_rjs",
     ],
-)
-
-js_library(
-    name = "ng-devtools-backend",
-    package_name = "ng-devtools-backend",
-    deps = [":ng_devtools_backend_ts"],
 )

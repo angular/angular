@@ -1,34 +1,25 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
-load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-circular_dependency_test(
-    name = "circular_deps_test",
-    entry_point = "angular/packages/platform-server/index.mjs",
-    deps = ["//packages/platform-server"],
-)
-
-circular_dependency_test(
-    name = "testing_circular_deps_test",
-    entry_point = "angular/packages/platform-server/testing/index.mjs",
-    deps = ["//packages/platform-server/testing"],
-)
-
-ts_library(
+ts_project(
     name = "dom_utils",
+    testonly = True,
     srcs = [
         "dom_utils.ts",
         "hydration_utils.ts",
     ],
-    deps = [
+    interop_deps = [
         "//packages/common",
-        "//packages/core",
-        "//packages/core/testing",
         "//packages/platform-browser",
-        "//packages/platform-server",
+    ],
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
@@ -39,41 +30,45 @@ ts_library(
             "dom_utils.ts",
         ],
     ),
-    deps = [
-        ":dom_utils",
+    interop_deps = [
         "//packages:types",
-        "//packages/animations",
         "//packages/common",
         "//packages/common/http",
         "//packages/common/http/testing",
         "//packages/common/testing",
         "//packages/compiler",
-        "//packages/core",
-        "//packages/core/testing",
         "//packages/localize",
         "//packages/localize/init",
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
-        "//packages/platform-server",
         "//packages/private/testing",
         "//packages/router",
-        "@npm//rxjs",
+    ],
+    deps = [
+        ":dom_utils_rjs",
+        "//:node_modules/rxjs",
+        "//packages/animations:animations_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "event_replay_test_lib",
     testonly = True,
     srcs = ["event_replay_spec.ts"],
-    deps = [
-        ":dom_utils",
+    interop_deps = [
         "//packages/common",
-        "//packages/core",
-        "//packages/core/primitives/event-dispatch",
-        "//packages/core/testing",
         "//packages/platform-browser",
-        "//packages/platform-server",
         "//packages/private/testing",
+    ],
+    deps = [
+        ":dom_utils_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
     ],
 )
 

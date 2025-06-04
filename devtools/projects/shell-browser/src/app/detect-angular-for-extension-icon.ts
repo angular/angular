@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AngularDetection} from 'protocol';
+import {AngularDetection} from '../../../protocol';
 import {
   appIsAngular,
   appIsAngularInDevMode,
   appIsAngularIvy,
   appIsSupportedAngularVersion,
-} from 'shared-utils';
+} from '../../../shared-utils';
 
 import {SamePageMessageBus} from './same-page-message-bus';
 

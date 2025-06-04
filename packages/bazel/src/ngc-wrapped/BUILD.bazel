@@ -1,7 +1,13 @@
-# BEGIN-DEV-ONLY
-load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@npm2//:defs.bzl", "npm_link_all_packages")
 
-ts_library(
+# BEGIN-DEV-ONLY
+load("//tools:defaults.bzl", "nodejs_binary")
+load("//tools:defaults2.bzl", "ts_project")
+
+npm_link_all_packages()
+
+ts_project(
     name = "ngc_lib",
     srcs = [
         "extract_i18n.ts",
@@ -9,33 +15,32 @@ ts_library(
         "ngc-wrapped-main.ts",
         "utils.ts",
     ],
+    extends = "//packages:tsconfig_build",
     module_name = "@angular/bazel",
+    tsconfig = "tsconfig.json",
     visibility = [
         "//packages/bazel:__pkg__",
         "//packages/bazel/test/ngc-wrapped:__subpackages__",
     ],
     deps = [
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/private",
-        "@npm//@bazel/concatjs",
-        "@npm//@types/node",
-        "@npm//typescript",
-        "@npm//typescript:typescript__typings",
+        ":node_modules/@angular/compiler-cli",
+        "//:node_modules/@bazel/concatjs",
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
     ],
 )
 
-nodejs_binary(
+js_binary(
     name = "ngc-wrapped",
     data = [
-        ":ngc_lib",
-        "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
+        ":ngc_lib_rjs",
+        "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol",
+        # Ensure compiler-cli `ts_project` `.js` files are picked up as ESM.
+        # Notably this is temporary and compiler raw sources are not valid ESM anyway.
+        # That is because there is no explicit import extensions.
+        "//packages:package_json",
     ],
-    entry_point = ":ngc-wrapped-main.ts",
-    # Disables the Bazel node modules linker. The node module linker is unreliable for the
-    # persistent worker executable, as it would rely on the `node_modules/` folder in the
-    # execroot that can be shared in non-sandbox environments or for persistent workers.
-    # https://docs.bazel.build/versions/main/command-line-reference.html#flag--worker_sandboxing.
-    templated_args = ["--nobazel_run_linker"],
+    entry_point = ":ngc-wrapped-main.js",
     visibility = ["//visibility:public"],
 )
 
@@ -44,7 +49,7 @@ nodejs_binary(
     data = [
         ":ngc_lib",
     ],
-    entry_point = ":extract_i18n.ts",
+    entry_point = ":extract_i18n.js",
     # Follows the same reasoning as for the actual `ngc-wrapped` target.
     templated_args = ["--nobazel_run_linker"],
     visibility = ["//visibility:public"],

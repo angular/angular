@@ -1,6 +1,7 @@
-load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
+load("//tools:defaults.bzl", "jasmine_node_test")
 
 generate_api_manifest(
     name = "test",
@@ -12,27 +13,33 @@ generate_api_manifest(
 
 extract_api_to_json(
     name = "another_extraction",
-    srcs = ["another-fake-source.ts"],
-    entry_point = "another-fake-source.ts",
+    srcs = ["another-fake-source.mts"],
+    entry_point = "another-fake-source.mts",
     module_name = "@angular/router",
     output_name = "api.json",
     private_modules = [""],
+    repo = "angular/angular",
 )
 
-ts_library(
+ts_project(
     name = "unit_test_lib",
     testonly = True,
     srcs = [
-        "manifest.spec.ts",
+        "manifest.spec.mts",
+    ],
+    interop_deps = [
+        "//packages/compiler-cli",
     ],
     deps = [
-        "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib",
-        "@angular//packages/compiler-cli",
+        "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib_rjs",
     ],
 )
 
 jasmine_node_test(
     name = "unit_tests",
-    data = ["@angular//packages/compiler-cli"],
+    data = [
+        "//packages:package_json",
+        "//packages/compiler-cli",
+    ],
     deps = [":unit_test_lib"],
 )

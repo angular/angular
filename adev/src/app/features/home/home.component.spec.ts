@@ -26,7 +26,7 @@
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Home],
-    }).compileComponents();
+    });
 
     TestBed.overrideProvider(HomeAnimation, {useValue: fakeHomeAnimation});
 

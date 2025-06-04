@@ -1,5 +1,3 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
-
 def _extract_api_to_json(ctx):
     """Implementation of the extract_api_to_json rule"""
 
@@ -9,6 +7,9 @@ def _extract_api_to_json(ctx):
     # Use a param file because we may have a large number of inputs.
     args.set_param_file_format("multiline")
     args.use_param_file("%s", use_always = True)
+
+    # Pass the repo name for the extracted APIs. This will be something like "angular/angular".
+    args.add(ctx.attr.repo)
 
     # Pass the module_name for the extracted APIs. This will be something like "@angular/core".
     args.add(ctx.attr.module_name)
@@ -46,12 +47,15 @@ def _extract_api_to_json(ctx):
 
     # Define an action that runs the nodejs_binary executable. This is
     # the main thing that this rule does.
-    run_node(
-        ctx = ctx,
+    ctx.actions.run(
         inputs = depset(ctx.files.srcs + ctx.files.extra_entries),
-        executable = "_extract_api_to_json",
+        executable = ctx.executable._extract_api_to_json,
         outputs = [json_output],
         arguments = [args],
+        env = {
+            # Note: We don't need to `cd` into the bin-dir as this action deals with execpaths.
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     # The return value describes what the rule is producing. In this case we need to specify
@@ -93,6 +97,10 @@ extract_api_to_json = rule(
         ),
         "module_label": attr.string(
             doc = """Module label to be used for the extracted symbols. To be used as display name, for example in API docs""",
+        ),
+        "repo": attr.string(
+            doc = """The name of the github repository the api belongs to""",
+            mandatory = True,
         ),
         "extra_entries": attr.label_list(
             doc = """JSON files that contain extra entries to append to the final collection.""",

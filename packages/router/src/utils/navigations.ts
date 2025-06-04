@@ -33,7 +33,7 @@ const enum NavigationResult {
  * redirecting/superseding navigation must finish.
  * - `NavigationError`, `NavigationEnd`, or `NavigationSkipped` event emits
  */
-export function afterNextNavigation(router: {events: Observable<Event>}, action: () => void) {
+export function afterNextNavigation(router: {events: Observable<Event>}, action: () => void): void {
   router.events
     .pipe(
       filter(

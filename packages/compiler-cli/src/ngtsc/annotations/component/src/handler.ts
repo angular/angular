@@ -279,6 +279,7 @@ export class ComponentDecoratorHandler
     private readonly implicitStandaloneValue: boolean,
     private readonly typeCheckHostBindings: boolean,
     private readonly enableSelectorless: boolean,
+    private readonly emitDeclarationOnly: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -488,6 +489,7 @@ export class ComponentDecoratorHandler
       this.elementSchemaRegistry.getDefaultComponentElementName(),
       this.strictStandalone,
       this.implicitStandaloneValue,
+      this.emitDeclarationOnly,
     );
     // `extractDirectiveMetadata` returns `jitForced = true` when the `@Component` has
     // set `jit: true`. In this case, compilation of the decorator is skipped. Returning
@@ -797,7 +799,7 @@ export class ComponentDecoratorHandler
           makeDiagnostic(
             ErrorCode.UNSUPPORTED_SELECTORLESS_COMPONENT_FIELD,
             (rawImports || rawDeferredImports)!,
-            `Cannot use the "${rawImports === null ? 'deferredImports' : 'imports'}" field in a selectorless components`,
+            `Cannot use the "${rawImports === null ? 'deferredImports' : 'imports'}" field in a selectorless component`,
           ),
         );
       }
@@ -1399,7 +1401,7 @@ export class ComponentDecoratorHandler
       removeDeferrableTypesFromComponentDecorator(analysis, perComponentDeferredDeps);
     }
 
-    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata =
       analysis.classMetadata !== null
@@ -1529,7 +1531,7 @@ export class ComponentDecoratorHandler
     }
 
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
-    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata =
       analysis.classMetadata !== null
@@ -1587,7 +1589,7 @@ export class ComponentDecoratorHandler
       defer,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
-    const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
+    const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
     const classMetadata =
       analysis.classMetadata !== null
         ? compileComponentClassMetadata(analysis.classMetadata, null).toStmt()
@@ -1675,7 +1677,7 @@ export class ComponentDecoratorHandler
       const scopeDeps = isModuleScope ? scope.compilation.dependencies : scope.dependencies;
       for (const dep of scopeDeps) {
         // Outside of selectorless the pipes are referred to by their defined name.
-        if (dep.kind === MetaKind.Pipe) {
+        if (dep.kind === MetaKind.Pipe && dep.name !== null) {
           pipes.set(dep.name, dep);
         }
         dependencies.push(dep);
@@ -1723,7 +1725,7 @@ export class ComponentDecoratorHandler
 
       const deferBlockMatcher = new SelectorMatcher<DirectiveMeta[]>();
       for (const dep of allDependencies) {
-        if (dep.kind === MetaKind.Pipe) {
+        if (dep.kind === MetaKind.Pipe && dep.name !== null) {
           pipes.set(dep.name, dep);
         } else if (dep.kind === MetaKind.Directive && dep.selector !== null) {
           deferBlockMatcher.addSelectables(CssSelector.parse(dep.selector), [dep]);
@@ -2443,6 +2445,11 @@ export class ComponentDecoratorHandler
     }
 
     throw new Error(`Invalid deferBlockDepsEmitMode. Cannot compile deferred block metadata.`);
+  }
+
+  /** Creates a new binding parser. */
+  private getNewBindingParser() {
+    return makeBindingParser(undefined, this.enableSelectorless);
   }
 }
 

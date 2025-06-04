@@ -14,10 +14,14 @@ import {parseR3 as parse} from './view/util';
 
 // Transform an IVY AST to a flat list of nodes to ease testing
 class R3AstHumanizer implements t.Visitor<void> {
-  result: any[] = [];
+  result: (string | number | null)[][] = [];
 
   visitElement(element: t.Element) {
-    this.result.push(['Element', element.name]);
+    const res = ['Element', element.name];
+    this.result.push(res);
+    if (element.isSelfClosing) {
+      res.push('#selfClosing');
+    }
     this.visitAll([
       element.attributes,
       element.inputs,
@@ -29,7 +33,11 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitTemplate(template: t.Template) {
-    this.result.push(['Template']);
+    const res = ['Template'];
+    if (template.isSelfClosing) {
+      res.push('#selfClosing');
+    }
+    this.result.push(res);
     this.visitAll([
       template.attributes,
       template.inputs,
@@ -43,7 +51,11 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitContent(content: t.Content) {
-    this.result.push(['Content', content.selector]);
+    const res = ['Content', content.selector];
+    this.result.push(res);
+    if (content.isSelfClosing) {
+      res.push('#selfClosing');
+    }
     this.visitAll([content.attributes, content.children]);
   }
 
@@ -175,7 +187,11 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitComponent(component: t.Component) {
-    this.result.push(['Component', component.componentName, component.tagName, component.fullName]);
+    const res = ['Component', component.componentName, component.tagName, component.fullName];
+    if (component.isSelfClosing) {
+      res.push('#selfClosing');
+    }
+    this.result.push(res);
     this.visitAll([
       component.attributes,
       component.inputs,
@@ -750,6 +766,26 @@ describe('R3 template transform', () => {
     });
   });
 
+  describe('parser errors', () => {
+    it('should only report errors on the node on which the error occurred', () => {
+      const errors = parse(
+        `
+        <input (input)="foo(12#3)">
+        <button (click)="bar()"></button>
+        <span (mousedown)="baz()"></span>
+      `,
+        {
+          ignoreError: true,
+        },
+      ).errors;
+
+      expect(errors.length).toBe(3);
+      expect(errors[0].msg).toContain('Parser Error: Missing expected )');
+      expect(errors[1].msg).toContain('Invalid character [#]');
+      expect(errors[2].msg).toContain(`Unexpected token ')'`);
+    });
+  });
+
   describe('Ignored elements', () => {
     it('should ignore <script> elements', () => {
       expectFromHtml('<script></script>a').toEqual([['Text', 'a']]);
@@ -948,7 +984,7 @@ describe('R3 template transform', () => {
           '@error {Loading failed :(}',
       ).toEqual([
         ['DeferredBlock'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockPlaceholder'],
         ['Text', 'Placeholder content!'],
@@ -967,7 +1003,7 @@ describe('R3 template transform', () => {
           '<!-- Show this on error --> @error {Loading failed :(}',
       ).toEqual([
         ['DeferredBlock'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockPlaceholder'],
         ['Text', 'Placeholder content!'],
@@ -991,7 +1027,7 @@ describe('R3 template transform', () => {
         expectFromR3Nodes(parse(template, {preserveWhitespaces: true}).nodes).toEqual([
           // Note: we also expect the whitespace nodes between the blocks to be ignored here.
           ['DeferredBlock'],
-          ['Element', 'calendar-cmp'],
+          ['Element', 'calendar-cmp', '#selfClosing'],
           ['BoundAttribute', 0, 'date', 'current'],
           ['DeferredBlockPlaceholder'],
           ['Text', 'Placeholder content!'],
@@ -1009,7 +1045,7 @@ describe('R3 template transform', () => {
           '@loading (after 100ms; minimum 1.5s){Loading...}',
       ).toEqual([
         ['DeferredBlock'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockLoading', 'after 100ms', 'minimum 1500ms'],
         ['Text', 'Loading...'],
@@ -1021,7 +1057,7 @@ describe('R3 template transform', () => {
         '@defer {<calendar-cmp [date]="current"/>}' + '@placeholder (minimum 1.5s){Placeholder...}',
       ).toEqual([
         ['DeferredBlock'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockPlaceholder', 'minimum 1500ms'],
         ['Text', 'Placeholder...'],
@@ -1117,7 +1153,7 @@ describe('R3 template transform', () => {
         ['ViewportDeferredTrigger', 'container'],
         ['ImmediateDeferredTrigger'],
         ['BoundDeferredTrigger', 'isDataLoaded()'],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['BoundAttribute', 0, 'date', 'current'],
         ['DeferredBlockPlaceholder', 'minimum 500ms'],
         ['Text', 'Placeholder content!'],
@@ -1147,7 +1183,7 @@ describe('R3 template transform', () => {
             'interaction(button), viewport(container); prefetch on immediate; ' +
             'prefetch when isDataLoaded(); hydrate when shouldHydrate(); hydrate on viewport){',
         ],
-        ['Element', 'calendar-cmp'],
+        ['Element', 'calendar-cmp', '#selfClosing'],
         ['TextAttribute', '[date]', 'current'],
         ['Text', '}'],
         ['Text', '@loading (minimum 1s; after 100ms){'],
@@ -1176,7 +1212,7 @@ describe('R3 template transform', () => {
         ['ViewportDeferredTrigger', null],
         ['Text', 'hello'],
         ['DeferredBlockPlaceholder'],
-        ['Element', 'implied-trigger'],
+        ['Element', 'implied-trigger', '#selfClosing'],
       ]);
     });
 
@@ -1397,32 +1433,6 @@ describe('R3 template transform', () => {
         ).toThrowError(/@loading block can only have one "after" parameter/);
       });
 
-      it('should report if reference-based trigger has no reference and there is no placeholder block', () => {
-        expect(() => parse('@defer (on viewport) {hello}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/,
-        );
-      });
-
-      it('should report if reference-based trigger has no reference and the placeholder is empty', () => {
-        expect(() => parse('@defer (on viewport) {hello} @placeholder {}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/,
-        );
-      });
-
-      it('should report if reference-based trigger has no reference and the placeholder with text at the root', () => {
-        expect(() => parse('@defer (on viewport) {hello} @placeholder {placeholder}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/,
-        );
-      });
-
-      it('should report if reference-based trigger has no reference and the placeholder has multiple root elements', () => {
-        expect(() =>
-          parse('@defer (on viewport) {hello} @placeholder {<div></div><span></span>}'),
-        ).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node/,
-        );
-      });
-
       it('should report parameter passed to hydrate trigger with reference-based equivalent', () => {
         expect(() =>
           parse('@defer (on interaction(button); hydrate on interaction(button)) {hello}'),
@@ -1431,18 +1441,6 @@ describe('R3 template transform', () => {
 
       it('should not report missing reference on hydrate trigger', () => {
         expect(() => parse('@defer (on immediate; hydrate on viewport) {hello}')).not.toThrow();
-      });
-
-      it('should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists', () => {
-        expect(() => parse('@defer (on viewport; hydrate on immediate) {hello}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/,
-        );
-      });
-
-      it('should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists and it is also viewport', () => {
-        expect(() => parse('@defer (on viewport; hydrate on viewport) {hello}')).toThrowError(
-          /"viewport" trigger with no parameters can only be placed on an @defer that has a @placeholder block/,
-        );
       });
 
       it('should report never trigger used without `hydrate`', () => {
@@ -2459,7 +2457,7 @@ describe('R3 template transform', () => {
         ['Text', 'Hello: '],
         ['Component', 'MyComp', null, 'MyComp'],
         ['Element', 'span'],
-        ['Component', 'OtherComp', null, 'OtherComp'],
+        ['Component', 'OtherComp', null, 'OtherComp', '#selfClosing'],
       ]);
     });
 
@@ -2494,7 +2492,7 @@ describe('R3 template transform', () => {
       ).toEqual([
         ['Template'],
         ['BoundAttribute', 0, 'ngIf', 'true'],
-        ['Component', 'MyComp', null, 'MyComp'],
+        ['Component', 'MyComp', null, 'MyComp', '#selfClosing'],
         ['Directive', 'Dir'],
         ['TextAttribute', 'static', '1'],
         ['BoundAttribute', 0, 'bound', 'expr'],

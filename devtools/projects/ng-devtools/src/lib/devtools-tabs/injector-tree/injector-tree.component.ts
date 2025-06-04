@@ -7,12 +7,15 @@
  */
 
 import {
-  afterNextRender,
+  afterRenderEffect,
   Component,
+  computed,
   ElementRef,
   inject,
+  input,
   NgZone,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import {MatCheckbox} from '@angular/material/checkbox';
@@ -25,7 +28,7 @@ import {
   MessageBus,
   SerializedInjector,
   SerializedProviderRecord,
-} from 'protocol';
+} from '../../../../../protocol';
 
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {
@@ -43,6 +46,15 @@ import {
   splitInjectorPathsIntoElementAndEnvironmentPaths,
   transformInjectorResolutionPathsIntoTree,
 } from './injector-tree-fns';
+import {
+  Direction,
+  ResponsiveSplitConfig,
+  ResponsiveSplitDirective,
+} from '../../shared/responsive-split/responsive-split.directive';
+
+const ENV_HIERARCHY_VER_SIZE = 35;
+const EL_HIERARCHY_VER_SIZE = 65;
+const HIERARCHY_HOR_SIZE = 50;
 
 @Component({
   selector: 'ng-injector-tree',
@@ -54,61 +66,69 @@ import {
     MatIcon,
     MatTooltip,
     MatCheckbox,
+    ResponsiveSplitDirective,
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
 })
 export class InjectorTreeComponent {
-  private environmentTree = viewChild.required<TreeVisualizerHostComponent>('environmentTree');
-  private elementTree = viewChild.required<TreeVisualizerHostComponent>('elementTree');
+  private environmentTree = viewChild<TreeVisualizerHostComponent>('environmentTree');
+  private elementTree = viewChild<TreeVisualizerHostComponent>('elementTree');
 
   private _messageBus = inject(MessageBus) as MessageBus<Events>;
   zone = inject(NgZone);
 
-  firstRender = true;
   readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
+
+  readonly providers = input.required<SerializedProviderRecord[]>();
+  readonly componentExplorerView = input.required<ComponentExplorerView | null>();
+
+  readonly sortedProviders = computed(() =>
+    Array.from(this.providers()).sort((a, b) => {
+      return a.token.localeCompare(b.token);
+    }),
+  );
+
+  readonly diDebugAPIsAvailable = computed<boolean>(() => {
+    const view = this.componentExplorerView();
+    return !!(view && view.forest.length && view.forest[0].resolutionPath);
+  });
+
+  firstRender = true;
   rawDirectiveForest: DevToolsNode[] = [];
   injectorTreeGraph!: InjectorTreeVisualizer;
   elementInjectorTreeGraph!: InjectorTreeVisualizer;
-  readonly diDebugAPIsAvailable = signal(false);
-  readonly providers = signal<SerializedProviderRecord[]>([]);
   elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();
 
   hideInjectorsWithNoProviders = false;
   hideFrameworkInjectors = false;
 
+  protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
+    defaultDirection: 'vertical',
+    aspectRatioBreakpoint: 1.5,
+    breakpointDirection: 'horizontal',
+  };
+
+  protected readonly envHierarchySize = signal<number>(0);
+  protected readonly elHierarchySize = signal<number>(0);
+
   constructor() {
-    afterNextRender({
+    afterRenderEffect({
       write: () => {
+        const view = this.componentExplorerView();
+        if (!this.diDebugAPIsAvailable() || !view) {
+          return;
+        }
+
         this.init();
-        this.setUpEnvironmentInjectorVisualizer();
-        this.setUpElementInjectorVisualizer();
+        this.rawDirectiveForest = view.forest;
+
+        untracked(() => this.updateInjectorTreeVisualization(view.forest));
       },
     });
   }
 
   private init() {
-    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
-      if (view.forest.length === 0) return;
-
-      if (!view.forest[0].resolutionPath) return;
-
-      this.diDebugAPIsAvailable.set(true);
-      this.rawDirectiveForest = view.forest;
-      this.updateInjectorTreeVisualization(view.forest);
-    });
-
-    this._messageBus.on(
-      'latestInjectorProviders',
-      (_: SerializedInjector, providers: SerializedProviderRecord[]) => {
-        this.providers.set(
-          Array.from(providers).sort((a, b) => {
-            return a.token.localeCompare(b.token);
-          }),
-        );
-      },
-    );
-
     this._messageBus.on('highlightComponent', (id: number) => {
       const injectorNode = this.getNodeByComponentId(this.elementInjectorTreeGraph, id);
       if (injectorNode === null) {
@@ -117,6 +137,9 @@ export class InjectorTreeComponent {
 
       this.selectInjectorByNode(injectorNode);
     });
+
+    this.setUpEnvironmentInjectorVisualizer();
+    this.setUpElementInjectorVisualizer();
   }
 
   toggleHideInjectorsWithNoProviders(): void {
@@ -263,24 +286,40 @@ export class InjectorTreeComponent {
   }
 
   setUpEnvironmentInjectorVisualizer(): void {
-    const svg = this.environmentTree().container().nativeElement;
-    const g = this.environmentTree().group().nativeElement;
+    const environmentTree = this.environmentTree();
+    if (!environmentTree) {
+      return;
+    }
+
+    const svg = environmentTree.container().nativeElement;
+    const g = environmentTree.group().nativeElement;
 
     this.injectorTreeGraph?.cleanup?.();
     this.injectorTreeGraph = new InjectorTreeVisualizer(svg, g);
   }
 
   setUpElementInjectorVisualizer(): void {
-    const svg = this.elementTree().container().nativeElement;
-    const g = this.elementTree().group().nativeElement;
+    const elementTree = this.elementTree();
+    if (!elementTree) {
+      return;
+    }
+
+    const svg = elementTree.container().nativeElement;
+    const g = elementTree.group().nativeElement;
 
     this.elementInjectorTreeGraph?.cleanup?.();
     this.elementInjectorTreeGraph = new InjectorTreeVisualizer(svg, g, {nodeSeparation: () => 1});
   }
 
   highlightPathFromSelectedInjector(): void {
-    const envGroup = this.environmentTree().group();
-    const elementGroup = this.elementTree().group();
+    const environmentTree = this.environmentTree();
+    const elementTree = this.elementTree();
+    if (!environmentTree || !elementTree) {
+      return;
+    }
+
+    const envGroup = environmentTree.group();
+    const elementGroup = elementTree.group();
 
     this.unhighlightAllEdges(elementGroup);
     this.unhighlightAllNodes(elementGroup);
@@ -368,5 +407,15 @@ export class InjectorTreeComponent {
         name: injector.name,
       },
     ]);
+  }
+
+  onResponsiveSplitDirChange(direction: Direction) {
+    if (direction === 'vertical') {
+      this.envHierarchySize.set(ENV_HIERARCHY_VER_SIZE);
+      this.elHierarchySize.set(EL_HIERARCHY_VER_SIZE);
+    } else {
+      this.envHierarchySize.set(HIERARCHY_HOR_SIZE);
+      this.elHierarchySize.set(HIERARCHY_HOR_SIZE);
+    }
   }
 }

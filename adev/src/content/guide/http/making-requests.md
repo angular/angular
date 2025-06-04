@@ -256,13 +256,15 @@ import { AsyncPipe } from '@angular/common';
   `,
 })
 export class UserProfileComponent {
-  @Input() userId!: string;
+  userId = input.required<string>();
   user$!: Observable<User>;
 
   private userService = inject(UserService);
 
   constructor(): void {
-    this.user$ = this.userService.getUser(this.userId);
+    effect(() => {
+      this.user$ = this.userService.getUser(this.userId());
+    });
   }
 }
 </docs-code>

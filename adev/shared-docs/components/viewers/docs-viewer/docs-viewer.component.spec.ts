@@ -86,7 +86,7 @@ describe('DocViewer', () => {
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: NavigationState, useValue: navigationStateSpy},
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(DocViewer);
     fixture.detectChanges();

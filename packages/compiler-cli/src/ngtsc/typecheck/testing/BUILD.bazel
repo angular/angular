@@ -1,13 +1,12 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "testing",
     testonly = True,
     srcs = glob([
         "**/*.ts",
     ]),
-    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
-    deps = [
+    interop_deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/core",
         "//packages/compiler-cli/src/ngtsc/file_system",
@@ -24,7 +23,10 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/util",
-        "@npm//tinyglobby",
-        "@npm//typescript",
+    ],
+    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
+    deps = [
+        "//:node_modules/tinyglobby",
+        "//:node_modules/typescript",
     ],
 )

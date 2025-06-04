@@ -6,8 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createPlatformFactory, NgModule, platformCore, StaticProvider} from '@angular/core';
-import {ɵINTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS as INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from '@angular/platform-browser-dynamic';
+import {
+  createPlatformFactory,
+  NgModule,
+  platformCore,
+  PlatformRef,
+  StaticProvider,
+} from '@angular/core';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {
   ɵINTERNAL_SERVER_PLATFORM_PROVIDERS as INTERNAL_SERVER_PLATFORM_PROVIDERS,
@@ -15,7 +20,6 @@ import {
 } from '../../index';
 
 const INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS: StaticProvider[] = [
-  ...INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
   ...INTERNAL_SERVER_PLATFORM_PROVIDERS,
 ];
 
@@ -25,11 +29,12 @@ const INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS: StaticProvider[] = [
  * @publicApi
  * @deprecated from v20.0.0, use e2e testing to verify SSR behavior.
  */
-export const platformServerTesting = createPlatformFactory(
-  platformCore,
-  'serverTesting',
-  INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS,
-);
+export const platformServerTesting: (extraProviders?: StaticProvider[]) => PlatformRef =
+  createPlatformFactory(
+    platformCore,
+    'serverTesting',
+    INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS,
+  );
 
 /**
  * NgModule for testing.

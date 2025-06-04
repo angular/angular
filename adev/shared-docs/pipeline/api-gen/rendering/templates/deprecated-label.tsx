@@ -7,7 +7,7 @@
  */
 
 import {Fragment, h} from 'preact';
-import {PARAM_KEYWORD_CLASS_NAME} from '../styling/css-classes';
+import {PARAM_KEYWORD_CLASS_NAME} from '../styling/css-classes.mjs';
 
 export function DeprecatedLabel(props: {
   entry:

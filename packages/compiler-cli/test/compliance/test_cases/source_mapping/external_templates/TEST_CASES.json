@@ -7,7 +7,8 @@
         "external_template.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true,
@@ -30,7 +31,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true,
@@ -43,7 +45,8 @@
         "extra_root_dir.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true,
@@ -60,7 +63,8 @@
         "extra_root_dir.ts"
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "expectations": [
         {
@@ -87,7 +91,8 @@
         "escaped_chars.ts"
       ],
       "compilationModeFilter": [
-        "full compile"
+        "full compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true,
@@ -110,7 +115,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "compilerOptions": {
         "sourceMap": true,

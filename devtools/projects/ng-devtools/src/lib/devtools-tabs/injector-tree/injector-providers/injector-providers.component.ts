@@ -14,7 +14,12 @@ import {MatInput} from '@angular/material/input';
 import {MatSelect} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
 import {MatTooltip} from '@angular/material/tooltip';
-import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from 'protocol';
+import {
+  Events,
+  MessageBus,
+  SerializedInjector,
+  SerializedProviderRecord,
+} from '../../../../../../protocol';
 
 @Component({
   selector: 'ng-injector-providers',

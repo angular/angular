@@ -11,33 +11,32 @@
 // this statement only.
 
 import {
+  ApplicationRef,
   Component,
+  ɵRender3ComponentFactory as ComponentFactory,
   ComponentRef,
+  ɵDeferBlockBehavior as DeferBlockBehavior,
   Directive,
   EnvironmentInjector,
-  InjectOptions,
-  Injector,
-  NgModule,
-  NgZone,
-  Pipe,
-  PlatformRef,
-  ProviderToken,
-  runInInjectionContext,
-  Type,
-  ɵDeferBlockBehavior as DeferBlockBehavior,
-  ɵEffectScheduler as EffectScheduler,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
-  ɵRender3ComponentFactory as ComponentFactory,
+  InjectOptions,
+  Injector,
+  NgModule,
   ɵRender3NgModuleRef as NgModuleRef,
+  NgZone,
+  Pipe,
+  PlatformRef,
+  ProviderToken,
   ɵresetCompiledComponents as resetCompiledComponents,
+  runInInjectionContext,
   ɵsetAllowDuplicateNgModuleIdsForTest as setAllowDuplicateNgModuleIdsForTest,
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-  ApplicationRef,
+  Type,
 } from '../../src/core';
 
 import {ComponentFixture} from './component_fixture';
@@ -151,6 +150,13 @@ export interface TestBed {
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed;
 
   createComponent<T>(component: Type<T>): ComponentFixture<T>;
+
+  /**
+   * Execute any pending effects.
+   *
+   * @deprecated use `TestBed.tick()` instead
+   */
+  flushEffects(): void;
 
   /**
    * Execute any pending work required to synchronize model to the UI.
@@ -391,6 +397,10 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.ngModule;
   }
 
+  static flushEffects(): void {
+    return TestBedImpl.INSTANCE.tick();
+  }
+
   static tick(): void {
     return TestBedImpl.INSTANCE.tick();
   }
@@ -408,7 +418,7 @@ export class TestBedImpl implements TestBed {
   /**
    * Internal-only flag to indicate whether a module
    * scoping queue has been checked and flushed already.
-   * @nodoc
+   * @docs-private
    */
   globalCompilationChecked = false;
 
@@ -802,12 +812,31 @@ export class TestBedImpl implements TestBed {
   }
 
   /**
+   * Execute any pending effects by executing any pending work required to synchronize model to the UI.
+   *
+   * @deprecated use `TestBed.tick()` instead
+   */
+  flushEffects(): void {
+    this.tick();
+  }
+
+  /**
    * Execute any pending work required to synchronize model to the UI.
    *
    * @publicApi
    */
   tick(): void {
-    this.inject(ApplicationRef).tick();
+    const appRef = this.inject(ApplicationRef);
+    try {
+      // TODO(atscott): ApplicationRef.tick should set includeAllTestViews to true itself rather than doing this here and in ComponentFixture
+      // The behavior should be that TestBed.tick, ComponentFixture.detectChanges, and ApplicationRef.tick all result in the test fixtures
+      // getting synchronized, regardless of whether they are autoDetect: true.
+      // Automatic scheduling (zone or zoneless) will call _tick which will _not_ include fixtures with autoDetect: false
+      (appRef as any).includeAllTestViews = true;
+      appRef.tick();
+    } finally {
+      (appRef as any).includeAllTestViews = false;
+    }
   }
 }
 

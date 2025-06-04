@@ -18,7 +18,6 @@ import {
   ImplicitReceiver,
   Interpolation,
   KeyedRead,
-  KeyedWrite,
   LiteralArray,
   LiteralMap,
   LiteralPrimitive,
@@ -26,7 +25,6 @@ import {
   ParenthesizedExpression,
   PrefixNot,
   PropertyRead,
-  PropertyWrite,
   RecursiveAstVisitor,
   SafeCall,
   SafeKeyedRead,
@@ -57,13 +55,6 @@ class Unparser implements AstVisitor {
   visitPropertyRead(ast: PropertyRead, context: any) {
     this._visit(ast.receiver);
     this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}` : `.${ast.name}`;
-  }
-
-  visitPropertyWrite(ast: PropertyWrite, context: any) {
-    this._visit(ast.receiver);
-    this._expression +=
-      ast.receiver instanceof ImplicitReceiver ? `${ast.name} = ` : `.${ast.name} = `;
-    this._visit(ast.value);
   }
 
   visitUnary(ast: Unary, context: any) {
@@ -148,14 +139,6 @@ class Unparser implements AstVisitor {
     this._expression += '[';
     this._visit(ast.key);
     this._expression += ']';
-  }
-
-  visitKeyedWrite(ast: KeyedWrite, context: any) {
-    this._visit(ast.receiver);
-    this._expression += '[';
-    this._visit(ast.key);
-    this._expression += '] = ';
-    this._visit(ast.value);
   }
 
   visitLiteralArray(ast: LiteralArray, context: any) {

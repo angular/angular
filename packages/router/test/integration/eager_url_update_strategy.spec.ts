@@ -30,7 +30,7 @@ import {
   createRoot,
   advance,
 } from './integration_helpers';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {timeout} from '../helpers';
 
 export function eagerUrlUpdateStrategyIntegrationSuite() {

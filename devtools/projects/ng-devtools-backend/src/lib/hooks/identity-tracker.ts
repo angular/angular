@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DevToolsNode, ElementPosition} from 'protocol';
+import {DevToolsNode, ElementPosition} from '../../../../protocol';
 
 import {buildDirectiveForest} from '../component-tree/component-tree';
 import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces';
@@ -96,6 +96,9 @@ export class IdentityTracker {
       this.isComponent.set(dir.instance, false);
       this._indexNode(dir.instance, node.position, newNodes);
     });
+    if (node.defer) {
+      this._indexNode(node.defer, node.position, newNodes);
+    }
     node.children.forEach((child) => this._index(child, parent, newNodes, allNodes));
   }
 
@@ -124,21 +127,12 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
   parentPosition: number[] = [],
 ): IndexedNode => {
   const position = parentPosition.concat([idx]);
-
-  // Not every node represents a DOM element (ex @defer blocks), we shouldn't account for them
-  const children: IndexedNode[] = [];
-  node.children.forEach((n, i) => {
-    if (n.nativeElement) {
-      children.push(indexTree(n, i, position));
-    }
-  });
-
   return {
     position,
     element: node.element,
     component: node.component,
     directives: node.directives.map((d) => ({position, ...d})),
-    children,
+    children: node.children.map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
     hydration: node.hydration,
     defer: node.defer,
@@ -147,5 +141,4 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
 
 export const indexForest = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(
   forest: T[],
-  // Not every node represents a DOM element (ex @defer blocks), we shouldn't account for them
-): IndexedNode[] => forest.filter((n) => n.nativeElement).map((n, i) => indexTree(n, i));
+): IndexedNode[] => forest.map((n, i) => indexTree(n, i));

@@ -7,10 +7,10 @@
  */
 
 import {h} from 'preact';
-import {DocEntryRenderable} from '../entities/renderables';
+import {DocEntryRenderable} from '../entities/renderables.mjs';
 import {HeaderApi} from './header-api';
 import {SectionDescription} from './section-description';
-import {API_REFERENCE_CONTAINER} from '../styling/css-classes';
+import {API_REFERENCE_CONTAINER} from '../styling/css-classes.mjs';
 
 /** Component to render a block or element API reference document. */
 export function DocsReference(entry: DocEntryRenderable) {

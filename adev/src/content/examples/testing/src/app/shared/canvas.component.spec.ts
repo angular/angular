@@ -20,7 +20,7 @@ describe('CanvasComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CanvasComponent],
-    }).compileComponents();
+    });
   });
 
   it('should be able to generate blob data from canvas', fakeAsync(() => {

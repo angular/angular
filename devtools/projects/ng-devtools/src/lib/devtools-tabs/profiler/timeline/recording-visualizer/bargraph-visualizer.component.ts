@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
-import {ProfilerFrame} from 'protocol';
+import {ProfilerFrame} from '../../../../../../../protocol';
 
 import {ThemeService} from '../../../../application-services/theme_service';
 import {BarGraphFormatter, BargraphNode} from '../record-formatter/bargraph-formatter/index';

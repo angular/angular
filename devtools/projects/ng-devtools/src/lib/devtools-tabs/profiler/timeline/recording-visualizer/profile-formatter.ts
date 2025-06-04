@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveProfile} from 'protocol';
+import {DirectiveProfile} from '../../../../../../../protocol';
 
 import {SelectedDirective} from './timeline-visualizer.component';
 

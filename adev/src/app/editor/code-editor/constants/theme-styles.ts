@@ -44,7 +44,6 @@ export const CODE_EDITOR_THEME_STYLES = {
     'overflow-y': 'scroll',
     'max-height': '70%',
     'max-width': '100%',
-    'margin-right': '10px',
   },
   '.cm-tooltip.cm-tooltip-autocomplete > ul': {
     background: 'var(--code-editor-autocomplete-background)',

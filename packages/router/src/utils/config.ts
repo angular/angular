@@ -31,7 +31,7 @@ import {PRIMARY_OUTLET} from '../shared';
 export function getOrCreateRouteInjectorIfNeeded(
   route: Route,
   currentInjector: EnvironmentInjector,
-) {
+): EnvironmentInjector {
   if (route.providers && !route._injector) {
     route._injector = createEnvironmentInjector(
       route.providers,
@@ -70,7 +70,7 @@ export function validateConfig(
   }
 }
 
-export function assertStandalone(fullPath: string, component: Type<unknown> | undefined) {
+export function assertStandalone(fullPath: string, component: Type<unknown> | undefined): void {
   if (component && isNgModule(component)) {
     throw new RuntimeError(
       RuntimeErrorCode.INVALID_ROUTE_CONFIG,

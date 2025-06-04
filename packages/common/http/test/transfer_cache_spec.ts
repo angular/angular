@@ -7,8 +7,14 @@
  */
 
 import {DOCUMENT} from '../../index';
-import {ApplicationRef, Component, Injectable, PLATFORM_ID} from '@angular/core';
-import {makeStateKey, TransferState} from '@angular/core/src/transfer_state';
+import {
+  ApplicationRef,
+  Component,
+  Injectable,
+  PLATFORM_ID,
+  TransferState,
+  makeStateKey,
+} from '@angular/core';
 import {fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';

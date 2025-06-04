@@ -1,54 +1,62 @@
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "browser_styles",
     srcs = ["browser_styles_service.ts"],
-    deps = [
+    interop_deps = [
         "//packages/common",
         "//packages/core",
-        "@npm//@angular/cdk",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
     ],
 )
 
-ng_module(
+ng_project(
     name = "frame_manager",
     srcs = ["frame_manager.ts"],
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib/application-environment",
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
+    ],
+    deps = [
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-ng_module(
+ng_project(
     name = "theme",
     srcs = ["theme_service.ts"],
-    deps = [
-        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
+    interop_deps = [
         "//packages/common",
         "//packages/core",
-        "@npm//@types",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
     ],
 )
 
 ts_test_library(
     name = "test_application_services_lib",
     srcs = glob(["*_spec.ts"]),
-    deps = [
+    interop_deps = [
+        "//packages/common",
+        "//packages/core/testing",
         ":browser_styles",
         ":frame_manager",
         ":theme",
-        "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/application-providers:window",
-        "//devtools/projects/protocol",
-        "//packages/common",
-        "//packages/core/testing",
-        "@npm//@angular/cdk",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

@@ -19,6 +19,7 @@ import {
 import ts from 'typescript';
 
 import {
+  ClassMemberAccessLevel,
   CtorParameter,
   DeclarationNode,
   Decorator,
@@ -84,11 +85,14 @@ export function extractClassMetadata(
 
   // Do the same for property decorators.
   let metaPropDecorators: Expression | null = null;
-  const classMembers = reflection
-    .getMembersOfClass(clazz)
-    .filter(
-      (member) => !member.isStatic && member.decorators !== null && member.decorators.length > 0,
-    );
+  const classMembers = reflection.getMembersOfClass(clazz).filter(
+    (member) =>
+      !member.isStatic &&
+      member.decorators !== null &&
+      member.decorators.length > 0 &&
+      // Private fields are not supported in the metadata emit
+      member.accessLevel !== ClassMemberAccessLevel.EcmaScriptPrivate,
+  );
   const duplicateDecoratedMembers = classMembers.filter(
     (member, i, arr) => arr.findIndex((arrayMember) => arrayMember.name === member.name) < i,
   );

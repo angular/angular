@@ -7,10 +7,10 @@
  */
 
 import {Fragment, h} from 'preact';
-import {DocEntryRenderable} from '../entities/renderables';
+import {DocEntryRenderable} from '../entities/renderables.mjs';
 import {RawHtml} from './raw-html';
 import {CodeSymbol} from './code-symbols';
-import {SECTION_CONTAINER} from '../styling/css-classes';
+import {SECTION_CONTAINER} from '../styling/css-classes.mjs';
 import {SectionHeading} from './section-heading';
 
 const DESCRIPTION_SECTION_NAME = 'Description';

@@ -138,6 +138,7 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
       if (
         pipeMeta !== null &&
         pipeMeta.isStandalone &&
+        pipeMeta.name !== null &&
         !usedPipes.has(pipeMeta.name) &&
         !this.isPotentialSharedReference(current, rawImports)
       ) {

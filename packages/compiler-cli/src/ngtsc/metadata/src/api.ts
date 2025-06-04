@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveMeta as T2DirectiveMeta, Expression, SchemaMetadata} from '@angular/compiler';
+import {
+  DirectiveMeta as T2DirectiveMeta,
+  Expression,
+  SchemaMetadata,
+  ExternalReference,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -305,7 +310,7 @@ export interface HostDirectiveMeta {
    * which indicates the expression could not be resolved due to being imported from some external
    * file. In this case, the expression is the raw expression as appears in the decorator.
    */
-  directive: Reference<ClassDeclaration> | Expression;
+  directive: Reference<ClassDeclaration> | Expression | ExternalReference;
 
   /** Whether the reference to the host directive is a forward reference. */
   isForwardReference: boolean;
@@ -358,7 +363,7 @@ export interface TemplateGuardMeta {
 export interface PipeMeta {
   kind: MetaKind.Pipe;
   ref: Reference<ClassDeclaration>;
-  name: string;
+  name: string | null;
   nameExpr: ts.Expression | null;
   isStandalone: boolean;
   isPure: boolean;

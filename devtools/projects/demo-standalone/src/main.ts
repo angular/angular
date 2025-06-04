@@ -9,7 +9,7 @@
 import {bootstrapApplication} from '@angular/platform-browser';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideRouter} from '@angular/router';
-import {ApplicationEnvironment, ApplicationOperations} from 'ng-devtools';
+import {ApplicationEnvironment, ApplicationOperations} from '../../ng-devtools';
 
 import {DemoApplicationEnvironment} from '../../../src/demo-application-environment';
 import {DemoApplicationOperations} from '../../../src/demo-application-operations';

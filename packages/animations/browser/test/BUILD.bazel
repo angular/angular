@@ -1,30 +1,19 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
-load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
-circular_dependency_test(
-    name = "circular_deps_test",
-    entry_point = "angular/packages/animations/browser/index.mjs",
-    deps = ["//packages/animations/browser"],
-)
-
-circular_dependency_test(
-    name = "testing_circular_deps_test",
-    entry_point = "angular/packages/animations/browser/testing/index.mjs",
-    deps = ["//packages/animations/browser/testing"],
-)
-
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
+    interop_deps = [
+        "//packages/private/testing",
+    ],
     deps = [
-        "//packages:types",
-        "//packages/animations",
-        "//packages/animations/browser",
-        "//packages/animations/browser/testing",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser/testing",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )
 

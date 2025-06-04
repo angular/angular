@@ -88,15 +88,11 @@ export class AngularElementCollector extends RecursiveVisitor {
   }
 
   override visitElement(element: Element) {
-    const isHtmlTag = ALL_HTML_TAGS.includes(element.name);
-    if (isHtmlTag) {
-      return;
-    }
-
-    const hasNoContent = this.elementHasNoContent(element);
-    const hasNoClosingTag = this.elementHasNoClosingTag(element);
-
-    if (hasNoContent && !hasNoClosingTag) {
+    if (
+      !element.isSelfClosing &&
+      !ALL_HTML_TAGS.includes(element.name) &&
+      this.elementHasNoContent(element)
+    ) {
       this.elements.push({
         tagName: element.name,
         start: element.sourceSpan.start.offset,
@@ -116,16 +112,5 @@ export class AngularElementCollector extends RecursiveVisitor {
       return child instanceof Text && /^\s*$/.test(child.value);
     }
     return false;
-  }
-
-  private elementHasNoClosingTag(element: Element) {
-    const {startSourceSpan, endSourceSpan} = element;
-    if (!endSourceSpan) {
-      return true;
-    }
-    return (
-      startSourceSpan.start.offset === endSourceSpan.start.offset &&
-      startSourceSpan.end.offset === endSourceSpan.end.offset
-    );
   }
 }

@@ -8,7 +8,7 @@
 
 import {getIntParameter} from '../util';
 
-export const numViews = getIntParameter('viewCount');
+export const numViews: number = getIntParameter('viewCount');
 
 export function newArray<T = any>(size: number): T[];
 export function newArray<T>(size: number, value: T): T[];

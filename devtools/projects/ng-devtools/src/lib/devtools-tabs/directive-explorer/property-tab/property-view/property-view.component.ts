@@ -7,7 +7,7 @@
  */
 
 import {Component, computed, inject, input, output} from '@angular/core';
-import {DirectivePosition} from 'protocol';
+import {DirectivePosition} from '../../../../../../../protocol';
 
 import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyViewBodyComponent} from './property-view-body.component';

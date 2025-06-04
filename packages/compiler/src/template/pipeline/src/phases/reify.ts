@@ -268,7 +268,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         );
         break;
       case ir.OpKind.DeferOn:
-        let args: number[] = [];
+        let args: (number | null)[] = [];
         switch (op.trigger.kind) {
           case ir.DeferTriggerKind.Never:
           case ir.DeferTriggerKind.Idle:
@@ -284,12 +284,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             if (op.modifier === ir.DeferOpModifierKind.HYDRATE) {
               args = [];
             } else {
-              if (op.trigger.targetSlot?.slot == null || op.trigger.targetSlotViewSteps === null) {
-                throw new Error(
-                  `Slot or view steps not set in trigger reification for trigger kind ${op.trigger.kind}`,
-                );
-              }
-              args = [op.trigger.targetSlot.slot];
+              // The slots not being defined at this point is invalid, however we
+              // catch it during type checking. Pass in null in such cases.
+              args = [op.trigger.targetSlot?.slot ?? null];
               if (op.trigger.targetSlotViewSteps !== 0) {
                 args.push(op.trigger.targetSlotViewSteps);
               }
@@ -487,20 +484,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
       case ir.OpKind.Property:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.propertyInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.sanitizer,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
         break;
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
@@ -509,43 +493,16 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         );
         break;
       case ir.OpKind.StyleProp:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.stylePropInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.unit,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit, op.sourceSpan));
         break;
       case ir.OpKind.ClassProp:
         ir.OpList.replace(op, ng.classProp(op.name, op.expression, op.sourceSpan));
         break;
       case ir.OpKind.StyleMap:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.styleMapInterpolate(op.expression.strings, op.expression.expressions, op.sourceSpan),
-          );
-        } else {
-          ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
         break;
       case ir.OpKind.ClassMap:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.classMapInterpolate(op.expression.strings, op.expression.expressions, op.sourceSpan),
-          );
-        } else {
-          ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
         break;
       case ir.OpKind.I18nExpression:
         ir.OpList.replace(op, ng.i18nExp(op.expression, op.sourceSpan));
@@ -560,20 +517,10 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         );
         break;
       case ir.OpKind.Attribute:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.attributeInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.sanitizer,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer, op.namespace));
-        }
+        ir.OpList.replace(
+          op,
+          ng.attribute(op.name, op.expression, op.sanitizer, op.namespace, op.sourceSpan),
+        );
         break;
       case ir.OpKind.DomProperty:
         if (op.expression instanceof ir.Interpolation) {

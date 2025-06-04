@@ -173,7 +173,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   // match the native "disabled attribute" semantics which can be observed on input elements.
   // This static member tells the compiler that values of type "string" can also be assigned
   // to the input in a template.
-  /** @nodoc */
+  /** @docs-private */
   static ngAcceptInputType_isDisabled: boolean | string;
 
   /** @internal */
@@ -181,7 +181,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * Internal reference to the view model value.
-   * @nodoc
+   * @docs-private
    */
   viewModel: any;
 
@@ -249,7 +249,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
     this._checkForErrors();
     if (!this._registered || 'name' in changes) {
@@ -276,7 +276,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     this.formDirective && this.formDirective.removeControl(this);
   }

@@ -7,7 +7,7 @@
  */
 
 import {h} from 'preact';
-import {CodeLineRenderable} from '../entities/renderables';
+import {CodeLineRenderable} from '../entities/renderables.mjs';
 
 export function CodeLine(props: {line: CodeLineRenderable}) {
   const line = props.line;

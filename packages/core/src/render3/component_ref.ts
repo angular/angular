@@ -16,7 +16,7 @@ import {
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type, Writable} from '../interface/type';
+import {Type} from '../interface/type';
 import {
   ComponentFactory as AbstractComponentFactory,
   ComponentRef as AbstractComponentRef,
@@ -42,7 +42,13 @@ import {
 } from './instructions/shared';
 import {ComponentDef, ComponentTemplate, DirectiveDef, RenderFlags} from './interfaces/definition';
 import {InputFlags} from './interfaces/input_flags';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
+import {
+  TContainerNode,
+  TElementContainerNode,
+  TElementNode,
+  TNode,
+  TNodeType,
+} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {
   CONTEXT,
@@ -71,10 +77,10 @@ import {executeContentQueries} from './queries/query_execution';
 import {enterView, leaveView} from './state';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getTNode} from './util/view_utils';
-import {elementEndFirstCreatePass, elementStartFirstCreatePass} from './view/elements';
+import {directiveHostEndFirstCreatePass, directiveHostFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
-import {BINDING, Binding, DirectiveWithBindings} from './dynamic_bindings';
+import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
 import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
@@ -297,10 +303,10 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       let componentView: LView | null = null;
 
       try {
-        const hostTNode = elementStartFirstCreatePass(
+        const hostTNode = directiveHostFirstCreatePass(
           HEADER_OFFSET,
-          rootTView,
           rootLView,
+          TNodeType.Element,
           '#host',
           () => rootTView.directiveRegistry,
           true,
@@ -320,8 +326,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         // TODO(pk): this logic is similar to the instruction code where a node can have directives
         createDirectivesInstances(rootTView, rootLView, hostTNode);
         executeContentQueries(rootTView, hostTNode, rootLView);
-
-        elementEndFirstCreatePass(rootTView, hostTNode);
+        directiveHostEndFirstCreatePass(rootTView, hostTNode);
 
         if (projectableNodes !== undefined) {
           projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);
@@ -368,16 +373,16 @@ function createRootTView(
   let varsToAllocate = 0;
 
   if (componentBindings) {
-    for (const binding of componentBindings) {
+    for (const binding of componentBindings as BindingInternal[]) {
       varsToAllocate += binding[BINDING].requiredVars;
 
       if (binding.create) {
-        (binding as Writable<Binding>).targetIdx = 0;
+        (binding as BindingInternal).targetIdx = 0;
         (creationBindings ??= []).push(binding);
       }
 
       if (binding.update) {
-        (binding as Writable<Binding>).targetIdx = 0;
+        (binding as BindingInternal).targetIdx = 0;
         (updateBindings ??= []).push(binding);
       }
     }
@@ -387,16 +392,16 @@ function createRootTView(
     for (let i = 0; i < directives.length; i++) {
       const directive = directives[i];
       if (typeof directive !== 'function') {
-        for (const binding of directive.bindings) {
+        for (const binding of directive.bindings as BindingInternal[]) {
           varsToAllocate += binding[BINDING].requiredVars;
           const targetDirectiveIdx = i + 1;
           if (binding.create) {
-            (binding as Writable<Binding>).targetIdx = targetDirectiveIdx;
+            (binding as BindingInternal).targetIdx = targetDirectiveIdx;
             (creationBindings ??= []).push(binding);
           }
 
           if (binding.update) {
-            (binding as Writable<Binding>).targetIdx = targetDirectiveIdx;
+            (binding as BindingInternal).targetIdx = targetDirectiveIdx;
             (updateBindings ??= []).push(binding);
           }
         }
@@ -451,13 +456,13 @@ function getRootTViewTemplate(
 
   return (flags) => {
     if (flags & RenderFlags.Create && creationBindings) {
-      for (const binding of creationBindings) {
+      for (const binding of creationBindings as BindingInternal[]) {
         binding.create!();
       }
     }
 
     if (flags & RenderFlags.Update && updateBindings) {
-      for (const binding of updateBindings) {
+      for (const binding of updateBindings as BindingInternal[]) {
         binding.update!();
       }
     }
@@ -465,7 +470,7 @@ function getRootTViewTemplate(
 }
 
 function isInputBinding(binding: Binding): boolean {
-  const kind = binding[BINDING].kind;
+  const kind = (binding as BindingInternal)[BINDING].kind;
   return kind === 'input' || kind === 'twoWay';
 }
 

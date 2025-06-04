@@ -11,7 +11,6 @@ import {Builder, WebDriver} from 'selenium-webdriver4';
 
 import {Browser, getUniqueId} from '../browser';
 
-import {IpcServer} from './ipc';
 import {openSauceConnectTunnel} from './sauce-connect-tunnel';
 
 const defaultCapabilities = {

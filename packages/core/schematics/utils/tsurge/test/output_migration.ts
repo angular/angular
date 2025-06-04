@@ -14,7 +14,6 @@ import {ProgramInfo} from '../program_info';
 import {Replacement, TextUpdate} from '../replacement';
 import {findOutputDeclarationsAndReferences, OutputID} from './output_helpers';
 import {projectFile} from '../project_paths';
-import {MigrationStats} from '../base_migration';
 
 type AnalysisUnit = {[id: OutputID]: {seenProblematicUsage: boolean}};
 type GlobalMetadata = {[id: OutputID]: {canBeMigrated: boolean}};
@@ -120,7 +119,7 @@ export class OutputMigration extends TsurgeComplexMigration<AnalysisUnit, Global
     return {replacements};
   }
 
-  override async stats(globalMetadata: GlobalMetadata): Promise<MigrationStats> {
+  override async stats(globalMetadata: GlobalMetadata) {
     let allOutputs = 0;
     let migratedOutputs = 0;
 
@@ -131,11 +130,9 @@ export class OutputMigration extends TsurgeComplexMigration<AnalysisUnit, Global
       }
     }
 
-    return {
-      counters: {
-        allOutputs,
-        migratedOutputs,
-      },
-    };
+    return confirmAsSerializable({
+      allOutputs,
+      migratedOutputs,
+    });
   }
 }

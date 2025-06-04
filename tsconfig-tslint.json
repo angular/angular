@@ -14,7 +14,6 @@
   "exclude": [
     "adev/src/content/api-examples/**",
     "adev/src/content/examples/**",
-    "adev/src/content/tutorials/**/src/**",
-    "adev/src/content/tutorials/**/src-final/**"
+    "adev/src/content/tutorials/**",
   ]
 }

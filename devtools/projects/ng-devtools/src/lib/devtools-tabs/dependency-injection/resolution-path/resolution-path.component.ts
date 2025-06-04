@@ -7,7 +7,7 @@
  */
 
 import {Component, computed, input} from '@angular/core';
-import {SerializedInjector} from 'protocol';
+import {SerializedInjector} from '../../../../../../protocol';
 
 export const NODE_TYPE_CLASS_MAP: {[key in SerializedInjector['type']]: string} = {
   'element': 'type-element',

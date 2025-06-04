@@ -129,22 +129,6 @@ export class PropertyRead extends ASTWithName {
   }
 }
 
-export class PropertyWrite extends ASTWithName {
-  constructor(
-    span: ParseSpan,
-    sourceSpan: AbsoluteSourceSpan,
-    nameSpan: AbsoluteSourceSpan,
-    public receiver: AST,
-    public name: string,
-    public value: AST,
-  ) {
-    super(span, sourceSpan, nameSpan);
-  }
-  override visit(visitor: AstVisitor, context: any = null): any {
-    return visitor.visitPropertyWrite(this, context);
-  }
-}
-
 export class SafePropertyRead extends ASTWithName {
   constructor(
     span: ParseSpan,
@@ -188,19 +172,19 @@ export class SafeKeyedRead extends AST {
   }
 }
 
-export class KeyedWrite extends AST {
-  constructor(
-    span: ParseSpan,
-    sourceSpan: AbsoluteSourceSpan,
-    public receiver: AST,
-    public key: AST,
-    public value: AST,
-  ) {
-    super(span, sourceSpan);
-  }
-  override visit(visitor: AstVisitor, context: any = null): any {
-    return visitor.visitKeyedWrite(this, context);
-  }
+/** Possible types for a pipe. */
+export enum BindingPipeType {
+  /**
+   * Pipe is being referenced by its name, for example:
+   * `@Pipe({name: 'foo'}) class FooPipe` and `{{123 | foo}}`.
+   */
+  ReferencedByName,
+
+  /**
+   * Pipe is being referenced by its class name, for example:
+   * `@Pipe() class FooPipe` and `{{123 | FooPipe}}`.
+   */
+  ReferencedDirectly,
 }
 
 export class BindingPipe extends ASTWithName {
@@ -210,6 +194,7 @@ export class BindingPipe extends ASTWithName {
     public exp: AST,
     public name: string,
     public args: any[],
+    readonly type: BindingPipeType,
     nameSpan: AbsoluteSourceSpan,
   ) {
     super(span, sourceSpan, nameSpan);
@@ -612,7 +597,6 @@ export interface AstVisitor {
   visitImplicitReceiver(ast: ImplicitReceiver, context: any): any;
   visitInterpolation(ast: Interpolation, context: any): any;
   visitKeyedRead(ast: KeyedRead, context: any): any;
-  visitKeyedWrite(ast: KeyedWrite, context: any): any;
   visitLiteralArray(ast: LiteralArray, context: any): any;
   visitLiteralMap(ast: LiteralMap, context: any): any;
   visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any;
@@ -622,7 +606,6 @@ export interface AstVisitor {
   visitVoidExpression(ast: TypeofExpression, context: any): any;
   visitNonNullAssert(ast: NonNullAssert, context: any): any;
   visitPropertyRead(ast: PropertyRead, context: any): any;
-  visitPropertyWrite(ast: PropertyWrite, context: any): any;
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
   visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any;
   visitCall(ast: Call, context: any): any;
@@ -676,11 +659,6 @@ export class RecursiveAstVisitor implements AstVisitor {
     this.visit(ast.receiver, context);
     this.visit(ast.key, context);
   }
-  visitKeyedWrite(ast: KeyedWrite, context: any): any {
-    this.visit(ast.receiver, context);
-    this.visit(ast.key, context);
-    this.visit(ast.value, context);
-  }
   visitLiteralArray(ast: LiteralArray, context: any): any {
     this.visitAll(ast.expressions, context);
   }
@@ -702,10 +680,6 @@ export class RecursiveAstVisitor implements AstVisitor {
   }
   visitPropertyRead(ast: PropertyRead, context: any): any {
     this.visit(ast.receiver, context);
-  }
-  visitPropertyWrite(ast: PropertyWrite, context: any): any {
-    this.visit(ast.receiver, context);
-    this.visit(ast.value, context);
   }
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
     this.visit(ast.receiver, context);

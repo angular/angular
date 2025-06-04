@@ -7,9 +7,9 @@
  */
 
 import {Fragment, h} from 'preact';
-import {CliCardRenderable} from '../entities/renderables';
+import {CliCardRenderable} from '../entities/renderables.mjs';
 import {DeprecatedLabel} from './deprecated-label';
-import {REFERENCE_MEMBER_CARD, REFERENCE_MEMBER_CARD_BODY} from '../styling/css-classes';
+import {REFERENCE_MEMBER_CARD, REFERENCE_MEMBER_CARD_BODY} from '../styling/css-classes.mjs';
 
 export function CliCard(props: {card: CliCardRenderable}) {
   return (
@@ -31,8 +31,25 @@ export function CliCard(props: {card: CliCardRenderable}) {
               <div dangerouslySetInnerHTML={{__html: item.description}}></div>
             </div>
             <div class="docs-reference-type-and-default">
-              <span>Value Type</span>
-              <code>{item.type}</code>
+              {/* Display the enum values if there are some, else the type expected for the option */}
+              {item.enum ? (
+                <>
+                  <span>Allowed Values</span>
+                  <span>
+                    {item.enum.map((val, i, items) => (
+                      <>
+                        <code>{val}</code>
+                        {i < items.length - 1 && ', '}
+                      </>
+                    ))}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span>Value Type</span>
+                  <code>{item.type}</code>
+                </>
+              )}
               {/* Default Value */}
               {item.default !== undefined ? <span>Default</span> : <></>}
               {props.card.type === 'Options' && item.default !== undefined ? (

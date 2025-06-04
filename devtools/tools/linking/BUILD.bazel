@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//tools:defaults.bzl", "nodejs_binary")
 
 copy_to_bin(
@@ -10,6 +10,7 @@ nodejs_binary(
     name = "linker_bin",
     data = [
         ":linker_srcs",
+        "//packages:package_json",
         "//packages/compiler-cli/linker/babel",
         "@npm//@babel/core",
         "@npm//@nginfra/angular-linking",

@@ -1,45 +1,34 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
-load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
 exports_files([
     "browser/static_assets/200.html",
     "static_assets/test.html",
 ])
 
-circular_dependency_test(
-    name = "circular_deps_test",
-    entry_point = "angular/packages/platform-browser/index.mjs",
-    deps = ["//packages/platform-browser"],
-)
-
-circular_dependency_test(
-    name = "testing_circular_deps_test",
-    entry_point = "angular/packages/platform-browser/testing/index.mjs",
-    deps = ["//packages/platform-browser/testing"],
-)
-
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages:types",
-        "//packages/animations",
-        "//packages/animations/browser",
-        "//packages/animations/browser/testing",
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/common/http/testing",
         "//packages/compiler",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
-        "//packages/platform-browser/animations",
-        "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/common/http/testing:testing_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
     ],
 )
 

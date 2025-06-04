@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {EventCallback, WrappedEventCallback} from '../../event_delegation_utils';
 import {TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {LView, RENDERER, TView} from '../interfaces/view';
@@ -13,12 +14,7 @@ import {assertTNodeType} from '../node_assert';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 
 import {listenToOutput} from '../view/directive_outputs';
-import {
-  EventCallback,
-  listenToDomEvent,
-  wrapListener,
-  WrappedEventCallback,
-} from '../view/listeners';
+import {listenToDomEvent, wrapListener} from '../view/listeners';
 import {loadComponentRenderer} from './shared';
 
 /**
@@ -86,6 +82,41 @@ export function ɵɵsyntheticHostListener(
   const renderer = loadComponentRenderer(currentDef, tNode, lView);
   listenerInternal(tView, lView, renderer, tNode, eventName, listenerFn);
   return ɵɵsyntheticHostListener;
+}
+
+/**
+ * Adds a listener for a DOM event on the current node.
+ *
+ * @param eventName Name of the event
+ * @param listenerFn The function to be called when event emits
+ * @param eventTargetResolver Function that returns global target information in case this listener
+ * should be attached to a global object like window, document or body
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomListener(
+  eventName: string,
+  listenerFn: EventCallback,
+  eventTargetResolver?: GlobalTargetResolver,
+): typeof ɵɵdomListener {
+  const lView = getLView<{} | null>();
+  const tView = getTView();
+  const tNode = getCurrentTNode()!;
+
+  if (tNode.type & TNodeType.AnyRNode || eventTargetResolver) {
+    listenToDomEvent(
+      tNode,
+      tView,
+      lView,
+      eventTargetResolver,
+      lView[RENDERER],
+      eventName,
+      listenerFn,
+      wrapListener(tNode, lView, listenerFn),
+    );
+  }
+
+  return ɵɵdomListener;
 }
 
 export function listenerInternal(

@@ -189,11 +189,11 @@ export class ComponentWithFragment { }
 })
 export class MyOutlet {
   private viewContainer = inject(ViewContainerRef);
-  @Input() fragment: TemplateRef<unknown> | undefined;
+  fragment = input<TemplateRef<unknown> | undefined>();
 
   showFragment() {
-    if (this.fragment) {
-      this.viewContainer.createEmbeddedView(this.fragment);
+    if (this.fragment()) {
+      this.viewContainer.createEmbeddedView(this.fragment());
     }
   }
 }
@@ -279,5 +279,5 @@ For more details, see [Structural Directives](/guide/directives/structural-direc
 
 For examples of how `ng-template` is used in other libraries, check out:
 
-- [Tabs from Angular Material](https://material.angular.io/components/tabs/overview) - nothing gets rendered into the DOM until the tab is activated
-- [Table from Angular Material](https://material.angular.io/components/table/overview) - allows developers to define different ways to render data
+- [Tabs from Angular Material](https://material.angular.dev/components/tabs/overview) - nothing gets rendered into the DOM until the tab is activated
+- [Table from Angular Material](https://material.angular.dev/components/table/overview) - allows developers to define different ways to render data

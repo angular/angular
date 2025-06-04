@@ -18,20 +18,24 @@ import {stringifyForError} from './util/stringify_utils';
 import {createOutputListener} from './view/directive_outputs';
 
 /** Symbol used to store and retrieve metadata about a binding. */
-export const BINDING = /* @__PURE__ */ Symbol('BINDING');
+export const BINDING: unique symbol = /* @__PURE__ */ Symbol('BINDING');
 
 /**
  * A dynamically-defined binding targeting.
  * For example, `inputBinding('value', () => 123)` creates an input binding.
  */
 export interface Binding {
+  readonly [BINDING]: unknown;
+}
+
+export interface BindingInternal extends Binding {
   readonly [BINDING]: {
     readonly kind: string;
     readonly requiredVars: number;
   };
 
   /** Target index (in a view's registry) to which to apply the binding. */
-  readonly targetIdx?: number;
+  targetIdx?: number;
 
   /** Callback that will be invoked during creation. */
   create?(): void;
@@ -52,8 +56,8 @@ export interface DirectiveWithBindings<T> {
 }
 
 // These are constant between all the bindings so we can reuse the objects.
-const INPUT_BINDING_METADATA: Binding[typeof BINDING] = {kind: 'input', requiredVars: 1};
-const OUTPUT_BINDING_METADATA: Binding[typeof BINDING] = {kind: 'output', requiredVars: 0};
+const INPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'input', requiredVars: 1};
+const OUTPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'output', requiredVars: 0};
 
 // TODO(pk): this is a sketch of an input binding instruction that still needs some cleanups
 // - take an index of a directive on TNode (as matched), review all the index mappings that we need to do
@@ -111,9 +115,9 @@ function inputBindingUpdate(targetDirectiveIdx: number, publicName: string, valu
 export function inputBinding(publicName: string, value: () => unknown): Binding {
   // Note: ideally we would use a class here, but it seems like they
   // don't get tree shaken when constructed by a function like this.
-  const binding: Binding = {
+  const binding: BindingInternal = {
     [BINDING]: INPUT_BINDING_METADATA,
-    update: () => inputBindingUpdate(binding.targetIdx!, publicName, value()),
+    update: () => inputBindingUpdate((binding as BindingInternal).targetIdx!, publicName, value()),
   };
 
   return binding;
@@ -143,7 +147,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
 export function outputBinding<T>(eventName: string, listener: (event: T) => unknown): Binding {
   // Note: ideally we would use a class here, but it seems like they
   // don't get tree shaken when constructed by a function like this.
-  const binding: Binding = {
+  const binding: BindingInternal = {
     [BINDING]: OUTPUT_BINDING_METADATA,
     create: () => {
       const lView = getLView<{} | null>();
@@ -178,8 +182,10 @@ export function outputBinding<T>(eventName: string, listener: (event: T) => unkn
  * ```
  */
 export function twoWayBinding(publicName: string, value: WritableSignal<unknown>): Binding {
-  const input = inputBinding(publicName, value);
-  const output = outputBinding(publicName + 'Change', (eventValue) => value.set(eventValue));
+  const input = inputBinding(publicName, value) as BindingInternal;
+  const output = outputBinding(publicName + 'Change', (eventValue) =>
+    value.set(eventValue),
+  ) as BindingInternal;
 
   // We take advantage of inputs only having a `create` block and outputs only having an `update`
   // block by passing them through directly instead of creating dedicated functions here. This
@@ -188,16 +194,17 @@ export function twoWayBinding(publicName: string, value: WritableSignal<unknown>
   ngDevMode && assertNotDefined(input.create, 'Unexpected `create` callback in inputBinding');
   ngDevMode && assertNotDefined(output.update, 'Unexpected `update` callback in outputBinding');
 
-  return {
+  const binding: BindingInternal = {
     [BINDING]: {
       kind: 'twoWay',
       requiredVars: input[BINDING].requiredVars + output[BINDING].requiredVars,
     },
     set targetIdx(idx: number) {
-      (input as Writable<Binding>).targetIdx = idx;
-      (output as Writable<Binding>).targetIdx = idx;
+      (input as Writable<BindingInternal>).targetIdx = idx;
+      (output as Writable<BindingInternal>).targetIdx = idx;
     },
     create: output.create,
     update: input.update,
   };
+  return binding;
 }

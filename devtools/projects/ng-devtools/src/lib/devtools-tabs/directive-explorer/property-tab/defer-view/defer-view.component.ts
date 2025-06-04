@@ -8,7 +8,7 @@
 
 import {Component, computed, input} from '@angular/core';
 import {MatToolbar} from '@angular/material/toolbar';
-import {DeferInfo} from 'protocol';
+import {DeferInfo} from '../../../../../../../protocol';
 
 @Component({
   templateUrl: './defer-view.component.html',

@@ -8,7 +8,7 @@
 import {filter, tap, first} from 'rxjs/operators';
 import {Event} from '../../index';
 import {TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {expect} from '@angular/private/testing/matchers';
 import {
   Router,
   ChildActivationStart,

@@ -146,7 +146,7 @@ export interface R3DeclareDependencyMetadataFacade {
 export interface R3PipeMetadataFacade {
   name: string;
   type: Type;
-  pipeName: string;
+  pipeName: string | null;
   pure: boolean;
   isStandalone: boolean;
 }

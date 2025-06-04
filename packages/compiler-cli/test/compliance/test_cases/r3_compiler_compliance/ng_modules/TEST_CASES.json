@@ -15,7 +15,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ]
     },
     {
@@ -33,7 +34,8 @@
       ],
       "compilationModeFilter": [
         "full compile",
-        "local compile"
+        "local compile",
+        "declaration-only emit"
       ]
     },
     {
@@ -64,7 +66,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "angularCompilerOptions": {
         "linkerJitMode": true
@@ -86,7 +89,8 @@
       "compilationModeFilter": [
         "full compile",
         "linked compile",
-        "local compile"
+        "local compile",
+        "declaration-only emit"
       ]
     },
     {
@@ -104,7 +108,8 @@
       ],
       "compilationModeFilter": [
         "full compile",
-        "local compile"
+        "local compile",
+        "declaration-only emit"
       ]
     },
     {
@@ -121,7 +126,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "angularCompilerOptions": {
         "linkerJitMode": true
@@ -143,7 +149,8 @@
       "compilationModeFilter": [
         "full compile",
         "linked compile",
-        "local compile"
+        "local compile",
+        "declaration-only emit"
       ]
     },
     {
@@ -162,7 +169,8 @@
       "compilationModeFilter": [
         "full compile",
         "linked compile",
-        "local compile"
+        "local compile",
+        "declaration-only emit"
       ]
     },
     {
@@ -179,7 +187,8 @@
         }
       ],
       "compilationModeFilter": [
-        "linked compile"
+        "linked compile",
+        "declaration-only emit"
       ],
       "angularCompilerOptions": {
         "linkerJitMode": true
@@ -201,7 +210,8 @@
       "compilationModeFilter": [
         "full compile",
         "linked compile",
-        "local compile"
+        "local compile",
+        "declaration-only emit"
       ]
     },
     {
@@ -220,7 +230,8 @@
       "compilationModeFilter": [
         "full compile",
         "linked compile",
-        "local compile"
+        "local compile",
+        "declaration-only emit"
       ]
     }
   ]

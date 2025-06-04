@@ -1,15 +1,17 @@
+load("//tools:defaults2.bzl", "ts_project")
+
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
-
-ts_library(
+ts_project(
     name = "cycles",
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
+    interop_deps = [
+        "//packages/compiler-cli/src/ngtsc/perf",
+    ],
     module_name = "@angular/compiler-cli/src/ngtsc/cycles",
     deps = [
-        "//packages/compiler-cli/src/ngtsc/perf",
-        "@npm//typescript",
+        "//:node_modules/typescript",
     ],
 )

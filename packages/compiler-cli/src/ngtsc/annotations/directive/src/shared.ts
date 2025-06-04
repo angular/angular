@@ -11,6 +11,7 @@ import {
   emitDistinctChangesOnlyDefaultValue,
   Expression,
   ExternalExpr,
+  ExternalReference,
   ForwardRefHandling,
   getSafePropertyAccessString,
   MaybeForwardRefExpression,
@@ -126,6 +127,7 @@ export function extractDirectiveMetadata(
   defaultSelector: string | null,
   strictStandalone: boolean,
   implicitStandaloneValue: boolean,
+  emitDeclarationOnly: boolean,
 ):
   | {
       jitForced: false;
@@ -185,6 +187,7 @@ export function extractDirectiveMetadata(
     reflector,
     refEmitter,
     compilationMode,
+    emitDeclarationOnly,
   );
   const inputsFromFields = parseInputFields(
     clazz,
@@ -197,6 +200,7 @@ export function extractDirectiveMetadata(
     compilationMode,
     inputsFromMeta,
     decorator,
+    emitDeclarationOnly,
   );
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
 
@@ -392,8 +396,10 @@ export function extractDirectiveMetadata(
       : extractHostDirectives(
           rawHostDirectives,
           evaluator,
+          reflector,
           compilationMode,
           createForwardRefResolver(isCore),
+          emitDeclarationOnly,
         );
 
   if (compilationMode !== CompilationMode.LOCAL && hostDirectives !== null) {
@@ -965,6 +971,7 @@ function parseInputsArray(
   reflector: ReflectionHost,
   refEmitter: ReferenceEmitter,
   compilationMode: CompilationMode,
+  emitDeclarationOnly: boolean,
 ): Record<string, InputMapping> {
   const inputsField = decoratorMetadata.get('inputs');
 
@@ -1030,6 +1037,7 @@ function parseInputsArray(
           reflector,
           refEmitter,
           compilationMode,
+          emitDeclarationOnly,
         );
       }
 
@@ -1080,6 +1088,7 @@ function tryParseInputFieldMapping(
   isCore: boolean,
   refEmitter: ReferenceEmitter,
   compilationMode: CompilationMode,
+  emitDeclarationOnly: boolean,
 ): InputMapping | null {
   const classPropertyName = member.name;
 
@@ -1156,6 +1165,7 @@ function tryParseInputFieldMapping(
         reflector,
         refEmitter,
         compilationMode,
+        emitDeclarationOnly,
       );
     }
 
@@ -1192,6 +1202,7 @@ function parseInputFields(
   compilationMode: CompilationMode,
   inputsFromClassDecorator: Record<string, InputMapping>,
   classDecorator: Decorator,
+  emitDeclarationOnly: boolean,
 ): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
 
@@ -1206,6 +1217,7 @@ function parseInputFields(
       isCore,
       refEmitter,
       compilationMode,
+      emitDeclarationOnly,
     );
     if (inputMapping === null) {
       continue;
@@ -1252,7 +1264,24 @@ export function parseDecoratorInputTransformFunction(
   reflector: ReflectionHost,
   refEmitter: ReferenceEmitter,
   compilationMode: CompilationMode,
+  emitDeclarationOnly: boolean,
 ): DecoratorInputTransform {
+  if (emitDeclarationOnly) {
+    const chain: ts.DiagnosticMessageChain = {
+      messageText:
+        '@Input decorators with a transform function are not supported in experimental declaration-only emission mode',
+      category: ts.DiagnosticCategory.Error,
+      code: 0,
+      next: [
+        {
+          messageText: `Consider converting '${clazz.name.text}.${classPropertyName}' to an input signal`,
+          category: ts.DiagnosticCategory.Message,
+          code: 0,
+        },
+      ],
+    };
+    throw new FatalDiagnosticError(ErrorCode.DECORATOR_UNEXPECTED, value.node, chain);
+  }
   // In local compilation mode we can skip type checking the function args. This is because usually
   // the type check is done in a separate build which runs in full compilation mode. So here we skip
   // all the diagnostics.
@@ -1706,8 +1735,10 @@ function getHostBindingErrorNode(error: ParseError, hostExpr: ts.Expression): ts
 function extractHostDirectives(
   rawHostDirectives: ts.Expression,
   evaluator: PartialEvaluator,
+  reflector: ReflectionHost,
   compilationMode: CompilationMode,
   forwardRefResolver: ForeignFunctionResolver,
+  emitDeclarationOnly: boolean,
 ): HostDirectiveMeta[] {
   const resolved = evaluator.evaluate(rawHostDirectives, forwardRefResolver);
   if (!Array.isArray(resolved)) {
@@ -1740,7 +1771,7 @@ function extractHostDirectives(
       }
     }
 
-    let directive: Reference<ClassDeclaration> | Expression;
+    let directive: Reference<ClassDeclaration> | Expression | ExternalReference;
     let nameForErrors = (fieldName: string) => '@Directive.hostDirectives';
     if (compilationMode === CompilationMode.LOCAL && hostReference instanceof DynamicValue) {
       // At the moment in local compilation we only support simple array for host directives, i.e.,
@@ -1752,14 +1783,38 @@ function extractHostDirectives(
         !ts.isIdentifier(hostReference.node) &&
         !ts.isPropertyAccessExpression(hostReference.node)
       ) {
+        const compilationModeName = emitDeclarationOnly
+          ? 'experimental declaration-only emission'
+          : 'local compilation';
         throw new FatalDiagnosticError(
           ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
           hostReference.node,
-          `In local compilation mode, host directive cannot be an expression. Use an identifier instead`,
+          `In ${compilationModeName} mode, host directive cannot be an expression. Use an identifier instead`,
         );
       }
 
-      directive = new WrappedNodeExpr(hostReference.node);
+      if (emitDeclarationOnly) {
+        if (ts.isIdentifier(hostReference.node)) {
+          const importInfo = reflector.getImportOfIdentifier(hostReference.node);
+          if (importInfo) {
+            directive = new ExternalReference(importInfo.from, importInfo.name);
+          } else {
+            throw new FatalDiagnosticError(
+              ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
+              hostReference.node,
+              `In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead`,
+            );
+          }
+        } else {
+          throw new FatalDiagnosticError(
+            ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
+            hostReference.node,
+            `In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead`,
+          );
+        }
+      } else {
+        directive = new WrappedNodeExpr(hostReference.node);
+      }
     } else if (hostReference instanceof Reference) {
       directive = hostReference as Reference<ClassDeclaration>;
       nameForErrors = (fieldName: string) =>
@@ -1829,6 +1884,11 @@ function toHostDirectiveMetadata(
       context,
       refEmitter,
     );
+  } else if (hostDirective.directive instanceof ExternalReference) {
+    directive = {
+      value: new ExternalExpr(hostDirective.directive),
+      type: new ExternalExpr(hostDirective.directive),
+    };
   } else {
     directive = {
       value: hostDirective.directive,

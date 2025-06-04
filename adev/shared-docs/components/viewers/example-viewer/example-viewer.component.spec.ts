@@ -40,7 +40,7 @@ describe('ExampleViewer', () => {
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: ActivatedRoute, useValue: {snapshot: {fragment: 'fragment'}}},
       ],
-    }).compileComponents();
+    });
     fixture = TestBed.createComponent(ExampleViewer);
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;

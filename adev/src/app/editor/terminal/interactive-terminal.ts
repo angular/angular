@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject} from '@angular/core';
 import {Subject} from 'rxjs';
 import {Terminal} from '@xterm/xterm';
-
-import {WINDOW} from '@angular/docs';
 
 import {CommandValidator} from './command-validator.service';
 
@@ -25,15 +22,15 @@ export const ALLOWED_KEYS: Array<KeyboardEvent['key']> = [
 ];
 
 export class InteractiveTerminal extends Terminal {
-  private readonly window = inject(WINDOW);
-  private readonly commandValidator = inject(CommandValidator);
-
   private readonly breakProcess = new Subject<void>();
 
   // Using this stream, the webcontainer shell can break current process.
   breakProcess$ = this.breakProcess.asObservable();
 
-  constructor() {
+  constructor(
+    readonly window: Window,
+    readonly commandValidator: CommandValidator,
+  ) {
     super({convertEol: true, disableStdin: false});
 
     // bypass command validation if sudo=true is present in the query string
@@ -44,6 +41,11 @@ export class InteractiveTerminal extends Terminal {
 
   breakCurrentProcess(): void {
     this.breakProcess.next();
+  }
+
+  override dispose(): void {
+    super.dispose();
+    this.breakProcess.complete();
   }
 
   // Method validate if provided command by user is on the list of the allowed commands.

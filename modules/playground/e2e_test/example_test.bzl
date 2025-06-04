@@ -1,37 +1,45 @@
-load("//tools:defaults.bzl", "protractor_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "protractor_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
-def example_test(name, srcs, server, data = [], deps = [], use_legacy_webdriver_types = True, **kwargs):
-    ts_deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "//packages/private/testing",
-        "@npm//@types/selenium-webdriver",
-        "@npm//protractor",
-    ] + deps
-
+def example_test(
+        name,
+        srcs,
+        server,
+        data = [],
+        interop_deps = [],
+        deps = [],
+        tsconfig = "//modules/playground:tsconfig_e2e",
+        use_legacy_webdriver_types = True,
+        **kwargs):
     # Reliance on the Control Flow in Selenium Webdriver is not recommended long-term,
     # especially with the deprecation of Protractor. New tests should not use the legacy
     # webdriver types but rather use the actual `@types/jasmine` types.
     if use_legacy_webdriver_types:
-        ts_deps.append("@npm//@types/jasminewd2")
+        tsconfig = "//modules/playground:tsconfig_e2e_legacy_wd2"
 
-    ts_library(
+    ts_project(
         name = "%s_lib" % name,
         testonly = True,
         srcs = srcs,
-        tsconfig = "//modules/playground:tsconfig-e2e.json",
-        deps = ts_deps,
+        tsconfig = tsconfig,
+        deps = deps + [
+            "//:node_modules/protractor",
+            "//:node_modules/@types/selenium-webdriver",
+        ],
+        interop_deps = interop_deps + [
+            "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
+        ],
     )
 
     protractor_web_test_suite(
         name = "protractor_tests",
-        data = data,
+        data = data + ["@npm//source-map"],
         on_prepare = "//modules/playground/e2e_test:start-server.js",
         server = server,
         deps = [
             ":%s_lib" % name,
             "@npm//selenium-webdriver",
             "@npm//yargs",
-            "@npm//source-map",
         ],
         **kwargs
     )

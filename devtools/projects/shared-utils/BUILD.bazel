@@ -1,11 +1,10 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
-    name = "shared_utils_ts",
+ts_project(
+    name = "shared-utils",
     srcs = glob(
         ["**/*.ts"],
         exclude = [
@@ -13,25 +12,19 @@ ts_library(
             "src/test.ts",
         ],
     ),
-    deps = [
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
     ],
-)
-
-js_library(
-    name = "shared-utils",
-    package_name = "shared-utils",
-    deps = [":shared_utils_ts"],
 )
 
 ts_test_library(
     name = "shared_utils_test",
     srcs = glob(["**/*.spec.ts"]),
-    deps = [
-        ":shared-utils",
+    interop_deps = [
         "//packages/core",
-        "@npm//@types",
+    ],
+    deps = [
+        ":shared-utils_rjs",
     ],
 )
 

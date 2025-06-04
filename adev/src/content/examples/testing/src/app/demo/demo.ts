@@ -9,15 +9,15 @@ import {
   HostListener,
   inject,
   Injectable,
-  Input,
+  input,
+  output,
   OnChanges,
   OnDestroy,
   OnInit,
-  Optional,
-  Output,
   Pipe,
   PipeTransform,
   SimpleChanges,
+  signal,
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {of} from 'rxjs';
@@ -84,11 +84,11 @@ export class ReversePipe implements PipeTransform {
 //////////// Components /////////////
 @Component({
   selector: 'bank-account',
-  template: ` Bank Name: {{ bank }} Account Id: {{ id }} `,
+  template: ` Bank Name: {{ bank() }} Account Id: {{ id() }} `,
 })
 export class BankAccountComponent {
-  @Input() bank = '';
-  @Input('account') id = '';
+  bank = input('');
+  id = input('', {alias: 'account'});
 }
 
 /** A component with attributes, styles, classes, and property setting */
@@ -131,18 +131,18 @@ export class LightswitchComponent {
 
 @Component({
   selector: 'child-1',
-  template: '<span>Child-1({{text}})</span>',
+  template: '<span>Child-1({{text()}})</span>',
 })
 export class Child1Component {
-  @Input() text = 'Original';
+  text = input('Original');
 }
 
 @Component({
   selector: 'child-2',
-  template: '<div>Child-2({{text}})</div>',
+  template: '<div>Child-2({{text()}})</div>',
 })
 export class Child2Component {
-  @Input() text = '';
+  text = input('');
 }
 
 @Component({
@@ -150,7 +150,7 @@ export class Child2Component {
   template: '<div>Child-3({{text}})</div>',
 })
 export class Child3Component {
-  @Input() text = '';
+  text = input('');
 }
 
 @Component({
@@ -159,35 +159,7 @@ export class Child3Component {
   imports: [FormsModule],
 })
 export class InputComponent {
-  name = 'John';
-}
-
-/* Prefer this metadata syntax */
-// @Directive({
-//   selector: 'input[value]',
-//   host: {
-//     '[value]': 'value',
-//     '(input)': 'valueChange.emit($event.target.value)'
-//   },
-//   inputs:  ['value'],
-//   outputs: ['valueChange']
-// })
-// export class InputValueBinderDirective {
-//   value: any;
-//   valueChange: EventEmitter<any> = new EventEmitter();
-// }
-
-// As the styleguide recommends
-@Directive({selector: 'input[value]'})
-export class InputValueBinderDirective {
-  @HostBinding() @Input() value: any;
-
-  @Output() valueChange: EventEmitter<any> = new EventEmitter();
-
-  @HostListener('input', ['$event.target.value'])
-  onInput(value: any) {
-    this.valueChange.emit(value);
-  }
+  name = signal('John');
 }
 
 @Component({
@@ -207,11 +179,13 @@ export class ParentComponent {}
 
 @Component({
   selector: 'io-comp',
-  template: '<button type="button" class="hero" (click)="click()">Original {{hero.name}}</button>',
+  template:
+    '<button type="button" class="hero" (click)="click()">Original {{hero().name}}</button>',
 })
 export class IoComponent {
-  @Input() hero!: Hero;
-  @Output() selected = new EventEmitter<Hero>();
+  hero = input.required<Hero>();
+  selected = output<Hero>();
+
   click() {
     this.selected.emit(this.hero);
   }
@@ -293,99 +267,6 @@ export class NeedsContentComponent {
   @ContentChildren('content') children: any;
 }
 
-///////// MyIfChildComp ////////
-@Component({
-  selector: 'my-if-child-1',
-  template: ` <h4>MyIfChildComp</h4>
-    <div>
-      <label for="child-value"
-        >Child value: <input id="child-value" [(ngModel)]="childValue" />
-      </label>
-    </div>
-    <p><i>Change log:</i></p>
-    @for (log of changeLog; track log; let i = $index) {
-      <div>{{ i + 1 }} - {{ log }}</div>
-    }`,
-  imports: [FormsModule, sharedImports],
-})
-export class MyIfChildComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() value = '';
-  @Output() valueChange = new EventEmitter<string>();
-
-  get childValue() {
-    return this.value;
-  }
-  set childValue(v: string) {
-    if (this.value === v) {
-      return;
-    }
-    this.value = v;
-    this.valueChange.emit(v);
-  }
-
-  changeLog: string[] = [];
-
-  ngOnInitCalled = false;
-  ngOnChangesCounter = 0;
-  ngOnDestroyCalled = false;
-
-  ngOnInit() {
-    this.ngOnInitCalled = true;
-    this.changeLog.push('ngOnInit called');
-  }
-
-  ngOnDestroy() {
-    this.ngOnDestroyCalled = true;
-    this.changeLog.push('ngOnDestroy called');
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    for (const propName in changes) {
-      this.ngOnChangesCounter += 1;
-      const prop = changes[propName];
-      const cur = JSON.stringify(prop.currentValue);
-      const prev = JSON.stringify(prop.previousValue);
-      this.changeLog.push(`${propName}: currentValue = ${cur}, previousValue = ${prev}`);
-    }
-  }
-}
-
-///////// MyIfParentComp ////////
-
-@Component({
-  selector: 'my-if-parent-comp',
-  template: `
-    <h3>MyIfParentComp</h3>
-    <label for="parent"
-      >Parent value:
-      <input id="parent" [(ngModel)]="parentValue" />
-    </label>
-    <button type="button" (click)="clicked()">{{ toggleLabel }} Child</button><br />
-    @if (showChild) {
-      <div style="margin: 4px; padding: 4px; background-color: aliceblue;">
-        <my-if-child-1 [(value)]="parentValue"></my-if-child-1>
-      </div>
-    }
-  `,
-  imports: [FormsModule, MyIfChildComponent, sharedImports],
-})
-export class MyIfParentComponent implements OnInit {
-  ngOnInitCalled = false;
-  parentValue = 'Hello, World';
-  showChild = false;
-  toggleLabel = 'Unknown';
-
-  ngOnInit() {
-    this.ngOnInitCalled = true;
-    this.clicked();
-  }
-
-  clicked() {
-    this.showChild = !this.showChild;
-    this.toggleLabel = this.showChild ? 'Close' : 'Show';
-  }
-}
-
 @Component({
   selector: 'reverse-pipe-comp',
   template: `
@@ -448,7 +329,6 @@ export class ShellComponent {}
     LightswitchComponent,
     NeedsContentComponent,
     ReversePipeComponent,
-    MyIfParentComponent,
   ],
 })
 export class DemoComponent {}

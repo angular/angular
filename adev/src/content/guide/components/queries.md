@@ -229,7 +229,8 @@ Developers most commonly use `read` to retrieve `ElementRef` and `TemplateRef`.
 
 ### Content descendants
 
-By default, content queries find only _direct_ children of the component and do not traverse into descendants.
+By default, `contentChildren` queries find only _direct_ children of the component and do not traverse into descendants.
+`contentChild` queries do traverse into descendants by default. 
 
 <docs-code language="angular-ts" highlight="[13, 14, 15, 16]">
 @Component({
@@ -237,7 +238,8 @@ By default, content queries find only _direct_ children of the component and do 
   /*...*/
 })
 export class CustomExpando {
-  toggle = contentChild(CustomToggle);
+  toggle = contentChildren(CustomToggle); // none found
+  // toggle = contentChild(CustomToggle); // found
 }
 
 @Component({
@@ -245,7 +247,6 @@ export class CustomExpando {
   template: `
     <custom-expando>
       <some-other-component>
-        <!-- custom-toggle will not be found! -->
         <custom-toggle>Show</custom-toggle>
       </some-other-component>
     </custom-expando>
@@ -254,7 +255,7 @@ export class CustomExpando {
 export class UserProfile { }
 </docs-code>
 
-In the example above, `CustomExpando` cannot find `<custom-toggle>` because it is not a direct child of `<custom-expando>`. By setting `descendants: true`, you configure the query to traverse all descendants in the same template. Queries, however, _never_ pierce into components to traverse elements in other templates.
+In the example above, `CustomExpando` cannot find `<custom-toggle>` with `contentChildren` because it is not a direct child of `<custom-expando>`. By setting `descendants: true`, you configure the query to traverse all descendants in the same template. Queries, however, _never_ pierce into components to traverse elements in other templates.
 
 View queries do not have this option because they _always_ traverse into descendants.
 

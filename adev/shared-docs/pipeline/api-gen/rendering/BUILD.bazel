@@ -1,12 +1,13 @@
-load("@npm//@angular/build-tooling/bazel:defaults.bzl", "ts_library")
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild_esm_bundle")
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
 esbuild_esm_bundle(
     name = "bin",
-    entry_point = ":index.ts",
+    entry_point = ":index.mts",
+    metafile = False,
     output = "bin.mjs",
     platform = "node",
     target = "es2022",
@@ -15,37 +16,36 @@ esbuild_esm_bundle(
     ],
 )
 
-ts_library(
+ts_project(
     name = "render_api_to_html_lib",
     srcs = glob(
         [
-            "**/*.ts",
+            "**/*.mts",
             "**/*.tsx",
+            "shiki.d.ts",
         ],
         exclude = [
-            "entities.ts",
+            "entities.mts",
         ],
     ),
-    devmode_module = "commonjs",
-    tsconfig = "//adev:tsconfig.json",
     deps = [
-        ":entities",
-        "@npm//@bazel/runfiles",
-        "@npm//@types/node",
-        "@npm//html-entities",
-        "@npm//marked",
-        "@npm//preact",
-        "@npm//preact-render-to-string",
-        "@npm//shiki",
+        ":entities_rjs",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/node",
+        "//:node_modules/html-entities",
+        "//:node_modules/marked",
+        "//:node_modules/preact",
+        "//:node_modules/preact-render-to-string",
+        "//:node_modules/prettier",
+        "//:node_modules/shiki",
     ],
 )
 
-ts_library(
+ts_project(
     name = "entities",
     srcs = [
-        "entities.ts",
+        "entities.mts",
     ],
-    tsconfig = "//adev:tsconfig.json",
     visibility = [
         "//adev/shared-docs/pipeline/api-gen/rendering:__pkg__",
         "//docs/pipeline/guides:__pkg__",

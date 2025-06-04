@@ -1,6 +1,6 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_module.bzl", "ng_module")
+load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//:__subpackages__"])
@@ -14,7 +14,7 @@ sass_binary(
     ],
 )
 
-ng_module(
+ng_project(
     name = "resolution-path",
     srcs = [
         "resolution-path.component.ts",
@@ -23,24 +23,28 @@ ng_module(
         ":resolution-path.component.html",
         ":resolution_path_styles",
     ],
-    deps = [
-        "//devtools/projects/protocol",
+    interop_deps = [
         "//packages/core",
+    ],
+    deps = [
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
 ts_test_library(
     name = "resolution_path_test",
     srcs = ["resolution-path.component.spec.ts"],
+    interop_deps = [
+        "//packages/core",
+        ":resolution-path",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+    ],
     visibility = [
         "//visibility:private",
     ],
     deps = [
-        ":resolution-path",
-        "//devtools/projects/protocol",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
+        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 

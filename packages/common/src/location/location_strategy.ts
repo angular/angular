@@ -7,13 +7,13 @@
  */
 
 import {
+  DOCUMENT,
   Inject,
   inject,
   Injectable,
   InjectionToken,
   OnDestroy,
   Optional,
-  DOCUMENT,
 } from '@angular/core';
 
 import {LocationChangeListener, PlatformLocation} from './platform_location';
@@ -126,7 +126,7 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
       '';
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnDestroy(): void {
     while (this._removeListenerFns.length) {
       this._removeListenerFns.pop()!();

@@ -7,11 +7,11 @@
  */
 
 import {h, Fragment} from 'preact';
-import {EnumEntryRenderable, MemberEntryRenderable} from '../entities/renderables';
+import {EnumEntryRenderable, MemberEntryRenderable} from '../entities/renderables.mjs';
 import {HeaderApi} from './header-api';
 import {SectionDescription} from './section-description';
 import {SectionApi} from './section-api';
-import {API_REFERENCE_CONTAINER, REFERENCE_MEMBERS} from '../styling/css-classes';
+import {API_REFERENCE_CONTAINER, REFERENCE_MEMBERS} from '../styling/css-classes.mjs';
 import {ClassMember} from './class-member';
 
 /** Component to render a enum API reference document. */

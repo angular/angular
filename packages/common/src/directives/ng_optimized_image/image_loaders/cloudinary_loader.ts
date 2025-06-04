@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Provider} from '@angular/core';
 import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
 
 /**
@@ -36,7 +37,7 @@ function isCloudinaryUrl(url: string): boolean {
  *
  * @publicApi
  */
-export const provideCloudinaryLoader = createImageLoader(
+export const provideCloudinaryLoader: (path: string) => Provider[] = createImageLoader(
   createCloudinaryUrl,
   ngDevMode
     ? [

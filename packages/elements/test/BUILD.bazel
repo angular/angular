@@ -1,27 +1,20 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
-load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project")
 
-circular_dependency_test(
-    name = "circular_deps_test",
-    entry_point = "angular/packages/elements/index.mjs",
-    deps = ["//packages/elements"],
-)
-
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    deps = [
-        "//packages:types",
+    interop_deps = [
         "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
         "//packages/elements",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
-        "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/testing",
-        "@npm//rxjs",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
     ],
 )
 

@@ -7,9 +7,16 @@
  */
 
 import {
+  ApplicationRef,
   booleanAttribute,
+  ChangeDetectorRef,
+  DestroyRef,
   Directive,
   ElementRef,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵIMAGE_CONFIG as IMAGE_CONFIG,
+  ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS,
+  ɵImageConfig as ImageConfig,
   inject,
   Injector,
   Input,
@@ -17,19 +24,12 @@ import {
   numberAttribute,
   OnChanges,
   OnInit,
-  Renderer2,
-  SimpleChanges,
-  ɵformatRuntimeError as formatRuntimeError,
-  ɵIMAGE_CONFIG as IMAGE_CONFIG,
-  ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS,
-  ɵImageConfig as ImageConfig,
   ɵperformanceMarkFeature as performanceMarkFeature,
+  Renderer2,
   ɵRuntimeError as RuntimeError,
   ɵSafeValue as SafeValue,
+  SimpleChanges,
   ɵunwrapSafeValue as unwrapSafeValue,
-  ChangeDetectorRef,
-  ApplicationRef,
-  DestroyRef,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -408,7 +408,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnInit() {
     performanceMarkFeature('NgOptimizedImage');
 
@@ -520,7 +520,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     }
   }
 
-  /** @nodoc */
+  /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
     if (ngDevMode) {
       assertNoPostInitInputChange(this, changes, [

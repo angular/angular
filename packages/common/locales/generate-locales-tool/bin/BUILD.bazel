@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+load("//tools:defaults.bzl", "nodejs_binary")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -9,12 +10,14 @@ BIN_ENTRYPOINTS = [
     "write-locale-files-to-dist",
 ]
 
-ts_library(
+ts_project(
     name = "bin",
     srcs = glob(["*.ts"]),
-    deps = [
+    interop_deps = [
         "//packages/common/locales/generate-locales-tool",
-        "@npm//@types/node",
+    ],
+    deps = [
+        "//:node_modules/@types/node",
     ],
 )
 
@@ -25,5 +28,5 @@ ts_library(
         "@cldr_json_data//:all_json",
         "@cldr_xml_data//:all_xml",
     ],
-    entry_point = ":%s.ts" % entrypoint,
+    entry_point = ":%s.js" % entrypoint,
 ) for entrypoint in BIN_ENTRYPOINTS]

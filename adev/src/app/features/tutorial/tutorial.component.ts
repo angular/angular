@@ -98,6 +98,7 @@ export default class Tutorial {
   readonly shouldRenderContent = signal<boolean>(false);
   readonly shouldRenderEmbeddedEditor = signal<boolean>(false);
   readonly shouldRenderRevealAnswer = signal<boolean>(false);
+  readonly restrictedMode = signal<boolean>(false);
 
   nextStepPath: string | undefined;
   previousStepPath: string | undefined;
@@ -188,6 +189,7 @@ export default class Tutorial {
   private async setTutorialData(tutorialNavigationItem: TutorialNavigationItem): Promise<void> {
     this.showNavigationDropdown.set(false);
     this.answerRevealed.set(false);
+    this.restrictedMode.set(tutorialNavigationItem.tutorialData.restrictedMode);
 
     this.setRouteData(tutorialNavigationItem);
 
@@ -195,7 +197,10 @@ export default class Tutorial {
 
     if (routeData.type === TutorialType.LOCAL) {
       this.setLocalTutorialData(routeData);
-    } else if (routeData.type === TutorialType.EDITOR && this.isBrowser) {
+    } else if (
+      (routeData.type === TutorialType.EDITOR || routeData.type === TutorialType.CLI) &&
+      this.isBrowser
+    ) {
       await this.setEditorTutorialData(
         tutorialNavigationItem.path.replace(`${PagePrefix.TUTORIALS}/`, ''),
       );

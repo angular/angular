@@ -8,80 +8,39 @@
 import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {
+  canHydrateNode,
   getNgContainerSize,
-  isDisconnectedNode,
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {isDetachedByI18n} from '../../i18n/utils';
-import {assertEqual, assertIndexInRange, assertNumber} from '../../util/assert';
-import {assertHasParent} from '../assert';
-import {attachPatchData} from '../context_discovery';
+import {assertDefined, assertNumber} from '../../util/assert';
+import {assertTNodeCreationIndex} from '../assert';
 import {createCommentNode} from '../dom_node_manipulation';
-import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
+import {TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
 import {RComment} from '../interfaces/renderer_dom';
-import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {isDirectiveHost} from '../interfaces/type_checks';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
-import {appendChild} from '../node_manipulation';
 import {executeContentQueries} from '../queries/query_execution';
 import {
-  getBindingIndex,
   getBindingsEnabled,
   getCurrentTNode,
   getLView,
   getTView,
-  isCurrentTNodeParent,
-  isInSkipHydrationBlock,
   lastNodeWasCreated,
-  setCurrentTNode,
-  setCurrentTNodeAsNotParent,
-  wasLastNodeCreated,
 } from '../state';
-import {computeStaticStyling} from '../styling/static_styling';
-import {mergeHostAttrs} from '../util/attrs_utils';
-import {getConstant} from '../util/view_utils';
-
-import {getOrCreateTNode} from '../tnode_manipulation';
-import {resolveDirectives} from '../view/directives';
+import {
+  directiveHostEndFirstCreatePass,
+  directiveHostFirstCreatePass,
+  domOnlyFirstCreatePass,
+} from '../view/elements';
 import {
   createDirectivesInstances,
+  elementLikeEndShared,
+  elementLikeStartShared,
   findDirectiveDefMatches,
   saveResolvedLocalsInData,
 } from './shared';
-
-function elementContainerStartFirstCreatePass(
-  index: number,
-  tView: TView,
-  lView: LView,
-  attrsIndex?: number | null,
-  localRefsIndex?: number,
-): TElementContainerNode {
-  const tViewConsts = tView.consts;
-  const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
-  const tNode = getOrCreateTNode(tView, index, TNodeType.ElementContainer, 'ng-container', attrs);
-
-  // While ng-container doesn't necessarily support styling, we use the style context to identify
-  // and execute directives on the ng-container.
-  if (attrs !== null) {
-    computeStaticStyling(tNode, attrs, true);
-  }
-
-  const localRefs = getConstant<string[]>(tViewConsts, localRefsIndex);
-  if (getBindingsEnabled()) {
-    resolveDirectives(tView, lView, tNode, localRefs, findDirectiveDefMatches);
-  }
-
-  // Merge the template attrs last so that they have the highest priority.
-  tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
-
-  if (tView.queries !== null) {
-    tView.queries.elementStart(tView, tNode);
-  }
-
-  return tNode;
-}
 
 /**
  * Creates a logical container for other nodes (<ng-container>) backed by a comment node in the DOM.
@@ -104,31 +63,27 @@ export function ɵɵelementContainerStart(
   localRefsIndex?: number,
 ): typeof ɵɵelementContainerStart {
   const lView = getLView();
-  const tView = getTView();
+  ngDevMode && assertTNodeCreationIndex(lView, index);
+
+  const tView = lView[TVIEW];
   const adjustedIndex = index + HEADER_OFFSET;
-
-  ngDevMode && assertIndexInRange(lView, adjustedIndex);
-  ngDevMode &&
-    assertEqual(
-      getBindingIndex(),
-      tView.bindingStartIndex,
-      'element containers should be created before any bindings',
-    );
-
   const tNode = tView.firstCreatePass
-    ? elementContainerStartFirstCreatePass(adjustedIndex, tView, lView, attrsIndex, localRefsIndex)
+    ? directiveHostFirstCreatePass(
+        adjustedIndex,
+        lView,
+        TNodeType.ElementContainer,
+        'ng-container',
+        findDirectiveDefMatches,
+        getBindingsEnabled(),
+        attrsIndex,
+        localRefsIndex,
+      )
     : (tView.data[adjustedIndex] as TElementContainerNode);
-  setCurrentTNode(tNode, true);
 
-  const comment = _locateOrCreateElementContainerNode(tView, lView, tNode, index);
-  lView[adjustedIndex] = comment;
-
-  if (wasLastNodeCreated()) {
-    appendChild(tView, lView, comment, tNode);
-  }
-  attachPatchData(comment, lView);
+  elementLikeStartShared(tNode, lView, index, 'ng-container', _locateOrCreateElementContainerNode);
 
   if (isDirectiveHost(tNode)) {
+    const tView = lView[TVIEW];
     createDirectivesInstances(tView, lView, tNode);
     executeContentQueries(tView, tNode, lView);
   }
@@ -147,24 +102,16 @@ export function ɵɵelementContainerStart(
  * @codeGenApi
  */
 export function ɵɵelementContainerEnd(): typeof ɵɵelementContainerEnd {
-  let currentTNode = getCurrentTNode()!;
   const tView = getTView();
-  if (isCurrentTNodeParent()) {
-    setCurrentTNodeAsNotParent();
-  } else {
-    ngDevMode && assertHasParent(currentTNode);
-    currentTNode = currentTNode.parent!;
-    setCurrentTNode(currentTNode, false);
+  const initialTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
+  const currentTNode = elementLikeEndShared(initialTNode);
+
+  if (tView.firstCreatePass) {
+    directiveHostEndFirstCreatePass(tView, currentTNode);
   }
 
   ngDevMode && assertTNodeType(currentTNode, TNodeType.ElementContainer);
-
-  if (tView.firstCreatePass) {
-    registerPostOrderHooks(tView, currentTNode);
-    if (isContentQueryHost(currentTNode)) {
-      tView.queries!.elementEnd(currentTNode);
-    }
-  }
   return ɵɵelementContainerEnd;
 }
 
@@ -189,14 +136,90 @@ export function ɵɵelementContainer(
   return ɵɵelementContainer;
 }
 
+/**
+ * Creates a DOM-only logical container for other nodes (<ng-container>) backed by a comment node
+ * in the DOM. The host node will *not* match any directives.
+ *
+ * @param index Index of the element in the LView array
+ * @param attrsIndex Index of the container attributes in the `consts` array.
+ * @param localRefsIndex Index of the container's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementContainerStart(
+  index: number,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵdomElementContainerStart {
+  const lView = getLView();
+  ngDevMode && assertTNodeCreationIndex(lView, index);
+
+  const tView = lView[TVIEW];
+  const adjustedIndex = index + HEADER_OFFSET;
+  const tNode = tView.firstCreatePass
+    ? domOnlyFirstCreatePass(
+        adjustedIndex,
+        tView,
+        TNodeType.ElementContainer,
+        'ng-container',
+        attrsIndex,
+      )
+    : (tView.data[adjustedIndex] as TElementContainerNode);
+
+  elementLikeStartShared(tNode, lView, index, 'ng-container', _locateOrCreateElementContainerNode);
+
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(lView, tNode);
+  }
+
+  return ɵɵdomElementContainerStart;
+}
+
+/**
+ * Mark the end of a directiveless <ng-container>.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementContainerEnd(): typeof ɵɵelementContainerEnd {
+  const initialTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
+  const currentTNode = elementLikeEndShared(initialTNode);
+  ngDevMode && assertTNodeType(currentTNode, TNodeType.ElementContainer);
+  return ɵɵelementContainerEnd;
+}
+
+/**
+ * Creates an empty logical container using {@link domElementContainerStart}
+ * and {@link domElementContainerEnd}
+ *
+ * @param index Index of the element in the LView array
+ * @param attrsIndex Index of the container attributes in the `consts` array.
+ * @param localRefsIndex Index of the container's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementContainer(
+  index: number,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵdomElementContainer {
+  ɵɵdomElementContainerStart(index, attrsIndex, localRefsIndex);
+  ɵɵdomElementContainerEnd();
+  return ɵɵdomElementContainer;
+}
+
 let _locateOrCreateElementContainerNode: typeof locateOrCreateElementContainerNode = (
   tView: TView,
   lView: LView,
   tNode: TNode,
+  commentText: string,
   index: number,
 ) => {
   lastNodeWasCreated(true);
-  return createCommentNode(lView[RENDERER], ngDevMode ? 'ng-container' : '');
+  return createCommentNode(lView[RENDERER], ngDevMode ? commentText : '');
 };
 
 /**
@@ -208,24 +231,21 @@ function locateOrCreateElementContainerNode(
   tView: TView,
   lView: LView,
   tNode: TNode,
+  commentText: string,
   index: number,
 ): RComment {
   let comment: RComment;
-  const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode =
-    !hydrationInfo ||
-    isInSkipHydrationBlock() ||
-    isDisconnectedNode(hydrationInfo, index) ||
-    isDetachedByI18n(tNode);
+  const isNodeCreationMode = !canHydrateNode(lView, tNode);
 
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
   if (isNodeCreationMode) {
-    return createCommentNode(lView[RENDERER], ngDevMode ? 'ng-container' : '');
+    return createCommentNode(lView[RENDERER], ngDevMode ? commentText : '');
   }
 
   // Hydration mode, looking up existing elements in DOM.
+  const hydrationInfo = lView[HYDRATION]!;
   const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
   ngDevMode && validateNodeExists(currentRNode, lView, tNode);
 

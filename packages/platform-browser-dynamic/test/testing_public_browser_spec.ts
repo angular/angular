@@ -7,12 +7,13 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {Compiler, Component, getPlatform, NgModule, PlatformRef} from '@angular/core';
+import {Compiler, Component, getPlatform, NgModule} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '../testing';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {isBrowser} from '@angular/private/testing';
 
 // Components for the tests.
 class FancyService {

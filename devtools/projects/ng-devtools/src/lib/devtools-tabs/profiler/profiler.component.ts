@@ -8,7 +8,7 @@
 
 import {Component, inject, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {Events, MessageBus, ProfilerFrame} from 'protocol';
+import {Events, MessageBus, ProfilerFrame} from '../../../../../protocol';
 import {Subject} from 'rxjs';
 
 import {FileApiService} from './file-api-service';

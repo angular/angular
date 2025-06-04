@@ -49,7 +49,7 @@ export const expanding_row_css = `
     border-left-color: $cfc-color-active;
   }
 
-  // Adjust icons to be positioned correctly in the row.
+  /* Adjust icons to be positioned correctly in the row. */
   .cfc-expanding-row-summary::ng-deep cfc-icon {
     margin-top: 3;
   }
@@ -68,7 +68,7 @@ export const expanding_row_css = `
     color: $cfc-color-text-primary-inverse;
   }
 
-  // Adjust icons to be positioned correctly in the row.
+  /* Adjust icons to be positioned correctly in the row. */
   ::ng-deep cfc-icon {
     margin-top: 3;
   }

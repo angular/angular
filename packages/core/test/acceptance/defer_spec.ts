@@ -41,10 +41,11 @@ import {getInjectorResolutionPath} from '../../src/render3/util/injector_discove
 import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
 import {ChainedInjector} from '../../src/render3/chained_injector';
 import {global} from '../../src/util/global';
-import {TimerScheduler} from '@angular/core/src/defer/timer_scheduler';
+import {TimerScheduler} from '../../src/defer/timer_scheduler';
 import {Console} from '../../src/console';
 import {formatRuntimeErrorCode, RuntimeErrorCode} from '../../src/errors';
 import {provideNgReflectAttributes} from '../../src/ng_reflect';
+import {isBrowser} from '@angular/private/testing';
 
 /**
  * Clears all associated directive defs from a given component class.

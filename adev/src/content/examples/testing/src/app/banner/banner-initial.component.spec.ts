@@ -24,7 +24,7 @@ describe('BannerComponent (initial CLI generated)', () => {
   let fixture: ComponentFixture<BannerComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({imports: [BannerComponent]}).compileComponents();
+    TestBed.configureTestingModule({imports: [BannerComponent]});
   }));
 
   beforeEach(() => {

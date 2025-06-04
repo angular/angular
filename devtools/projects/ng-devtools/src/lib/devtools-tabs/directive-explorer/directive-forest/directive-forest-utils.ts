@@ -8,7 +8,7 @@
 
 import {FlatTreeControl} from '@angular/cdk/tree';
 
-import {FlatNode} from './component-data-source';
+import {FlatNode} from './component-data-source/index';
 
 export const isChildOf = (childPosition: number[], parentPosition: number[]) => {
   if (childPosition.length <= parentPosition.length) {

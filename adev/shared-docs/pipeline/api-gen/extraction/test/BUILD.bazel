@@ -1,56 +1,62 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
 load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
 extract_api_to_json(
     name = "test",
     srcs = [
-        "fake-source.ts",
+        "fake-source.mts",
         "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:dummy_package",
     ],
-    entry_point = "fake-source.ts",
+    entry_point = "fake-source.mts",
     import_map = {
-        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.ts": "@angular/dummy-package",
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.mts": "@angular/dummy-package",
     },
     module_name = "@angular/core",
     output_name = "api.json",
     private_modules = [""],
+    repo = "angular/angular",
 )
 
 extract_api_to_json(
     name = "test_with_extra_entries",
     srcs = [
-        "fake-source.ts",
+        "fake-source.mts",
         "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:dummy_package",
     ],
-    entry_point = "fake-source.ts",
+    entry_point = "fake-source.mts",
     extra_entries = [
         "extra.json",
     ],
     import_map = {
-        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.ts": "@angular/dummy-package",
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.mts": "@angular/dummy-package",
     },
     module_name = "@angular/core",
     output_name = "extra_api.json",
     private_modules = [""],
+    repo = "angular/angular",
 )
 
 filegroup(
     name = "source_files",
-    srcs = ["fake-source.ts"],
+    srcs = ["fake-source.mts"],
 )
 
-ts_library(
+ts_project(
     name = "unit_test_lib",
     testonly = True,
     srcs =
-        glob(["*.spec.ts"]) + [
-            "fake-examples.ts",
+        glob(["*.spec.mts"]) + [
+            "fake-examples.mts",
         ],
-    deps = [
-        "//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json_lib",
+    interop_deps = [
         "@angular//packages/compiler-cli",
+    ],
+    deps = [
+        "//:node_modules/@types/node",
+        "//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json_lib_rjs",
     ],
 )
 

@@ -8,6 +8,7 @@
 
 import {TestBed} from '../testing';
 import {ErrorHandler, provideBrowserGlobalErrorListeners} from '../src/error_handler';
+import {isNode} from '@angular/private/testing';
 
 class MockConsole {
   res: any[][] = [];
