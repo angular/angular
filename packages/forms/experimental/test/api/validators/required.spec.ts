@@ -62,7 +62,7 @@ describe('required validator', () => {
     const cat = signal({name: '', age: 5});
     const f = form(cat, (p) => {
       required(p.name, {
-        condition({valueOf}) {
+        when({valueOf}) {
           return valueOf(p.age) > 10;
         }
       });

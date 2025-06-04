@@ -9,7 +9,7 @@
 
 import {LogicFn, ValidationResult} from '@angular/forms/experimental';
 
-
+// TODO(kirjs): Consider using {length: number}
 export type ValueWithLength = Array<unknown> | string;
 
 

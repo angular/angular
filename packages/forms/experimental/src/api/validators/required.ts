@@ -17,20 +17,20 @@ import {BaseValidatorConfig} from '@angular/forms/experimental/src/api/validator
  *
  * @param path The target path to add the required logic to.
  * @param config Additional configuration
- *                - errors (Optional) - A function that takes FieldContext and returns one or more custom errors.
- *                - emptyPredicate (Optional) - A function that takes the value, and returns true if it's empty, false otherwise
- *                - condition (Optional) - A function that takes FieldContext and returns true if the field is required.
+ *                - errors Optional - A function that takes FieldContext and returns one or more custom errors.
+ *                - emptyPredicate Optional - A function that takes the value, and returns true if it's empty, false otherwise
+ *                - condition Optional - A function that takes FieldContext and returns true if the field is required.
  * @template T The data type of the field the logic is being added to.
  */
 export function required<T>(
-  path: FieldPath<T>,
-  config?: BaseValidatorConfig<T> & {
-    emptyPredicate?: (value: T) => boolean,
-    condition?: NoInfer<LogicFn<T, boolean>>
-  }
+    path: FieldPath<T>,
+    config?: BaseValidatorConfig<T> & {
+      emptyPredicate?: (value: T) => boolean,
+      when?: NoInfer<LogicFn<T, boolean>>
+    }
 ): void {
   const emptyPredicate = config?.emptyPredicate || ((value) => value == null || value === '');
-  const condition = config?.condition ?? (() => true);
+  const condition = config?.when ?? (() => true);
 
   metadata(path, REQUIRED, condition);
   validate(path, (ctx) => {

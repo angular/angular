@@ -573,7 +573,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, {condition: ({valueOf}) => valueOf(name.last) !== ''});
+          required(name.first, {when: ({valueOf}) => valueOf(name.last) !== ''});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -621,7 +621,7 @@ describe('FieldNode', () => {
           required(
             tx.name,
             {
-              condition: ({valueOf}) => valueOf(tx.country) === 'USA',
+              when: ({valueOf}) => valueOf(tx.country) === 'USA',
               errors: () => ({
                 kind: 'required',
                 message: 'Name is required in your country'
@@ -631,7 +631,7 @@ describe('FieldNode', () => {
           required(
             tx.name,
             {
-              condition: ({valueOf}) => valueOf(tx.amount) >= 1000,
+              when: ({valueOf}) => valueOf(tx.amount) >= 1000,
               errors: () => ({
                 kind: 'required',
                 message: 'Name is required for large transactions',
@@ -742,7 +742,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, {condition: ({valueOf}) => valueOf(name.last) !== ''});
+          required(name.first, {when: ({valueOf}) => valueOf(name.last) !== ''});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -766,7 +766,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, {condition: ({valueOf}) => valueOf(name.last) !== ''});
+          required(name.first, {when: ({valueOf}) => valueOf(name.last) !== ''});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -788,7 +788,7 @@ describe('FieldNode', () => {
         data,
         (name) => {
           // first name required if last name specified
-          required(name.first, {condition: ({valueOf}) => valueOf(name.last) !== ''});
+          required(name.first, {when: ({valueOf}) => valueOf(name.last) !== ''});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -823,7 +823,7 @@ describe('FieldNode', () => {
         (name) => {
           // first name required if last name specified
           required(name.first, {
-            condition: ({valueOf}) => valueOf(name.last) !== ''
+            when: ({valueOf}) => valueOf(name.last) !== ''
           });
         },
         {injector: TestBed.inject(Injector)},

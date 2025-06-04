@@ -10,7 +10,7 @@ import {FieldPath} from '../types';
 import {BaseValidatorConfig} from './types';
 import {PATTERN} from '@angular/forms/experimental';
 
-export function strToRegexp(pattern: string) {
+function strToRegexp(pattern: string) {
 
   let regexStr = '';
 
@@ -28,7 +28,7 @@ export function strToRegexp(pattern: string) {
 * Validator allowing to validate a string against a pattern.
 *
 * @param path Path to the target field
-* @param maxValue The minimum value, or a LogicFn returning it.
+* @param pattern Regex as a string. `^` and `$` would be added automatically if not present.
 * @param config Optional, currently allows providing custom errors function.
 */
 export function pattern(path: FieldPath<string>, pattern: string, config?: BaseValidatorConfig<string>) {
