@@ -8,7 +8,9 @@
 
 import {TestBed} from '../testing';
 import {ErrorHandler, provideBrowserGlobalErrorListeners} from '../src/error_handler';
-import {isNode} from '@angular/private/testing';
+import {isNode, withBody} from '@angular/private/testing';
+import {ApplicationRef, Component, destroyPlatform, inject} from '../src/core';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 class MockConsole {
   res: any[][] = [];
@@ -95,4 +97,51 @@ describe('ErrorHandler', () => {
     expect(spy.calls.count()).toBe(1);
     window.onerror = originalWindowOnError;
   });
+
+  it(
+    'should not try to inject the `ErrorHandler` lazily once app is destroyed',
+    withBody('<app></app>', async () => {
+      destroyPlatform();
+
+      let dispatched = false;
+      // Prevents Jasmine from reporting an error.
+      const originalWindowOnError = window.onerror;
+      window.onerror = () => {};
+
+      @Component({
+        selector: 'app',
+        template: '',
+      })
+      class App {
+        constructor() {
+          inject(ApplicationRef).onDestroy(() => {
+            // Note: The unit test environment differs from the real browser environment.
+            // This is a simple test that ensures that if an error event is dispatched
+            // during destruction, it does not attempt to inject the `ErrorHandler`.
+            // Before the `if (injector.destroyed)` checks were added, this would
+            // throw a "destroyed injector" error.
+            dispatched = window.dispatchEvent(new Event('error'));
+          });
+        }
+      }
+
+      await jasmine.spyOnGlobalErrorsAsync(async () => {
+        const appRef = await bootstrapApplication(App, {
+          providers: [provideBrowserGlobalErrorListeners()],
+        });
+        appRef.destroy();
+
+        // We assert that `dispatched` is truthy because Angular's error handler
+        // calls `preventDefault()` on the event object, which would cause `dispatchEvent`
+        // to return false. This assertion ensures that Angular's error handler was not invoked.
+        expect(dispatched).toEqual(true);
+
+        // Wait until the error is re-thrown, so we can reset the original error handler.
+        await new Promise((resolve) => setTimeout(resolve, 1));
+      });
+
+      window.onerror = originalWindowOnError;
+      destroyPlatform();
+    }),
+  );
 });
