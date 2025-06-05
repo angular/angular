@@ -628,7 +628,8 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
     const ratio = this.width != null && this.height != null ? this.width / this.height : 0;
     const finalSrcs = filteredBreakpoints.map(
-      (bp) => `${this.callImageLoader({src: this.ngSrc, width: bp, height: ratio > 0 ? Math.round(bp / ratio) : undefined })} ${bp}w`,
+      (bp) =>
+        `${this.callImageLoader({src: this.ngSrc, width: bp, height: ratio > 0 ? Math.round(bp / ratio) : undefined})} ${bp}w`,
     );
     return finalSrcs.join(', ');
   }
@@ -694,7 +695,10 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       return `url(${this.callImageLoader({
         src: this.ngSrc,
         width: placeholderResolution,
-        height: placeholderResolution != null && ratio > 0 ? Math.round(placeholderResolution / ratio) : undefined,
+        height:
+          placeholderResolution != null && ratio > 0
+            ? Math.round(placeholderResolution / ratio)
+            : undefined,
         isPlaceholder: true,
       })})`;
     } else if (typeof placeholderInput === 'string') {
