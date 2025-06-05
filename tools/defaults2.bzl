@@ -1,7 +1,7 @@
-load("@aspect_rules_jasmine//jasmine:defs.bzl", _jasmine_test = "jasmine_test")
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
+load("//tools/bazel:jasmine_test.bzl", _jasmine_test = "jasmine_test")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ng_package.bzl", _ng_package = "ng_package")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
@@ -9,6 +9,7 @@ load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
 npm_package = _npm_package
 ts_config = _ts_config
 ng_package = _ng_package
+jasmine_test = _jasmine_test
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):
@@ -84,26 +85,5 @@ def ng_project(
         rule_impl = _ng_project,
         testonly = testonly,
         tsconfig = tsconfig,
-        **kwargs
-    )
-
-def jasmine_test(name, data = [], args = [], **kwargs):
-    # Create relative path to root, from current package dir. Necessary as
-    # we change the `chdir` below to the package directory.
-    relative_to_root = "/".join([".."] * len(native.package_name().split("/")))
-
-    _jasmine_test(
-        name = name,
-        node_modules = "//:node_modules",
-        chdir = native.package_name(),
-        fixed_args = [
-            "--require=%s/node_modules/source-map-support/register.js" % relative_to_root,
-            "**/*spec.js",
-            "**/*spec.mjs",
-            "**/*spec.cjs",
-        ] + args,
-        data = data + [
-            "//:node_modules/source-map-support",
-        ],
         **kwargs
     )
