@@ -8,9 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {PATTERN} from '@angular/forms/experimental';
-import {pattern} from '@angular/forms/experimental/src/api/validators/pattern';
-import {form} from '../../../src/api/structure';
+import {PATTERN, form, pattern} from '../../../public_api';
 
 describe('pattern validator', () => {
   it('validates whether a value matches the string pattern', () => {

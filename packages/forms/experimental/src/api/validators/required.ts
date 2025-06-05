@@ -9,7 +9,7 @@
 import {metadata, validate} from '../logic';
 import {REQUIRED} from '../metadata';
 import {FieldPath, LogicFn} from '../types';
-import {BaseValidatorConfig} from '@angular/forms/experimental/src/api/validators/types';
+import {BaseValidatorConfig} from './types';
 
 /**
  * Adds logic to a field to conditionally make it required. A required field has metadata to
@@ -23,11 +23,11 @@ import {BaseValidatorConfig} from '@angular/forms/experimental/src/api/validator
  * @template T The data type of the field the logic is being added to.
  */
 export function required<T>(
-    path: FieldPath<T>,
-    config?: BaseValidatorConfig<T> & {
-      emptyPredicate?: (value: T) => boolean,
-      when?: NoInfer<LogicFn<T, boolean>>
-    }
+  path: FieldPath<T>,
+  config?: BaseValidatorConfig<T> & {
+    emptyPredicate?: (value: T) => boolean;
+    when?: NoInfer<LogicFn<T, boolean>>;
+  },
 ): void {
   const emptyPredicate = config?.emptyPredicate || ((value) => value == null || value === '');
   const condition = config?.when ?? (() => true);
@@ -44,5 +44,3 @@ export function required<T>(
     return undefined;
   });
 }
-
-

@@ -8,9 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {MAX_LENGTH} from '../../../src/api/metadata';
-import {form} from '../../../src/api/structure';
-import {maxLength} from '../../../src/api/validators';
+import {MAX_LENGTH, form, maxLength} from '../../../public_api';
 
 describe('maxLength validator', () => {
   it('returns maxLength error when the length is larger for strings', () => {

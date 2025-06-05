@@ -18,3 +18,6 @@ export * from './src/api/logic';
 export * from './src/api/types';
 export * from './src/api/control';
 export * from './src/api/metadata';
+export * from './src/api/validators';
+export * from './src/api/async';
+export * from './src/api/data';

@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath} from "../types";
-import {BaseValidatorConfig} from '@angular/forms/experimental/src/api/validators/types';
+import {FieldPath} from '../types';
 import {validate} from '../logic';
-
+import {BaseValidatorConfig} from './types';
 
 /**
  * A regular expression that matches valid e-mail addresses.
@@ -45,12 +44,12 @@ const EMAIL_REGEXP =
   /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 /*
-* Validator validating email addresses.
-*
-* @param path Path to the target field
-* @param maxValue The minimum value, or a LogicFn returning it.
-* @param config Optional, currently allows providing custom errors function.
-*/
+ * Validator validating email addresses.
+ *
+ * @param path Path to the target field
+ * @param maxValue The minimum value, or a LogicFn returning it.
+ * @param config Optional, currently allows providing custom errors function.
+ */
 export function email(path: FieldPath<string>, config?: BaseValidatorConfig<string>) {
   return validate(path, (ctx) => {
     if (!EMAIL_REGEXP.test(ctx.value())) {
