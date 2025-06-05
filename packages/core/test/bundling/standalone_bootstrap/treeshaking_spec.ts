@@ -13,9 +13,7 @@ import * as path from 'path';
 
 describe('treeshaking with uglify', () => {
   let content: string;
-  const contentPath = path.resolve(
-    'packages/core/test/bundling/standalone_bootstrap/bundles/main.js',
-  );
+  const contentPath = path.resolve('./bundles/main.js');
   beforeAll(() => {
     content = fs.readFileSync(contentPath, {encoding: 'utf-8'});
   });
