@@ -12,7 +12,6 @@ import {
   ReactiveNode,
   setPostProducerCreatedFn,
   setPostSignalSetFn,
-  createSignalTuple,
   SIGNAL,
 } from '../../primitives/signals';
 
@@ -224,24 +223,5 @@ describe('signals', () => {
 
     expect(producerKindsCreated).toEqual(['signal']);
     setPostProducerCreatedFn(prev);
-  });
-});
-
-describe('createSignalTuple', () => {
-  it('get returns the signal value', () => {
-    const [get] = createSignalTuple(0);
-    expect(get()).toBe(0);
-  });
-
-  it('set sets the signal value', () => {
-    const [get, set] = createSignalTuple(0);
-    set(1);
-    expect(get()).toBe(1);
-  });
-
-  it('update updates the values based on the previous value', () => {
-    const [get, , update] = createSignalTuple(0);
-    update((prev) => prev + 2);
-    expect(get()).toBe(2);
   });
 });

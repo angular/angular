@@ -72,17 +72,6 @@ export function createSignal<T>(
   return [getter, set, update];
 }
 
-/**
- * Creates a `Signal` getter, setter, and updater function.
- * @deprecated use createSignal
- */
-export function createSignalTuple<T>(
-  initialValue: T,
-  equal?: ValueEqualityFn<T>,
-): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>] {
-  return createSignal(initialValue, equal);
-}
-
 export function setPostSignalSetFn(fn: ReactiveHookFn | null): ReactiveHookFn | null {
   const prev = postSignalSetFn;
   postSignalSetFn = fn;
