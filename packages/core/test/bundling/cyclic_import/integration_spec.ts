@@ -15,7 +15,7 @@ import * as url from 'url';
 
 describe('treeshaking with uglify', () => {
   let content: string;
-  const contentPath = path.resolve('packages/core/test/bundling/cyclic_import/bundles/main.js');
+  const contentPath = path.resolve('./bundles/main.js');
   const bundleUrl = url.pathToFileURL(contentPath).toString();
 
   beforeAll(() => {

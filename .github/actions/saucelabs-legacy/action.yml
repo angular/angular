@@ -19,11 +19,6 @@ runs:
     - name: Preparing Bazel-generated fixtures required in legacy tests
       shell: bash
       run: |
-        yarn bazel build //packages/core/test:downleveled_es5_fixture //packages/common/locales
-        # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
-        mkdir -p dist/legacy-test-out/core/test/reflection/
-        cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
-          dist/legacy-test-out/core/test/reflection/es5_downleveled_inheritance_fixture.js
         # Locale files are needed for i18n tests running within Saucelabs. These are added
         # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
         # can succeed. Note that the base locale and currencies files are checked-in, so

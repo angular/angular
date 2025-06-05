@@ -1,24 +1,7 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
-
-genrule(
-    name = "downleveled_es5_fixture",
-    srcs = ["reflection/es2015_inheritance_fixture.ts"],
-    outs = ["reflection/es5_downleveled_inheritance_fixture.js"],
-    cmd = """
-        es2015_out_dir="/tmp/downleveled_es5_fixture/"
-        es2015_out_file="$$es2015_out_dir/es2015_inheritance_fixture.js"
-
-        # Build the ES2015 output and then downlevel it to ES5.
-        $(execpath @npm//typescript/bin:tsc) $< --outDir $$es2015_out_dir --target ES2015 \
-            --types --module umd
-        $(execpath @npm//typescript/bin:tsc) --outFile $@ $$es2015_out_file --allowJs \
-            --types --target ES5 --downlevelIteration
-    """,
-    tools = ["@npm//typescript/bin:tsc"],
-)
 
 UTILS = [
     "linker/source_map_util.ts",
@@ -43,7 +26,6 @@ ts_project(
         ["**/*.ts"],
         exclude = UTILS + [
             "**/*_node_only_spec.ts",
-            "reflection/es2015_inheritance_fixture.ts",
         ],
     ),
     interop_deps = [
@@ -100,26 +82,18 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
     data = [
-        ":downleveled_es5_fixture",
+        ":test_lib_rjs",
+        ":test_node_only_lib_rjs",
     ],
     shard_count = 4,
-    deps = [
-        ":test_lib",
-        ":test_node_only_lib",
-        "//packages/platform-server",
-        "//packages/platform-server/testing",
-        "@npm//source-map",
-    ],
 )
 
 karma_web_test_suite(
     name = "test_web",
     external = ["@angular/platform-server"],
-    runtime_deps = [":downleveled_es5_fixture"],
     deps = [
         ":test_lib",
     ],
