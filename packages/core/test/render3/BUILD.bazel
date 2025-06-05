@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -78,14 +78,10 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "render3",
-    bootstrap = [
-        ":domino",
-        "//tools/testing:node",
-    ],
-    deps = [
-        ":render3_node_lib",
+    data = [
+        ":render3_node_lib_rjs",
     ],
 )
 
