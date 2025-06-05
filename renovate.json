@@ -38,6 +38,14 @@
   ],
   "packageRules": [
     {
+      "matchBaseBranches": ["main"],
+      "addLabels": ["target: minor"]
+    },
+    {
+      "matchBaseBranches": ["!main"],
+      "addLabels": ["target: patch"]
+    },
+    {
       "matchFileNames": [
         "integration/**",
         "packages/core/schematics/migrations/signal-migration/test/**",
