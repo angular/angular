@@ -1951,6 +1951,7 @@ describe('Image directive', () => {
     it('should pass height to custom image loaders', () => {
       @Component({
         selector: 'test-cmp',
+        standalone: false,
         template: `<img [ngSrc]="ngSrc" width="300" height="150" sizes="100vw" />`,
       })
       class TestComponent {
