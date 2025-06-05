@@ -15,7 +15,6 @@ ng_project(
     ),
     interop_deps = [
         "//packages/core",
-        "//packages/zone.js/lib:zone_d_ts",
     ],
     deps = [
         "//:node_modules/rxjs",
