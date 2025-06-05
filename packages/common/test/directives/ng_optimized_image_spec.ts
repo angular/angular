@@ -804,6 +804,60 @@ describe('Image directive', () => {
     });
   });
 
+  describe('decoding attribute', () => {
+    it('should throw for invalid loading inputs', () => {
+      setupTestingModule();
+
+      const template =
+        '<img ngSrc="path/img.png" width="150" height="150" decoding="unknown_value">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      }).toThrowError(
+        'NG02952: The NgOptimizedImage directive ' +
+          '(activated on an <img> element with the `ngSrc="path/img.png"`) has detected ' +
+          'that the `decoding` attribute has an invalid value (`unknown_value`). ' +
+          'To fix this, provide a valid value ("sync", "async", or "auto").',
+      );
+    });
+
+    it('should set the decoding to "auto" by default', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" width="150" height="150">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('decoding')).toEqual('auto');
+    });
+
+    it('should set the decoding to sync for priority images', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" width="150" height="50" priority>';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('decoding')).toEqual('sync');
+    });
+
+    it('should override the default decoding behavior', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" width="150" height="150" decoding="async">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('decoding')).toEqual('async');
+    });
+  });
+
   describe('loading attribute', () => {
     it('should override the default loading behavior for non-priority images', () => {
       setupTestingModule();
