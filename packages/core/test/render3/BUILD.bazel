@@ -64,7 +64,6 @@ ts_project(
         "//packages/compiler",
         "//packages/platform-server",
         "//packages/platform-server:bundled_domino_lib",
-        "//packages/zone.js/lib:zone_d_ts",
     ],
 )
 

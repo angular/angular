@@ -14,7 +14,6 @@ ng_project(
     interop_deps = [
         "//packages/core",
         "//packages/platform-browser-dynamic",
-        "//packages/zone.js/lib:zone_d_ts",
     ],
     deps = [
         "//packages/upgrade/src/common:common_rjs",

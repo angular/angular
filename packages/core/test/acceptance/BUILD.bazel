@@ -35,7 +35,6 @@ ts_project(
         "//packages/platform-server",
         "//packages/private/testing",
         "//packages/router",
-        "//packages/zone.js/lib:zone_d_ts",
     ],
     # Visible to //:saucelabs_unit_tests
     visibility = ["//:__pkg__"],
@@ -66,7 +65,6 @@ jasmine_node_test(
     deps = [
         ":acceptance_lib",
         ":forward_ref_test_lib",
-        "//packages/zone.js/lib:zone_d_ts",
         "@npm//source-map",
     ],
 )
