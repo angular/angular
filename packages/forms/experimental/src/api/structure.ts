@@ -226,9 +226,9 @@ export function applyWhen<T>(
  * Conditionally applies a predefined schema to a given `FieldPath`.
  *
  * @param path The target path to apply the schema to.
- * @param valuePredicate A type guard that accepts a value `T` and returns `true` if `T` is of type
+ * @param predicate A type guard that accepts a value `T` and returns `true` if `T` is of type
  *   `TNarrowed`.
- * @param schema The schema to apply to the field when `valuePredicate` returns `true`.
+ * @param schema The schema to apply to the field when `predicate` returns `true`.
  */
 export function applyWhenValue<T, TNarrowed extends T>(
   path: FieldPath<T>,
@@ -239,9 +239,9 @@ export function applyWhenValue<T, TNarrowed extends T>(
  * Conditionally applies a predefined schema to a given `FieldPath`.
  *
  * @param path The target path to apply the schema to.
- * @param valuePredicate A function that accepts a value `T` and returns `true` when the schema
+ * @param predicate A function that accepts a value `T` and returns `true` when the schema
  *   should be applied.
- * @param schema The schema to apply to the field when `valuePredicate` returns `true`.
+ * @param schema The schema to apply to the field when `predicate` returns `true`.
  */
 export function applyWhenValue<T>(
   path: FieldPath<T>,
@@ -275,7 +275,7 @@ export function applyWhenValue(
  *
  * const registrationForm = form(signal({username: 'god', password: ''}));
  * submit(registrationForm, async (f) => {
- *   return registerNewUser(registrationForm().value());
+ *   return registerNewUser(registrationForm);
  * });
  * registrationForm.username().errors(); // [{kind: 'server', message: 'Username already taken'}]
  * ```
