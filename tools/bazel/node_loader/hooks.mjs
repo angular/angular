@@ -52,7 +52,11 @@ export const resolve = async (specifier, context, nextResolve) => {
   } else {
     const fixedResult =
       (await catchError(() => nextResolve(`${specifier}.js`, context))) ||
-      (await catchError(() => nextResolve(`${specifier}/index.js`, context)));
+      (await catchError(() => nextResolve(`${specifier}/index.js`, context))) ||
+      // Legacy variants for the `zone.js` variant using still `ts_library`.
+      // TODO(rules_js migration): Remove this.
+      (await catchError(() => nextResolve(`${specifier}.mjs`, context))) ||
+      (await catchError(() => nextResolve(`${specifier}/index.mjs`, context)));
 
     if (fixedResult !== null) {
       return fixedResult;
