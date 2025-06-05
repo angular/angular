@@ -3,7 +3,7 @@
   "version": "0.3.0",
   "description": "Benchpress - a framework for e2e performance tests",
   "dependencies": {
-    "@angular/core": "^20.0.0-rc",
+    "@angular/core": "^20.1.0-next",
     "reflect-metadata": "^0.2.0"
   },
   "repository": {
