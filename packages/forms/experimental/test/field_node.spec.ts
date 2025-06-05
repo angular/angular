@@ -8,11 +8,21 @@
 
 import {computed, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {disabled, error, readonly, validate, validateTree} from '../src/api/logic';
-import {REQUIRED} from '../src/api/metadata';
-import {apply, applyEach, form, submit} from '../src/api/structure';
-import {FormTreeError, SchemaOrSchemaFn} from '../src/api/types';
-import {required} from '../src/api/validators';
+import {
+  disabled,
+  required,
+  error,
+  readonly,
+  validate,
+  validateTree,
+  REQUIRED,
+  FormTreeError,
+  SchemaOrSchemaFn,
+  apply,
+  applyEach,
+  form,
+  submit,
+} from '../public_api';
 
 const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
 
@@ -376,7 +386,12 @@ describe('FieldNode', () => {
       );
 
       expect(f.a().disabled()).toBe(true);
-      expect(f.a().disabledReasons()).toEqual([{field: f.a, reason: 'a cannot be changed'}]);
+      expect(f.a().disabledReasons()).toEqual([
+        {
+          field: f.a,
+          reason: 'a cannot be changed',
+        },
+      ]);
     });
 
     it('should not have disabled reason if not disabled', () => {
@@ -394,7 +409,12 @@ describe('FieldNode', () => {
       f.a().value.set(6);
 
       expect(f.a().disabled()).toBe(true);
-      expect(f.a().disabledReasons()).toEqual([{field: f.a, reason: 'a cannot be changed'}]);
+      expect(f.a().disabledReasons()).toEqual([
+        {
+          field: f.a,
+          reason: 'a cannot be changed',
+        },
+      ]);
     });
 
     it('disabled reason should propagate to children', () => {
@@ -407,9 +427,19 @@ describe('FieldNode', () => {
       );
 
       expect(f().disabled()).toBe(true);
-      expect(f().disabledReasons()).toEqual([{field: f, reason: 'form unavailable'}]);
+      expect(f().disabledReasons()).toEqual([
+        {
+          field: f,
+          reason: 'form unavailable',
+        },
+      ]);
       expect(f.a().disabled()).toBe(true);
-      expect(f.a().disabledReasons()).toEqual([{field: f, reason: 'form unavailable'}]);
+      expect(f.a().disabledReasons()).toEqual([
+        {
+          field: f,
+          reason: 'form unavailable',
+        },
+      ]);
     });
   });
 

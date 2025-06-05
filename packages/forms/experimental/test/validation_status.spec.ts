@@ -8,8 +8,15 @@
 
 import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Field, form, FormError, FormTreeError, validate, validateTree} from '../public_api';
-import {validateAsync} from '../src/api/async';
+import {
+  Field,
+  form,
+  validateAsync,
+  FormError,
+  FormTreeError,
+  validate,
+  validateTree,
+} from '../public_api';
 
 function validateValue(value: string): FormError[] {
   return value === 'INVALID' ? [{kind: 'error'}] : [];
@@ -249,7 +256,11 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) => errs.map((e) => ({...e, field: fieldOf(p.child)})),
+            errors: (errs, {fieldOf}) =>
+              errs.map((e) => ({
+                ...e,
+                field: fieldOf(p.child),
+              })),
           });
         },
         {injector},
@@ -301,7 +312,11 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) => errs.map((e) => ({...e, field: fieldOf(p.child)})),
+            errors: (errs, {fieldOf}) =>
+              errs.map((e) => ({
+                ...e,
+                field: fieldOf(p.child),
+              })),
           });
         },
         {injector},
@@ -356,7 +371,11 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) => errs.map((e) => ({...e, field: fieldOf(p.child)})),
+            errors: (errs, {fieldOf}) =>
+              errs.map((e) => ({
+                ...e,
+                field: fieldOf(p.child),
+              })),
           });
         },
         {injector},

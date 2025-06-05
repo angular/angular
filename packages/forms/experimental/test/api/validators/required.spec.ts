@@ -8,8 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form} from '../../../src/api/structure';
-import {required} from '../../../src/api/validators';
+import {form, required} from '../../../public_api';
 
 describe('required validator', () => {
   it('returns required Error when the value is not present', () => {

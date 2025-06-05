@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn, MAX_LENGTH, metadata, validate} from '@angular/forms/experimental';
-import {BaseValidatorConfig, ValueWithLength} from '@angular/forms/experimental/src/api/validators/types';
+import {FieldPath, LogicFn} from '../types';
+import {metadata, validate} from '../logic';
+import {BaseValidatorConfig, ValueWithLength} from './types';
+import {MAX_LENGTH} from '../metadata';
 
 /**
  * Validator requiring a field value's length to be smaller than or equal to a maximum length.
@@ -16,11 +18,15 @@ import {BaseValidatorConfig, ValueWithLength} from '@angular/forms/experimental/
  * @param maxLength The maximum length, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function maxLength(path: FieldPath<ValueWithLength>, maxLength: number | LogicFn<ValueWithLength, number>, config?: BaseValidatorConfig<ValueWithLength>) {
+export function maxLength(
+  path: FieldPath<ValueWithLength>,
+  maxLength: number | LogicFn<ValueWithLength, number>,
+  config?: BaseValidatorConfig<ValueWithLength>,
+) {
   const reactiveMaxLengthValue = typeof maxLength === 'number' ? () => maxLength : maxLength;
   metadata(path, MAX_LENGTH, reactiveMaxLengthValue);
 
-  validate(path, ctx => {
+  validate(path, (ctx) => {
     if (ctx.value().length > reactiveMaxLengthValue(ctx)) {
       if (config?.errors) {
         return config.errors(ctx);

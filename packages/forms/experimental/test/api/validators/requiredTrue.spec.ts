@@ -8,8 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form} from '../../../src/api/structure';
-import {requiredTrue} from '../../../src/api/validators';
+import {requiredTrue, form} from '../../../public_api';
 
 describe('requiredTrue validator', () => {
   it('returns requiredTrue error when the value is false', () => {

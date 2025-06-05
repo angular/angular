@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn, MAX, metadata, validate} from '@angular/forms/experimental';
-import {BaseValidatorConfig} from '@angular/forms/experimental/src/api/validators/types';
+import {FieldPath, LogicFn} from '../types';
+import {metadata, validate} from '../logic';
+import {MAX} from '../metadata';
+import {BaseValidatorConfig} from './types';
 
 /**
  * Validator requiring a field value to be smaller than or equal to a maximum value.
@@ -16,9 +18,12 @@ import {BaseValidatorConfig} from '@angular/forms/experimental/src/api/validator
  * @param maxValue The minimum value, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function max(path: FieldPath<number>, maxValue: (number | LogicFn<number, number>), config?: BaseValidatorConfig<number>) {
-  const reactiveMaxValue = (typeof maxValue === 'number') ?
-    () => maxValue : maxValue;
+export function max(
+  path: FieldPath<number>,
+  maxValue: number | LogicFn<number, number>,
+  config?: BaseValidatorConfig<number>,
+) {
+  const reactiveMaxValue = typeof maxValue === 'number' ? () => maxValue : maxValue;
 
   metadata(path, MAX, reactiveMaxValue);
   validate(path, (ctx) => {

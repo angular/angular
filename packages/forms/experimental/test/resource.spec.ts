@@ -10,11 +10,16 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
-import {validateAsync, validateHttp} from '../src/api/async';
-import {define} from '../src/api/data';
-import {validate} from '../src/api/logic';
-import {applyEach, form} from '../src/api/structure';
-import {SchemaOrSchemaFn} from '../src/api/types';
+
+import {
+  define,
+  validateAsync,
+  validateHttp,
+  applyEach,
+  validate,
+  form,
+  SchemaOrSchemaFn,
+} from '../public_api';
 
 interface Cat {
   name: string;
@@ -64,11 +69,21 @@ describe('resources', () => {
     const f = form(cat, s, {injector});
 
     await appRef.whenStable();
-    expect(f.name().errors()).toEqual([{kind: 'whatever', message: 'got: cat'}]);
+    expect(f.name().errors()).toEqual([
+      {
+        kind: 'whatever',
+        message: 'got: cat',
+      },
+    ]);
 
     f.name().value.set('dog');
     await appRef.whenStable();
-    expect(f.name().errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
+    expect(f.name().errors()).toEqual([
+      {
+        kind: 'whatever',
+        message: 'got: dog',
+      },
+    ]);
   });
 
   it('should create a resource per entry in an array', async () => {
@@ -97,13 +112,33 @@ describe('resources', () => {
     const f = form(cat, s, {injector});
 
     await appRef.whenStable();
-    expect(f[0].name().errors()).toEqual([{kind: 'whatever', message: 'got: cat'}]);
-    expect(f[1].name().errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
+    expect(f[0].name().errors()).toEqual([
+      {
+        kind: 'whatever',
+        message: 'got: cat',
+      },
+    ]);
+    expect(f[1].name().errors()).toEqual([
+      {
+        kind: 'whatever',
+        message: 'got: dog',
+      },
+    ]);
 
     f[0].name().value.set('bunny');
     await appRef.whenStable();
-    expect(f[0].name().errors()).toEqual([{kind: 'whatever', message: 'got: bunny'}]);
-    expect(f[1].name().errors()).toEqual([{kind: 'whatever', message: 'got: dog'}]);
+    expect(f[0].name().errors()).toEqual([
+      {
+        kind: 'whatever',
+        message: 'got: bunny',
+      },
+    ]);
+    expect(f[1].name().errors()).toEqual([
+      {
+        kind: 'whatever',
+        message: 'got: dog',
+      },
+    ]);
   });
 
   it('should support tree validation for resources', async () => {
@@ -151,7 +186,11 @@ describe('resources', () => {
             },
           }),
         errors: (cats, {fieldOf}) => {
-          return {kind: 'meows_too_much', name: cats[0].name, field: fieldOf(p)[0]};
+          return {
+            kind: 'meows_too_much',
+            name: cats[0].name,
+            field: fieldOf(p)[0],
+          };
         },
       });
     };

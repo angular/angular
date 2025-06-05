@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, metadata, REQUIRED, validate} from '@angular/forms/experimental';
-import {BaseValidatorConfig} from '@angular/forms/experimental/src/api/validators/types';
+import {FieldPath} from '../types';
+import {metadata, validate} from '../logic';
+import {BaseValidatorConfig} from './types';
+import {REQUIRED} from '../metadata';
 
 /**
  * Validator requiring a field value to be true, generally is used for checkboxes that must be checked.
@@ -17,7 +19,7 @@ import {BaseValidatorConfig} from '@angular/forms/experimental/src/api/validator
 export function requiredTrue(path: FieldPath<boolean>, config?: BaseValidatorConfig<boolean>) {
   metadata(path, REQUIRED, () => true);
 
-  validate(path, ctx => {
+  validate(path, (ctx) => {
     if (!ctx.value()) {
       if (config?.errors) {
         return config.errors(ctx);

@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {metadata, validate} from "../logic";
-import { FieldPath, LogicFn } from "../types";
-import {MIN} from '@angular/forms/experimental';
-import { BaseValidatorConfig } from "./types";
-
+import {FieldPath, LogicFn} from '../types';
+import {metadata, validate} from '../logic';
+import {BaseValidatorConfig} from './types';
+import {MIN} from '../metadata';
 
 /**
  * Validator requiring a field value to be greater than or equal to a minimum value.
@@ -19,9 +18,12 @@ import { BaseValidatorConfig } from "./types";
  * @param minValue The minimum value, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function min(path: FieldPath<number>, minValue: (number | LogicFn<number, number>), config?: BaseValidatorConfig<number>) {
-  const reactiveMinValue = (typeof minValue === 'number') ?
-    () => minValue : minValue;
+export function min(
+  path: FieldPath<number>,
+  minValue: number | LogicFn<number, number>,
+  config?: BaseValidatorConfig<number>,
+) {
+  const reactiveMinValue = typeof minValue === 'number' ? () => minValue : minValue;
   metadata(path, MIN, reactiveMinValue);
   validate(path, (ctx) => {
     // TODO(kirjs): Do we need to handle Null, parseFloat, NaN?
