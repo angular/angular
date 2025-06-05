@@ -15,8 +15,7 @@ import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
  * Adds logic to a field to conditionally disable it.
  *
  * @param path The target path to add the disabled logic to.
- * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is disabled.
- * @param reason A user-facing message describing why the field is disabled.
+ * @param logic A `LogicFn<T, boolean | string>` that returns `true` when the field is disabled.
  * @template T The data type of the field the logic is being added to.
  */
 export function disabled<T>(
