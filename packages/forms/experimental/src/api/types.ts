@@ -67,10 +67,12 @@ export type ValidationResult = FormError | FormError[] | undefined;
  */
 export type Field<T> = (() => FieldState<T>) &
   (T extends Array<infer U>
-    ? Array<Field<U>>
+    ? Array<MaybeField<U>>
     : T extends Record<PropertyKey, any>
-      ? {[K in keyof T]: Field<T[K]>}
+      ? {[K in keyof T]: MaybeField<T[K]>}
       : unknown);
+
+export type MaybeField<T> = (T & undefined) | Field<Exclude<T, undefined>>;
 
 /**
  * Contains all of the state (e.g. value, statuses, metadata) associated with a `Field`, exposed as

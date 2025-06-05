@@ -631,6 +631,15 @@ export class FieldNode implements FieldState<unknown> {
     for (let key of Object.keys(value)) {
       let identity: PropertyKey = key;
       const childValue = value[key] as unknown;
+
+      // Fields explicitly set to `undefined` are treated as if they don't exist.
+      // This ensures that `{value: undefined}` and `{}` have the same behavior for their `value`
+      // field.
+      if (childValue === undefined) {
+        childrenMap?.delete(key);
+        continue;
+      }
+
       if (isArray && isObject(childValue)) {
         // For object values in arrays, assign a synthetic identity instead.
         identity = (childValue[this.identitySymbol] as PropertyKey) ??= Symbol(
