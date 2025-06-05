@@ -13,7 +13,6 @@ ng_project(
         "//packages/core",
         "//packages/core/primitives/dom-navigation/testing",
         "//packages/localize",
-        "//packages/zone.js/lib:zone_d_ts",
     ],
     deps = [
         "//:node_modules/@types/jasmine",
