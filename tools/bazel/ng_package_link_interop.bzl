@@ -1,3 +1,5 @@
+"""Used for angular.dev first-party package linking."""
+
 load("@aspect_rules_js//npm:providers.bzl", "NpmPackageInfo")
 load("@build_bazel_rules_nodejs//:providers.bzl", "LinkablePackageInfo")
 
