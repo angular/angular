@@ -11,11 +11,9 @@ import '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const PACKAGE = 'angular/';
-
 describe('treeshaking with uglify', () => {
   let content: string;
-  const contentPath = path.resolve('packages/core/test/bundling/hydration/bundles/main.js');
+  const contentPath = path.resolve('./bundles/main.js');
   beforeAll(() => {
     content = fs.readFileSync(contentPath, {encoding: 'utf-8'});
   });

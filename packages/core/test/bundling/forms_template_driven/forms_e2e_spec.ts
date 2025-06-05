@@ -9,9 +9,8 @@
 import '@angular/compiler';
 
 import {withBody} from '@angular/private/testing';
-import * as path from 'path';
 
-const BUNDLE = 'angular/packages/core/test/bundling/forms_template_driven/bundles/main.js';
+const BUNDLE = './bundles/main.js';
 
 describe('functional test for forms', () => {
   it(
