@@ -18,7 +18,6 @@ ng_project(
         "//packages/common/http",
         "//packages/compiler",
         "//packages/platform-browser",
-        "//packages/zone.js/lib:zone_d_ts",
         ":bundled_domino_lib",
     ],
     deps = [

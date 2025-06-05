@@ -11,7 +11,6 @@ ng_project(
     interop_deps = [
         "//packages/core",
         "//packages/core/testing",
-        "//packages/zone.js/lib:zone_d_ts",
     ],
     tsconfig = ":tsconfig.json",
     visibility = ["//:__pkg__"],
@@ -22,7 +21,6 @@ jasmine_node_test(
     bootstrap = ["//tools/testing:node"],
     deps = [
         ":selectorless_test_lib",
-        "//packages/zone.js/lib:zone_d_ts",
         "@npm//source-map",
     ],
 )

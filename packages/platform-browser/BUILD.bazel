@@ -13,7 +13,6 @@ ng_project(
     ),
     interop_deps = [
         "//packages:types",
-        "//packages/zone.js/lib:zone_d_ts",
     ],
     deps = [
         "//:node_modules/@types/hammerjs",
