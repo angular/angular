@@ -8,9 +8,14 @@
 
 import {Injector, Signal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {validate} from '../../src/api/logic';
-import {applyEach, applyWhen, applyWhenValue, form} from '../../src/api/structure';
-import {SchemaOrSchemaFn} from '../../src/api/types';
+import {
+  validate,
+  SchemaOrSchemaFn,
+  applyEach,
+  applyWhen,
+  applyWhenValue,
+  form,
+} from '../../public_api';
 
 export interface User {
   first: string;

@@ -8,9 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FieldPath, SchemaFn} from '../public_api';
-import {validate} from '../src/api/logic';
-import {apply, applyEach, applyWhen, form} from '../src/api/structure';
+import {FieldPath, SchemaFn, validate, apply, applyEach, form, applyWhen} from '../public_api';
 import {FieldPathNode, FieldRootPathNode} from '../src/path_node';
 
 describe('path', () => {
@@ -113,7 +111,10 @@ describe('path', () => {
     });
 
     it('Disallows using parent paths for apply', () => {
-      const data = signal({needLastName: false, items: [{first: '', last: ''}]});
+      const data = signal({
+        needLastName: false,
+        items: [{first: '', last: ''}],
+      });
 
       form(
         data,
