@@ -21,6 +21,8 @@ import {
 import type {Observable} from 'rxjs';
 
 import {NgswCommChannel} from './low_level';
+import {SwPush} from './push';
+import {SwUpdate} from './update';
 import {RuntimeErrorCode} from './errors';
 
 export const SCRIPT = new InjectionToken<string>(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
@@ -211,6 +213,8 @@ export function provideServiceWorker(
   options: SwRegistrationOptions = {},
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
+    SwPush,
+    SwUpdate,
     {provide: SCRIPT, useValue: script},
     {provide: SwRegistrationOptions, useValue: options},
     {
