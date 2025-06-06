@@ -33,6 +33,6 @@ http_server(
     ],
     deps = [
         ":app_bundle",
-        "//packages/zone.js/bundles:zone.umd.js",
+        "//modules:node_modules/zone.js",
     ],
 )
