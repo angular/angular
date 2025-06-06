@@ -34,7 +34,7 @@ import {
   getInjectorProviders,
   getInjectorResolutionPath,
 } from './injector_discovery_utils';
-import {getSignalGraph} from './signal_debug';
+import {getSignalGraph, toggleDebugSignal} from './signal_debug';
 
 import {enableProfiling} from '../debug/chrome_dev_tools_performance';
 
@@ -75,6 +75,7 @@ const globalUtilsFunctions = {
   'ɵsetProfiler': setProfiler,
   'ɵgetSignalGraph': getSignalGraph,
   'ɵgetDeferBlocks': getDeferBlocks,
+  'ɵtoggleDebugSignal': toggleDebugSignal,
 
   'getDirectiveMetadata': getDirectiveMetadata,
   'getComponent': getComponent,
