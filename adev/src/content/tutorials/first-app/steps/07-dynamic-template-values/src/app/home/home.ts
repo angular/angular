@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {HousingLocationInfo} from '../housing-location/housing-location';
+import {HousingLocation} from '../housing-location/housing-location';
 import {HousingLocationInfo} from '../housinglocation';
 
 @Component({
