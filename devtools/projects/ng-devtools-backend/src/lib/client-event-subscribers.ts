@@ -19,6 +19,7 @@ import {
   Route,
   SerializedInjector,
   SerializedProviderRecord,
+  SignalNodePosition,
 } from '../../../protocol';
 import {debounceTime} from 'rxjs/operators';
 import {
@@ -710,3 +711,4 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
   }
 };
+

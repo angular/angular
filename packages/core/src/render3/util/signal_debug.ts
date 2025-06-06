@@ -21,6 +21,7 @@ import {throwError} from '../../util/assert';
 import {
   ComputedNode,
   ReactiveNode,
+  setPostSignalSetFn,
   SIGNAL,
   SIGNAL_NODE,
   SignalNode,
