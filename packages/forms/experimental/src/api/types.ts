@@ -65,20 +65,22 @@ export type ValidationResult = FormError | FormError[] | undefined;
  *
  * @template T The type of the data which the field is wrapped around.
  */
-export type Field<T> = (() => FieldState<T>) &
+export type Field<T, TKey extends string | number = string | number> = (() => FieldState<T, TKey>) &
   (T extends Array<infer U>
-    ? Array<MaybeField<U>>
-    : T extends Record<PropertyKey, any>
-      ? {[K in keyof T]: MaybeField<T[K]>}
+    ? Array<MaybeField<U, number>>
+    : T extends Record<string, any>
+      ? {[K in keyof T]: MaybeField<T[K], string>}
       : unknown);
 
-export type MaybeField<T> = (T & undefined) | Field<Exclude<T, undefined>>;
+export type MaybeField<T, TKey extends string | number = string | number> =
+  | (T & undefined)
+  | Field<Exclude<T, undefined>, TKey>;
 
 /**
  * Contains all of the state (e.g. value, statuses, metadata) associated with a `Field`, exposed as
  * signals.
  */
-export interface FieldState<T> {
+export interface FieldState<T, TKey extends string | number = string | number> {
   /**
    * A writable signal containing the value for this field. Updating this signal will update the
    * data model that the field is bound to.
@@ -149,6 +151,12 @@ export interface FieldState<T> {
    * being submitted.
    */
   readonly submittedStatus: Signal<SubmittedStatus>;
+
+  /**
+   * The property key in the parent field under which this field is stored. If the parent field is
+   * array-valued, for example, this is the index of this field in that array.
+   */
+  readonly keyInParent: Signal<TKey>;
 
   data<D>(key: DataKey<D>): D | undefined;
 

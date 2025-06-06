@@ -145,7 +145,7 @@ export class FieldNode implements FieldState<unknown> {
       if (this.resolveCache.has(target)) {
         return this.resolveCache.get(target) as Field<U>;
       }
-      const currentPathKeys = this.pathKeys;
+      const currentPathKeys = this.pathKeys();
       const targetPathNode = FieldPathNode.unwrapFieldPath(target);
 
       if (!(this.root.logicPath instanceof FieldRootPathNode)) {
@@ -204,26 +204,38 @@ export class FieldNode implements FieldState<unknown> {
 
   private readonly root: FieldNode;
 
-  private readonly pathKeys: PropertyKey[];
+  private readonly pathKeys: Signal<PropertyKey[]>;
 
   private logic: FieldLogicNode;
 
+  readonly value: WritableSignal<unknown>;
+
   private constructor(
     private readonly fieldManager: FormFieldManager,
-    readonly value: WritableSignal<unknown>,
+    value: WritableSignal<unknown> | undefined,
     private readonly logicPath: FieldPathNode,
     readonly parent: FieldNode | undefined,
-    readonly keyInParent: PropertyKey | undefined,
+    initialKeyInParent: string | number | undefined,
   ) {
     this.fieldManager.nodes.add(this);
     this.logic = logicPath.logic;
 
-    if (parent !== undefined && keyInParent !== undefined) {
+    if (parent !== undefined) {
       this.root = parent.root;
-      this.pathKeys = [...parent.pathKeys, keyInParent];
+      this.pathKeys = computed(() => [...parent.pathKeys(), this.keyInParent()]);
+      if (initialKeyInParent === undefined) {
+        throw new Error(`should have a key in the parent`);
+      }
+      this._prevKeyInParent = initialKeyInParent;
     } else {
       this.root = this;
-      this.pathKeys = [];
+      this.pathKeys = computed(() => []);
+    }
+
+    if (value !== undefined) {
+      this.value = value;
+    } else {
+      this.value = deepSignal(parent!.value, this.keyInParent as Signal<never>);
     }
 
     // We use a `linkedSignal` to preserve the instances of `FieldNode` for each child field even if
@@ -478,6 +490,43 @@ export class FieldNode implements FieldState<unknown> {
 
   readonly invalid = computed(() => this.status() === 'invalid');
 
+  private _prevKeyInParent: string | number | undefined = undefined;
+  readonly keyInParent = computed<string | number>(() => {
+    // What is the key in parent if this is the root?
+    if (this.parent === undefined) {
+      return '';
+    }
+
+    const parentMap = this.parent.childrenMap();
+    if (!parentMap) {
+      throw new Error(`parent value is not indexable?`);
+    }
+
+    if (this._prevKeyInParent && parentMap.get(this._prevKeyInParent) === this) {
+      return this._prevKeyInParent;
+    }
+
+    const parentValue = this.parent.value();
+    if (!isObject(parentValue)) {
+      throw new Error(`parent value is not indexable?`);
+    }
+
+    // Find the physical key where our node is located.
+    for (const key of Object.keys(parentValue)) {
+      let identity: PropertyKey = key;
+      const childValue = parentValue[key as keyof typeof parentValue];
+      if (isObject(childValue) && childValue.hasOwnProperty(this.parent.identitySymbol)) {
+        identity = childValue[this.parent.identitySymbol] as PropertyKey;
+      }
+
+      if (parentMap.get(identity) === this) {
+        return (this._prevKeyInParent = key);
+      }
+    }
+
+    throw new Error(`Field is orphaned?`);
+  });
+
   children(): Iterable<FieldNode> {
     return this.childrenMap()?.values() ?? [];
   }
@@ -662,16 +711,7 @@ export class FieldNode implements FieldState<unknown> {
         childPath = this.logicPath.getChild(key);
       }
       childrenMap ??= new Map<PropertyKey, FieldNode>();
-      childrenMap.set(
-        identity,
-        new FieldNode(
-          this.fieldManager,
-          deepSignal(this.value, key as never),
-          childPath,
-          this,
-          key,
-        ),
-      );
+      childrenMap.set(identity, new FieldNode(this.fieldManager, undefined, childPath, this, key));
     }
 
     return childrenMap;
