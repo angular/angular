@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, NgModule, NgZone, PlatformRef, Testability} from '@angular/core';
+import {
+  Injector,
+  NgModule,
+  NgZone,
+  PlatformRef,
+  Testability,
+  afterEveryRender,
+  ɵNoopNgZone,
+} from '@angular/core';
 
 import {ɵangular1, ɵconstants, ɵutil} from '../common';
 
@@ -295,7 +303,7 @@ export class UpgradeModule {
           // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
           // We need to do this in the next tick so that we don't prevent the bootup stabilizing
           setTimeout(() => {
-            const subscription = this.ngZone.onMicrotaskEmpty.subscribe(() => {
+            const synchronize = () => {
               if ($rootScope.$$phase) {
                 if (typeof ngDevMode === 'undefined' || ngDevMode) {
                   console.warn(
@@ -307,10 +315,33 @@ export class UpgradeModule {
               }
 
               return $rootScope.$digest();
-            });
-            $rootScope.$on('$destroy', () => {
-              subscription.unsubscribe();
-            });
+            };
+            // We _DO NOT_ usually want to have any code that does one thing for zoneless and another for ZoneJS.
+            // This is only here because there is not enough coverage for hybrid apps anymore so we cannot
+            // be confident that making UpgradeModule work with zoneless is a non-breaking change.
+            if (this.ngZone instanceof ɵNoopNgZone) {
+              let syncPending = false;
+              const renderRef = afterEveryRender({
+                mixedReadWrite: () => {
+                  if (syncPending) {
+                    return;
+                  }
+                  syncPending = true;
+                  queueMicrotask(() => {
+                    synchronize();
+                    syncPending = false;
+                  });
+                },
+              });
+              $rootScope.$on('$destroy', () => {
+                renderRef.destroy();
+              });
+            } else {
+              const subscription = this.ngZone.onMicrotaskEmpty.subscribe(synchronize);
+              $rootScope.$on('$destroy', () => {
+                subscription.unsubscribe();
+              });
+            }
           }, 0);
         },
       ]);
