@@ -16,7 +16,7 @@ import {
   type FormError,
   type LogicFn,
 } from './api/types';
-import {FieldNode} from './field_node';
+import {FieldNode} from './field/node';
 
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
@@ -147,14 +147,14 @@ class BooleanOrLogic extends AbstractLogic<boolean> {
 }
 
 class ArrayMergeLogic<TElement> extends AbstractLogic<
-  TElement[],
-  TElement | TElement[] | undefined
+  readonly TElement[],
+  TElement | readonly TElement[] | undefined
 > {
   override get defaultValue() {
     return undefined;
   }
 
-  override compute(arg: FieldContext<any>): TElement[] {
+  override compute(arg: FieldContext<any>): readonly TElement[] {
     return this.fns.reduce((prev, f) => {
       const value = f(arg);
 
@@ -203,7 +203,7 @@ function wrapWithPredicate<TValue, TReturn>(
   }
   return (arg: FieldContext<any>): TReturn => {
     const predicateField = arg.stateOf(predicate.path) as FieldNode;
-    if (!predicate.fn(predicateField.fieldContext)) {
+    if (!predicate.fn(predicateField.context)) {
       // don't actually run the user function
       return defaultValue;
     }
