@@ -769,6 +769,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'best-practices/a11y',
       },
       {
+        label: 'Unhandled errors in Angular',
+        path: 'best-practices/error-handling',
+        contentPath: 'best-practices/error-handling',
+      },
+      {
         label: 'Performance',
         children: [
           {
