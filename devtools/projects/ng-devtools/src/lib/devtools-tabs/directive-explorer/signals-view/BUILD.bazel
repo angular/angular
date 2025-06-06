@@ -1,0 +1,53 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+_STYLE_SRCS = [
+    "signals-tab.component.scss",
+    "signals-value-tree.component.scss",
+]
+
+_STYLE_LABELS = [
+    src[:-len(".component.scss")].replace("-", "_") + "_styles"
+    for src in _STYLE_SRCS
+]
+
+[
+    sass_binary(
+        name = label,
+        src = src,
+        deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
+    )
+    for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
+]
+
+ng_project(
+    name = "signals-tab",
+    srcs = [
+        "signal-data-source.ts",
+        "signals-tab.component.ts",
+        "signals-value-tree.component.ts",
+        "signals-visualizer.ts",
+    ],
+    angular_assets = [
+        "signals-tab.component.html",
+        "signals-value-tree.component.html",
+    ] + _STYLE_LABELS,
+    interop_deps = [
+        "//packages/common",
+        "//packages/core",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@types/d3",
+        "//:node_modules/d3",
+        "//:node_modules/dagre-d3-es",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing:diffing_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
