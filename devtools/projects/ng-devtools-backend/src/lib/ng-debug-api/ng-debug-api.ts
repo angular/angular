@@ -75,3 +75,9 @@ export function ngDebugRoutesApiIsSupported(): boolean {
     })
   );
 }
+
+/** Checks whether Signal Graph API is supported within window.ng */
+export function ngDebugSignalGraphApiIsSupported(): boolean {
+  const ng = ngDebugClient();
+  return ngDebugApiIsSupported(ng, 'ɵgetSignalGraph');
+}

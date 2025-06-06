@@ -338,6 +338,7 @@ export interface SupportedApis {
   profiler: boolean;
   dependencyInjection: boolean;
   routes: boolean;
+  signals: boolean;
 }
 
 export interface Events {
@@ -357,6 +358,11 @@ export interface Events {
 
   getSignalGraph: (query: ElementPosition) => void;
   latestSignalGraph: (graph: DebugSignalGraph) => void;
+
+  getSignalNestedProperties: (position: SignalNodePosition, path: string[]) => void;
+  signalNestedProperties: (position: SignalNodePosition, data: Properties, path: string[]) => void;
+
+  toggleLogging: (position: SignalNodePosition) => void;
 
   getNestedProperties: (position: DirectivePosition, path: string[]) => void;
   nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;
