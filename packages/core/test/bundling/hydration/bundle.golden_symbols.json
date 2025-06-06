@@ -237,8 +237,6 @@
       "VIEW_REFS",
       "ViewEncapsulation",
       "ViewRef",
-      "X_REQUEST_URL_HEADER",
-      "X_REQUEST_URL_REGEXP",
       "XhrFactory",
       "ZONELESS_ENABLED",
       "ZONELESS_SCHEDULER_DISABLED",
