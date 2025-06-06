@@ -19,6 +19,6 @@
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+    "zone.js": "file:../../node_modules/zone.js"
   }
 }
