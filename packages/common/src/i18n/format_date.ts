@@ -875,10 +875,7 @@ function getDateFormatter(format: string): DateFormatter | null {
 }
 
 function timezoneToOffset(timezone: string, fallback: number): number {
-  // Support: IE 11 only, Edge 13-15+
-  // IE/Edge do not "understand" colon (`:`) in timezone
-  timezone = timezone.replace(/:/g, '');
-  const requestedTimezoneOffset = Date.parse('Jan 01, 1970 00:00:00 ' + timezone) / 60000;
+  const requestedTimezoneOffset = Date.parse(`Jan 01, 1970 00:00:00 ${timezone}`) / 60000;
   return isNaN(requestedTimezoneOffset) ? fallback : requestedTimezoneOffset;
 }
 
