@@ -174,4 +174,12 @@ export class SignalsTabComponent {
       frame!,
     );
   }
+
+  toggleLogging() {
+    const selected = this.selected();
+    if (!selected) {
+      return;
+    }
+    this._messageBus.emit('toggleLogging', [{element: this.currentElement()!, signalId: selected}]);
+  }
 }

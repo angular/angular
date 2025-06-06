@@ -109,6 +109,8 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
 
+  messageBus.on('toggleLogging', toggleSignalLogging);
+
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
 
@@ -712,3 +714,23 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
   }
 };
 
+const toggleSignalLogging = ({element, signalId}: SignalNodePosition) => {
+  const ng = ngDebugClient();
+
+    // get injector from position
+    const node = queryDirectiveForest(
+      element,
+      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    );
+    if (!node) {
+      return;
+    }
+  
+    const injector = getInjectorFromElementNode(node.nativeElement!);
+  
+    if (!injector) {
+      return;
+    }
+
+  ng.ɵtoggleDebugSignal?.(injector, signalId);
+};
