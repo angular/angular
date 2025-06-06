@@ -70,11 +70,7 @@ export type PipeEntryRenderable = PipeEntry &
     members: MemberEntryRenderable[];
   };
 
-export type DecoratorEntryRenderable = DecoratorEntry &
-  DocEntryRenderable &
-  HasRenderableToc & {
-    members: MemberEntryRenderable[];
-  };
+export type DecoratorEntryRenderable = DecoratorEntry & DocEntryRenderable & HasRenderableToc;
 
 /** Documentation entity for a TypeScript enum augmented transformed content for rendering. */
 export type EnumEntryRenderable = EnumEntry &
