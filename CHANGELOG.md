@@ -1,3 +1,13 @@
+<a name="20.0.2"></a>
+# 20.0.2 (2025-06-06)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1e8158baee](https://github.com/angular/angular/commit/1e8158baee1be48747180eead8d61de328041b2c) | fix | components marked for traversal resets reactive context ([#61663](https://github.com/angular/angular/pull/61663)) |
+| [1cd23be57e](https://github.com/angular/angular/commit/1cd23be57e68c50d6c1f3f19d53d83651fa73fd1) | fix | unregister `onDestroy` in `outputToObservable` ([#61882](https://github.com/angular/angular/pull/61882)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.1"></a>
 # 20.0.1 (2025-06-04)
 ### compiler
