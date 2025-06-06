@@ -12,7 +12,7 @@
     "rxjs": "file:../../node_modules/rxjs",
     "tslib": "file:../../node_modules/tslib",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+    "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
     "@babel/core": "file:../../node_modules/@babel/core",
