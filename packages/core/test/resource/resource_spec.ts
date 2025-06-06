@@ -341,7 +341,7 @@ describe('resource', () => {
     const res = resource({
       params: request,
       loader: async ({params}) => {
-        if (params === 2) {
+        if (params === 1) {
           throw new Error('err');
         }
         return ['data'];
@@ -351,13 +351,15 @@ describe('resource', () => {
     });
     expect(res.value()).toBe(DEFAULT);
 
+    // Verify the value is not the default one on request resolution.
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.value()).not.toBe(DEFAULT);
 
+    // Retain the non-default value during request execution.
     request.set(1);
-    expect(res.value()).toBe(DEFAULT);
+    expect(res.value()).not.toBe(DEFAULT);
 
-    request.set(2);
+    // Resolve the request.
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.error()).not.toBeUndefined();
     const err = extractError(() => res.value())!;
@@ -752,7 +754,7 @@ describe('resource', () => {
     expect(res.value()).toBe(4);
   });
 
-  it('should not accept new values/errors after a request is cancelled', async () => {
+  it('should not accept new errors after a request is cancelled', async () => {
     const appRef = TestBed.inject(ApplicationRef);
     const stream = signal<{value: number} | {error: Error}>({value: 0});
     const request = signal(1);
@@ -775,9 +777,7 @@ describe('resource', () => {
     // Changing the request aborts the previous one.
     request.set(2);
 
-    // The previous set/error functions should no longer result in changes to the resource.
-    stream.set({value: 2});
-    expect(res.value()).toBe(undefined);
+    // The previous error functions should no longer result in changes to the resource.
     stream.set({error: new Error('fail')});
     expect(res.value()).toBe(undefined);
   });
@@ -875,6 +875,68 @@ describe('resource', () => {
     expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual({});
     expect(echoResource.error()).toEqual(undefined);
+  });
+
+  it('should retain the value from the last resolved request until the new request is loaded', async () => {
+    const request = signal<number>(1);
+    const backend = new MockEchoBackend();
+    const echoResource = resource({
+      params: request,
+      loader: ({params}) => backend.fetch(params),
+      injector: TestBed.inject(Injector),
+    });
+
+    // Fully resolve the resource to start.
+    TestBed.tick();
+    await backend.flush();
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.value()).toBe(1);
+
+    // Trigger loading state and check if the value is retained.
+    request.set(2);
+    expect(echoResource.status()).toBe('loading');
+    expect(echoResource.value()).toBe(1);
+
+    // Verify that the value has been updated after the completion of the last request.
+    TestBed.tick();
+    await backend.flush();
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.value()).toBe(2);
+  });
+
+  it('should _not_ retain the value from the last errored request if a new request is loading', async () => {
+    const request = signal<number>(1);
+    const backend = new MockEchoBackend();
+    const echoResource = resource({
+      params: request,
+      loader: ({params}) => backend.fetch(params),
+      injector: TestBed.inject(Injector),
+    });
+
+    // Fully resolve the resource to start.
+    TestBed.tick();
+    await backend.flush();
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.value()).toBe(1);
+
+    // Initiate and complete a second request that results in an error.
+    request.set(2);
+    TestBed.tick();
+    await backend.reject(request(), new Error('Something went wrong....'));
+    expect(echoResource.status()).toBe('error');
+    expect(echoResource.hasValue()).toBeFalse();
+    expect(echoResource.error()).toEqual(new Error('Something went wrong....'));
+
+    // Initiate a third successful request and verify that the value is undefined (not `1`) during loading.
+    request.set(3);
+    expect(echoResource.status()).toBe('loading');
+    expect(echoResource.value()).toBe(undefined);
+
+    // Complete the last/third request and check if latest value has been set.
+    TestBed.tick();
+    await backend.flush();
+    expect(echoResource.status()).toBe('resolved');
+    expect(echoResource.value()).toBe(3);
   });
 });
 

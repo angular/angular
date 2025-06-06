@@ -229,15 +229,16 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
             stream: undefined,
           };
         } else {
+          const isSameRequest = previous.value.extRequest.request === extRequest.request;
+          const isPreviousStreamResolved =
+            previous.value.stream && isResolved(previous.value.stream());
+
           return {
             extRequest,
             status,
             previousStatus: projectStatusOfState(previous.value),
-            // If the request hasn't changed, keep the previous stream.
-            stream:
-              previous.value.extRequest.request === extRequest.request
-                ? previous.value.stream
-                : undefined,
+            // If the request hasn't changed or the previous stream didn't error, keep the previous stream.
+            stream: isSameRequest || isPreviousStreamResolved ? previous.value.stream : undefined,
           };
         }
       },
