@@ -2708,4 +2708,45 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
       expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
     });
   });
+
+  it('should throw with invalid keys', () => {
+    const consoleWarnSpy = spyOn(console, 'warn');
+    new FormGroup({
+      foo: new FormControl('foo'),
+      bar: new FormControl('foo', [Validators.required]),
+      'baz.not.ok': new FormControl('baz'),
+    });
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+  });
+
+  describe('impact of `onlySelf` flag on form group methods', () => {
+    let nestedGroup: FormGroup;
+    let parentGroup: FormGroup;
+
+    beforeEach(() => {
+      nestedGroup = new FormGroup({one: new FormControl('new!', Validators.required)});
+      parentGroup = new FormGroup({
+        otherControl: new FormControl('Hello', Validators.required),
+        nested: nestedGroup,
+      });
+    });
+
+    it('set a control', () => {
+      nestedGroup.setControl('one', new FormControl('', Validators.required), {onlySelf: true});
+
+      expect(parentGroup.valid).toBe(true);
+    });
+
+    it('remove a control', () => {
+      nestedGroup.addControl('two', new FormControl('', Validators.required));
+
+      expect(nestedGroup.valid).toBe(false);
+      expect(parentGroup.valid).toBe(false);
+
+      nestedGroup.removeControl('two', {emitEvent: false, onlySelf: true});
+
+      expect(nestedGroup.valid).toBe(true);
+      expect(parentGroup.valid).toBe(false);
+    });
+  });
 })();
