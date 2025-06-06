@@ -8,7 +8,7 @@
 
 import {inject, Injector, WritableSignal} from '@angular/core';
 
-import {FieldNode, FormFieldManager} from '../field_node';
+import {FieldNode} from '../field/node';
 import {FieldPathNode, FieldRootPathNode} from '../path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema';
 import type {
@@ -20,6 +20,7 @@ import type {
   SchemaOrSchemaFn,
   ServerError,
 } from './types';
+import {FormFieldManager} from '../field/manager';
 
 export interface FormOptions {
   injector?: Injector;
@@ -132,7 +133,7 @@ export function form<T>(...args: any[]): Field<T> {
   }
   const fieldManager = new FormFieldManager(injector);
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
-  fieldManager.createFieldManagementEffect(fieldRoot);
+  fieldManager.createFieldManagementEffect(fieldRoot.structure);
 
   return fieldRoot.fieldProxy as Field<T>;
 }
@@ -289,12 +290,12 @@ export async function submit<T>(
   action: (form: Field<T>) => Promise<ServerError[] | void>,
 ) {
   const api = form() as FieldNode;
-  api.setSubmittedStatus('submitting');
+  api.submitState.selfSubmittedStatus.set('submitting');
   const errors = (await action(form)) || [];
   for (const error of errors) {
-    (error.field() as FieldNode).setServerErrors(error.error);
+    (error.field() as FieldNode).submitState.setServerErrors(error.error);
   }
-  api.setSubmittedStatus('submitted');
+  api.submitState.selfSubmittedStatus.set('submitted');
 }
 
 export function schema<T>(fn: SchemaFn<T>): Schema<T> {

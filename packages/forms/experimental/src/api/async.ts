@@ -8,7 +8,7 @@
 
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
 import {ResourceRef, Signal} from '@angular/core';
-import {FieldNode} from '../field_node';
+import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {defineResource} from './data';
@@ -33,7 +33,7 @@ export function validateAsync<TValue, TRequest, TData>(
   const dataKey = defineResource(path, {
     params: (ctx) => {
       const node = ctx.stateOf(path) as FieldNode;
-      if (node.shouldSkipValidation() || !node.syncValid()) {
+      if (node.validationState.shouldSkipValidation() || !node.syncValid()) {
         return undefined;
       }
       return opts.params(ctx);
