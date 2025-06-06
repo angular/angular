@@ -194,3 +194,17 @@ bootstrapApplication(AppComponent, {providers: [
 </docs-code>
 
 DI-based interceptors run in the order that their providers are registered. In an app with an extensive and hierarchical DI configuration, this order can be very hard to predict.
+
+
+## Ensuring Required Interceptors Are Registered
+
+Angular provides a mechanism to keep track of registered interceptors using a specialized injection token. This ensures that interceptors critical to application functionality are not omitted accidentally.
+
+To ensure a critical interceptor like `authInterceptor` is registered:
+
+<docs-code language="ts">
+  assertInterceptorRegistered(authInterceptor);
+</docs-code>
+
+This will throw an error if `authInterceptor` is not registered.
+

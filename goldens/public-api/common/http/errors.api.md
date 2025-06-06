@@ -23,6 +23,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     KEEPALIVE_NOT_SUPPORTED_WITH_XHR = 2813,
     // (undocumented)
+    MISSING_INTERCEPTOR = 2814,
+    // (undocumented)
     MISSING_JSONP_MODULE = -2800,
     // (undocumented)
     NOT_USING_FETCH_BACKEND_IN_SSR = 2801,
