@@ -9,11 +9,13 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
 
 import {provideServiceWorker, SwRegistrationOptions} from './provider';
+import {SwPush} from './push';
+import {SwUpdate} from './update';
 
 /**
  * @publicApi
  */
-@NgModule()
+@NgModule({providers: [SwPush, SwUpdate]})
 export class ServiceWorkerModule {
   /**
    * Register the given Angular Service Worker script.
