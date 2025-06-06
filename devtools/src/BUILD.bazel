@@ -79,7 +79,6 @@ filegroup(
         ":demo_styles",
         ":index.html",
         "//devtools/src/assets",
-        "//packages/zone.js/bundles:zone.umd.js",
     ],
 )
 
@@ -88,6 +87,7 @@ pkg_web(
     srcs = [":dev_app_static_files"] + [
         ":bundle",
         "@npm//:node_modules/tslib/tslib.js",
+        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
     ],
 )
 
