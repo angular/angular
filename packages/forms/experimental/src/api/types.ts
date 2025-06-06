@@ -155,6 +155,9 @@ export interface FieldState<T, TKey extends string | number = string | number> {
   /**
    * The property key in the parent field under which this field is stored. If the parent field is
    * array-valued, for example, this is the index of this field in that array.
+   *
+   * @throws if the field is no longer connected to its parent, or if it's the root field of the
+   * form (it has no parent).
    */
   readonly keyInParent: Signal<TKey>;
 
