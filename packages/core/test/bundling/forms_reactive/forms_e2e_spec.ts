@@ -12,7 +12,7 @@ import {withBody} from '@angular/private/testing';
 import * as path from 'path';
 import * as url from 'url';
 
-const BUNDLE = path.resolve('packages/core/test/bundling/forms_reactive/bundles/main.js');
+const BUNDLE = path.resolve('./bundles/main.js');
 
 describe('functional test for reactive forms', () => {
   it(
