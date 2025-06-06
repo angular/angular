@@ -66,6 +66,7 @@ export class DevToolsTabsComponent {
   readonly showCommentNodes = signal(false);
   readonly routerGraphEnabled = signal(false);
   readonly timingAPIEnabled = signal(false);
+  readonly signalGraphEnabled = signal(false);
 
   readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
   readonly providers = signal<SerializedProviderRecord[]>([]);

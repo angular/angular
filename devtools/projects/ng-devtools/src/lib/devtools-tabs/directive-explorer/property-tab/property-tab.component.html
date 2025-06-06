@@ -1,7 +1,11 @@
 @let currentSelectedElement = this.currentSelectedElement();
 
 @if (currentSelectedElement) {
-  <ng-property-tab-header [currentSelectedElement]="currentSelectedElement" />
+  <ng-property-tab-header
+    [currentSelectedElement]="currentSelectedElement"
+    [signalGraphEnabled]="signalGraphEnabled()"
+    (showSignalGraph)="showSignalGraph.emit(null)"
+  />
   <ng-property-tab-body
     (inspect)="inspect.emit($event)"
     (viewSource)="viewSource.emit($event)"
