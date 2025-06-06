@@ -686,6 +686,7 @@ export const ENVIRONMENT_INITIALIZER: InjectionToken<readonly (() => void)[]>;
 export abstract class EnvironmentInjector implements Injector {
     // (undocumented)
     abstract destroy(): void;
+    abstract get destroyed(): boolean;
     abstract get<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {
         optional?: false;
     }): T;
