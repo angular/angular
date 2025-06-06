@@ -7,6 +7,11 @@
           <mat-panel-title>
             <div class="element-header">
               <div class="component-name">{{ comp.name }}</div>
+              @if (signalGraphEnabled()) {
+                <button ng-button type="button" size="compact" (click)="showGraph($event)">
+                  Show Signal Graph
+                </button>
+              }
             </div>
           </mat-panel-title>
         </mat-expansion-panel-header>
@@ -17,5 +22,10 @@
 } @else {
   <div class="element-header">
     <div class="element-name">{{ currentSelectedElement().element }}</div>
+    @if (signalGraphEnabled()) {
+      <button ng-button type="button" size="compact" (click)="showGraph($event)">
+        Show Signal Graph
+      </button>
+    }
   </div>
 }

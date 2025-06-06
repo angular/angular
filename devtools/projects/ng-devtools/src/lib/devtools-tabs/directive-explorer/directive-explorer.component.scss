@@ -12,6 +12,16 @@
   }
 }
 
+.forest-breadcrumbs {
+  display: flex;
+  flex-direction: column;
+
+  .breadcrumbs {
+    height: 22px;
+    border-top: 1px solid var(--color-separator);
+  }
+}
+
 .prop-split {
   display: flex;
   flex-direction: column;

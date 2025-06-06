@@ -48,6 +48,7 @@ import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
 import {Platform} from '@angular/cdk/platform';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
+import {SignalsTabComponent} from './signals-view/signals-tab.component';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -84,6 +85,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     MatSlideToggle,
     FormsModule,
     MatSnackBarModule,
+    SignalsTabComponent,
   ],
 })
 export class DirectiveExplorerComponent {
@@ -97,11 +99,15 @@ export class DirectiveExplorerComponent {
     read: ElementRef,
   });
 
+  readonly signalGraphEnabled = input.required<boolean>();
+
   readonly currentSelectedElement = signal<IndexedNode | null>(null);
   readonly forest = signal<DevToolsNode[]>([]);
   readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');
   readonly parents = signal<FlatNode[] | null>(null);
   readonly showHydrationNodeHighlights = signal(false);
+
+  readonly signalsOpen = signal(false);
 
   private _clickedElement: IndexedNode | null = null;
   private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
@@ -112,7 +118,6 @@ export class DirectiveExplorerComponent {
   private readonly _frameManager = inject(FrameManager);
 
   private readonly platform = inject(Platform);
-
   private readonly snackBar = inject(MatSnackBar);
 
   constructor() {
@@ -338,5 +343,10 @@ export class DirectiveExplorerComponent {
       this.removeHydrationNodesHightlights();
       this.hightlightHydrationNodes();
     }
+  }
+
+  showSignalGraph(node: PropertyFlatNode | null) {
+    // TBD: Use the node argument for graph node selection/highlighting.
+    this.signalsOpen.set(true);
   }
 }
