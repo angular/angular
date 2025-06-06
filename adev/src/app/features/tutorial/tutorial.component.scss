@@ -142,7 +142,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
   width: 100%;
   min-width: 300px;
   padding-block-start: var(--layout-padding);
-  height: 100vh;
+  height: calc(100vh - var(--layout-padding));
 
   // should be suprior to the tutorial content or the tooltip won't integrate properly
   z-index: var( --z-index-nav);
