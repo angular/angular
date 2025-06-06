@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, InjectionToken, Provider, inject, resource, signal} from '@angular/core';
+import {
+  Injectable,
+  InjectionToken,
+  Provider,
+  inject,
+  linkedSignal,
+  resource,
+  signal,
+} from '@angular/core';
 import {ENVIRONMENT} from '../providers/index';
 import type {Environment, SearchResult, SearchResultItem, SnippetResult} from '../interfaces/index';
 import {
@@ -40,7 +48,7 @@ export class Search {
   private readonly config = inject(ENVIRONMENT);
   private readonly client = inject(ALGOLIA_CLIENT);
 
-  searchResults = resource({
+  resultsResource = resource({
     params: () => this.searchQuery() || undefined, // coerces empty string to undefined
     loader: async ({params: query, abortSignal}) => {
       // Until we have a better alternative we debounce by awaiting for a short delay.
@@ -87,6 +95,11 @@ export class Search {
           return this.parseResult(response);
         });
     },
+  });
+
+  searchResults = linkedSignal<SearchResultItem[] | undefined, SearchResultItem[]>({
+    source: this.resultsResource.value,
+    computation: (next, prev) => (!next && this.searchQuery() ? prev?.value : next) ?? [],
   });
 
   private getUniqueSearchResultItems(items: SearchResult[]): SearchResult[] {
