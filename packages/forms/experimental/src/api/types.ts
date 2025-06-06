@@ -21,8 +21,8 @@ declare const ɵɵTYPE: unique symbol;
 export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
 
 export interface DisabledReason {
-  field: Field<unknown>;
-  reason?: string;
+  readonly field: Field<unknown>;
+  readonly reason?: string;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface ServerError {
  * The result of running a validation function. The result may be `undefined` to indicate no errors,
  * a single `FormError`, or a list of `FormError` which can be used to indicate multiple errors.
  */
-export type ValidationResult = FormError | FormError[] | undefined;
+export type ValidationResult = FormError | readonly FormError[] | undefined;
 
 /**
  * An object that represents a single field in a form. This includes both primitive value fields
@@ -101,7 +101,7 @@ export interface FieldState<T, TKey extends string | number = string | number> {
   /**
    * A signal containing the reasons why the field is currently disabled.
    */
-  readonly disabledReasons: Signal<DisabledReason[]>;
+  readonly disabledReasons: Signal<readonly DisabledReason[]>;
   /**
    * A signal indicating whether the field is currently readonly.
    */
