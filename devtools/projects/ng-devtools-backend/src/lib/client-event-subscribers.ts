@@ -19,6 +19,7 @@ import {
   Route,
   SerializedInjector,
   SerializedProviderRecord,
+  SignalNodePosition,
 } from '../../../protocol';
 import {debounceTime} from 'rxjs/operators';
 import {
@@ -90,6 +91,8 @@ export const subscribeToClientEvents = (
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
   messageBus.on('navigateRoute', navigateRouteCallback(messageBus));
+
+  messageBus.on('getSignalNestedProperties', getSignalNestedPropertiesCallback(messageBus));
 
   messageBus.on('updateState', updateState);
 
@@ -249,6 +252,50 @@ const getNestedPropertiesCallback =
       }
     }
     messageBus.emit('nestedProperties', [
+      position,
+      {props: serializeDirectiveState(data)},
+      propPath,
+    ]);
+    return;
+  };
+
+const getSignalNestedPropertiesCallback =
+  (messageBus: MessageBus<Events>) => (position: SignalNodePosition, propPath: string[]) => {
+    const emitEmpty = () =>
+      messageBus.emit('signalNestedProperties', [position, {props: {}}, propPath]);
+    const node = queryDirectiveForest(
+      position.element,
+      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    );
+    if (!node) {
+      return emitEmpty();
+    }
+
+    const injector = getInjectorFromElementNode(node.nativeElement!);
+    if (!injector) {
+      return emitEmpty();
+    }
+
+    const ng = ngDebugClient();
+
+    const signalGraph = ng.ɵgetSignalGraph?.(injector);
+    if (!signalGraph) {
+      return emitEmpty();
+    }
+
+    const current = signalGraph.nodes.find((node) => node.id === position.signalId);
+    if (!current) {
+      return emitEmpty();
+    }
+
+    let data = current.value as object;
+    for (const prop of propPath) {
+      data = (data as Record<string, object>)[prop];
+      if (!data) {
+        console.error('Cannot access the properties', propPath, 'of', node);
+      }
+    }
+    messageBus.emit('signalNestedProperties', [
       position,
       {props: serializeDirectiveState(data)},
       propPath,
