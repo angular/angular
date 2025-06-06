@@ -47,7 +47,7 @@ export abstract class DestroyRef {
   abstract onDestroy(callback: () => void): () => void;
 
   /**
-   * Indicates whether the instance has already been destroyed and whether its `onDestroy` callbacks have executed.
+   * Indicates whether the instance has already been destroyed.
    */
   abstract get destroyed(): boolean;
 
