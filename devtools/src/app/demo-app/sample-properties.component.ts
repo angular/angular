@@ -13,7 +13,7 @@ import {SampleService} from './sample.service';
 
 @Component({
   selector: 'app-sample-properties',
-  template: '',
+  template: '{{computedObject()}}',
   styles: [''],
 })
 export class SamplePropertiesComponent {
