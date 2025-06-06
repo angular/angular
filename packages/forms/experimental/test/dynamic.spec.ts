@@ -34,7 +34,7 @@ describe('dynamic data patterns', () => {
   });
 
   describe('tracking', () => {
-    fit('should write to the right key after a move', () => {
+    it('should write to the right key after a move', () => {
       const data = signal([
         {name: 'Alex', counter: 0},
         {name: 'Miles', counter: 0},
