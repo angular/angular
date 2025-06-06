@@ -1872,6 +1872,7 @@ export interface HttpResourceRequest {
     body?: unknown;
     context?: HttpContext;
     headers?: HttpHeaders | Record<string, string | ReadonlyArray<string>>;
+    keepalive?: boolean;
     method?: string;
     params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
     reportProgress?: boolean;
