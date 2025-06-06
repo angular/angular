@@ -1229,6 +1229,7 @@ export function transformExpressionsInOp(
     case OpKind.SourceLocation:
     case OpKind.ConditionalCreate:
     case OpKind.ConditionalBranchCreate:
+    case OpKind.StaticHtml:
       // These operations contain no expressions.
       break;
     default:
