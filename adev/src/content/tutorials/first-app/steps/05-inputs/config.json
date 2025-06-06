@@ -2,5 +2,6 @@
   "title": "Add inputs to components",
   "type": "editor",
   "answerSrc": "../06-property-binding/src",
+  "answerRootDir": "../06-property-binding/",
   "openFiles": ["src/app/housing-location/housing-location.ts"]
 }

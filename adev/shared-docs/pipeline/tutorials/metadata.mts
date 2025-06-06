@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {join} from 'path';
+import {join, relative} from 'path';
 import {glob} from 'tinyglobby';
 import {
   FileAndContentRecord,
@@ -15,6 +15,7 @@ import {
   TutorialMetadata,
 } from '../../interfaces';
 import {getFileContents} from './utils.mjs';
+import assert from 'assert';
 
 /** Generate the metadata.json content for a provided tutorial config. */
 export async function generateMetadata(
@@ -55,7 +56,11 @@ async function getAnswerFiles(
   const answerPrefix = /answer[\\/]/;
 
   if (config.answerSrc) {
+    assert(config.answerRootDir, `No \`answerRootDir\` specified for: ${path}`);
+
     const answersDir = join(path, config.answerSrc);
+    const answerRootDir = join(path, config.answerRootDir);
+
     const answerFilePaths = await glob('**/*', {
       cwd: answersDir,
       onlyFiles: true,
@@ -63,9 +68,12 @@ async function getAnswerFiles(
     });
 
     for (const answerFile of answerFilePaths) {
+      const absAnswerFile = join(answersDir, answerFile);
+      // Relativize answer file path.
+      const filePath = relative(answerRootDir, absAnswerFile);
       // We use the absolute file in order to read the content, but the key
       // needs to be a relative path within the project.
-      answerFiles[answerFile] = getFileContents(join(answersDir, answerFile));
+      answerFiles[filePath] = getFileContents(absAnswerFile);
     }
   } else {
     for (const file of Object.keys(files)) {
