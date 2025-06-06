@@ -73,6 +73,14 @@ export class FormFieldManager {
 type DestroyableInjector = Injector & {destroy(): void};
 
 /**
+ * Key by which a parent `FieldNode` tracks its children.
+ *
+ * Often this is the actual property key of the child, but in the case of arrays it could be a
+ * tracking key allocated for the object.
+ */
+type TrackingKey = PropertyKey & {__brand: 'FieldIdentity'};
+
+/**
  * Internal node in the form graph for a given field.
  *
  * Field nodes have several responsibilities:
@@ -97,7 +105,7 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * Computed map of child fields, based on the current value of this field.
    */
-  private readonly childrenMap: Signal<Map<PropertyKey, FieldNode> | undefined>;
+  private readonly childrenMap: Signal<Map<TrackingKey, FieldNode> | undefined>;
 
   private serverErrors: WritableSignal<ValidationResult>;
 
@@ -135,6 +143,8 @@ export class FieldNode implements FieldState<unknown> {
   private _fieldContext: FieldContext<unknown> | undefined = undefined;
 
   private readonly resolveCache = new WeakMap<FieldPath<unknown>, Field<unknown>>();
+
+  readonly keyInParent: Signal<string | number>;
 
   /**
    * Value of the "context" argument passed to all logic functions, which supports e.g. resolving
@@ -206,41 +216,86 @@ export class FieldNode implements FieldState<unknown> {
 
   private readonly pathKeys: Signal<PropertyKey[]>;
 
-  private logic: FieldLogicNode;
-
+  private readonly fieldManager: FormFieldManager;
+  private readonly parent: FieldNode | undefined;
   readonly value: WritableSignal<unknown>;
+  private readonly logicPath: FieldPathNode;
 
-  private constructor(
-    private readonly fieldManager: FormFieldManager,
-    value: WritableSignal<unknown> | undefined,
-    private readonly logicPath: FieldPathNode,
-    readonly parent: FieldNode | undefined,
-    initialKeyInParent: string | number | undefined,
-  ) {
-    this.fieldManager.nodes.add(this);
-    this.logic = logicPath.logic;
+  private get logic(): FieldLogicNode {
+    return this.logicPath.logic;
+  }
 
-    if (parent !== undefined) {
-      this.root = parent.root;
-      this.pathKeys = computed(() => [...parent.pathKeys(), this.keyInParent()]);
-      if (initialKeyInParent === undefined) {
-        throw new Error(`should have a key in the parent`);
-      }
-      this._prevKeyInParent = initialKeyInParent;
-    } else {
+  private constructor(options: FieldNodeOptions) {
+    this.logicPath = options.logicPath;
+
+    if (options.kind === 'root') {
+      this.parent = undefined;
       this.root = this;
+      this.fieldManager = options.fieldManager;
       this.pathKeys = computed(() => []);
+      this.value = options.value;
+      this.keyInParent = computed(() => {
+        throw new Error(`RuntimeError: the top-level field in the form has no parent`);
+      });
+    } else {
+      const parent = (this.parent = options.parent);
+      this.root = this.parent.root;
+      this.fieldManager = this.root.fieldManager;
+
+      this.pathKeys = computed(() => [...parent!.pathKeys(), this.keyInParent()]);
+
+      const identityInParent = options.identityInParent;
+
+      if (identityInParent === undefined) {
+        const key = options.initialKeyInParent;
+        this.keyInParent = computed(() => {
+          if (parent.childrenMap()?.get(key as TrackingKey) !== this) {
+            throw new Error(`RuntimeError: orphan field`);
+          }
+          return key;
+        });
+      } else {
+        let lastKnownKey = options.initialKeyInParent as number;
+        this.keyInParent = computed(() => {
+          const parentValue = parent.value();
+          if (!Array.isArray(parentValue)) {
+            // The parent is no longer an array?
+            throw new Error(`RuntimeError: orphan field`);
+          }
+
+          // Check the parent value at the last known key to avoid a scan.
+          const data = parentValue[lastKnownKey as number];
+          if (
+            isObject(data) &&
+            data.hasOwnProperty(parent.identitySymbol) &&
+            data[parent.identitySymbol] === identityInParent
+          ) {
+            return lastKnownKey;
+          }
+
+          // Otherwise, we need to check all the keys in the parent.
+          for (let i = 0; i < parentValue.length; i++) {
+            const data = parentValue[i];
+            if (
+              isObject(data) &&
+              data.hasOwnProperty(parent.identitySymbol) &&
+              data[parent.identitySymbol] === identityInParent
+            ) {
+              return (lastKnownKey = i);
+            }
+          }
+
+          throw new Error(`RuntimeError: orphan field`);
+        });
+      }
+      this.value = deepSignal(this.parent.value, this.keyInParent as Signal<never>);
     }
 
-    if (value !== undefined) {
-      this.value = value;
-    } else {
-      this.value = deepSignal(parent!.value, this.keyInParent as Signal<never>);
-    }
+    this.fieldManager.nodes.add(this);
 
     // We use a `linkedSignal` to preserve the instances of `FieldNode` for each child field even if
     // the value of this field changes its object identity.
-    this.childrenMap = linkedSignal<unknown, Map<PropertyKey, FieldNode> | undefined>({
+    this.childrenMap = linkedSignal<unknown, Map<TrackingKey, FieldNode> | undefined>({
       source: this.value,
       computation: (data, previous) => this.computeChildrenMap(data, previous?.value),
       equal: () => false,
@@ -487,45 +542,7 @@ export class FieldNode implements FieldState<unknown> {
   });
 
   readonly valid = computed(() => this.status() === 'valid');
-
   readonly invalid = computed(() => this.status() === 'invalid');
-
-  private _prevKeyInParent: string | number | undefined = undefined;
-  readonly keyInParent = computed<string | number>(() => {
-    // What is the key in parent if this is the root?
-    if (this.parent === undefined) {
-      return '';
-    }
-
-    const parentMap = this.parent.childrenMap();
-    if (!parentMap) {
-      throw new Error(`parent value is not indexable?`);
-    }
-
-    if (this._prevKeyInParent && parentMap.get(this._prevKeyInParent) === this) {
-      return this._prevKeyInParent;
-    }
-
-    const parentValue = this.parent.value();
-    if (!isObject(parentValue)) {
-      throw new Error(`parent value is not indexable?`);
-    }
-
-    // Find the physical key where our node is located.
-    for (const key of Object.keys(parentValue)) {
-      let identity: PropertyKey = key;
-      const childValue = parentValue[key as keyof typeof parentValue];
-      if (isObject(childValue) && childValue.hasOwnProperty(this.parent.identitySymbol)) {
-        identity = childValue[this.parent.identitySymbol] as PropertyKey;
-      }
-
-      if (parentMap.get(identity) === this) {
-        return (this._prevKeyInParent = key);
-      }
-    }
-
-    throw new Error(`Field is orphaned?`);
-  });
 
   children(): Iterable<FieldNode> {
     return this.childrenMap()?.values() ?? [];
@@ -593,7 +610,7 @@ export class FieldNode implements FieldState<unknown> {
       }
     }
 
-    return map.get(typeof key === 'number' ? key.toString() : key);
+    return map.get((typeof key === 'number' ? key.toString() : key) as TrackingKey);
   }
 
   /**
@@ -638,8 +655,8 @@ export class FieldNode implements FieldState<unknown> {
    */
   private computeChildrenMap(
     value: unknown,
-    prevMap: Map<PropertyKey, FieldNode> | undefined,
-  ): Map<PropertyKey, FieldNode> | undefined {
+    prevMap: Map<TrackingKey, FieldNode> | undefined,
+  ): Map<TrackingKey, FieldNode> | undefined {
     // We may or may not have a previous map. If there isn't one, then `childrenMap` will be lazily
     // initialized to a new map instance if needed.
     let childrenMap = prevMap;
@@ -652,15 +669,15 @@ export class FieldNode implements FieldState<unknown> {
 
     // Remove fields that have disappeared since the last time this map was computed.
     if (childrenMap !== undefined) {
-      let oldKeys: Set<PropertyKey> | undefined = undefined;
+      let oldKeys: Set<TrackingKey> | undefined = undefined;
       if (isArray) {
         oldKeys = new Set(childrenMap.keys());
         for (let i = 0; i < value.length; i++) {
           const childValue = value[i] as unknown;
           if (isObject(childValue) && childValue.hasOwnProperty(this.identitySymbol)) {
-            oldKeys.delete(childValue[this.identitySymbol] as PropertyKey);
+            oldKeys.delete(childValue[this.identitySymbol] as TrackingKey);
           } else {
-            oldKeys.delete(i.toString());
+            oldKeys.delete(i.toString() as TrackingKey);
           }
         }
 
@@ -678,23 +695,26 @@ export class FieldNode implements FieldState<unknown> {
 
     // Add fields that exist in the value but don't yet have instances in the map.
     for (let key of Object.keys(value)) {
-      let identity: PropertyKey = key;
+      let trackingId: TrackingKey | undefined = undefined;
       const childValue = value[key] as unknown;
 
       // Fields explicitly set to `undefined` are treated as if they don't exist.
       // This ensures that `{value: undefined}` and `{}` have the same behavior for their `value`
       // field.
       if (childValue === undefined) {
-        childrenMap?.delete(key);
+        // The value might have _become_ `undefined`, so we need to delete it here.
+        childrenMap?.delete(key as TrackingKey);
         continue;
       }
 
       if (isArray && isObject(childValue)) {
         // For object values in arrays, assign a synthetic identity instead.
-        identity = (childValue[this.identitySymbol] as PropertyKey) ??= Symbol(
+        trackingId = (childValue[this.identitySymbol] as TrackingKey) ??= Symbol(
           ngDevMode ? `id:${globalId++}` : '',
-        );
+        ) as TrackingKey;
       }
+
+      const identity = trackingId ?? (key as TrackingKey);
 
       if (childrenMap?.has(identity)) {
         continue;
@@ -702,7 +722,7 @@ export class FieldNode implements FieldState<unknown> {
 
       // Determine the logic for the field that we're defining.
       let childPath: FieldPathNode | undefined;
-      if (Array.isArray(value)) {
+      if (isArray) {
         // Fields for array elements have their logic defined by the `element` mechanism.
         // TODO: other dynamic data
         childPath = this.logicPath.getChild(DYNAMIC);
@@ -710,8 +730,18 @@ export class FieldNode implements FieldState<unknown> {
         // Fields for plain properties exist in our logic node's child map.
         childPath = this.logicPath.getChild(key);
       }
-      childrenMap ??= new Map<PropertyKey, FieldNode>();
-      childrenMap.set(identity, new FieldNode(this.fieldManager, undefined, childPath, this, key));
+
+      childrenMap ??= new Map<TrackingKey, FieldNode>();
+      childrenMap.set(
+        identity,
+        new FieldNode({
+          kind: 'child',
+          parent: this,
+          logicPath: childPath,
+          initialKeyInParent: key,
+          identityInParent: trackingId,
+        }),
+      );
     }
 
     return childrenMap;
@@ -720,9 +750,14 @@ export class FieldNode implements FieldState<unknown> {
   static newRoot<T>(
     formRoot: FormFieldManager,
     value: WritableSignal<T>,
-    path: FieldPathNode,
+    logicPath: FieldPathNode,
   ): FieldNode {
-    return new FieldNode(formRoot, value, path, undefined, undefined);
+    return new FieldNode({
+      kind: 'root',
+      fieldManager: formRoot,
+      value,
+      logicPath,
+    });
   }
 }
 
@@ -806,3 +841,20 @@ function lengthOfSharedPrefix(currentPath: PropertyKey[], targetPath: PropertyKe
 function cast<T>(value: unknown): asserts value is T {}
 
 let globalId = 0;
+
+interface RootFieldNodeOptions {
+  readonly kind: 'root';
+  readonly logicPath: FieldPathNode;
+  readonly value: WritableSignal<unknown>;
+  readonly fieldManager: FormFieldManager;
+}
+
+interface ChildFieldNodeOptions {
+  readonly kind: 'child';
+  readonly parent: FieldNode;
+  readonly logicPath: FieldPathNode;
+  readonly initialKeyInParent: string | number;
+  readonly identityInParent: TrackingKey | undefined;
+}
+
+type FieldNodeOptions = RootFieldNodeOptions | ChildFieldNodeOptions;
