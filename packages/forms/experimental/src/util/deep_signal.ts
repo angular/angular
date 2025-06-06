@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {untracked, WritableSignal} from '@angular/core';
+import {Signal, untracked, WritableSignal} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
 
 export function deepSignal<S, K extends keyof S>(
   source: WritableSignal<S>,
-  prop: K,
+  prop: Signal<K>,
 ): WritableSignal<S[K]> {
   const read: WritableSignal<S[K]> = (() => {
-    return source()[prop];
+    return source()[prop()];
   }) as WritableSignal<S[K]>;
 
   read[SIGNAL] = source[SIGNAL];
   read.set = (value: S[K]) => {
-    source.update((current) => valueForWrite(current, value, [prop]) as S);
+    source.update((current) => valueForWrite(current, value, [prop()]) as S);
   };
 
   read.update = (fn: (current: S[K]) => S[K]) => {

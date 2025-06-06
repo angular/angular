@@ -32,4 +32,23 @@ describe('dynamic data patterns', () => {
     // Asserts that the type of `value()` is indeed `string` and excludes `undefined`.
     let value: string = f.data!().value();
   });
+
+  describe('tracking', () => {
+    fit('should write to the right key after a move', () => {
+      const data = signal([
+        {name: 'Alex', counter: 0},
+        {name: 'Miles', counter: 0},
+      ]);
+      const f = form(data, {injector: TestBed.inject(Injector)});
+      const c0 = f[0].counter();
+      // Swap
+      data.update(([v0, v1]) => [v1, v0]);
+
+      c0.value.set(1);
+      expect(data()[0].name).toBe('Miles');
+      expect(data()[0].counter).toBe(0);
+      expect(data()[1].name).toBe('Alex');
+      expect(data()[1].counter).toBe(1);
+    });
+  });
 });
