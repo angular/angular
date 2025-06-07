@@ -123,7 +123,7 @@ const resolvedPromise = (() => Promise.resolve())();
  * @publicApi
  */
 @Directive({
-  selector: 'form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]',
+  selector: 'form:not([ngNoForm]):not([formGroup]):not([formArray]),ng-form,[ngForm]',
   providers: [formDirectiveProvider],
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   outputs: ['ngSubmit'],
