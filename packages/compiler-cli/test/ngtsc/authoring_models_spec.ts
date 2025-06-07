@@ -300,7 +300,9 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
-        expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+        expect(diags[1].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'boolean'.`,
+        );
       });
 
       it('should check a signal value bound to a model input via a two-way binding', () => {
@@ -331,7 +333,9 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
-        expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+        expect(diags[1].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'boolean'.`,
+        );
       });
 
       it('should check two-way binding of a signal to a decorator-based input/output pair', () => {
@@ -363,7 +367,9 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
-        expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+        expect(diags[1].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'boolean'.`,
+        );
       });
 
       it('should not allow a non-writable signal to be assigned to a model', () => {
@@ -397,7 +403,7 @@ runInEachFileSystem(() => {
           `Type 'InputSignal<number>' is not assignable to type 'number'.`,
         );
         expect(diags[1].messageText).toBe(
-          `Type 'number' is not assignable to type 'InputSignal<number>'.`,
+          `Argument of type 'number' is not assignable to parameter of type 'InputSignal<number>'.`,
         );
       });
 
@@ -527,7 +533,7 @@ runInEachFileSystem(() => {
         );
         expect(diags[1].messageText).toEqual(
           jasmine.objectContaining({
-            messageText: `Type '{ id: string; }' is not assignable to type '{ id: number; }'.`,
+            messageText: `Argument of type '{ id: string; }' is not assignable to parameter of type '{ id: number; }'.`,
           }),
         );
       });
@@ -566,7 +572,7 @@ runInEachFileSystem(() => {
         );
         expect(diags[1].messageText).toEqual(
           jasmine.objectContaining({
-            messageText: `Type '{ id: string; }' is not assignable to type '{ id: number; }'.`,
+            messageText: `Argument of type '{ id: string; }' is not assignable to parameter of type '{ id: number; }'.`,
           }),
         );
       });
