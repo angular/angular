@@ -69,6 +69,7 @@ export class SearchDialog {
   ).withWrap();
 
   searchQuery = this.search.searchQuery;
+  resultsResource = this.search.resultsResource;
   searchResults = this.search.searchResults;
 
   // We use a FormControl instead of relying on NgModel+signal to avoid
