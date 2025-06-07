@@ -19,7 +19,7 @@ import {
   Directive,
   EnvironmentInjector,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
-  ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
+  ɵhasAsyncClassMetadata as hasAsyncClassMetadata,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
   InjectOptions,
@@ -100,6 +100,8 @@ export interface TestBed {
   configureTestingModule(moduleDef: TestModuleMetadata): TestBed;
 
   compileComponents(): Promise<any>;
+
+  prepareAsyncComponents(): Promise<any>;
 
   inject<T>(
     token: ProviderToken<T>,
@@ -296,6 +298,10 @@ export class TestBedImpl implements TestBed {
    */
   static compileComponents(): Promise<any> {
     return TestBedImpl.INSTANCE.compileComponents();
+  }
+
+  static prepareAsyncComponents(): Promise<any> {
+    return TestBedImpl.INSTANCE.prepareAsyncComponents();
   }
 
   static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBed {
@@ -552,6 +558,10 @@ export class TestBedImpl implements TestBed {
     return this.compiler.compileComponents();
   }
 
+  prepareAsyncComponents(): Promise<any> {
+    return this.compiler.prepareAsyncComponents();
+  }
+
   inject<T>(
     token: ProviderToken<T>,
     notFoundValue: undefined,
@@ -635,10 +645,10 @@ export class TestBedImpl implements TestBed {
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
 
-    if (getAsyncClassMetadataFn(type)) {
+    if (hasAsyncClassMetadata(type) && this.compiler.hasPendingOverrides()) {
       throw new Error(
         `Component '${type.name}' has unresolved metadata. ` +
-          `Please call \`await TestBed.compileComponents()\` before running this test.`,
+          `Please call \`await TestBed.prepareAsyncComponents()\` before running this test.`,
       );
     }
 

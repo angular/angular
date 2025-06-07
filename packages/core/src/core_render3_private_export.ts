@@ -287,5 +287,5 @@ export {noSideEffects as ɵnoSideEffects} from './util/closure';
 export {AfterRenderManager as ɵAfterRenderManager} from './render3/after_render/manager';
 export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker';
 export {generateStandaloneInDeclarationsError as ɵgenerateStandaloneInDeclarationsError} from './render3/jit/module';
-export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
+export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn, hasAsyncClassMetadata as ɵhasAsyncClassMetadata} from './render3/metadata';
 export {DeferBlockData as ɵDeferBlockData} from './render3/util/defer';
