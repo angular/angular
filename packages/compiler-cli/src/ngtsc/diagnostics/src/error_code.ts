@@ -596,6 +596,21 @@ export enum ErrorCode {
   MISSING_STRUCTURAL_DIRECTIVE = 8116,
 
   /**
+   * A function in a text interpolation is not invoked.
+   *
+   * For example:
+   * ```html
+   * <p> {{ firstName }} </p>
+   * ```
+   *
+   * The `firstName` function is not invoked. Instead, it should be:
+   * ```html
+   * <p> {{ firstName() }} </p>
+   * ```
+   */
+  UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = 8117,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
