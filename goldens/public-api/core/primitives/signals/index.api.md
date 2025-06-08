@@ -118,19 +118,19 @@ export interface ReactiveNode {
     // (undocumented)
     consumerMarkedDirty(node: unknown): void;
     consumerOnSignalRead(node: unknown): void;
+    consumers: ReactiveLink | undefined;
+    // (undocumented)
+    consumersTail: ReactiveLink | undefined;
     debugName?: string;
     dirty: boolean;
     kind: string;
     lastCleanEpoch: Version;
-    liveConsumerIndexOfThis: number[] | undefined;
-    liveConsumerNode: ReactiveNode[] | undefined;
-    nextProducerIndex: number;
-    producerIndexOfThis: number[] | undefined;
-    producerLastReadVersion: Version[] | undefined;
     producerMustRecompute(node: unknown): boolean;
-    producerNode: ReactiveNode[] | undefined;
     // (undocumented)
     producerRecomputeValue(node: unknown): void;
+    producers: ReactiveLink | undefined;
+    producersTail: ReactiveLink | undefined;
+    recomputing: boolean;
     version: Version;
 }
 
