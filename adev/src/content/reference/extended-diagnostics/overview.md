@@ -22,6 +22,7 @@ Currently, Angular supports the following extended diagnostics:
 | `NG8111` | [`uninvokedFunctionInEventBinding`](extended-diagnostics/NG8111)  |
 | `NG8113` | [`unusedStandaloneImports`](extended-diagnostics/NG8113)          |
 | `NG8114` | [`unparenthesizedNullishCoalescing`](extended-diagnostics/NG8114) |
+| `NG8115` | [`uninvokedTrackFunction`](extended-diagnostics/NG8115)           |
 | `NG8116` | [`missingStructuralDirective`](extended-diagnostics/NG8116)       |
 
 ## Configuration
@@ -50,8 +51,7 @@ Check severity can be configured as an [Angular compiler option](reference/confi
       // The category to use for any diagnostics not listed in `checks` above.
       "defaultCategory": "error"
     }
-
-}
+  }
 }
 </docs-code>
 
