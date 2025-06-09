@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import 'zone.js/lib/browser/rollup-main';
-import 'zone.js/lib/zone-spec/task-tracking';
+import 'zone.js';
+import 'zone.js/plugins/task-tracking';
 
 // okd
 

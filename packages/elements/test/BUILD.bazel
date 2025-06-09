@@ -15,6 +15,7 @@ ts_project(
     ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
     ],
 )
 

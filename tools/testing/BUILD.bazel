@@ -7,9 +7,9 @@ ts_project(
     name = "zone_base_setup_lib",
     testonly = 1,
     srcs = ["zone_base_setup.mts"],
-    interop_deps = [
-        "//packages/zone.js/lib",
-        "@npm//reflect-metadata",
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//:node_modules/zone.js",
     ],
 )
 
@@ -17,13 +17,12 @@ ts_project(
     name = "browser",
     testonly = 1,
     srcs = ["browser_tests.init.mts"],
-    interop_deps = [
-        ":zone_base_setup_lib",
-        "//packages/compiler",
-        "//packages/core/testing",
-        "//packages/platform-browser/animations",
-        "//packages/platform-browser/testing",
-        "//packages/zone.js/lib",
+    deps = [
+        ":zone_base_setup_lib_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
     ],
 )
 
@@ -31,13 +30,13 @@ ts_project(
     name = "browser_zoneless",
     testonly = 1,
     srcs = ["browser_zoneless_tests.init.mts"],
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser/animations",
-        "//packages/platform-browser/testing",
-        "@npm//reflect-metadata",
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
     ],
 )
 
@@ -46,13 +45,15 @@ ts_project(
     testonly = 1,
     srcs = ["node_zoneless_tests.init.mts"],
     interop_deps = [
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-server",
         "//packages/platform-server:bundled_domino_lib",
-        "//packages/platform-server/testing",
-        "@npm//reflect-metadata",
+    ],
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/platform-server/testing:testing_rjs",
     ],
 )
 
@@ -61,14 +62,16 @@ ts_project(
     testonly = 1,
     srcs = ["node_tests.init.mts"],
     interop_deps = [
-        ":zone_base_setup_lib",
-        "//packages/compiler",
-        "//packages/core/testing",
-        "//packages/platform-server",
         "//packages/platform-server:bundled_domino_lib",
-        "//packages/platform-server/testing",
-        "//packages/zone.js/lib",
-        "@npm//reflect-metadata",
+    ],
+    deps = [
+        ":zone_base_setup_lib_rjs",
+        "//:node_modules/reflect-metadata",
+        "//:node_modules/zone.js",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/platform-server/testing:testing_rjs",
     ],
 )
 
