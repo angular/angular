@@ -21,10 +21,10 @@
       }
     </div>
     <div class="up-down-buttons">
-      <button matTooltip="Select previous element" (click)="emitPrevMatched()">
+      <button (click)="emitPrevMatched()" matTooltip="Previous match" aria-label="Previous match">
         <mat-icon class="mat-icon-rtl-mirror"> expand_less </mat-icon>
       </button>
-      <button matTooltip="Select next element" (click)="emitNextMatched()">
+      <button (click)="emitNextMatched()" matTooltip="Next match" aria-label="Next match">
         <mat-icon class=""> expand_more </mat-icon>
       </button>
     </div>

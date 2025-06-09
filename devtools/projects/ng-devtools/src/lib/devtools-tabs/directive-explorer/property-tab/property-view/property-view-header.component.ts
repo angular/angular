@@ -32,6 +32,12 @@ export class PropertyViewHeaderComponent {
     return (this.platform.FIREFOX && !isTopLevelFrame) || !frameHasUniqueUrl;
   });
 
+  protected readonly viewSourceTooltip = computed(() =>
+    this.disableViewSourceButton()
+      ? 'Inspecting source is not supported in Firefox when the inspected frame is not the top-level frame.'
+      : 'Open Source',
+  );
+
   // output that emits directive
   handleViewSource(event: MouseEvent): void {
     event.stopPropagation();
