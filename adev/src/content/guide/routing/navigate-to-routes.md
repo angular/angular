@@ -5,12 +5,19 @@ The RouterLink directive is Angular's declarative approach to navigation. It all
 ## How to use RouterLink
 
 Instead of using regular anchor elements `<a>` with an `href` attribute, you add a RouterLink directive with the appropriate path in order to leverage Angular routing.
-
-```angular-html
-<nav>
-  <a routerLink="/user-profile">User profile</a>
-  <a routerLink="/settings">Settings</a>
-</nav>
+```angular-ts
+import {RouterLink} from '@angular/router';
+@Component({
+  template: `
+    <nav>
+      <a routerLink="/user-profile">User profile</a>
+      <a routerLink="/settings">Settings</a>
+    </nav>
+  `
+  imports: [RouterLink],
+  ...
+})
+export class App {}
 ```
 
 ### Using absolute or relative links
