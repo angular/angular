@@ -14,6 +14,8 @@ import {EventManager, EventManagerPlugin} from '../../../src/dom/events/event_ma
 import {TestBed} from '@angular/core/testing';
 import {isNode, createMouseEvent, el} from '@angular/private/testing';
 
+import type {} from 'zone.js';
+
 (function () {
   if (isNode) return;
   let domEventPlugin: DomEventsPlugin;

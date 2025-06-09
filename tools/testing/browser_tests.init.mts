@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import 'zone.js/lib/browser/rollup-main';
+import 'zone.js';
 import './zone_base_setup.mjs';
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
 

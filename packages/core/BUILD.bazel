@@ -46,10 +46,10 @@ ng_project(
         "//packages/core/primitives/di",
         "//packages/core/primitives/dom-navigation",
         "//packages/core/primitives/event-dispatch",
-        "//packages/zone.js/lib:zone_d_ts",
     ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages:goog_types_rjs",
         "//packages/core/primitives/signals:signals_rjs",
         "//packages/core/src/compiler:compiler_rjs",

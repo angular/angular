@@ -18,6 +18,7 @@ ng_project(
     ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages/common:common_rjs",
     ],
 )
