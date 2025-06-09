@@ -16,6 +16,7 @@ ng_project(
         "//packages/platform-browser-dynamic",
     ],
     deps = [
+        "//:node_modules/zone.js",
         "//packages/upgrade/src/common:common_rjs",
     ],
 )

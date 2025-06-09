@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import 'zone.js/lib/node/rollup-main';
+import 'reflect-metadata';
+import 'zone.js';
 import './zone_base_setup.mjs';
 
 (global as any).isNode = true;
