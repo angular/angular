@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveProfile, ElementProfile, ProfilerFrame} from '../../../../../../../protocol';
+import {DirectiveProfile, ElementProfile, type ProfilerFrame} from '../../../../../../../protocol';
 
 export interface TimelineView<T> {
   timeline: AppEntry<T>[];

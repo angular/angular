@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementProfile, ProfilerFrame} from '../../../../../../../../protocol';
+import {ElementProfile, type ProfilerFrame} from '../../../../../../../../protocol';
 
 import {memo} from '../../../../../vendor/memo-decorator';
 import {RecordFormatter} from '../record-formatter';
