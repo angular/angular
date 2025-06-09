@@ -5,9 +5,10 @@
 
   <button
     mat-icon-button
-    matTooltip="Select previous frame"
     (click)="move(-1)"
     [disabled]="disablePreviousFrameButton()"
+    matTooltip="Select previous frame"
+    aria-label="Select previous frame"
   >
     <mat-icon>chevron_left</mat-icon>
   </button>
@@ -33,9 +34,10 @@
 
   <button
     mat-icon-button
-    matTooltip="Select next frame"
     (click)="move(1)"
     [disabled]="disableNextFrameButton()"
+    matTooltip="Select next frame"
+    aria-label="Select next frame"
   >
     <mat-icon>chevron_right</mat-icon>
   </button>

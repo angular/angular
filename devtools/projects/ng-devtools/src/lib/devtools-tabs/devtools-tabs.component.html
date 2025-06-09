@@ -8,13 +8,13 @@
   [tabPanel]="tabPanel"
 >
   <div id="nav-buttons">
-    <button (click)="toggleInspector()" matTooltip="Inspect element">
+    <button (click)="toggleInspector()" matTooltip="Inspect element" aria-label="Inspect element">
       <mat-icon [class.inspector-active]="inspectorRunning()"> pin_end </mat-icon>
     </button>
-    <button [matMenuTriggerFor]="menu" matTooltip="Open settings">
+    <button [matMenuTriggerFor]="menu" matTooltip="Open settings" aria-label="Open settings">
       <mat-icon> settings </mat-icon>
     </button>
-    <button [matMenuTriggerFor]="info" matTooltip="Info">
+    <button [matMenuTriggerFor]="info" matTooltip="Info" aria-label="Info">
       <mat-icon> info </mat-icon>
     </button>
   </div>
