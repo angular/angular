@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import 'zone.js/lib/browser/rollup-main';
+import 'zone.js';
 
 import {platformBrowser} from '@angular/platform-browser';
 

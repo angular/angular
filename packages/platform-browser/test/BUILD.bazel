@@ -18,6 +18,7 @@ ts_project(
     ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages/animations:animations_rjs",
         "//packages/animations/browser:browser_rjs",
         "//packages/animations/browser/testing:testing_rjs",

@@ -27,12 +27,11 @@ ts_project(
         ["*.ts"],
         exclude = ["goog.d.ts"],
     ),
-    interop_deps = [
-        "//packages/zone.js/lib:zone_d_ts",
-    ],
     deps = [
         ":goog_types_rjs",
         "//:node_modules/@types/hammerjs",
+        "//:node_modules/tslib",
+        "//:node_modules/zone.js",
     ],
 )
 
@@ -99,8 +98,8 @@ filegroup(
         "//packages/examples:files_for_docgen",
         "//packages/platform-browser:files_for_docgen",
         "//packages/platform-browser-dynamic:files_for_docgen",
-        "//packages/zone.js/lib:zone_d_ts",
         "@npm//rxjs",
+        "@npm//zone.js",
     ],
 )
 

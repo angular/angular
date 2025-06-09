@@ -21,6 +21,5 @@ jasmine_node_test(
     ],
     deps = [
         ":ivy_lib",
-        "//packages/zone.js/lib",
     ],
 )

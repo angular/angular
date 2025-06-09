@@ -38,6 +38,7 @@ ts_project(
     ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
     ],
 )
 
@@ -85,7 +86,6 @@ jasmine_node_test(
     ],
     deps = [
         ":render3_node_lib",
-        "//packages/zone.js/lib",
     ],
 )
 

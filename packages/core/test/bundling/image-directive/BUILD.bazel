@@ -54,7 +54,7 @@ http_server(
     ],
     deps = [
         ":bundle",
-        "//packages/zone.js/bundles:zone.umd.js",
+        "@npm//zone.js",
     ],
 )
 

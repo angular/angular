@@ -15,10 +15,10 @@ ng_project(
     interop_deps = [
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
-        "//packages/zone.js/lib",
     ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages/animations:animations_rjs",
         "//packages/core:core_rjs",
         "//packages/forms:forms_rjs",

@@ -74,6 +74,7 @@ ts_project(
     deps = [
         ":test_utils_rjs",
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
     ],
 )
 
