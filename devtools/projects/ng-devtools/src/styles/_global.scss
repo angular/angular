@@ -8,23 +8,7 @@
 @include mat.all-component-typographies();
 @include mat.core();
 @include clr.root-colors();
-
 @include tg.fonts();
-
-body {
-  padding: 0;
-  margin: 0;
-  background: var(--color-background);
-  color: var(--color-text);
-  @extend %body-01;
-}
-
-input,
-select {
-  color: var(--primary-contrast);
-  background: var(--color-foreground);
-  @extend %body-01;
-}
 
 $body-tg-level: mat.m2-define-typography-level(
   $font-family: tg.$font-family,
@@ -88,6 +72,53 @@ $dark-theme: map.deep-merge(
   .mat-mdc-chip.mat-mdc-standard-chip {
     --mdc-chip-container-height: 24px;
   }
+}
+
+:root {
+  @include mat.expansion-overrides(
+    (
+      container-background-color: transparent,
+    )
+  );
+
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: transparent,
+    )
+  );
+
+  @include mat.tree-overrides(
+    (
+      container-background-color: transparent,
+    )
+  );
+
+  @include mat.card-overrides(
+    (
+      elevated-container-color: transparent,
+    )
+  );
+
+  @include mat.table-overrides(
+    (
+      background-color: transparent,
+    )
+  );
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  @extend %body-01;
+}
+
+input,
+select {
+  color: var(--primary-contrast);
+  background: var(--color-foreground);
+  @extend %body-01;
 }
 
 ng-devtools {
