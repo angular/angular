@@ -351,13 +351,7 @@ function locateOrCreateContainerAnchorImpl(
   const isNodeCreationMode = !canHydrateNode(lView, tNode);
   lastNodeWasCreated(isNodeCreationMode);
 
-  // Regular creation mode.
-  if (isNodeCreationMode) {
-    return createContainerAnchorImpl(tView, lView, tNode, index);
-  }
-
-  const hydrationInfo = lView[HYDRATION]!;
-  const ssrId = hydrationInfo.data[TEMPLATES]?.[index] ?? null;
+  const ssrId = lView[HYDRATION]?.data[TEMPLATES]?.[index] ?? null;
 
   // Apply `ssrId` value to the underlying TView if it was not previously set.
   //
@@ -376,6 +370,12 @@ function locateOrCreateContainerAnchorImpl(
     }
   }
 
+  // Regular creation mode.
+  if (isNodeCreationMode) {
+    return createContainerAnchorImpl(tView, lView, tNode, index);
+  }
+
+  const hydrationInfo = lView[HYDRATION]!;
   // Hydration mode, looking up existing elements in DOM.
   const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
   ngDevMode && validateNodeExists(currentRNode, lView, tNode);
