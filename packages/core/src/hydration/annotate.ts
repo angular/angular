@@ -595,10 +595,15 @@ function serializeLView(
       continue;
     }
 
+    // Serialize information about template.
+    if (isLContainer(lView[i]) && tNode.tView) {
+      ngh[TEMPLATES] ??= {};
+      ngh[TEMPLATES][noOffsetIndex] = getSsrId(tNode.tView!);
+    }
+
     // Check if a native node that represents a given TNode is disconnected from the DOM tree.
     // Such nodes must be excluded from the hydration (since the hydration won't be able to
     // find them), so the TNode ids are collected and used at runtime to skip the hydration.
-    //
     // This situation may happen during the content projection, when some nodes don't make it
     // into one of the content projection slots (for example, when there is no default
     // <ng-content /> slot in projector component's template).
@@ -648,13 +653,6 @@ function serializeLView(
 
     conditionallyAnnotateNodePath(ngh, tNode, lView, i18nChildren);
     if (isLContainer(lView[i])) {
-      // Serialize information about a template.
-      const embeddedTView = tNode.tView;
-      if (embeddedTView !== null) {
-        ngh[TEMPLATES] ??= {};
-        ngh[TEMPLATES][noOffsetIndex] = getSsrId(embeddedTView);
-      }
-
       // Serialize views within this LContainer.
       const hostNode = lView[i][HOST]!; // host node of this container
 
