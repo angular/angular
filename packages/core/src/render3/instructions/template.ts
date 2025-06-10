@@ -264,6 +264,7 @@ function locateOrCreateContainerAnchorImpl(
   index: number,
 ): RComment {
   const hydrationInfo = lView[HYDRATION];
+
   const isNodeCreationMode =
     !hydrationInfo ||
     isInSkipHydrationBlock() ||
@@ -271,12 +272,7 @@ function locateOrCreateContainerAnchorImpl(
     isDisconnectedNode(hydrationInfo, index);
   lastNodeWasCreated(isNodeCreationMode);
 
-  // Regular creation mode.
-  if (isNodeCreationMode) {
-    return createContainerAnchorImpl(tView, lView, tNode, index);
-  }
-
-  const ssrId = hydrationInfo.data[TEMPLATES]?.[index] ?? null;
+  const ssrId = hydrationInfo?.data[TEMPLATES]?.[index] ?? null;
 
   // Apply `ssrId` value to the underlying TView if it was not previously set.
   //
@@ -295,12 +291,17 @@ function locateOrCreateContainerAnchorImpl(
     }
   }
 
+  // Regular creation mode.
+  if (isNodeCreationMode) {
+    return createContainerAnchorImpl(tView, lView, tNode, index);
+  }
+
   // Hydration mode, looking up existing elements in DOM.
-  const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
+  const currentRNode = locateNextRNode(hydrationInfo!, tView, lView, tNode)!;
   ngDevMode && validateNodeExists(currentRNode, lView, tNode);
 
-  setSegmentHead(hydrationInfo, index, currentRNode);
-  const viewContainerSize = calcSerializedContainerSize(hydrationInfo, index);
+  setSegmentHead(hydrationInfo!, index, currentRNode);
+  const viewContainerSize = calcSerializedContainerSize(hydrationInfo!, index);
   const comment = siblingAfter<RComment>(viewContainerSize, currentRNode)!;
 
   if (ngDevMode) {
