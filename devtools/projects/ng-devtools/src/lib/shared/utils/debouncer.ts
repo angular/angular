@@ -6,27 +6,48 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-type Callable = (...args: any) => void;
-
+/** Debounces a callback/handler. */
 export class Debouncer {
-  private timeout?: ReturnType<typeof setTimeout>;
+  private handle?: number;
   private initialized: boolean = false;
 
-  debounce<T = any>(handler: T, timeout: number): T {
+  /**
+   * Debounces the wrapped handler by a provided timeout.
+   *
+   * Example:
+   *
+   * ```typescript
+   * // Non-debounced
+   * api((args) => { ... });
+   *
+   * // Debounced
+   * const d = new Debouncer();
+   * api(d.debounce(
+   *   (args) => { ... },
+   *   1000
+   * ));
+   * ```
+   *
+   * @param handler
+   * @param timeout
+   * @returns A debounced handler
+   */
+  debounce<T extends (...args: any[]) => void>(handler: T, timeout: number): T {
     if (this.initialized) {
       throw new Error('The debouncer is already initialized and running.');
     }
     this.initialized = true;
 
-    return ((...args: any) => {
+    return ((...lastArgs: any[]) => {
       this.cancel();
-      this.timeout = setTimeout(() => (handler as Callable)(...args), timeout);
+      this.handle = setTimeout(() => handler(...lastArgs), timeout);
     }) as T;
   }
 
+  /** Cancel the currently debounced handler, if not resolved. */
   cancel() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
+    if (this.handle) {
+      clearTimeout(this.handle);
     }
   }
 }

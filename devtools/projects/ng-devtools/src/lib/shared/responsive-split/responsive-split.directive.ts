@@ -24,10 +24,6 @@ export type ResponsiveSplitConfig = {
   breakpointDirection: Direction;
 };
 
-interface ExtendedWindow extends Window {
-  ResizeObserver: typeof ResizeObserver;
-}
-
 /** Make as-split direction responsive. */
 @Directive({
   selector: 'as-split[ngResponsiveSplit]',
@@ -36,7 +32,7 @@ export class ResponsiveSplitDirective implements OnDestroy {
   private readonly host = inject(SplitComponent);
   private readonly elementRef = inject(ElementRef);
   private readonly zone = inject(NgZone);
-  private readonly window = inject<ExtendedWindow>(WINDOW);
+  private readonly window = inject<typeof globalThis>(WINDOW);
   private resizeObserver: ResizeObserver;
   private debouncer: Debouncer;
 
