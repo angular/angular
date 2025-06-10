@@ -487,8 +487,11 @@ describe('Format date', () => {
 
           // Platforms are a bit inconsistent on the numbering system for language only locales
           // Adding the region works around this issue
-        if(isNode || isFirefox()) {
+        if(isFirefox()) {
           expect(formatDate(date, 'short', 'ar')).toEqual('١٥‏/٦‏/٢٠١٥، ٩:٠٣ ص');
+        } else if (isNode) {
+          //                                                                        v--- additional arabic comma
+          expect(formatDate(date, 'short', 'ar')).toEqual('15‏/6‏/2015، 9:03 ص');
         } else {
           // Chrome should use the arab numbering system but doesn't
           // https://github.com/unicode-org/cldr-json/blob/858baad63c1d51e1d576ef99dccc229d92cedda4/cldr-json/cldr-numbers-full/main/ar/numbers.json#L11
@@ -600,13 +603,21 @@ describe('Format date', () => {
       const isoDate = '2024-02-17T12:00:00Z';
 
       const date1 = formatDate(isoDate, 'long', 'en', 'America/New_York');
-      const date2 = formatDate(isoDate, 'long', 'en', 'EST');
       if(useIntl) {
         expect(date1).toBe('February 17, 2024 at 7:00:00 AM EST');
       } else {
         expect(date1).toBe('February 17, 2024 at 12:00:00 PM GMT+0');
       }
-      expect(date2).toBe('February 17, 2024 at 7:00:00 AM GMT-5');
+      
+      const date2 = formatDate(isoDate, 'long', 'en', 'EST');
+
+      if(isNode && useIntl) {
+        // Newer browers do also return this result, but it is not reflect yet in the tests
+        expect(date2).toBe('February 17, 2024 at 7:00:00 AM EST');
+      } else {
+        // Above is considered a better output as EST is a geographical timezone
+        expect(date2).toBe('February 17, 2024 at 7:00:00 AM GMT-5');
+      }
 
       // This format is only partially supported by Intl
       // We recommend using IANA Timezone names instead which are best for Localization

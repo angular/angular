@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Inject, Injectable, LOCALE_ID, ɵgetLocalePluralCase, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  LOCALE_ID,
+  ɵgetLocalePluralCase,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
