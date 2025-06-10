@@ -11,11 +11,13 @@ import localeRo from '../../locales/ro';
 import localeSr from '../../locales/sr';
 import localeZgh from '../../locales/zgh';
 import {getPluralCategory, NgLocaleLocalization, NgLocalization} from '../../src/i18n/localization';
-import {LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {
-  usePluralIntlImplementation,
-  usePluralLegacyImplementation,
-} from '@angular/core/src/i18n/implementation';
+  LOCALE_ID,
+  ɵregisterLocaleData,
+  ɵunregisterLocaleData,
+  ɵusePluralIntlImplementation as usePluralIntlImplementation,
+  ɵusePluralLegacyImplementation as usePluralLegacyImplementation,
+} from '@angular/core';
 import {inject, TestBed} from '@angular/core/testing';
 
 // Following ignore is to ease the review of the diff
