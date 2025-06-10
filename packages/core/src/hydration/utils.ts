@@ -26,6 +26,7 @@ import {
   DehydratedView,
   DISCONNECTED_NODES,
   ELEMENT_CONTAINERS,
+  MOVED,
   MULTIPLIER,
   NUM_ROOT_NODES,
   SerializedContainerView,
@@ -459,12 +460,27 @@ export function getSerializedContainerViews(
   return hydrationInfo.data[CONTAINERS]?.[index] ?? null;
 }
 
+export function getSerializedMovedContainerViews(
+  hydrationInfo: DehydratedView,
+): SerializedContainerView[] | undefined {
+  return hydrationInfo.data[MOVED];
+}
+
+export function hasMovedViews(hydrationInfo: DehydratedView | null): boolean {
+  return hydrationInfo?.data[MOVED] ? true : false;
+}
+
 /**
  * Computes the size of a serialized container (the number of root nodes)
  * by calculating the sum of root nodes in all dehydrated views in this container.
  */
 export function calcSerializedContainerSize(hydrationInfo: DehydratedView, index: number): number {
-  const views = getSerializedContainerViews(hydrationInfo, index) ?? [];
+  let views = [];
+  if (hasMovedViews(hydrationInfo)) {
+    views = getSerializedMovedContainerViews(hydrationInfo) ?? [];
+  } else {
+    views = getSerializedContainerViews(hydrationInfo, index) ?? [];
+  }
   let numNodes = 0;
   for (let view of views) {
     numNodes += view[NUM_ROOT_NODES] * (view[MULTIPLIER] ?? 1);

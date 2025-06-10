@@ -21,18 +21,25 @@ import {Renderer2} from '../render';
 import {assertTNode} from '../render3/assert';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
 import {getComponentDef} from '../render3/def_getters';
-import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
+import {
+  CONTAINER_HEADER_OFFSET,
+  LContainer,
+  LContainerFlags,
+  MOVED_VIEWS,
+} from '../render3/interfaces/container';
 import {isLetDeclaration, isTNodeShape, TNode, TNodeType} from '../render3/interfaces/node';
 import {RComment, RElement} from '../render3/interfaces/renderer_dom';
 import {
   hasI18n,
   isComponentHost,
+  isContentQueryHost,
   isLContainer,
   isProjectionTNode,
   isRootView,
 } from '../render3/interfaces/type_checks';
 import {
   CONTEXT,
+  FLAGS,
   HEADER_OFFSET,
   HOST,
   INJECTOR,
@@ -68,6 +75,7 @@ import {
   DISCONNECTED_NODES,
   ELEMENT_CONTAINERS,
   I18N_DATA,
+  MOVED,
   MULTIPLIER,
   NODES,
   NUM_ROOT_NODES,
@@ -112,6 +120,15 @@ class SerializedViewCollection {
       return index;
     }
     return this.indexByContent.get(viewAsString)!;
+  }
+
+  getContainersByIndex(index: number): SerializedContainerView[] {
+    const containers = this.views[index][CONTAINERS];
+    const views: SerializedContainerView[] = [];
+    for (let index in containers) {
+      views.push(...containers[Number(index)]);
+    }
+    return views;
   }
 
   getAll(): SerializedView[] {
@@ -328,6 +345,7 @@ function serializeLContainer(
   tNode: TNode,
   lView: LView,
   parentDeferBlockId: string | null,
+  noOffsetIndex: number,
   context: HydrationContext,
 ): SerializedContainerView[] {
   const views: SerializedContainerView[] = [];
@@ -381,6 +399,7 @@ function serializeLContainer(
         numRootNodes = calcNumRootNodes(childTView, childLView, childTView.firstChild);
       }
 
+      childTView.nghId = noOffsetIndex;
       serializedView = {
         [TEMPLATE_ID]: template,
         [NUM_ROOT_NODES]: numRootNodes,
@@ -595,16 +614,31 @@ function serializeLView(
       continue;
     }
 
+    const projectionHostNode = getContentProjectedNode(tNode);
+
     // Check if a native node that represents a given TNode is disconnected from the DOM tree.
     // Such nodes must be excluded from the hydration (since the hydration won't be able to
     // find them), so the TNode ids are collected and used at runtime to skip the hydration.
     //
     // This situation may happen during the content projection, when some nodes don't make it
     // into one of the content projection slots (for example, when there is no default
-    // <ng-content /> slot in projector component's template).
-    if (isDisconnectedNode(tNode, lView) && isContentProjectedNode(tNode)) {
-      appendDisconnectedNodeIndex(ngh, tNode);
-      continue;
+    if (isDisconnectedNode(tNode, lView) && projectionHostNode !== null) {
+      if (!isContentQueryHost(projectionHostNode)) {
+        appendDisconnectedNodeIndex(ngh, tNode);
+        continue;
+      }
+
+      if (isLContainer(lView[i]) && lView[i][FLAGS] & LContainerFlags.HasTransplantedViews) {
+        const lContainer = lView[i] as LContainer;
+        const movedLViews = lContainer[MOVED_VIEWS]!;
+        const containers = movedLViews.flatMap((view) =>
+          context.serializedViewCollection.getContainersByIndex(view[TVIEW].nghId!),
+        );
+
+        if (containers.length > 0) {
+          ngh[MOVED] ??= containers;
+        }
+      }
     }
 
     if (Array.isArray(tNode.projection)) {
@@ -680,6 +714,7 @@ function serializeLView(
         tNode,
         lView,
         parentDeferBlockId,
+        noOffsetIndex,
         context,
       );
     } else if (Array.isArray(lView[i]) && !isLetDeclaration(tNode)) {
@@ -870,17 +905,17 @@ function insertCorruptedTextNodeMarkers(
  * Detects whether a given TNode represents a node that
  * is being content projected.
  */
-function isContentProjectedNode(tNode: TNode): boolean {
+function getContentProjectedNode(tNode: TNode): TNode | null {
   let currentTNode = tNode;
   while (currentTNode != null) {
     // If we come across a component host node in parent nodes -
     // this TNode is in the content projection section.
     if (isComponentHost(currentTNode)) {
-      return true;
+      return currentTNode;
     }
     currentTNode = currentTNode.parent as TNode;
   }
-  return false;
+  return null;
 }
 
 /**

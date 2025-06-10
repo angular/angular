@@ -36,6 +36,7 @@ export const NODE_NAVIGATION_STEP_NEXT_SIBLING = 'n';
 export const ELEMENT_CONTAINERS = 'e';
 export const TEMPLATES = 't';
 export const CONTAINERS = 'c';
+export const MOVED = 'm';
 export const MULTIPLIER = 'x';
 export const NUM_ROOT_NODES = 'r';
 export const TEMPLATE_ID = 'i'; // as it's also an "id"
@@ -85,6 +86,14 @@ export interface SerializedView {
    * of serialized information about views within this container.
    */
   [CONTAINERS]?: Record<number, SerializedContainerView[]>;
+
+  /**
+   * Serialized information about transplanted view containers.
+   * Key-value pairs where a key is an index of the corresponding
+   * LContainer entry within an LView, and the value is a list
+   * of serialized information about views within this container.
+   */
+  [MOVED]?: SerializedContainerView[];
 
   /**
    * Serialized information about nodes in a template.

@@ -856,6 +856,12 @@ export interface TView {
    *                        (see `getComponentId` function for details)
    */
   ssrId: string | null;
+
+  /**
+   * Reference to serialized ngh index number used in case of transplated view
+   * identification.
+   */
+  nghId: number | null;
 }
 
 /** Single hook callback function. */

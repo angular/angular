@@ -116,6 +116,7 @@ export function createTView(
     consts: consts,
     incompleteFirstPass: false,
     ssrId,
+    nghId: null,
   });
   if (ngDevMode) {
     // For performance reasons it is important that the tView retains the same shape during runtime.

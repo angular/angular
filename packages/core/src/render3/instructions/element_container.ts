@@ -261,7 +261,7 @@ function locateOrCreateElementContainerNode(
 
   if (ngDevMode) {
     validateMatchingNode(comment, Node.COMMENT_NODE, null, lView, tNode);
-    markRNodeAsClaimedByHydration(comment);
+    markRNodeAsClaimedByHydration(comment, false);
   }
 
   return comment;

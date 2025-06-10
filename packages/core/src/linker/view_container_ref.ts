@@ -9,10 +9,11 @@
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {validateMatchingNode} from '../hydration/error_handling';
-import {CONTAINERS} from '../hydration/interfaces';
+import {CONTAINERS, MOVED} from '../hydration/interfaces';
 import {isInSkipHydrationBlock} from '../hydration/skip_hydration';
 import {
   getSegmentHead,
+  hasMovedViews,
   isDisconnectedNode,
   markRNodeAsClaimedByHydration,
 } from '../hydration/utils';
@@ -839,7 +840,10 @@ function populateDehydratedViewsInLContainerImpl(
   // Hydration mode, looking up an anchor node and dehydrated views in DOM.
   const currentRNode: RNode | null = getSegmentHead(hydrationInfo, noOffsetIndex);
 
-  const serializedViews = hydrationInfo.data[CONTAINERS]?.[noOffsetIndex];
+  const hasMoved = hasMovedViews(hydrationInfo);
+  const serializedViews = hasMoved
+    ? hydrationInfo.data[MOVED]
+    : hydrationInfo.data[CONTAINERS]?.[noOffsetIndex];
   ngDevMode &&
     assertDefined(
       serializedViews,
@@ -863,7 +867,9 @@ function populateDehydratedViewsInLContainerImpl(
   }
 
   lContainer[NATIVE] = commentNode as RComment;
-  lContainer[DEHYDRATED_VIEWS] = dehydratedViews;
+  if (!hasMoved) {
+    lContainer[DEHYDRATED_VIEWS] = dehydratedViews;
+  }
 
   return true;
 }

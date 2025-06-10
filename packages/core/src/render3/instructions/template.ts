@@ -11,6 +11,7 @@ import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {
   calcSerializedContainerSize,
   canHydrateNode,
+  hasMovedViews,
   markRNodeAsClaimedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
@@ -386,7 +387,9 @@ function locateOrCreateContainerAnchorImpl(
 
   if (ngDevMode) {
     validateMatchingNode(comment, Node.COMMENT_NODE, null, lView, tNode);
-    markRNodeAsClaimedByHydration(comment);
+    if (!hasMovedViews(hydrationInfo)) {
+      markRNodeAsClaimedByHydration(comment);
+    }
   }
 
   return comment;

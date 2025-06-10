@@ -51,6 +51,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
   ɵNoopNgZone as NoopNgZone,
+  ContentChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -5713,6 +5714,47 @@ describe('platform-server full application hydration integration', () => {
           verifyAllNodesClaimedForHydration(clientRootNode);
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
+
+        it('should not render content twice with contentChildren', async () => {
+          @Component({
+            selector: 'app-shell',
+            imports: [NgTemplateOutlet],
+            template: `
+            <ng-container [ngTemplateOutlet]="customTemplate"></ng-container>
+          `,
+          })
+          class ShellCmp {
+            @ContentChild('customTemplate', {static: true})
+            customTemplate: TemplateRef<any> | null = null;
+          }
+
+          @Component({
+            imports: [ShellCmp],
+            selector: 'app',
+            template: `
+            <app-shell>
+              <ng-template #customTemplate>
+                <p>template</p>
+              </ng-template>
+            </app-shell>
+            `,
+          })
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent, ShellCmp);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        }, 100_000);
 
         it('should support cases when component nodes are not projected in nested components', async () => {
           @Component({
