@@ -60,10 +60,10 @@ const userId: Signal<string> = getUserId();
 
 const userResource = resource({
   params: () => ({id: userId()}),
-  loader: ({request, abortSignal}): Promise<User> => {
+  loader: ({params, abortSignal}): Promise<User> => {
     // fetch cancels any outstanding HTTP requests when the given `AbortSignal`
     // indicates that the request has been aborted.
-    return fetch(`users/${request.id}`, {signal: abortSignal});
+    return fetch(`users/${params.id}`, {signal: abortSignal});
   },
 });
 ```
