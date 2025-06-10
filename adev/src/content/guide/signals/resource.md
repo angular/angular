@@ -111,3 +111,7 @@ The `status` signal provides a specific `ResourceStatus` that describes the stat
 | `'local'`     | Locally set value | The resource's value has been set locally via `.set()` or `.update()`        |
 
 You can use this status information to conditionally display user interface elements, such loading indicators and error messages.
+
+## Reactive data fetching with `httpResource`
+
+[`httpResource`](/guide/http/httpResource) is a wrapper around `HttpClient` that gives you the request status and response as signals. It makes HTTP requests through the Angular HTTP stack, including interceptors.

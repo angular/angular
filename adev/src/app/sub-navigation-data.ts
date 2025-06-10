@@ -422,6 +422,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/http/making-requests',
           },
           {
+            label: 'Reactive data fetching with httpResource',
+            path: 'guide/http/http-resource',
+            contentPath: 'guide/http/http-resource',
+          },
+          {
             label: 'Intercepting requests and responses',
             path: 'guide/http/interceptors',
             contentPath: 'guide/http/interceptors',
