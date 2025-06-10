@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {isNode} from '@angular/private/testing';
 import {
   formatCurrency,
   formatNumber,
