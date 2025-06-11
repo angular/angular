@@ -533,9 +533,13 @@ function migrateInjectDecorator(
 
   // `inject` no longer officially supports string injection so we need
   // to cast to any. We maintain the type by passing it as a generic.
+  // skip migration for string and variable tokens; add warning comment to inform the user
   if (ts.isStringLiteralLike(firstArg)) {
-    typeArguments = [type || ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)];
-    injectedType += ' as any';
+    injectedType = `// WARNING: String token '${firstArg.text}' found. Skipping migration. Please replace with InjectionToken.\n` + injectedType;
+    typeArguments = null;
+  } else if (ts.isIdentifier(firstArg)) {
+    injectedType = `// WARNING: Variable token '${firstArg.text}' found. Skipping migration. Please replace with InjectionToken.\n` + injectedType;
+    typeArguments = null;
   } else if (
     ts.isCallExpression(firstArg) &&
     ts.isIdentifier(firstArg.expression) &&
