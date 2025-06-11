@@ -1,4 +1,4 @@
-# Data fetching with `httpResource`
+# Reactive data fetching with `httpResource`
 
 IMPORTANT: `httpResource` is [experimental](reference/releases#experimental). It's ready for you to try, but it might change before it is stable.
 
@@ -10,7 +10,7 @@ Fetching data is by nature an asynchronous task. You can use a [`Resource`](/api
 
 ## Reactive HTTP requests  
 
-`httpResource` makes a reactive HTTP request and exposes the request status and response value as a [`WritableResource`](/api/core/WritableResource). By default, it assumes that the backend will return JSON data. Like `resource`, it configures a reactive request. If any of the source signals in the request computation change, a new HTTP request will be made.
+`httpResource` makes a reactive HTTP request and exposes the response status and response value as a [`WritableResource`](/api/core/WritableResource). By default, it assumes that the backend will return JSON data. Like `resource`, it configures a reactive request. If any of the source signals in the request computation change, a new HTTP request will be made.
 
 You can define an http resource by returning a url: 
 
@@ -20,9 +20,9 @@ userId = input.required<string>();
 user = httpResource(() => `/api/user/${userId()}`); // A reactive function as argument
 ```
 
-IMPORTANT: `httpResource` differs from the `HttpClient` as it initiates the request eagerly (unlike the `HttpClient` `Observable`-based requests which must be subscribed).
+IMPORTANT: `httpResource` differs from the `HttpClient` as it initiates the request _eagerly_. In contrast, the `HttpClient` only initiates requests upon subscription to the returned `Observable`.
 
-For more advanced requests, it is possible to define a request object similar to `HttpClient`‘s request.
+For more advanced requests, you can define a request object similar to the request taken by `HttpClient`.
 
 ```ts
 user = httpResource(() => ({
@@ -40,13 +40,11 @@ user = httpResource(() => ({
 }));
 ```
 
-While the resource pattern is meant only for retrieving asynchronous data, `httpResource` will allow any request method (like `POST` in the previous example). This still doesn’t mean that you should be using `httpResource` to change data on the server. For instance, if you need to submit form data, use the `HttpClient` methods.
+TIP: Avoid using `httpResource` for _mutations_ like `POST` or `PUT`. Instead, prefer directly using the underlying `HttpClient` APIs.
 
 ### Response types 
 
-An `httpResource` will return and parse the response as JSON but it is possible to use it for other return types.
-
-The API has multiple dedicated methods available for other response types:
+By default, `httpResource` returns and parses the response as JSON. However, you can specify alternate return with additional functions on `httpResource`: 
 
 ```ts
 httpResource.text(() => ({ … })); // returns a string in value()
@@ -71,16 +69,21 @@ It also includes dedicated signals for metadata about the response:
 - `statusCode()` — with the response’s status code
 - `progress()` — with the progress of the request (if required in the request object)
 
-## Parsing typesafety 
+## Response parsing and validation
 
-When performing http requests you often want to ensure that the data we receive conforms the shape that we expect. This is commonly known as schema validation.
-
-In the JavaScript ecosystem it is common to reach out for battle-tested libraries like [Zod](https://zod.dev/) or [Valibot](https://valibot.dev/) for schema validation. `httpResource` offers direct integration for those libraries by using the `parse` parameter. The returned type of this parse function will provide the type to the resource itself, ensuring type safety alongside the schema validation.
+When fetching data, you may want to validate responses against a predefined schema, often using popular open-source libraries like [Zod](https://zod.dev) or [Valibot](https://valibot.dev). You can integrate validation libraries like this with `httpResource` by specifying a `parse` option. The return type of the `parse` function determines the type of the resource's `value`.
 
 The following example uses Zod to parse and validate the response from the [StarWars API](https://swapi.dev/). The resource is then typed the same as the output type of Zod’s parsing.
 
 ```ts
-export class AppComponent {
+const starWarsPersonSchema = z.object({
+  name: z.string(),
+  height: z.number({ coerce: true }),
+  edited: z.string().datetime(),
+  films: z.array(z.string()),
+});
+
+export class CharacterViewer {
   id = signal(1);
 
   swPersonResource = httpResource(
@@ -88,21 +91,13 @@ export class AppComponent {
     { parse: starWarsPersonSchema.parse }
   );
 }
-
-const starWarsPersonSchema = z.object({
-  name: z.string(),
-  height: z.number({ coerce: true }),
-  edited: z.string().datetime(),
-  films: z.array(z.string()),
-});
 ```
 
 ## Testing an httpResource
 
-With `httpResource` as a frontend for `@angular/common/http`, it makes HTTP requests through the Angular HTTP stack. 
-This means you can use the same utilities as [`HttpClient` testing](/guide/http/testing).
+Because `httpResource` is a wrapper around `HttpClient`, you can test `httpResource` with the exact same APIs as `HttpResource. See [HttpClient Testing](/guide/http/testing) for details.
 
-Here an example to illustrate testing of a `httpResource`
+The following example shows a unit test for code using `httpResource`.
 
 ```ts
 TestBed.configureTestingModule({

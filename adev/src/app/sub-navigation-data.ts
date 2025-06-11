@@ -422,7 +422,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/http/making-requests',
           },
           {
-            label: 'Data fetching with httpResource',
+            label: 'Reactive data fetching with httpResource',
             path: 'guide/http/http-resource',
             contentPath: 'guide/http/http-resource',
           },
