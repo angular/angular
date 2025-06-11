@@ -8,7 +8,10 @@ For more about Angular's `resource` pattern, see [Async reactivity with `resourc
 
 ## `Using httpResource`
 
-You can define an http resource by returning a url: 
+TIP: Make sure to include `provideHttpClient` in your application providers. See [Setting up HttpClient](/guide/http/setup) for details.  
+
+
+You can define an HTTP resource by returning a url: 
 
 ```ts
 userId = input.required<string>();
@@ -17,7 +20,7 @@ user = httpResource(() => `/api/user/${userId()}`); // A reactive function as ar
 ```
 
 `httResource` is reactive, meaning that whenever one of the signal it depends on changes (like `userId`), the resource will emit a new http request. 
-If a request is already pending, the previous one gets canceled. 
+If a request is already pending, the resource cancels the outstanding request before issuing a new one.  
 
 HELPFUL: `httpResource` differs from the `HttpClient` as it initiates the request _eagerly_. In contrast, the `HttpClient` only initiates requests upon subscription to the returned `Observable`.
 
@@ -108,13 +111,13 @@ TestBed.configureTestingModule({
 
 const id = signal(0);
 const mockBackend = TestBed.inject(HttpTestingController);
-const res = httpResource(() => `/data/${id()}`, {injector: TestBed.inject(Injector)});
+const response = httpResource(() => `/data/${id()}`, {injector: TestBed.inject(Injector)});
 TestBed.tick(); // Triggers the effect
-const req1 = mockBackend.expectOne('/data/0');
-req1.flush(0);
+const firstRequest = mockBackend.expectOne('/data/0');
+firstRequest.flush(0);
 
 // Ensures the values are propagated to the httpResource
 await TestBed.inject(ApplicationRef).whenStable();
 
-expect(res.value()).toEqual(0);
+expect(response.value()).toEqual(0);
 ```
