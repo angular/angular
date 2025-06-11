@@ -533,7 +533,7 @@ function migrateInjectDecorator(
 
   // `inject` no longer officially supports string injection so we need
   // to cast to any. We maintain the type by passing it as a generic.
-  if (ts.isStringLiteralLike(firstArg)) {
+  if (ts.isStringLiteralLike(firstArg) || isStringType(firstArg, localTypeChecker)) {
     typeArguments = [type || ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)];
     injectedType += ' as any';
   } else if (
@@ -884,4 +884,11 @@ function replaceParameterReferencesInInitializer(
   }
 
   return result.join('this.');
+}
+
+function isStringType(node: ts.Expression, checker: ts.TypeChecker): boolean {
+  const type = checker.getTypeAtLocation(node);
+
+  // stringLiteral here is to cover const strings inferred as literal type.
+  return !!(type.flags & ts.TypeFlags.String || type.flags & ts.TypeFlags.StringLiteral);
 }

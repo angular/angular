@@ -120,7 +120,7 @@ describe('inject migration', () => {
     ]);
   });
 
-  it('should account for string tokens in @Inject()', async () => {
+  it('should account for string literal tokens in @Inject()', async () => {
     writeFile(
       '/dir.ts',
       [
@@ -141,6 +141,35 @@ describe('inject migration', () => {
       `@Directive()`,
       `class MyDir {`,
       `  private foo = inject<number>('not-officially-supported' as any);`,
+      `}`,
+    ]);
+  });
+
+  it('should account for string tokens in @Inject()', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject } from '@angular/core';`,
+        ``,
+        `const token = 'not-officially-supported'`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Inject(token) private foo: number) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      ``,
+      `const token = 'not-officially-supported'`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo = inject<number>(token as any);`,
       `}`,
     ]);
   });
