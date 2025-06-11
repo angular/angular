@@ -15,4 +15,14 @@
     background: var(--dynamic-blue-02);
     color: var(--septenary-contrast);
   }
+
+  &.type-icon {
+    background: transparent;
+    border: none;
+    padding: 0;
+
+    &.size-compact {
+      padding: 0;
+    }
+  }
 }

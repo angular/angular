@@ -1,65 +1,66 @@
-<div class="profiler-wrapper">
-  <mat-card>
-    @if (state() === 'idle') {
+<div class="recorder-controls">
+  @switch (state()) {
+    @case ('idle') {
       <button
-        mat-icon-button
-        color="primary"
+        ng-button
+        btnType="icon"
         (click)="startRecording()"
-        class="profiler-control start-recording-button"
         matTooltip="Start recording"
         aria-label="Start recording"
       >
         <mat-icon> circle </mat-icon>
       </button>
-    } @else if (state() === 'recording') {
-      <button
-        mat-icon-button
-        (click)="stopRecording()"
-        class="profiler-control recording-button"
-        matTooltip="Stop recording"
-        aria-label="Stop recording"
-      >
-        <mat-icon> circle </mat-icon>
-      </button>
-    } @else if (state() === 'visualizing') {
-      <button
-        mat-icon-button
-        color="primary"
-        (click)="discardRecording()"
-        class="profiler-control discard-button"
-        matTooltip="Clear recording"
-        aria-label="Clear recording"
-      >
-        <mat-icon> not_interested </mat-icon>
-      </button>
-    }
-    <p class="instructions" [class.hidden]="state() !== 'idle'">
-      <span>
-        Click the record button to start a new recording, or upload a JSON file containing profiler
-        data.
-      </span>
-      <br />
-      <span>
+
+      <p class="instructions">
+        <span>
+          Click the record button to start a new recording, or upload a JSON file containing
+          profiler data.
+        </span>
+        <br />
         <input
           type="file"
           (change)="importProfilerResults($event)"
           placeholder="Upload file"
           accept=".json"
         />
-      </span>
-    </p>
-    <p class="instructions" [class.hidden]="state() !== 'recording'">
-      Interact to preview change detection. Clicking stop ends this Profiler recording.
-    </p>
-    <p class="instructions" [class.hidden]="state() !== 'visualizing'">
-      Click Save Profile to save your recording or click refresh to clear the current recording.
-    </p>
-  </mat-card>
-  <div id="profiler-content-wrapper">
-    @if (state() !== 'idle') {
-      <div class="visualization">
-        <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()" />
-      </div>
+      </p>
     }
-  </div>
+    @case ('recording') {
+      <button
+        ng-button
+        btnType="icon"
+        (click)="stopRecording()"
+        class="recording-button"
+        matTooltip="Stop recording"
+        aria-label="Stop recording"
+      >
+        <mat-icon> circle </mat-icon>
+      </button>
+
+      <p class="instructions">
+        Interact to preview change detection. Clicking stop ends this Profiler recording.
+      </p>
+    }
+    @case ('visualizing') {
+      <button
+        ng-button
+        btnType="icon"
+        (click)="discardRecording()"
+        matTooltip="Clear recording"
+        aria-label="Clear recording"
+      >
+        <mat-icon> not_interested </mat-icon>
+      </button>
+
+      <p class="instructions">
+        Click Save Profile to save your recording or click refresh to clear the current recording.
+      </p>
+    }
+  }
 </div>
+
+@if (state() !== 'idle') {
+  <div class="recording">
+    <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()" />
+  </div>
+}
