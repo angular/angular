@@ -2585,6 +2585,7 @@ describe('platform-server partial hydration integration', () => {
 
       const routeLink = doc.getElementById('route-link')!;
       routeLink.click();
+      await appRef.whenStable();
       await allPendingDynamicImports();
       appRef.tick();
 
