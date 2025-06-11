@@ -112,6 +112,6 @@ The `status` signal provides a specific `ResourceStatus` that describes the stat
 
 You can use this status information to conditionally display user interface elements, such loading indicators and error messages.
 
-## Data fetching with `httpResource`
+## Reactive data fetching with `httpResource`
 
-[`httpResource`](/guide/http/httpResource) is built on top of the `resource` primitive and uses `HttpClient` as loader. It acts as a frontend for `@angular/common/http`. It makes HTTP requests through the Angular HTTP stack, including interceptors.
+[`httpResource`](/guide/http/httpResource) is a wrapper around `HttpClient` that gives you the request status and response as signals. It makes HTTP requests through the Angular HTTP stack, including interceptors.
