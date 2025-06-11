@@ -27,7 +27,7 @@
     "@types/jasmine": "~5.1.0",
     "@types/node": "^16.11.35",
     "copyfiles": "^2.4.1",
-    "jasmine-core": "~5.7.0",
+    "jasmine-core": "~5.8.0",
     "jasmine-marbles": "~0.9.2",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",
