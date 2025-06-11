@@ -2,15 +2,11 @@
 
 IMPORTANT: `httpResource` is [experimental](reference/releases#experimental). It's ready for you to try, but it might change before it is stable.
 
-Fetching data is by nature an asynchronous task. You can use a [`Resource`](/api/core/resource) to perform any kind of async operation.
+`httpResource` is a reactive wrapper around `HttpClient` that gives you the request status and response as signals. You can thus use these signals with `computed`, `effect`, `linkedSignal`, or any other reactive API. Because it's built on top of `HttpClient`, `httpResource` supports all the same features, such as interceptors.
 
-<!-- mention reactive ?-->
+For more about Angular's `resource` pattern, see [Async reactivity with `resource`](/guide/signals/resource).
 
-`httpResource` is built on top of the `resource` primitive and uses `HttpClient` as loader. It acts as a frontend for `@angular/common/http`. It makes HTTP requests through the Angular HTTP stack, including interceptors. 
-
-## Reactive HTTP requests  
-
-`httpResource` makes a reactive HTTP request and exposes the response status and response value as a [`WritableResource`](/api/core/WritableResource). By default, it assumes that the backend will return JSON data. Like `resource`, it configures a reactive request. If any of the source signals in the request computation change, a new HTTP request will be made.
+## `Using httpResource`
 
 You can define an http resource by returning a url: 
 
@@ -20,9 +16,13 @@ userId = input.required<string>();
 user = httpResource(() => `/api/user/${userId()}`); // A reactive function as argument
 ```
 
-IMPORTANT: `httpResource` differs from the `HttpClient` as it initiates the request _eagerly_. In contrast, the `HttpClient` only initiates requests upon subscription to the returned `Observable`.
+`httResource` is reactive, meaning that whenever one of the signal it depends on changes (like `userId`), the resource will emit a new http request. 
+If a request is already pending, the previous one gets canceled. 
+
+HELPFUL: `httpResource` differs from the `HttpClient` as it initiates the request _eagerly_. In contrast, the `HttpClient` only initiates requests upon subscription to the returned `Observable`.
 
 For more advanced requests, you can define a request object similar to the request taken by `HttpClient`.
+Each property of the request object that should be reactive should be composed by a signal.
 
 ```ts
 user = httpResource(() => ({
@@ -42,6 +42,20 @@ user = httpResource(() => ({
 
 TIP: Avoid using `httpResource` for _mutations_ like `POST` or `PUT`. Instead, prefer directly using the underlying `HttpClient` APIs.
 
+The signals of the `httpResource` can be used in the template to control which elements should be displayed. 
+
+```angular-html
+@if(user.hasValue()) {
+  <user-details user="[user.value()]">
+} @else if (user.error()) {
+  <div>Could not load user information</div>
+} @else if (user.isLoading()) {
+  <div>Loading user info...</div>
+}
+```
+
+HELPFUL: Reading the `value` signal on a `resource` that is in error state throws at runtime. It is recommended to guard `value` reads with `hasValue()`.
+
 ### Response types 
 
 By default, `httpResource` returns and parses the response as JSON. However, you can specify alternate return with additional functions on `httpResource`: 
@@ -53,21 +67,6 @@ httpResource.blob(() => ({ … })); // returns a Blob object in value()
 
 httpResource.arrayBuffer(() => ({ … })); // returns an ArrayBuffer in value()
 ```
-
-## Shape of an HttpResource
-
-An httpResource , similar to other `resource`, exposes several signals:
-
-- `value()` — which contains the result of the http request (when successful) and is programmatically overwritable
-- `status()` — with the status of the resource (idle, loading, error etc)
-- `error()` — with the request error / parsing error
-- `isLoading()` — which is `true` while the request is pending
-
-It also includes dedicated signals for metadata about the response:
-
-- `​​headers()` — with the response’s headers
-- `statusCode()` — with the response’s status code
-- `progress()` — with the progress of the request (if required in the request object)
 
 ## Response parsing and validation
 
@@ -95,7 +94,7 @@ export class CharacterViewer {
 
 ## Testing an httpResource
 
-Because `httpResource` is a wrapper around `HttpClient`, you can test `httpResource` with the exact same APIs as `HttpResource. See [HttpClient Testing](/guide/http/testing) for details.
+Because `httpResource` is a wrapper around `HttpClient`, you can test `httpResource` with the exact same APIs as `HttpClient`. See [HttpClient Testing](/guide/http/testing) for details.
 
 The following example shows a unit test for code using `httpResource`.
 
