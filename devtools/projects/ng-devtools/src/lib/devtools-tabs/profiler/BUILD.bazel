@@ -44,6 +44,7 @@ ng_project(
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline:timeline_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

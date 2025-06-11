@@ -1,55 +1,47 @@
 @use '../../../styles/typography';
 
-:host,
-.profiler-wrapper {
-  width: 100%;
-  height: calc(100% - 30px);
-
-  p {
-    margin: 0;
-  }
-}
-
-.mat-icon {
-  font-size: 18px;
-  top: 4px;
-  position: relative;
-}
-
-.profiler-control {
-  cursor: pointer;
-
-  &.recording-button {
-    color: var(--dynamic-red-01);
-  }
-}
-
-.instructions {
-  @extend %body-01;
-
-  &.hidden {
-    display: none;
-  }
-
-  input,
-  span {
-    margin-top: 5px;
-    cursor: pointer;
-  }
-}
-
-#profiler-content-wrapper {
-  margin: 0;
-  height: calc(100% - 30px);
-  width: 100%;
-}
-
-.visualization {
-  margin: 0;
+:host {
+  display: flex;
+  flex-direction: column;
   height: 100%;
-}
 
-.mdc-card {
-  flex-direction: row;
-  align-items: center;
+  .recorder-controls {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--color-separator);
+
+    button {
+      $icon-size: 18px;
+      margin: 0.625rem;
+      color: var(--secondary-contrast);
+      height: $icon-size;
+
+      &.recording-button {
+        color: var(--dynamic-red-01);
+      }
+
+      mat-icon {
+        width: $icon-size;
+        height: $icon-size;
+        font-size: $icon-size;
+      }
+    }
+
+    .instructions {
+      @extend %body-01;
+      padding-block: 0.7rem;
+      margin: 0;
+
+      input {
+        margin-top: 0.5rem;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .recording {
+    flex: 1;
+    overflow: hidden;
+  }
 }

@@ -8,16 +8,15 @@
 
 import {Component, inject, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
 import {Events, MessageBus, ProfilerFrame} from '../../../../../protocol';
 import {Subject} from 'rxjs';
 
 import {FileApiService} from './file-api-service';
 import {ProfilerImportDialogComponent} from './profiler-import-dialog.component';
 import {TimelineComponent} from './timeline/timeline.component';
-import {MatIcon} from '@angular/material/icon';
-import {MatTooltip} from '@angular/material/tooltip';
-import {MatIconButton} from '@angular/material/button';
-import {MatCard} from '@angular/material/card';
+import {ButtonComponent} from '../../shared/button/button.component';
 
 type State = 'idle' | 'recording' | 'visualizing';
 
@@ -28,7 +27,7 @@ const PROFILER_VERSION = 1;
   selector: 'ng-profiler',
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.scss'],
-  imports: [MatCard, MatIconButton, MatTooltip, MatIcon, TimelineComponent],
+  imports: [MatTooltip, MatIcon, TimelineComponent, ButtonComponent],
 })
 export class ProfilerComponent {
   readonly state = signal<State>('idle');
