@@ -1,3 +1,25 @@
+<a name="20.1.0-next.1"></a>
+# 20.1.0-next.1 (2025-06-11)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ef10aa4005](https://github.com/angular/angular/commit/ef10aa400585fb66e1afde08be0f9fd9a70ce7f2) | feat | support decoding in NgOptimizedImage ([#61905](https://github.com/angular/angular/pull/61905)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b7ab5fa256](https://github.com/angular/angular/commit/b7ab5fa2562524a0e8dfa4f3dff740ec2d31b4c7) | fix | add signal checks to handle negated calls ([#59970](https://github.com/angular/angular/pull/59970)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3aa933acb7](https://github.com/angular/angular/commit/3aa933acb796c6c85181c798b5353caaae17e809) | fix | components marked for traversal resets reactive context ([#61663](https://github.com/angular/angular/pull/61663)) |
+| [e81ea0c3dd](https://github.com/angular/angular/commit/e81ea0c3dd67fc86c7203de65896c3119813fe4c) | fix | unregister `onDestroy` in `outputToObservable` ([#61882](https://github.com/angular/angular/pull/61882)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f0221e193](https://github.com/angular/angular/commit/4f0221e1933675b24bdbf95be3825fdacee13c00) | fix | improve select performance ([#61949](https://github.com/angular/angular/pull/61949)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.3"></a>
 # 20.0.3 (2025-06-11)
 
