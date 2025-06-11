@@ -10,15 +10,15 @@
 // Run with `node adev/scripts/shared/llms.mjs` to generate llms-full.txt from the list in llms-list.md
 
 //tslint:disable:no-console
-import fs from 'fs/promises';
-import path from 'path';
+import {readFile, writeFile} from 'fs/promises';
+import {resolve, dirname} from 'path';
 
-const INPUT_MD_FILENAME = 'adev/scripts/shared/llms-list.md';
-const OUTPUT_FILENAME = 'adev/src/llms-full.txt';
+const INPUT_MD_FILENAME = 'adev/src/context/llms-list.md';
+const OUTPUT_FILENAME = 'adev/src/context/llms-full.txt';
 
-function postProcessOutputContent(content) {
+function postProcessOutputContent(content: string) {
   // Helper to map custom languages to standard Markdown languages
-  const mapLanguage = (lang) => {
+  const mapLanguage = (lang: string) => {
     if (!lang) return ''; // For code blocks without a specified language
     const lowerLang = lang.trim().toLowerCase();
     if (lowerLang === 'angular-ts') return 'typescript';
@@ -88,21 +88,21 @@ function postProcessOutputContent(content) {
 }
 
 async function main() {
-  const inputFilePath = path.resolve(process.cwd(), INPUT_MD_FILENAME);
-  const baseDirForIncludes = path.dirname(inputFilePath);
+  const inputFilePath = resolve(process.cwd(), INPUT_MD_FILENAME);
+  const baseDirForIncludes = dirname(inputFilePath);
 
   console.log(`Starting processing of: ${inputFilePath}`);
 
-  let mainFileContent;
+  let mainFileContent: string;
   try {
-    mainFileContent = await fs.readFile(inputFilePath, 'utf-8');
-  } catch (error) {
+    mainFileContent = await readFile(inputFilePath, 'utf-8');
+  } catch (error: unknown) {
     console.error(`Error: Failed to read input file "${inputFilePath}".`);
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1); // Exit with error code
   }
 
-  let processedContent = mainFileContent;
+  let processedContent: string = mainFileContent;
   const matches = [...mainFileContent.matchAll(/(.*\.md)/g)];
 
   console.log(`Found ${matches.length} files`);
@@ -111,28 +111,30 @@ async function main() {
 
   for (const match of matches) {
     const filePath = match[0];
-    const absolutePathToIncludeFile = path.resolve(filePath);
+    const absolutePathToIncludeFile = resolve(filePath);
 
     try {
       console.log(`  Including content from: ${absolutePathToIncludeFile}`);
-      const includedFileContent = await fs.readFile(absolutePathToIncludeFile, 'utf-8');
+      const includedFileContent = await readFile(absolutePathToIncludeFile, 'utf-8');
       const processedFile = postProcessOutputContent(includedFileContent);
       resultString += processedFile; // Append the content of the included file
-    } catch (fileReadError) {
-      console.warn(`  Warning: Could not read file "${absolutePathToIncludeFile}"`);
+    } catch (fileReadError: any) {
+      console.warn(
+        `  Warning: Could not read file "${absolutePathToIncludeFile}" - ${fileReadError.message}`,
+      );
     }
   }
 
   // Basic cleanup of blank lines
   processedContent = resultString.replace(/(?:\s*\n){3,}/g, '\n');
 
-  const outputFilePath = path.resolve(process.cwd(), OUTPUT_FILENAME);
+  const outputFilePath = resolve(process.cwd(), OUTPUT_FILENAME);
   try {
-    await fs.writeFile(outputFilePath, processedContent, 'utf-8');
+    await writeFile(outputFilePath, processedContent, 'utf-8');
     console.log(`Successfully generated combined file: ${outputFilePath}`);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(`Error: Failed to write output file "${outputFilePath}".`);
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1); // Exit with error code
   }
 }

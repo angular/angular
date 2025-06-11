@@ -15,6 +15,7 @@ exports_files([
 ])
 
 APPLICATION_FILES = [
+    "//adev/src/context:llms_full",
     "//adev/src/assets/images",
     "//adev/src/assets/others",
     "//adev/src/assets/previews",
