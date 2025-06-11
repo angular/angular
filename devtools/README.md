@@ -61,8 +61,8 @@ DevTools then communicate with the user's app via message passing.
 You can build the release version of Angular DevTools for either Chrome or Firefox with:
 
 ```shell
-yarn devtools:build:chrome
-yarn devtools:build:firefox
+yarn devtools:build:chrome:release
+yarn devtools:build:firefox:release
 ```
 
 Either way, the built extension will be at `dist/bin/devtools/projects/shell-browser/src/prodapp`.
