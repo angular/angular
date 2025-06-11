@@ -1,3 +1,4 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//adev/shared-docs:index.bzl", "generate_guides")
 
 generate_guides(
@@ -8,5 +9,24 @@ generate_guides(
     data = [
         "//adev/src/content/examples",
     ],
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = [
+        "//adev/src/content/guide/animations:guide_files",
+        "//adev/src/content/guide/components:guide_files",
+        "//adev/src/content/guide/di:guide_files",
+        "//adev/src/content/guide/directives:guide_files",
+        "//adev/src/content/guide/forms:guide_files",
+        "//adev/src/content/guide/http:guide_files",
+        "//adev/src/content/guide/i18n:guide_files",
+        "//adev/src/content/guide/performance:guide_files",
+        "//adev/src/content/guide/routing:guide_files",
+        "//adev/src/content/guide/signals:guide_files",
+        "//adev/src/content/guide/templates:guide_files",
+        "//adev/src/content/guide/testing:guide_files",
+    ] + glob(["**/*.md"]),
     visibility = ["//adev:__subpackages__"],
 )
