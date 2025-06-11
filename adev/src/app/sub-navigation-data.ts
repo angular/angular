@@ -352,6 +352,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/read-route-state',
           },
           {
+            label: 'Redirecting routes',
+            path: 'guide/routing/redirecting-routes',
+            contentPath: 'guide/routing/redirecting-routes',
+          },
+          {
             label: 'Other routing tasks',
             path: 'guide/routing/common-router-tasks',
             contentPath: 'guide/routing/common-router-tasks',
