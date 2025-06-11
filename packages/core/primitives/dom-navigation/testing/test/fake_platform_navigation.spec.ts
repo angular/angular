@@ -26,6 +26,8 @@ interface Locals {
   setExtraNavigateCallback: (callback: (event: FakeNavigateEvent) => void) => void;
 }
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
+
 describe('navigation', () => {
   let locals: Locals;
 
@@ -494,6 +496,34 @@ describe('navigation', () => {
       await expectAsync(finished).toBeResolvedTo(committedEntry);
     });
 
+    it('precommitHandler rejects', async () => {
+      const error = new Error('precommitHandler rejected');
+      locals.pendingInterceptOptions.push({
+        precommitHandler: () => Promise.reject(error),
+      });
+      const {committed, finished} = locals.navigation.navigate('/test-precommit-reject');
+      await expectAsync(committed).toBeRejectedWith(error);
+      await expectAsync(finished).toBeRejectedWith(error);
+      expect(locals.navigation.currentEntry.url).not.toBe('https://test.com/test-precommit-reject');
+      expect(locals.navigateEvents.length).toBe(1); // navigate event still fires
+      expect(locals.navigationCurrentEntryChangeEvents.length).toBe(0); // No commit
+    });
+
+    it('precommitHandler throws', async () => {
+      const error = new Error('precommitHandler threw');
+      locals.pendingInterceptOptions.push({
+        precommitHandler: () => {
+          throw error;
+        },
+      });
+      const {committed, finished} = locals.navigation.navigate('/test-precommit-throw');
+      await expectAsync(committed).toBeRejectedWith(error);
+      await expectAsync(finished).toBeRejectedWith(error);
+      expect(locals.navigation.currentEntry.url).not.toBe('https://test.com/test-precommit-throw');
+      expect(locals.navigateEvents.length).toBe(1);
+      expect(locals.navigationCurrentEntryChangeEvents.length).toBe(0);
+    });
+
     it('deferred commit resolves on finished', async () => {
       let handlerFinishedResolve!: () => void;
       let precommitHandlerResolve!: () => void;
@@ -630,6 +660,253 @@ describe('navigation', () => {
       handlerFinishedReject(error);
       await expectAsync(finished).toBeRejectedWith(error);
       expect(navigateEvent.signal.aborted).toBeTrue();
+    });
+
+    describe('precommitHandler with history API', () => {
+      it('is invoked when pushState triggers a navigation', async () => {
+        let precommitHandlerCalled = false;
+        locals.pendingInterceptOptions.push({
+          precommitHandler: async () => {
+            precommitHandlerCalled = true;
+          },
+        });
+        locals.navigation.pushState(null, '', '/pushed');
+        await new Promise((resolve) => setTimeout(resolve));
+        expect(precommitHandlerCalled).toBeTrue();
+        expect(locals.navigation.currentEntry.url).toBe('https://test.com/pushed');
+      });
+
+      it('precommitHandler rejects during pushState', async () => {
+        let precommitHandlerCalled = false;
+        locals.pendingInterceptOptions.push({
+          precommitHandler: () => {
+            precommitHandlerCalled = true;
+            return Promise.reject(new Error());
+          },
+        });
+
+        const nextEvent = locals.nextNavigateEvent();
+        locals.navigation.pushState(null, '', '/pushed-throw');
+        await new Promise(async (resolve) => {
+          (await nextEvent).signal.onabort = resolve;
+        });
+
+        expect(precommitHandlerCalled).toBeTrue();
+        expect(locals.navigation.currentEntry.url).not.toBe('https://test.com/pushed-reject');
+        expect(locals.navigationCurrentEntryChangeEvents.length).toBe(0);
+      });
+
+      it('precommitHandler throws during pushState', async () => {
+        locals.pendingInterceptOptions.push({
+          precommitHandler: () => {
+            throw new Error();
+          },
+        });
+
+        locals.navigation.pushState(null, '', '/pushed-throw');
+        await new Promise((resolve) => setTimeout(resolve));
+        expect(locals.navigation.currentEntry.url).not.toBe('https://test.com/pushed-throw');
+        expect(locals.navigationCurrentEntryChangeEvents.length).toBe(0);
+      });
+
+      it('is invoked when replaceState triggers a navigation', async () => {
+        let precommitHandlerCalled = false;
+        locals.pendingInterceptOptions.push({
+          precommitHandler: async () => {
+            precommitHandlerCalled = true;
+          },
+        });
+        locals.navigation.replaceState(null, '', '/replaced');
+        await new Promise((resolve) => setTimeout(resolve));
+        expect(precommitHandlerCalled).toBeTrue();
+        expect(locals.navigation.currentEntry.url).toBe('https://test.com/replaced');
+      });
+
+      it('precommitHandler rejects during replaceState', async () => {
+        const error = new Error('precommitHandler rejected for replaceState');
+        let precommitHandlerCalled = false;
+        locals.pendingInterceptOptions.push({
+          precommitHandler: () => {
+            precommitHandlerCalled = true;
+            return Promise.reject(error);
+          },
+        });
+
+        locals.navigation.replaceState(null, '', '/replaced-reject');
+        await new Promise((resolve) => setTimeout(resolve));
+        expect(precommitHandlerCalled).toBeTrue();
+        const navigateEvent = locals.navigateEvents[locals.navigateEvents.length - 1];
+        expect(navigateEvent.signal.aborted).toBeTrue();
+        expect(navigateEvent.signal.reason).toBe(error);
+        expect(locals.navigation.currentEntry.url).not.toBe('https://test.com/replaced-reject');
+        expect(locals.navigationCurrentEntryChangeEvents.length).toBe(0);
+      });
+
+      it('precommitHandler throws during replaceState', async () => {
+        const error = new Error('precommitHandler threw for replaceState');
+        let precommitHandlerCalled = false;
+        locals.pendingInterceptOptions.push({
+          precommitHandler: () => {
+            precommitHandlerCalled = true;
+            throw error;
+          },
+        });
+
+        locals.navigation.replaceState(null, '', '/replaced-throw');
+        await new Promise((resolve) => setTimeout(resolve));
+        expect(precommitHandlerCalled).toBeTrue();
+        const navigateEvent = locals.navigateEvents[locals.navigateEvents.length - 1];
+        expect(navigateEvent.signal.aborted).toBeTrue();
+        expect(locals.navigation.currentEntry.url).not.toBe('https://test.com/replaced-throw');
+        expect(locals.navigationCurrentEntryChangeEvents.length).toBe(0);
+      });
+
+      describe('redirect from precommitHandler during pushState', () => {
+        it('correctly changes URL and replaces history entry by default', async () => {
+          // First, push a state
+          locals.navigation.pushState(null, '', '/initial-for-replace-push');
+          await new Promise((resolve) => setTimeout(resolve));
+          locals.pendingInterceptOptions.push({
+            precommitHandler: async (event) => {
+              event.redirect('/redirected-from-push', {history: 'push'});
+            },
+          });
+          const originalNumEntries = locals.navigation.entries().length;
+          locals.navigation.pushState(null, '', '/pushed');
+          await new Promise((resolve) => setTimeout(resolve));
+
+          expect(locals.navigation.currentEntry.url).toBe('https://test.com/redirected-from-push');
+          expect(locals.navigation.entries().length).toBe(originalNumEntries + 1);
+        });
+
+        it('correctly changes URL and replaces history entry when history: "replace"', async () => {
+          // First, push a state
+          locals.navigation.pushState(null, '', '/initial-for-replace-push');
+          await new Promise((resolve) => setTimeout(resolve));
+          locals.pendingInterceptOptions.push({
+            precommitHandler: async (event) => {
+              event.redirect('/redirected-from-push', {history: 'replace'});
+            },
+          });
+          const originalNumEntries = locals.navigation.entries().length;
+          locals.navigation.pushState(null, '', '/pushed');
+          await new Promise((resolve) => setTimeout(resolve));
+
+          expect(locals.navigation.currentEntry.url).toBe('https://test.com/redirected-from-push');
+          // pushState (becomes entry) + redirect with replace (replaces that entry)
+          expect(locals.navigation.entries().length).toBe(originalNumEntries);
+        });
+
+        it('correctly updates info during redirect', async () => {
+          const redirectInfo = {isRedirected: true};
+          locals.pendingInterceptOptions.push({
+            precommitHandler: async (event) => {
+              event.redirect('/redirected-info', {info: redirectInfo});
+            },
+          });
+          const nextEvent = locals.nextNavigateEvent();
+          locals.navigation.pushState(null, '', '/pushed-for-info');
+          const e = await nextEvent;
+          await new Promise((resolve) => setTimeout(resolve));
+          expect(e.info).toEqual(redirectInfo);
+        });
+
+        it('correctly updates state during redirect', async () => {
+          const redirectState = {isRedirected: true};
+          locals.pendingInterceptOptions.push({
+            precommitHandler: async (event) => {
+              event.redirect('/redirected-state', {state: redirectState});
+            },
+          });
+          locals.navigation.pushState(null, '', '/pushed-for-state');
+          await new Promise((resolve) => setTimeout(resolve));
+
+          expect(locals.navigation.currentEntry.getState()).toEqual(redirectState);
+        });
+      });
+
+      describe('redirect from precommitHandler during replaceState', () => {
+        it('correctly changes URL and replaces history entry by default', async () => {
+          // First, push a state
+          locals.navigation.pushState(null, '', '/initial-for-replace-push');
+          await new Promise((resolve) => setTimeout(resolve));
+          locals.navigateEvents.length = 0;
+
+          locals.pendingInterceptOptions.push({
+            precommitHandler: async (event) => {
+              event.redirect('/redirected-from-replace-push', {history: 'push'});
+            },
+          });
+          const originalNumEntries = locals.navigation.entries().length;
+          locals.navigation.replaceState(null, '', '/replaced-for-push');
+          await new Promise((resolve) => setTimeout(resolve));
+
+          expect(locals.navigation.currentEntry.url).toBe(
+            'https://test.com/redirected-from-replace-push',
+          );
+          // replaceState (modifies current) + redirect with push (adds new one)
+          expect(locals.navigation.entries().length).toBe(originalNumEntries + 1);
+        });
+
+        it('correctly changes URL and replaces history entry when history: "replace"', async () => {
+          // First, push a state
+          locals.navigation.pushState(null, '', '/initial-for-replace-replace');
+          await new Promise((resolve) => setTimeout(resolve));
+          locals.navigateEvents.length = 0;
+
+          locals.pendingInterceptOptions.push({
+            precommitHandler: async (event) => {
+              event.redirect('/redirected-from-replace-replace', {history: 'replace'});
+            },
+          });
+          const originalNumEntries = locals.navigation.entries().length;
+          locals.navigation.replaceState(null, '', '/replaced-for-replace');
+          await new Promise((resolve) => setTimeout(resolve));
+
+          expect(locals.navigation.currentEntry.url).toBe(
+            'https://test.com/redirected-from-replace-replace',
+          );
+          // replaceState (modifies current) + redirect with replace (modifies current again)
+          expect(locals.navigation.entries().length).toBe(originalNumEntries);
+        });
+
+        it('correctly updates info during redirect', async () => {
+          const redirectInfo = {isRedirectedReplace: true};
+          // First, push a state
+          locals.navigation.pushState(null, '', '/initial-for-replace-info');
+          await new Promise((resolve) => setTimeout(resolve));
+          locals.navigateEvents.length = 0;
+
+          locals.pendingInterceptOptions.push({
+            precommitHandler: async (event) => {
+              event.redirect('/redirected-replace-info', {info: redirectInfo});
+            },
+          });
+          const redirectedEvent = locals.nextNavigateEvent(); // Redirected navigation
+          locals.navigation.replaceState(null, '', '/replaced-for-info');
+          const e = await redirectedEvent;
+          await new Promise((resolve) => setTimeout(resolve));
+
+          expect(e.info).toEqual(redirectInfo);
+        });
+
+        it('correctly updates state during redirect', async () => {
+          const redirectState = {isRedirectedReplace: true};
+          // First, push a state
+          locals.navigation.pushState(null, '', '/initial-for-replace-state');
+          await new Promise((resolve) => setTimeout(resolve));
+
+          locals.pendingInterceptOptions.push({
+            precommitHandler: async (event) => {
+              event.redirect('/redirected-replace-state', {state: redirectState});
+            },
+          });
+          locals.navigation.replaceState(null, '', '/replaced-for-state');
+          await new Promise((resolve) => setTimeout(resolve));
+
+          expect(locals.navigation.currentEntry.getState()).toEqual(redirectState);
+        });
+      });
     });
   });
 
@@ -1800,6 +2077,68 @@ describe('navigation', () => {
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(3);
         expect(locals.popStateEvents.length).toBe(2);
       });
+    });
+  });
+
+  describe('redirect', () => {
+    it('correctly changes the destination URL', async () => {
+      locals.pendingInterceptOptions.push({
+        precommitHandler: async (event) => {
+          event.redirect('/redirected');
+        },
+      });
+      const {committed} = locals.navigation.navigate('/initial');
+      const committedEntry = await committed;
+      expect(committedEntry.url).toBe('https://test.com/redirected');
+    });
+
+    it('works with history: "push" option', async () => {
+      locals.pendingInterceptOptions.push({
+        precommitHandler: async (event) => {
+          event.redirect('/redirected', {history: 'push'});
+        },
+      });
+      const {committed} = locals.navigation.navigate('/initial');
+      const committedEntry = await committed;
+      expect(committedEntry.url).toBe('https://test.com/redirected');
+      expect(locals.navigation.entries().length).toBe(2); // Initial and redirected
+    });
+
+    it('works with history: "replace" option', async () => {
+      locals.pendingInterceptOptions.push({
+        precommitHandler: async (event) => {
+          event.redirect('/redirected', {history: 'replace'});
+        },
+      });
+      const {committed} = locals.navigation.navigate('/initial');
+      const committedEntry = await committed;
+      expect(committedEntry.url).toBe('https://test.com/redirected');
+      expect(locals.navigation.entries().length).toBe(1); // Original entry replaced
+    });
+
+    it('correctly updates state if provided', async () => {
+      const state = {redirectState: 'test'};
+      locals.pendingInterceptOptions.push({
+        precommitHandler: async (event) => {
+          event.redirect('/redirected', {state});
+        },
+      });
+      const {committed} = locals.navigation.navigate('/initial');
+      const committedEntry = await committed;
+      expect(committedEntry.getState()).toEqual(state);
+    });
+
+    it('throws an error if navigationType is "traverse"', async () => {
+      await setUpEntries();
+      locals.pendingInterceptOptions.push({
+        precommitHandler: async (event) => {
+          expect(() => event.redirect('/redirected')).toThrowError();
+        },
+      });
+      // Use back() to trigger a 'traverse' navigation
+      await locals.navigation.back().finished;
+      // Check that a navigate event occurred (it should, even if redirect fails)
+      expect(locals.navigateEvents.length).toBe(1);
     });
   });
 });
