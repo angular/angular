@@ -45,9 +45,9 @@
           </li>
         }
       </ul>
-    } @else if (!searchResults.isLoading() && (history.hasItems())) {
+    } @else if (history.hasItems() && !this.searchControl.value.length) {
       <docs-search-history />
-    } @else if (!searchResults.isLoading()) {
+    } @else {
       <div class="docs-search-results docs-mini-scroll-track">
         @if (!resultsResource.hasValue()) {
           <div class="docs-search-results__start-typing">
