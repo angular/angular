@@ -40,6 +40,7 @@ export function matchWithChecks(
   segments: UrlSegment[],
   injector: EnvironmentInjector,
   urlSerializer: UrlSerializer,
+  abortSignal: AbortSignal,
 ): Observable<MatchResult> {
   const result = match(segmentGroup, route, segments);
   if (!result.matched) {
@@ -49,7 +50,7 @@ export function matchWithChecks(
   // Only create the Route's `EnvironmentInjector` if it matches the attempted
   // navigation
   injector = getOrCreateRouteInjectorIfNeeded(route, injector);
-  return runCanMatchGuards(injector, route, segments, urlSerializer).pipe(
+  return runCanMatchGuards(injector, route, segments, urlSerializer, abortSignal).pipe(
     map((v) => (v === true ? result : {...noMatch})),
   );
 }
