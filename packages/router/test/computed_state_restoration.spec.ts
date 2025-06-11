@@ -377,6 +377,7 @@ describe('`restoredState#ɵrouterPageId`', () => {
 
       TestBed.inject(MyCanActivateGuard).redirectTo = '/unguarded';
       await router.navigateByUrl('/third');
+      await timeout();
       expect(location.path()).toEqual('/unguarded');
       expect(location.getState()).toEqual(jasmine.objectContaining({ɵrouterPageId: 4}));
 

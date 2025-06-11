@@ -23,9 +23,10 @@ export function recognize(
   config: Route[],
   serializer: UrlSerializer,
   paramsInheritanceStrategy: 'emptyOnly' | 'always',
+  abortSignal: AbortSignal,
 ): MonoTypeOperatorFunction<NavigationTransition> {
-  return mergeMap((t) =>
-    recognizeFn(
+  return mergeMap(async (t) => {
+    const {state: targetSnapshot, tree: urlAfterRedirects} = await recognizeFn(
       injector,
       configLoader,
       rootComponentType,
@@ -33,10 +34,8 @@ export function recognize(
       t.extractedUrl,
       serializer,
       paramsInheritanceStrategy,
-    ).pipe(
-      map(({state: targetSnapshot, tree: urlAfterRedirects}) => {
-        return {...t, targetSnapshot, urlAfterRedirects};
-      }),
-    ),
-  );
+      abortSignal,
+    );
+    return {...t, targetSnapshot, urlAfterRedirects};
+  });
 }
