@@ -2,7 +2,8 @@
 
 ## 🚧🚧 This design is still work in progress
 
-> This tutorial assumes you are familiar with the previous iteration of forms and takes it from there.
+> This tutorial assumes you are familiar with the previous iteration of forms
+> and takes it from there.
 
 We're still in early stages but wanted to get feedback as early as possible.
 
@@ -27,9 +28,10 @@ console.log(f().valid())
 console.log(f.a.b.c.d.e().errors())
 ```
 
-### `Resolve` is now fieldOf/stateOf/valueOf
+### `resolve()` is now `fieldOf`/`stateOf`/`valueOf`
 
-We got rid of `resolve` and introduced new ways of accessing a field and its state.
+We got rid of `resolve` and introduced new ways of accessing a field and its
+state.
 
 ```typescript
 const cat = signal({
@@ -56,7 +58,7 @@ validate(p.name, ({value, state, field, valueOf, stateOf, fieldOf}) => {
 });
 ```
 
-### Schema<T> type is now schema<T>() function
+### `Schema<T>` type is now `schema<T>()` function
 
 This would allow us to have more control:
 
@@ -76,22 +78,24 @@ export const catSchema = schema<Cat>((cat) => {
 
 ```typescript
 // Before
-import {FieldDirective} from 'google3/experimental/angularsignalforms';
+import {FieldDirective} from '@angular/forms/experimental';
 
 @Component({
   imports: [FieldDirective],
   template: `<input [field]="cat.name" matInput>`
 })
-class CatComponent {}
+class CatComponent {
+}
 
 // After
-import {Control} from 'google3/experimental/angularsignalforms';
+import {Control} from '@angular/forms/experimental';
 
 @Component({
   imports: [Control],
   template: `<input [control]="cat.name" matInput>`
 })
-class CatComponent {}
+class CatComponent {
+}
 ```
 
 ### New validation statuses
@@ -110,12 +114,23 @@ form.name().invalid();
 
 ### Form must be created in Injection Context
 
-Creating a form now requires an injection context. This allows for injecting services directly within the schema.
+Creating a form now requires an injection context. This allows for injecting
+services directly within the schema.
 
 ```typescript
 const catSchema = schema<Cat>(c => {
   const service = inject(CatService);
 });
+```
+
+You can also pass injector to the form:
+
+```typescript
+const f = form(
+    data,
+    schema,
+    {injector: TestBed.inject(Injector)},
+);
 ```
 
 ## Built-in validators
@@ -142,7 +157,8 @@ export class FeedbackComponent {
 
 ## Dirty state
 
-You can check dirty state for the form (`form().dirty()`) or any of its children (`form.name().dirty()`).
+You can check dirty state for the form (`form().dirty()`) or any of its
+children (`form.name().dirty()`).
 
 > A field is considered dirty if its value has ever been changed by a user.
 
@@ -162,11 +178,33 @@ export class FeedbackComponent implements HasUnsavedChanges {
 }
 ```
 
-We'll leave adding `canDeactivate` as an exercise for the reader.
+We'll leave adding `canDeactivate` as an exercise to the reader.
 
 > There is no pristine state; let us know if it might be useful.
 
 ## Async validation
+
+There are several different options available for async validation.
+
+### validateHttp
+
+If we have an HTTP endpoint, we can use `validateHttp` which uses httpResource
+under the hood.
+
+```typescript
+validateHttp(p.username, {
+  request: ({value}) => `/api/usernameTaken?${value()}`,
+  errors: (result) => {
+    return result ? [{kind: 'notUnique'}] : undefined;
+  },
+});
+```
+
+### validateAsync
+
+> This is a lower-level primitive for most cases `validateHttp` should be
+> enough.  
+> We're also working on adding `validateGrpc`
 
 Let's create an async function that validates the name asynchronously:
 
@@ -205,20 +243,9 @@ validateAsync(path.name, {
 });
 ```
 
-> This is a lower-level primitive. In the future, we're planning to support higher-level APIs like `validateHttp` or `validateGrpc`.
-
-```typescript
-validateHttp(p.username, {
-  request: ({value}) => `/api/usernameTaken?${value()}`,
-  errors: (result) => {
-    return result ? [{kind: 'notUnique'}] : undefined;
-  },
-});
-```
-
 ### Fetching dynamic data
 
-Sometimes we need to fetch  data based on the value of a field.
+Sometimes we need to fetch data based on the value of a field.
 
 In our case, we can have the user select a product, and then fetch the list of
 versions
@@ -231,18 +258,18 @@ field.
 ```typescript
 // product.service.ts
 import {ResourceRef} from '@angular/core';
-import {DataKey} from 'google3/experimental/angularsignalforms';
+import {DataKey} from '@angular/forms/experimental';
 
 // Each product would have a list of available versions, e.g. [1, 2, 3]
 export const VERSIONS_KEY = new DataKey<ResourceRef<number[]>>();
 ```
 
-Then, let's create a separate schema for a product. Since forms must be created in an injection context, we can now inject a service.
+Then, let's create a separate schema for a product.
 
 ```typescript
 // product.service.ts
 import {ResourceRef} from '@angular/core';
-import {schema} from 'google3/experimental/angularsignalforms';
+import {schema} from '@angular/forms/experimental';
 
 export const VERSIONS_KEY = new DataKey<ResourceRef<number[]>>();
 
@@ -263,7 +290,7 @@ service:
 ```typescript
 // product.service.ts
 import {ResourceRef, inject} from '@angular/core';
-import {schema, required} from 'google3/experimental/angularsignalforms';
+import {schema, required} from '@angular/forms/experimental';
 
 export const VERSIONS_KEY = new DataKey<ResourceRef<number[]>>();
 
@@ -280,7 +307,7 @@ Now we can use `define` rule to attach a resource to the `product.name` field.
 ```typescript
 // product.service.ts
 import {ResourceRef, inject, resource} from '@angular/core';
-import {schema, required, define} from 'google3/experimental/angularsignalforms';
+import {schema, required, define} from '@angular/forms/experimental';
 
 export const VERSIONS_KEY = new DataKey<ResourceRef<number[]>>();
 
@@ -319,7 +346,7 @@ export class FeedbackComponent {
     // We also have to wire up the schema using apply.
     apply(path.product, productSchema);
   })
-  
+
   readonly versions = this.form.product.name().data(VERSIONS_KEY); // This is ResourceRef<number[]>
 
 }
@@ -328,21 +355,23 @@ export class FeedbackComponent {
 Now we can use the resulting resource in the template.
 
 ```angular2html
+
 <mat-select [control]="form.product.version">
   @if (versions?.isLoading()) {
-    <mat-option disabled>Loading...</mat-option>
+  <mat-option disabled>Loading...</mat-option>
   }
   @if (versions?.hasValue()) {
-    @for (version of versions.value(); track version) {
-      <mat-option [value]="version">{{ version }}</mat-option>
-    }
+  @for (version of versions.value(); track version) {
+  <mat-option [value]="version">{{ version }}</mat-option>
+  }
   }
 </mat-select>
 ```
 
 ## Disabled reason
 
-When we disable a field, we can now return a string explaining why the field is disabled:
+When we disable a field, we can now return a string explaining why the field is
+disabled:
 
 ```typescript
 disabled(path.feedback, ({valueOf}) => {
@@ -352,34 +381,39 @@ disabled(path.feedback, ({valueOf}) => {
 });
 ```
 
-Now we can access `disabledReasons` from the field using `form.feedback().disabledReasons()`.
+Now we can access `disabledReasons` from the field using
+`form.feedback().disabledReasons()`.
 
 ```angular2html
+
 <mat-form-field appearance="outline">
   <mat-label>Feedback</mat-label>
   <input [control]="form.feedback" matInput>
-  @if(form.feedback().disabled()) {
+  @if( form.feedback().disabled() ) {
   <mat-hint>
-  {{form.feedback().disabledReasons()[0].reason}}
+  {{ form.feedback().disabledReasons()[0].reason }}
   </mat-hint>
   }
 </mat-form-field>
 ```
 
-> The disabled reason propagates down to its children in the same way the disabled state does.
+> The disabled reason propagates down to its children in the same way the
+> disabled state does.
 
 ## validateTree
 
-`validateTree` allows running validation on a group field and attaching the errors to specific child fields. Let's rewrite our matching password validation to display the error on both fields.
+`validateTree` allows running validation on a group field and attaching the
+errors to specific child fields. Let's rewrite our matching password validation
+to display the error on both fields.
 
 ```typescript
 export function confirmationPasswordValidator(
-  path: FieldPath<{password: string; confirmationPassword: string}>,
-): TreeValidator<{password: string; confirmationPassword: string}> {
+    path: FieldPath<{ password: string; confirmationPassword: string }>,
+): TreeValidator<{ password: string; confirmationPassword: string }> {
   return ({valueOf, fieldOf}) => {
     return valueOf(path.confirmationPassword) === valueOf(path.password)
-      ? []
-      : [
+        ? []
+        : [
           {
             field: fieldOf(path.confirmationPassword),
             kind: 'confirmationPassword',
@@ -406,13 +440,13 @@ Now both fields will have the `confirmationPassword` error.
 
 ## Readonly
 
-The new `readonly` rule is very similar to `disabled:
+The new `readonly` rule is very similar to `disabled`:
 
 ```typescript
 import {
   /* ... */
   readonly,
-} from 'google3/experimental/angularsignalforms';
+} from '@angular/forms/experimental';
 
 /* ... */
 export class FeedbackComponent {
@@ -426,8 +460,10 @@ export class FeedbackComponent {
 }
 ```
 
-> There is currently no `readonly reason`; let us know if there's a use case for having it.
+> There is currently no `readonly reason`; let us know if there's a use case for
+> having it.
 
 ### Array tracking
 
-We've added some rudimentary array tracking under the hood. Try moving elements within an array and let us know if that works.
+We've added some rudimentary array tracking under the hood.
+Try moving elements within an array and let us know if that works.
