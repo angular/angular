@@ -31,6 +31,6 @@ Several editors, such as <a href="https://studio.firebase.google.com?utm_source=
 
 
 * <a href="/llms.txt" target="_blank">llms.txt</a> - an index file providing links to key files and resources. 
-* <a href="/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
+* <a href="/context/llm-files/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
 
 Be sure [to check out the overview page](/ai) for more information on how to integrate AI into your Angular applications.

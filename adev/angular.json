@@ -32,14 +32,10 @@
               "src/favicon.ico",
               "src/robots.txt",
               "src/assets",
-              "src/llms.txt",
-              "src/llms-full.txt",
-              "src/context"
+              "src/context",
+              "src/llms.txt"
             ],
-            "styles": [
-              "@angular/docs/styles/global-styles.scss",
-              "./src/local-styles.scss"
-            ],
+            "styles": ["@angular/docs/styles/global-styles.scss", "./src/local-styles.scss"],
             "scripts": [],
             "webWorkerTsConfig": "tsconfig.worker.json",
             "optimization": {
