@@ -9,9 +9,9 @@
       placeholder="Search docs"
     />
 
-    @if (searchResults().length) {
+    @if (searchResults.hasValue() && searchResults.value().length > 0) {
       <ul class="docs-search-results docs-mini-scroll-track">
-        @for (result of searchResults(); track result.id) {
+        @for (result of searchResults.value(); track result.id) {
           <li docsSearchItem [item]="result">
             <a
               [routerLink]="'/' + result.url | relativeLink: 'pathname'"
@@ -49,11 +49,11 @@
       <docs-search-history />
     } @else if (!searchResults.isLoading()) {
       <div class="docs-search-results docs-mini-scroll-track">
-        @if (!resultsResource.hasValue()) {
+        @if (!searchResults.hasValue()) {
           <div class="docs-search-results__start-typing">
             <span>Start typing to see results</span>
           </div>
-        } @else if (searchResults().length === 0) {
+        } @else if (searchResults.value().length === 0) {
           <div class="docs-search-results__no-results">
             <span>No results found</span>
           </div>
