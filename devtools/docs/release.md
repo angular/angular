@@ -70,7 +70,7 @@ Next, build and package the extension:
 
 ```shell
 # Build the Chrome version.
-yarn devtools:build:chrome
+yarn devtools:build:chrome:release
 
 # Package the extension.
 (cd dist/bin/devtools/projects/shell-browser/src/prodapp && zip -r ~/devtools-chrome.zip *)
@@ -91,7 +91,7 @@ To publish Angular DevTools as a Firefox Add-on, first build and package the ext
 
 ```shell
 # Build the Firefox version.
-yarn devtools:build:firefox
+yarn devtools:build:firefox:release
 
 # Package the extension.
 (cd dist/bin/devtools/projects/shell-browser/src/prodapp && zip -r ~/devtools-firefox.zip *)
