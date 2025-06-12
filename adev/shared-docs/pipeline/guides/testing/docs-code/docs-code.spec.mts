@@ -7,7 +7,7 @@
  */
 
 import {parseMarkdown} from '../../../guides/parse.mjs';
-import {runfiles} from '@bazel/runfiles';
+import {resolve} from 'node:path';
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
 import {initHighlighter} from '../../extensions/docs-code/format/highlight.mjs';
@@ -17,10 +17,7 @@ describe('markdown to html', () => {
 
   beforeAll(async () => {
     await initHighlighter();
-    const markdownContent = await readFile(
-      runfiles.resolvePackageRelative('docs-code/docs-code.md'),
-      {encoding: 'utf-8'},
-    );
+    const markdownContent = await readFile(resolve('./docs-code.md'), {encoding: 'utf-8'});
     markdownDocument = JSDOM.fragment(await parseMarkdown(markdownContent, {}));
   });
 
