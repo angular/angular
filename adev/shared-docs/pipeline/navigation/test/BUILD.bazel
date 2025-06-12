@@ -1,5 +1,5 @@
 load("//adev/shared-docs:defaults.bzl", "ts_project")
-load("//tools:defaults.bzl", "jasmine_node_test")
+load("//tools:defaults2.bzl", "jasmine_test")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/navigation:__subpackages__"])
 
@@ -13,7 +13,7 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "unit_tests",
-    deps = [":unit_test_lib"],
+    data = [":unit_test_lib_rjs"],
 )
