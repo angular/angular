@@ -29,7 +29,7 @@ In this case, `:id` is dynamic and will change based on how the route is request
 
 1. In `src/app/housing-location/housing-location.ts`, add an anchor tag to the `section` element and include the `routerLink` directive:
 
-    <docs-code header="Add anchor with a routerLink directive to housing-location.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/housing-location/housing-location.ts" visibleLines="[20]"/>
+    <docs-code header="Add anchor with a routerLink directive to housing-location.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/housing-location/housing-location.ts" visibleLines="[19]"/>
 
     The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
 
@@ -45,7 +45,7 @@ In this step, you will get the route parameter in the `Details`. Currently, the 
 
 1. In `src/app/details/details.ts` update the template to import the functions, classes and services that you'll need to use in the `Details`:
 
-    <docs-code header="Update file level imports" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[1,5]"/>
+    <docs-code header="Update file level imports" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[1,4]"/>
 
 1. Update the `template` property of the `@Component` decorator to display the value `housingLocationId`:
 
@@ -56,13 +56,13 @@ In this step, you will get the route parameter in the `Details`. Currently, the 
 1. Update the body of the `Details` class with the following code:
 
     <docs-code language="javascript">
-        export class Details {
-            route: ActivatedRoute = inject(ActivatedRoute);
-            housingLocationId = -1;
-            constructor() {
-                this.housingLocationId = Number(this.route.snapshot.params['id']);
-            }
+    export class Details {
+        route: ActivatedRoute = inject(ActivatedRoute);
+        housingLocationId = -1;
+        constructor() {
+            this.housingLocationId = Number(this.route.snapshot.params['id']);
         }
+    }
     </docs-code>
 
     This code gives the `Details` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the `constructor`, the code converts the `id` parameter acquired from the route from a string to a number.
@@ -79,13 +79,13 @@ To access the data you will add a call to the `HousingService`.
 
 1. Update the template code to match the following code:
 
-    <docs-code header="Update the Details template in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[11,32]"/>
+    <docs-code header="Update the Details template in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[8,29]"/>
 
     Notice that the `housingLocation` properties are being accessed with the optional chaining operator `?`. This ensures that if the `housingLocation` value is null or undefined the application doesn't crash.
 
 1. Update the body of the `Details` class to match the following code:
 
-    <docs-code header="Update the Details class in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[35,44]"/>
+    <docs-code header="Update the Details class in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[32,41]"/>
 
     Now the component has the code to display the correct information based on the selected housing location. The `constructor` now includes a call to the `HousingService` to pass the route parameter as an argument to the `getHousingLocationById` service function.
 
@@ -106,7 +106,7 @@ In a previous lesson you updated the `App` template to include a `routerLink`. A
 
 1. Confirm that your code matches the following:
 
-    <docs-code header="Add routerLink to App" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[8,20]"/>
+    <docs-code header="Add routerLink to App" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[8,19]"/>
 
     Your code may already be up-to-date but confirm to be sure.
 </docs-step>

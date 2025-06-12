@@ -38,7 +38,7 @@ In the **Edit** pane of your IDE, in `src/app/details/details.ts`:
 
 1. After the `import` statements at the top of the file, add the following code to import the Angular form classes.
 
-    <docs-code header="Forms imports in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[6]"/>
+    <docs-code header="Forms imports in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[5]"/>
 
 1. In the `Details` decorator metadata, update the `imports` property with the following code:
 
@@ -67,7 +67,7 @@ In the **Edit** pane of your IDE, in `src/app/details/details.ts`:
 
 1. In the `Details` decorator metadata, update the `template` HTML to match the following code to add the form's markup.
 
-   <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[11,46]"/>
+   <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[10,45]"/>
 
    The template now includes an event handler `(submit)="submitApplication()"`. Angular uses parentheses syntax around the event name to define events in the template code. The code on the right hand side of the equals sign is the code that should be executed when this event is triggered. You can bind to browser events and custom events.
 
