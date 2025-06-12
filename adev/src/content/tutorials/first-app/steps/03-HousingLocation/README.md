@@ -47,7 +47,7 @@ In the **Edit** pane of your IDE:
 1. Open `home.ts` in the editor.
 1. In `home.ts`, import `HousingLocation` by adding this line to the file level imports.
 
-    <docs-code header="Import HousingLocation in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[3]"/>
+    <docs-code header="Import HousingLocation in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[2]"/>
 
 1. Next update the `imports` property of the `@Component` metadata by adding `HousingLocation` to the array.
 

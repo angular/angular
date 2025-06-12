@@ -81,13 +81,13 @@ In the **Edit** pane of your IDE, in `src/app/home/home.ts`:
 
 1. Add a new file level import for the `HousingService`:
 
-    <docs-code header="Add import to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[5]"/>
+    <docs-code header="Add import to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[7]"/>
 
 1. From `Home`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
 
 1. In `Home`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
 
-    <docs-code header="Initialize data from service in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[25,32]"/>
+    <docs-code header="Initialize data from service in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[23,30]"/>
 
 1. Save the changes to `src/app/home/home.ts` and confirm your app builds without error.
     Correct any errors before you continue to the next step.

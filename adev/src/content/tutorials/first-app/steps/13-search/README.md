@@ -26,7 +26,7 @@ In this step, you'll update the `Home` class to store data in a new array proper
 
 1. The `filteredLocationList` should contain the total set of housing locations values by default when the page loads. Update the `constructor` for the `Home` to set the value.
 
-<docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[30,33]"/>
+<docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[29,32]"/>
 
 </docs-step>
 
@@ -52,7 +52,9 @@ The `Home` already contains an input field that you will use to capture input fr
 1. The last template update is to the `ngFor` directive. Update the `ngFor` value to iterate over values from the `filteredLocationList` array.
 
 <docs-code header="Update the ngFor directive value" language="html">
-    <app-housing-location *ngFor="let housingLocation of filteredLocationList" [housingLocation]="housingLocation"></app-housing-location>
+@for(housingLocation of housingLocationList; track $index) {
+   <app-housing-location [housingLocation]="housingLocation"></app-housing-location>
+}
 </docs-code>
 
 </docs-step>
