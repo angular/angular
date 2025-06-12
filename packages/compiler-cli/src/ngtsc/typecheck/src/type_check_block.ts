@@ -3346,10 +3346,15 @@ function getBoundAttributes(
     }
   };
 
-  node.inputs.forEach(processAttribute);
-  node.attributes.forEach(processAttribute);
   if (node instanceof TmplAstTemplate) {
+    if (node.tagName === 'ng-template') {
+      node.inputs.forEach(processAttribute);
+      node.attributes.forEach(processAttribute);
+    }
     node.templateAttrs.forEach(processAttribute);
+   } else {
+    node.inputs.forEach(processAttribute);
+    node.attributes.forEach(processAttribute);
   }
 
   return boundInputs;

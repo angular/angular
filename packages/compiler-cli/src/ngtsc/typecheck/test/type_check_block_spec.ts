@@ -429,6 +429,50 @@ describe('type check blocks', () => {
     expect(block).not.toContain('NoReference');
   });
 
+  it('should not bind inputs outside of microsyntax to a structural directive', () => {
+    const TEMPLATE = `
+      <my-dir *ngFor="let foo of foos" [ngForTrackBy]="foo"></my-dir>
+    `;
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'NgFor',
+        selector: '[ngFor][ngForOf]',
+        inputs: {ngForOf: 'ngForOf', ngForTrackBy: 'ngForTrackBy'},
+      },
+      {
+        type: 'directive',
+        name: 'MyDir',
+        selector: 'my-dir',
+        inputs: {ngForTrackBy: 'ngForTrackBy'},
+      },
+    ];
+    const block = tcb(TEMPLATE, DIRECTIVES);
+    expect(block).toContain('var _t1 = null! as i0.NgFor');
+    expect(block).toContain('_t1.ngForOf = (((this).foos))');
+    expect(block).not.toContain('_t1.ngForTrackBy');
+    expect(block).toContain('var _t4 = null! as i0.MyDir');
+    expect(block).toContain('_t4.ngForTrackBy =');
+  });
+
+  it('should bind inputs to a structural directive when used on ng-template', () => {
+    const TEMPLATE = `
+      <ng-template ngFor [ngForOf]="foos" let-foo [ngForTrackBy]="foo"></ng-template>
+    `;
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'NgFor',
+        selector: '[ngFor][ngForOf]',
+        inputs: {ngForOf: 'ngForOf', ngForTrackBy: 'ngForTrackBy'},
+      },
+    ];
+    const block = tcb(TEMPLATE, DIRECTIVES);
+    expect(block).toContain('var _t1 = null! as i0.NgFor');
+    expect(block).toContain('_t1.ngForOf = (((this).foos))');
+    expect(block).toContain('_t1.ngForTrackBy = (((this).foo))');
+  });
+  
   it('should generate a forward element reference correctly', () => {
     const TEMPLATE = `
       {{ i.value }}
