@@ -1,5 +1,6 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "zone_compatible_jasmine_node_test")
 load("//packages/zone.js/test:karma_test.bzl", "karma_test")
+load("//tools:defaults.bzl", "zone_compatible_jasmine_node_test")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -9,7 +10,7 @@ exports_files([
     "assets/import.html",
 ])
 
-ts_library(
+ts_project(
     name = "common_spec_env",
     testonly = True,
     srcs = [
@@ -18,11 +19,11 @@ ts_library(
         "wtf_mock.ts",
     ],
     deps = [
-        "//packages/zone.js/lib",
+        "//packages/zone.js/lib:lib_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "common_spec_srcs",
     testonly = True,
     srcs = glob(
@@ -37,48 +38,48 @@ ts_library(
         ],
     ),
     deps = [
-        ":common_spec_util",
-        "//packages/zone.js/lib",
+        ":common_spec_util_rjs",
+        "//packages/zone.js/lib:lib_rjs",
         "@npm//rxjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "common_spec_util",
     testonly = True,
     srcs = ["test-util.ts"],
     deps = [
-        "//packages/zone.js/lib",
+        "//packages/zone.js/lib:lib_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "error_spec_srcs",
     testonly = True,
     srcs = [
         "common/Error.spec.ts",
     ],
     deps = [
-        ":common_spec_util",
-        "//packages/zone.js/lib",
+        ":common_spec_util_rjs",
+        "//packages/zone.js/lib:lib_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_node_lib",
     testonly = True,
     srcs = glob(["node/*.ts"]),
     deps = [
-        "//packages/zone.js/lib",
-        "@npm//@types/shelljs",
-        "@npm//@types/systemjs",
-        "@npm//rxjs",
-        "@npm//shelljs",
-        "@npm//systemjs",
+        "//:node_modules/@types/shelljs",
+        "//:node_modules/@types/systemjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/shelljs",
+        "//:node_modules/systemjs",
+        "//packages/zone.js/lib:lib_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "node_entry_point",
     testonly = True,
     srcs = [
@@ -86,42 +87,42 @@ ts_library(
         "node_entry_point.init.ts",
     ],
     deps = [
-        ":common_spec_env",
-        "//packages/zone.js/lib",
-        "@npm//@types/shelljs",
-        "@npm//@types/systemjs",
-        "@npm//rxjs",
-        "@npm//shelljs",
-        "@npm//systemjs",
+        ":common_spec_env_rjs",
+        "//:node_modules/@types/shelljs",
+        "//:node_modules/@types/systemjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/shelljs",
+        "//:node_modules/systemjs",
+        "//packages/zone.js/lib:lib_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "bluebird_spec",
     testonly = True,
     srcs = [
         "extra/bluebird.spec.ts",
     ],
     deps = [
-        ":common_spec_env",
-        "//packages/zone.js/lib",
-        "@npm//bluebird",
+        ":common_spec_env_rjs",
+        "//:node_modules/bluebird",
+        "//packages/zone.js/lib:lib_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "node_bluebird_entry_point",
     testonly = True,
     srcs = ["node_bluebird_entry_point.init.ts"],
     deps = [
-        ":common_spec_env",
-        "//packages/zone.js/lib",
+        ":common_spec_env_rjs",
+        "//:node_modules/bluebird",
+        "//packages/zone.js/lib:lib_rjs",
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//bluebird",
     ],
 )
 
-ts_library(
+ts_project(
     name = "node_error_disable_policy_entry_point",
     testonly = True,
     srcs = [
@@ -129,22 +130,22 @@ ts_library(
         "node_error_disable_policy_entry_point.init.ts",
     ],
     deps = [
-        ":node_error_entry_point",
+        ":node_error_entry_point_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "node_error_entry_point",
     testonly = True,
     srcs = ["node_error_entry_point.init.ts"],
     deps = [
-        ":common_spec_env",
-        "//packages/zone.js/lib",
+        ":common_spec_env_rjs",
+        "//packages/zone.js/lib:lib_rjs",
         "//packages/zone.js/lib:zone_d_ts",
     ],
 )
 
-ts_library(
+ts_project(
     name = "node_error_lazy_policy_entry_point",
     testonly = True,
     srcs = [
@@ -152,7 +153,7 @@ ts_library(
         "node_error_lazy_policy_entry_point.init.ts",
     ],
     deps = [
-        ":node_error_entry_point",
+        ":node_error_entry_point_rjs",
     ],
 )
 
@@ -173,38 +174,44 @@ zone_compatible_jasmine_node_test(
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test_node_error_disable_policy",
-    bootstrap = [":node_error_disable_policy_entry_point"],
-    deps = [
-        ":error_spec_srcs",
+    data = [
+        ":error_spec_srcs_rjs",
+        ":node_error_disable_policy_entry_point_rjs",
+    ],
+    fixed_args = [
+        "--require={root}/packages/zone.js/test/node_error_disable_policy_entry_point.init.js",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test_node_error_lazy_policy",
-    bootstrap = [":node_error_lazy_policy_entry_point"],
-    deps = [
-        ":error_spec_srcs",
+    data = [
+        ":error_spec_srcs_rjs",
+        ":node_error_lazy_policy_entry_point_rjs",
+    ],
+    fixed_args = [
+        "--require={root}/packages/zone.js/test/node_error_entry_point.init.js",
     ],
 )
 
-ts_library(
+ts_project(
     name = "npm_package_spec_lib",
     testonly = True,
     srcs = ["npm_package/npm_package.spec.ts"],
     deps = [
-        "@npm//@bazel/runfiles",
-        "@npm//@types/shelljs",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/shelljs",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test_npm_package",
-    srcs = [":npm_package_spec_lib"],
     data = [
+        ":npm_package_spec_lib",
+        "//:node_modules/shelljs",
         "//packages/zone.js:npm_package",
-        "@npm//shelljs",
     ],
 )
 
