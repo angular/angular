@@ -70,38 +70,36 @@ const HIERARCHY_HOR_SIZE = 50;
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
+  host: {
+    '[hidden]': 'hidden()',
+  },
 })
 export class InjectorTreeComponent {
-  private environmentTree = viewChild<TreeVisualizerHostComponent>('environmentTree');
-  private elementTree = viewChild<TreeVisualizerHostComponent>('elementTree');
+  private readonly environmentTree = viewChild<TreeVisualizerHostComponent>('environmentTree');
+  private readonly elementTree = viewChild<TreeVisualizerHostComponent>('elementTree');
 
-  private _messageBus = inject(MessageBus) as MessageBus<Events>;
-  zone = inject(NgZone);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly zone = inject(NgZone);
 
-  readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
+  protected readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
 
-  readonly providers = input.required<SerializedProviderRecord[]>();
-  readonly componentExplorerView = input.required<ComponentExplorerView | null>();
+  protected readonly providers = input.required<SerializedProviderRecord[]>();
+  protected readonly componentExplorerView = input.required<ComponentExplorerView | null>();
+  protected readonly hidden = input<boolean>(false);
 
-  readonly sortedProviders = computed(() =>
-    Array.from(this.providers()).sort((a, b) => {
-      return a.token.localeCompare(b.token);
-    }),
-  );
-
-  readonly diDebugAPIsAvailable = computed<boolean>(() => {
+  protected readonly diDebugAPIsAvailable = computed<boolean>(() => {
     const view = this.componentExplorerView();
     return !!(view && view.forest.length && view.forest[0].resolutionPath);
   });
 
-  firstRender = true;
-  rawDirectiveForest: DevToolsNode[] = [];
-  injectorTreeGraph!: InjectorTreeVisualizer;
-  elementInjectorTreeGraph!: InjectorTreeVisualizer;
-  elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();
+  private firstRender = true;
+  private rawDirectiveForest: DevToolsNode[] = [];
+  private injectorTreeGraph!: InjectorTreeVisualizer;
+  private elementInjectorTreeGraph!: InjectorTreeVisualizer;
+  private elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();
 
-  hideInjectorsWithNoProviders = false;
-  hideFrameworkInjectors = false;
+  private hideInjectorsWithNoProviders = false;
+  private hideFrameworkInjectors = false;
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
@@ -116,20 +114,26 @@ export class InjectorTreeComponent {
     afterRenderEffect({
       write: () => {
         const view = this.componentExplorerView();
-        if (!this.diDebugAPIsAvailable() || !view) {
+        if (!this.diDebugAPIsAvailable() || !view || untracked(this.hidden)) {
           return;
         }
 
-        this.init();
-        this.rawDirectiveForest = view.forest;
+        if (!this.isInitialized) {
+          this.init();
+        }
 
+        this.rawDirectiveForest = view.forest;
         untracked(() => this.updateInjectorTreeVisualization(view.forest));
       },
     });
   }
 
+  private get isInitialized(): boolean {
+    return !!(this.injectorTreeGraph && this.elementInjectorTreeGraph);
+  }
+
   private init() {
-    this._messageBus.on('highlightComponent', (id: number) => {
+    this.messageBus.on('highlightComponent', (id: number) => {
       const injectorNode = this.getNodeByComponentId(this.elementInjectorTreeGraph, id);
       if (injectorNode === null) {
         return;
@@ -228,12 +232,18 @@ export class InjectorTreeComponent {
     });
   }
 
-  snapToNode(node: InjectorTreeD3Node) {
+  snapToNode(node?: InjectorTreeD3Node) {
+    if (!node) {
+      return;
+    }
+
     // wait for CD to run before snapping to root so that svg container can change size.
     setTimeout(() => {
-      if (node.data.injector.type === 'element') {
+      const {type} = node.data.injector;
+
+      if (type === 'element') {
         this.elementInjectorTreeGraph.snapToNode(node);
-      } else if (node.data.injector.type === 'environment') {
+      } else if (type === 'environment') {
         this.injectorTreeGraph.snapToNode(node);
       }
     });
@@ -391,16 +401,17 @@ export class InjectorTreeComponent {
   selectInjectorByNode(node: InjectorTreeD3Node): void {
     this.selectedNode.set(node);
     this.highlightPathFromSelectedInjector();
-    this.snapToNode(this.selectedNode()!);
-    this.getProviders();
+
+    const selectedNode = this.selectedNode();
+    if (selectedNode) {
+      this.snapToNode(selectedNode);
+      this.getProviders(selectedNode);
+    }
   }
 
-  getProviders() {
-    if (this.selectedNode() === null) {
-      return;
-    }
-    const injector = this.selectedNode()!.data.injector;
-    this._messageBus.emit('getInjectorProviders', [
+  getProviders(node: InjectorTreeD3Node) {
+    const injector = node.data.injector;
+    this.messageBus.emit('getInjectorProviders', [
       {
         id: injector.id,
         type: injector.type,
