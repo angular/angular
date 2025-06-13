@@ -405,6 +405,19 @@ describe('lexer', () => {
       );
     });
 
+    it('should tokenize assignment operators', () => {
+      expectOperatorToken(lex('=')[0], 0, 1, '=');
+      expectOperatorToken(lex('+=')[0], 0, 2, '+=');
+      expectOperatorToken(lex('-=')[0], 0, 2, '-=');
+      expectOperatorToken(lex('*=')[0], 0, 2, '*=');
+      expectOperatorToken(lex('/=')[0], 0, 2, '/=');
+      expectOperatorToken(lex('%=')[0], 0, 2, '%=');
+      expectOperatorToken(lex('**=')[0], 0, 3, '**=');
+      expectOperatorToken(lex('&&=')[0], 0, 3, '&&=');
+      expectOperatorToken(lex('||=')[0], 0, 3, '||=');
+      expectOperatorToken(lex('??=')[0], 0, 3, '??=');
+    });
+
     describe('template literals', () => {
       it('should tokenize template literal with no interpolations', () => {
         const tokens: Token[] = lex('`hello world`');
