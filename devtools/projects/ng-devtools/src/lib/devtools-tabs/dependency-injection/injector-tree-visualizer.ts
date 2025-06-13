@@ -58,6 +58,7 @@ export abstract class GraphRenderer<T, U> {
 }
 
 interface InjectorTreeVisualizerConfig {
+  /** WARNING: For vertically-oriented trees, use separation greater than `1` */
   orientation: 'horizontal' | 'vertical';
   nodeSize: [width: number, height: number];
   nodeSeparation: (nodeA: InjectorTreeD3Node, nodeB: InjectorTreeD3Node) => number;
@@ -109,9 +110,14 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
 
   override snapToNode(node: InjectorTreeD3Node, scale = 1): void {
     const svg = this.d3.select(this._containerElement);
-    const halfWidth = this._containerElement.clientWidth / 2;
-    const halfHeight = this._containerElement.clientHeight / 2;
-    const t = d3.zoomIdentity.translate(halfWidth - node.y, halfHeight - node.x).scale(scale);
+    const contHalfWidth = this._containerElement.clientWidth / 2;
+    const contHalfHeight = this._containerElement.clientHeight / 2;
+    const {x, y} = this.getNodeCoor(node);
+
+    const t = d3.zoomIdentity
+      .translate(contHalfWidth, contHalfHeight)
+      .scale(scale)
+      .translate(-x, -y);
     svg.transition().duration(500).call(this.zoomController!.transform, t);
   }
 
@@ -167,7 +173,7 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
       .append('svg:marker') // This section adds in the arrows
       .attr('id', String)
       .attr('viewBox', '0 -5 10 10')
-      .attr('refX', 15)
+      .attr('refX', 10)
       .attr('refY', 0)
       .attr('class', 'arrow')
       .attr('markerWidth', 6)
@@ -175,6 +181,10 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
       .attr('orient', 'auto')
       .append('svg:path')
       .attr('d', 'M0,-5L10,0L0,5');
+
+    const [labelWidth, labelHeight] = this.config.nodeLabelSize;
+    const halfLabelWidth = labelWidth / 2;
+    const halfLabelHeight = labelHeight / 2;
 
     g.selectAll('.link')
       .data(nodes.descendants().slice(1))
@@ -199,22 +209,24 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
       })
       .attr('marker-end', `url(#end${arrowDefId})`)
       .attr('d', (node: InjectorTreeD3Node) => {
-        const parent = node.parent!;
+        const {x, y} = this.getNodeCoor(node);
+        const {x: parentX, y: parentY} = this.getNodeCoor(node.parent!);
+
         if (this.config.orientation === 'horizontal') {
           return `
-                    M${node.y},${node.x}
-                    C${(node.y + parent.y) / 2},
-                      ${node.x} ${(node.y + parent.y) / 2},
-                      ${parent.x} ${parent.y},
-                      ${parent.x}`;
+            M${x - halfLabelWidth},${y}
+            C${(x + parentX) / 2},
+              ${y} ${(x + parentX) / 2},
+              ${parentY} ${parentX + halfLabelWidth},
+              ${parentY}`;
         }
 
         return `
-              M${node.x},${node.y}
-              C${(node.x + parent.x) / 2},
-                ${node.y} ${(node.x + parent.x) / 2},
-                ${parent.y} ${parent.x},
-                ${parent.y}`;
+          M${x},${y - halfLabelHeight}
+          C${x},
+            ${(y + parentY) / 2} ${parentX},
+            ${(y + parentY) / 2} ${parentX},
+            ${parentY + halfLabelHeight}`;
       });
 
     // Declare the nodes
@@ -248,23 +260,17 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
       .on('mouseout', (pointerEvent: PointerEvent, node: InjectorTreeD3Node) => {
         this.nodeMouseoutListeners.forEach((listener) => listener(pointerEvent, node));
       })
-
       .attr('transform', (node: InjectorTreeD3Node) => {
-        if (this.config.orientation === 'horizontal') {
-          return `translate(${node.y},${node.x})`;
-        }
-
-        return `translate(${node.x},${node.y})`;
+        const {x, y} = this.getNodeCoor(node);
+        return `translate(${x},${y})`;
       });
-
-    const [width, height] = this.config.nodeLabelSize!;
 
     node
       .append('foreignObject')
-      .attr('width', width)
-      .attr('height', height)
-      .attr('x', -1 * (width - 10))
-      .attr('y', -1 * (height / 2))
+      .attr('width', labelWidth)
+      .attr('height', labelHeight)
+      .attr('x', -halfLabelWidth)
+      .attr('y', -halfLabelHeight)
       .append('xhtml:div')
       .attr('title', (node: InjectorTreeD3Node) => {
         return node.data.injector.name;
@@ -283,5 +289,18 @@ export class InjectorTreeVisualizer extends GraphRenderer<InjectorTreeNode, Inje
       });
 
     svg.attr('height', '100%').attr('width', '100%');
+  }
+
+  /** Returns the node coordinates based on orientation. */
+  private getNodeCoor(node: InjectorTreeD3Node): {x: number; y: number} {
+    const {x, y} = node;
+
+    if (this.config.orientation === 'horizontal') {
+      return {
+        x: y,
+        y: x,
+      };
+    }
+    return {x, y};
   }
 }
