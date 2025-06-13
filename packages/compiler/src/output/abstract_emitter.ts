@@ -22,6 +22,39 @@ class _EmittedLine {
   constructor(public indent: number) {}
 }
 
+const BINARY_OPERATORS = new Map([
+  [o.BinaryOperator.And, '&&'],
+  [o.BinaryOperator.Bigger, '>'],
+  [o.BinaryOperator.BiggerEquals, '>='],
+  [o.BinaryOperator.BitwiseOr, '|'],
+  [o.BinaryOperator.BitwiseAnd, '&'],
+  [o.BinaryOperator.Divide, '/'],
+  [o.BinaryOperator.Assign, '='],
+  [o.BinaryOperator.Equals, '=='],
+  [o.BinaryOperator.Identical, '==='],
+  [o.BinaryOperator.Lower, '<'],
+  [o.BinaryOperator.LowerEquals, '<='],
+  [o.BinaryOperator.Minus, '-'],
+  [o.BinaryOperator.Modulo, '%'],
+  [o.BinaryOperator.Exponentiation, '**'],
+  [o.BinaryOperator.Multiply, '*'],
+  [o.BinaryOperator.NotEquals, '!='],
+  [o.BinaryOperator.NotIdentical, '!=='],
+  [o.BinaryOperator.NullishCoalesce, '??'],
+  [o.BinaryOperator.Or, '||'],
+  [o.BinaryOperator.Plus, '+'],
+  [o.BinaryOperator.In, 'in'],
+  [o.BinaryOperator.AdditionAssignment, '+='],
+  [o.BinaryOperator.SubtractionAssignment, '-='],
+  [o.BinaryOperator.MultiplicationAssignment, '*='],
+  [o.BinaryOperator.DivisionAssignment, '/='],
+  [o.BinaryOperator.RemainderAssignment, '%='],
+  [o.BinaryOperator.ExponentiationAssignment, '**='],
+  [o.BinaryOperator.AndAssignment, '&&='],
+  [o.BinaryOperator.OrAssignment, '||='],
+  [o.BinaryOperator.NullishCoalesceAssignment, '??='],
+]);
+
 export class EmitterVisitorContext {
   static createRoot(): EmitterVisitorContext {
     return new EmitterVisitorContext(0);
@@ -379,78 +412,14 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): any {
-    let opStr: string;
-    switch (ast.operator) {
-      case o.BinaryOperator.Assign:
-        opStr = '=';
-        break;
-      case o.BinaryOperator.Equals:
-        opStr = '==';
-        break;
-      case o.BinaryOperator.Identical:
-        opStr = '===';
-        break;
-      case o.BinaryOperator.NotEquals:
-        opStr = '!=';
-        break;
-      case o.BinaryOperator.NotIdentical:
-        opStr = '!==';
-        break;
-      case o.BinaryOperator.And:
-        opStr = '&&';
-        break;
-      case o.BinaryOperator.BitwiseOr:
-        opStr = '|';
-        break;
-      case o.BinaryOperator.BitwiseAnd:
-        opStr = '&';
-        break;
-      case o.BinaryOperator.Or:
-        opStr = '||';
-        break;
-      case o.BinaryOperator.Plus:
-        opStr = '+';
-        break;
-      case o.BinaryOperator.Minus:
-        opStr = '-';
-        break;
-      case o.BinaryOperator.Divide:
-        opStr = '/';
-        break;
-      case o.BinaryOperator.Multiply:
-        opStr = '*';
-        break;
-      case o.BinaryOperator.Modulo:
-        opStr = '%';
-        break;
-      case o.BinaryOperator.Exponentiation:
-        opStr = '**';
-        break;
-      case o.BinaryOperator.Lower:
-        opStr = '<';
-        break;
-      case o.BinaryOperator.LowerEquals:
-        opStr = '<=';
-        break;
-      case o.BinaryOperator.Bigger:
-        opStr = '>';
-        break;
-      case o.BinaryOperator.BiggerEquals:
-        opStr = '>=';
-        break;
-      case o.BinaryOperator.NullishCoalesce:
-        opStr = '??';
-        break;
-      case o.BinaryOperator.In:
-        opStr = 'in';
-        break;
-      default:
-        throw new Error(`Unknown operator ${ast.operator}`);
+    const operator = BINARY_OPERATORS.get(ast.operator);
+    if (!operator) {
+      throw new Error(`Unknown operator ${ast.operator}`);
     }
     const parens = ast !== this.lastIfCondition;
     if (parens) ctx.print(ast, `(`);
     ast.lhs.visitExpression(this, ctx);
-    ctx.print(ast, ` ${opStr} `);
+    ctx.print(ast, ` ${operator} `);
     ast.rhs.visitExpression(this, ctx);
     if (parens) ctx.print(ast, `)`);
     return null;
