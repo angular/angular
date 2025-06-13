@@ -70,12 +70,14 @@ const HIERARCHY_HOR_SIZE = 50;
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
+  host: {
+    '[hidden]': 'hidden()',
+  },
 })
 export class InjectorTreeComponent {
   private readonly environmentTree = viewChild<TreeVisualizerHostComponent>('environmentTree');
   private readonly elementTree = viewChild<TreeVisualizerHostComponent>('elementTree');
 
-  private readonly elementRef = inject(ElementRef);
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly zone = inject(NgZone);
 
@@ -83,6 +85,7 @@ export class InjectorTreeComponent {
 
   protected readonly providers = input.required<SerializedProviderRecord[]>();
   protected readonly componentExplorerView = input.required<ComponentExplorerView | null>();
+  protected readonly hidden = input<boolean>(false);
 
   protected readonly diDebugAPIsAvailable = computed<boolean>(() => {
     const view = this.componentExplorerView();
@@ -111,7 +114,7 @@ export class InjectorTreeComponent {
     afterRenderEffect({
       write: () => {
         const view = this.componentExplorerView();
-        if (!this.diDebugAPIsAvailable() || !view || this.isHidden) {
+        if (!this.diDebugAPIsAvailable() || !view || untracked(this.hidden)) {
           return;
         }
 
@@ -123,10 +126,6 @@ export class InjectorTreeComponent {
         untracked(() => this.updateInjectorTreeVisualization(view.forest));
       },
     });
-  }
-
-  private get isHidden(): boolean {
-    return this.elementRef.nativeElement.hidden;
   }
 
   private get isInitialized(): boolean {
@@ -402,15 +401,16 @@ export class InjectorTreeComponent {
   selectInjectorByNode(node: InjectorTreeD3Node): void {
     this.selectedNode.set(node);
     this.highlightPathFromSelectedInjector();
-    this.snapToNode(this.selectedNode()!);
-    this.getProviders();
+
+    const selectedNode = this.selectedNode();
+    if (selectedNode) {
+      this.snapToNode(selectedNode);
+      this.getProviders(selectedNode);
+    }
   }
 
-  getProviders() {
-    if (this.selectedNode() === null) {
-      return;
-    }
-    const injector = this.selectedNode()!.data.injector;
+  getProviders(node: InjectorTreeD3Node) {
+    const injector = node.data.injector;
     this.messageBus.emit('getInjectorProviders', [
       {
         id: injector.id,
