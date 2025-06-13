@@ -134,6 +134,32 @@ describe('parser', () => {
       checkAction('');
     });
 
+    it('should parse assignment operators with property reads', () => {
+      checkAction('a = b');
+      checkAction('a += b');
+      checkAction('a -= b');
+      checkAction('a *= b');
+      checkAction('a /= b');
+      checkAction('a %= b');
+      checkAction('a **= b');
+      checkAction('a &&= b');
+      checkAction('a ||= b');
+      checkAction('a ??= b');
+    });
+
+    it('should parse assignment operators with keyed reads', () => {
+      checkAction('a[0] = b');
+      checkAction('a[0] += b');
+      checkAction('a[0] -= b');
+      checkAction('a[0] *= b');
+      checkAction('a[0] /= b');
+      checkAction('a[0] %= b');
+      checkAction('a[0] **= b');
+      checkAction('a[0] &&= b');
+      checkAction('a[0] ||= b');
+      checkAction('a[0] ??= b');
+    });
+
     describe('literals', () => {
       it('should parse array', () => {
         checkAction('[1][0]');
