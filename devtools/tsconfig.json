@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "sourceMap": true,
+    "inlineSources": true,
     "declaration": true,
     "strict": true,
     "noImplicitReturns": true,
