@@ -1,4 +1,4 @@
-load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("@devinfra//bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
 load("//tools:defaults.bzl", "http_server")
 load("//tools:defaults2.bzl", "ts_project")

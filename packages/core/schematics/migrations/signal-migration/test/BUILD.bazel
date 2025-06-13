@@ -1,5 +1,5 @@
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
-load("@npm//@angular/build-tooling/bazel/integration:index.bzl", "integration_test")
+load("@devinfra//bazel/integration:index.bzl", "integration_test")
 load("//tools:defaults.bzl", "jasmine_node_test", "nodejs_binary")
 load("//tools:defaults2.bzl", "ts_project")
 
