@@ -147,10 +147,10 @@ export class FeedbackComponent {
     required(path.password);
     minLength(path.password, 8);
     maxLength(path.password, 16);
-    min();
-    max();
-    pattern();
-    email();
+    min(path.amount, 0);
+    max(path.amount, 25);
+    pattern(path.username, '\w+');
+    email(path.email);
   });
 }
 ```
@@ -354,7 +354,7 @@ export class FeedbackComponent {
 
 Now we can use the resulting resource in the template.
 
-```angular2html
+```html
 
 <mat-select [control]="form.product.version">
   @if (versions?.isLoading()) {
@@ -384,8 +384,7 @@ disabled(path.feedback, ({valueOf}) => {
 Now we can access `disabledReasons` from the field using
 `form.feedback().disabledReasons()`.
 
-```angular2html
-
+```html
 <mat-form-field appearance="outline">
   <mat-label>Feedback</mat-label>
   <input [control]="form.feedback" matInput>
