@@ -354,7 +354,7 @@ export class FeedbackComponent {
 
 Now we can use the resulting resource in the template.
 
-```angular2html
+```html
 
 <mat-select [control]="form.product.version">
   @if (versions?.isLoading()) {
