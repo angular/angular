@@ -385,7 +385,6 @@ Now we can access `disabledReasons` from the field using
 `form.feedback().disabledReasons()`.
 
 ```html
-
 <mat-form-field appearance="outline">
   <mat-label>Feedback</mat-label>
   <input [control]="form.feedback" matInput>
