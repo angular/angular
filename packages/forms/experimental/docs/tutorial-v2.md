@@ -127,9 +127,9 @@ You can also pass injector to the form:
 
 ```typescript
 const f = form(
-    data,
-    schema,
-    {injector: TestBed.inject(Injector)},
+  data,
+  schema,
+  {injector: TestBed.inject(Injector)},
 );
 ```
 
@@ -147,10 +147,10 @@ export class FeedbackComponent {
     required(path.password);
     minLength(path.password, 8);
     maxLength(path.password, 16);
-    min(path.amount, 0);
-    max(path.amount, 25);
-    pattern(path.username, '\w+');
-    email(path.email);
+    min();
+    max();
+    pattern();
+    email();
   });
 }
 ```
@@ -354,7 +354,7 @@ export class FeedbackComponent {
 
 Now we can use the resulting resource in the template.
 
-```html
+```angular2html
 
 <mat-select [control]="form.product.version">
   @if (versions?.isLoading()) {
@@ -384,7 +384,8 @@ disabled(path.feedback, ({valueOf}) => {
 Now we can access `disabledReasons` from the field using
 `form.feedback().disabledReasons()`.
 
-```html
+```angular2html
+
 <mat-form-field appearance="outline">
   <mat-label>Feedback</mat-label>
   <input [control]="form.feedback" matInput>
@@ -407,21 +408,21 @@ to display the error on both fields.
 
 ```typescript
 export function confirmationPasswordValidator(
-    path: FieldPath<{ password: string; confirmationPassword: string }>,
+  path: FieldPath<{ password: string; confirmationPassword: string }>,
 ): TreeValidator<{ password: string; confirmationPassword: string }> {
   return ({valueOf, fieldOf}) => {
     return valueOf(path.confirmationPassword) === valueOf(path.password)
-        ? []
-        : [
-          {
-            field: fieldOf(path.confirmationPassword),
-            kind: 'confirmationPassword',
-          },
-          {
-            field: fieldOf(path.password),
-            kind: 'confirmationPassword',
-          },
-        ];
+      ? []
+      : [
+        {
+          field: fieldOf(path.confirmationPassword),
+          kind: 'confirmationPassword',
+        },
+        {
+          field: fieldOf(path.password),
+          kind: 'confirmationPassword',
+        },
+      ];
   };
 }
 ```

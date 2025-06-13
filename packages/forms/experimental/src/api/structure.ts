@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injector, WritableSignal} from '@angular/core';
+import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/core';
 
 import {FieldNode} from '../field/node';
 import {FieldPathNode, FieldRootPathNode} from '../path_node';
@@ -24,6 +24,28 @@ import {FormFieldManager} from '../field/manager';
 
 export interface FormOptions {
   injector?: Injector;
+}
+
+function normalizeFormArgs<T>(
+  args: any[],
+): [WritableSignal<T>, SchemaOrSchemaFn<T> | undefined, FormOptions | undefined] {
+  let model: WritableSignal<T>;
+  let schema: SchemaOrSchemaFn<T> | undefined;
+  let options: FormOptions | undefined;
+
+  if (args.length === 3) {
+    [model, schema, options] = args;
+  } else if (args.length === 2) {
+    if (isSchema(args[1])) {
+      [model, schema] = args;
+    } else {
+      [model, options] = args;
+    }
+  } else {
+    [model] = args;
+  }
+
+  return [model, schema, options];
 }
 
 /**
@@ -111,25 +133,12 @@ export function form<T>(
 ): Field<T>;
 
 export function form<T>(...args: any[]): Field<T> {
-  let model: WritableSignal<T>;
-  let schema: SchemaOrSchemaFn<T> | undefined;
-  let options: FormOptions | undefined;
-  if (args.length === 3) {
-    [model, schema, options] = args;
-  } else if (args.length === 2) {
-    if (isSchema(args[1])) {
-      [model, schema] = args;
-    } else {
-      [model, options] = args;
-    }
-  } else {
-    [model] = args;
-  }
+  const [model, schema, options] = normalizeFormArgs<T>(args);
 
   const injector = options?.injector ?? inject(Injector);
   const pathNode = new FieldRootPathNode(undefined);
   if (schema !== undefined) {
-    new SchemaImpl(schema).apply(pathNode);
+    runInInjectionContext(injector, () => new SchemaImpl(schema).apply(pathNode));
   }
   const fieldManager = new FormFieldManager(injector);
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
