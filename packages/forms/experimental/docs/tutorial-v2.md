@@ -384,7 +384,7 @@ disabled(path.feedback, ({valueOf}) => {
 Now we can access `disabledReasons` from the field using
 `form.feedback().disabledReasons()`.
 
-```angular2html
+```html
 
 <mat-form-field appearance="outline">
   <mat-label>Feedback</mat-label>
