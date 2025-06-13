@@ -147,10 +147,10 @@ export class FeedbackComponent {
     required(path.password);
     minLength(path.password, 8);
     maxLength(path.password, 16);
-    min();
-    max();
-    pattern();
-    email();
+    min(path.amount, 0);
+    max(path.amount, 25);
+    pattern(path.username, '\w+');
+    email(path.email);
   });
 }
 ```
