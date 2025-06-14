@@ -207,7 +207,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 * All public API methods **must be documented**.
 * We follow [Google's TypeScript Style Guide][ts-style-guide], but wrap all code at **100 characters**.
 
-   An automated formatter is available, see [DEVELOPER.md](contributing-docs/building-and-testing-angular.md#formatting-your-source-code).
+   An automated formatter is available, see [building-and-testing-angular.md](./contributing-docs/building-and-testing-angular.md#formatting-your-source-code).
 
 
 ## <a name="commit"></a> Commit Message Guidelines
