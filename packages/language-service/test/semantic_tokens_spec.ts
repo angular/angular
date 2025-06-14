@@ -165,6 +165,29 @@ describe('semantic tokens', () => {
 
     expectClassifications(templateFile, actual, semanticToken('class', 'test-comp', 65));
   });
+
+  it('should exclude non-component directives', () => {
+    const template = `
+    <button>Test</button>
+    <button test>Test</button>
+    `;
+    const {templateFile} = setup(template, '', {
+      'ButtonDirective': `
+        @Directive({
+          selector: "button"
+        })
+        export class ButtonDirective {}
+      `,
+      'TestDirective': `
+        @Directive({
+          selector: "[test]"
+        })
+        export class TestDirective {}
+      `,
+    });
+    const actual = templateFile.getEncodedSemanticClassifications();
+    expectClassifications(templateFile, actual);
+  });
 });
 
 function setup(
@@ -181,7 +204,7 @@ function setup(
   const env = LanguageServiceTestEnv.setup();
   const project = env.addProject('test', {
     'test.ts': `
-         import { Component, Input, Output, NgModule } from '@angular/core';
+         import { Component, Directive, Input, Output, NgModule } from '@angular/core';
 
          @Component({
            templateUrl: './test.html',

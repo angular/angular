@@ -38,6 +38,7 @@ import {
   ParseSourceSpan,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {PotentialDirective} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 import {TypeCheckInfo} from './utils';
 
@@ -101,7 +102,7 @@ export function getClassificationsForTemplate(
 class ClassificationVisitor implements TmplAstVisitor {
   private spans: number[] = [];
   constructor(
-    private tags: Map<string, any | null>,
+    private tags: Map<string, PotentialDirective | null>,
     private range: ts.TextSpan,
   ) {}
 
@@ -117,7 +118,8 @@ class ClassificationVisitor implements TmplAstVisitor {
 
   visitElement(element: TmplAstElement) {
     const tag = element.name;
-    const isComponent = this.tags.has(tag) && this.tags.get(tag) != null;
+    const potentialDirective = this.tags.get(tag);
+    const isComponent = potentialDirective && potentialDirective.isComponent;
     const classification = this.classifyAs(TokenType.class);
 
     if (isComponent && this.rangeIntersectsWith(element.startSourceSpan)) {
@@ -126,10 +128,7 @@ class ClassificationVisitor implements TmplAstVisitor {
 
     this.visitAll(element.children);
 
-    const hasClosingTag =
-      element.endSourceSpan &&
-      element.endSourceSpan.start.offset > element.startSourceSpan.start.offset;
-    if (isComponent && hasClosingTag && this.rangeIntersectsWith(element.endSourceSpan!)) {
+    if (isComponent && !element.isSelfClosing && this.rangeIntersectsWith(element.endSourceSpan!)) {
       this.spans.push(element.endSourceSpan!.start.offset + 2, tag.length, classification);
     }
   }
