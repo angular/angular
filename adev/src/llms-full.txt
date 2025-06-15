@@ -853,11 +853,11 @@ import {Component, input} from '@angular/core';
 
 @Component({/*...*/})
 export class CustomSlider {
-  // Declare an input named 'value' with a default value of zero. 
+  // Declare an input named 'value' with a default value of zero.
   value = input(0);
 
   // Create a computed expression that reads the value input
-  label = computed(() => `The slider's value is ${this.value()}`); 
+  label = computed(() => `The slider's value is ${this.value()}`);
 }
 ```
 Signals created by the `input` function are read-only.
@@ -935,8 +935,8 @@ import {Component, input, booleanAttribute, numberAttribute} from '@angular/core
 
 @Component({/*...*/})
 export class CustomSlider {
-  disabled = input(false, {transform: booleanAttribute}); 
-  value = input(0, {transform: numberAttribute}); 
+  disabled = input(false, {transform: booleanAttribute});
+  value = input(0, {transform: numberAttribute});
 }
 ```
 `booleanAttribute` imitates the behavior of standard HTML [boolean attributes](https://developer.mozilla.org/docs/Glossary/Boolean/HTML), where the
@@ -977,7 +977,7 @@ export class CustomSlider {
   value = model(0);
 
   increment() {
-    // Update the model input with a new value, propagating the value to any bindings. 
+    // Update the model input with a new value, propagating the value to any bindings.
     this.value.update(oldValue => oldValue + 10);
   }
 }
@@ -990,7 +990,7 @@ export class CustomSlider {
   template: `<custom-slider [(value)]="volume" />`,
 })
 export class MediaControls {
-  // Create a writable signal for the `volume` local state. 
+  // Create a writable signal for the `volume` local state.
   volume = signal(0);
 }
 ```
@@ -1969,12 +1969,12 @@ Angular lets you add event listeners to an element in your template with parenth
 ```typescript
 @Component({
   /*...*/
-  // Add an 'click' event handler that calls the `cancelSubscription` method. 
+  // Add an 'click' event handler that calls the `cancelSubscription` method.
   template: `<button (click)="cancelSubscription()">Cancel subscription</button>`,
 })
 export class UserProfile {
   /* ... */
-  
+
   cancelSubscription() { /* Your event handling code goes here. */  }
 }
 ```
@@ -1984,12 +1984,12 @@ If you need to pass the [event](https://developer.mozilla.org/docs/Web/API/Event
 ```typescript
 @Component({
   /*...*/
-  // Add an 'click' event handler that calls the `cancelSubscription` method. 
+  // Add an 'click' event handler that calls the `cancelSubscription` method.
   template: `<button (click)="cancelSubscription($event)">Cancel subscription</button>`,
 })
 export class UserProfile {
   /* ... */
-  
+
   cancelSubscription(event: Event) { /* Your event handling code goes here. */  }
 }
 ```
@@ -2017,7 +2017,7 @@ The `@if` block also supports an optional `@else` block:
   <!-- ... -->
 } @else {
   <h2>User settings</h2>
-  <!-- ... -->  
+  <!-- ... -->
 }
 ```
 
@@ -4172,7 +4172,7 @@ firstName.set('Jaime');
 
 // You can also use the `update` method to change the value
 // based on the previous value.
-firstName.update(name => name.toUpperCase()); 
+firstName.update(name => name.toUpperCase());
 ```
 
 Angular tracks where signals are read and when they're updated. The framework uses this information to do additional work, such as updating the DOM with new state. This ability to respond to changing signal values over time is known as *reactivity*.
@@ -4188,7 +4188,7 @@ const firstName = signal('Morgan');
 const firstNameCapitalized = computed(() => firstName().toUpperCase());
 
 console.log(firstNameCapitalized()); // MORGAN
-``` 
+```
 
 A `computed` signal is read-only; it does not have a `set` or an `update` method. Instead, the value of the `computed` signal automatically changes when any of the signals it reads change:
 
@@ -4335,7 +4335,7 @@ The `source` can be any signal, such as a `computed` or component `input`. When 
 
 The `computation` is a function that receives the new value of `source` and a `previous` object. The `previous` object has two properties— `previous.source` is the previous value of `source`, and `previous.value` is the previous result of the `computation`. You can use these previous values to decide the new result of the computation.
 
-HELPFUL: When using the `previous` parameter, it is necessary to provide the generic type arguments of `linkedSignal` explicitly. The first generic type corresponds with the type of `source` and the second generic type determines the output type of `computation`.  
+HELPFUL: When using the `previous` parameter, it is necessary to provide the generic type arguments of `linkedSignal` explicitly. The first generic type corresponds with the type of `source` and the second generic type determines the output type of `computation`.
 
 ## Custom equality comparison
 
@@ -5288,7 +5288,7 @@ export class HostComponent {
 ```
 Since `HostComponent` has the `host` option , no matter what the parent of `HostComponent` might have as a `flower.emoji` value, the `HostComponent` will use tulip <code>&#x1F337;</code>.
 
-### Modifiers with constructor injection  
+### Modifiers with constructor injection
 
 Similarly as presented before, the behavior of constructor injection can be modified with `@Optional()`, `@Self()`, `@SkipSelf()` and `@Host()`.
 
@@ -5546,7 +5546,7 @@ Here, it has a value of dog <code>&#x1F436;</code>.
 })
 export class ChildComponent {
   // inject services
-  flower = inject(FlowerService); 
+  flower = inject(FlowerService);
   animal = inject(AnimalService)
 ...
 }
@@ -6394,7 +6394,7 @@ import {outputFromObservable} from '@angular/core/rxjs-interop';
 @Directive({/*...*/})
 class Draggable {
   pointerMoves$: Observable<PointerMovements> = listenToPointerMoves();
-  
+
   // Whenever `pointerMoves$` emits, the `pointerMove` event fires.
   pointerMove = outputFromObservable(this.pointerMoves$);
 }
@@ -9728,7 +9728,7 @@ const routes: Routes = [
 The last route with the `path` of `**` is a wildcard route.
 The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
 
-## Preventing unauthorized access
+## Route Guards
 
 Use route guards to prevent users from navigating to parts of an application without authorization.
 The following route guards are available in Angular:
@@ -13137,14 +13137,14 @@ CSS offers a robust set of tools for you to create beautiful and engaging animat
 
 ## How to write animations in native CSS
 
-If you've never written any native CSS animations, there are a number of excellent guides to get you started. Here's a few of them:  
-[MDN's CSS Animations guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations)  
-[W3Schools CSS3 Animations guide](https://www.w3schools.com/css/css3_animations.asp)  
-[The Complete CSS Animations Tutorial](https://www.lambdatest.com/blog/css-animations-tutorial/)  
-[CSS Animation for Beginners](https://thoughtbot.com/blog/css-animation-for-beginners)  
+If you've never written any native CSS animations, there are a number of excellent guides to get you started. Here's a few of them:
+[MDN's CSS Animations guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations)
+[W3Schools CSS3 Animations guide](https://www.w3schools.com/css/css3_animations.asp)
+[The Complete CSS Animations Tutorial](https://www.lambdatest.com/blog/css-animations-tutorial/)
+[CSS Animation for Beginners](https://thoughtbot.com/blog/css-animation-for-beginners)
 
-and a couple of videos:  
-[Learn CSS Animation in 9 Minutes](https://www.youtube.com/watch?v=z2LQYsZhsFw)  
+and a couple of videos:
+[Learn CSS Animation in 9 Minutes](https://www.youtube.com/watch?v=z2LQYsZhsFw)
 [Net Ninja CSS Animation Tutorial Playlist](https://www.youtube.com/watch?v=jgw82b5Y2MU&list=PL4cUxeGkcC9iGYgmEd2dm3zAKzyCGDtM5)
 
 Check some of these various guides and tutorials out, and then come back to this guide.
@@ -13256,15 +13256,15 @@ Applying this class to an element prevents any animation from firing on that ele
 
 If you have actions you would like to execute at certain points during animations, there are a number of available events you can listen to. Here's a few of them.
 
-[`OnAnimationStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationstart_event)  
-[`OnAnimationEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationend_event)  
-[`OnAnimationIteration`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationitration_event)  
-[`OnAnimationCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationcancel_event)  
+[`OnAnimationStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationstart_event)
+[`OnAnimationEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationend_event)
+[`OnAnimationIteration`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationitration_event)
+[`OnAnimationCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationcancel_event)
 
-[`OnTransitionStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionstart_event)  
-[`OnTransitionRun`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionrun_event)  
-[`OnTransitionEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionend_event)  
-[`OnTransitionCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitioncancel_event)  
+[`OnTransitionStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionstart_event)
+[`OnTransitionRun`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionrun_event)
+[`OnTransitionEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionend_event)
+[`OnTransitionCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitioncancel_event)
 
 The Web Animations API has a lot of additional functionality. [Take a look at the documentation](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) to see all the available animation APIs.
 
@@ -13401,10 +13401,10 @@ withViewTransitions({
  onViewTransitionCreated: ({transition}) => {
    const router = inject(Router);
    const targetUrl = router.getCurrentNavigation()!.finalUrl!;
-   // Skip the transition if the only thing 
+   // Skip the transition if the only thing
    // changing is the fragment and queryParams
-   const config = { 
-     paths: 'exact', 
+   const config = {
+     paths: 'exact',
      matrixParams: 'exact',
      fragment: 'ignored',
      queryParams: 'ignored',
@@ -13463,7 +13463,7 @@ The view transition feature in the Angular router does not provide a way to dela
 
 ## Native View Transitions Alternative
 
-Animating the transition between routes can also be done with the `@angular/animations` package. 
+Animating the transition between routes can also be done with the `@angular/animations` package.
 The animation [triggers and transitions](/guide/animations/transition-and-triggers)
 can be derived from the router state, such as the current URL or `ActivatedRoute`.
 # Migrating away from Angular's Animations package
@@ -13472,14 +13472,14 @@ Almost all the features supported by `@angular/animations` have simpler alternat
 
 ## How to write animations in native CSS
 
-If you've never written any native CSS animations, there are a number of excellent guides to get you started. Here's a few of them:  
-[MDN's CSS Animations guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations)  
-[W3Schools CSS3 Animations guide](https://www.w3schools.com/css/css3_animations.asp)  
-[The Complete CSS Animations Tutorial](https://www.lambdatest.com/blog/css-animations-tutorial/)  
-[CSS Animation for Beginners](https://thoughtbot.com/blog/css-animation-for-beginners)  
+If you've never written any native CSS animations, there are a number of excellent guides to get you started. Here's a few of them:
+[MDN's CSS Animations guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations)
+[W3Schools CSS3 Animations guide](https://www.w3schools.com/css/css3_animations.asp)
+[The Complete CSS Animations Tutorial](https://www.lambdatest.com/blog/css-animations-tutorial/)
+[CSS Animation for Beginners](https://thoughtbot.com/blog/css-animation-for-beginners)
 
-and a couple of videos:  
-[Learn CSS Animation in 9 Minutes](https://www.youtube.com/watch?v=z2LQYsZhsFw)  
+and a couple of videos:
+[Learn CSS Animation in 9 Minutes](https://www.youtube.com/watch?v=z2LQYsZhsFw)
 [Net Ninja CSS Animation Tutorial Playlist](https://www.youtube.com/watch?v=jgw82b5Y2MU&list=PL4cUxeGkcC9iGYgmEd2dm3zAKzyCGDtM5)
 
 Check some of these various guides and tutorials out, and then come back to this guide.
@@ -13624,15 +13624,15 @@ Applying this class to an element prevents any animation from firing on that ele
 
 The animations package exposed callbacks for you to use in the case that you want to do something when the animation has finished. Native CSS animations also have these callbacks.
 
-[`OnAnimationStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationstart_event)  
-[`OnAnimationEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationend_event)  
-[`OnAnimationIteration`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationitration_event)  
-[`OnAnimationCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationcancel_event)  
+[`OnAnimationStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationstart_event)
+[`OnAnimationEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationend_event)
+[`OnAnimationIteration`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationitration_event)
+[`OnAnimationCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationcancel_event)
 
-[`OnTransitionStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionstart_event)  
-[`OnTransitionRun`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionrun_event)  
-[`OnTransitionEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionend_event)  
-[`OnTransitionCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitioncancel_event)  
+[`OnTransitionStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionstart_event)
+[`OnTransitionRun`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionrun_event)
+[`OnTransitionEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionend_event)
+[`OnTransitionCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitioncancel_event)
 
 The Web Animations API has a lot of additional functionality. [Take a look at the documentation](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) to see all the available animation APIs.
 

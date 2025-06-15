@@ -61,7 +61,7 @@ const routes: Routes = [
 The last route with the `path` of `**` is a wildcard route.
 The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
 
-## Preventing unauthorized access
+## Route Guards
 
 Use route guards to prevent users from navigating to parts of an application without authorization.
 The following route guards are available in Angular:
