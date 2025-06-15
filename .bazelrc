@@ -142,7 +142,7 @@ common --experimental_allow_tags_propagation
 # Disable network access in the sandbox by default. To enable network access
 # for a particular target, use:
 #
-# load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+# load("@devinfra//bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 # my_target(
 #   ...,
 #   exec_properties = ENABLE_NETWORK,   # Enables network in remote exec

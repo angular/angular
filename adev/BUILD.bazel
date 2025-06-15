@@ -1,10 +1,10 @@
 load("@bazel_skylib//lib:collections.bzl", "collections")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
-load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", "http_server")
-load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load("@devinfra//bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
 load("//adev/tools/local_deps:index.bzl", "ensure_local_package_deps", "link_local_packages")
+load("//tools:defaults.bzl", "http_server")
 
 package(default_visibility = ["//visibility:public"])
 
