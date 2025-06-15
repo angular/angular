@@ -28,6 +28,8 @@ const fib = (n: number): number => {
   imports: [RouterLink, TodoComponent, TooltipDirective, SamplePipe, TodosFilter],
 })
 export class TodosComponent implements OnInit, OnDestroy {
+  title = 'Angular Todo';
+
   todos: Todo[] = [
     {
       label: 'Buy milk',
