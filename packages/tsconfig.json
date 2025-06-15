@@ -28,7 +28,7 @@
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es2022", "dom", "dom.iterable"],
+    "lib": ["es2020", "dom", "dom.iterable", "ES2021.WeakRef"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "types": ["angular"]
