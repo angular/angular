@@ -96,6 +96,7 @@ http_server(
     name = "devserver",
     srcs = [":dev_app_static_files"],
     additional_root_paths = ["angular/devtools/src/devapp"],
+    port = 4200,
     tags = ["manual"],
     deps = [
         ":devapp",
