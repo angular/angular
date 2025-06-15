@@ -22,7 +22,7 @@ import {HousingLocationInfo} from '../housinglocation';
 export class Home {
   readonly baseUrl = 'https://angular.dev/assets/images/tutorials/common';
 
-  housingLocation: HousingLocation = {
+  housingLocation: HousingLocationInfo = {
     id: 9999,
     name: 'Test Home',
     city: 'Test city',
