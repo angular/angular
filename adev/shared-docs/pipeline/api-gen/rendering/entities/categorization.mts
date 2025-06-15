@@ -52,7 +52,8 @@ export function isClassEntry(entry: DocEntry): entry is ClassEntry {
     entry.entryType === EntryType.Component ||
     entry.entryType === EntryType.Pipe ||
     entry.entryType === EntryType.NgModule ||
-    entry.entryType === EntryType.Directive
+    entry.entryType === EntryType.Directive ||
+    entry.entryType === EntryType.InterfaceLikeDecorator
   );
 }
 
