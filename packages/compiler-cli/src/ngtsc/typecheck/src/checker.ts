@@ -354,6 +354,46 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     });
   }
 
+  getSuggestionDiagnosticsForFile(
+    sf: ts.SourceFile,
+    tsLs: ts.LanguageService,
+    optimizeFor: OptimizeFor,
+  ): ts.DiagnosticWithLocation[] {
+    switch (optimizeFor) {
+      case OptimizeFor.WholeProgram:
+        this.ensureAllShimsForAllFiles();
+        break;
+      case OptimizeFor.SingleFile:
+        this.ensureAllShimsForOneFile(sf);
+        break;
+    }
+
+    return this.perf.inPhase(PerfPhase.TtcSuggestionDiagnostics, () => {
+      const sfPath = absoluteFromSourceFile(sf);
+      const fileRecord = this.state.get(sfPath)!;
+
+      const diagnostics: (ts.DiagnosticWithLocation | null)[] = [];
+
+      if (fileRecord.hasInlines) {
+        diagnostics.push(
+          ...getDeprecatedSuggestionDiagnostics(tsLs, sfPath).map((diag) =>
+            convertDiagnostic(diag, fileRecord.sourceManager),
+          ),
+        );
+      }
+
+      for (const [shimPath] of fileRecord.shimData) {
+        diagnostics.push(
+          ...getDeprecatedSuggestionDiagnostics(tsLs, shimPath).map((diag) =>
+            convertDiagnostic(diag, fileRecord.sourceManager),
+          ),
+        );
+      }
+
+      return diagnostics.filter((diag): diag is ts.DiagnosticWithLocation => diag !== null);
+    });
+  }
+
   getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[] {
     this.ensureShimForComponent(component);
 
@@ -398,6 +438,49 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return diagnostics.filter(
         (diag: TemplateDiagnostic | null): diag is TemplateDiagnostic =>
           diag !== null && diag.typeCheckId === id,
+      );
+    });
+  }
+
+  getSuggestionDiagnosticsForComponent(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+  ): ts.DiagnosticWithLocation[] {
+    this.ensureShimForComponent(component);
+
+    return this.perf.inPhase(PerfPhase.TtcSuggestionDiagnostics, () => {
+      const sf = component.getSourceFile();
+      const sfPath = absoluteFromSourceFile(sf);
+      const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
+
+      const fileRecord = this.getFileData(sfPath);
+
+      if (!fileRecord.shimData.has(shimPath)) {
+        return [];
+      }
+
+      const templateId = fileRecord.sourceManager.getTypeCheckId(component);
+      const shimRecord = fileRecord.shimData.get(shimPath)!;
+
+      const diagnostics: (TemplateDiagnostic | null)[] = [];
+
+      if (shimRecord.hasInlines) {
+        diagnostics.push(
+          ...getDeprecatedSuggestionDiagnostics(tsLs, sfPath).map((diag) =>
+            convertDiagnostic(diag, fileRecord.sourceManager),
+          ),
+        );
+      }
+
+      diagnostics.push(
+        ...getDeprecatedSuggestionDiagnostics(tsLs, shimPath).map((diag) =>
+          convertDiagnostic(diag, fileRecord.sourceManager),
+        ),
+      );
+
+      return diagnostics.filter(
+        (diag: TemplateDiagnostic | null): diag is TemplateDiagnostic =>
+          diag !== null && diag.typeCheckId === templateId,
       );
     });
   }
@@ -1457,4 +1540,13 @@ function getClassDeclFromSymbol(
     return decl;
   }
   return null;
+}
+
+/**
+ * Returns the diagnostics that report deprecated symbols in the given TypeScript language service.
+ */
+function getDeprecatedSuggestionDiagnostics(tsLs: ts.LanguageService, path: string) {
+  return tsLs.getSuggestionDiagnostics(path).filter((diag) => {
+    return diag.reportsDeprecated !== undefined;
+  });
 }

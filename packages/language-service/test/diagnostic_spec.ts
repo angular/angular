@@ -592,6 +592,50 @@ describe('getSemanticDiagnostics', () => {
   });
 });
 
+describe('getSuggestedDiagnostics', () => {
+  let env: LanguageServiceTestEnv;
+  beforeEach(() => {
+    initMockFileSystem('Native');
+    env = LanguageServiceTestEnv.setup();
+  });
+
+  it('should report deprecated', () => {
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<app-bar name=""></app-bar>',
+        standalone: false,
+      })
+      export class AppComponent {}
+    `,
+      'bar.ts': `
+      import {Component, input} from '@angular/core';
+      @Component({
+        selector: 'app-bar',
+        template: '',
+        standalone: false,
+      })
+      export class BarComponent {
+        /**
+         * @deprecated
+         */
+        name = input<string>();
+      }
+    `,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getSuggestionDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(1);
+    const {category, file, messageText} = diags[0];
+    expect(category).toBe(ts.DiagnosticCategory.Suggestion);
+    expect(file?.fileName).toBe('/test/app.ts');
+    expect(messageText).toBe(`'name' is deprecated.`);
+  });
+});
+
 function getTextOfDiagnostic(diag: ts.Diagnostic): string {
   expect(diag.file).not.toBeUndefined();
   expect(diag.start).not.toBeUndefined();

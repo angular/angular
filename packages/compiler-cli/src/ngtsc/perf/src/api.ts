@@ -100,6 +100,11 @@ export enum PerfPhase {
   TtcDiagnostics,
 
   /**
+   * Time spent computing template type-checking suggestion diagnostics.
+   */
+  TtcSuggestionDiagnostics,
+
+  /**
    * Time spent getting a `Symbol` from the `TemplateTypeChecker`.
    */
   TtcSymbol,
@@ -137,6 +142,11 @@ export enum PerfPhase {
    * Time spent by the Angular Language Service calculating diagnostics.
    */
   LsDiagnostics,
+
+  /**
+   * Time spent by the Angular Language Service calculating suggestion diagnostics.
+   */
+  LsSuggestionDiagnostics,
 
   /**
    * Time spent by the Angular Language Service calculating a "get component locations for template"
