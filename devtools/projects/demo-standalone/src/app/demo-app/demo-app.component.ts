@@ -14,6 +14,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
+  InjectionToken,
   Injector,
   Input,
   Output,
@@ -30,6 +31,9 @@ import {ZoneUnawareIFrameMessageBus} from '../../../../../src/zone-unaware-ifram
 import {HeavyComponent} from './heavy.component';
 import {ZippyComponent} from './zippy.component';
 
+const NUMBER_TOKEN = new InjectionToken<number>('number-token');
+const SYMBOL_TOKEN = new InjectionToken<Symbol>('symbol-token');
+
 @Component({
   selector: 'app-demo-component',
   templateUrl: './demo-app.component.html',
@@ -37,8 +41,15 @@ import {ZippyComponent} from './zippy.component';
   encapsulation: ViewEncapsulation.None,
   imports: [HeavyComponent, RouterOutlet, JsonPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  providers: [
+    {provide: NUMBER_TOKEN, useValue: 42},
+    {provide: SYMBOL_TOKEN, useValue: Symbol('symbol_token')},
+  ],
 })
 export class DemoAppComponent {
+  readonly myNumber = inject(NUMBER_TOKEN);
+  readonly mySymbol = inject(SYMBOL_TOKEN);
+
   @ViewChild(ZippyComponent) zippy!: ZippyComponent;
   @ViewChild('elementReference') elementRef!: ElementRef;
 
