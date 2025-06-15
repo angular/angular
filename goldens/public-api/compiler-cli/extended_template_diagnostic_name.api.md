@@ -31,6 +31,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     UNINVOKED_FUNCTION_IN_EVENT_BINDING = "uninvokedFunctionInEventBinding",
     // (undocumented)
+    UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = "uninvokedFunctionInTextInterpolation",
+    // (undocumented)
     UNINVOKED_TRACK_FUNCTION = "uninvokedTrackFunction",
     // (undocumented)
     UNPARENTHESIZED_NULLISH_COALESCING = "unparenthesizedNullishCoalescing",
