@@ -38,6 +38,7 @@ export {
   withNoXsrfProtection,
   withRequestsMadeViaParent,
   withXsrfConfiguration,
+  assertInterceptorRegistered,
 } from './src/provider';
 export {HttpRequest} from './src/request';
 export {
