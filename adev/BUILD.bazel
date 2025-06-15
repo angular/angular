@@ -161,6 +161,7 @@ architect(
     chdir = "$(RULEDIR)",
     data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
         ":application_files_bin",
+        "//adev/scripts/shared:llms_full",
     ],
     env = config_based_architect_env,
     # Network is required to inline fonts.

@@ -1,4 +1,5 @@
 load("//adev/shared-docs:index.bzl", "generate_guides")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 
 generate_guides(
     name = "ngmodules",
@@ -7,5 +8,11 @@ generate_guides(
     ]),
     data = [
     ],
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
     visibility = ["//adev:__subpackages__"],
 )

@@ -1,4 +1,5 @@
 load("//adev/shared-docs:index.bzl", "generate_guides")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 
 generate_guides(
     name = "components",
@@ -9,5 +10,11 @@ generate_guides(
         "//adev/src/assets/images:components.svg",
     ],
     mermaid_blocks = True,
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
     visibility = ["//adev:__subpackages__"],
 )
