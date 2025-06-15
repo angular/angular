@@ -284,6 +284,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   private renderer = inject(Renderer2);
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
+  private destroyRef = inject(DestroyRef);
 
   // An LCP image observer should be injected only in development mode.
   // Do not assign it to `null` to avoid having a redundant property in the production bundle.
@@ -409,10 +410,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     if (ngDevMode) {
       this.lcpObserver = this.injector.get(LCPImageObserver);
 
-      // Using `DestroyRef` to avoid having an empty `ngOnDestroy` method since this
-      // is only run in development mode.
-      const destroyRef = inject(DestroyRef);
-      destroyRef.onDestroy(() => {
+      this.destroyRef.onDestroy(() => {
         if (!this.priority && this._renderedSrc !== null) {
           this.lcpObserver!.unregisterImage(this._renderedSrc);
         }
@@ -747,6 +745,14 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
     const removeLoadListenerFn = this.renderer.listen(img, 'load', callback);
     const removeErrorListenerFn = this.renderer.listen(img, 'error', callback);
+
+    // Clean up listeners once the view is destroyed, before the placeholder
+    // loads or fails to load, because attempting to retrieve a
+    // `ChangeDetectorRef` from a destroyed injector would result in an error.
+    this.destroyRef.onDestroy(() => {
+      removeLoadListenerFn();
+      removeErrorListenerFn();
+    });
 
     callOnLoadIfImageIsLoaded(img, callback);
   }
