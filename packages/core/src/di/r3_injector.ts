@@ -175,7 +175,9 @@ export abstract class EnvironmentInjector implements Injector {
 
   abstract destroy(): void;
 
-  /** @internal */
+  /**
+   * Indicates whether the instance has already been destroyed.
+   */
   abstract get destroyed(): boolean;
 
   /**
