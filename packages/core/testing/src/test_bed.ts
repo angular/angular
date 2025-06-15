@@ -12,6 +12,7 @@
 
 import {
   ApplicationRef,
+  Binding,
   Component,
   ɵRender3ComponentFactory as ComponentFactory,
   ComponentRef,
@@ -61,6 +62,16 @@ import {TestBedCompiler} from './test_bed_compiler';
  */
 export interface TestBedStatic extends TestBed {
   new (...args: any[]): TestBed;
+}
+
+/**
+ * Options that can be configured for a test component.
+ *
+ * @publicApi
+ */
+export interface TestComponentOptions {
+  /** Bindings to apply to the test component. */
+  bindings?: Binding[];
 }
 
 /**
@@ -149,7 +160,7 @@ export interface TestBed {
 
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed;
 
-  createComponent<T>(component: Type<T>): ComponentFixture<T>;
+  createComponent<T>(component: Type<T>, options?: TestComponentOptions): ComponentFixture<T>;
 
   /**
    * Execute any pending effects.
@@ -377,8 +388,11 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.runInInjectionContext(fn);
   }
 
-  static createComponent<T>(component: Type<T>): ComponentFixture<T> {
-    return TestBedImpl.INSTANCE.createComponent(component);
+  static createComponent<T>(
+    component: Type<T>,
+    options?: TestComponentOptions,
+  ): ComponentFixture<T> {
+    return TestBedImpl.INSTANCE.createComponent(component, options);
   }
 
   static resetTestingModule(): TestBed {
@@ -630,7 +644,7 @@ export class TestBedImpl implements TestBed {
     return this.overrideComponent(component, {set: {template, templateUrl: null!}});
   }
 
-  createComponent<T>(type: Type<T>): ComponentFixture<T> {
+  createComponent<T>(type: Type<T>, options?: TestComponentOptions): ComponentFixture<T> {
     const testComponentRenderer = this.inject(TestComponentRenderer);
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
@@ -655,6 +669,8 @@ export class TestBedImpl implements TestBed {
         [],
         `#${rootElId}`,
         this.testModuleRef,
+        undefined,
+        options?.bindings,
       ) as ComponentRef<T>;
       return this.runInInjectionContext(() => new ComponentFixture(componentRef));
     };
