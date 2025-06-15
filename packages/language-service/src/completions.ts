@@ -63,7 +63,6 @@ import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
 import {
   findTightestNode,
   getCodeActionToImportTheDirectiveDeclaration,
-  getModuleSpecifierFromImportStatement,
   standaloneTraitOrNgModule,
 } from './utils/ts_utils';
 import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
@@ -128,6 +127,13 @@ interface DirectiveInfoForCompletionDetail {
    * and the `fileName` will be the `bar.ts`.
    */
   symbolFileName: string;
+  /**
+   * Sometime the component can be exported with a different name than the class name.
+   * For example, `export {BarComponent as NewBarComponent} from './bar.component';`
+   *
+   * Sometimes, the component is exported by the `NgModule`.
+   */
+  symbolName: string;
 }
 
 /**
@@ -763,12 +769,18 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
     const entries: ts.CompletionEntry[] = [];
     for (let [tag, directive] of potentialTags) {
-      if (directive?.tsCompletionEntryInfo != null) {
+      if (
+        directive?.tsCompletionEntryInfos != null &&
+        directive.tsCompletionEntryInfos.length > 0
+      ) {
         directiveCompletionDetailMap.set(tag, {
           fileName: directive.ref.node.getSourceFile().fileName,
           entryName: directive.tsSymbol.name,
           pos: directive.ref.node.getStart(),
-          symbolFileName: directive.tsCompletionEntryInfo.tsCompletionEntrySymbolFileName,
+          // The Angular LS only supports displaying one directive at a time when
+          // providing the completion item, even if it's exported by multiple modules.
+          symbolFileName: directive.tsCompletionEntryInfos[0].tsCompletionEntrySymbolFileName,
+          symbolName: directive.tsCompletionEntryInfos[0].tsCompletionEntrySymbolName,
         });
       }
       entries.push({
@@ -777,7 +789,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
         sortText: tag,
         replacementSpan,
         hasAction: directive?.isInScope === true ? undefined : true,
-        data: directive?.tsCompletionEntryInfo?.tsCompletionEntryData,
+        data: directive?.tsCompletionEntryInfos?.[0]?.tsCompletionEntryData,
       });
     }
 
@@ -823,6 +835,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
         directive = templateTypeChecker.getDirectiveScopeData(node, false, {
           tsCompletionEntrySymbolFileName: directiveCompletionDetail.symbolFileName,
           tsCompletionEntryData: data,
+          tsCompletionEntrySymbolName: directiveCompletionDetail.symbolName,
         });
       }
     }
@@ -838,28 +851,17 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
     let codeActions: ts.CodeAction[] | undefined;
     if (!directive.isInScope) {
-      const importStatement = getModuleSpecifierFromImportStatement(
-        directive,
-        this.templateTypeChecker,
-        this.component,
-        this.tsLS,
-        data,
-        options?.includeCompletionsForModuleExports,
-      );
       const importOn = standaloneTraitOrNgModule(templateTypeChecker, this.component);
 
       const codeActionsCache =
         importOn !== null
           ? getCodeActionToImportTheDirectiveDeclaration(
               this.compiler,
+              this.component,
               importOn,
               directive,
-              importStatement !== undefined && directiveCompletionDetail !== undefined
-                ? {
-                    symbolFileName: directiveCompletionDetail.symbolFileName,
-                    moduleSpecifier: importStatement,
-                  }
-                : null,
+              this.tsLS,
+              options?.includeCompletionsWithInsertText,
             )
           : undefined;
 
