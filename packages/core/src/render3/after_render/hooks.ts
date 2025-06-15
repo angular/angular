@@ -389,7 +389,10 @@ export function afterNextRender(
       },
   options?: AfterRenderOptions,
 ): AfterRenderRef {
-  !options?.injector && assertInInjectionContext(afterNextRender);
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(afterNextRender);
+  }
+
   const injector = options?.injector ?? inject(Injector);
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
