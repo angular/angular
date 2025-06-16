@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from './injection_token';
-import {NotFound} from './not_found';
+import {NotFound, NOT_FOUND} from './not_found';
 
 export interface Injector {
   retrieve<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;
@@ -31,4 +31,12 @@ export function setCurrentInjector(
   const former = _currentInjector;
   _currentInjector = injector;
   return former;
+}
+
+export function inject<T>(token: InjectionToken<T>, options?: unknown): T | NotFound {
+  const currentInjector = getCurrentInjector();
+  if (!currentInjector) {
+    return NOT_FOUND;
+  }
+  return currentInjector.retrieve(token, options);
 }

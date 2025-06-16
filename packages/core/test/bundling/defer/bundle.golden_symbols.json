@@ -529,7 +529,7 @@
       "initTNodeFlags",
       "initializeDirectives",
       "initializeInputAndOutputAliases",
-      "inject",
+      "inject2",
       "injectArgs",
       "injectDestroyRef",
       "injectElementRef",

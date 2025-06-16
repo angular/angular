@@ -757,7 +757,7 @@
       "initTNodeFlags",
       "initializeDirectives",
       "initializeInputAndOutputAliases",
-      "inject",
+      "inject2",
       "injectArgs",
       "injectAttributeImpl",
       "injectChangeDetectorRef",
