@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {enableProdMode} from '@angular/core';
-import {platformBrowser} from '@angular/platform-browser';
+import {enableProdMode, NgZone, ɵNoopNgZone} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 import {init} from './init';
-import {JsWebFrameworksModule} from './rows';
+import {JsWebFrameworksComponent} from './rows';
 
 enableProdMode();
-platformBrowser()
-  .bootstrapModule(JsWebFrameworksModule, {
-    ngZone: 'noop',
-  })
-  .then(init);
+bootstrapApplication(JsWebFrameworksComponent, {
+  providers: [{provide: NgZone, useClass: ɵNoopNgZone}],
+}).then(init, (e) => console.error(e));

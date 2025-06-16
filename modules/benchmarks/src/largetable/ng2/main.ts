@@ -7,10 +7,10 @@
  */
 
 import {enableProdMode} from '@angular/core';
-import {platformBrowser} from '@angular/platform-browser';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 import {init} from './init';
-import {AppModule} from './table';
+import {TableComponent} from './table';
 
 enableProdMode();
-platformBrowser().bootstrapModule(AppModule).then(init);
+bootstrapApplication(TableComponent).then(init);
