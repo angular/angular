@@ -23,6 +23,7 @@ export class PropertyViewComponent {
   readonly directive = input.required<{name: string}>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<void>();
+  readonly showSignalGraph = output<FlatNode>();
 
   private _nestedProps = inject(ElementPropertyResolver);
 

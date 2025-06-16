@@ -23,6 +23,7 @@ export class PropertyTabBodyComponent {
   readonly currentSelectedElement = input.required<IndexedNode>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<string>();
+  readonly showSignalGraph = output<FlatNode>();
 
   readonly currentDirectives = computed(() => {
     const selected = this.currentSelectedElement();

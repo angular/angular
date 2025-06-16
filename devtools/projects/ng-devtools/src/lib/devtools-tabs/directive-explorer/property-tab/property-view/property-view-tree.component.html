@@ -29,6 +29,16 @@
         <span class="value">
           {{ node.prop.descriptor.preview }}
         </span>
+        @if (isSignal(node)) {
+          <button
+            class="show-signal-btn"
+            type="button"
+            matTooltip="Show signal graph snapshot"
+            (click)="showGraph($event, node)"
+          >
+            <mat-icon>schema</mat-icon>
+          </button>
+        }
       </div>
     </mat-tree-node>
   </mat-tree>
