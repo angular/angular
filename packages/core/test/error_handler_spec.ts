@@ -65,4 +65,34 @@ describe('ErrorHandler', () => {
     expect(spy.calls.count()).toBe(1);
     window.onerror = originalWindowOnError;
   });
+
+  it('handles error events without error', async () => {
+    if (isNode) {
+      return;
+    }
+    // override global.onerror to prevent jasmine report error
+    let originalWindowOnError = window.onerror;
+    window.onerror = function () {};
+    TestBed.configureTestingModule({
+      rethrowApplicationErrors: false,
+      providers: [provideBrowserGlobalErrorListeners()],
+    });
+
+    const spy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        window.dispatchEvent(new ErrorEvent('error', {message: 'error event without error'}));
+      });
+      setTimeout(resolve, 1);
+    });
+
+    expect(spy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        message:
+          'An ErrorEvent with no error occurred. See Error.cause for details: error event without error',
+      }),
+    );
+    expect(spy.calls.count()).toBe(1);
+    window.onerror = originalWindowOnError;
+  });
 });
