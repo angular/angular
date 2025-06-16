@@ -109,7 +109,7 @@ filegroup(
         ":browser_specific_styles",
         ":index.html",
         ":shell_common_styles",
-        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
+        "//:node_modules/zone.js",
     ],
 )
 

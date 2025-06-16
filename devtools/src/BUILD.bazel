@@ -86,8 +86,7 @@ pkg_web(
     name = "devapp",
     srcs = [":dev_app_static_files"] + [
         ":bundle",
-        "@npm//:node_modules/tslib/tslib.js",
-        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
+        "//:node_modules/zone.js",
     ],
 )
 

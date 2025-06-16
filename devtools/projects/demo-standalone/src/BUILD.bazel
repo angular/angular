@@ -75,8 +75,8 @@ filegroup(
         ":browser_specific_styles",
         ":demo_styles",
         ":index.html",
+        "//:node_modules/zone.js",
         "//devtools/projects/demo-standalone/src/assets",
-        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
     ],
 )
 
@@ -84,7 +84,6 @@ pkg_web(
     name = "devapp",
     srcs = [":dev_app_static_files"] + [
         ":bundle",
-        "@npm//:node_modules/tslib/tslib.js",
     ],
 )
 

@@ -9,6 +9,5 @@ ts_project(
     ],
     deps = [
         "//devtools/projects/ng-devtools",
-        "@npm//@types",
     ],
 )
