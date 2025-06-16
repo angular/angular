@@ -101,8 +101,8 @@ Angular — Deliver web apps with confidence 🚀
 - [Testing services](https://angular.dev/guide/testing/services)
 - [Basics of component testing](https://angular.dev/guide/testing/components-basics)
 - [Component testing scenarios](https://angular.dev/guide/testing/components-scenarios)
-- [Testing attribute directives](https://angular.dev/guide/testing/attribute-directives
-- [Testing pipes](https://angular.dev/guide/testing/pipes
+- [Testing attribute directives](https://angular.dev/guide/testing/attribute-directives)
+- [Testing pipes](https://angular.dev/guide/testing/pipes)
 - [Debugging tests](https://angular.dev/guide/testing/debugging)
 - [Testing utility apis](https://angular.dev/guide/testing/utility-apis)
 - [Component harness overview](https://angular.dev/guide/testing/component-harnesses-overview)
