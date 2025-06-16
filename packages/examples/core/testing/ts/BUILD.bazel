@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,11 +14,10 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":fake_async_lib",
+    data = [
+        ":fake_async_lib_rjs",
     ],
 )
 

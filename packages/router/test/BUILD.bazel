@@ -1,34 +1,31 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ts_project", "zoneless_jasmine_test")
 
 ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/common",
-        "//packages/common/testing",
-        "//packages/platform-browser",
-        "//packages/platform-browser/testing",
-        "//packages/private/testing",
-    ],
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",
+        "//packages/common:common_rjs",
+        "//packages/common/testing:testing_rjs",
         "//packages/core:core_rjs",
         "//packages/core/rxjs-interop:rxjs-interop_rjs",
         "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
         "//packages/router:router_rjs",
         "//packages/router/testing:testing_rjs",
     ],
 )
 
-jasmine_node_test(
+zoneless_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_zoneless"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )
 

@@ -7,14 +7,12 @@ ts_project(
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/logging",
-    ],
     deps = [
         "//:node_modules/@jridgewell/sourcemap-codec",
         "//:node_modules/@types/convert-source-map",
         "//:node_modules/@types/node",
         "//:node_modules/convert-source-map",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
     ],
 )

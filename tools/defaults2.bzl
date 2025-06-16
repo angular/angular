@@ -1,7 +1,7 @@
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
-load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test")
+load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test", _zoneless_jasmine_test = "zoneless_jasmine_test")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ng_package.bzl", _ng_package = "ng_package")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
@@ -11,6 +11,7 @@ ts_config = _ts_config
 ng_package = _ng_package
 jasmine_test = _jasmine_test
 angular_jasmine_test = _angular_jasmine_test
+zoneless_jasmine_test = _zoneless_jasmine_test
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):
