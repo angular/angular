@@ -23,7 +23,7 @@ The most common attribute directives are as follows:
 | :------------------------------------------------------------ | :------------------------------------------------- |
 | [`NgClass`](#adding-and-removing-classes-with-ngclass)        | Adds and removes a set of CSS classes.             |
 | [`NgStyle`](#setting-inline-styles-with-ngstyle)              | Adds and removes a set of HTML styles.             |
-| [`NgModel`](#displaying-and-updating-properties-with-ngmodel) | Adds two-way data binding to an HTML form element. |
+| [`NgModel`](guide/forms/template-driven-forms)                | Adds two-way data binding to an HTML form element. |
 
 HELPFUL: Built-in directives use only public APIs. They do not have special access to any private APIs that other directives can't access.
 
@@ -91,41 +91,6 @@ Use `NgStyle` to set multiple inline styles simultaneously, based on the state o
 For this use case, Angular applies the styles upon initialization and in case of changes.
 To do this, the full example calls `setCurrentStyles()` initially with `ngOnInit()` and when the dependent properties change through a button click.
 However, these steps are not necessary to implement `ngStyle` on its own.
-
-## Displaying and updating properties with `ngModel`
-
-Use the `NgModel` directive to display a data property and update that property when the user makes changes.
-
-1. Import `FormsModule` and add it to the AppComponent's `imports` list.
-
-<docs-code header="src/app/app.component.ts (FormsModule import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="import-forms-module" />
-
-1. Add an `[(ngModel)]` binding on an HTML `<form>` element and set it equal to the property, here `name`.
-
-   <docs-code header="src/app/app.component.html (NgModel example)" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgModel-1"/>
-
-   This `[(ngModel)]` syntax can only set a data-bound property.
-
-To customize your configuration, write the expanded form, which separates the property and event binding.
-Use [property binding](guide/templates/property-binding) to set the property and [event binding](guide/templates/event-listeners) to respond to changes.
-The following example changes the `<input>` value to uppercase:
-
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="uppercase"/>
-
-Here are all variations in action, including the uppercase version:
-
-<img alt="NgModel variations" src="assets/images/guide/built-in-directives/ng-model-anim.gif">
-
-### `NgModel` and value accessors
-
-The `NgModel` directive works for an element supported by a [ControlValueAccessor](api/forms/ControlValueAccessor).
-Angular provides _value accessors_ for all of the basic HTML form elements.
-For more information, see [Forms](guide/forms).
-
-To apply `[(ngModel)]` to a non-form built-in element or a third-party custom component, you have to write a value accessor.
-For more information, see the API documentation on [DefaultValueAccessor](api/forms/DefaultValueAccessor).
-
-HELPFUL: When you write an Angular component, you don't need a value accessor or `NgModel` if you name the value and event properties according to Angular's [two-way binding syntax](guide/templates/two-way-binding#how-two-way-binding-works).
 
 ## Hosting a directive without a DOM element
 
