@@ -90,13 +90,13 @@ export class SelectDirective {
 
 </docs-step>
 <docs-step title="Add the 'selectFrom' input">
-Add a `selectFrom` `@Input()` property.
+Add a `selectFrom` `input()` property.
 
 ```ts
 export class SelectDirective {
   // ...
 
-  @Input({required: true}) selectFrom!: DataSource;
+  selectFrom = input.required<DataSource<unknown>>();
 }
 ```
 
