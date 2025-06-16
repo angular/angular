@@ -21,6 +21,7 @@ import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
 import {
+  TemplateCompilationMode,
   CompilationUnit,
   ComponentCompilationJob,
   HostBindingCompilationJob,
@@ -54,6 +55,7 @@ export function ingestComponent(
   componentName: string,
   template: t.Node[],
   constantPool: ConstantPool,
+  compilationMode: TemplateCompilationMode,
   relativeContextFilePath: string,
   i18nUseExternalIds: boolean,
   deferMeta: R3ComponentDeferMetadata,
@@ -65,6 +67,7 @@ export function ingestComponent(
     componentName,
     constantPool,
     compatibilityMode,
+    compilationMode,
     relativeContextFilePath,
     i18nUseExternalIds,
     deferMeta,
@@ -93,7 +96,12 @@ export function ingestHostBinding(
   bindingParser: BindingParser,
   constantPool: ConstantPool,
 ): HostBindingCompilationJob {
-  const job = new HostBindingCompilationJob(input.componentName, constantPool, compatibilityMode);
+  const job = new HostBindingCompilationJob(
+    input.componentName,
+    constantPool,
+    compatibilityMode,
+    TemplateCompilationMode.DomOnly,
+  );
   for (const property of input.properties ?? []) {
     let bindingKind = ir.BindingKind.Property;
     // TODO: this should really be handled in the parser.

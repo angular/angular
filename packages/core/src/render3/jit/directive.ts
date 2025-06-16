@@ -129,8 +129,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
         }
 
         const templateUrl = metadata.templateUrl || `ng:///${type.name}/template.html`;
+        const baseMeta = directiveMetadata(type, metadata);
         const meta: R3ComponentMetadataFacade = {
-          ...directiveMetadata(type, metadata),
+          ...baseMeta,
           typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
           template: metadata.template || '',
           preserveWhitespaces,
@@ -149,6 +150,11 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           encapsulation,
           interpolation: metadata.interpolation,
           viewProviders: metadata.viewProviders || null,
+          // We can't inspect whether any of the dependencies are actually directives, because they
+          // get patched on after compilation. That's why in JIT mode we consider that any
+          // dependency might be a directive dependency.
+          hasDirectiveDependencies:
+            !baseMeta.isStandalone || (metadata.imports != null && metadata.imports.length > 0),
         };
 
         compilationDepth++;
