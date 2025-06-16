@@ -8,6 +8,14 @@ def angular_jasmine_test(name, data = [], fixed_args = [], **kwargs):
         **kwargs
     )
 
+def zoneless_jasmine_test(name, data = [], fixed_args = [], **kwargs):
+    jasmine_test(
+        name = name,
+        data = data + ["//tools/testing:node_zoneless_rjs"],
+        fixed_args = fixed_args + ["--require={root}/tools/testing/node_zoneless_tests.init.mjs"],
+        **kwargs
+    )
+
 def jasmine_test(name, data = [], fixed_args = [], **kwargs):
     # Create relative path to root, from current package dir. Necessary as
     # we change the `chdir` below to the package directory.

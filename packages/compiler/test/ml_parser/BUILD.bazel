@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 ts_project(
     name = "ml_parser_lib",
@@ -12,10 +12,9 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "ml_parser",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
+    data = [
         ":ml_parser_lib",
     ],
 )

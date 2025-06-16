@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 # Test that should only be run in node
 NODE_ONLY = [
@@ -49,13 +49,12 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
-        ":test_node_only_lib",
-        "@npm//source-map",
+    data = [
+        ":test_lib_rjs",
+        ":test_node_only_lib_rjs",
+        "//:node_modules/source-map",
     ],
 )
 
