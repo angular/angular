@@ -211,15 +211,29 @@ export function declareNoDirectiveHostTemplate(
   localRefExtractor?: LocalRefExtractor,
 ): TNode {
   const adjustedIndex = index + HEADER_OFFSET;
-  const tNode = declarationTView.firstCreatePass
-    ? getOrCreateTNode(
-        declarationTView,
-        adjustedIndex,
-        TNodeType.Container,
-        tagName || null,
-        attrs || null,
-      )
-    : (declarationTView.data[adjustedIndex] as TContainerNode);
+  let tNode: TContainerNode;
+
+  if (declarationTView.firstCreatePass) {
+    tNode = getOrCreateTNode(
+      declarationTView,
+      adjustedIndex,
+      TNodeType.Container,
+      tagName || null,
+      attrs || null,
+    );
+
+    if (localRefsIndex != null) {
+      const refs = getConstant<string[]>(declarationTView.consts, localRefsIndex)!;
+      tNode.localNames = [];
+
+      for (let i = 0; i < refs.length; i += 2) {
+        // Always -1 since DOM-only instructions can only refer to the native node.
+        tNode.localNames.push(refs[i], -1);
+      }
+    }
+  } else {
+    tNode = declarationTView.data[adjustedIndex] as TContainerNode;
+  }
 
   templateCreate(tNode, declarationLView, declarationTView, index, templateFn, decls, vars, flags);
 
@@ -306,7 +320,7 @@ export function ɵɵdomTemplate(
   const lView = getLView();
   const tView = getTView();
   const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
-  declareDirectiveHostTemplate(
+  declareNoDirectiveHostTemplate(
     lView,
     tView,
     index,

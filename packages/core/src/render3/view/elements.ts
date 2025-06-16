@@ -83,6 +83,7 @@ export function domOnlyFirstCreatePass(
   type: TNodeType.Element | TNodeType.ElementContainer,
   name: string,
   attrsIndex?: number | null,
+  localRefsIndex?: number,
 ): TElementNode | TElementContainerNode {
   ngDevMode && assertFirstCreatePass(tView);
   const tViewConsts = tView.consts;
@@ -93,6 +94,16 @@ export function domOnlyFirstCreatePass(
 
   // Merge the template attrs last so that they have the highest priority.
   tNode.mergedAttrs = mergeHostAttrs(tNode.mergedAttrs, tNode.attrs);
+
+  if (localRefsIndex != null) {
+    const refs = getConstant<string[]>(tViewConsts, localRefsIndex)!;
+    tNode.localNames = [];
+
+    for (let i = 0; i < refs.length; i += 2) {
+      // Always -1 since DOM-only instructions can only refer to the native node.
+      tNode.localNames.push(refs[i], -1);
+    }
+  }
 
   if (tNode.attrs !== null) {
     computeStaticStyling(tNode, tNode.attrs, false);
