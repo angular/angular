@@ -2757,11 +2757,209 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toEqual('256');
   });
 
+  it('should support addition assignment operator in templates', () => {
+    @Component({template: '<button (click)="a += b += c"></button>'})
+    class TestComponent {
+      a = 2;
+      b = 3;
+      c = 4;
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    const button = fixture.nativeElement.querySelector('button');
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(9);
+    expect(fixture.componentInstance.b).toBe(7);
+    expect(fixture.componentInstance.c).toBe(4);
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(20);
+    expect(fixture.componentInstance.b).toBe(11);
+    expect(fixture.componentInstance.c).toBe(4);
+  });
+
+  it('should support subtraction assignment operator in templates', () => {
+    @Component({template: '<button (click)="a -= b -= c"></button>'})
+    class TestComponent {
+      a = 2;
+      b = 3;
+      c = 4;
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    const button = fixture.nativeElement.querySelector('button');
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(3);
+    expect(fixture.componentInstance.b).toBe(-1);
+    expect(fixture.componentInstance.c).toBe(4);
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(8);
+    expect(fixture.componentInstance.b).toBe(-5);
+    expect(fixture.componentInstance.c).toBe(4);
+  });
+
+  it('should support multiplication assignment operator in templates', () => {
+    @Component({template: '<button (click)="a *= b *= c"></button>'})
+    class TestComponent {
+      a = 2;
+      b = 3;
+      c = 4;
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    const button = fixture.nativeElement.querySelector('button');
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(24);
+    expect(fixture.componentInstance.b).toBe(12);
+    expect(fixture.componentInstance.c).toBe(4);
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(1152);
+    expect(fixture.componentInstance.b).toBe(48);
+    expect(fixture.componentInstance.c).toBe(4);
+  });
+
+  it('should support division assignment operator in templates', () => {
+    @Component({template: '<button (click)="a /= b /= c"></button>'})
+    class TestComponent {
+      a = 4;
+      b = 8;
+      c = 16;
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    const button = fixture.nativeElement.querySelector('button');
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(8);
+    expect(fixture.componentInstance.b).toBe(0.5);
+    expect(fixture.componentInstance.c).toBe(16);
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(256);
+    expect(fixture.componentInstance.b).toBe(0.03125);
+    expect(fixture.componentInstance.c).toBe(16);
+  });
+
+  it('should support remainder assignment operator in templates', () => {
+    @Component({template: '<button (click)="a %= b %= c"></button>'})
+    class TestComponent {
+      a = 4;
+      b = 3;
+      c = 2;
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    const button = fixture.nativeElement.querySelector('button');
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(0);
+    expect(fixture.componentInstance.b).toBe(1);
+    expect(fixture.componentInstance.c).toBe(2);
+  });
+
+  it('should support exponentiation assignment operator in templates', () => {
+    @Component({template: '<button (click)="a **= b **= c"></button>'})
+    class TestComponent {
+      a = 0.5;
+      b = 2;
+      c = 3;
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    const button = fixture.nativeElement.querySelector('button');
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(0.00390625);
+    expect(fixture.componentInstance.b).toBe(8);
+    expect(fixture.componentInstance.c).toBe(3);
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(0);
+    expect(fixture.componentInstance.b).toBe(512);
+    expect(fixture.componentInstance.c).toBe(3);
+  });
+
+  it('should support logical and assignment operator in templates', () => {
+    @Component({template: '<button (click)="a &&= b"></button>'})
+    class TestComponent {
+      a = 0;
+      b = 2;
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    const button = fixture.nativeElement.querySelector('button');
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(0);
+
+    fixture.componentInstance.a = 1;
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(2);
+  });
+
+  it('should support logical or assignment operator in templates', () => {
+    @Component({template: '<button (click)="a ||= b"></button>'})
+    class TestComponent {
+      a = 0;
+      b = 2;
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    const button = fixture.nativeElement.querySelector('button');
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(2);
+
+    fixture.componentInstance.a = 1;
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(1);
+  });
+
+  it('should support nullish coalescing assignment operator in templates', () => {
+    @Component({template: '<button (click)="a ??= b"></button>'})
+    class TestComponent {
+      a: number | null = 0;
+      b = 1;
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    const button = fixture.nativeElement.querySelector('button');
+    fixture.detectChanges();
+
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a).toBe(0);
+
+    fixture.componentInstance.a = null;
+    button.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.a!).toBe(1);
+  });
+
   it('should support tagged template literals with no interpolations in expressions', () => {
     @Component({
       standalone: true,
       template: `
-        <p>:{{ caps\`Hello, World!\` }}:{{ excited?.caps(3)\`Uncomfortably excited\` }}:</p> 
+        <p>:{{ caps\`Hello, World!\` }}:{{ excited?.caps(3)\`Uncomfortably excited\` }}:</p>
         <p>{{ greet\`Hi, I'm \${name}, and I'm \${age}\` }}</p>
       `,
     })

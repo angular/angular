@@ -61,6 +61,16 @@ const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = /* @__PURE__
   '+': ts.SyntaxKind.PlusToken,
   '??': ts.SyntaxKind.QuestionQuestionToken,
   'in': ts.SyntaxKind.InKeyword,
+  '=': ts.SyntaxKind.EqualsToken,
+  '+=': ts.SyntaxKind.PlusEqualsToken,
+  '-=': ts.SyntaxKind.MinusEqualsToken,
+  '*=': ts.SyntaxKind.AsteriskEqualsToken,
+  '/=': ts.SyntaxKind.SlashEqualsToken,
+  '%=': ts.SyntaxKind.PercentEqualsToken,
+  '**=': ts.SyntaxKind.AsteriskAsteriskEqualsToken,
+  '&&=': ts.SyntaxKind.AmpersandAmpersandEqualsToken,
+  '||=': ts.SyntaxKind.BarBarEqualsToken,
+  '??=': ts.SyntaxKind.QuestionQuestionEqualsToken,
 }))();
 
 const VAR_TYPES: Record<VariableDeclarationType, ts.NodeFlags> = /* @__PURE__ */ (() => ({
@@ -81,8 +91,12 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createArrayLiteral = ts.factory.createArrayLiteralExpression;
 
-  createAssignment(target: ts.Expression, value: ts.Expression): ts.Expression {
-    return ts.factory.createBinaryExpression(target, ts.SyntaxKind.EqualsToken, value);
+  createAssignment(
+    target: ts.Expression,
+    operator: BinaryOperator,
+    value: ts.Expression,
+  ): ts.Expression {
+    return ts.factory.createBinaryExpression(target, BINARY_OPERATORS[operator], value);
   }
 
   createBinaryExpression(
