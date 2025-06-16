@@ -12,7 +12,7 @@ import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {CssSelector} from '../../directive_matching';
 import {ShadowCss} from '../../shadow_css';
-import {CompilationJobKind} from '../../template/pipeline/src/compilation';
+import {CompilationJobKind, TemplateCompilationMode} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
 import {BindingParser} from '../../template_parser/binding_parser';
@@ -217,11 +217,17 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn = o.variable(fnName);
   }
 
+  const compilationMode =
+    meta.isStandalone && !meta.hasDirectiveDependencies
+      ? TemplateCompilationMode.DomOnly
+      : TemplateCompilationMode.Full;
+
   // First the template is ingested into IR:
   const tpl = ingestComponent(
     meta.name,
     meta.template.nodes,
     constantPool,
+    compilationMode,
     meta.relativeContextFilePath,
     meta.i18nUseExternalIds,
     meta.defer,

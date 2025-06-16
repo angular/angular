@@ -1222,6 +1222,7 @@ export class ComponentDecoratorHandler
         deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerComponent,
         deferrableDeclToImportDecl: new Map(),
         deferPerComponentDependencies: analysis.explicitlyDeferredTypes ?? [],
+        hasDirectiveDependencies: true,
       };
 
       if (this.localCompilationExtraImportsTracker === null) {
@@ -1238,6 +1239,7 @@ export class ComponentDecoratorHandler
         deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
         deferrableDeclToImportDecl: new Map(),
         deferPerComponentDependencies: [],
+        hasDirectiveDependencies: true,
       };
     }
 
@@ -1289,6 +1291,20 @@ export class ComponentDecoratorHandler
           analysis,
           eagerlyUsed,
         );
+        data.hasDirectiveDependencies =
+          !analysis.meta.isStandalone ||
+          allDependencies.some(({kind, ref}) => {
+            // Note that `allDependencies` includes ones that aren't
+            // used in the template so we need to filter them out.
+            return (
+              (kind === MetaKind.Directive || kind === MetaKind.NgModule) &&
+              wholeTemplateUsed.has(ref.node)
+            );
+          });
+      } else {
+        // We don't have the ability to inspect the component's dependencies in local
+        // compilation mode. Assume that it always has directive dependencies in such cases.
+        data.hasDirectiveDependencies = true;
       }
 
       this.handleDependencyCycles(
