@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 # Uses separate test rules to allow the tests to run in parallel
 
@@ -10,13 +9,6 @@ ts_project(
         "mocks.ts",
         "test_support.ts",
     ],
-    interop_deps = [
-        "//packages:types",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/testing",
-    ],
     visibility = [
         ":__subpackages__",
         "//packages/compiler-cli/src/ngtsc/transform/jit/test:__pkg__",
@@ -24,6 +16,11 @@ ts_project(
     ],
     deps = [
         "//:node_modules/typescript",
+        "//packages:types_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
     ],
 )
 
@@ -34,27 +31,22 @@ ts_project(
     srcs = [
         "extract_i18n_spec.ts",
     ],
-    interop_deps = [
-        ":test_utils",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-    ],
     deps = [
+        ":test_utils_rjs",
         "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "extract_i18n",
-    bootstrap = ["//tools/testing:node"],
     data = [
-        "//packages/core:npm_package",
-    ],
-    deps = [
-        ":extract_i18n_lib",
+        ":extract_i18n_lib_rjs",
+        "//:node_modules/yargs",
         "//packages/common:npm_package",
-        "//packages/core",
-        "@npm//yargs",
+        "//packages/core:core_rjs",
+        "//packages/core:npm_package",
     ],
 )
 
@@ -65,26 +57,21 @@ ts_project(
     srcs = [
         "perform_watch_spec.ts",
     ],
-    interop_deps = [
-        ":test_utils",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-        "//packages/private/testing",
-    ],
     deps = [
+        ":test_utils_rjs",
         "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "perform_watch",
-    bootstrap = ["//tools/testing:node"],
     data = [
+        ":perform_watch_lib_rjs",
+        "//packages/core:core_rjs",
         "//packages/core:npm_package",
-    ],
-    deps = [
-        ":perform_watch_lib",
-        "//packages/core",
     ],
 )
 
@@ -95,25 +82,20 @@ ts_project(
     srcs = [
         "perform_compile_spec.ts",
     ],
-    interop_deps = [
-        ":test_utils",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-    ],
     deps = [
+        ":test_utils_rjs",
         "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "perform_compile",
-    bootstrap = ["//tools/testing:node"],
     data = [
+        ":perform_compile_lib_rjs",
+        "//packages/core:core_rjs",
         "//packages/core:npm_package",
-    ],
-    deps = [
-        ":perform_compile_lib",
-        "//packages/core",
     ],
 )
 
@@ -123,16 +105,15 @@ ts_project(
     srcs = [
         "typescript_support_spec.ts",
     ],
-    interop_deps = [
-        "//packages/compiler-cli",
+    deps = [
+        "//packages/compiler-cli:compiler-cli_rjs",
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "typescript_support",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":typescript_support_lib",
+    data = [
+        ":typescript_support_lib_rjs",
     ],
 )
 
@@ -141,15 +122,14 @@ ts_project(
     name = "version_helpers_lib",
     testonly = True,
     srcs = ["version_helpers_spec.ts"],
-    interop_deps = [
-        "//packages/compiler-cli",
+    deps = [
+        "//packages/compiler-cli:compiler-cli_rjs",
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "version_helpers",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":version_helpers_lib",
+    data = [
+        ":version_helpers_lib_rjs",
     ],
 )

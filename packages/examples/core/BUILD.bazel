@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "jasmine_node_test", "protractor_web_test_suite")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
+load("//tools:defaults.bzl", "esbuild", "http_server", "protractor_web_test_suite")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -74,12 +74,11 @@ protractor_web_test_suite(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":core_tests_lib",
-        "//packages/examples/core/di/ts/forward_ref:forward_ref_tests_lib",
+    data = [
+        ":core_tests_lib_rjs",
+        "//packages/examples/core/di/ts/forward_ref:forward_ref_tests_lib_rjs",
     ],
 )
 
