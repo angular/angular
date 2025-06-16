@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {ApplicationRef, Component} from '@angular/core';
 
 export interface RowData {
   id: number;
@@ -36,7 +35,6 @@ export interface RowData {
       </tbody>
     </table>
   `,
-  standalone: false,
 })
 export class JsWebFrameworksComponent {
   data: Array<RowData> = [];
@@ -60,10 +58,3 @@ export class JsWebFrameworksComponent {
     this._appRef.tick();
   }
 }
-
-@NgModule({
-  imports: [BrowserModule],
-  declarations: [JsWebFrameworksComponent],
-  bootstrap: [JsWebFrameworksComponent],
-})
-export class JsWebFrameworksModule {}
