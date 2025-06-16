@@ -20,9 +20,6 @@ ts_project(
     interop_deps = [
         "//packages/core",
     ],
-    deps = [
-        "@npm//@types",
-    ],
 )
 
 ts_test_library(
@@ -35,7 +32,6 @@ ts_test_library(
     ],
     deps = [
         ":protocol_rjs",
-        "@npm//@types",
     ],
 )
 

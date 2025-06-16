@@ -69,7 +69,6 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/protocol",
         "//devtools/projects/protocol:protocol_rjs",
-        "@npm//@types",
     ],
 )
 
