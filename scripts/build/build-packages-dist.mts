@@ -12,7 +12,6 @@ import {buildAngularInMemoryWebApiPackage} from './angular-in-memory-web-api.mjs
 import {performDefaultSnapshotBuild} from './package-builder.mjs';
 import {buildZoneJsPackage} from './zone-js-builder.mjs';
 
-
 // Build the legacy (view engine) npm packages into `dist/packages-dist/`.
 performDefaultSnapshotBuild();
 

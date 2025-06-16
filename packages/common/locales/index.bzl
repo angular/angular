@@ -1,5 +1,5 @@
-load("@cldr_json_data//:index.bzl", _ALL_CLDR_LOCALES = "LOCALES")
 load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
+load("@cldr_json_data//:index.bzl", _ALL_CLDR_LOCALES = "LOCALES")
 
 # List of locales the tool can generate files for.
 LOCALES = _ALL_CLDR_LOCALES
