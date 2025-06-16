@@ -211,7 +211,14 @@ export function ɵɵdomElementStart(
   const tView = lView[TVIEW];
   const adjustedIndex = index + HEADER_OFFSET;
   const tNode = tView.firstCreatePass
-    ? domOnlyFirstCreatePass(adjustedIndex, tView, TNodeType.Element, name, attrsIndex)
+    ? domOnlyFirstCreatePass(
+        adjustedIndex,
+        tView,
+        TNodeType.Element,
+        name,
+        attrsIndex,
+        localRefsIndex,
+      )
     : (tView.data[adjustedIndex] as TElementNode);
 
   elementLikeStartShared(tNode, lView, index, name, _locateOrCreateElementNode);

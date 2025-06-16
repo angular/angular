@@ -164,6 +164,7 @@ export function ɵɵdomElementContainerStart(
         TNodeType.ElementContainer,
         'ng-container',
         attrsIndex,
+        localRefsIndex,
       )
     : (tView.data[adjustedIndex] as TElementContainerNode);
 
