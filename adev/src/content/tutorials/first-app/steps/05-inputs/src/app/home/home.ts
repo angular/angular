@@ -1,10 +1,11 @@
-import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
 import {HousingLocation} from '../housing-location/housing-location';
+import {HousingLocationInfo} from '../housinglocation';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, HousingLocation],
+  imports: [HousingLocation],
+  schemas: [NO_ERRORS_SCHEMA],
   template: `
     <section>
       <form>
@@ -13,7 +14,7 @@ import {HousingLocation} from '../housing-location/housing-location';
       </form>
     </section>
     <section class="results">
-      <app-housing-location></app-housing-location>
+      <app-housing-location [housingLocation]="housingLocation"/>
     </section>
   `,
   styleUrls: ['./home.css'],
@@ -21,7 +22,7 @@ import {HousingLocation} from '../housing-location/housing-location';
 export class Home {
   readonly baseUrl = 'https://angular.dev/assets/images/tutorials/common';
 
-  housingLocation: HousingLocation = {
+  housingLocation: HousingLocationInfo = {
     id: 9999,
     name: 'Test Home',
     city: 'Test city',

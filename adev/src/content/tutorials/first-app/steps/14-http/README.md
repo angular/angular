@@ -172,11 +172,11 @@ The data source has been configured, the next step is to update your web app to 
   
        HELPFUL: Notice the `fetch` method has been updated to _query_ the data for location with a matching `id` property value. See [URL Search Parameter](https://developer.mozilla.org/en-US/docs/Web/API/URL/search) for more information.
 
-        <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[15,18]"/>
+        <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[15,19]"/>
 
     1. Once all the updates are complete, your updated service should match the following code.
 
-        <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,24]" />
+        <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,25]" />
 
 </docs-step>
 
@@ -185,15 +185,15 @@ The server is now reading data from the HTTP request but the components that rel
 
 1. In `src/app/home/home.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method.
 
-    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[32,37]"/>
+    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[29,36]"/>
 
 1. In `src/app/details/details.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method.
 
-    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[61,66]"/>
+    <docs-code header="" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[59,64]"/>
 
-1. Save your code.
+2. Save your code.
 
-1. Open the application in the browser and confirm that it runs without any errors.
+3. Open the application in the browser and confirm that it runs without any errors.
 </docs-step>
 
 </docs-workflow>

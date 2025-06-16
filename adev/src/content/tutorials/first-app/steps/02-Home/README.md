@@ -100,7 +100,7 @@ In the **Edit** pane of your IDE:
 1. In the `first-app` directory, open `home.ts` in the editor.
 1. In `home.ts`, in `@Component`, update the `template` property with this code.
 
-    <docs-code header="Replace in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.ts" visibleLines="[7,14]"/>
+    <docs-code header="Replace in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.ts" visibleLines="[5,12]"/>
 
 1. Next, open `home.css` in the editor and update the content with these styles.
 
