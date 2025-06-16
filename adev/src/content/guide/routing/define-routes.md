@@ -363,18 +363,20 @@ You can add child routes to any route definition with the `children` property:
 
 ```angular-ts
 const routes: Routes = [
-  path: 'product/:id',
-  component: 'ProductComponent',
-  children: [
-    {
-      path: 'info',
-      component: ProductInfoComponent
-    },
-    {
-      path: 'reviews',
-      component: ProductReviewsComponent
-    }
-  ]
+  {
+    path: 'product/:id',
+    component: 'ProductComponent',
+    children: [
+      {
+        path: 'info',
+        component: ProductInfoComponent
+      },
+      {
+        path: 'reviews',
+        component: ProductReviewsComponent
+      }
+    ]
+  }
 ]
 ```
 
