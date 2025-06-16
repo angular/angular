@@ -1,21 +1,23 @@
-# Use *ngFor to list objects in component
+# Use @for to list objects in component
 
-This tutorial lesson demonstrates how to use `ngFor` directive in Angular templates in order to display dynamically repeated data in a template.
+This tutorial lesson demonstrates how to use `@for` block in Angular templates in order to display dynamically repeated data in a template.
 
 <docs-video src="https://www.youtube.com/embed/eM3zi_n7lNs?si=MIl5NcRxvcLjYt5f&amp;start=477"/>
+
+NOTE: This video reflects an older syntax, but the main concepts remain valid.
 
 ## What you'll learn
 
 * You will have added a data set to the app
-* Your app will display a list of elements from the new data set using `ngFor`
+* Your app will display a list of elements from the new data set using `@for`
 
-## Conceptual preview of ngFor
+## Conceptual preview of `@for`
 
-In Angular, `ngFor` is a specific type of [directive](guide/directives) used to dynamically repeat data in a template. In plain JavaScript you would use a for loop - ngFor provides similar functionality for Angular templates.
+In Angular, `@for` is a specific type of [control flow block](/guide/templates/control-flow) used to dynamically repeat data in a template. In plain JavaScript you would use a for loop - `@for` provides similar functionality for Angular templates.
 
-You can utilize `ngFor` to iterate over arrays and even asynchronous values. In this lesson, you'll add a new array of data to iterate over.
+You can utilize `@for` to iterate over arrays and even asynchronous values. In this lesson, you'll add a new array of data to iterate over.
 
-For a more in depth explanation, please refer to the [Built-in directives](guide/directives#ngFor) guide.
+For a more in depth explanation, please refer to the [control flow](guide/templates/control-flow#repeat-content-with-the-for-block) guide.
 
 <docs-workflow>
 
@@ -31,15 +33,13 @@ In the `Home` there is only a single housing location. In this step, you will ad
 
 </docs-step>
 
-<docs-step title="Update the `Home` template to use `ngFor`">
-Now the app has a dataset that you can use to display the entries in the browser using the `ngFor` directive.
+<docs-step title="Update the `Home` template to use `@for`">
+Now the app has a dataset that you can use to display the entries in the browser using the `@for` block.
 
 1. Update the `<app-housing-location>` tag in the template code to this:
-    <docs-code header="Add ngFor to Home template" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="[14,20]"/>
+    <docs-code header="Add @for to Home template" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="[14,20]"/>
 
-    Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `ngFor` directive. Before this change, it referred to the property on the `Home` class.
-
-    IMPORTANT: Don't forget to import the `NgFor` directive in your `Home` class.
+    Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `@for` block. Before this change, it referred to the property on the `Home` class.
 
 1. Save all changes.
 
@@ -53,14 +53,14 @@ Now the app has a dataset that you can use to display the entries in the browser
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you used the `ngFor` directive to repeat data dynamically in Angular templates. You also added a new array of data to be used in the Angular app. The application now dynamically renders a list of housing locations in the browser.
+SUMMARY: In this lesson, you used the `@for` block to repeat data dynamically in Angular templates. You also added a new array of data to be used in the Angular app. The application now dynamically renders a list of housing locations in the browser.
 
 The app is taking shape, great job.
 
 For more information about the topics covered in this lesson, visit:
 
 <docs-pill-row>
-  <docs-pill href="guide/directives/structural-directives" title="Structural Directives"/>
-  <docs-pill href="guide/directives#ngFor" title="ngFor guide"/>
-  <docs-pill href="api/common/NgFor" title="ngFor"/>
+  <docs-pill href="guide/templates/control-flow" title="Control flow blocks"/>
+  <docs-pill href="guide/templates/control-flow#repeat-content-with-the-for-block" title="@for guide"/>
+  <docs-pill href="/api/core/@for" title="@for"/>
 </docs-pill-row>

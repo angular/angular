@@ -4,6 +4,8 @@ This tutorial lesson demonstrates how to create a component `input` and use it t
 
 <docs-video src="https://www.youtube.com/embed/eM3zi_n7lNs?si=WvRGFSkW_7_zDIFD&amp;start=241"/>
 
+NOTE: This video reflects an older syntax, but the main concepts remain valid.
+
 ## What you'll learn
 
 Your app's `HousingLocation` template has a `HousingLocation` property to receive input.
