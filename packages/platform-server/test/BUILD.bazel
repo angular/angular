@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 ts_project(
     name = "dom_utils",
@@ -72,22 +71,18 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
     data = [
+        ":test_lib_rjs",
         "//packages/core/primitives/event-dispatch:contract_bundle_min",
-    ],
-    deps = [
-        ":test_lib",
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "event_replay_test",
-    bootstrap = ["//tools/testing:node"],
-    data = ["//packages/core/primitives/event-dispatch:contract_bundle_min"],
-    deps = [
-        ":event_replay_test_lib",
+    data = [
+        ":event_replay_test_lib_rjs",
+        "//packages/core/primitives/event-dispatch:contract_bundle_min",
     ],
 )

@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
 ts_project(
     name = "test_lib",
@@ -17,10 +16,9 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_no_angular"],
-    deps = [
+    data = [
         ":test_lib",
     ],
 )

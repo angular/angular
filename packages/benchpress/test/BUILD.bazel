@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 ts_project(
     name = "test_lib",
@@ -16,13 +15,12 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
-        "//packages/benchpress",
-        "//packages/core/testing",
-        "@npm//protractor",
+    data = [
+        ":test_lib_rjs",
+        "//:node_modules/protractor",
+        "//packages/benchpress:benchpress_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )

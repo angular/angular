@@ -1,3 +1,4 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("//tools:defaults.bzl", "pkg_npm")
 load("//tools:defaults2.bzl", "ts_config")
@@ -7,6 +8,16 @@ exports_files([
     "migrations.json",
     "collection.json",
 ])
+
+js_library(
+    name = "schematics_jsons",
+    srcs = [
+        "collection.json",
+        "migrations.json",
+        "tsconfig.json",
+    ],
+    visibility = ["//packages/core/schematics:__subpackages__"],
+)
 
 ts_config(
     name = "tsconfig_build",
@@ -32,6 +43,11 @@ pkg_npm(
     srcs = [
         "collection.json",
         "migrations.json",
+    ],
+    validate = False,
+    visibility = ["//packages/core:__pkg__"],
+    deps = [
+        ":bundles",
         "//packages/core/schematics/migrations/control-flow-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
@@ -42,11 +58,6 @@ pkg_npm(
         "//packages/core/schematics/ng-generate/signal-queries-migration:static_files",
         "//packages/core/schematics/ng-generate/signals:static_files",
         "//packages/core/schematics/ng-generate/standalone-migration:static_files",
-    ],
-    validate = False,
-    visibility = ["//packages/core:__pkg__"],
-    deps = [
-        ":bundles",
     ],
 )
 

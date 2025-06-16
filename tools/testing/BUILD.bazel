@@ -1,4 +1,3 @@
-load("//tools:defaults.bzl", "jasmine_node_test")
 load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -82,33 +81,4 @@ ts_project(
     interop_deps = [
         "//packages:types",
     ],
-)
-
-# A test to verify that jasmine_node_test targets fail as expected.
-# This is to catch any future regressions to jasmine_node_test where
-# tests pass silently without executing.
-# See https://github.com/bazelbuild/rules_nodejs/pull/1540 for an example
-# of a potential regression.
-jasmine_node_test(
-    name = "fail_test",
-    srcs = ["fail.spec.mjs"],
-    # While we force the termination of the process with an exitCode of 55 in fail.spec.js. Jasmine force it to 4.
-    # see: https://github.com/jasmine/jasmine-npm/blob/eea8b26efe29176ecbb26ce3f1c4990f8bede685/lib/jasmine.js#L213
-    expected_exit_code = 4,
-)
-
-# A test to verify that jasmine_node_test targets fail as expected
-# when there is a bootstrap script set.
-# This is to catch any future regressions to jasmine_node_test where
-# tests pass silently without executing.
-# See https://github.com/bazelbuild/rules_nodejs/pull/1540 for an example
-# of a potential regression.
-jasmine_node_test(
-    name = "fail_bootstrap_test",
-    srcs = ["fail.spec.mjs"],
-    bootstrap = ["//tools/testing:node"],
-    data = ["//packages:package_json"],
-    # While we force the termination of the process with an exitCode of 55 in fail.spec.js. Jasmine force it to 4.
-    # see: https://github.com/jasmine/jasmine-npm/blob/eea8b26efe29176ecbb26ce3f1c4990f8bede685/lib/jasmine.js#L213
-    expected_exit_code = 4,
 )

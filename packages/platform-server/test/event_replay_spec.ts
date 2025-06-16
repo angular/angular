@@ -71,7 +71,7 @@ describe('event replay', () => {
 
   beforeAll(async () => {
     globalThis.window = globalThis as unknown as Window & typeof globalThis;
-    await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
+    await import('../../core/primitives/event-dispatch/contract_bundle_min.js' as string);
   });
 
   beforeEach(() => {
