@@ -1,4 +1,14 @@
-import {FieldContext, FormError, LogicFn, MetadataKey, ValidationResult} from '../public_api';
+import {
+  AsyncValidationResult,
+  DataKey,
+  DisabledReason,
+  FieldContext,
+  FormError,
+  FormTreeError,
+  LogicFn,
+  MetadataKey,
+  ValidationResult,
+} from '../public_api';
 import {
   AbstractLogic,
   ArrayMergeLogic,
@@ -8,10 +18,14 @@ import {
 } from './logic_node';
 
 abstract class AbstractLogicNodeBuilder {
-  abstract addHiddenRule(logic: LogicFn<unknown, boolean>): void;
-  abstract addDisabledRule(logic: LogicFn<unknown, boolean>): void;
-  abstract addErrorRule(logic: LogicFn<unknown, ValidationResult>): void;
-  abstract addMetadataRule<T>(key: MetadataKey<T>, logic: LogicFn<unknown, T>): void;
+  abstract addHiddenRule(logic: LogicFn<any, boolean>): void;
+  abstract addDisabledReasonRule(logic: LogicFn<any, DisabledReason | undefined>): void;
+  abstract addReadonlyRule(logic: LogicFn<any, boolean>): void;
+  abstract addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void;
+  abstract addSyncTreeErrorRule(logic: LogicFn<any, FormTreeError[]>): void;
+  abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
+  abstract addMetadataRule<M>(key: MetadataKey<M>, logic: LogicFn<any, M>): void;
+  abstract addDataFactory<D>(key: DataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
   abstract getChild(key: PropertyKey): LogicNodeBuilder;
 
   build(): LogicNode {
@@ -26,23 +40,39 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
   private current: NonMergableLogicNodeBuilder | undefined;
   readonly all: {builder: AbstractLogicNodeBuilder; predicate?: Predicate}[] = [];
 
-  addHiddenRule(logic: LogicFn<unknown, boolean>): void {
+  override addHiddenRule(logic: LogicFn<any, boolean>): void {
     this.getCurrent().addHiddenRule(logic);
   }
 
-  addDisabledRule(logic: LogicFn<unknown, boolean>): void {
-    this.getCurrent().addDisabledRule(logic);
+  override addDisabledReasonRule(logic: LogicFn<any, DisabledReason | undefined>): void {
+    this.getCurrent().addDisabledReasonRule(logic);
   }
 
-  addErrorRule(logic: LogicFn<unknown, ValidationResult>): void {
-    this.getCurrent().addErrorRule(logic);
+  override addReadonlyRule(logic: LogicFn<any, boolean>): void {
+    this.getCurrent().addReadonlyRule(logic);
   }
 
-  addMetadataRule<T>(key: MetadataKey<T>, logic: LogicFn<unknown, T>): void {
+  override addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void {
+    this.getCurrent().addSyncErrorRule(logic);
+  }
+
+  override addSyncTreeErrorRule(logic: LogicFn<any, FormTreeError[]>): void {
+    this.getCurrent().addSyncTreeErrorRule(logic);
+  }
+
+  override addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void {
+    this.getCurrent().addAsyncErrorRule(logic);
+  }
+
+  override addMetadataRule<T>(key: MetadataKey<T>, logic: LogicFn<any, T>): void {
     this.getCurrent().addMetadataRule(key, logic);
   }
 
-  getChild(key: PropertyKey): LogicNodeBuilder {
+  override addDataFactory<D>(key: DataKey<D>, factory: (ctx: FieldContext<any>) => D): void {
+    this.getCurrent().addDataFactory(key, factory);
+  }
+
+  override getChild(key: PropertyKey): LogicNodeBuilder {
     return this.getCurrent().getChild(key);
   }
 
@@ -83,20 +113,36 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
   readonly logic = new Logic([]);
   readonly children = new Map<PropertyKey, LogicNodeBuilder>();
 
-  override addHiddenRule(logic: LogicFn<unknown, boolean>): void {
+  override addHiddenRule(logic: LogicFn<any, boolean>): void {
     this.logic.hidden.push(logic);
   }
 
-  override addDisabledRule(logic: LogicFn<unknown, boolean>): void {
-    this.logic.disabled.push(logic);
+  override addDisabledReasonRule(logic: LogicFn<any, DisabledReason | undefined>): void {
+    this.logic.disabledReasons.push(logic);
   }
 
-  override addErrorRule(logic: LogicFn<unknown, ValidationResult>): void {
-    this.logic.errors.push(logic);
+  override addReadonlyRule(logic: LogicFn<any, boolean>): void {
+    this.logic.readonly.push(logic);
   }
 
-  override addMetadataRule<T>(key: MetadataKey<T>, logic: LogicFn<unknown, T>): void {
+  override addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void {
+    this.logic.syncErrors.push(logic);
+  }
+
+  override addSyncTreeErrorRule(logic: LogicFn<any, FormTreeError[]>): void {
+    this.logic.syncTreeErrors.push(logic);
+  }
+
+  override addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void {
+    this.logic.asyncErrors.push(logic);
+  }
+
+  override addMetadataRule<T>(key: MetadataKey<T>, logic: LogicFn<any, T>): void {
     this.logic.getMetadata(key).push(logic);
+  }
+
+  override addDataFactory<D>(key: DataKey<D>, factory: (ctx: FieldContext<any>) => D): void {
+    this.logic.addDataFactory(key, factory);
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
@@ -113,14 +159,32 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
  */
 export class Logic {
   readonly hidden: BooleanOrLogic;
-  readonly disabled: BooleanOrLogic;
-  readonly errors: ArrayMergeLogic<FormError>;
+  readonly disabledReasons: ArrayMergeLogic<DisabledReason>;
+  readonly readonly: BooleanOrLogic;
+  readonly syncErrors: ArrayMergeLogic<FormError>;
+  readonly syncTreeErrors: ArrayMergeLogic<FormTreeError>;
+  readonly asyncErrors: ArrayMergeLogic<FormTreeError | 'pending'>;
   private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
+  private readonly dataFactories = new Map<
+    DataKey<unknown>,
+    (ctx: FieldContext<unknown>) => unknown
+  >();
 
   constructor(private predicates: ReadonlyArray<Predicate>) {
     this.hidden = new BooleanOrLogic(predicates);
-    this.disabled = new BooleanOrLogic(predicates);
-    this.errors = new ArrayMergeLogic<FormError>(predicates);
+    this.disabledReasons = new ArrayMergeLogic(this.predicates);
+    this.readonly = new BooleanOrLogic(this.predicates);
+    this.syncErrors = new ArrayMergeLogic<FormError>(predicates);
+    this.syncTreeErrors = new ArrayMergeLogic<FormTreeError>(predicates);
+    this.asyncErrors = new ArrayMergeLogic<FormTreeError | 'pending'>(predicates);
+  }
+
+  getMetadataEntries() {
+    return this.metadata.entries();
+  }
+
+  getDataFactoryEntries() {
+    return this.dataFactories.entries();
   }
 
   getMetadata<T>(key: MetadataKey<T>): AbstractLogic<T> {
@@ -130,24 +194,26 @@ export class Logic {
     return this.metadata.get(key as MetadataKey<unknown>)! as AbstractLogic<T>;
   }
 
-  readMetadata<T>(key: MetadataKey<T>, arg: FieldContext<unknown>): T {
-    if (this.metadata.has(key as MetadataKey<unknown>)) {
-      return this.metadata.get(key as MetadataKey<unknown>)!.compute(arg) as T;
-    } else {
-      return key.defaultValue();
+  addDataFactory(key: DataKey<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
+    if (this.dataFactories.has(key)) {
+      // TODO: name of the key?
+      throw new Error(`Can't define data twice for the same key`);
     }
-  }
-
-  getMetadataKeys() {
-    return this.metadata.keys();
+    this.dataFactories.set(key, factory);
   }
 
   mergeIn(other: Logic) {
-    this.disabled.mergeIn(other.disabled);
     this.hidden.mergeIn(other.hidden);
-    this.errors.mergeIn(other.errors);
-    for (const key of other.getMetadataKeys()) {
-      this.getMetadata(key).mergeIn(other.getMetadata(key));
+    this.disabledReasons.mergeIn(other.disabledReasons);
+    this.readonly.mergeIn(other.readonly);
+    this.syncErrors.mergeIn(other.syncErrors);
+    this.syncTreeErrors.mergeIn(other.syncTreeErrors);
+    this.asyncErrors.mergeIn(other.asyncErrors);
+    for (const [key, metadataLogic] of other.getMetadataEntries()) {
+      this.getMetadata(key).mergeIn(metadataLogic);
+    }
+    for (const [key, dataFactory] of other.getDataFactoryEntries()) {
+      this.addDataFactory(key, dataFactory);
     }
   }
 }
