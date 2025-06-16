@@ -31,6 +31,24 @@ export class Identifiers {
 
   static elementEnd: o.ExternalReference = {name: 'ɵɵelementEnd', moduleName: CORE};
 
+  static domElement: o.ExternalReference = {name: 'ɵɵdomElement', moduleName: CORE};
+  static domElementStart: o.ExternalReference = {name: 'ɵɵdomElementStart', moduleName: CORE};
+  static domElementEnd: o.ExternalReference = {name: 'ɵɵdomElementEnd', moduleName: CORE};
+  static domElementContainer: o.ExternalReference = {
+    name: 'ɵɵdomElementContainer',
+    moduleName: CORE,
+  };
+  static domElementContainerStart: o.ExternalReference = {
+    name: 'ɵɵdomElementContainerStart',
+    moduleName: CORE,
+  };
+  static domElementContainerEnd: o.ExternalReference = {
+    name: 'ɵɵdomElementContainerEnd',
+    moduleName: CORE,
+  };
+  static domTemplate: o.ExternalReference = {name: 'ɵɵdomTemplate', moduleName: CORE};
+  static domListener: o.ExternalReference = {name: 'ɵɵdomListener', moduleName: CORE};
+
   static advance: o.ExternalReference = {name: 'ɵɵadvance', moduleName: CORE};
 
   static syntheticHostProperty: o.ExternalReference = {
