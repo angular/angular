@@ -14,8 +14,8 @@ import {Events, MessageBus, ProfilerFrame} from '../../../../../protocol';
 import {Subject} from 'rxjs';
 
 import {FileApiService} from './file-api-service';
-import {ProfilerImportDialogComponent} from './profiler-import-dialog.component';
-import {TimelineComponent} from './timeline/timeline.component';
+import {ProfilerImportDialogComponent} from './profiler-import-dialog/profiler-import-dialog.component';
+import {RecordingTimelineComponent} from './recording-timeline/recording-timeline.component';
 import {ButtonComponent} from '../../shared/button/button.component';
 
 type State = 'idle' | 'recording' | 'visualizing';
@@ -27,7 +27,7 @@ const PROFILER_VERSION = 1;
   selector: 'ng-profiler',
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.scss'],
-  imports: [MatTooltip, MatIcon, TimelineComponent, ButtonComponent],
+  imports: [MatTooltip, MatIcon, RecordingTimelineComponent, ButtonComponent],
 })
 export class ProfilerComponent {
   readonly state = signal<State>('idle');
