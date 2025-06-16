@@ -134,7 +134,7 @@ export class Logic {
     if (this.metadata.has(key as MetadataKey<unknown>)) {
       return this.metadata.get(key as MetadataKey<unknown>)!.compute(arg) as T;
     } else {
-      return key.defaultValue;
+      return key.defaultValue();
     }
   }
 
