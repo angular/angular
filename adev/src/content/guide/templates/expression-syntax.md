@@ -47,27 +47,37 @@ For example, `@for` blocks make several local variables corresponding to informa
 
 Angular supports the following operators from standard JavaScript.
 
-| Operator              | Example(s)                               |
-| --------------------- | ---------------------------------------- |
-| Add / Concatenate     | `1 + 2`                                  |
-| Subtract              | `52 - 3`                                 |
-| Multiply              | `41 * 6`                                 |
-| Divide                | `20 / 4`                                 |
-| Remainder (Modulo)    | `17 % 5`                                 |
-| Exponentiation        | `10 ** 3`                                |
-| Parenthesis           | `9 * (8 + 4)`                            |
-| Conditional (Ternary) | `a > b ? true : false`                   |
-| And (Logical)         | `&&`                                     |
-| Or (Logical)          | `\|\|`                                   |
-| Not (Logical)         | `!`                                      |
-| Nullish Coalescing    | `possiblyNullValue ?? 'default'`         |
-| Comparison Operators  | `<`, `<=`, `>`, `>=`, `==`, `===`, `!==` |
-| Unary Negation        | `-x`                                     |
-| Unary Plus            | `+y`                                     |
-| Property Accessor     | `person['name']`                         |
-| typeof                | `typeof 42`                              |
-| void                  | `void 1`                                 |
-| in                    | `'model' in car`                         |
+| Operator                        | Example(s)                               |
+| ------------------------------- | ---------------------------------------- |
+| Add / Concatenate               | `1 + 2`                                  |
+| Subtract                        | `52 - 3`                                 |
+| Multiply                        | `41 * 6`                                 |
+| Divide                          | `20 / 4`                                 |
+| Remainder (Modulo)              | `17 % 5`                                 |
+| Exponentiation                  | `10 ** 3`                                |
+| Parenthesis                     | `9 * (8 + 4)`                            |
+| Conditional (Ternary)           | `a > b ? true : false`                   |
+| And (Logical)                   | `&&`                                     |
+| Or (Logical)                    | `\|\|`                                   |
+| Not (Logical)                   | `!`                                      |
+| Nullish Coalescing              | `possiblyNullValue ?? 'default'`         |
+| Comparison Operators            | `<`, `<=`, `>`, `>=`, `==`, `===`, `!==` |
+| Unary Negation                  | `-x`                                     |
+| Unary Plus                      | `+y`                                     |
+| Property Accessor               | `person['name']`                         |
+| typeof                          | `typeof 42`                              |
+| void                            | `void 1`                                 |
+| in                              | `'model' in car`                         |
+| Assignment                      | `a = b`                                  |
+| Addition Assignment             | `a += b`                                 |
+| Subtraction Assignment          | `a -= b`                                 |
+| Multiplication Assignment       | `a *= b`                                 |
+| Division Assignment             | `a /= b`                                 |
+| Remainder Assignment            | `a %= b`                                 |
+| Exponentiation Assignment       | `a **= b`                                |
+| Logical AND Assignment          | `a &&= b`                                |
+| Logical OR Assignment           | `a \|\|= b`                              |
+| Nullish Coalescing Assignment   | `a ??= b`                                |
 
 Angular expressions additionally also support the following non-standard operators:
 
@@ -84,13 +94,9 @@ NOTE: Optional chaining behaves differently from the standard JavaScript version
 | Operator              | Example(s)                        |
 | --------------------- | --------------------------------- |
 | All bitwise operators | `&`, `&=`, `~`, `\|=`, `^=`, etc. |
-| Assignment operators  | `=`                               |
 | Object destructuring  | `const { name } = person`         |
 | Array destructuring   | `const [firstItem] = items`       |
 | Comma operator        | `x = (x++, x)`                    |
-| in                    | `'model' in car`                  |
-| typeof                | `typeof 42`                       |
-| void                  | `void 1`                          |
 | instanceof            | `car instanceof Automobile`       |
 | new                   | `new Car()`                       |
 
