@@ -1222,6 +1222,7 @@ export class ComponentDecoratorHandler
         deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerComponent,
         deferrableDeclToImportDecl: new Map(),
         deferPerComponentDependencies: analysis.explicitlyDeferredTypes ?? [],
+        hasDirectiveDependencies: true,
       };
 
       if (this.localCompilationExtraImportsTracker === null) {
@@ -1238,6 +1239,7 @@ export class ComponentDecoratorHandler
         deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
         deferrableDeclToImportDecl: new Map(),
         deferPerComponentDependencies: [],
+        hasDirectiveDependencies: true,
       };
     }
 
@@ -1289,6 +1291,28 @@ export class ComponentDecoratorHandler
           analysis,
           eagerlyUsed,
         );
+        data.hasDirectiveDependencies =
+          !analysis.meta.isStandalone ||
+          allDependencies.some(({kind, ref}) => {
+            // Note that `allDependencies` includes ones that aren't
+            // used in the template so we need to filter them out.
+            return (
+              (kind === MetaKind.Directive || kind === MetaKind.NgModule) &&
+              wholeTemplateUsed.has(ref.node)
+            );
+          });
+      } else {
+        const {meta, rawImports, rawDeferredImports} = analysis;
+
+        // In local compilation mode we don't what type the dependencies. Fall back to
+        // checking whether the items are in a static array with at least one item.
+        data.hasDirectiveDependencies =
+          !meta.isStandalone ||
+          (rawImports !== null &&
+            (!ts.isArrayLiteralExpression(rawImports) || rawImports.elements.length > 0)) ||
+          (rawDeferredImports !== null &&
+            (!ts.isArrayLiteralExpression(rawDeferredImports) ||
+              rawDeferredImports.elements.length > 0));
       }
 
       this.handleDependencyCycles(

@@ -657,6 +657,11 @@ function convertDeclareComponentFacadeToMetadata(
     decl.pipes && declarations.push(...convertPipeMapToMetadata(decl.pipes));
   }
 
+  const hasDirectiveDependencies = declarations.every(
+    ({kind}) =>
+      kind === R3TemplateDependencyKind.Directive || kind === R3TemplateDependencyKind.NgModule,
+  );
+
   return {
     ...convertDeclareDirectiveFacadeToMetadata(decl, typeSourceSpan),
     template,
@@ -666,7 +671,6 @@ function convertDeclareComponentFacadeToMetadata(
       decl.viewProviders !== undefined ? new WrappedNodeExpr(decl.viewProviders) : null,
     animations: decl.animations !== undefined ? new WrappedNodeExpr(decl.animations) : null,
     defer,
-
     changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.Default,
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
     interpolation,
@@ -674,6 +678,7 @@ function convertDeclareComponentFacadeToMetadata(
     relativeContextFilePath: '',
     i18nUseExternalIds: true,
     relativeTemplatePath: null,
+    hasDirectiveDependencies,
   };
 }
 
