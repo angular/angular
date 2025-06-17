@@ -31,13 +31,18 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatCard} from '@angular/material/card';
 import {NgStyle} from '@angular/common';
 import {MatIconButton} from '@angular/material/button';
+import {ProfilerFrame} from '../../../../../../../protocol';
 
-const ITEM_WIDTH = 30;
+const ITEM_WIDTH = 25;
+const MAX_HEIGHT = 100;
 
 @Component({
   selector: 'ng-frame-selector',
   templateUrl: './frame-selector.component.html',
   styleUrls: ['./frame-selector.component.scss'],
+  styles: `
+    :host { --max-bar-height: ${MAX_HEIGHT}px }
+  `,
   imports: [
     MatCard,
     MatTooltip,
@@ -50,8 +55,10 @@ const ITEM_WIDTH = 30;
   ],
 })
 export class FrameSelectorComponent {
+  private readonly tabUpdate = inject(TabUpdate);
+
   readonly barContainer = viewChild.required<ElementRef>('barContainer');
-  readonly graphData = input<GraphNode[]>([]);
+  readonly frames = input<ProfilerFrame[]>([]);
 
   readonly selectFrames = output<{indexes: number[]}>();
 
@@ -60,7 +67,7 @@ export class FrameSelectorComponent {
   readonly startFrameIndex = signal(-1);
   readonly endFrameIndex = signal(-1);
   readonly selectedFrameIndexes = signal(new Set<number>());
-  readonly frameCount = computed(() => this.graphData().length);
+  readonly frameCount = computed(() => this.frames().length);
   readonly disableNextFrameButton = computed(
     () => this.endFrameIndex() >= this.frameCount() - 1 || this.selectedFrameIndexes().size > 1,
   );
@@ -79,20 +86,30 @@ export class FrameSelectorComponent {
 
   readonly itemWidth = ITEM_WIDTH;
 
-  private _tabUpdate = inject(TabUpdate);
+  private readonly maxFrameDuration = computed(() =>
+    this.frames().reduce((acc: number, frame: ProfilerFrame) => Math.max(acc, frame.duration), 0),
+  );
+
+  private readonly multiplicationFactor = computed(() =>
+    parseFloat((MAX_HEIGHT / this.maxFrameDuration()).toFixed(2)),
+  );
+
+  protected readonly graphData = computed<GraphNode[]>(() =>
+    this.frames().map((r) => this.getBarStyles(r, this.multiplicationFactor())),
+  );
 
   constructor() {
     afterRenderEffect(() => {
       // Listen for tab updates to reset the scroll position to the top
       // This ensures the viewport is properly updated when switching tabs
-      this._tabUpdate.tabUpdate();
+      this.tabUpdate.tabUpdate();
 
       const viewport = this.viewport();
       viewport.scrollToIndex(0);
       viewport.checkViewportSize();
     });
     afterRenderEffect(() => {
-      const items = this.graphData();
+      const items = this.frames();
       this.viewport().scrollToIndex(items.length);
     });
   }
@@ -188,6 +205,12 @@ export class FrameSelectorComponent {
     }
   }
 
+  // DUPLICATE
+  static estimateFrameRate(timeSpent: number): number {
+    const multiplier = Math.max(Math.ceil(timeSpent / 16) - 1, 0);
+    return Math.floor(60 / 2 ** multiplier);
+  }
+
   stopDragScrolling(): void {
     this._viewportScrollState.isDragScrolling = false;
   }
@@ -209,5 +232,34 @@ export class FrameSelectorComponent {
     const dx = event.clientX - this._viewportScrollState.xCoordinate;
     this.viewport().elementRef.nativeElement.scrollLeft =
       this._viewportScrollState.scrollLeft - dx * dragScrollSpeed;
+  }
+
+  private getBarStyles(frame: ProfilerFrame, multiplicationFactor: number): GraphNode {
+    const height = frame.duration * multiplicationFactor;
+    const colorPercentage = Math.max(10, Math.round((height / MAX_HEIGHT) * 100));
+    const backgroundColor = this.getColorByFrameRate(
+      FrameSelectorComponent.estimateFrameRate(frame.duration),
+    );
+
+    const style = {
+      'background-image': `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,
+      cursor: 'pointer',
+      'min-width': '25px',
+      width: '25px',
+      height: MAX_HEIGHT + 'px',
+    };
+    const toolTip = `${frame.source} TimeSpent: ${frame.duration.toFixed(3)}ms`;
+    return {style, toolTip, frame};
+  }
+
+  private getColorByFrameRate(framerate: number): string {
+    if (framerate >= 60) {
+      return '#d6f0d1';
+    } else if (framerate < 60 && framerate >= 30) {
+      return '#f2dca2';
+    } else if (framerate < 30 && framerate >= 15) {
+      return '#f9cc9d';
+    }
+    return '#fad1d1';
   }
 }

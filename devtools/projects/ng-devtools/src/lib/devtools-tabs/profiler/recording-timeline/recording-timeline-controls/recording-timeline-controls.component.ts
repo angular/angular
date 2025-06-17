@@ -6,44 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, input, model, output} from '@angular/core';
-import {ProfilerFrame} from '../../../../../../../protocol';
-
-import {VisualizationMode} from '../visualization-mode';
-import {MatButton} from '@angular/material/button';
-import {MatCheckbox} from '@angular/material/checkbox';
-import {MatOption} from '@angular/material/core';
-import {MatSelect} from '@angular/material/select';
-import {MatInput} from '@angular/material/input';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
-import {DecimalPipe} from '@angular/common';
+import {Component, output} from '@angular/core';
+import {ButtonComponent} from '../../../../shared/button/button.component';
 
 @Component({
   selector: 'ng-recording-timeline-controls',
   templateUrl: './recording-timeline-controls.component.html',
   styleUrls: ['./recording-timeline-controls.component.scss'],
-  imports: [
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatSelect,
-    MatOption,
-    MatCheckbox,
-    MatButton,
-    DecimalPipe,
-  ],
+  imports: [ButtonComponent],
 })
 export class RecordingTimelineControlsComponent {
-  readonly record = input<ProfilerFrame>();
-  readonly estimatedFrameRate = input.required<number>();
-  readonly visualizationMode = model.required<VisualizationMode>();
-  readonly empty = input.required<boolean>();
-  readonly changeDetection = model.required<boolean>();
-
   readonly exportProfile = output<void>();
   readonly filter = output<string>();
-
-  flameGraphMode = VisualizationMode.FlameGraph;
-  treeMapMode = VisualizationMode.TreeMap;
-  barGraphMode = VisualizationMode.BarGraph;
 }

@@ -9,18 +9,3 @@
   margin-top: 16px;
   text-align: center;
 }
-
-.hidden {
-  /*
-    intentionally using visibility: hidden
-    display: none breaks the virtual scroll
-  */
-  visibility: hidden;
-}
-
-.timeline-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  margin: 0 10px;
-}

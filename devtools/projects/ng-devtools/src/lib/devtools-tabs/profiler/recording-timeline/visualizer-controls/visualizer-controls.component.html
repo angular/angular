@@ -1,0 +1,43 @@
+<div
+  class="details"
+  [class.flame-details]="visualizationMode() === VisMode.FlameGraph"
+  [class.bar-details]="visualizationMode() === VisMode.BarGraph"
+>
+  @if (estimatedFrameRate() >= 60 && record()) {
+    <label>
+      Time spent: <span class="value">{{ record()?.duration | number }} ms</span>
+    </label>
+  }
+  @if (estimatedFrameRate() < 60 && record()) {
+    <label class="warning-label">
+      Time spent: <span class="value">{{ record()?.duration | number }} ms</span>
+    </label>
+  }
+  @if (estimatedFrameRate() < 60 && record()) {
+    <label class="warning-label">
+      Frame rate: <span class="value">{{ estimatedFrameRate() }} fps</span>
+    </label>
+  }
+  @if (record()?.source && record()) {
+    <label>
+      Source: <span class="value">{{ record()?.source }}</span>
+    </label>
+  }
+  @if (visualizationMode() === VisMode.FlameGraph) {
+    <mat-checkbox [checked]="changeDetection()" (change)="changeDetection.set($event.checked)">
+      Show only change detection
+    </mat-checkbox>
+  }
+</div>
+
+<select [hidden]="!record()" (change)="onVisualizationChange($event)">
+  <option [value]="VisMode.FlameGraph" [selected]="visualizationMode() === VisMode.FlameGraph">
+    Flame graph
+  </option>
+  <option [value]="VisMode.TreeMap" [selected]="visualizationMode() === VisMode.TreeMap">
+    Tree map
+  </option>
+  <option [value]="VisMode.BarGraph" [selected]="visualizationMode() === VisMode.BarGraph">
+    Bar chart
+  </option>
+</select>

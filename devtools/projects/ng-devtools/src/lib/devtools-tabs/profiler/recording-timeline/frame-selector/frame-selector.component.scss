@@ -2,7 +2,7 @@
 
 .bar-graph-container {
   padding: 2px;
-  height: 54px;
+  height: var(--max-bar-height);
   display: flex;
   flex-direction: row;
   align-items: flex-end;
@@ -61,8 +61,4 @@
   button {
     margin-bottom: 5px;
   }
-}
-
-cdk-virtual-scroll-viewport {
-  height: 50px;
 }

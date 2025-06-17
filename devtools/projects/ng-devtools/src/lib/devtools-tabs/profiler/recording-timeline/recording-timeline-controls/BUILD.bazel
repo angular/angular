@@ -6,9 +6,6 @@ package(default_visibility = ["//devtools:__subpackages__"])
 sass_binary(
     name = "recording-timeline-controls_styles",
     src = "recording-timeline-controls.component.scss",
-    deps = [
-        "//devtools/projects/ng-devtools/src/styles:typography",
-    ],
 )
 
 ng_project(
@@ -22,11 +19,8 @@ ng_project(
     ],
     interop_deps = [
         "//packages/core",
-        "//packages/common",
     ],
     deps = [
-        "//:node_modules/@angular/material",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/visualization-mode:visualization-mode_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
     ],
 )
