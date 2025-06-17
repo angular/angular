@@ -10,6 +10,7 @@ import {inject, Type} from '@angular/core';
 
 import {
   CanActivate,
+  CanDeactivateChild,
   CanActivateChild,
   CanActivateChildFn,
   CanActivateFn,
@@ -19,6 +20,7 @@ import {
   CanMatchFn,
   Resolve,
   ResolveFn,
+  CanDeactivateChildFn,
 } from '../models';
 
 /**
@@ -88,6 +90,35 @@ export function mapToCanDeactivate<T = unknown>(
     (provider) =>
       (...params) =>
         inject(provider).canDeactivate(...params),
+  );
+}
+/**
+ * Maps an array of injectable classes with canDeactivateChild functions to an array of equivalent
+ * `CanDeactivateChildFn` for use in a `Route` definition.
+ *
+ * @example
+ * ```
+ * const route = {
+ *   path: 'parent',
+ *   component: Parent,
+ *   canDeactivateChild: mapToCanDeactivateChild([MyCanDeactivateChild]),
+ *   children: [
+ *     {path: 'child', component: Child},
+ *   ],
+ * }
+ * ```
+ *
+ * @publicApi
+ * @see {@link Route}
+ * @see {@link CanDeactivateChildFn}
+ */
+export function mapToCanDeactivateChild(
+  providers: Array<Type<CanDeactivateChild>>,
+): CanDeactivateChildFn[] {
+  return providers.map(
+    (provider) =>
+      (...params) =>
+        inject(provider).canDeactivateChild(...params),
   );
 }
 /**
