@@ -41,7 +41,8 @@
               "src/robots.txt",
               "src/assets",
               "src/llms.txt",
-              "src/llms-full.txt"
+              "src/llms-full.txt",
+              "src/context"
             ],
             "styles": ["@angular/docs/styles/global-styles.scss", "./src/local-styles.scss"],
             "scripts": [],
