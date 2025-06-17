@@ -32,7 +32,7 @@ export interface DomPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
 
   sanitizer: o.Expression | null;
 
-  sourceSpan: ParseSourceSpan | null;
+  sourceSpan: ParseSourceSpan;
 }
 
 export function createDomPropertyOp(
@@ -41,7 +41,7 @@ export function createDomPropertyOp(
   isAnimationTrigger: boolean,
   i18nContext: XrefId | null,
   securityContext: SecurityContext | SecurityContext[],
-  sourceSpan: ParseSourceSpan | null,
+  sourceSpan: ParseSourceSpan,
 ): DomPropertyOp {
   return {
     kind: OpKind.DomProperty,

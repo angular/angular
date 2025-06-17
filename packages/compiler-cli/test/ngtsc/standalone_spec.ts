@@ -288,7 +288,7 @@ runInEachFileSystem(() => {
 
         // verify generated code for the unknown element
         const jsCode = env.getContents('test.js');
-        expect(jsCode).toContain('i0.ɵɵelement(0, "is-unknown");');
+        expect(jsCode).toContain('i0.ɵɵdomElement(0, "is-unknown");');
 
         // verify schemas are not included in the generated code
         const jsCodeAoT = jsCode.slice(
@@ -1234,7 +1234,7 @@ runInEachFileSystem(() => {
         'app.ts',
         `
         import {Component} from '@angular/core';
-        
+
         @Component({standalone: false, template: ''})
         export class TestCmp {}
       `,
@@ -1251,7 +1251,7 @@ runInEachFileSystem(() => {
         'app.ts',
         `
         import {Directive} from '@angular/core';
-        
+
         @Directive({standalone: false})
         export class TestDir {}
       `,
@@ -1268,7 +1268,7 @@ runInEachFileSystem(() => {
         'app.ts',
         `
         import {Directive} from '@angular/core';
-        
+
         @Directive()
         export class TestDir {}
       `,
@@ -1283,7 +1283,7 @@ runInEachFileSystem(() => {
         'app.ts',
         `
         import {Pipe} from '@angular/core';
-        
+
         @Pipe({name: 'test', standalone: false})
         export class TestPipe {}
       `,
