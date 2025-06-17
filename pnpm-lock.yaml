@@ -358,8 +358,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4
         version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/ssr@20.0.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.42.0)(tsx@4.20.3)(zone.js@packages+zone.js)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#4ab7be5c2562e6b3bfb594a282f5e1982e1b1cd6
-        version: github.com/angular/dev-infra-private-ng-dev-builds/4ab7be5c2562e6b3bfb594a282f5e1982e1b1cd6
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#c2b8d84fd686967020de322f3f13b3e7ddcd971e
+        version: github.com/angular/dev-infra-private-ng-dev-builds/c2b8d84fd686967020de322f3f13b3e7ddcd971e
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.27.4)
@@ -7133,7 +7133,7 @@ packages:
     resolution: {integrity: sha512-4zFBCU5Pf+4Z6v+rwnZ1HU1yzOKKvDkMXZrymE2PBlbjKJRlrOxbvpfPSvJTGRIwGoahaOGvp+kbCoxifhzJ1Q==, tarball: https://registry.npmjs.org/@vitest/utils/-/utils-3.2.3.tgz}
     dependencies:
       '@vitest/pretty-format': 3.2.3
-      loupe: 3.1.3
+      loupe: 3.1.4
       tinyrainbow: 2.0.0
     dev: true
 
@@ -8652,7 +8652,7 @@ packages:
       assertion-error: 2.0.1
       check-error: 2.1.1
       deep-eql: 5.0.2
-      loupe: 3.1.3
+      loupe: 3.1.4
       pathval: 2.0.0
     dev: true
 
@@ -14963,8 +14963,8 @@ packages:
     resolution: {integrity: sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==, tarball: https://registry.npmjs.org/long/-/long-5.3.2.tgz}
     dev: true
 
-  /loupe@3.1.3:
-    resolution: {integrity: sha512-kkIp7XSkP78ZxJEsSxW3712C6teJVoeHHwgo9zJ380de7IYyJ2ISlxojcH2pC5OFLewESmnRi/+XCDIEEVyoug==, tarball: https://registry.npmjs.org/loupe/-/loupe-3.1.3.tgz}
+  /loupe@3.1.4:
+    resolution: {integrity: sha512-wJzkKwJrheKtknCOKNEtDK4iqg/MxmZheEMtSTYvnzRdEYaZzmgH976nenp8WdJRdx5Vc1X/9MO0Oszl6ezeXg==, tarball: https://registry.npmjs.org/loupe/-/loupe-3.1.4.tgz}
     dev: true
 
   /lower-case@2.0.2:
@@ -19398,8 +19398,8 @@ packages:
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
 
-  /tinypool@1.1.0:
-    resolution: {integrity: sha512-7CotroY9a8DKsKprEy/a14aCCm8jYVmR7aFy4fpkZM8sdpNJbKkixuNjgM50yCmip2ezc8z4N7k3oe2+rfRJCQ==, tarball: https://registry.npmjs.org/tinypool/-/tinypool-1.1.0.tgz}
+  /tinypool@1.1.1:
+    resolution: {integrity: sha512-Zba82s87IFq9A9XmjiX5uZA/ARWDrB03OHlq+Vw1fSdt0I+4/Kutwy8BP4Y/y/aORMo61FQ0vIb5j44vSo5Pkg==, tarball: https://registry.npmjs.org/tinypool/-/tinypool-1.1.1.tgz}
     engines: {node: ^18.0.0 || >=20.0.0}
     dev: true
 
@@ -20670,7 +20670,7 @@ packages:
       tinybench: 2.9.0
       tinyexec: 0.3.2
       tinyglobby: 0.2.14
-      tinypool: 1.1.0
+      tinypool: 1.1.1
       tinyrainbow: 2.0.0
       vite: 6.3.5(@types/node@10.17.60)(terser@5.42.0)(tsx@4.20.3)
       vite-node: 3.2.3(@types/node@10.17.60)(terser@5.42.0)(tsx@4.20.3)
@@ -21607,10 +21607,10 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/4ab7be5c2562e6b3bfb594a282f5e1982e1b1cd6:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/4ab7be5c2562e6b3bfb594a282f5e1982e1b1cd6}
+  github.com/angular/dev-infra-private-ng-dev-builds/c2b8d84fd686967020de322f3f13b3e7ddcd971e:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c2b8d84fd686967020de322f3f13b3e7ddcd971e}
     name: '@angular/ng-dev'
-    version: 0.0.0-1f047e7dbae43ea969c2cafb53b33207e86b800f
+    version: 0.0.0-f0289062692ca0af149a1bb61cc075a532003f49
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 8.0.0(supports-color@10.0.0)
