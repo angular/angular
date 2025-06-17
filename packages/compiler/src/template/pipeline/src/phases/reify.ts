@@ -208,7 +208,8 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         const childView = unit.job.views.get(op.xref)!;
         ir.OpList.replace(
           op,
-          unit.job.mode === CompilationMode.DomOnly
+          // Block templates can't have directives so we can always generate them as DOM-only.
+          op.templateKind === ir.TemplateKind.Block || unit.job.mode === CompilationMode.DomOnly
             ? ng.domTemplate(
                 op.handle.slot!,
                 o.variable(childView.fnName!),

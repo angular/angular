@@ -58,6 +58,7 @@
       "shimStylesContent"
     ],
     "lazy": [
+      "DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "APP_BOOTSTRAP_LISTENER",
       "APP_ID",
@@ -257,11 +258,13 @@
       "\\u0275\\u0275defineComponent",
       "\\u0275\\u0275defineInjectable",
       "\\u0275\\u0275directiveInject",
+      "\\u0275\\u0275domElementEnd",
+      "\\u0275\\u0275domElementStart",
+      "\\u0275\\u0275domTemplate",
       "\\u0275\\u0275element",
       "\\u0275\\u0275elementEnd",
       "\\u0275\\u0275elementStart",
       "\\u0275\\u0275inject",
-      "\\u0275\\u0275template",
       "\\u0275\\u0275text",
       "_NullComponentFactoryResolver",
       "_THROW_IF_NOT_FOUND",
@@ -377,7 +380,6 @@
       "createTView",
       "createTextNode",
       "createViewBlueprint",
-      "declareDirectiveHostTemplate",
       "declareNoDirectiveHostTemplate",
       "decreaseElementDepthCount",
       "deepForEach",
@@ -400,6 +402,7 @@
       "diPublicInInjector",
       "directiveHostEndFirstCreatePass",
       "directiveHostFirstCreatePass",
+      "domOnlyFirstCreatePass",
       "elementLikeEndShared",
       "elementLikeStartShared",
       "enterDI",
@@ -746,8 +749,7 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput",
-      "DeferComponent"
+      "writeToDirectiveInput"
     ]
   }
 }
