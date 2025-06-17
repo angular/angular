@@ -5285,7 +5285,7 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       expect(env.getContents('test.js')).toContain(
-        `ɵɵlistener("click", function TestCmp_Template_div_click_0_listener() { return 123; });`,
+        `ɵɵdomListener("click", function TestCmp_Template_div_click_0_listener() { return 123; });`,
       );
     });
 
@@ -9430,7 +9430,7 @@ runInEachFileSystem((os: string) => {
         // Only `sandbox` has an extra validation fn (since it's security-sensitive),
         // the `title` property doesn't have an extra validation fn.
         expect(jsContents).toContain(
-          'ɵɵproperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)("title", "Hi!")',
+          'ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)("title", "Hi!")',
         );
 
         // The `allow` property is also security-sensitive, thus an extra validation fn.

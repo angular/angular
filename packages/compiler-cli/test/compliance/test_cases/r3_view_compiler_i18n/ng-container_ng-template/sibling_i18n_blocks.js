@@ -1,11 +1,11 @@
 function MyComponent_ng_template_2_Template(rf, ctx) {
   if (rf & 1) {
-    i0.ɵɵi18n(0, 0, 1);
+    $r3$.ɵɵi18n(0, 0, 1);
   }
 }
 function MyComponent_ng_template_5_Template(rf, ctx) {
   if (rf & 1) {
-    i0.ɵɵi18n(0, 1, 1);
+    $r3$.ɵɵi18n(0, 1, 1);
   }
 }
 …
@@ -18,15 +18,15 @@ consts: () => {
 }, 
 template: function MyComponent_Template(rf, ctx) {
   if (rf & 1) {
-    i0.ɵɵelementStart(0, "div");
-    i0.ɵɵi18nStart(1, 0);
-    i0.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 1, 0, "ng-template");
-    i0.ɵɵi18nEnd();
-    i0.ɵɵelementEnd();
-    i0.ɵɵelementStart(3, "div");
-    i0.ɵɵi18nStart(4, 1);
-    i0.ɵɵtemplate(5, MyComponent_ng_template_5_Template, 1, 0, "ng-template");
-    i0.ɵɵi18nEnd();
-    i0.ɵɵelementEnd();
+    $r3$.ɵɵdomElementStart(0, "div");
+    $r3$.ɵɵi18nStart(1, 0);
+    $r3$.ɵɵdomTemplate(2, MyComponent_ng_template_2_Template, 1, 0, "ng-template");
+    $r3$.ɵɵi18nEnd();
+    $r3$.ɵɵdomElementEnd();
+    $r3$.ɵɵdomElementStart(3, "div");
+    $r3$.ɵɵi18nStart(4, 1);
+    $r3$.ɵɵdomTemplate(5, MyComponent_ng_template_5_Template, 1, 0, "ng-template");
+    $r3$.ɵɵi18nEnd();
+    $r3$.ɵɵdomElementEnd();
   }
 }

@@ -9,13 +9,13 @@ function TestComponent_ProjectionFallback_0_Template(rf, ctx) {
 
 function TestComponent_ProjectionFallback_3_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "h1");
+    $r3$.ɵɵdomElementStart(0, "h1");
     $r3$.ɵɵtext(1);
-    $r3$.ɵɵelementStart(2, "strong");
+    $r3$.ɵɵdomElementStart(2, "strong");
     $r3$.ɵɵtext(3, "content");
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵdomElementEnd();
     $r3$.ɵɵtext(4, "!");
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵdomElementEnd();
   }
   if (rf & 2) {
     const $ctx_r0$ = $r3$.ɵɵnextContext();
@@ -38,9 +38,9 @@ function TestComponent_Conditional_5_Template(rf, ctx) {
 
 function TestComponent_ng_content_6_ProjectionFallback_0_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "h2");
+    $r3$.ɵɵdomElementStart(0, "h2");
     $r3$.ɵɵtext(1, "With a structural directive");
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵdomElementEnd();
   }
 }
 
@@ -62,17 +62,17 @@ $r3$.ɵɵdefineComponent({
     if (rf & 1) {
       $r3$.ɵɵprojectionDef($_c0$);
       $r3$.ɵɵprojection(0, 0, null, TestComponent_ProjectionFallback_0_Template, 1, 0);
-      $r3$.ɵɵelementStart(2, "div");
+      $r3$.ɵɵdomElementStart(2, "div");
       $r3$.ɵɵprojection(3, 1, null, TestComponent_ProjectionFallback_3_Template, 5, 1);
-      $r3$.ɵɵelementEnd();
+      $r3$.ɵɵdomElementEnd();
       $r3$.ɵɵconditionalCreate(5, TestComponent_Conditional_5_Template, 2, 0);
-      $r3$.ɵɵtemplate(6, TestComponent_ng_content_6_Template, 2, 0, "ng-content", 0);
+      $r3$.ɵɵdomTemplate(6, TestComponent_ng_content_6_Template, 2, 0, "ng-content", 0);
     }
     if (rf & 2) {
       $r3$.ɵɵadvance(5);
       $r3$.ɵɵconditional(ctx.hasFooter ? 5 : -1);
       $r3$.ɵɵadvance();
-      $r3$.ɵɵproperty("ngIf", ctx.hasStructural);
+      $r3$.ɵɵdomProperty("ngIf", ctx.hasStructural);
     }
   },
   …

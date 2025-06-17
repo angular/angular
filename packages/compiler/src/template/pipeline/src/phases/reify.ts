@@ -9,7 +9,12 @@
 import * as o from '../../../../output/output_ast';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
-import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
+import {
+  TemplateCompilationMode,
+  ViewCompilationUnit,
+  type CompilationJob,
+  type CompilationUnit,
+} from '../compilation';
 import * as ng from '../instruction';
 
 /**
@@ -81,54 +86,94 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.ElementStart:
         ir.OpList.replace(
           op,
-          ng.elementStart(
-            op.handle.slot!,
-            op.tag!,
-            op.attributes as number | null,
-            op.localRefs as number | null,
-            op.startSourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementStart(
+                op.handle.slot!,
+                op.tag!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.startSourceSpan,
+              )
+            : ng.elementStart(
+                op.handle.slot!,
+                op.tag!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.startSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.Element:
         ir.OpList.replace(
           op,
-          ng.element(
-            op.handle.slot!,
-            op.tag!,
-            op.attributes as number | null,
-            op.localRefs as number | null,
-            op.wholeSourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElement(
+                op.handle.slot!,
+                op.tag!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.wholeSourceSpan,
+              )
+            : ng.element(
+                op.handle.slot!,
+                op.tag!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.wholeSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.ElementEnd:
-        ir.OpList.replace(op, ng.elementEnd(op.sourceSpan));
+        ir.OpList.replace(
+          op,
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementEnd(op.sourceSpan)
+            : ng.elementEnd(op.sourceSpan),
+        );
         break;
       case ir.OpKind.ContainerStart:
         ir.OpList.replace(
           op,
-          ng.elementContainerStart(
-            op.handle.slot!,
-            op.attributes as number | null,
-            op.localRefs as number | null,
-            op.startSourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementContainerStart(
+                op.handle.slot!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.startSourceSpan,
+              )
+            : ng.elementContainerStart(
+                op.handle.slot!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.startSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.Container:
         ir.OpList.replace(
           op,
-          ng.elementContainer(
-            op.handle.slot!,
-            op.attributes as number | null,
-            op.localRefs as number | null,
-            op.wholeSourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementContainer(
+                op.handle.slot!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.wholeSourceSpan,
+              )
+            : ng.elementContainer(
+                op.handle.slot!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.wholeSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.ContainerEnd:
-        ir.OpList.replace(op, ng.elementContainerEnd());
+        ir.OpList.replace(
+          op,
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementContainerEnd()
+            : ng.elementContainerEnd(),
+        );
         break;
       case ir.OpKind.I18nStart:
         ir.OpList.replace(
@@ -163,16 +208,27 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         const childView = unit.job.views.get(op.xref)!;
         ir.OpList.replace(
           op,
-          ng.template(
-            op.handle.slot!,
-            o.variable(childView.fnName!),
-            childView.decls!,
-            childView.vars!,
-            op.tag,
-            op.attributes,
-            op.localRefs,
-            op.startSourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domTemplate(
+                op.handle.slot!,
+                o.variable(childView.fnName!),
+                childView.decls!,
+                childView.vars!,
+                op.tag,
+                op.attributes,
+                op.localRefs,
+                op.startSourceSpan,
+              )
+            : ng.template(
+                op.handle.slot!,
+                o.variable(childView.fnName!),
+                childView.decls!,
+                childView.vars!,
+                op.tag,
+                op.attributes,
+                op.localRefs,
+                op.startSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.DisableBindings:
@@ -204,13 +260,17 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         }
         ir.OpList.replace(
           op,
-          ng.listener(
-            op.name,
-            listenerFn,
-            eventTargetResolver,
-            op.hostListener && op.isAnimationListener,
-            op.sourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly &&
+            !op.hostListener &&
+            !op.isAnimationListener
+            ? ng.domListener(op.name, listenerFn, eventTargetResolver, op.sourceSpan)
+            : ng.listener(
+                op.name,
+                listenerFn,
+                eventTargetResolver,
+                op.hostListener && op.isAnimationListener,
+                op.sourceSpan,
+              ),
         );
         break;
       case ir.OpKind.TwoWayListener:
@@ -475,7 +535,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
   }
 }
 
-function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
+function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
@@ -484,7 +544,12 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
       case ir.OpKind.Property:
-        ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
+        ir.OpList.replace(
+          op,
+          unit.job.mode === TemplateCompilationMode.DomOnly && !op.isAnimationTrigger
+            ? ng.domProperty(op.name, op.expression, op.sanitizer, op.sourceSpan)
+            : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan),
+        );
         break;
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
