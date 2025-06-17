@@ -5,11 +5,22 @@ import {validateTree} from './logic';
 import {StandardSchemaV1} from './standard_schema_types';
 import {Field, FieldPath} from './types';
 
+/**
+ * Validates a field using a `StandardSchemaV1` compatible validator (e.g. a zod validator).
+ *
+ * @param path The `FieldPath` to the field to validate.
+ * @param schema The standard schema copatible validator to use for validation.
+ * @template T The type of the field being validated.
+ */
 export function validateStandardSchema<T>(
   path: FieldPath<T>,
   schema: NoInfer<StandardSchemaV1<T>>,
 ) {
-  // Memoize the result so it can be passed through both sync & async validation.
+  // We create both a sync and async validator because the standard schema validator can return
+  // either a sync result or a Promise, and we need to handle both cases. The sync validator
+  // handles the sync result, and the async validator handles the Promise.
+  // We memoize the result of the validation function here, so that it is only run once for both
+  // validators, it can then be passed through both sync & async validation.
   const schemaResult = define(path, ({value}) => {
     return computed(() => schema['~standard'].validate(value()));
   });
@@ -20,9 +31,7 @@ export function validateStandardSchema<T>(
     if (isPromise(result)) {
       return [];
     }
-    return (
-      result.issues?.map((issue) => standardIssueToFormTreeError(false, fieldOf(path), issue)) ?? []
-    );
+    return result.issues?.map((issue) => standardIssueToFormTreeError(fieldOf(path), issue)) ?? [];
   });
 
   validateAsync(path, {
@@ -38,16 +47,19 @@ export function validateStandardSchema<T>(
       });
     },
     errors: (issues, {fieldOf}) => {
-      return issues.map((issue) => standardIssueToFormTreeError(true, fieldOf(path), issue));
+      return issues.map((issue) => standardIssueToFormTreeError(fieldOf(path), issue));
     },
   });
 }
 
-export function standardIssueToFormTreeError(
-  async: boolean,
-  field: Field<unknown>,
-  issue: StandardSchemaV1.Issue,
-) {
+/**
+ * Converts a `StandardSchemaV1.Issue` to a `FormTreeError`.
+ *
+ * @param field The root field to which the issue's path is relative.
+ * @param issue The `StandardSchemaV1.Issue` to convert.
+ * @returns A `FormTreeError` representing the issue.
+ */
+export function standardIssueToFormTreeError(field: Field<unknown>, issue: StandardSchemaV1.Issue) {
   let target = field as Field<Record<PropertyKey, unknown>>;
   for (const pathPart of issue.path ?? []) {
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
@@ -60,6 +72,14 @@ export function standardIssueToFormTreeError(
   };
 }
 
+/**
+ * Checks if a value is a Promise.
+ * Use this function rather than `instanceof Promise` because the value could be a thenable rather
+ * than a proper `Promise` (e.g. from nodejs)
+ *
+ * @param value The value to check.
+ * @returns `true` if the value is a Promise, `false` otherwise.
+ */
 export function isPromise(value: Object): value is Promise<unknown> {
-  return (value as Promise<unknown>).then !== undefined;
+  return typeof (value as Promise<unknown>).then === 'function';
 }
