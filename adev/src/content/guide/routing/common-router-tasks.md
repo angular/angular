@@ -61,51 +61,6 @@ const routes: Routes = [
 The last route with the `path` of `**` is a wildcard route.
 The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
 
-## Preventing unauthorized access with route guards
-
-Use route guards to prevent users from navigating to parts of an application without authorization.
-The following route guards are available in Angular:
-
-<docs-pill-row>
-  <docs-pill href="api/router/CanActivateFn" title="`canActivate`"/>
-  <docs-pill href="api/router/CanActivateChildFn" title="`canActivateChild`"/>
-  <docs-pill href="api/router/CanDeactivateFn" title="`canDeactivate`"/>
-  <docs-pill href="api/router/CanMatchFn" title="`canMatch`"/>
-  <docs-pill href="api/router/ResolveFn" title="`resolve`"/>
-  <docs-pill href="api/router/CanLoadFn" title="`canLoad`"/>
-</docs-pill-row>
-
-To use route guards, consider using [component-less routes](api/router/Route#componentless-routes) as this facilitates guarding child routes.
-
-Create a file for your guard:
-
-```bash
-ng generate guard your-guard
-```
-
-In your guard file, add the guard functions you want to use.
-The following example uses `canActivateFn` to guard the route.
-
-```ts
-export const yourGuardFunction: CanActivateFn = (
-  next: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-) => {
-  // your  logic goes here
-}
-```
-
-In your routing module, use the appropriate property in your `routes` configuration.
-Here, `canActivate` tells the router to mediate navigation to this particular route.
-
-```ts
-{
-  path: '/your-path',
-  component: YourComponent,
-  canActivate: [yourGuardFunction],
-}
-```
-
 ## Link parameters array
 
 A link parameters array holds the following ingredients for router navigation:

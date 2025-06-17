@@ -357,6 +357,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/redirecting-routes',
           },
           {
+            label: 'Control route access with guards',
+            path: 'guide/routing/route-guards',
+            contentPath: 'guide/routing/route-guards',
+          },
+          {
             label: 'Other routing tasks',
             path: 'guide/routing/common-router-tasks',
             contentPath: 'guide/routing/common-router-tasks',
