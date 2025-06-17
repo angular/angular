@@ -1,6 +1,6 @@
 function MyApp_ng_template_0_ng_template_4_ng_template_0_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵtemplate(0, MyApp_ng_template_0_ng_template_4_ng_template_0_Defer_0_Template, 0, 0);
+    $r3$.ɵɵdomTemplate(0, MyApp_ng_template_0_ng_template_4_ng_template_0_Defer_0_Template, 0, 0);
     $r3$.ɵɵdefer(1, 0);
     $r3$.ɵɵdeferOnInteraction(1, 2);
     $r3$.ɵɵdeferPrefetchOnInteraction(1, 2);
