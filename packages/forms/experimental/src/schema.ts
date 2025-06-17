@@ -6,24 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, SchemaFn, SchemaOrSchemaFn} from './api/types';
-import {FieldPathNode} from './path_node';
+import {FieldPath, Schema, SchemaOrSchemaFn} from './api/types';
+import {FieldPathNode, FieldRootPathNode} from './path_node';
 
-let currentRoot: FieldPathNode | undefined = undefined;
+let currentRoot: FieldRootPathNode | undefined = undefined;
 
-export class SchemaImpl {
-  constructor(readonly schema: SchemaOrSchemaFn<any>) {}
-
-  apply(path: FieldPathNode): void {
-    const schemaFn = this.schema as unknown as SchemaFn<any>;
-    const prevRoot = currentRoot;
-    try {
-      currentRoot = path.root;
-      schemaFn(path.fieldPathProxy);
-    } finally {
-      currentRoot = prevRoot;
-    }
+export function compileSchema(schemaFn: SchemaOrSchemaFn<any> | undefined): FieldRootPathNode {
+  if (schemaFn === undefined) {
+    return new FieldRootPathNode();
   }
+  if (isCompiledSchema(schemaFn)) {
+    return schemaFn;
+  }
+  const prevRoot = currentRoot;
+  try {
+    currentRoot = new FieldRootPathNode();
+    schemaFn(currentRoot.fieldPathProxy);
+    return currentRoot as Schema<unknown>;
+  } finally {
+    currentRoot = prevRoot;
+  }
+}
+
+export function isCompiledSchema(obj: unknown): obj is Schema<unknown> {
+  return obj instanceof FieldRootPathNode;
 }
 
 export function assertPathIsCurrent(path: FieldPath<unknown>): void {

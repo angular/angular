@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FieldPath} from './api/types';
-import {DYNAMIC, FieldLogicNode, Predicate} from './logic_node';
+import {DYNAMIC, Predicate} from './logic_node';
+import {LogicNodeBuilder} from './logic_node_2';
 
 /**
  * Special key which is used to retrieve the `FieldPathNode` instance from its `FieldPath` proxy wrapper.
@@ -24,7 +25,7 @@ export class FieldPathNode {
 
   protected constructor(
     readonly keys: PropertyKey[],
-    readonly logic: FieldLogicNode,
+    readonly logic: LogicNodeBuilder,
     root: FieldRootPathNode | undefined,
   ) {
     this.root = root ?? (this as unknown as FieldRootPathNode);
@@ -44,11 +45,11 @@ export class FieldPathNode {
     return this.children.get(key)!;
   }
 
-  mergeIn(other: FieldRootPathNode) {
-    this.logic.mergeIn(other.logic);
+  mergeIn(other: FieldRootPathNode, predicate?: Predicate) {
     for (const [root, pathKeys] of other.subroots) {
       this.root.subroots.set(root, [...this.keys, ...pathKeys]);
     }
+    this.logic.mergeIn(other.logic, predicate);
   }
 
   static unwrapFieldPath(formPath: FieldPath<unknown>): FieldPathNode {
@@ -59,8 +60,8 @@ export class FieldPathNode {
 export class FieldRootPathNode extends FieldPathNode {
   readonly subroots = new Map<FieldPathNode, PropertyKey[]>([[this, []]]);
 
-  constructor(predicate: Predicate | undefined) {
-    super([], FieldLogicNode.newRoot(predicate), undefined);
+  constructor() {
+    super([], LogicNodeBuilder.newRoot(), undefined);
   }
 }
 

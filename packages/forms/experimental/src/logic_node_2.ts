@@ -23,7 +23,7 @@ import {
  * and data factories to a node in the logic tree.
  * LogicNodeBuilders are 1:1 with nodes in the Schema tree.
  */
-abstract class AbstractLogicNodeBuilder {
+export abstract class AbstractLogicNodeBuilder {
   /** Adds a rule to determine if a field should be hidden. */
   abstract addHiddenRule(logic: LogicFn<any, boolean>): void;
   /** Adds a rule to determine if a field should be disabled, and for what reason. */
@@ -262,6 +262,9 @@ export class LogicContainer {
     return this.dataFactories.entries();
   }
 
+  hasData() {
+    return this.dataFactories.size > 0;
+  }
   /**
    * Retrieves or creates the `AbstractLogic` for a given metadata key.
    * @param key The `MetadataKey` for which to get the logic.
@@ -356,7 +359,9 @@ class LeafLogicNode implements LogicNode {
     // The logic for a particular child may be spread across multiple builders. We lazily combine
     // this logic at the time the child logic node is requested to be created.
     const childBuilders = this.builder ? getAllChildBuilders(this.builder, key) : [];
-    if (childBuilders.length <= 1) {
+    if (childBuilders.length === 0) {
+      return new LeafLogicNode(undefined, []);
+    } else if (childBuilders.length === 1) {
       const {builder, predicates} = childBuilders[0];
       return new LeafLogicNode(builder, [...this.predicates, ...predicates]);
     } else {
