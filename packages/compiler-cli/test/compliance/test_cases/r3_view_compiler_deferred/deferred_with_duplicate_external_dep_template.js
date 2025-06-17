@@ -9,14 +9,14 @@ $r3$.ɵɵdefineComponent({
   …
   template: function MyApp_Template(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵtemplate(0, MyApp_Defer_0_Template, 1, 0);
+      $r3$.ɵɵdomTemplate(0, MyApp_Defer_0_Template, 1, 0);
       $r3$.ɵɵdefer(1, 0, MyApp_Defer_1_DepsFn);
       $r3$.ɵɵdeferOnIdle();
-      $r3$.ɵɵtemplate(3, MyApp_Defer_3_Template, 1, 0);
+      $r3$.ɵɵdomTemplate(3, MyApp_Defer_3_Template, 1, 0);
       // NOTE: does not check the function name, because linked compilation doesn't have the ability to de-dupe identical functions.
       $r3$.ɵɵdefer(4, 3, …);
       $r3$.ɵɵdeferOnIdle();
-      $r3$.ɵɵtemplate(6, MyApp_Defer_6_Template, 1, 0);
+      $r3$.ɵɵdomTemplate(6, MyApp_Defer_6_Template, 1, 0);
       $r3$.ɵɵdefer(7, 6, MyApp_Defer_7_DepsFn);
       $r3$.ɵɵdeferOnIdle();
     }
