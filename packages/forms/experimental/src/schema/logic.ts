@@ -96,6 +96,11 @@ export abstract class AbstractLogic<TReturn, TValue = TReturn> {
    */
   abstract get defaultValue(): TReturn;
 
+  /** Checks if any logic functions are registered with this logic instance. */
+  get hasLogic(): boolean {
+    return this.fns.length > 0;
+  }
+
   /** Registers a logic function with this logic instance. */
   push(logicFn: LogicFn<any, TValue>) {
     this.fns.push(wrapWithPredicates(this.predicates, logicFn));

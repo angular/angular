@@ -33,6 +33,7 @@ import {
   illegallySetComponentInput as illegallySetInputSignal,
 } from '../util/illegal';
 import {InteropNgControl} from './interop_ng_control';
+import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH} from '../api/property';
 
 @Directive({
   selector: '[control]',
@@ -96,6 +97,11 @@ export class Control<T> {
     this.maybeSynchronize(() => this.state().readonly(), withBooleanAttribute(input, 'readonly'));
     this.maybeSynchronize(() => this.state().disabled(), withBooleanAttribute(input, 'disabled'));
 
+    this.maybeSynchronize(this.propertySource(MIN), withAttribute(input, 'min'));
+    this.maybeSynchronize(this.propertySource(MIN_LENGTH), withAttribute(input, 'minLength'));
+    this.maybeSynchronize(this.propertySource(MAX), withAttribute(input, 'max'));
+    this.maybeSynchronize(this.propertySource(MAX_LENGTH), withAttribute(input, 'maxLength'));
+
     if (!isCheckbox) {
       this.maybeSynchronize(
         () => this.state().value(),
@@ -137,6 +143,11 @@ export class Control<T> {
     this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
     this.maybeSynchronize(() => this.state().valid(), withInput(cmp.valid));
 
+    this.maybeSynchronize(this.propertySource(MIN), withInput(cmp.min));
+    this.maybeSynchronize(this.propertySource(MIN_LENGTH), withInput(cmp.minLength));
+    this.maybeSynchronize(this.propertySource(MAX), withInput(cmp.max));
+    this.maybeSynchronize(this.propertySource(MAX_LENGTH), withInput(cmp.maxLength));
+
     // Output bindings:
     const cleanupValue = cmp.value.subscribe((newValue) => this.state().value.set(newValue));
     let cleanupTouch: OutputRefSubscription | undefined;
@@ -169,6 +180,13 @@ export class Control<T> {
       return;
     }
     effect(() => sink(source()), {injector: this.injector});
+  }
+
+  private propertySource<T>(key: AggregateProperty<T, any>): () => T | undefined {
+    const metaSource = computed(() =>
+      this.state().hasProperty(key) ? this.state().property(key) : undefined,
+    );
+    return () => metaSource()?.();
   }
 }
 
@@ -203,11 +221,16 @@ function isUiControl<T>(cmp: unknown): cmp is FormUiControl<T> {
   const castCmp = cmp as FormUiControl<unknown>;
   return (
     illegallyIsModelInput(castCmp.value) &&
+    (!castCmp.readonly || illegallyIsSignalInput(castCmp.readonly)) &&
     (!castCmp.disabled || illegallyIsSignalInput(castCmp.disabled)) &&
     (!castCmp.errors || illegallyIsSignalInput(castCmp.errors)) &&
     (!castCmp.valid || illegallyIsSignalInput(castCmp.valid)) &&
     (!castCmp.touched || illegallyIsSignalInput(castCmp.touched)) &&
-    (!castCmp.touch || isOutputRef(castCmp.touch))
+    (!castCmp.touch || isOutputRef(castCmp.touch)) &&
+    (!castCmp.min || illegallyIsSignalInput(castCmp.min)) &&
+    (!castCmp.minLength || illegallyIsSignalInput(castCmp.minLength)) &&
+    (!castCmp.max || illegallyIsSignalInput(castCmp.max)) &&
+    (!castCmp.maxLength || illegallyIsSignalInput(castCmp.maxLength))
   );
 }
 
