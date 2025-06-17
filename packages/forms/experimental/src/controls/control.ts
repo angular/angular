@@ -20,11 +20,12 @@ import {
   OutputEmitterRef,
   OutputRef,
   OutputRefSubscription,
+  Signal,
   untracked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {FormUiControl} from '../api/control';
-import {Field} from '../api/types';
+import {Field, FieldState} from '../api/types';
 import {
   illegallyGetComponentInstance,
   illegallyIsModelInput,
@@ -62,86 +63,140 @@ export class Control<T> {
   ngOnInit() {
     const injector = this.injector;
     const cmp = illegallyGetComponentInstance(injector);
-    if (this.el.nativeElement instanceof HTMLInputElement) {
-      // Bind our field to an <input>
-      const input = this.el.nativeElement;
-      const isCheckbox = input.type === 'checkbox';
 
-      input.addEventListener('input', () => {
-        this.state().value.set((!isCheckbox ? input.value : input.checked) as T);
-        this.state().markAsDirty();
-      });
-      input.addEventListener('blur', () => this.state().markAsTouched());
-
-      effect(
-        () => {
-          if (!isCheckbox) {
-            input.value = this.state().value() as string;
-          } else {
-            input.checked = this.state().value() as boolean;
-          }
-        },
-        {injector},
-      );
+    if (cmp && isUiControl<T>(cmp)) {
+      this.setupCustomUiControl(cmp);
+    } else if (
+      this.el.nativeElement instanceof HTMLInputElement ||
+      this.el.nativeElement instanceof HTMLTextAreaElement
+    ) {
+      this.setupNativeInput(this.el.nativeElement);
     } else if (this.cva !== undefined) {
-      const cva = this.cva;
-      // Binding to a Control Value Accessor
-
-      cva.registerOnChange((value: T) => this.state().value.set(value));
-      cva.registerOnTouched(() => this.state().markAsTouched());
-
-      effect(
-        () => {
-          const value = this.state().value();
-          untracked(() => {
-            cva.writeValue(value);
-          });
-        },
-        {injector},
-      );
-    } else if (isUiControl<T>(cmp)) {
-      // Binding to a custom UI component.
-
-      // Input bindings:
-      maybeSynchronize(injector, () => this.state().value(), cmp.value);
-      maybeSynchronize(injector, () => this.state().disabled(), cmp.disabled);
-      maybeSynchronize(injector, () => this.state().readonly(), cmp.readonly);
-      maybeSynchronize(injector, () => this.state().errors(), cmp.errors);
-      maybeSynchronize(injector, () => this.state().touched(), cmp.touched);
-      maybeSynchronize(injector, () => this.state().valid(), cmp.valid);
-
-      // Output bindings:
-      const cleanupValue = cmp.value.subscribe((newValue) => this.state().value.set(newValue));
-      let cleanupTouch: OutputRefSubscription | undefined;
-      let cleanupDefaultTouch: (() => void) | undefined;
-      if (cmp.touch !== undefined) {
-        cleanupTouch = cmp.touch.subscribe(() => this.state().markAsTouched());
-      } else {
-        // If the component did not give us a touch event stream, use the standard touch logic,
-        // marking it touched when the focus moves from inside the host element to outside.
-        const listener = (event: FocusEvent) => {
-          const newActiveEl = event.relatedTarget;
-          if (!this.el.nativeElement.contains(newActiveEl as Element | null)) {
-            this.state().markAsTouched();
-          }
-        };
-        this.el.nativeElement.addEventListener('focusout', listener);
-        cleanupDefaultTouch = () => this.el.nativeElement.removeEventListener('focusout', listener);
-      }
-
-      // Cleanup for output binding subscriptions:
-      injector.get(DestroyRef).onDestroy(() => {
-        cleanupValue.unsubscribe();
-        cleanupTouch?.unsubscribe();
-        cleanupDefaultTouch?.();
-      });
+      this.setupControlValueAccessor(this.cva);
     } else {
       throw new Error(`Unhandled control?`);
     }
+
     if (this.cva) {
       this.cva.writeValue(this.state().value());
+      this.cva.setDisabledState?.(this.state().disabled());
     }
   }
+
+  // Bind our field to an <input> or <textarea>
+  private setupNativeInput(input: HTMLInputElement | HTMLTextAreaElement): void {
+    const isCheckbox = input instanceof HTMLInputElement && input.type === 'checkbox';
+
+    input.addEventListener('input', () => {
+      this.state().value.set((!isCheckbox ? input.value : input.checked) as T);
+      this.state().markAsDirty();
+    });
+    input.addEventListener('blur', () => this.state().markAsTouched());
+
+    this.maybeSynchronize(() => this.state().readonly(), withBooleanAttribute(input, 'readonly'));
+    this.maybeSynchronize(() => this.state().disabled(), withBooleanAttribute(input, 'disabled'));
+
+    if (!isCheckbox) {
+      this.maybeSynchronize(
+        () => this.state().value(),
+        (value) => (input.value = value as string),
+      );
+    } else {
+      this.maybeSynchronize(
+        () => this.state().value(),
+        (value) => (input.checked = value as boolean),
+      );
+    }
+  }
+
+  // Binding to a Control Value Accessor
+  private setupControlValueAccessor(cva: ControlValueAccessor): void {
+    cva.registerOnChange((value: T) => this.state().value.set(value));
+    cva.registerOnTouched(() => this.state().markAsTouched());
+
+    this.maybeSynchronize(
+      () => this.state().value(),
+      (value) => cva.writeValue(value),
+    );
+
+    if (cva.setDisabledState) {
+      this.maybeSynchronize(
+        () => this.state().disabled(),
+        (value) => cva.setDisabledState!(value),
+      );
+    }
+  }
+
+  // Binding to a custom UI component.
+  private setupCustomUiControl(cmp: FormUiControl<T>) {
+    // Input bindings:
+    this.maybeSynchronize(() => this.state().value(), withInput(cmp.value));
+    this.maybeSynchronize(() => this.state().disabled(), withInput(cmp.disabled));
+    this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.readonly));
+    this.maybeSynchronize(() => this.state().errors(), withInput(cmp.errors));
+    this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
+    this.maybeSynchronize(() => this.state().valid(), withInput(cmp.valid));
+
+    // Output bindings:
+    const cleanupValue = cmp.value.subscribe((newValue) => this.state().value.set(newValue));
+    let cleanupTouch: OutputRefSubscription | undefined;
+    let cleanupDefaultTouch: (() => void) | undefined;
+    if (cmp.touch !== undefined) {
+      cleanupTouch = cmp.touch.subscribe(() => this.state().markAsTouched());
+    } else {
+      // If the component did not give us a touch event stream, use the standard touch logic,
+      // marking it touched when the focus moves from inside the host element to outside.
+      const listener = (event: FocusEvent) => {
+        const newActiveEl = event.relatedTarget;
+        if (!this.el.nativeElement.contains(newActiveEl as Element | null)) {
+          this.state().markAsTouched();
+        }
+      };
+      this.el.nativeElement.addEventListener('focusout', listener);
+      cleanupDefaultTouch = () => this.el.nativeElement.removeEventListener('focusout', listener);
+    }
+
+    // Cleanup for output binding subscriptions:
+    this.injector.get(DestroyRef).onDestroy(() => {
+      cleanupValue.unsubscribe();
+      cleanupTouch?.unsubscribe();
+      cleanupDefaultTouch?.();
+    });
+  }
+
+  private maybeSynchronize<T>(source: () => T, sink: ((value: T) => void) | undefined): void {
+    if (!sink) {
+      return;
+    }
+    effect(() => sink(source()), {injector: this.injector});
+  }
+}
+
+function withInput<T>(input: InputSignal<T> | undefined): ((value: T) => void) | undefined {
+  return input ? (value: T) => illegallySetInputSignal(input, value) : undefined;
+}
+
+function withBooleanAttribute(element: HTMLElement, attribute: string): (value: boolean) => void {
+  return (value) => {
+    if (value) {
+      element.setAttribute(attribute, '');
+    } else {
+      element.removeAttribute(attribute);
+    }
+  };
+}
+
+function withAttribute(
+  element: HTMLElement,
+  attribute: string,
+): (value: {toString(): string} | undefined) => void {
+  return (value) => {
+    if (value !== undefined) {
+      element.setAttribute(attribute, value.toString());
+    } else {
+      element.removeAttribute(attribute);
+    }
+  };
 }
 
 function isUiControl<T>(cmp: unknown): cmp is FormUiControl<T> {
@@ -158,15 +213,4 @@ function isUiControl<T>(cmp: unknown): cmp is FormUiControl<T> {
 
 function isOutputRef(value: unknown): value is OutputRef<unknown> {
   return value instanceof OutputEmitterRef || value instanceof EventEmitter;
-}
-
-function maybeSynchronize<T>(
-  injector: Injector,
-  source: () => T,
-  target: InputSignal<T> | undefined,
-): void {
-  if (target === undefined) {
-    return;
-  }
-  effect(() => illegallySetInputSignal(target, source()), {injector});
 }
