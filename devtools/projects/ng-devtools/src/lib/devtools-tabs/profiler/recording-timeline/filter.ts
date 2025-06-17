@@ -8,11 +8,9 @@
 
 import {ProfilerFrame} from '../../../../../../protocol';
 
-import {GraphNode} from './record-formatter/record-formatter';
+export type Filter = (nodes: ProfilerFrame) => boolean;
 
-export type Filter = (nodes: GraphNode) => boolean;
-
-export const noopFilter = (_: GraphNode) => true;
+export const noopFilter = (_: ProfilerFrame) => true;
 
 interface Query<Arguments = unknown> {
   readonly name: QueryType;
@@ -137,13 +135,13 @@ export const parseFilter = (query: string): QueryAST[] => {
 
 export const createFilter = (query: string) => {
   const queries = parseFilter(query);
-  return (frame: GraphNode) => {
+  return (frame: ProfilerFrame) => {
     return queries.every(([predicate, queryName, args]) => {
       const currentQuery = queryMap[queryName];
       if (!currentQuery) {
         return true;
       }
-      const result = currentQuery.apply(frame.frame, args);
+      const result = currentQuery.apply(frame, args);
       return predicate ? result : !result;
     });
   };

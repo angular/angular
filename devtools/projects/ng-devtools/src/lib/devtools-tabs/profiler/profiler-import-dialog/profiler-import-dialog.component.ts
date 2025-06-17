@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogRef,
@@ -29,6 +29,7 @@ interface DialogData {
   templateUrl: './profiler-import-dialog.component.html',
   styleUrls: ['./profiler-import-dialog.component.scss'],
   imports: [MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, MatButton],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilerImportDialogComponent {
   public dialogRef = inject<MatDialogRef<ProfilerImportDialogComponent>>(MatDialogRef);

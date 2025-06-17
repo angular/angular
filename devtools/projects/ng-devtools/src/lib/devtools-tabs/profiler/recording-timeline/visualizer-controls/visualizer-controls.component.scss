@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  justify-content: space-between;
+
+  .details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.bar-details {
+      min-height: 60px;
+    }
+
+    &.flame-details {
+      min-height: 85px;
+    }
+
+    label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &.warning-label {
+        color: var(--dynamic-red-01);
+      }
+    }
+
+    .value {
+      color: var(--dynamic-purple-01);
+    }
+  }
+
+  select {
+    display: block;
+  }
+}

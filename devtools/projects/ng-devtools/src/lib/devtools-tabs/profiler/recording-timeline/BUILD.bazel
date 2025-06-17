@@ -31,6 +31,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-timeline-controls:recording-timeline-controls_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer:recording-visualizer_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/visualization-mode:visualization-mode_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/visualizer-controls:visualizer-controls_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
