@@ -222,6 +222,9 @@ Prefer `class` and `style` bindings over using the `NgClass` and `NgStyle` direc
 ```html
 <!-- PREFER -->
 <div [class.admin]="isAdmin" [class.dense]="density === 'high'">
+<!-- OR -->
+<div [class]="{admin: isAdmin, dense: density === 'high'}">
+
 
 <!-- AVOID -->
 <div [ngClass]="{admin: isAdmin, dense: density === 'high'}">
