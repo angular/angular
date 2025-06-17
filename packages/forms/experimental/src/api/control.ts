@@ -18,4 +18,9 @@ export interface FormUiControl<TValue> {
   readonly touched?: InputSignal<boolean | undefined>;
 
   readonly touch?: OutputRef<void>;
+
+  readonly min?: InputSignal<number | undefined>;
+  readonly minLength?: InputSignal<number | undefined>;
+  readonly max?: InputSignal<number | undefined>;
+  readonly maxLength?: InputSignal<number | undefined>;
 }

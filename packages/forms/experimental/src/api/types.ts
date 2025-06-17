@@ -297,6 +297,11 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   property<M>(prop: Property<M>): M | undefined;
 
   /**
+   * Checks whether the given metadata key has been defined for this field.
+   */
+  hasProperty(key: Property<any> | AggregateProperty<any, any>): boolean;
+
+  /**
    * Sets the touched status of the field to `true`.
    */
   markAsTouched(): void;
