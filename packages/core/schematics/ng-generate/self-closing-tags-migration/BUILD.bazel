@@ -16,7 +16,6 @@ ts_project(
     name = "self-closing-tags-migration",
     srcs = glob(["**/*.ts"]),
     interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/core/schematics/migrations/self-closing-tags-migration:migration",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",

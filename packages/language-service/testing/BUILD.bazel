@@ -8,11 +8,6 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     interop_deps = [
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/core:api",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/testing",
-        "//packages/compiler-cli/src/ngtsc/typecheck/api",
     ],
     deps = [
         "//:node_modules/typescript",

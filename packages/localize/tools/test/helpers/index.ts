@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {setFileSystem, InvalidFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {MockFileSystemNative} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {InvalidFileSystem, MockFileSystemNative, setFileSystem} from '@angular/compiler-cli';
 
 /**
  * Only run these tests on the "native" file-system.

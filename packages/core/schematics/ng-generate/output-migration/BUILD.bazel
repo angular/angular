@@ -17,7 +17,6 @@ ts_project(
     name = "output-migration",
     srcs = glob(["**/*.ts"]),
     interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/core/schematics/migrations/output-migration:migration",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",

@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {absoluteFrom} from '@angular/compiler-cli';
-import {runTsurgeMigration} from '../../utils/tsurge/testing';
-import {SignalQueriesMigration} from './migration';
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {diffText} from '../../utils/tsurge/testing/diff';
-import {dedent} from '../../utils/tsurge/testing/dedent';
-import {setupTsurgeJasmineHelpers} from '../../utils/tsurge/testing/jasmine';
+import {absoluteFrom, initMockFileSystem} from '@angular/compiler-cli';
 import ts from 'typescript';
+import {runTsurgeMigration} from '../../utils/tsurge/testing';
+import {dedent} from '../../utils/tsurge/testing/dedent';
+import {diffText} from '../../utils/tsurge/testing/diff';
+import {setupTsurgeJasmineHelpers} from '../../utils/tsurge/testing/jasmine';
+import {SignalQueriesMigration} from './migration';
 
 interface TestCase {
   id: string;

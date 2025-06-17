@@ -18,7 +18,6 @@ ts_project(
     interop_deps = [
         "//packages/compiler-cli",
         "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/core:api",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/ast",

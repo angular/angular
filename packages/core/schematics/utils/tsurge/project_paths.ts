@@ -11,7 +11,7 @@ import {
   FileSystem,
   getFileSystem,
   isLocalRelativePath,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 import {ProgramInfo} from './program_info';
 

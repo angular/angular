@@ -11,9 +11,6 @@ ts_project(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/logging/testing",
     ],
     visibility = ["//packages/localize/tools/test:__subpackages__"],
     deps = [

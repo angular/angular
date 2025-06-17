@@ -5,16 +5,9 @@ package(default_visibility = ["//packages/language-service:__subpackages__"])
 ts_project(
     name = "utils",
     srcs = glob(["*.ts"]),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/core",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/metadata",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/typecheck/api",
-    ],
     deps = [
         "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
     ],
 )

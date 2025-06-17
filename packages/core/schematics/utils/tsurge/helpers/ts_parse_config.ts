@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ParsedConfiguration, readConfiguration} from '@angular/compiler-cli/src/perform_compile';
-import {FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {FileSystem, ParsedConfiguration, readConfiguration} from '@angular/compiler-cli';
 
 /** Code of the error raised by TypeScript when a tsconfig doesn't match any files. */
 const NO_INPUTS_ERROR_CODE = 18003;

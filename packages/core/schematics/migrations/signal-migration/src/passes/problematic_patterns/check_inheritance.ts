@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
-import {MetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {ClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {ClassDeclaration, MetadataReader, Reference} from '@angular/compiler-cli';
 import assert from 'assert';
 import ts from 'typescript';
 import {getMemberName} from '../../utils/class_member_names';

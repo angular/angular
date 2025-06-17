@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
 import {
-  ReflectionHost,
   ClassDeclaration,
   Decorator,
-} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
-import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
+  DtsMetadataReader,
+  getAngularDecorators,
+  Reference,
+  ReflectionHost,
+} from '@angular/compiler-cli';
+import ts from 'typescript';
 
+import {AST, PropertyRead} from '@angular/compiler';
 import {ProgramInfo, projectFile} from '../../utils/tsurge';
 import {
   ClassFieldDescriptor,
@@ -25,7 +26,6 @@ import {
   HostBindingReference,
   TemplateReference,
 } from '../signal-migration/src/passes/reference_resolution/reference_kinds';
-import {AST, PropertyRead} from '@angular/compiler';
 
 /** Type describing an extracted output query that can be migrated. */
 export interface ExtractedOutput {

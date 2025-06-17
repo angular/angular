@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {
   absoluteFrom,
   FileSystem,
+  getRootDirs,
+  isShim,
+  NgCompilerOptions,
   NgtscCompilerHost,
-  NodeJSFileSystem,
   setFileSystem,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
-import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
+} from '@angular/compiler-cli';
 import {BaseProgramInfo, ProgramInfo} from '../program_info';
 import {google3UsePlainTsProgramIfNoKnownAngularOption} from './google3/target_detection';
 import {createNgtscProgram} from './ngtsc_program';

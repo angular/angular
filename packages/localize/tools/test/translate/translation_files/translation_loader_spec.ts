@@ -10,8 +10,8 @@ import {
   AbsoluteFsPath,
   FileSystem,
   getFileSystem,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+  runInEachFileSystem,
+} from '@angular/compiler-cli';
 import {ɵParsedTranslation, ɵparseTranslation} from '../../../../index';
 
 import {DiagnosticHandlingStrategy, Diagnostics} from '../../../src/diagnostics';

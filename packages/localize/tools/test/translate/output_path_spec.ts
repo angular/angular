@@ -9,8 +9,8 @@ import {
   absoluteFrom,
   getFileSystem,
   PathManipulation,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+  runInEachFileSystem,
+} from '@angular/compiler-cli';
 
 import {getOutputPathFn} from '../../src/translate/output_path';
 

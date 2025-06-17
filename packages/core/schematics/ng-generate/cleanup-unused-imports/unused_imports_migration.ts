@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DiagnosticCategoryLabel, ErrorCode, FileSystem, ngErrorCode} from '@angular/compiler-cli';
+import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import ts from 'typescript';
 import {
   confirmAsSerializable,
@@ -16,9 +18,6 @@ import {
   TextUpdate,
   TsurgeFunnelMigration,
 } from '../../utils/tsurge';
-import {ErrorCode, FileSystem, ngErrorCode} from '@angular/compiler-cli';
-import {DiagnosticCategoryLabel} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
 import {getLeadingLineWhitespaceOfNode} from '../../utils/tsurge/helpers/ast/leading_space';
 

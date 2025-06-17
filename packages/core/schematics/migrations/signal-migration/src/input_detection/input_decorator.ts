@@ -8,34 +8,28 @@
 
 import ts from 'typescript';
 
-import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {parseDecoratorInputTransformFunction} from '@angular/compiler-cli/src/ngtsc/annotations/directive';
-import {FatalDiagnosticError} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {
-  Reference,
-  ReferenceEmitKind,
-  ReferenceEmitter,
-} from '@angular/compiler-cli/src/ngtsc/imports';
-import {
+  ClassDeclaration,
+  CompilationMode,
+  Decorator,
   DecoratorInputTransform,
   DirectiveMeta,
   DtsMetadataReader,
-  InputMapping,
-} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {
   DynamicValue,
+  FatalDiagnosticError,
+  getAngularDecorators,
+  InputMapping,
+  parseDecoratorInputTransformFunction,
   PartialEvaluator,
-  ResolvedValueMap,
-} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {
-  ClassDeclaration,
-  Decorator,
+  Reference,
+  ReferenceEmitKind,
+  ReferenceEmitter,
   ReflectionHost,
-} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {CompilationMode} from '@angular/compiler-cli/src/ngtsc/transform';
-import {MigrationHost} from '../migration_host';
-import {InputNode, isInputContainerNode} from '../input_detection/input_node';
+  ResolvedValueMap,
+} from '@angular/compiler-cli';
 import {NULL_EXPR} from '../../../../../../compiler/src/output/output_ast';
+import {InputNode, isInputContainerNode} from '../input_detection/input_node';
+import {MigrationHost} from '../migration_host';
 
 /** Metadata extracted of an input declaration (in `.ts` or `.d.ts` files). */
 export interface ExtractedInput extends InputMapping {

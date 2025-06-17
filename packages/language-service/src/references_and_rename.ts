@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {AST, TmplAstComponent, TmplAstNode} from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {MetaKind, PipeMeta, DirectiveMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  absoluteFrom,
+  DirectiveMeta,
+  MetaKind,
+  NgCompiler,
+  PerfPhase,
+  PipeMeta,
+  SymbolKind,
+  TemplateTypeChecker,
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {
@@ -22,8 +27,8 @@ import {
   SelectorlessCollector,
   TemplateLocationDetails,
 } from './references_and_rename_utils';
-import {collectMemberMethods, findTightestNode} from './utils/ts_utils';
 import {getTypeCheckInfoAtPosition, TypeCheckInfo} from './utils';
+import {collectMemberMethods, findTightestNode} from './utils/ts_utils';
 
 export class ReferencesBuilder {
   private readonly ttc: TemplateTypeChecker;

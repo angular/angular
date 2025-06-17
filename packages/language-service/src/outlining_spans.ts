@@ -7,7 +7,6 @@
  */
 
 import {
-  ParseLocation,
   ParseSourceSpan,
   TmplAstBlockNode,
   TmplAstDeferredBlock,
@@ -17,9 +16,7 @@ import {
   TmplAstRecursiveVisitor,
   tmplAstVisitAll,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {isExternalResource, isNamedClassDeclaration, NgCompiler} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {getFirstComponentForTemplateFile, isTypeScriptFile, toTextSpan} from './utils';
