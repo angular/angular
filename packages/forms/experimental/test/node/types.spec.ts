@@ -7,7 +7,7 @@
  */
 
 import {WritableSignal} from '@angular/core';
-import {form, schema, SchemaFn} from '../public_api';
+import {form, schema, SchemaFn} from '../../public_api';
 
 interface Order {
   id: string;

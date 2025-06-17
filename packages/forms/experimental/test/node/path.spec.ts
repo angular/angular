@@ -8,8 +8,8 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FieldPath, SchemaFn, validate, apply, applyEach, form, applyWhen} from '../public_api';
-import {FieldPathNode, FieldRootPathNode} from '../src/path_node';
+import {apply, applyEach, applyWhen, FieldPath, form, SchemaFn, validate} from '../../public_api';
+import {FieldPathNode, FieldRootPathNode} from '../../src/path_node';
 
 describe('path', () => {
   describe('roots', () => {
