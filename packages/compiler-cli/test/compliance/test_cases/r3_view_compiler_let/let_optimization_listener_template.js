@@ -9,13 +9,13 @@ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵtext(0);
       $r3$.ɵɵdeclareLet(1);
       $r3$.ɵɵtext(2);
-      $r3$.ɵɵelementStart(3, "button", 0);
-      $r3$.ɵɵlistener("click", function MyApp_Template_button_click_3_listener() {
+      $r3$.ɵɵdomElementStart(3, "button", 0);
+      $r3$.ɵɵdomListener("click", function MyApp_Template_button_click_3_listener() {
         $r3$.ɵɵrestoreView($_r1$);
         const $three_1$ = $r3$.ɵɵreadContextLet(1);
         return $r3$.ɵɵresetView(ctx.callback($three_1$));
       });
-      $r3$.ɵɵelementEnd();
+      $r3$.ɵɵdomElementEnd();
     }
     if (rf & 2) {
       $r3$.ɵɵtextInterpolate1(" ", ctx.value, " ");

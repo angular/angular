@@ -42,12 +42,12 @@ $r3$.ɵɵdefineComponent({
   },
   template: function MyApp_Template(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵelementStart(0, "div");
+      $r3$.ɵɵdomElementStart(0, "div");
       $r3$.ɵɵi18nStart(1, 0);
       $r3$.ɵɵdeclareLet(2);
-      $r3$.ɵɵtemplate(3, MyApp_ng_template_3_Template, 1, 1, "ng-template");
+      $r3$.ɵɵdomTemplate(3, MyApp_ng_template_3_Template, 1, 1, "ng-template");
       $r3$.ɵɵi18nEnd();
-      $r3$.ɵɵelementEnd();
+      $r3$.ɵɵdomElementEnd();
     }
     if (rf & 2) {
       $r3$.ɵɵadvance(2);

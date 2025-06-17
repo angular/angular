@@ -19,7 +19,7 @@ $r3$.ɵɵdefineComponent({
     if (rf & 1) {
       $r3$.ɵɵdeclareLet(0);
       $r3$.ɵɵtext(1);
-      $r3$.ɵɵtemplate(2, MyApp_ng_template_2_Template, 1, 1, "ng-template");
+      $r3$.ɵɵdomTemplate(2, MyApp_ng_template_2_Template, 1, 1, "ng-template");
     }
     if (rf & 2) {
       const $value_r0$ = $r3$.ɵɵstoreLet(123);

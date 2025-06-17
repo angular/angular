@@ -6,7 +6,7 @@ $r3$.ɵɵdefineComponent({
   template: function MyApp_Template(rf, ctx) {
     if (rf & 1) {
       $r3$.ɵɵtext(0);
-      $r3$.ɵɵelement(1, "input", null, 0);
+      $r3$.ɵɵdomElement(1, "input", null, 0);
     }
     if (rf & 2) {
       const $name_r1$ = $r3$.ɵɵreference(2);
