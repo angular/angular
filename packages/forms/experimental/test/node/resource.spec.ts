@@ -1,4 +1,3 @@
-<<<<<<< HEAD:packages/forms/experimental/test/resource.spec.ts
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -13,23 +12,14 @@ import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 
 import {
-  define,
-  validateAsync,
-  validateHttp,
   applyEach,
-  validate,
+  define,
   form,
   SchemaOrSchemaFn,
-} from '../public_api';
-=======
-import {ApplicationRef, Injector, resource, signal} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {validateAsync} from '../../src/api/async';
-import {define} from '../../src/api/data';
-import {validate} from '../../src/api/logic';
-import {applyEach, form} from '../../src/api/structure';
-import {Schema} from '../../src/api/types';
->>>>>>> aac6b4d8f3 (use zod's actual async refinement instead of hacks):packages/forms/experimental/test/node/resource.spec.ts
+  validate,
+  validateAsync,
+  validateHttp,
+} from '../../public_api';
 
 interface Cat {
   name: string;

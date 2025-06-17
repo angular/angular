@@ -24,18 +24,14 @@ describe('standard schema integration', () => {
       {injector},
     );
 
-    await TestBed.inject(ApplicationRef).whenStable();
-
-    expect(nameForm.first.$state.errors()).toEqual([
+    expect(nameForm.first().errors()).toEqual([
       jasmine.objectContaining({
-        async: false,
         kind: '~standard',
         issue: jasmine.objectContaining({message: 'String must contain at least 2 character(s)'}),
       }),
     ]);
-    expect(nameForm.last.$state.errors()).toEqual([
+    expect(nameForm.last().errors()).toEqual([
       jasmine.objectContaining({
-        async: false,
         kind: '~standard',
         issue: jasmine.objectContaining({message: 'String must contain at least 3 character(s)'}),
       }),
@@ -60,18 +56,19 @@ describe('standard schema integration', () => {
       {injector},
     );
 
+    expect(nameForm.first().errors()).toEqual([]);
+    expect(nameForm.last().errors()).toEqual([]);
+
     await TestBed.inject(ApplicationRef).whenStable();
 
-    expect(nameForm.first.$state.errors()).toEqual([
+    expect(nameForm.first().errors()).toEqual([
       jasmine.objectContaining({
-        async: true,
         kind: '~standard',
         issue: jasmine.objectContaining({message: 'String must contain at least 2 character(s)'}),
       }),
     ]);
-    expect(nameForm.last.$state.errors()).toEqual([
+    expect(nameForm.last().errors()).toEqual([
       jasmine.objectContaining({
-        async: true,
         kind: '~standard',
         issue: jasmine.objectContaining({message: 'String must contain at least 3 character(s)'}),
       }),

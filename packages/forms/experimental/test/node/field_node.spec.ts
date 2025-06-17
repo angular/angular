@@ -9,20 +9,20 @@
 import {computed, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  disabled,
-  required,
-  error,
-  readonly,
-  validate,
-  validateTree,
-  REQUIRED,
-  FormTreeError,
-  SchemaOrSchemaFn,
   apply,
   applyEach,
+  disabled,
+  error,
   form,
+  FormTreeError,
+  readonly,
+  required,
+  REQUIRED,
+  SchemaOrSchemaFn,
   submit,
-} from '../public_api';
+  validate,
+  validateTree,
+} from '../../public_api';
 
 const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
 

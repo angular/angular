@@ -8,20 +8,14 @@
 
 import {Injector, Signal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-<<<<<<< HEAD:packages/forms/experimental/test/api/when.spec.ts
 import {
-  validate,
   SchemaOrSchemaFn,
   applyEach,
   applyWhen,
   applyWhenValue,
   form,
-} from '../../public_api';
-=======
-import {validate} from '../../src/api/logic';
-import {applyEach, applyWhen, applyWhenValue, form} from '../../src/api/structure';
-import {Schema} from '../../src/api/types';
->>>>>>> aac6b4d8f3 (use zod's actual async refinement instead of hacks):packages/forms/experimental/test/node/when.spec.ts
+  validate,
+} from '../../../public_api';
 
 export interface User {
   first: string;

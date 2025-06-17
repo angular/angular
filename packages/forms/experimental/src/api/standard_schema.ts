@@ -14,31 +14,31 @@ export function validateStandardSchema<T>(
     return computed(() => schema['~standard'].validate(value()));
   });
 
-  validateTree(path, ({data, resolve}) => {
+  validateTree(path, ({state, fieldOf}) => {
     // Skip sync validation if the result is a Promise.
-    const result = data(schemaResult)();
+    const result = state.data(schemaResult)!();
     if (isPromise(result)) {
       return [];
     }
     return (
-      result.issues?.map((issue) => standardIssueToFormTreeError(false, resolve(path), issue)) ?? []
+      result.issues?.map((issue) => standardIssueToFormTreeError(false, fieldOf(path), issue)) ?? []
     );
   });
 
   validateAsync(path, {
-    request: ({data}) => {
+    params: ({state}) => {
       // Skip async validation if the result is *not* a Promise.
-      const result = data(schemaResult)();
+      const result = state.data(schemaResult)!();
       return isPromise(result) ? result : undefined;
     },
-    factory: (request) => {
+    factory: (params) => {
       return resource({
-        request,
-        loader: async ({request}) => (await request)?.issues ?? [],
+        params,
+        loader: async ({params}) => (await params)?.issues ?? [],
       });
     },
-    error: (issues, {resolve}) => {
-      return issues.map((issue) => standardIssueToFormTreeError(true, resolve(path), issue));
+    errors: (issues, {fieldOf}) => {
+      return issues.map((issue) => standardIssueToFormTreeError(true, fieldOf(path), issue));
     },
   });
 }
@@ -54,7 +54,6 @@ export function standardIssueToFormTreeError(
     target = target[pathKey] as Field<Record<PropertyKey, unknown>>;
   }
   return {
-    async, // TODO: remove; for testing only
     kind: '~standard',
     field: target,
     issue,
