@@ -16,6 +16,7 @@ export interface FormUiControl<TValue> {
   readonly readonly?: InputSignal<boolean | undefined>;
   readonly valid?: InputSignal<boolean | undefined>;
   readonly touched?: InputSignal<boolean | undefined>;
+  readonly name?: InputSignal<string>;
 
   readonly touch?: OutputRef<void>;
 

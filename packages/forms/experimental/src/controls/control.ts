@@ -94,6 +94,7 @@ export class Control<T> {
 
     this.maybeSynchronize(() => this.state().readonly(), withBooleanAttribute(input, 'readonly'));
     this.maybeSynchronize(() => this.state().disabled(), withBooleanAttribute(input, 'disabled'));
+    this.maybeSynchronize(() => this.state().name(), withAttribute(input, 'name'));
 
     this.maybeSynchronize(this.propertySource(MIN), withAttribute(input, 'min'));
     this.maybeSynchronize(this.propertySource(MIN_LENGTH), withAttribute(input, 'minLength'));
@@ -135,6 +136,7 @@ export class Control<T> {
   private setupCustomUiControl(cmp: FormUiControl<T>) {
     // Input bindings:
     this.maybeSynchronize(() => this.state().value(), withInput(cmp.value));
+    this.maybeSynchronize(() => this.state().name(), withInput(cmp.name));
     this.maybeSynchronize(() => this.state().disabled(), withInput(cmp.disabled));
     this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.readonly));
     this.maybeSynchronize(() => this.state().errors(), withInput(cmp.errors));
