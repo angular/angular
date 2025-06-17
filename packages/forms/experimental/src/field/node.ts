@@ -155,6 +155,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.propertyState.get(prop);
   }
 
+  hasProperty(prop: Property<unknown> | AggregateProperty<unknown, any>): boolean {
+    return this.propertyState.has(prop);
+  }
+
   /**
    * Marks this specific field as touched.
    */

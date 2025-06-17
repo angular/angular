@@ -68,6 +68,10 @@ export abstract class AbstractLogic<TReturn, TValue = TReturn> {
 
   abstract get defaultValue(): TReturn;
 
+  get hasLogic(): boolean {
+    return this.fns.length > 0;
+  }
+
   push(logicFn: LogicFn<any, TValue>) {
     this.fns.push(wrapWithPredicates(this.predicates, logicFn));
   }
