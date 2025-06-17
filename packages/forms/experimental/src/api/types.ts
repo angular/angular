@@ -279,6 +279,11 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly submitting: Signal<boolean>;
   /**
+   * A signal of a unique name for the field, by default based on the name of its parent field.
+   */
+  readonly name: Signal<string>;
+
+  /**
    * The property key in the parent field under which this field is stored. If the parent field is
    * array-valued, for example, this is the index of this field in that array.
    */

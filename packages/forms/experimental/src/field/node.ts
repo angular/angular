@@ -149,12 +149,15 @@ export class FieldNode implements FieldState<unknown> {
     return this.submitState.submitting;
   }
 
+  get name(): Signal<string> {
+    return this.nodeState.name;
+  }
+
   property<M>(prop: AggregateProperty<M, any>): Signal<M>;
   property<M>(prop: Property<M>): M | undefined;
   property<M>(prop: Property<M> | AggregateProperty<M, any>): Signal<M> | M | undefined {
     return this.propertyState.get(prop);
   }
-
   hasProperty(prop: Property<unknown> | AggregateProperty<unknown, any>): boolean {
     return this.propertyState.has(prop);
   }

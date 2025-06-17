@@ -360,6 +360,27 @@ describe('FieldNode', () => {
     });
   });
 
+  describe('names', () => {
+    it('auto-generates a name for the form', () => {
+      const f = form(signal({}), {injector: TestBed.inject(Injector)});
+      expect(f().name()).toMatch(/^a.form\d+$/);
+    });
+
+    it('uses a specific name for the form when given', () => {
+      const f = form(signal({}), {injector: TestBed.inject(Injector), name: 'test'});
+      expect(f().name()).toBe('test');
+    });
+
+    it('derives child field names from parents', () => {
+      const f = form(signal({user: {firstName: 'Alex'}}), {
+        injector: TestBed.inject(Injector),
+        name: 'test',
+      });
+      expect(f.user().name()).toBe('test.user');
+      expect(f.user.firstName().name()).toBe('test.user.firstName');
+    });
+  });
+
   describe('disabled', () => {
     it('should allow logic to make a node disabled', () => {
       const f = form(
