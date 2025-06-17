@@ -458,8 +458,8 @@ export class FakeNavigation implements Navigation {
     return this.disposed;
   }
 
-  abortTheOngoingNavigation(eventToAbort: InternalFakeNavigateEvent, reason?: Error) {
-    if (!this.navigateEvent || this.navigateEvent !== eventToAbort) {
+  abortOngoingNavigation(eventToAbort: InternalFakeNavigateEvent, reason?: Error) {
+    if (this.navigateEvent !== eventToAbort) {
       return;
     }
     if (this.navigateEvent.abortController.signal.aborted) {
@@ -482,7 +482,7 @@ export class FakeNavigation implements Navigation {
     // entry.
     this.canSetInitialEntry = false;
     if (this.navigateEvent) {
-      this.abortTheOngoingNavigation(
+      this.abortOngoingNavigation(
         this.navigateEvent,
         new DOMException('Navigation superseded by a new navigation.', 'AbortError'),
       );
@@ -1006,7 +1006,7 @@ function dispatchNavigateEvent({
       result.committedReject(reason);
     }
     result.finishedReject(reason);
-    const transition = navigation.transition as InternalNavigationTransition;
+    const transition = navigation.transition as InternalNavigationTransition | undefined;
     transition?.committedReject(reason);
     transition?.finishedReject(reason);
     navigation.transition = null;
