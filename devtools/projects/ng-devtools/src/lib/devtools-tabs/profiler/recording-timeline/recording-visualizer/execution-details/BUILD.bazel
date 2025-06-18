@@ -1,0 +1,26 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "execution-details_styles",
+    src = "execution-details.component.scss",
+)
+
+ng_project(
+    name = "execution-details",
+    srcs = [
+        "execution-details.component.ts",
+    ],
+    angular_assets = [
+        "execution-details.component.html",
+        ":execution-details_styles",
+    ],
+    interop_deps = [
+        "//packages/core",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer:recording-visualizer-types_rjs",
+    ],
+)

@@ -2,5 +2,6 @@
   "title": "Add HTTP communication",
   "type": "local",
   "answerSrc": "./src-final",
+  "answerRootDir": "./src-final",
   "openFiles": ["src/app/app.ts"]
 }

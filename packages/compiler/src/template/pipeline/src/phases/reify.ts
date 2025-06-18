@@ -268,7 +268,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         );
         break;
       case ir.OpKind.DeferOn:
-        let args: number[] = [];
+        let args: (number | null)[] = [];
         switch (op.trigger.kind) {
           case ir.DeferTriggerKind.Never:
           case ir.DeferTriggerKind.Idle:
@@ -284,12 +284,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             if (op.modifier === ir.DeferOpModifierKind.HYDRATE) {
               args = [];
             } else {
-              if (op.trigger.targetSlot?.slot == null || op.trigger.targetSlotViewSteps === null) {
-                throw new Error(
-                  `Slot or view steps not set in trigger reification for trigger kind ${op.trigger.kind}`,
-                );
-              }
-              args = [op.trigger.targetSlot.slot];
+              // The slots not being defined at this point is invalid, however we
+              // catch it during type checking. Pass in null in such cases.
+              args = [op.trigger.targetSlot?.slot ?? null];
               if (op.trigger.targetSlotViewSteps !== 0) {
                 args.push(op.trigger.targetSlotViewSteps);
               }

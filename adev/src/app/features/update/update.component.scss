@@ -1,5 +1,7 @@
 @use '@angular/docs/styles/media-queries' as mq;
 
+$ver-dropdown-width: 200px;
+
 :host {
   display: flex;
   flex-flow: column;
@@ -10,7 +12,7 @@
   .docs-viewer {
     padding-inline: var(--layout-padding);
 
-    //applying styles when TOC position got translated to the top right 
+    //applying styles when TOC position got translated to the top right
     @include mq.for-large-desktop-up {
       // take the available space except a reserved area for TOC
       margin-left: -16rem;
@@ -27,7 +29,7 @@
 .page {
   max-width: var(--page-width);
 
-  &>* {
+  & > * {
     @include mq.for-extra-large-desktop-up {
       padding-inline: 0px;
     }
@@ -64,10 +66,12 @@ h4 {
   transform: translateY(-0.7rem);
   max-height: 200px;
   overflow-y: auto;
+  width: $ver-dropdown-width;
+  box-sizing: border-box;
+  background: var(--page-background);
 
   li {
     list-style: none;
-    width: 198px;
     box-sizing: border-box;
 
     button {
@@ -98,7 +102,7 @@ h4 {
     font-size: 0.875rem;
     border: 1px solid var(--senary-contrast);
     border-radius: 0.25rem;
-    width: 200px;
+    width: $ver-dropdown-width;
     display: inline-flex;
     justify-content: space-between;
     align-items: center;
@@ -124,7 +128,7 @@ h4 {
   display: flex;
   align-items: center;
 
-  >div {
+  > div {
     margin-inline-start: 2rem;
   }
 

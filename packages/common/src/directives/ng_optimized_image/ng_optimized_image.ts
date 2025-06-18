@@ -336,6 +336,18 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   @Input({transform: numberAttribute}) height: number | undefined;
 
   /**
+   * The desired decoding behavior for the image. Defaults to `auto`
+   * if not explicitly set, matching native browser behavior.
+   *
+   * Use `async` to decode the image off the main thread (non-blocking),
+   * `sync` for immediate decoding (blocking), or `auto` to let the
+   * browser decide the optimal strategy.
+   *
+   * [Spec](https://html.spec.whatwg.org/multipage/images.html#image-decoding-hint)
+   */
+  @Input() decoding?: 'sync' | 'async' | 'auto';
+
+  /**
    * The desired loading behavior (lazy, eager, or auto). Defaults to `lazy`,
    * which is recommended for most images.
    *
@@ -444,6 +456,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
         );
       }
       assertValidLoadingInput(this);
+      assertValidDecodingInput(this);
       if (!this.ngSrcset) {
         assertNoComplexSizes(this);
       }
@@ -484,6 +497,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
+    this.setHostAttribute('decoding', this.getDecoding());
 
     // The `data-ng-img` attribute flags an image as using the directive, to allow
     // for analysis of the directive's performance.
@@ -579,6 +593,20 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
   private getFetchPriority(): string {
     return this.priority ? 'high' : 'auto';
+  }
+
+  private getDecoding(): string {
+    if (this.priority) {
+      // `sync` means the image is decoded immediately when it's loaded,
+      // reducing the risk of content shifting later (important for LCP).
+      // If we're marking an image as priority, we want it decoded and
+      // painted as early as possible.
+      return 'sync';
+    }
+    // Returns the value of the `decoding` attribute, defaulting to `auto`
+    // if not explicitly provided. This mimics native browser behavior and
+    // avoids breaking changes when no decoding strategy is specified.
+    return this.decoding ?? 'auto';
   }
 
   private getRewrittenSrc(): string {
@@ -1232,6 +1260,21 @@ function assertValidLoadingInput(dir: NgOptimizedImage) {
       `${imgDirectiveDetails(dir.ngSrc)} the \`loading\` attribute ` +
         `has an invalid value (\`${dir.loading}\`). ` +
         `To fix this, provide a valid value ("lazy", "eager", or "auto").`,
+    );
+  }
+}
+
+/**
+ * Verifies that the `decoding` attribute is set to a valid input.
+ */
+function assertValidDecodingInput(dir: NgOptimizedImage) {
+  const validInputs = ['sync', 'async', 'auto'];
+  if (typeof dir.decoding === 'string' && !validInputs.includes(dir.decoding)) {
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_INPUT,
+      `${imgDirectiveDetails(dir.ngSrc)} the \`decoding\` attribute ` +
+        `has an invalid value (\`${dir.decoding}\`). ` +
+        `To fix this, provide a valid value ("sync", "async", or "auto").`,
     );
   }
 }

@@ -77,7 +77,7 @@ import {executeContentQueries} from './queries/query_execution';
 import {enterView, leaveView} from './state';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';
 import {getComponentLViewByIndex, getTNode} from './util/view_utils';
-import {elementLikeEndFirstCreatePass, elementLikeStartFirstCreatePass} from './view/elements';
+import {directiveHostEndFirstCreatePass, directiveHostFirstCreatePass} from './view/elements';
 import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
@@ -303,9 +303,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       let componentView: LView | null = null;
 
       try {
-        const hostTNode = elementLikeStartFirstCreatePass(
+        const hostTNode = directiveHostFirstCreatePass(
           HEADER_OFFSET,
-          rootTView,
           rootLView,
           TNodeType.Element,
           '#host',
@@ -327,8 +326,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         // TODO(pk): this logic is similar to the instruction code where a node can have directives
         createDirectivesInstances(rootTView, rootLView, hostTNode);
         executeContentQueries(rootTView, hostTNode, rootLView);
-
-        elementLikeEndFirstCreatePass(rootTView, hostTNode);
+        directiveHostEndFirstCreatePass(rootTView, hostTNode);
 
         if (projectableNodes !== undefined) {
           projectNodes(hostTNode, this.ngContentSelectors, projectableNodes);

@@ -75,8 +75,11 @@ Angular — Deliver web apps with confidence 🚀
 
 ## Routing
 - [Routing overview](https://angular.dev/guide/routing)
+- [Define routes](https://angular.dev/guide/routing/define-routes)
+- [Show routes with outlets](https://angular.dev/guide/routing/show-routes-with-outlets)
+- [Navigate to routes](https://angular.dev/guide/routing/navigate-to-routes)
+- [Read route state](https://angular.dev/guide/routing/read-route-state)
 - [Common routing tasks](https://angular.dev/guide/routing/common-router-tasks)
-- [Routing in an SPA](https://angular.dev/guide/routing/router-tutorial)
 - [Creating custom route matches](https://angular.dev/guide/routing/routing-with-urlmatcher)
 
 ## Server Side Rendering (SSR)
@@ -98,8 +101,8 @@ Angular — Deliver web apps with confidence 🚀
 - [Testing services](https://angular.dev/guide/testing/services)
 - [Basics of component testing](https://angular.dev/guide/testing/components-basics)
 - [Component testing scenarios](https://angular.dev/guide/testing/components-scenarios)
-- [Testing attribute directives](https://angular.dev/guide/testing/attribute-directives
-- [Testing pipes](https://angular.dev/guide/testing/pipes
+- [Testing attribute directives](https://angular.dev/guide/testing/attribute-directives)
+- [Testing pipes](https://angular.dev/guide/testing/pipes)
 - [Debugging tests](https://angular.dev/guide/testing/debugging)
 - [Testing utility apis](https://angular.dev/guide/testing/utility-apis)
 - [Component harness overview](https://angular.dev/guide/testing/component-harnesses-overview)
@@ -118,7 +121,7 @@ Angular — Deliver web apps with confidence 🚀
 
 ## Others
 
-- [Zoneless](https://angular.dev/guide/experimental/zoneless)
+- [Zoneless](https://angular.dev/guide/zoneless)
 - [Error encyclopedia](https://angular.dev/errors)
 - [Extended diagnostics](https://angular.dev/extended-diagnostics)
 - [Update guide](https://angular.dev/update-guide)

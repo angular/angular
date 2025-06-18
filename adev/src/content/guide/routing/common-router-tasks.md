@@ -31,13 +31,11 @@ providers: [
 
 <docs-step title="Add an `Input` to the component">
 
-Update the component to have an `Input` matching the name of the parameter.
+Update the component to have an `input()` property matching the name of the parameter.
 
 ```ts
-@Input()
-set id(heroId: string) {
-  this.hero$ = this.service.getHero(heroId);
-}
+id = input.required<string>()
+hero = computed(() => this.service.getHero(id));
 ```
 
 NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
@@ -63,7 +61,7 @@ const routes: Routes = [
 The last route with the `path` of `**` is a wildcard route.
 The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
 
-## Preventing unauthorized access
+## Preventing unauthorized access with route guards
 
 Use route guards to prevent users from navigating to parts of an application without authorization.
 The following route guards are available in Angular:

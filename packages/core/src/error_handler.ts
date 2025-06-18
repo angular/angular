@@ -100,7 +100,18 @@ const globalErrorListeners = new InjectionToken<void>(ngDevMode ? 'GlobalErrorLi
       e.preventDefault();
     };
     const errorListener = (e: ErrorEvent) => {
-      errorHandler(e.error);
+      if (e.error) {
+        errorHandler(e.error);
+      } else {
+        errorHandler(
+          new Error(
+            ngDevMode
+              ? `An ErrorEvent with no error occurred. See Error.cause for details: ${e.message}`
+              : e.message,
+            {cause: e},
+          ),
+        );
+      }
       e.preventDefault();
     };
 

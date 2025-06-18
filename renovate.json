@@ -33,9 +33,18 @@
     "angular-mocks-1.8",
     "convert-source-map",
     "selenium-webdriver",
-    "systemjs"
+    "systemjs",
+    "patch-package"
   ],
   "packageRules": [
+    {
+      "matchBaseBranches": ["main"],
+      "addLabels": ["target: minor"]
+    },
+    {
+      "matchBaseBranches": ["!main"],
+      "addLabels": ["target: patch"]
+    },
     {
       "matchFileNames": [
         "integration/**",

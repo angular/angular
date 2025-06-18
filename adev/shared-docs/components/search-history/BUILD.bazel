@@ -1,0 +1,54 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//visibility:private"])
+
+sass_binary(
+    name = "styles",
+    src = "search-history.component.scss",
+)
+
+ng_project(
+    name = "search-history",
+    srcs = [
+        "search-history.component.ts",
+    ],
+    assets = [
+        "search-history.component.html",
+        ":styles",
+    ],
+    interop_deps = [
+        "//packages/core",
+        "//packages/router",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/search-dialog:__pkg__",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//adev/shared-docs/directives:directives_rjs",
+        "//adev/shared-docs/pipes:pipes_rjs",
+        "//adev/shared-docs/services:services_rjs",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["search-history.component.spec.ts"],
+    interop_deps = [
+        ":search-history",
+        "//adev/shared-docs/services",
+        "//adev/shared-docs/testing",
+        "//packages/core/testing",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

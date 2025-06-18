@@ -50,7 +50,7 @@ export class StylingComponent {
   tplRefIdx: number = 0;
   staticStyle = {width: '10px'};
 
-  getTplRef(...tplRefs): TemplateRef<any> {
+  getTplRef(...tplRefs: TemplateRef<any>[]): TemplateRef<any> {
     return tplRefs[this.tplRefIdx];
   }
 }

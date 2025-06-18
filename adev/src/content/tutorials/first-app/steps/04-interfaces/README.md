@@ -70,9 +70,9 @@ There are a few more lessons to complete before that happens.
 
 1. In `src/app/home/home.ts`, replace the empty `export class Home {}` definition with this code to create a single instance of the new interface in the component.
 
-    <docs-code header="Add sample data to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[23,36]"/>
+    <docs-code header="Add sample data to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[22,35]"/>
 
-1. Confirm that your `home.ts` file matches like this example.
+1. Confirm that your `home.ts` file matches this example.
 
     <docs-code header="src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[1,36]" />
 

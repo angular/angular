@@ -10,7 +10,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  OnInit,
   PLATFORM_ID,
   computed,
   inject,
@@ -22,7 +21,6 @@ import {
   NavigationItem,
   NavigationList,
   NavigationState,
-  WINDOW,
   findNavigationItem,
   getBaseUrlAfterRedirects,
   getNavigationItemsTree,
@@ -45,7 +43,7 @@ export const ANIMATION_DURATION = 500;
   styleUrls: ['./secondary-navigation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SecondaryNavigation implements OnInit {
+export class SecondaryNavigation {
   private readonly destroyRef = inject(DestroyRef);
   private readonly navigationState = inject(NavigationState);
   private readonly platformId = inject(PLATFORM_ID);
@@ -91,7 +89,7 @@ export class SecondaryNavigation implements OnInit {
     takeUntilDestroyed(this.destroyRef),
   );
 
-  ngOnInit(): void {
+  constructor() {
     this.navigationState.cleanExpandedState();
     this.listenToPrimaryRouteChange();
     this.setActiveRouteOnNavigationEnd();

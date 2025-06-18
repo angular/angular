@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 exports_files([
     "browser/static_assets/200.html",
@@ -18,6 +18,7 @@ ts_project(
     ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages/animations:animations_rjs",
         "//packages/animations/browser:browser_rjs",
         "//packages/animations/browser/testing:testing_rjs",
@@ -37,11 +38,10 @@ js_library(
     srcs = ["dom/events/zone_event_unpatched.init.mjs"],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )
 

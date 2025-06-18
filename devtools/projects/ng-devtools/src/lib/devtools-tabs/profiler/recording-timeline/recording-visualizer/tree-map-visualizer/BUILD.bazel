@@ -1,0 +1,32 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "tree-map-visualizer_styles",
+    src = "tree-map-visualizer.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "tree-map-visualizer",
+    srcs = [
+        "tree-map-visualizer.component.ts",
+    ],
+    angular_assets = [
+        "tree-map-visualizer.component.html",
+        ":tree-map-visualizer_styles",
+    ],
+    interop_deps = [
+        "//packages/core",
+    ],
+    deps = [
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/tree-map-formatter:tree-map-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/vendor/webtreemap:webtreemap_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)

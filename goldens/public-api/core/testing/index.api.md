@@ -114,7 +114,7 @@ export interface TestBed {
     // (undocumented)
     configureTestingModule(moduleDef: TestModuleMetadata): TestBed;
     // (undocumented)
-    createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    createComponent<T>(component: Type<T>, options?: TestComponentOptions): ComponentFixture<T>;
     // (undocumented)
     execute(tokens: any[], fn: Function, context?: any): any;
     // @deprecated
@@ -175,6 +175,11 @@ export const TestBed: TestBedStatic;
 export interface TestBedStatic extends TestBed {
     // (undocumented)
     new (...args: any[]): TestBed;
+}
+
+// @public
+export interface TestComponentOptions {
+    bindings?: Binding[];
 }
 
 // @public

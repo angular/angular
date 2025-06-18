@@ -95,7 +95,7 @@ export interface HttpResourceOptions<TResult, TRaw> {
   parse?: (value: TRaw) => TResult;
 
   /**
-   * Value that the resource will take when in Idle, Loading, or Error states.
+   * Value that the resource will take when in Idle or Loading states.
    *
    * If not set, the resource will use `undefined` as its default value.
    */

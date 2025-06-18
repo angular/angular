@@ -1,21 +1,21 @@
-# Component Communication with `@Output`
+# Component output properties 
 
 When working with components it may be required to notify other components that something has happened. Perhaps a button has been clicked, an item has been added/removed from a list or some other important update has occurred. In this scenario components need to communicate with parent components.
 
-Angular uses the `@Output` decorator to enable this type of behavior.
+Angular uses the `output()` function to enable this type of behavior.
 
 Note: Learn more about [custom events in the outputs guide](/guide/components/outputs).
 
-In this activity, you'll learn how to use the `@Output` decorator and `EventEmitter` to communicate with components.
+In this activity, you'll learn how to use the `output()` function to communicate with components.
 
 <hr />
 
-To create the communication path from child to parent components, use the `@Output` decorator on a class property and assign it a value of type `EventEmitter`:
+To create the communication path from child to parent components, use the `output` function to initiaize a class property.
 
 <docs-code header="child.ts" language="ts">
 @Component({...})
 class Child {
-    @Output() incrementCountEvent = new EventEmitter<number>();
+    incrementCountEvent = output<number>();
 }
 </docs-code>
 
@@ -33,14 +33,14 @@ class Child {
 }
 </docs-code>
 
-The emit function will generate an event with the same type as the `EventEmitter` instance.
+The emit function will generate an event with the same type as defined by the `output`.
 
 Alright, your turn to give this a try. Complete the code by following these tasks:
 
 <docs-workflow>
 
-<docs-step title="Add an `@Output` property">
-Update `child.ts` by adding an output property called `addItemEvent`, be sure to set the EventEmitter type to be `string`.
+<docs-step title="Add an `output()` property">
+Update `child.ts` by adding an output property called `addItemEvent`, be sure to set the output type to be `string`.
 </docs-step>
 
 <docs-step title="Complete `addItem` method">

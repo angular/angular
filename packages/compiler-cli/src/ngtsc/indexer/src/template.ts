@@ -13,7 +13,6 @@ import {
   ImplicitReceiver,
   ParseSourceSpan,
   PropertyRead,
-  PropertyWrite,
   TmplAstBoundAttribute,
   TmplAstComponent,
   TmplAstDirective,
@@ -143,11 +142,6 @@ class TemplateVisitor extends CombinedRecursiveAstVisitor {
   override visitPropertyRead(ast: PropertyRead) {
     this.visitIdentifier(ast, IdentifierKind.Property);
     super.visitPropertyRead(ast, null);
-  }
-
-  override visitPropertyWrite(ast: PropertyWrite) {
-    this.visitIdentifier(ast, IdentifierKind.Property);
-    super.visitPropertyWrite(ast, null);
   }
 
   override visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
@@ -367,9 +361,9 @@ class TemplateVisitor extends CombinedRecursiveAstVisitor {
     // The source span of the requested AST starts at a location that is offset from the expression.
     let identifierStart = ast.sourceSpan.start - absoluteOffset;
 
-    if (ast instanceof PropertyRead || ast instanceof PropertyWrite) {
-      // For `PropertyRead` and `PropertyWrite`, the identifier starts at the `nameSpan`, not
-      // necessarily the `sourceSpan`.
+    if (ast instanceof PropertyRead) {
+      // For `PropertyRead` and the identifier starts at the `nameSpan`,
+      // not necessarily the `sourceSpan`.
       identifierStart = ast.nameSpan.start - absoluteOffset;
     }
 

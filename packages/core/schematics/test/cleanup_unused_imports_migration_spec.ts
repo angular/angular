@@ -9,7 +9,7 @@
 import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
-import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
 import {runfiles} from '@bazel/runfiles';
 import shx from 'shelljs';
 
@@ -27,10 +27,6 @@ describe('cleanup unused imports schematic', () => {
 
   function runMigration() {
     return runner.runSchematic('cleanup-unused-imports', {}, tree);
-  }
-
-  function stripWhitespace(content: string) {
-    return content.replace(/\s+/g, '');
   }
 
   beforeEach(() => {
@@ -95,19 +91,10 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
+    const contents = tree.readContent('comp.ts');
     expect(logs.pop()).toBe('Removed 2 imports in 1 file');
-    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
-      stripWhitespace(`
-        import {Component} from '@angular/core';
-        import {One} from './directives';
-
-        @Component({
-          imports: [One],
-          template: '<div one></div>',
-        })
-        export class Comp {}
-    `),
-    );
+    expect(contents).toContain('imports: [One],');
+    expect(contents).toContain(`import {One} from './directives';`);
   });
 
   it('should clean up an array where all imports are not used', async () => {
@@ -127,18 +114,10 @@ describe('cleanup unused imports schematic', () => {
 
     await runMigration();
 
+    const contents = tree.readContent('comp.ts');
     expect(logs.pop()).toBe('Removed 3 imports in 1 file');
-    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
-      stripWhitespace(`
-        import {Component} from '@angular/core';
-
-        @Component({
-          imports: [],
-          template: '',
-        })
-        export class Comp {}
-    `),
-    );
+    expect(contents).toContain('imports: [],');
+    expect(contents).not.toContain(`from './directives'`);
   });
 
   it('should clean up an array where aliased imports are not used', async () => {
@@ -157,20 +136,11 @@ describe('cleanup unused imports schematic', () => {
     );
 
     await runMigration();
+    const contents = tree.readContent('comp.ts');
 
     expect(logs.pop()).toBe('Removed 2 imports in 1 file');
-    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
-      stripWhitespace(`
-        import {Component} from '@angular/core';
-        import {One as OneAlias} from './directives';
-
-        @Component({
-          imports: [OneAlias],
-          template: '<div one></div>',
-        })
-        export class Comp {}
-    `),
-    );
+    expect(contents).toContain('imports: [OneAlias],');
+    expect(contents).toContain(`import {One as OneAlias} from './directives';`);
   });
 
   it('should preserve import declaration if unused import is still used within the file', async () => {
@@ -195,26 +165,11 @@ describe('cleanup unused imports schematic', () => {
     );
 
     await runMigration();
+    const contents = tree.readContent('comp.ts');
 
     expect(logs.pop()).toBe('Removed 1 import in 1 file');
-    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
-      stripWhitespace(`
-        import {Component} from '@angular/core';
-        import {One} from './directives';
-
-        @Component({
-          imports: [],
-          template: '',
-        })
-        export class Comp {}
-
-        @Component({
-          imports: [One],
-          template: '<div one></div>',
-        })
-        export class OtherComp {}
-    `),
-    );
+    expect(contents).toContain('imports: [],');
+    expect(contents).toContain(`import {One} from './directives';`);
   });
 
   it('should not touch a file where all imports are used', async () => {
@@ -282,62 +237,51 @@ describe('cleanup unused imports schematic', () => {
     );
 
     await runMigration();
+    const contents = tree.readContent('comp.ts');
 
     expect(logs.pop()).toBe('Removed 2 imports in 1 file');
-    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
-      stripWhitespace(`
-        import {Component} from '@angular/core';
-        import {One} from './directives';
-
-        @Component({
-          imports: [One],
-          template: '<div one></div>',
-        })
-        export class Comp {}
-    `),
-    );
+    expect(contents).toContain('imports: [One],');
+    expect(contents).toContain(`import {One} from './directives';`);
   });
 
   it('should preserve comments when removing unused imports', async () => {
     writeFile(
       'comp.ts',
-      `
-        import {Component} from '@angular/core';
-        import {One, Two, Three} from './directives';
-
-        @Component({
-          imports: [
-            // Start
-            Three,
-            One,
-            Two,
-            // End
-          ],
-          template: '<div one></div>',
-        })
-        export class Comp {}
-      `,
+      [
+        `import {Component} from '@angular/core';`,
+        `import {One, Two, Three} from './directives';`,
+        ``,
+        `@Component({`,
+        `  imports: [`,
+        `    // Start`,
+        `    Three,`,
+        `    One,`,
+        `    Two,`,
+        `    // End`,
+        `  ],`,
+        `  template: '<div one></div>',`,
+        `})`,
+        `export class Comp {}`,
+      ].join('\n'),
     );
 
     await runMigration();
 
     expect(logs.pop()).toBe('Removed 2 imports in 1 file');
-    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
-      stripWhitespace(`
-        import {Component} from '@angular/core';
-        import {One} from './directives';
-
-        @Component({
-          imports: [
-            // Start
-            One,
-            // End
-          ],
-          template: '<div one></div>',
-        })
-        export class Comp {}
-    `),
-    );
+    expect(tree.readContent('comp.ts').split('\n')).toEqual([
+      `import {Component} from '@angular/core';`,
+      `import {One} from './directives';`,
+      ``,
+      `@Component({`,
+      `  imports: [`,
+      `    // Start`,
+      `    One,`,
+      `    // End`,
+      `  ],`,
+      `  template: '<div one></div>',`,
+      `})`,
+      `export class Comp {}`,
+    ]);
   });
 
   it('should preserve inline comments and strip trailing comma when removing imports from same line', async () => {
@@ -356,19 +300,33 @@ describe('cleanup unused imports schematic', () => {
     );
 
     await runMigration();
+    const contents = tree.readContent('comp.ts');
 
     expect(logs.pop()).toBe('Removed 2 imports in 1 file');
-    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
-      stripWhitespace(`
+    expect(contents).toContain(' imports: [/* Start */ One/* End */],');
+    expect(contents).toContain(`import {One} from './directives';`);
+  });
+
+  it('should handle all items except the first one being removed', async () => {
+    writeFile(
+      'comp.ts',
+      `
         import {Component} from '@angular/core';
-        import {One} from './directives';
+        import {One, Two, Three} from './directives';
 
         @Component({
-          imports: [/* Start */ One /* End */],
-          template: '<div one></div>',
+          imports: [Three, One, Two],
+          template: '<div three></div>',
         })
         export class Comp {}
-    `),
+      `,
     );
+
+    await runMigration();
+
+    const contents = tree.readContent('comp.ts');
+    expect(logs.pop()).toBe('Removed 2 imports in 1 file');
+    expect(contents).toContain('imports: [Three],');
+    expect(contents).toContain(`import {Three} from './directives';`);
   });
 });

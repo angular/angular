@@ -9,3 +9,4 @@
 export * from './navigation-state.service';
 export {TOC_SKIP_CONTENT_MARKER, TableOfContentsLoader} from './table-of-contents-loader.service';
 export * from './search.service';
+export * from './search-history.service';

@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, output, input} from '@angular/core';
 import {trigger, state, style, animate, transition, group} from '@angular/animations';
 
 import {Hero} from './hero';
@@ -7,7 +7,7 @@ import {Hero} from './hero';
   selector: 'app-hero-list-groups',
   template: `
     <ul class="heroes">
-      @for (hero of heroes; track hero) {
+      @for (hero of heroes(); track hero) {
         <li [@flyInOut]="'in'">
           <button class="inner" type="button" (click)="removeHero(hero.id)">
             <span class="badge">{{ hero.id }}</span>
@@ -69,9 +69,9 @@ import {Hero} from './hero';
   // #enddocregion animationdef
 })
 export class HeroListGroupsComponent {
-  @Input() heroes: Hero[] = [];
+  heroes = input<Hero[]>([]);
 
-  @Output() remove = new EventEmitter<number>();
+  remove = output<number>();
 
   removeHero(id: number) {
     this.remove.emit(id);

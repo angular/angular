@@ -11,10 +11,10 @@ ng_project(
     ),
     interop_deps = [
         "//packages/platform-browser",
-        "//packages/zone.js/lib",
     ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages/common:common_rjs",
         "//packages/core:core_rjs",
         "//packages/router:router_rjs",

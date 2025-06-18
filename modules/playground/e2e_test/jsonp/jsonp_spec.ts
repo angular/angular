@@ -15,9 +15,9 @@ describe('jsonp', function () {
   describe('fetching', function () {
     const URL = '/';
 
-    it('should fetch and display people', function () {
+    it('should fetch and display people', async function () {
       browser.get(URL);
-      expect(getComponentText('jsonp-app', '.people')).toEqual('hello, caitp');
+      expect(await getComponentText('jsonp-app', '.people')).toEqual('hello, caitp');
     });
   });
 });

@@ -1,7 +1,7 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -39,9 +39,26 @@ ts_test_library(
     ],
 )
 
+ts_project(
+    name = "directive-forest-filter-fn-generator",
+    srcs = ["directive-forest-filter-fn-generator.ts"],
+    interop_deps = [
+        ":filter",
+    ],
+)
+
+ts_test_library(
+    name = "directive-forest-filter-fn-generator_test",
+    srcs = ["directive-forest-filter-fn-generator.spec.ts"],
+    deps = [
+        ":directive-forest-filter-fn-generator_rjs",
+    ],
+)
+
 karma_web_test_suite(
     name = "test",
     deps = [
+        ":directive-forest-filter-fn-generator_test",
         ":filter_test",
     ],
 )

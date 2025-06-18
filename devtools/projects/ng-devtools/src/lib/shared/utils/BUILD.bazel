@@ -1,0 +1,24 @@
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "utils",
+    srcs = ["debouncer.ts"],
+)
+
+ts_test_library(
+    name = "utils_tests",
+    srcs = glob(["*.spec.ts"]),
+    deps = [
+        ":utils_rjs",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":utils_tests",
+    ],
+)

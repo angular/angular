@@ -1,15 +1,14 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
-load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
-load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
+load("@devinfra//bazel:extract_js_module_output.bzl", "extract_js_module_output")
+load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
+load("@devinfra//bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config", _esbuild_esm_bundle = "esbuild_esm_bundle")
+load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
+load("@devinfra//bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
+load("@devinfra//bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
-load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
-load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config", _esbuild_esm_bundle = "esbuild_esm_bundle")
-load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
-load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
-load("@npm//@angular/build-tooling/bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//@bazel/concatjs:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
@@ -18,17 +17,11 @@ load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//typescript:index.bzl", "tsc")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
-load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
-_INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
-_INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
-_INTERNAL_NG_PACKAGE_PACKAGER = "//packages/bazel/src/ng_package:packager"
-_INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL = "//packages/bazel/src/ng_package:rollup.config.js"
-_INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package/rollup"
 
 esbuild_config = _esbuild_config
 esbuild_esm_bundle = _esbuild_esm_bundle
@@ -117,116 +110,6 @@ def ts_library(
         # allows for resolution of the given target within the `node_modules/`.
         package_name = package_name,
         **kwargs
-    )
-
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, **kwargs):
-    """Default values for ng_module"""
-    deps = deps + ["@npm//tslib"]
-    if testonly:
-        # Match the types[] in //packages:tsconfig-test.json
-        deps.append("@npm//@types/jasmine")
-        deps.append("@npm//@types/node")
-    if not tsconfig and testonly:
-        tsconfig = _DEFAULT_TSCONFIG_TEST
-
-    if not module_name:
-        module_name = compute_module_name(testonly)
-
-    # If no `package_name` is explicitly set, we use the default module name as package
-    # name, so that the target can be resolved within NodeJS executions, by activating
-    # the Bazel NodeJS linker. See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
-    if not package_name:
-        package_name = compute_module_name(testonly)
-
-    if not entry_point:
-        entry_point = "public_api.ts"
-
-    is_angular_core_compilation = False
-    if native.package_name().startswith("packages/core"):
-        is_angular_core_compilation = True
-
-    _ng_module(
-        name = name,
-        flat_module_out_file = name,
-        tsconfig = tsconfig,
-        entry_point = entry_point,
-        testonly = testonly,
-        deps = deps,
-        compiler = _INTERNAL_NG_MODULE_COMPILER,
-        ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
-        strict_templates = True,
-        # `module_name` is used for AMD module names within emitted JavaScript files.
-        module_name = module_name,
-        # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
-        # allows for resolution of the given target within the `node_modules/`.
-        package_name = package_name,
-        is_angular_core_compilation = is_angular_core_compilation,
-        perf_flag = "//packages/compiler-cli:ng_perf",
-        **kwargs
-    )
-
-def ng_package(name, readme_md = None, license_banner = None, license = None, deps = [], **kwargs):
-    """Default values for ng_package"""
-    if not readme_md:
-        readme_md = "//packages:README.md"
-    if not license_banner:
-        license_banner = "//packages:license-banner.txt"
-    if not license:
-        license = "//:LICENSE"
-    visibility = kwargs.pop("visibility", None)
-    tags = kwargs.pop("tags", [])
-
-    common_substitutions = dict(kwargs.pop("substitutions", {}), **PKG_GROUP_REPLACEMENTS)
-    substitutions = dict(common_substitutions, **{
-        "0.0.0-PLACEHOLDER": "0.0.0",
-    })
-    stamped_substitutions = dict(common_substitutions, **{
-        "0.0.0-PLACEHOLDER": "{STABLE_PROJECT_VERSION}",
-    })
-
-    _ng_package(
-        name = name,
-        deps = deps,
-        validate = True,
-        readme_md = readme_md,
-        license = license,
-        license_banner = license_banner,
-        substitutions = select({
-            "//:stamp": stamped_substitutions,
-            "//conditions:default": substitutions,
-        }),
-        ng_packager = _INTERNAL_NG_PACKAGE_PACKAGER,
-        rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
-        rollup = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP,
-        visibility = visibility,
-        tags = tags,
-        **kwargs
-    )
-
-    _ng_package(
-        name = "%s_nosub" % name,
-        deps = deps,
-        validate = True,
-        readme_md = readme_md,
-        license = license,
-        license_banner = license_banner,
-        substitutions = common_substitutions,
-        ng_packager = _INTERNAL_NG_PACKAGE_PACKAGER,
-        rollup_config_tmpl = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP_CONFIG_TMPL,
-        rollup = _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP,
-        visibility = visibility,
-        tags = ["manual"],
-        **kwargs
-    )
-
-    pkg_tar(
-        name = name + "_archive",
-        srcs = [":%s" % name],
-        extension = "tar.gz",
-        strip_prefix = "./%s" % name,
-        # should not be built unless it is a dependency of another rule
-        tags = ["manual"],
-        visibility = visibility,
     )
 
 def pkg_npm(name, deps = [], validate = True, **kwargs):
@@ -520,10 +403,6 @@ def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kw
         use_esm = True,
         **kwargs
     )
-
-def app_bundle(**kwargs):
-    """Default values for app_bundle"""
-    _app_bundle(**kwargs)
 
 # TODO: Consider removing this rule in favor of `esbuild` for more consistent bundling.
 def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):

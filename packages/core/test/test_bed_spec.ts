@@ -42,6 +42,11 @@ import {
   DOCUMENT,
   signal,
   provideZonelessChangeDetection,
+  inputBinding,
+  Output,
+  EventEmitter,
+  outputBinding,
+  twoWayBinding,
 } from '../src/core';
 import {DeferBlockBehavior} from '../testing';
 import {TestBed, TestBedImpl} from '../testing/src/test_bed';
@@ -1212,6 +1217,73 @@ describe('TestBed', () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({imports: [MyMod2]});
       expect(TestBed.inject(TOKEN)).toEqual(['forRootValue']);
+    });
+  });
+
+  describe('bindings', () => {
+    it('should be able to bind to inputs', () => {
+      @Component({template: ''})
+      class TestComp {
+        @Input() value = 0;
+      }
+
+      const value = signal(1);
+      const fixture = TestBed.createComponent(TestComp, {
+        bindings: [inputBinding('value', value)],
+      });
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value).toBe(1);
+
+      value.set(2);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value).toBe(2);
+    });
+
+    it('should be able to bind to outputs', () => {
+      let count = 0;
+
+      @Component({template: '<button (click)="event.emit()">Click me</button>'})
+      class TestComp {
+        @Output() event = new EventEmitter<void>();
+      }
+
+      const fixture = TestBed.createComponent(TestComp, {
+        bindings: [outputBinding('event', () => count++)],
+      });
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      expect(count).toBe(0);
+
+      button.click();
+      fixture.detectChanges();
+      expect(count).toBe(1);
+    });
+
+    it('should be able to bind two-way bindings', () => {
+      @Component({template: 'Value: {{value}}'})
+      class TestComp {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+      }
+
+      const value = signal('initial');
+      const fixture = TestBed.createComponent(TestComp, {
+        bindings: [twoWayBinding('value', value)],
+      });
+      fixture.detectChanges();
+      expect(value()).toBe('initial');
+      expect(fixture.nativeElement.textContent).toBe('Value: initial');
+
+      value.set('1');
+      fixture.detectChanges();
+      expect(value()).toBe('1');
+      expect(fixture.nativeElement.textContent).toBe('Value: 1');
+
+      fixture.componentInstance.value = '2';
+      fixture.componentInstance.valueChange.emit('2');
+      fixture.detectChanges();
+      expect(value()).toBe('2');
+      expect(fixture.nativeElement.textContent).toBe('Value: 2');
     });
   });
 

@@ -1,0 +1,24 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//tools:defaults2.bzl", "jasmine_test")
+
+ts_project(
+    name = "docs-code-multifile",
+    testonly = True,
+    srcs = glob([
+        "**/*.spec.mts",
+    ]),
+    deps = [
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/jsdom",
+        "//:node_modules/jsdom",
+        "//adev/shared-docs/pipeline/guides:guides_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        "docs-code-multifile.md",
+        ":docs-code-multifile_rjs",
+    ],
+)

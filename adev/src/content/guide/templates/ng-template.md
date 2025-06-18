@@ -189,11 +189,11 @@ export class ComponentWithFragment { }
 })
 export class MyOutlet {
   private viewContainer = inject(ViewContainerRef);
-  @Input() fragment: TemplateRef<unknown> | undefined;
+  fragment = input<TemplateRef<unknown> | undefined>();
 
   showFragment() {
-    if (this.fragment) {
-      this.viewContainer.createEmbeddedView(this.fragment);
+    if (this.fragment()) {
+      this.viewContainer.createEmbeddedView(this.fragment());
     }
   }
 }

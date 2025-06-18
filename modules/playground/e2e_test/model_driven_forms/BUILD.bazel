@@ -1,7 +1,0 @@
-load("//modules/playground/e2e_test:example_test.bzl", "example_test")
-
-example_test(
-    name = "model_driven_forms",
-    srcs = glob(["**/*.ts"]),
-    server = "//modules/playground/src/model_driven_forms:devserver",
-)

@@ -36,12 +36,12 @@ describe('sourcemaps', function () {
     expect(errorColumn).not.toBeNull();
 
     const mapContent = readFileSync(
-      runfiles.resolvePackageRelative('../../src/sourcemap/app_bundle.js.map'),
+      runfiles.resolvePackageRelative('../../src/sourcemap/bundles/main.js.map'),
     ).toString('utf8');
     const decoder = await new SourceMapConsumer(JSON.parse(mapContent) as RawSourceMap);
     const originalPosition = decoder.originalPositionFor({line: errorLine!, column: errorColumn!});
     const sourceCodeLines = readFileSync(
-      runfiles.resolvePackageRelative('../../src/sourcemap/index.ts'),
+      runfiles.resolvePackageRelative('../../src/sourcemap/main.ts'),
       {
         encoding: 'utf-8',
       },

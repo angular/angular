@@ -6,10 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DestroyRef, EnvironmentInjector, Injector, runInInjectionContext} from '../../src/core';
-import {BehaviorSubject} from 'rxjs';
+import {
+  Component,
+  DestroyRef,
+  EnvironmentInjector,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from '../../src/core';
+import {BehaviorSubject, finalize} from 'rxjs';
 
 import {takeUntilDestroyed} from '../src/take_until_destroyed';
+import {TestBed} from '@angular/core/testing';
 
 describe('takeUntilDestroyed', () => {
   it('should complete an observable when the current context is destroyed', () => {
@@ -75,5 +83,40 @@ describe('takeUntilDestroyed', () => {
     subscription.unsubscribe();
 
     expect(unregisterFn).toHaveBeenCalled();
+  });
+
+  // https://github.com/angular/angular/issues/54527
+  it('should unsubscribe after the current context has already been destroyed', async () => {
+    const recorder: any[] = [];
+
+    // Note that we need a "real" view for this test because, in other cases,
+    // `DestroyRef` would resolve to the root injector rather than to the
+    // `NodeInjectorDestroyRef`, where `lView` is used.
+    @Component({template: ''})
+    class TestComponent {
+      destroyRef = inject(DestroyRef);
+
+      source$ = new BehaviorSubject(0);
+
+      ngOnDestroy(): void {
+        Promise.resolve().then(() => {
+          this.source$
+            .pipe(
+              takeUntilDestroyed(this.destroyRef),
+              finalize(() => recorder.push('finalize()')),
+            )
+            .subscribe((value) => recorder.push(value));
+        });
+      }
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.destroy();
+
+    // Wait until the `ngOnDestroy` microtask is run.
+    await Promise.resolve();
+
+    // Ensure the `value` is not recorded, but unsubscribed immediately.
+    expect(recorder).toEqual(['finalize()']);
   });
 });

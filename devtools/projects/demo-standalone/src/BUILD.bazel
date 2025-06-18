@@ -76,7 +76,7 @@ filegroup(
         ":demo_styles",
         ":index.html",
         "//devtools/projects/demo-standalone/src/assets",
-        "//packages/zone.js/bundles:zone.umd.js",
+        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
     ],
 )
 

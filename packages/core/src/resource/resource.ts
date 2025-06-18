@@ -167,6 +167,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   private pendingController: AbortController | undefined;
   private resolvePendingTask: (() => void) | undefined = undefined;
   private destroyed = false;
+  private unregisterOnDestroy: () => void;
 
   constructor(
     request: () => R,
@@ -250,7 +251,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     this.pendingTasks = injector.get(PendingTasks);
 
     // Cancel any pending request when the resource itself is destroyed.
-    injector.get(DestroyRef).onDestroy(() => this.destroy());
+    this.unregisterOnDestroy = injector.get(DestroyRef).onDestroy(() => this.destroy());
   }
 
   override readonly status = computed(() => projectStatusOfState(this.state()));
@@ -302,6 +303,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
   destroy(): void {
     this.destroyed = true;
+    this.unregisterOnDestroy();
     this.effectRef.destroy();
     this.abortInProgressLoad();
 

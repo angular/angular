@@ -7,6 +7,4 @@ import {CarService} from './car.service';
 })
 export class App {
   display = '';
-
-  constructor() {}
 }

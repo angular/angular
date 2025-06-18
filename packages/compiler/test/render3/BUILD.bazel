@@ -1,12 +1,12 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["**/*.ts"],
     ),
-    deps = [
+    interop_deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler/test/expression_parser/utils",
@@ -14,10 +14,9 @@ ts_library(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )

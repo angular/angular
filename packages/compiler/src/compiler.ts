@@ -116,9 +116,6 @@ export {
   UnaryOperatorExpr,
   VoidExpr,
   WrappedNodeExpr,
-  WriteKeyExpr,
-  WritePropExpr,
-  WriteVarExpr,
 } from './output/output_ast';
 export {JitEvaluator} from './output/output_jit';
 export {SourceMap} from './output/source_map';
@@ -252,6 +249,8 @@ export * from './version';
 export {outputAst};
 export {CompilerFacadeImpl} from './jit_compiler_facade';
 export {FactoryTarget} from './compiler_facade_interface';
+export {QueryFlags} from './render3/view/query_generation';
+export {setEnableTemplateSourceLocations} from './render3/view/config';
 
 // This file only reexports content of the `src` folder. Keep it that way.
 

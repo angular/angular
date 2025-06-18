@@ -47,6 +47,11 @@ export abstract class DestroyRef {
   abstract onDestroy(callback: () => void): () => void;
 
   /**
+   * Indicates whether the instance has already been destroyed and whether its `onDestroy` callbacks have executed.
+   */
+  abstract get destroyed(): boolean;
+
+  /**
    * @internal
    * @nocollapse
    */
@@ -62,6 +67,10 @@ export abstract class DestroyRef {
 export class NodeInjectorDestroyRef extends DestroyRef {
   constructor(readonly _lView: LView) {
     super();
+  }
+
+  override get destroyed() {
+    return isDestroyed(this._lView);
   }
 
   override onDestroy(callback: () => void): () => void {

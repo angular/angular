@@ -82,10 +82,8 @@ import {createComponentLView} from '../view/construction';
 import {selectIndexInternal} from './advance';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
-import {elementLikeEndFirstCreatePass, elementLikeStartFirstCreatePass} from '../view/elements';
 import {isDetachedByI18n} from '../../i18n/utils';
 import {appendChild} from '../node_manipulation';
-import {executeContentQueries} from '../queries/query_execution';
 
 export function executeTemplate<T>(
   tView: TView,
@@ -567,9 +565,9 @@ function setInputsFromAttrs<T>(
 
 /** Shared code between instructions that indicate the start of an element. */
 export function elementLikeStartShared(
+  tNode: TElementNode | TElementContainerNode,
   lView: LView,
   index: number,
-  type: TNodeType.Element | TNodeType.ElementContainer,
   name: string,
   locateOrCreateNativeNode: (
     tView: TView,
@@ -578,33 +576,15 @@ export function elementLikeStartShared(
     name: string,
     index: number,
   ) => RNode,
-  bindingsEnabled: boolean,
-  attrsIndex: number | null | undefined,
-  localRefsIndex: number | undefined,
 ) {
   const adjustedIndex = HEADER_OFFSET + index;
-
   const tView = lView[TVIEW];
-  const tNode = tView.firstCreatePass
-    ? elementLikeStartFirstCreatePass(
-        adjustedIndex,
-        tView,
-        lView,
-        type,
-        name,
-        findDirectiveDefMatches,
-        bindingsEnabled,
-        attrsIndex,
-        localRefsIndex,
-      )
-    : (tView.data[adjustedIndex] as TElementNode | TElementContainerNode);
-
   const native = locateOrCreateNativeNode(tView, lView, tNode, name, index);
   lView[adjustedIndex] = native;
   setCurrentTNode(tNode, true);
 
   // It's important that this runs before we've instantiated the directives.
-  const isElement = type === TNodeType.Element;
+  const isElement = tNode.type === TNodeType.Element;
   if (isElement) {
     setupStaticAttributes(lView[RENDERER], native as RElement, tNode);
 
@@ -625,20 +605,11 @@ export function elementLikeStartShared(
     appendChild(tView, lView, native, tNode);
   }
 
-  if (isDirectiveHost(tNode)) {
-    createDirectivesInstances(tView, lView, tNode);
-    executeContentQueries(tView, tNode, lView);
-  }
-
-  if (localRefsIndex != null) {
-    saveResolvedLocalsInData(lView, tNode);
-  }
-
   return tNode;
 }
 
 /** Shared code between instructions that indicate the end of an element. */
-export function elementLikeEndShared(tView: TView, tNode: TNode): TNode {
+export function elementLikeEndShared(tNode: TNode): TNode {
   let currentTNode = tNode;
 
   if (isCurrentTNodeParent()) {
@@ -647,10 +618,6 @@ export function elementLikeEndShared(tView: TView, tNode: TNode): TNode {
     ngDevMode && assertHasParent(getCurrentTNode());
     currentTNode = currentTNode.parent!;
     setCurrentTNode(currentTNode, false);
-  }
-
-  if (tView.firstCreatePass) {
-    elementLikeEndFirstCreatePass(tView, currentTNode);
   }
 
   return currentTNode;

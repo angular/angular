@@ -22,7 +22,7 @@
                   (keydown)="$event.stopPropagation()"
                 />
               </form>
-            } @else if(restrictedMode()) {
+            } @else if (restrictedMode()) {
               {{ file.filename.replace('src/app/', '') }}
             } @else {
               {{ file.filename.replace('src/', '') }}
@@ -32,6 +32,8 @@
               <button
                 class="docs-rename-file"
                 aria-label="rename file"
+                matTooltip="Rename file"
+                matTooltipPosition="above"
                 (click)="onRenameButtonClick()"
               >
                 <docs-icon>edit</docs-icon>
@@ -41,6 +43,8 @@
               <button
                 class="docs-delete-file"
                 aria-label="Delete file"
+                matTooltip="Delete file"
+                matTooltipPosition="above"
                 (click)="deleteFile(file.filename)"
               >
                 <docs-icon>delete</docs-icon>
@@ -66,7 +70,13 @@
     </mat-tab-group>
 
     @if (canCreateFile()) {
-      <button class="adev-add-file" (click)="onAddButtonClick()" aria-label="Add a new file">
+      <button
+        class="adev-add-file"
+        (click)="onAddButtonClick()"
+        aria-label="Add a new file"
+        matTooltip="Add a new file"
+        matTooltipPosition="above"
+      >
         <docs-icon>add</docs-icon>
       </button>
     }

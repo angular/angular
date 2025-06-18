@@ -532,13 +532,13 @@ describe('parser', () => {
     it('should record property write span', () => {
       const ast = parseAction('a = b');
       expect(unparseWithSpan(ast)).toContain(['a = b', 'a = b']);
-      expect(unparseWithSpan(ast)).toContain(['a = b', '[nameSpan] a']);
+      expect(unparseWithSpan(ast)).toContain(['a', '[nameSpan] a']);
     });
 
     it('should record accessed property write span', () => {
       const ast = parseAction('a.b = c');
       expect(unparseWithSpan(ast)).toContain(['a.b = c', 'a.b = c']);
-      expect(unparseWithSpan(ast)).toContain(['a.b = c', '[nameSpan] b']);
+      expect(unparseWithSpan(ast)).toContain(['a.b', '[nameSpan] b']);
     });
 
     it('should record spans for untagged template literals with no interpolations', () => {
@@ -657,6 +657,19 @@ describe('parser', () => {
 
     it('should report a missing expected token', () => {
       expectActionError('a(b', 'Missing expected ) at the end of the expression [a(b]');
+    });
+
+    it('should report a single error for an `as` expression inside a parenthesized expression', () => {
+      expectActionError(
+        `foo(($event.target as HTMLElement).value)`,
+        'Missing closing parentheses at column 20',
+        1,
+      );
+      expectActionError(
+        `foo(((($event.target as HTMLElement))).value)`,
+        'Missing closing parentheses at column 22',
+        1,
+      );
     });
   });
 
@@ -1373,6 +1386,12 @@ describe('parser', () => {
     it('should be able to recover from a missing selector', () => recover('a.'));
     it('should be able to recover from a missing selector in a array literal', () =>
       recover('[[a.], b, c]'));
+
+    it('should recover from parenthesized `as` expressions', () => {
+      recover('foo(($event.target as HTMLElement).value)', 'foo(($event.target).value)');
+      recover('foo(((($event.target as HTMLElement))).value)', 'foo(((($event.target))).value)');
+      recover('foo(((bar as HTMLElement) as Something).value)', 'foo(((bar)).value)');
+    });
   });
 
   describe('offsets', () => {
@@ -1437,7 +1456,7 @@ function parseInterpolation(
 }
 
 function splitInterpolation(text: string, location: any = null): SplitInterpolation | null {
-  return createParser().splitInterpolation(text, location, null);
+  return createParser().splitInterpolation(text, location, [], null);
 }
 
 function parseSimpleBinding(text: string, location: any = null, offset: number = 0): ASTWithSource {
@@ -1468,7 +1487,13 @@ function checkAction(exp: string, expected?: string) {
   validate(ast);
 }
 
-function expectError(ast: {errors: ParserError[]}, message: string) {
+function expectError(ast: {errors: ParserError[]}, message: string, errorCount?: number) {
+  if (errorCount != null) {
+    expect(ast.errors.length).toBe(errorCount);
+  } else {
+    expect(ast.errors.length).toBeGreaterThan(0);
+  }
+
   for (const error of ast.errors) {
     if (error.message.indexOf(message) >= 0) {
       return;
@@ -1480,8 +1505,8 @@ function expectError(ast: {errors: ParserError[]}, message: string) {
   );
 }
 
-function expectActionError(text: string, message: string) {
-  expectError(validate(parseAction(text)), message);
+function expectActionError(text: string, message: string, errorCount?: number) {
+  expectError(validate(parseAction(text)), message, errorCount);
 }
 
 function expectBindingError(text: string, message: string) {

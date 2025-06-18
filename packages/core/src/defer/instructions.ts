@@ -14,7 +14,7 @@ import {
 } from '../hydration/interfaces';
 import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref';
 import {bindingUpdated} from '../render3/bindings';
-import {declareTemplate} from '../render3/instructions/template';
+import {declareNoDirectiveHostTemplate} from '../render3/instructions/template';
 import {DEHYDRATED_VIEWS} from '../render3/interfaces/container';
 import {HEADER_OFFSET, INJECTOR, TVIEW} from '../render3/interfaces/view';
 import {
@@ -65,6 +65,7 @@ import {
   triggerPrefetching,
   triggerResourceLoading,
   shouldAttachTrigger,
+  hasHydrateTriggers,
 } from './triggering';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {Console} from '../console';
@@ -132,14 +133,19 @@ export function ɵɵdefer(
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
-  const tNode = declareTemplate(lView, tView, index, null, 0, 0);
+  const tNode = declareNoDirectiveHostTemplate(lView, tView, index, null, 0, 0);
   const injector = lView[INJECTOR];
 
   if (tView.firstCreatePass) {
     performanceMarkFeature('NgDefer');
 
-    if (ngDevMode && typeof ngHmrMode !== 'undefined' && ngHmrMode) {
-      logHmrWarning(injector);
+    if (ngDevMode) {
+      if (typeof ngHmrMode !== 'undefined' && ngHmrMode) {
+        logHmrWarning(injector);
+      }
+      if (hasHydrateTriggers(flags)) {
+        assertIncrementalHydrationIsConfigured(injector);
+      }
     }
 
     const tDetails: TDeferBlockDetails = {
@@ -193,8 +199,6 @@ export function ɵɵdefer(
 
   let registry: DehydratedBlockRegistry | null = null;
   if (ssrUniqueId !== null) {
-    ngDevMode && assertIncrementalHydrationIsConfigured(injector);
-
     // Store this defer block in the registry, to have an access to
     // internal data structures from hydration runtime code.
     registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);

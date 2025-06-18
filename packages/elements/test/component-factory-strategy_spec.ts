@@ -32,6 +32,8 @@ import {
 } from '../src/component-factory-strategy';
 import {NgElementStrategyEvent} from '../src/element-strategy';
 
+import type {} from 'zone.js';
+
 describe('ComponentFactoryNgElementStrategy', () => {
   let strategy: ComponentNgElementStrategy;
   let injector: Injector;

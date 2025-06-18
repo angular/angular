@@ -8,20 +8,10 @@
 
 import 'reflect-metadata';
 
-import {} from 'zone.js';
-
-import {patchLongStackTrace} from 'zone.js/lib/zone-spec/long-stack-trace';
-import {patchTaskTracking} from 'zone.js/lib/zone-spec/task-tracking';
-import {patchProxyZoneSpec} from 'zone.js/lib/zone-spec/proxy';
-import {patchSyncTest} from 'zone.js/lib/zone-spec/sync-test';
-import {patchAsyncTest} from 'zone.js/lib/zone-spec/async-test';
-import {patchFakeAsyncTest} from 'zone.js/lib/zone-spec/fake-async-test';
-import {patchJasmine} from 'zone.js/lib/jasmine/jasmine';
-
-patchLongStackTrace(Zone);
-patchTaskTracking(Zone);
-patchProxyZoneSpec(Zone);
-patchSyncTest(Zone);
-patchAsyncTest(Zone);
-patchFakeAsyncTest(Zone);
-patchJasmine(Zone);
+import 'zone.js/plugins/long-stack-trace-zone';
+import 'zone.js/plugins/task-tracking';
+import 'zone.js/plugins/proxy';
+import 'zone.js/plugins/sync-test';
+import 'zone.js/plugins/async-test';
+import 'zone.js/plugins/fake-async-test';
+import 'zone.js/plugins/jasmine-patch';

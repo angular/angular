@@ -299,7 +299,7 @@ export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 /**
  * The type for the function that can be used to handle redirects when the path matches a `Route` config.
  *
- * The `RedirectFunction` does have access to the full
+ * The `RedirectFunction` does _not_ have access to the full
  * `ActivatedRouteSnapshot` interface. Some data are not accurately known
  * at the route matching phase. For example, resolvers are not run until
  * later, so any resolved title would not be populated. The same goes for lazy

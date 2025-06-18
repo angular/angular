@@ -5,9 +5,9 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Bazel
-      uses: angular/dev-infra/github-actions/bazel/setup@241f7bcac0f9e4e977e183e27dd041a357dcecbf
+      uses: angular/dev-infra/github-actions/bazel/setup@1f047e7dbae43ea969c2cafb53b33207e86b800f
     - name: Setup Saucelabs Variables
-      uses: angular/dev-infra/github-actions/saucelabs@241f7bcac0f9e4e977e183e27dd041a357dcecbf
+      uses: angular/dev-infra/github-actions/saucelabs@1f047e7dbae43ea969c2cafb53b33207e86b800f
     - name: Starting Saucelabs tunnel service
       shell: bash
       run: ./tools/saucelabs/sauce-service.sh run &
@@ -19,11 +19,6 @@ runs:
     - name: Preparing Bazel-generated fixtures required in legacy tests
       shell: bash
       run: |
-        yarn bazel build //packages/core/test:downleveled_es5_fixture //packages/common/locales
-        # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
-        mkdir -p dist/legacy-test-out/core/test/reflection/
-        cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
-          dist/legacy-test-out/core/test/reflection/es5_downleveled_inheritance_fixture.js
         # Locale files are needed for i18n tests running within Saucelabs. These are added
         # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
         # can succeed. Note that the base locale and currencies files are checked-in, so

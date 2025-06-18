@@ -113,14 +113,14 @@ describe('type check blocks diagnostics', () => {
     it('should annotate property writes', () => {
       const TEMPLATE = `<div (click)='a.b.c = d'></div>`;
       expect(tcbWithSpans(TEMPLATE)).toContain(
-        '(((((((this).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,23*/ = (((this).d /*22,23*/) /*22,23*/)) /*14,23*/',
+        '(((((((this).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,21*/) = (((this).d /*22,23*/) /*22,23*/) /*14,23*/;',
       );
     });
 
     it('should $event property writes', () => {
       const TEMPLATE = `<div (click)='a = $event'></div>`;
       expect(tcbWithSpans(TEMPLATE)).toContain(
-        '(((this).a /*14,15*/) /*14,24*/ = ($event /*18,24*/)) /*14,24*/;',
+        '(((this).a /*14,15*/) /*14,17*/) = ($event /*18,24*/) /*14,24*/;',
       );
     });
 
@@ -134,7 +134,7 @@ describe('type check blocks diagnostics', () => {
     it('should annotate keyed property writes', () => {
       const TEMPLATE = `<div (click)="a[b] = c"></div>`;
       expect(tcbWithSpans(TEMPLATE)).toContain(
-        '((((this).a /*14,15*/) /*14,15*/)[((this).b /*16,17*/) /*16,17*/] = (((this).c /*21,22*/) /*21,22*/)) /*14,22*/',
+        '((((this).a /*14,15*/) /*14,15*/)[((this).b /*16,17*/) /*16,17*/] /*14,20*/) = (((this).c /*21,22*/) /*21,22*/) /*14,22*/;',
       );
     });
 

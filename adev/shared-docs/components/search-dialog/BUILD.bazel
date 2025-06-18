@@ -26,6 +26,7 @@ ng_project(
         "//:node_modules/@angular/cdk",
         "//:node_modules/rxjs",
         "//adev/shared-docs/components/algolia-icon:algolia-icon_rjs",
+        "//adev/shared-docs/components/search-history:search-history_rjs",
         "//adev/shared-docs/components/text-field:text-field_rjs",
         "//adev/shared-docs/directives:directives_rjs",
         "//adev/shared-docs/interfaces:interfaces_rjs",

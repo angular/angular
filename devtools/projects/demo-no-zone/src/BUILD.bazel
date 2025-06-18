@@ -38,7 +38,7 @@ filegroup(
     srcs = [
         ":index.html",
         ":styles.css",
-        "//packages/zone.js/bundles:zone.umd.js",
+        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
     ],
 )
 

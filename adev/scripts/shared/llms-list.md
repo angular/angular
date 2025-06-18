@@ -69,6 +69,11 @@ adev/src/content/guide/forms/dynamic-forms.md
 
 ## Routing
 
+adev/src/content/guide/routing/overview.md 
+adev/src/content/guide/routing/define-routes.md 
+adev/src/content/guide/routing/show-routes-with-outlets.md 
+adev/src/content/guide/routing/navigate-to-routes.md 
+adev/src/content/guide/routing/read-route-state.md 
 adev/src/content/guide/routing/common-router-tasks.md 
 adev/src/content/guide/routing/router-tutorial.md 
 adev/src/content/guide/routing/routing-with-urlmatcher.md 

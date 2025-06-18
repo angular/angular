@@ -19,7 +19,6 @@ import {
   ParsedEventType,
   ParseSourceSpan,
   PropertyRead,
-  PropertyWrite,
   R3Identifiers,
   SafeCall,
   SafePropertyRead,
@@ -55,6 +54,7 @@ import {
   TransplantedType,
   TmplAstComponent,
   TmplAstDirective,
+  Binary,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -2960,25 +2960,60 @@ class Scope {
     }
 
     if (triggers.hover !== undefined) {
-      this.appendReferenceBasedDeferredTrigger(block, triggers.hover);
+      this.validateReferenceBasedDeferredTrigger(block, triggers.hover);
     }
 
     if (triggers.interaction !== undefined) {
-      this.appendReferenceBasedDeferredTrigger(block, triggers.interaction);
+      this.validateReferenceBasedDeferredTrigger(block, triggers.interaction);
     }
 
     if (triggers.viewport !== undefined) {
-      this.appendReferenceBasedDeferredTrigger(block, triggers.viewport);
+      this.validateReferenceBasedDeferredTrigger(block, triggers.viewport);
     }
   }
 
-  private appendReferenceBasedDeferredTrigger(
+  private validateReferenceBasedDeferredTrigger(
     block: TmplAstDeferredBlock,
     trigger:
       | TmplAstHoverDeferredTrigger
       | TmplAstInteractionDeferredTrigger
       | TmplAstViewportDeferredTrigger,
   ): void {
+    if (trigger.reference === null) {
+      if (block.placeholder === null) {
+        this.tcb.oobRecorder.deferImplicitTriggerMissingPlaceholder(this.tcb.id, trigger);
+        return;
+      }
+
+      let rootNode: TmplAstNode | null = null;
+
+      for (const child of block.placeholder.children) {
+        // Skip over empty text nodes if the host doesn't preserve whitespaces.
+        if (
+          !this.tcb.hostPreserveWhitespaces &&
+          child instanceof TmplAstText &&
+          child.value.trim().length === 0
+        ) {
+          continue;
+        }
+
+        // Capture the first root node.
+        if (rootNode === null) {
+          rootNode = child;
+        } else {
+          // More than one root node is invalid. Reset it and break
+          // the loop so the assertion below can flag it.
+          rootNode = null;
+          break;
+        }
+      }
+
+      if (rootNode === null || !(rootNode instanceof TmplAstElement)) {
+        this.tcb.oobRecorder.deferImplicitTriggerInvalidPlaceholder(this.tcb.id, trigger);
+      }
+      return;
+    }
+
     if (this.tcb.boundTarget.getDeferredTriggerTarget(block, trigger) === null) {
       this.tcb.oobRecorder.inaccessibleDeferredTriggerElement(this.tcb.id, trigger);
     }
@@ -3080,25 +3115,31 @@ class TcbExpressionTranslator {
         }
       }
       return targetExpression;
-    } else if (ast instanceof PropertyWrite && ast.receiver instanceof ImplicitReceiver) {
-      const target = this.tcb.boundTarget.getExpressionTarget(ast);
+    } else if (
+      ast instanceof Binary &&
+      ast.operation === '=' &&
+      ast.left instanceof PropertyRead &&
+      ast.left.receiver instanceof ImplicitReceiver
+    ) {
+      const read = ast.left;
+      const target = this.tcb.boundTarget.getExpressionTarget(read);
       if (target === null) {
         return null;
       }
 
-      const targetExpression = this.getTargetNodeExpression(target, ast);
-      const expr = this.translate(ast.value);
+      const targetExpression = this.getTargetNodeExpression(target, read);
+      const expr = this.translate(ast.right);
       const result = ts.factory.createParenthesizedExpression(
         ts.factory.createBinaryExpression(targetExpression, ts.SyntaxKind.EqualsToken, expr),
       );
-      addParseSpanInfo(result, ast.sourceSpan);
+      addParseSpanInfo(result, read.sourceSpan);
 
       // Ignore diagnostics from TS produced for writes to `@let` and re-report them using
       // our own infrastructure. We can't rely on the TS reporting, because it includes
       // the name of the auto-generated TCB variable name.
       if (target instanceof TmplAstLetDeclaration) {
         markIgnoreDiagnostics(result);
-        this.tcb.oobRecorder.illegalWriteToLetDeclaration(this.tcb.id, ast, target);
+        this.tcb.oobRecorder.illegalWriteToLetDeclaration(this.tcb.id, read, target);
       }
 
       return result;

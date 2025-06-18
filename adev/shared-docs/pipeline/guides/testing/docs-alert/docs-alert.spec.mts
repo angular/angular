@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {runfiles} from '@bazel/runfiles';
+import {resolve} from 'node:path';
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
 
@@ -17,10 +17,7 @@ describe('markdown to html', () => {
   let markdownDocument: DocumentFragment;
 
   beforeAll(async () => {
-    const markdownContent = await readFile(
-      runfiles.resolvePackageRelative('docs-alert/docs-alert.md'),
-      {encoding: 'utf-8'},
-    );
+    const markdownContent = await readFile(resolve('docs-alert.md'), {encoding: 'utf-8'});
     markdownDocument = JSDOM.fragment(await parseMarkdown(markdownContent, {}));
   });
 

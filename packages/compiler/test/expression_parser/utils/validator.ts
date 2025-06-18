@@ -16,7 +16,6 @@ import {
   ImplicitReceiver,
   Interpolation,
   KeyedRead,
-  KeyedWrite,
   LiteralArray,
   LiteralMap,
   LiteralPrimitive,
@@ -24,7 +23,6 @@ import {
   ParseSpan,
   PrefixNot,
   PropertyRead,
-  PropertyWrite,
   RecursiveAstVisitor,
   SafeCall,
   SafeKeyedRead,
@@ -94,10 +92,6 @@ class ASTValidator extends RecursiveAstVisitor {
     this.validate(ast, () => super.visitKeyedRead(ast, context));
   }
 
-  override visitKeyedWrite(ast: KeyedWrite, context: any): any {
-    this.validate(ast, () => super.visitKeyedWrite(ast, context));
-  }
-
   override visitLiteralArray(ast: LiteralArray, context: any): any {
     this.validate(ast, () => super.visitLiteralArray(ast, context));
   }
@@ -128,10 +122,6 @@ class ASTValidator extends RecursiveAstVisitor {
 
   override visitPropertyRead(ast: PropertyRead, context: any): any {
     this.validate(ast, () => super.visitPropertyRead(ast, context));
-  }
-
-  override visitPropertyWrite(ast: PropertyWrite, context: any): any {
-    this.validate(ast, () => super.visitPropertyWrite(ast, context));
   }
 
   override visitSafePropertyRead(ast: SafePropertyRead, context: any): any {

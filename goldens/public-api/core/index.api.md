@@ -593,6 +593,7 @@ export function destroyPlatform(): void;
 
 // @public
 export abstract class DestroyRef {
+    abstract get destroyed(): boolean;
     abstract onDestroy(callback: () => void): () => void;
 }
 

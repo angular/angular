@@ -34,9 +34,9 @@ http_archive(
 
 http_archive(
     name = "aspect_rules_js",
-    sha256 = "75c25a0f15a9e4592bbda45b57aa089e4bf17f9176fd735351e8c6444df87b52",
-    strip_prefix = "rules_js-2.1.0",
-    url = "https://github.com/aspect-build/rules_js/releases/download/v2.1.0/rules_js-v2.1.0.tar.gz",
+    sha256 = "304c51726b727d53277dd28fcda1b8e43b7e46818530b8d6265e7be98d5e2b25",
+    strip_prefix = "rules_js-2.3.8",
+    url = "https://github.com/aspect-build/rules_js/releases/download/v2.3.8/rules_js-v2.3.8.tar.gz",
 )
 
 load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
@@ -107,10 +107,26 @@ load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
 npm_translate_lock(
     name = "npm2",
     data = [
+        "//:.pnpmfile.cjs",
         "//:package.json",
         "//:pnpm-workspace.yaml",
+        "//adev/shared-docs/pipeline/api-gen:package.json",
+        "//integration:package.json",
+        "//modules:package.json",
+        "//packages/animations:package.json",
+        "//packages/common:package.json",
         "//packages/compiler:package.json",
         "//packages/compiler-cli:package.json",
+        "//packages/compiler-cli/linker/babel/test:package.json",
+        "//packages/core:package.json",
+        "//packages/core/test/bundling:package.json",
+        "//packages/forms:package.json",
+        "//packages/localize:package.json",
+        "//packages/platform-browser:package.json",
+        "//packages/platform-browser-dynamic:package.json",
+        "//packages/router:package.json",
+        "//packages/upgrade:package.json",
+        "//packages/zone.js:package.json",
         "//tools/bazel/rules_angular_store:package.json",
     ],
     npmrc = "//:.npmrc",
@@ -126,24 +142,24 @@ npm_repositories()
 
 http_archive(
     name = "aspect_rules_ts",
-    sha256 = "9acd128abe77397505148eaa6895faed57839560dbf2177dd6285e51235e2724",
-    strip_prefix = "rules_ts-3.3.1",
-    url = "https://github.com/aspect-build/rules_ts/releases/download/v3.3.1/rules_ts-v3.3.1.tar.gz",
+    sha256 = "6b15ac1c69f2c0f1282e41ab469fd63cd40eb2e2d83075e19b68a6a76669773f",
+    strip_prefix = "rules_ts-3.6.0",
+    url = "https://github.com/aspect-build/rules_ts/releases/download/v3.6.0/rules_ts-v3.6.0.tar.gz",
 )
 
 load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
 
 rules_ts_dependencies(
     # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.8.2 | jq -r '.dist.integrity'
-    ts_integrity = "sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==",
+    ts_integrity = "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==",
     ts_version_from = "//:package.json",
 )
 
 http_archive(
     name = "aspect_rules_rollup",
-    sha256 = "c4062681968f5dcd3ce01e09e4ba73670c064744a7046211763e17c98ab8396e",
-    strip_prefix = "rules_rollup-2.0.0",
-    url = "https://github.com/aspect-build/rules_rollup/releases/download/v2.0.0/rules_rollup-v2.0.0.tar.gz",
+    sha256 = "0b8ac7d97cd660eb9a275600227e9c4268f5904cba962939d1a6ce9a0a059d2e",
+    strip_prefix = "rules_rollup-2.0.1",
+    url = "https://github.com/aspect-build/rules_rollup/releases/download/v2.0.1/rules_rollup-v2.0.1.tar.gz",
 )
 
 http_archive(
@@ -259,7 +275,7 @@ yarn_install(
 
 git_repository(
     name = "devinfra",
-    commit = "241f7bcac0f9e4e977e183e27dd041a357dcecbf",
+    commit = "1f047e7dbae43ea969c2cafb53b33207e86b800f",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
@@ -273,7 +289,7 @@ setup_dependencies_2()
 
 git_repository(
     name = "rules_angular",
-    commit = "ad3a2d652f41c953fad8f55c3959fde628fa8ebf",
+    commit = "845ffcd8231832abdcfd6a47211b2feb4d178d7b",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 

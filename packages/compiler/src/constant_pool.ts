@@ -125,7 +125,7 @@ export class ConstantPool {
     if ((!newValue && !fixup.shared) || (newValue && forceShared)) {
       // Replace the expression with a variable
       const name = this.freshName();
-      let definition: o.WriteVarExpr;
+      let value: o.Expression;
       let usage: o.Expression;
       if (this.isClosureCompilerEnabled && isLongStringLiteral(literal)) {
         // For string literals, Closure will **always** inline the string at
@@ -141,24 +141,24 @@ export class ConstantPool {
         // const myStr = function() { return "very very very long string"; };
         // const usage1 = myStr();
         // const usage2 = myStr();
-        definition = o.variable(name).set(
-          new o.FunctionExpr(
-            [], // Params.
-            [
-              // Statements.
-              new o.ReturnStatement(literal),
-            ],
-          ),
+        value = new o.FunctionExpr(
+          [], // Params.
+          [
+            // Statements.
+            new o.ReturnStatement(literal),
+          ],
         );
         usage = o.variable(name).callFn([]);
       } else {
         // Just declare and use the variable directly, without a function call
         // indirection. This saves a few bytes and avoids an unnecessary call.
-        definition = o.variable(name).set(literal);
+        value = literal;
         usage = o.variable(name);
       }
 
-      this.statements.push(definition.toDeclStmt(o.INFERRED_TYPE, o.StmtModifier.Final));
+      this.statements.push(
+        new o.DeclareVarStmt(name, value, o.INFERRED_TYPE, o.StmtModifier.Final),
+      );
       fixup.fixup(usage);
     }
 
@@ -267,10 +267,7 @@ export class ConstantPool {
       );
       const name = this.freshName();
       this.statements.push(
-        o
-          .variable(name)
-          .set(pureFunctionDeclaration)
-          .toDeclStmt(o.INFERRED_TYPE, o.StmtModifier.Final),
+        new o.DeclareVarStmt(name, pureFunctionDeclaration, o.INFERRED_TYPE, o.StmtModifier.Final),
       );
       literalFactory = o.variable(name);
       this.literalFactories.set(key, literalFactory);

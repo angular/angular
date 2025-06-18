@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {AttributeMarker, SelectorFlags} from '@angular/compiler/src/core';
-import {QueryFlags} from '@angular/compiler/src/render3/view/query_generation';
+import {core, QueryFlags} from '@angular/compiler';
 
 import {
   i18nIcuMsg,
@@ -160,14 +159,14 @@ function parseMetaProperties(str: string): Record<string, string> {
   return obj;
 }
 
-const AttributeMarkerMap: Record<string, AttributeMarker> = {
-  NamespaceURI: AttributeMarker.NamespaceURI,
-  Classes: AttributeMarker.Classes,
-  Styles: AttributeMarker.Styles,
-  Bindings: AttributeMarker.Bindings,
-  Template: AttributeMarker.Template,
-  ProjectAs: AttributeMarker.ProjectAs,
-  I18n: AttributeMarker.I18n,
+const AttributeMarkerMap: Record<string, core.AttributeMarker> = {
+  NamespaceURI: core.AttributeMarker.NamespaceURI,
+  Classes: core.AttributeMarker.Classes,
+  Styles: core.AttributeMarker.Styles,
+  Bindings: core.AttributeMarker.Bindings,
+  Template: core.AttributeMarker.Template,
+  ProjectAs: core.AttributeMarker.ProjectAs,
+  I18n: core.AttributeMarker.I18n,
 };
 
 function getAttributeMarker(member: string): string {
@@ -178,11 +177,11 @@ function getAttributeMarker(member: string): string {
   return `${marker}`;
 }
 
-const SelectorFlagsMap: Record<string, SelectorFlags> = {
-  NOT: SelectorFlags.NOT,
-  ATTRIBUTE: SelectorFlags.ATTRIBUTE,
-  ELEMENT: SelectorFlags.ELEMENT,
-  CLASS: SelectorFlags.CLASS,
+const SelectorFlagsMap: Record<string, core.SelectorFlags> = {
+  NOT: core.SelectorFlags.NOT,
+  ATTRIBUTE: core.SelectorFlags.ATTRIBUTE,
+  ELEMENT: core.SelectorFlags.ELEMENT,
+  CLASS: core.SelectorFlags.CLASS,
 };
 
 function getSelectorFlag(member: string): number {

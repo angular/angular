@@ -24,7 +24,6 @@ Angular supports a subset of [literal values](https://developer.mozilla.org/en-U
 | Literal type           | Example value            |
 | ---------------------- | ------------------------ |
 | RegExp                 | `/\d+/`                  |
-| Tagged template string | `` tag`Hello ${name}` `` |
 
 ## Globals
 

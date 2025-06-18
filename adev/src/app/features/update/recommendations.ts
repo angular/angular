@@ -2595,6 +2595,28 @@ export const RECOMMENDATIONS: Step[] = [
   {
     possibleIn: 2000,
     necessaryAsOf: 2000,
+    level: ApplicationComplexity.Basic,
+    step: '20.0.0_rename_resource_request_to_param',
+    action: 'Rename the `request` property passed in resources to `params`.',
+  },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
+    level: ApplicationComplexity.Medium,
+    step: '20.0.0_rename_rxResource_loader_to_stream',
+    action: 'Rename the `loader` property passed in rxResources to `stream`.',
+  },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
+    level: ApplicationComplexity.Basic,
+    step: '20.0.0_replace_ResourceStatus_by_corresponding_strings',
+    action:
+      '`ResourceStatus` is no longer an enum. Use the corresponding constant string values instead.',
+  },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
     level: ApplicationComplexity.Advanced,
     step: '20.0.0_rename_provideExperimentalZonelessChangeDetection',
     action:

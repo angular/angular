@@ -11,9 +11,9 @@ ng_project(
     ),
     interop_deps = [
         "//packages/platform-browser",
-        "//packages/zone.js/lib",
     ],
     deps = [
+        "//:node_modules/zone.js",
         "//packages/core:core_rjs",
         "//packages/service-worker:service-worker_rjs",
     ],

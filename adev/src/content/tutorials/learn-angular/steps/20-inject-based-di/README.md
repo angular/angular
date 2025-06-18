@@ -31,12 +31,10 @@ NOTE: Notice the difference between the property `carService` and the class `Car
 
 Calling `inject(CarService)` gave you an instance of the `CarService` that you can use in your application, stored in the `carService` property.
 
-In the `constructor` function of the `App`, add the following implementation:
+Initialize the `display` property with the following implementation:
 
 ```ts
-constructor() {
-    this.display = this.carService.getCars().join(' ⭐️ ');
-}
+display = this.carService.getCars().join(' ⭐️ ');
 ```
 
 </docs-step>
@@ -53,4 +51,4 @@ template: `<p>Car Listing: {{ display }}</p>`,
 
 </docs-workflow>
 
-You've just injected your first service into a component - fantastic effort. Before you finish this section on DI, you'll learn an alternative syntax to inject resources into your components.
+You've just injected your first service into a component - fantastic effort.

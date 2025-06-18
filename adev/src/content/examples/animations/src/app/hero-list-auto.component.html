@@ -1,5 +1,5 @@
 <ul class="heroes">
-  @for (hero of heroes; track hero) {
+  @for (hero of heroes(); track hero) {
     <li
       [@shrinkOut]="'in'">
       <button class="inner" type="button" (click)="removeHero(hero.id)">

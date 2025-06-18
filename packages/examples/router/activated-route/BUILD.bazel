@@ -9,11 +9,11 @@ ng_project(
         ["**/*.ts"],
     ),
     interop_deps = [
-        "//packages/zone.js/lib",
         "//packages/platform-browser",
     ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages/core:core_rjs",
         "//packages/router:router_rjs",
     ],

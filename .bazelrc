@@ -9,6 +9,9 @@ test --flaky_test_attempts=1
 common --@aspect_rules_ts//ts:skipLibCheck=always
 common --@aspect_rules_ts//ts:default_to_tsc_transpiler
 
+# Needed as otherwise `env` of TS actions would be ignored.
+common --incompatible_merge_fixed_and_default_shell_env
+
 ###############################
 # Filesystem interactions     #
 ###############################
@@ -139,7 +142,7 @@ common --experimental_allow_tags_propagation
 # Disable network access in the sandbox by default. To enable network access
 # for a particular target, use:
 #
-# load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+# load("@devinfra//bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 # my_target(
 #   ...,
 #   exec_properties = ENABLE_NETWORK,   # Enables network in remote exec

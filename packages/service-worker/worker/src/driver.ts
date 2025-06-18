@@ -62,6 +62,14 @@ interface LatestEntry {
   latest: string;
 }
 
+// This is a bug in TypeScript, where they removed `PushSubscriptionChangeEvent`
+// based on the incorrect assumption that browsers don't support it.
+interface PushSubscriptionChangeEvent extends ExtendableEvent {
+  // https://w3c.github.io/push-api/#pushsubscriptionchangeeventinit-interface
+  oldSubscription: PushSubscription | null;
+  newSubscription: PushSubscription | null;
+}
+
 export enum DriverReadyState {
   // The SW is operating in a normal mode, responding to all traffic.
   NORMAL,
@@ -181,11 +189,18 @@ export class Driver implements Debuggable, UpdateSource {
       }
     });
 
-    // Handle the fetch, message, and push events.
+    // Handle the fetch, message, and push, notificationclick,
+    // notificationclose and pushsubscriptionchange events.
     this.scope.addEventListener('fetch', (event) => this.onFetch(event!));
     this.scope.addEventListener('message', (event) => this.onMessage(event!));
     this.scope.addEventListener('push', (event) => this.onPush(event!));
-    this.scope.addEventListener('notificationclick', (event) => this.onClick(event!));
+    this.scope.addEventListener('notificationclick', (event) => this.onClick(event));
+    this.scope.addEventListener('notificationclose', (event) => this.onClose(event));
+    this.scope.addEventListener('pushsubscriptionchange', (event) =>
+      // This is a bug in TypeScript, where they removed `PushSubscriptionChangeEvent`
+      // based on the incorrect assumption that browsers don't support it.
+      this.onPushSubscriptionChange(event as PushSubscriptionChangeEvent),
+    );
 
     // The debugger generates debug pages in response to debugging requests.
     this.debugger = new DebugHandler(this, this.adapter);
@@ -206,6 +221,12 @@ export class Driver implements Debuggable, UpdateSource {
     const requestUrlObj = this.adapter.parseUrl(req.url, scopeUrl);
 
     if (req.headers.has('ngsw-bypass') || /[?&]ngsw-bypass(?:[=&]|$)/i.test(requestUrlObj.search)) {
+      return;
+    }
+
+    // Calls range request handler
+    if (req.headers.has('range')) {
+      event.respondWith(this.handleRangeRequest(req));
       return;
     }
 
@@ -262,6 +283,63 @@ export class Driver implements Debuggable, UpdateSource {
     event.respondWith(this.handleFetch(event));
   }
 
+  // function to handle Range requests
+  private async handleRangeRequest(req: Request): Promise<Response> {
+    try {
+      const response = await fetch(req);
+      const contentType = response.headers.get('Content-Type');
+
+      // Only apply logic to content that is a video
+      if (!contentType || !contentType.startsWith('video/')) {
+        return response;
+      }
+
+      const rangeHeader = req.headers.get('range');
+      if (!rangeHeader) {
+        return new Response(null, {
+          status: 416,
+          statusText: 'Range Not Satisfiable',
+        });
+      }
+
+      const rangeMatch = /bytes=(\d+)-(\d+)?/.exec(rangeHeader);
+      if (!rangeMatch) {
+        return new Response(null, {
+          status: 416,
+          statusText: 'Range Not Satisfiable',
+        });
+      }
+
+      const start = Number(rangeMatch[1]);
+      const end = rangeMatch[2] ? Number(rangeMatch[2]) : undefined;
+
+      const buffer = await response.arrayBuffer();
+      const contentLength = buffer.byteLength;
+
+      const chunk = buffer.slice(start, end ? end + 1 : contentLength);
+      const chunkLength = chunk.byteLength;
+
+      const headers = new Headers(response.headers);
+      headers.set(
+        'Content-Range',
+        `bytes ${start}-${end ? end : contentLength - 1}/${contentLength}`,
+      );
+      headers.set('Content-Length', chunkLength.toString());
+      headers.set('Accept-Ranges', 'bytes');
+
+      return new Response(chunk, {
+        status: 206,
+        statusText: 'Partial Content',
+        headers: headers,
+      });
+    } catch (error) {
+      return new Response(null, {
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+    }
+  }
+
   /**
    * The handler for message events.
    */
@@ -311,6 +389,16 @@ export class Driver implements Debuggable, UpdateSource {
   private onClick(event: NotificationEvent): void {
     // Handle the click event and keep the SW alive until it's handled.
     event.waitUntil(this.handleClick(event.notification, event.action));
+  }
+
+  private onClose(event: NotificationEvent): void {
+    // Handle the close event and keep the SW alive until it's handled.
+    event.waitUntil(this.handleClose(event.notification, event.action));
+  }
+
+  private onPushSubscriptionChange(event: PushSubscriptionChangeEvent): void {
+    // Handle the pushsubscriptionchange event and keep the SW alive until it's handled.
+    event.waitUntil(this.handlePushSubscriptionChange(event));
   }
 
   private async ensureInitialized(event: ExtendableEvent): Promise<void> {
@@ -415,6 +503,49 @@ export class Driver implements Debuggable, UpdateSource {
     await this.broadcast({
       type: 'NOTIFICATION_CLICK',
       data: {action, notification: options},
+    });
+  }
+
+  /**
+   * Handles the closing of a notification by extracting its options and
+   * broadcasting a `NOTIFICATION_CLOSE` message.
+   *
+   * This is typically called when a notification is dismissed by the user
+   * or closed programmatically, and it relays that information to clients
+   * listening for service worker events.
+   *
+   * @param notification - The original `Notification` object that was closed.
+   * @param action - The action string associated with the close event, if any (usually an empty string).
+   */
+  private async handleClose(notification: Notification, action: string): Promise<void> {
+    const options: {-readonly [K in keyof Notification]?: Notification[K]} = {};
+    NOTIFICATION_OPTION_NAMES.filter((name) => name in notification).forEach(
+      (name) => (options[name] = notification[name]),
+    );
+
+    await this.broadcast({
+      type: 'NOTIFICATION_CLOSE',
+      data: {action, notification: options},
+    });
+  }
+
+  /**
+   * Handles changes to the push subscription by capturing the old and new
+   * subscription details and broadcasting a `PUSH_SUBSCRIPTION_CHANGE` message.
+   *
+   * This method is triggered when the browser invalidates an existing push
+   * subscription and creates a new one, which can happen without user interaction.
+   * It ensures that clients listening for service worker events are informed
+   * of the subscription update.
+   *
+   * @param event - The `PushSubscriptionChangeEvent` containing the old and new subscriptions.
+   */
+  private async handlePushSubscriptionChange(event: PushSubscriptionChangeEvent): Promise<void> {
+    const {oldSubscription, newSubscription} = event;
+
+    await this.broadcast({
+      type: 'PUSH_SUBSCRIPTION_CHANGE',
+      data: {oldSubscription, newSubscription},
     });
   }
 

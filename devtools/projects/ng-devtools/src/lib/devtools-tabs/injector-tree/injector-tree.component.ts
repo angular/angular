@@ -7,12 +7,15 @@
  */
 
 import {
-  afterNextRender,
+  afterRenderEffect,
   Component,
+  computed,
   ElementRef,
   inject,
+  input,
   NgZone,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import {MatCheckbox} from '@angular/material/checkbox';
@@ -67,25 +70,36 @@ const HIERARCHY_HOR_SIZE = 50;
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
+  host: {
+    '[hidden]': 'hidden()',
+  },
 })
 export class InjectorTreeComponent {
-  private environmentTree = viewChild.required<TreeVisualizerHostComponent>('environmentTree');
-  private elementTree = viewChild.required<TreeVisualizerHostComponent>('elementTree');
+  private readonly environmentTree = viewChild<TreeVisualizerHostComponent>('environmentTree');
+  private readonly elementTree = viewChild<TreeVisualizerHostComponent>('elementTree');
 
-  private _messageBus = inject(MessageBus) as MessageBus<Events>;
-  zone = inject(NgZone);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly zone = inject(NgZone);
 
-  firstRender = true;
-  readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
-  rawDirectiveForest: DevToolsNode[] = [];
-  injectorTreeGraph!: InjectorTreeVisualizer;
-  elementInjectorTreeGraph!: InjectorTreeVisualizer;
-  readonly diDebugAPIsAvailable = signal(false);
-  readonly providers = signal<SerializedProviderRecord[]>([]);
-  elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();
+  protected readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
 
-  hideInjectorsWithNoProviders = false;
-  hideFrameworkInjectors = false;
+  protected readonly providers = input.required<SerializedProviderRecord[]>();
+  protected readonly componentExplorerView = input.required<ComponentExplorerView | null>();
+  protected readonly hidden = input<boolean>(false);
+
+  protected readonly diDebugAPIsAvailable = computed<boolean>(() => {
+    const view = this.componentExplorerView();
+    return !!(view && view.forest.length && view.forest[0].resolutionPath);
+  });
+
+  private firstRender = true;
+  private rawDirectiveForest: DevToolsNode[] = [];
+  private injectorTreeGraph!: InjectorTreeVisualizer;
+  private elementInjectorTreeGraph!: InjectorTreeVisualizer;
+  private elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();
+
+  private hideInjectorsWithNoProviders = false;
+  private hideFrameworkInjectors = false;
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
@@ -97,38 +111,29 @@ export class InjectorTreeComponent {
   protected readonly elHierarchySize = signal<number>(0);
 
   constructor() {
-    afterNextRender({
+    afterRenderEffect({
       write: () => {
-        this.init();
-        this.setUpEnvironmentInjectorVisualizer();
-        this.setUpElementInjectorVisualizer();
+        const view = this.componentExplorerView();
+        if (!this.diDebugAPIsAvailable() || !view || untracked(this.hidden)) {
+          return;
+        }
+
+        if (!this.isInitialized) {
+          this.init();
+        }
+
+        this.rawDirectiveForest = view.forest;
+        untracked(() => this.updateInjectorTreeVisualization(view.forest));
       },
     });
   }
 
+  private get isInitialized(): boolean {
+    return !!(this.injectorTreeGraph && this.elementInjectorTreeGraph);
+  }
+
   private init() {
-    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
-      if (view.forest.length === 0) return;
-
-      if (!view.forest[0].resolutionPath) return;
-
-      this.diDebugAPIsAvailable.set(true);
-      this.rawDirectiveForest = view.forest;
-      this.updateInjectorTreeVisualization(view.forest);
-    });
-
-    this._messageBus.on(
-      'latestInjectorProviders',
-      (_: SerializedInjector, providers: SerializedProviderRecord[]) => {
-        this.providers.set(
-          Array.from(providers).sort((a, b) => {
-            return a.token.localeCompare(b.token);
-          }),
-        );
-      },
-    );
-
-    this._messageBus.on('highlightComponent', (id: number) => {
+    this.messageBus.on('highlightComponent', (id: number) => {
       const injectorNode = this.getNodeByComponentId(this.elementInjectorTreeGraph, id);
       if (injectorNode === null) {
         return;
@@ -136,6 +141,9 @@ export class InjectorTreeComponent {
 
       this.selectInjectorByNode(injectorNode);
     });
+
+    this.setUpEnvironmentInjectorVisualizer();
+    this.setUpElementInjectorVisualizer();
   }
 
   toggleHideInjectorsWithNoProviders(): void {
@@ -224,12 +232,18 @@ export class InjectorTreeComponent {
     });
   }
 
-  snapToNode(node: InjectorTreeD3Node) {
+  snapToNode(node?: InjectorTreeD3Node) {
+    if (!node) {
+      return;
+    }
+
     // wait for CD to run before snapping to root so that svg container can change size.
     setTimeout(() => {
-      if (node.data.injector.type === 'element') {
+      const {type} = node.data.injector;
+
+      if (type === 'element') {
         this.elementInjectorTreeGraph.snapToNode(node);
-      } else if (node.data.injector.type === 'environment') {
+      } else if (type === 'environment') {
         this.injectorTreeGraph.snapToNode(node);
       }
     });
@@ -282,24 +296,40 @@ export class InjectorTreeComponent {
   }
 
   setUpEnvironmentInjectorVisualizer(): void {
-    const svg = this.environmentTree().container().nativeElement;
-    const g = this.environmentTree().group().nativeElement;
+    const environmentTree = this.environmentTree();
+    if (!environmentTree) {
+      return;
+    }
+
+    const svg = environmentTree.container().nativeElement;
+    const g = environmentTree.group().nativeElement;
 
     this.injectorTreeGraph?.cleanup?.();
     this.injectorTreeGraph = new InjectorTreeVisualizer(svg, g);
   }
 
   setUpElementInjectorVisualizer(): void {
-    const svg = this.elementTree().container().nativeElement;
-    const g = this.elementTree().group().nativeElement;
+    const elementTree = this.elementTree();
+    if (!elementTree) {
+      return;
+    }
+
+    const svg = elementTree.container().nativeElement;
+    const g = elementTree.group().nativeElement;
 
     this.elementInjectorTreeGraph?.cleanup?.();
     this.elementInjectorTreeGraph = new InjectorTreeVisualizer(svg, g, {nodeSeparation: () => 1});
   }
 
   highlightPathFromSelectedInjector(): void {
-    const envGroup = this.environmentTree().group();
-    const elementGroup = this.elementTree().group();
+    const environmentTree = this.environmentTree();
+    const elementTree = this.elementTree();
+    if (!environmentTree || !elementTree) {
+      return;
+    }
+
+    const envGroup = environmentTree.group();
+    const elementGroup = elementTree.group();
 
     this.unhighlightAllEdges(elementGroup);
     this.unhighlightAllNodes(elementGroup);
@@ -371,16 +401,17 @@ export class InjectorTreeComponent {
   selectInjectorByNode(node: InjectorTreeD3Node): void {
     this.selectedNode.set(node);
     this.highlightPathFromSelectedInjector();
-    this.snapToNode(this.selectedNode()!);
-    this.getProviders();
+
+    const selectedNode = this.selectedNode();
+    if (selectedNode) {
+      this.snapToNode(selectedNode);
+      this.getProviders(selectedNode);
+    }
   }
 
-  getProviders() {
-    if (this.selectedNode() === null) {
-      return;
-    }
-    const injector = this.selectedNode()!.data.injector;
-    this._messageBus.emit('getInjectorProviders', [
+  getProviders(node: InjectorTreeD3Node) {
+    const injector = node.data.injector;
+    this.messageBus.emit('getInjectorProviders', [
       {
         id: injector.id,
         type: injector.type,

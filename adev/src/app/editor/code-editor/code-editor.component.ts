@@ -8,17 +8,17 @@
 
 import {Location} from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
   EnvironmentInjector,
-  OnDestroy,
   afterRenderEffect,
+  effect,
   inject,
   input,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -61,9 +61,8 @@ const ANGULAR_DEV = 'https://angular.dev';
     CdkMenuTrigger,
   ],
 })
-export class CodeEditor implements AfterViewInit, OnDestroy {
+export class CodeEditor {
   readonly restrictedMode = input(false);
-
   readonly codeEditorWrapperRef =
     viewChild.required<ElementRef<HTMLDivElement>>('codeEditorWrapper');
   readonly matTabGroup = viewChild.required(MatTabGroup);
@@ -116,18 +115,20 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
       const renameFileInput = this.renameFileInputRef();
       renameFileInput?.nativeElement.focus();
     });
-  }
 
-  ngAfterViewInit() {
-    this.codeMirrorEditor.init(this.codeEditorWrapperRef().nativeElement);
-    this.listenToDiagnosticsChange();
+    effect((cleanupFn) => {
+      const parent = this.codeEditorWrapperRef().nativeElement;
 
-    this.listenToTabChange();
-    this.setSelectedTabOnTutorialChange();
-  }
+      untracked(() => {
+        this.codeMirrorEditor.init(parent);
+        this.listenToDiagnosticsChange();
 
-  ngOnDestroy(): void {
-    this.codeMirrorEditor.disable();
+        this.listenToTabChange();
+        this.setSelectedTabOnTutorialChange();
+      });
+
+      cleanupFn(() => this.codeMirrorEditor.disable());
+    });
   }
 
   openCurrentSolutionInIDX(): void {

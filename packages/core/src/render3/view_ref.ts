@@ -200,7 +200,9 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * @Component({
    *   selector: 'giant-list',
    *   template: `
-   *     <li *ngFor="let d of dataProvider.data">Data {{d}}</li>
+   *     @for(d of dataProvider.data; track $index) {
+   *        <li>Data {{d}}</li>
+   *     }
    *   `,
    * })
    * class GiantList {
