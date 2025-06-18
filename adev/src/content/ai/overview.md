@@ -3,6 +3,8 @@
 Build AI-powered apps. Develop faster with AI.
 </docs-decorative-header>
 
+HELPFUL: Looking to get started with building in your favorite AI powered IDE? <br>Check out our [prompt rules and best practices](/ai/develop-with-ai).
+
 Generative AI (GenAI) with large language models (LLMs) enables the creation of sophisticated and engaging application experiences, including personalized content, intelligent recommendations, media generation and comprehension, information summarization, and dynamic functionality.
 
 Developing features like these would have previously required deep domain expertise and significant engineering effort. However, new products and SDKs are lowering the barrier to entry. Angular is well-suited for integrating AI into your web application as a result of:
