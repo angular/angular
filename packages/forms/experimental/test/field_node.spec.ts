@@ -9,19 +9,22 @@
 import {computed, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  disabled,
-  required,
-  error,
-  readonly,
-  validate,
-  validateTree,
-  REQUIRED,
-  FormTreeError,
-  SchemaOrSchemaFn,
   apply,
   applyEach,
+  disabled,
+  error,
+  FieldPath,
   form,
+  FormTreeError,
+  readonly,
+  required,
+  REQUIRED,
+  Schema,
+  schema,
+  SchemaOrSchemaFn,
   submit,
+  validate,
+  validateTree,
 } from '../public_api';
 
 const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
@@ -910,6 +913,75 @@ describe('FieldNode', () => {
       );
 
       expect(f.address.street().disabled()).toBe(true);
+    });
+  });
+
+  describe('precompiled schema', () => {
+    it('should not run precpmpiled schema function on form creation', () => {
+      const schemaFn = jasmine.createSpy('schemaFn');
+      expect(schemaFn).not.toHaveBeenCalled();
+
+      const s: Schema<string> = schema(schemaFn);
+      expect(schemaFn).toHaveBeenCalledTimes(1);
+
+      const opts = {injector: TestBed.inject(Injector)};
+      form(signal(''), s, opts);
+      form(signal(''), s, opts);
+      expect(schemaFn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should resolve precompiled paths within the local context', () => {
+      const s = schema<{a: string; b: string}>((p) => {
+        disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
+      });
+
+      const f = form(
+        signal({first: {a: '', b: ''}, second: {a: 'disable-b', b: ''}}),
+        (p) => {
+          apply(p.first, s);
+          apply(p.second, s);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.first.b().disabled()).toBe(false);
+      expect(f.second.b().disabled()).toBe(true);
+    });
+
+    it('should resolve precompiled paths deeply nested within the schema', () => {
+      const s = schema<{a: string; b: string}>((p) => {
+        disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
+      });
+
+      const f = form(
+        signal({first: {second: {a: 'disable-b', b: ''}}}),
+        (p) => {
+          apply(p.first, (p) => {
+            apply(p.second, s);
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.first.second.b().disabled()).toBe(true);
+    });
+
+    it('should error on resolving precompiled path that is not part of the form', () => {
+      let otherP: FieldPath<any>;
+      const s = schema<string>((p) => (otherP = p));
+
+      const f = form(
+        signal(''),
+        (p) => {
+          disabled(p, ({fieldOf}) => {
+            fieldOf(otherP);
+            return true;
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(() => f().disabled()).toThrowError('Path is not part of this field tree.');
     });
   });
 });

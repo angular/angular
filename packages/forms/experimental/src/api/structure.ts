@@ -128,7 +128,11 @@ export function form<T>(model: WritableSignal<T>, options?: FormOptions): Field<
  */
 export function form<T>(
   model: WritableSignal<T>,
-  schema?: NoInfer<SchemaOrSchemaFn<T>>,
+  // Note: `NoInfer<...>` works here when the schema is defined inline, but not when it is defined
+  // ahead of time, e.g.
+  // const s = (p: FieldPath<string>) => { ... };
+  // const f = form(signal(''), s);
+  schema?: SchemaOrSchemaFn<T>,
   options?: FormOptions,
 ): Field<T>;
 
