@@ -10,8 +10,7 @@ export class MetadataKey<TValue> {
   constructor(
     readonly defaultValue: () => TValue,
     readonly merge: (prev: TValue, next: TValue) => TValue,
-  ) {
-  }
+  ) {}
 }
 
 export const REQUIRED = new MetadataKey(
@@ -19,27 +18,65 @@ export const REQUIRED = new MetadataKey(
   (prev, next) => prev || next,
 );
 
-export const MIN = new MetadataKey<number>(
+export const MIN = new MetadataKey<number | undefined>(
+  () => undefined,
+  (prev, next) => {
+    if (prev === undefined) {
+      return next;
+    }
+
+    if (next === undefined) {
+      return prev;
+    }
+    return Math.max(prev, next);
+  },
+);
+
+export const MAX = new MetadataKey<number | undefined>(
+  () => undefined,
+  (prev, next) => {
+    if (prev === undefined) {
+      return next;
+    }
+
+    if (next === undefined) {
+      return prev;
+    }
+    return Math.min(prev, next);
+  },
+);
+
+export const MIN_LENGTH = new MetadataKey<number | undefined>(
   () => -Infinity,
-  (prev, next) => Math.max(prev, next),
+  (prev, next) => {
+    if (prev === undefined) {
+      return next;
+    }
+
+    if (next === undefined) {
+      return prev;
+    }
+
+    return Math.max(prev, next);
+  },
 );
 
-export const MAX = new MetadataKey<number>(
-  () => +Infinity,
-  (prev, next) => Math.min(prev, next),
+export const MAX_LENGTH = new MetadataKey<number | undefined>(
+  () => undefined,
+  (prev, next) => {
+    if (prev === undefined) {
+      return next;
+    }
+
+    if (next === undefined) {
+      return prev;
+    }
+
+    return Math.min(prev, next);
+  },
 );
 
-export const MIN_LENGTH = new MetadataKey<number>(
-  () => -Infinity,
-  (prev, next) => Math.max(prev, next)
-);
-
-export const MAX_LENGTH = new MetadataKey<number>(
-  () => +Infinity,
-  (prev, next) => Math.min(prev, next)
-);
-
-export const PATTERN = new MetadataKey<string[]>(
-    () => [],
-    (prev, next) => [...prev, ...next]
+export const PATTERN = new MetadataKey<(string | undefined)[]>(
+  () => [],
+  (prev, next) => [...prev, ...next],
 );

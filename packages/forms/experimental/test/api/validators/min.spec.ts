@@ -133,9 +133,47 @@ describe('min validator', () => {
       expect(f.age().errors()).toEqual([{kind: 'min'}]);
       expect(f.age().metadata(MIN)()).toBe(30);
     });
+
+    it('merges two mins _dynamically_ ignores undefined', () => {
+      const cat = signal({name: 'pirojok-the-cat', age: 3});
+      const minSignal = signal<number | undefined>(15);
+      const minSignal2 = signal<number | undefined>(10);
+      const f = form(
+        cat,
+        (p) => {
+          min(p.age, minSignal);
+          min(p.age, minSignal2);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.age().errors()).toEqual([{kind: 'min'}, {kind: 'min'}]);
+      minSignal.set(undefined);
+      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      minSignal2.set(undefined);
+      expect(f.age().errors()).toEqual([]);
+    });
   });
 
   describe('dynamic values', () => {
+    it('disables validation on undefined', () => {
+      const cat = signal({name: 'pirojok-the-cat', age: 4});
+      const minValue = signal<number | undefined>(5);
+      const f = form(
+        cat,
+        (p) => {
+          min(p.age, minValue);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      minValue.set(undefined);
+      expect(f.age().errors()).toEqual([]);
+      minValue.set(5);
+      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+    });
+
     it('handles dynamic value', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 4});
       const minValue = signal(5);

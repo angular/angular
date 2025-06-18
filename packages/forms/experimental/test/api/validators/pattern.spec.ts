@@ -73,4 +73,37 @@ describe('pattern validator', () => {
       expect(f.name().metadata(PATTERN)()).toEqual(['pir.*jok', 'pelmeni']);
     });
   });
+
+  describe('dynamic values', () => {
+    it('updates validation result as the string pattern changes', () => {
+      const patternSignal = signal<string | undefined>('pir.*jok');
+      const cat = signal({name: 'pelmeni-the-cat'});
+      const f = form(
+        cat,
+        (p) => {
+          pattern(p.name, patternSignal);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.name().errors()).toEqual([
+        jasmine.objectContaining({
+          kind: 'pattern',
+        }),
+      ]);
+
+      patternSignal.set('p.*');
+      expect(f.name().errors()).toEqual([]);
+      patternSignal.set('meow');
+      expect(f.name().errors()).toEqual([
+        jasmine.objectContaining({
+          kind: 'pattern',
+        }),
+      ]);
+
+      patternSignal.set(undefined);
+
+      expect(f.name().errors()).toEqual([]);
+    });
+  });
 });

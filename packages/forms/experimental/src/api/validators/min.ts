@@ -20,14 +20,19 @@ import {MIN} from '../metadata';
  */
 export function min(
   path: FieldPath<number>,
-  minValue: number | LogicFn<number, number>,
+  minValue: number | LogicFn<number | undefined, number | undefined>,
   config?: BaseValidatorConfig<number>,
 ) {
   const reactiveMinValue = typeof minValue === 'number' ? () => minValue : minValue;
   metadata(path, MIN, reactiveMinValue);
   validate(path, (ctx) => {
     // TODO(kirjs): Do we need to handle Null, parseFloat, NaN?
-    if (ctx.value() < reactiveMinValue(ctx)) {
+    const value = reactiveMinValue(ctx);
+    if (value === undefined) {
+      return undefined;
+    }
+
+    if (ctx.value() < value) {
       if (config?.errors) {
         return config.errors(ctx);
       } else {
