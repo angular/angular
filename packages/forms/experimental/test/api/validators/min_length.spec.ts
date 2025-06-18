@@ -177,6 +177,22 @@ describe('minLength validator', () => {
       expect(f.text().errors()).toEqual([]);
     });
 
+    it('disables validation on undefined value', () => {
+      const data = signal({text: 'abcd'});
+      const dynamicMinLength = signal<number | undefined>(5);
+      const f = form(
+        data,
+        (p) => {
+          minLength(p.text, dynamicMinLength);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
+      dynamicMinLength.set(undefined);
+      expect(f.text().errors()).toEqual([]);
+    });
+
     it('handles dynamic minLength value based on other field', () => {
       const data = signal({text: 'short', category: 'A'});
       const f = form(

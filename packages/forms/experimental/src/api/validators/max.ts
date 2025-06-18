@@ -20,7 +20,7 @@ import {BaseValidatorConfig} from './types';
  */
 export function max(
   path: FieldPath<number>,
-  maxValue: number | LogicFn<number, number>,
+  maxValue: number | LogicFn<number | undefined, number | undefined>,
   config?: BaseValidatorConfig<number>,
 ) {
   const reactiveMaxValue = typeof maxValue === 'number' ? () => maxValue : maxValue;
@@ -28,7 +28,12 @@ export function max(
   metadata(path, MAX, reactiveMaxValue);
   validate(path, (ctx) => {
     // TODO(kirjs): Do we need to handle Null, parseFloat, NaN?
-    if (ctx.value() > reactiveMaxValue(ctx)) {
+    const value = reactiveMaxValue(ctx);
+
+    if (value === undefined) {
+      return undefined;
+    }
+    if (ctx.value() > value) {
       if (config?.errors) {
         return config.errors(ctx);
       } else {

@@ -32,10 +32,28 @@ import {
   illegallySetComponentInput as illegallySetInputSignal,
 } from '../illegal';
 import {InteropNgControl} from './interop_ng_control';
+import {MAX, MetadataKey, MIN} from '@angular/forms/experimental';
+
+function extracted(input: HTMLInputElement, field: Field<unknown>) {
+  const setMetadataAttribute = (key: MetadataKey<any>, attr: string) => {
+    const value = field().metadata(key)();
+    if (value !== undefined && value != null) {
+      input.setAttribute(attr, value.toString());
+    }
+  };
+
+  setMetadataAttribute(MIN, 'min');
+  setMetadataAttribute(MAX, 'max');
+}
 
 @Directive({
   selector: '[control]',
-  providers: [{provide: NgControl, useFactory: () => inject(Control).ngControl}],
+  providers: [
+    {
+      provide: NgControl,
+      useFactory: () => inject(Control).ngControl,
+    },
+  ],
 })
 export class Control<T> {
   readonly injector = inject(Injector);
@@ -59,21 +77,23 @@ export class Control<T> {
     const cmp = illegallyGetComponentInstance(injector);
     if (this.el.nativeElement instanceof HTMLInputElement) {
       // Bind our field to an <input>
-      const i = this.el.nativeElement;
-      const isCheckbox = i.type === 'checkbox';
+      const input = this.el.nativeElement;
+      const isCheckbox = input.type === 'checkbox';
 
-      i.addEventListener('input', () => {
-        this.state().value.set((!isCheckbox ? i.value : i.checked) as T);
+      extracted(input, this.field());
+
+      input.addEventListener('input', () => {
+        this.state().value.set((!isCheckbox ? input.value : input.checked) as T);
         this.state().markAsDirty();
       });
-      i.addEventListener('blur', () => this.state().markAsTouched());
+      input.addEventListener('blur', () => this.state().markAsTouched());
 
       effect(
         () => {
           if (!isCheckbox) {
-            i.value = this.state().value() as string;
+            input.value = this.state().value() as string;
           } else {
-            i.checked = this.state().value() as boolean;
+            input.checked = this.state().value() as boolean;
           }
         },
         {injector},

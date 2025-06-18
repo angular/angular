@@ -137,6 +137,33 @@ describe('max validator', () => {
       expect(f.age().errors()).toEqual([{kind: 'max'}]);
       expect(f.age().metadata(MAX)()).toBe(2);
     });
+
+    it('merges two maxes _dynamically_ ignores undefined', () => {
+      const cat = signal({name: 'pirojok-the-cat', age: 20}); // Age is higher than both maxes
+      const maxSignal = signal<number | undefined>(10);
+      const maxSignal2 = signal<number | undefined>(15);
+      const f = form(
+        cat,
+        (p) => {
+          max(p.age, maxSignal);
+          max(p.age, maxSignal2);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Initially, age 20 is greater than both 10 and 15
+      expect(f.age().errors()).toEqual([{kind: 'max'}, {kind: 'max'}]);
+
+      // Set the first max threshold to undefined
+      maxSignal.set(undefined);
+      // Now, age 20 is only greater than 15
+      expect(f.age().errors()).toEqual([{kind: 'max'}]);
+
+      // Set the second max threshold to undefined
+      maxSignal2.set(undefined);
+      // No max constraints are active
+      expect(f.age().errors()).toEqual([]);
+    });
   });
 
   describe('dynamic values', () => {
@@ -154,6 +181,24 @@ describe('max validator', () => {
       expect(f.age().errors()).toEqual([{kind: 'max'}]);
       maxValue.set(7);
       expect(f.age().errors()).toEqual([]);
+    });
+
+    it('disables validation on undefined', () => {
+      const cat = signal({name: 'pirojok-the-cat', age: 6});
+      const maxValue = signal<number | undefined>(5);
+      const f = form(
+        cat,
+        (p) => {
+          max(p.age, maxValue);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.age().errors()).toEqual([{kind: 'max'}]);
+      maxValue.set(undefined);
+      expect(f.age().errors()).toEqual([]);
+      maxValue.set(5);
+      expect(f.age().errors()).toEqual([{kind: 'max'}]);
     });
 
     it('handles dynamic value based on other field', () => {
