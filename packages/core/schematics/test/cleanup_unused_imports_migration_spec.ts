@@ -306,4 +306,27 @@ describe('cleanup unused imports schematic', () => {
     expect(contents).toContain(' imports: [/* Start */ One/* End */],');
     expect(contents).toContain(`import {One} from './directives';`);
   });
+
+  it('should handle all items except the first one being removed', async () => {
+    writeFile(
+      'comp.ts',
+      `
+        import {Component} from '@angular/core';
+        import {One, Two, Three} from './directives';
+
+        @Component({
+          imports: [Three, One, Two],
+          template: '<div three></div>',
+        })
+        export class Comp {}
+      `,
+    );
+
+    await runMigration();
+
+    const contents = tree.readContent('comp.ts');
+    expect(logs.pop()).toBe('Removed 2 imports in 1 file');
+    expect(contents).toContain('imports: [Three],');
+    expect(contents).toContain(`import {Three} from './directives';`);
+  });
 });
