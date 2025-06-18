@@ -34,18 +34,6 @@ import {
 import {InteropNgControl} from './interop_ng_control';
 import {MAX, MetadataKey, MIN} from '@angular/forms/experimental';
 
-function extracted(input: HTMLInputElement, field: Field<unknown>) {
-  const setMetadataAttribute = (key: MetadataKey<any>, attr: string) => {
-    const value = field().metadata(key)();
-    if (value !== undefined && value != null) {
-      input.setAttribute(attr, value.toString());
-    }
-  };
-
-  setMetadataAttribute(MIN, 'min');
-  setMetadataAttribute(MAX, 'max');
-}
-
 @Directive({
   selector: '[control]',
   providers: [
@@ -79,8 +67,6 @@ export class Control<T> {
       // Bind our field to an <input>
       const input = this.el.nativeElement;
       const isCheckbox = input.type === 'checkbox';
-
-      extracted(input, this.field());
 
       input.addEventListener('input', () => {
         this.state().value.set((!isCheckbox ? input.value : input.checked) as T);
