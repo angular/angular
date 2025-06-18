@@ -46,8 +46,17 @@ export class FieldPathNode {
   }
 
   mergeIn(other: FieldRootPathNode, predicate?: Predicate) {
-    for (const [root, pathKeys] of other.subroots) {
-      this.root.subroots.set(root, [...this.keys, ...pathKeys]);
+    // Copy over the prefix lists for each subroot in the other node.
+    for (const [subroot, prefixes] of other.subroots) {
+      // Initialize the prefix list for this node if it doesn't exist yet.
+      if (!this.root.subroots.has(subroot)) {
+        this.root.subroots.set(subroot, []);
+      }
+      // Copy over the prefixes from the other subroot into our list.
+      const existingPrefixes = this.root.subroots.get(subroot)!;
+      for (const prefix of prefixes) {
+        existingPrefixes.push([...this.keys, ...prefix]);
+      }
     }
     this.logic.mergeIn(other.logic, predicate);
   }
@@ -58,7 +67,19 @@ export class FieldPathNode {
 }
 
 export class FieldRootPathNode extends FieldPathNode {
-  readonly subroots = new Map<FieldPathNode, PropertyKey[]>([[this, []]]);
+  /**
+   * Maps each sub-FieldRootPathNode to all of the prefixes for which that path has been applied.
+   * It is possible for it to map to multiple prefixes, since a precompiled schema can be applied
+   * to multiple different properties within the schema. For example:
+   *
+   * const addrSchema = schema<Address>(...)
+   * const orderSchema = shcema<Order>(p => {
+   *   apply(p.shippingAddress, addrSchema);
+   *   apply(p.billingAddress, addrScheam);
+   * });
+   */
+  // TODO: Might need to keep the prefixes sorted from longest to shortest?
+  readonly subroots = new Map<FieldRootPathNode, PropertyKey[][]>([[this, [[]]]]);
 
   constructor() {
     super([], LogicNodeBuilder.newRoot(), undefined);

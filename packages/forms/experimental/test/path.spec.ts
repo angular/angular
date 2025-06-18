@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FieldPath, SchemaFn, validate, apply, applyEach, form, applyWhen} from '../public_api';
+import {apply, applyEach, applyWhen, FieldPath, form, SchemaFn, validate} from '../public_api';
 import {FieldPathNode, FieldRootPathNode} from '../src/path_node';
 
 describe('path', () => {
@@ -43,11 +43,21 @@ describe('path', () => {
       );
       const topRoots = (FieldPathNode.unwrapFieldPath(rootPath) as FieldRootPathNode).subroots;
       expect(topRoots.size).toBe(5);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[0]))).toEqual([]);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[1]))).toEqual([]);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[2]))).toEqual(['a']);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[3]))).toEqual(['a', 'b']);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[4]))).toEqual(['a', 'b', 'c']);
+      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[0]) as FieldRootPathNode)).toEqual([
+        [],
+      ]);
+      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[1]) as FieldRootPathNode)).toEqual([
+        [],
+      ]);
+      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[2]) as FieldRootPathNode)).toEqual([
+        ['a'],
+      ]);
+      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[3]) as FieldRootPathNode)).toEqual([
+        ['a', 'b'],
+      ]);
+      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[4]) as FieldRootPathNode)).toEqual([
+        ['a', 'b', 'c'],
+      ]);
     });
   });
 

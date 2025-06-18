@@ -28,9 +28,13 @@ export class FieldNodeContext implements FieldContext<unknown> {
         if (!(this.node.structure.root.structure.logicPath instanceof FieldRootPathNode)) {
           throw Error('Expected root of FieldNode tree to have a FieldRootPathNode.');
         }
-        const prefix = this.node.structure.root.structure.logicPath.subroots.get(
+        // All prefixes for which the target path logic has been applied.
+        const prefixes = this.node.structure.root.structure.logicPath.subroots.get(
           targetPathNode.root,
         );
+        // Find the prefix which is a prefix of the current path.
+        const prefix = prefixes?.find((p) => isPrefixOf(p, currentPathKeys));
+
         if (!prefix) {
           throw Error('Path is not part of this field tree.');
         }
@@ -43,7 +47,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
 
         // Firstly, find the length of the shared prefix between the two paths. In our example, this
         // is the prefix [A, B], so we would expect a `sharedPrefixLength` of 2.
-        const sharedPrefixLength = lengthOfSharedPrefix(currentPathKeys, targetPathNode.keys);
+        const sharedPrefixLength = lengthOfSharedPrefix(currentPathKeys, targetPathKeys);
 
         // Walk up the graph until we arrive at the common ancestor, which could be the root node if
         // there is no shared prefix. In our example, this will require 2 up steps, navigating from
@@ -108,4 +112,16 @@ function lengthOfSharedPrefix(
     sharedPrefixLength++;
   }
   return sharedPrefixLength;
+}
+
+function isPrefixOf(prefix: readonly PropertyKey[], path: readonly PropertyKey[]): boolean {
+  if (prefix.length > path.length) {
+    return false;
+  }
+  for (let i = 0; i < prefix.length; i++) {
+    if (prefix[i] !== path[i] && prefix[i] !== DYNAMIC) {
+      return false;
+    }
+  }
+  return true;
 }
