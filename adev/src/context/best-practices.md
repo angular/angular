@@ -7,32 +7,32 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 ## Angular Best Practices
 - Always use standalone components over NgModules
-- Don't use explicit standalone: true (it is implied by default)
+- Don't use explicit `standalone: true` (it is implied by default)
 - Use signals for state management
 - Implement lazy loading for feature routes
-- Use NgOptimizedImage for all static images.
+- Use `NgOptimizedImage` for all static images.
 
 ## Components
 - Keep components small and focused on a single responsibility
-- Use input() and output() functions instead of decorators
-- Use computed() for derived state
+- Use `input()` and `output()` functions instead of decorators
+- Use `computed()` for derived state
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
 - Prefer inline templates for small components
 - Prefer Reactive forms instead of Template-driven ones
-- Do NOT use "ngClass" (NgClass), use "class" bindings instead
-- DO NOT use "ngStyle" (NgStyle), use "style" bindings instead
+- Do NOT use `ngClass`, use `class` bindings instead
+- DO NOT use `ngStyle`, use `style` bindings instead
 
 ## State Management
 - Use signals for local component state
-- Use computed() for derived state
+- Use `computed()` for derived state
 - Keep state transformations pure and predictable
 
 ## Templates
 - Keep templates simple and avoid complex logic
-- Use native control flow (@if, @for, @switch) instead of *ngIf, *ngFor, *ngSwitch
+- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
 - Use the async pipe to handle observables
 
 ## Services
 - Design services around a single responsibility
-- Use the providedIn: 'root' option for singleton services
-- Use the inject() function instead of constructor injection
+- Use the `providedIn: 'root'` option for singleton services
+- Use the `inject()` function instead of constructor injection
