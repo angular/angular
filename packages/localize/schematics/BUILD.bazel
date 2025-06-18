@@ -1,6 +1,14 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//tools:defaults.bzl", "pkg_npm")
 
 package(default_visibility = ["//visibility:public"])
+
+copy_to_bin(
+    name = "collection_json",
+    srcs = [
+        "collection.json",
+    ],
+)
 
 filegroup(
     name = "package_assets",
