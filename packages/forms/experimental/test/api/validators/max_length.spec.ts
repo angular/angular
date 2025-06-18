@@ -176,6 +176,21 @@ describe('maxLength validator', () => {
       dynamicMaxLength.set(7);
       expect(f.text().errors()).toEqual([]);
     });
+    it('disables validation on undefined value', () => {
+      const data = signal({text: 'abcdef'});
+      const dynamicMaxLength = signal<number | undefined>(5);
+      const f = form(
+        data,
+        (p) => {
+          maxLength(p.text, dynamicMaxLength);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.text().errors()).toEqual([{kind: 'maxLength'}]);
+      dynamicMaxLength.set(undefined);
+      expect(f.text().errors()).toEqual([]);
+    });
 
     it('handles dynamic maxLength value based on other field', () => {
       const data = signal({text: 'longtextvalue', category: 'A'});

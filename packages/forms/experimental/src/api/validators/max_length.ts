@@ -20,14 +20,19 @@ import {MAX_LENGTH} from '../metadata';
  */
 export function maxLength(
   path: FieldPath<ValueWithLength>,
-  maxLength: number | LogicFn<ValueWithLength, number>,
+  maxLength: number | LogicFn<ValueWithLength, number | undefined>,
   config?: BaseValidatorConfig<ValueWithLength>,
 ) {
   const reactiveMaxLengthValue = typeof maxLength === 'number' ? () => maxLength : maxLength;
   metadata(path, MAX_LENGTH, reactiveMaxLengthValue);
 
   validate(path, (ctx) => {
-    if (ctx.value().length > reactiveMaxLengthValue(ctx)) {
+    const value = reactiveMaxLengthValue(ctx);
+    if (value === undefined) {
+      return undefined;
+    }
+
+    if (ctx.value().length > value) {
       if (config?.errors) {
         return config.errors(ctx);
       } else {
