@@ -31,6 +31,8 @@ def jasmine_test(name, data = [], fixed_args = [], **kwargs):
 
     all_fixed_args = [arg.format(root = relative_to_root) for arg in all_fixed_args]
 
+    size = kwargs.pop("size", "medium")
+
     _jasmine_test(
         name = name,
         node_modules = "//:node_modules",
@@ -43,5 +45,6 @@ def jasmine_test(name, data = [], fixed_args = [], **kwargs):
             "//:node_modules/source-map-support",
         ],
         node_options = ["--import", "%s/tools/bazel/node_loader/index.mjs" % relative_to_root],
+        size = size,
         **kwargs
     )

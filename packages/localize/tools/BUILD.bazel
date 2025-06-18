@@ -18,10 +18,6 @@ ts_project(
             "**/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/compiler-cli/private",
-    ],
     visibility = ["//packages/localize/tools:__subpackages__"],
     deps = [
         "//:node_modules/@babel/core",
@@ -29,6 +25,8 @@ ts_project(
         "//:node_modules/@types/node",
         "//:node_modules/@types/yargs",
         "//:node_modules/tinyglobby",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/private:private_rjs",
         "//packages/localize:localize_rjs",
     ],
 )

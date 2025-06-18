@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "esbuild", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "esbuild")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -51,14 +51,12 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test",
     data = [
-        "//packages/localize/schematics:collection.json",
-    ],
-    deps = [
         ":assets",
-        ":ng-add",
-        ":test_lib",
+        ":ng-add_rjs",
+        ":test_lib_rjs",
+        "//packages/localize/schematics:collection_json",
     ],
 )
