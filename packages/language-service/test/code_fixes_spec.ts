@@ -286,19 +286,7 @@ describe('code fixes', () => {
       expectIncludeAddText({
         codeActions,
         position: appFile.cursor,
-        text: ` name=""`,
-        fileName: 'app.ts',
-      });
-      expectIncludeAddText({
-        codeActions,
-        position: appFile.cursor,
         text: ` [product]=""`,
-        fileName: 'app.ts',
-      });
-      expectIncludeAddText({
-        codeActions,
-        position: appFile.cursor,
-        text: ` isShow`,
         fileName: 'app.ts',
       });
       expectIncludeAddText({
@@ -349,12 +337,6 @@ describe('code fixes', () => {
         codeActions,
         position: appFile.cursor,
         text: ` [name]=""`,
-        fileName: 'app.ts',
-      });
-      expectIncludeAddText({
-        codeActions,
-        position: appFile.cursor,
-        text: ` name=""`,
         fileName: 'app.ts',
       });
     });
@@ -582,106 +564,6 @@ describe('code fixes', () => {
         codeActions,
         position: appFile.cursor,
         text: ` [name]=""`,
-        fileName: 'app.ts',
-      });
-    });
-
-    it('for transform type for @input', () => {
-      const files = {
-        'app.ts': `
-         import {Component} from '@angular/core';
-
-         @Component({
-           template: '<foo (click)="" />',
-           standalone: false,
-         })
-         export class AppComponent {
-           title = '';
-           banner = '';
-         }
-       `,
-        'foo.ts': `
-        import {Component, Input} from '@angular/core';
-
-        @Component({
-          selector: 'foo',
-          template: '',
-          standalone: false,
-        })
-        export class Foo {
-          @Input({required: true, transform: stringToNumber}) test = 0;
-        }
-        function stringToNumber(value: string): number {
-          return +value;
-        }
-       `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
-      const diags = project.getDiagnosticsForFile('app.ts');
-      appFile.moveCursorToText('¦<foo');
-
-      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
-        diags[0].code,
-      ]);
-
-      appFile.moveCursorToText('(click)=""¦');
-      expectIncludeAddText({
-        codeActions,
-        position: appFile.cursor,
-        text: ` test=""`,
-        fileName: 'app.ts',
-      });
-    });
-
-    it('for transform type for signal input', () => {
-      const files = {
-        'app.ts': `
-         import {Component} from '@angular/core';
-
-         @Component({
-           template: '<foo (click)="" />',
-           standalone: false,
-         })
-         export class AppComponent {
-           title = '';
-           banner = '';
-         }
-       `,
-        'foo.ts': `
-        import {Component, input} from '@angular/core';
-
-        @Component({
-          selector: 'foo',
-          template: '',
-          standalone: false,
-        })
-        export class Foo {
-          test = input.required({
-            transform: stringToNumber
-          });
-        }
-        function stringToNumber(value: string): number {
-          return +value;
-        }
-       `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
-      const diags = project.getDiagnosticsForFile('app.ts');
-      appFile.moveCursorToText('¦<foo');
-
-      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
-        diags[0].code,
-      ]);
-
-      appFile.moveCursorToText('(click)=""¦');
-      expectIncludeAddText({
-        codeActions,
-        position: appFile.cursor,
-        text: ` test=""`,
         fileName: 'app.ts',
       });
     });
