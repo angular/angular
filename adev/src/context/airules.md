@@ -68,10 +68,10 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 
 ### Angular Best Practices
 - Always use standalone components over `NgModules`
-- Don't use explicit standalone: true (it is implied by default)
+- Don't use explicit `standalone: true` (it is implied by default)
 - Use signals for state management
 - Implement lazy loading for feature routes
-- Use NgOptimizedImage for all static images.
+- Use `NgOptimizedImage` for all static images.
 
 ### Components
 - Keep components small and focused on a single responsibility
@@ -81,8 +81,8 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
 - Prefer inline templates for small components
 - Prefer Reactive forms instead of Template-driven ones
-- Do NOT use "ngClass" (NgClass), use "class" bindings instead, for context: https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
-- DO NOT use "ngStyle" (NgStyle), use "style" bindings instead, for context: https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
+- Do NOT use `ngClass`, use `class` bindings instead, for context: https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
+- DO NOT use `ngStyle`, use `style` bindings instead, for context: https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
 
 ### State Management
 - Use signals for local component state
@@ -91,7 +91,7 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 
 ### Templates
 - Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of *ngIf, *ngFor, *ngSwitch
+- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
 - Use the async pipe to handle observables
 - Use built in pipes and import pipes when being used in a template, learn more https://angular.dev/guide/templates/pipes#
 
