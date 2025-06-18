@@ -20,7 +20,6 @@ import {ErrorCode, FileSystem, ngErrorCode} from '@angular/compiler-cli';
 import {DiagnosticCategoryLabel} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
-import {getLeadingLineWhitespaceOfNode} from '../../utils/tsurge/helpers/ast/leading_space';
 
 /** Data produced by the migration for each compilation unit. */
 export interface CompilationUnitData {
@@ -306,9 +305,13 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
         replacements.push(
           new Replacement(
             projectFile(sourceFile, info),
-            getArrayElementRemovalUpdate(node, parent, sourceText),
+            getArrayElementRemovalUpdate(node, sourceText),
           ),
         );
+      });
+
+      stripTrailingSameLineCommas(parent, toRemove, sourceText)?.forEach((update) => {
+        replacements.push(new Replacement(projectFile(sourceFile, info), update));
       });
     });
 
@@ -333,11 +336,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
 }
 
 /** Generates a `TextUpdate` for the removal of an array element. */
-function getArrayElementRemovalUpdate(
-  node: ts.Expression,
-  parent: ts.ArrayLiteralExpression,
-  sourceText: string,
-): TextUpdate {
+function getArrayElementRemovalUpdate(node: ts.Expression, sourceText: string): TextUpdate {
   let position = node.getStart();
   let end = node.getEnd();
   let toInsert = '';
@@ -358,25 +357,49 @@ function getArrayElementRemovalUpdate(
     }
   }
 
-  // If we're removing the last element in the array, adjust the starting offset so that
-  // it includes the previous comma on the same line. This avoids turning something like
-  // `[One, Two, Three]` into `[One,]`. We only do this within the same like, because
-  // trailing comma at the end of the line is fine.
-  if (parent.elements[parent.elements.length - 1] === node) {
-    for (let i = position - 1; i >= 0; i--) {
-      const char = sourceText[i];
+  return new TextUpdate({position, end, toInsert});
+}
+
+/** Returns `TextUpdate`s that will remove any leftover trailing commas on the same line. */
+function stripTrailingSameLineCommas(
+  node: ts.ArrayLiteralExpression,
+  toRemove: Set<ts.Expression>,
+  sourceText: string,
+) {
+  let updates: TextUpdate[] | null = null;
+
+  for (let i = 0; i < node.elements.length; i++) {
+    // Skip over elements that are being removed already.
+    if (toRemove.has(node.elements[i])) {
+      continue;
+    }
+
+    // An element might have a trailing comma if all elements after it have been removed.
+    const mightHaveTrailingComma = node.elements.slice(i + 1).every((e) => toRemove.has(e));
+
+    if (!mightHaveTrailingComma) {
+      continue;
+    }
+
+    const position = node.elements[i].getEnd();
+    let end = position;
+
+    // If the item might have a trailing comma, start looking after it until we hit a line break.
+    for (let charIndex = position; charIndex < node.getEnd(); charIndex++) {
+      const char = sourceText[charIndex];
+
       if (char === ',' || char === ' ') {
-        position--;
+        end++;
       } else {
-        if (whitespaceOrLineFeed.test(char)) {
-          // Replace the node with its leading whitespace to preserve the formatting.
-          // This only needs to happen if we're breaking on a newline.
-          toInsert = getLeadingLineWhitespaceOfNode(node);
+        if (char !== '\n' && position !== end) {
+          updates ??= [];
+          updates.push(new TextUpdate({position, end, toInsert: ''}));
         }
+
         break;
       }
     }
   }
 
-  return new TextUpdate({position, end, toInsert});
+  return updates;
 }
