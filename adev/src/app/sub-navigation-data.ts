@@ -78,6 +78,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Start coding! 🚀',
         path: 'tutorials/learn-angular',
       },
+      {
+        label: 'Using AI for Development',
+        path: 'ai/develop-with-ai',
+        contentPath: 'ai/develop-with-ai',
+      },
     ],
   },
   {
