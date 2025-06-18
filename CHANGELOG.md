@@ -1,3 +1,18 @@
+<a name="20.0.4"></a>
+# 20.0.4 (2025-06-18)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e343cdfb86](https://github.com/angular/angular/commit/e343cdfb86043e10d08aa4031b7b8d59342b37e5) | fix | Fixes template outlet hydration ([#62012](https://github.com/angular/angular/pull/62012)) |
+| [67f657e4a3](https://github.com/angular/angular/commit/67f657e4a3b27b968277fa63c9455e44b3e2259f) | fix | inject `APP_ID` before injector is destroyed ([#61885](https://github.com/angular/angular/pull/61885)) |
+| [ae212b51ee](https://github.com/angular/angular/commit/ae212b51eef6779e70f076110085f35b684234c6) | fix | Wrap ErrorEvent with no error property ([#62081](https://github.com/angular/angular/pull/62081)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [82bf9848a1](https://github.com/angular/angular/commit/82bf9848a154c14f7100a1b29c5ef6aabc0a6c57) | fix | more robust trailing comma removal in unused imports migration ([#62118](https://github.com/angular/angular/pull/62118)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.3"></a>
 # 20.0.3 (2025-06-11)
 
