@@ -1,5 +1,5 @@
-load("//packages/zone.js:tools.bzl", "generate_dist")
 load("//packages/zone.js:bundles.bzl", "BUNDLES_ENTRY_POINTS")
+load("//packages/zone.js:tools.bzl", "generate_dist")
 
 generate_dist(
     bundles = BUNDLES_ENTRY_POINTS.items(),

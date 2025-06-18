@@ -1,5 +1,5 @@
-load("@npm//typescript:index.bzl", "tsc")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+load("@npm//typescript:index.bzl", "tsc")
 
 package(default_visibility = ["//packages/localize/tools/test/extract/integration:__pkg__"])
 

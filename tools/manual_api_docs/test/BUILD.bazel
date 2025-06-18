@@ -1,5 +1,5 @@
-load("//tools/manual_api_docs:generate_element_api_json.bzl", "generate_element_api_json")
 load("//tools/manual_api_docs:generate_block_api_json.bzl", "generate_block_api_json")
+load("//tools/manual_api_docs:generate_element_api_json.bzl", "generate_element_api_json")
 
 generate_element_api_json(
     name = "element_test",
