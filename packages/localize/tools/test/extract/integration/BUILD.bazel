@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
 ts_project(
     name = "test_lib",
@@ -7,32 +6,27 @@ ts_project(
     srcs = glob(
         ["**/*_spec.ts"],
     ),
-    interop_deps = [
-        "//packages:types",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/logging",
-        "//packages/compiler-cli/src/ngtsc/logging/testing",
-        "//packages/compiler-cli/src/ngtsc/testing",
-    ],
     deps = [
+        "//packages:types_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
         "//packages/localize/tools:tools_rjs",
         "//packages/localize/tools/test:test_lib_rjs",
         "//packages/localize/tools/test/helpers:helpers_rjs",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "integration",
-    bootstrap = ["//tools/testing:node_no_angular"],
     data = [
+        ":test_lib_rjs",
+        "//:node_modules/tinyglobby",
+        "//:node_modules/yargs",
         "//packages/localize/tools/test/extract/integration/test_files",
         "//packages/localize/tools/test/extract/integration/test_files:compile_es2015",
         "//packages/localize/tools/test/extract/integration/test_files:compile_es5",
-    ],
-    deps = [
-        ":test_lib",
-        "@npm//tinyglobby",
-        "@npm//yargs",
     ],
 )

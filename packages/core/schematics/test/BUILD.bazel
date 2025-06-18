@@ -33,5 +33,5 @@ jasmine_test(
         "//packages/core/schematics/ng-generate/signals:static_files",
         "//packages/core/schematics/ng-generate/standalone-migration:static_files",
     ],
-    shard_count = 4,
+    shard_count = 8,
 )
