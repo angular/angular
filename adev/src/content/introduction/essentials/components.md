@@ -60,7 +60,7 @@ export class UserProfile {
 
 ```angular-html
 <!-- user-profile.html -->
-<h1>Use profile</h1>
+<h1>User profile</h1>
 <p>This is the user profile page</p>
 ```
 
