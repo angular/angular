@@ -67,6 +67,19 @@ $transition: 200ms linear;
     .banners-layer {
       z-index: 10;
 
+      .adev-banner-container {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        position: absolute;
+        transition:
+          background 0.3s ease,
+          border 0.3s ease,
+          transform $transition;
+        top: var(--layout-padding);
+        left: calc(var(--layout-padding) + var(--primary-nav-width));
+      }
+
       .adev-banner {
         display: flex;
         align-items: center;
@@ -74,18 +87,11 @@ $transition: 200ms linear;
         gap: 0.5rem;
         border: 1px solid var(--senary-contrast);
         background: var(--page-background);
-        position: absolute;
         border-radius: 0.25rem;
         padding: 10px;
         max-width: 100%;
         width: fit-content;
         box-sizing: border-box;
-        transition:
-          background 0.3s ease,
-          border 0.3s ease,
-          transform $transition;
-        top: var(--layout-padding);
-        left: calc(var(--layout-padding) + var(--primary-nav-width));
 
         @include mq.for-tablet-landscape-down {
           & {
@@ -331,10 +337,12 @@ $transition: 200ms linear;
           }
 
           @mixin meteor-gradient($startColor, $endColor) {
-            background: linear-gradient(calc(var(--math-pi) + var(--meteor-tilt-angle)),
-                $startColor 0,
-                $endColor 66%,
-                transparent 100%);
+            background: linear-gradient(
+              calc(var(--math-pi) + var(--meteor-tilt-angle)),
+              $startColor 0,
+              $endColor 66%,
+              transparent 100%
+            );
           }
 
           &.type-1::after {
@@ -389,7 +397,7 @@ $transition: 200ms linear;
         transform: scale(1);
       }
 
-      .build-for-everyone-layer>.title {
+      .build-for-everyone-layer > .title {
         background-position-x: 0;
       }
     }
