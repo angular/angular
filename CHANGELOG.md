@@ -1,3 +1,19 @@
+<a name="20.1.0-next.2"></a>
+# 20.1.0-next.2 (2025-06-18)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2e0c98bd3f](https://github.com/angular/angular/commit/2e0c98bd3f2efd1181429b486dd1cebe14385c18) | feat | support bindings in TestBed ([#62040](https://github.com/angular/angular/pull/62040)) |
+| [8424b3bcd5](https://github.com/angular/angular/commit/8424b3bcd5b9c78f37dc8ba636c87775937bcc03) | fix | Fixes template outlet hydration ([#61989](https://github.com/angular/angular/pull/61989)) |
+| [31da435854](https://github.com/angular/angular/commit/31da435854379e2a97b9b746751617e9979f01b0) | fix | inject `APP_ID` before injector is destroyed ([#61885](https://github.com/angular/angular/pull/61885)) |
+| [572c32a038](https://github.com/angular/angular/commit/572c32a03876a5dbb6d0400ab0a217541407a0f9) | fix | Wrap ErrorEvent with no error property ([#62081](https://github.com/angular/angular/pull/62081)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [34adfdea82](https://github.com/angular/angular/commit/34adfdea82997c43325e541c016c5c5d6f6f4a31) | fix | more robust trailing comma removal in unused imports migration ([#62118](https://github.com/angular/angular/pull/62118)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.4"></a>
 # 20.0.4 (2025-06-18)
 ### core
