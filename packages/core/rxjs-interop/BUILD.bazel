@@ -15,6 +15,7 @@ ng_project(
     ),
     interop_deps = [
         "//packages/core",
+        "//packages/common/http",
     ],
     deps = [
         "//:node_modules/rxjs",

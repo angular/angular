@@ -20,6 +20,19 @@ import {
 } from '../../src/core';
 import {Observable, Subscription} from 'rxjs';
 import {encapsulateResourceError} from '../../src/resource/resource';
+import {HttpErrorResponse} from '@angular/common/http';
+
+/**
+ * Like `encapsulateResourceError` but additionally encapsulates the `HttpErrorResponse`
+ * @param error
+ */
+export function encapsulateRxResourceError(error: unknown): Error {
+  if (error instanceof HttpErrorResponse) {
+    return error;
+  }
+
+  return encapsulateResourceError(error);
+}
 
 /**
  * Like `ResourceOptions` but uses an RxJS-based `loader`.
@@ -85,7 +98,7 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
       sub = streamFn(params).subscribe({
         next: (value) => send({value}),
         error: (error: unknown) => {
-          send({error: encapsulateResourceError(error)});
+          send({error: encapsulateRxResourceError(error)});
           params.abortSignal.removeEventListener('abort', onAbort);
         },
         complete: () => {
