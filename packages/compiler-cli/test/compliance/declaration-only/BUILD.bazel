@@ -17,5 +17,5 @@ jasmine_test(
         "//packages/compiler-cli/test/compliance/test_cases",
         "//packages/core:npm_package",
     ],
-    shard_count = 2,
+    shard_count = 4,
 )
