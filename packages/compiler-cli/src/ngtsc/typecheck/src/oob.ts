@@ -65,8 +65,9 @@ export interface OutOfBandDiagnosticRecorder {
    *
    * @param id the type-checking ID of the template which contains the unknown pipe.
    * @param ast the `BindingPipe` invocation of the pipe which could not be found.
+   * @param isStandalone whether the host component is standalone.
    */
-  missingPipe(id: TypeCheckId, ast: BindingPipe): void;
+  missingPipe(id: TypeCheckId, ast: BindingPipe, isStandalone: boolean): void;
 
   /**
    * Reports usage of a pipe imported via `@Component.deferredImports` outside
@@ -238,13 +239,30 @@ export interface OutOfBandDiagnosticRecorder {
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
-  private _diagnostics: TemplateDiagnostic[] = [];
+  private readonly _diagnostics: TemplateDiagnostic[] = [];
 
   /**
    * Tracks which `BindingPipe` nodes have already been recorded as invalid, so only one diagnostic
    * is ever produced per node.
    */
-  private recordedPipes = new Set<BindingPipe>();
+  private readonly recordedPipes = new Set<BindingPipe>();
+
+  /** Common pipes that can be suggested to users. */
+  private readonly pipeSuggestions = new Map<string, string>([
+    ['async', 'AsyncPipe'],
+    ['uppercase', 'UpperCasePipe'],
+    ['lowercase', 'LowerCasePipe'],
+    ['json', 'JsonPipe'],
+    ['slice', 'SlicePipe'],
+    ['number', 'DecimalPipe'],
+    ['percent', 'PercentPipe'],
+    ['titlecase', 'TitleCasePipe'],
+    ['currency', 'CurrencyPipe'],
+    ['date', 'DatePipe'],
+    ['i18nPlural', 'I18nPluralPipe'],
+    ['i18nSelect', 'I18nSelectPipe'],
+    ['keyvalue', 'KeyValuePipe'],
+  ]);
 
   constructor(private resolver: TypeCheckSourceResolver) {}
 
@@ -269,13 +287,10 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
-  missingPipe(id: TypeCheckId, ast: BindingPipe): void {
+  missingPipe(id: TypeCheckId, ast: BindingPipe, isStandalone: boolean): void {
     if (this.recordedPipes.has(ast)) {
       return;
     }
-
-    const mapping = this.resolver.getTemplateSourceMapping(id);
-    const errorMsg = `No pipe found with name '${ast.name}'.`;
 
     const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, ast.nameSpan);
     if (sourceSpan === null) {
@@ -283,6 +298,25 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`,
       );
     }
+
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    let errorMsg = `No pipe found with name '${ast.name}'.`;
+
+    if (this.pipeSuggestions.has(ast.name)) {
+      const suggestedClassName = this.pipeSuggestions.get(ast.name)!;
+      const suggestedImport = '@angular/common';
+
+      if (isStandalone) {
+        errorMsg +=
+          `\nTo fix this, import the "${suggestedClassName}" class from "${suggestedImport}"` +
+          ` and add it to the "imports" array of the component.`;
+      } else {
+        errorMsg +=
+          `\nTo fix this, import the "${suggestedClassName}" class from "${suggestedImport}"` +
+          ` and add it to the "imports" array of the module declaring the component.`;
+      }
+    }
+
     this._diagnostics.push(
       makeTemplateDiagnostic(
         id,

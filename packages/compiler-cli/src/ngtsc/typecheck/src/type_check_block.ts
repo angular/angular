@@ -3163,7 +3163,7 @@ class TcbExpressionTranslator {
       let pipe: ts.Expression | null;
       if (pipeMeta === null) {
         // No pipe by that name exists in scope. Record this as an error.
-        this.tcb.oobRecorder.missingPipe(this.tcb.id, ast);
+        this.tcb.oobRecorder.missingPipe(this.tcb.id, ast, this.tcb.hostIsStandalone);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
         pipe = ANY_EXPRESSION;
