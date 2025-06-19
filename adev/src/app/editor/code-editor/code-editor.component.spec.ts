@@ -8,12 +8,12 @@
 
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {ApplicationRef, ChangeDetectorRef, signal} from '@angular/core';
+import {ChangeDetectorRef, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatTabGroupHarness} from '@angular/material/tabs/testing';
 import {By} from '@angular/platform-browser';
 import {provideNoopAnimations} from '@angular/platform-browser/animations';
-import {BehaviorSubject} from 'rxjs';
+import {NEVER} from 'rxjs';
 
 import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 
@@ -70,7 +70,11 @@ describe('CodeEditor', () => {
         {
           provide: EmbeddedTutorialManager,
           useValue: {
-            tutorialChanged$: new BehaviorSubject(true),
+            // We make sure to never emit so the
+            // setSelectedTabOnTutorialChange never resets the tab selection in an incontrolable way in unit tests.
+            // Changing this makes the tests flaky.
+            tutorialChanged$: NEVER,
+
             tutorialId: () => 'tutorial',
             tutorialFilesystemTree: () => ({'app.component.ts': ''}),
             commonFilesystemTree: () => ({'app.component.ts': ''}),
@@ -97,13 +101,17 @@ describe('CodeEditor', () => {
   });
 
   it('should initialize the code editor service with the code editor wrapper element', async () => {
+    // Spy should be init before the fixture is created
     const codeMirrorEditorInitSpy = spyOn(codeMirrorEditorService, 'init');
+
+    fixture = TestBed.createComponent(CodeEditor);
+    fixture.detectChanges();
+    component = fixture.componentInstance;
 
     expect(component.codeEditorWrapperRef()).toBeDefined();
     expect(codeMirrorEditorService.isInit).toBeTrue();
 
-    // For whatever reason this does not pass successfuly
-    // expect(codeMirrorEditorInitSpy).toHaveBeenCalled();
+    expect(codeMirrorEditorInitSpy).toHaveBeenCalled();
   });
 
   it('should render tabs based on filenames order', async () => {
