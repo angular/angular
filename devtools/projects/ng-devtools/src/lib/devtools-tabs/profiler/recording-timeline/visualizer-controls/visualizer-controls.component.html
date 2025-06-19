@@ -30,7 +30,7 @@
   }
 </div>
 
-<select [hidden]="!record()" (change)="onVisualizationChange($event)">
+<select [hidden]="!record()" (change)="onVisualizationChange($event)" class="ng-select">
   <option [value]="VisMode.FlameGraph" [selected]="visualizationMode() === VisMode.FlameGraph">
     Flame graph
   </option>

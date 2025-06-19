@@ -1,0 +1,58 @@
+/* Global input styles */
+@use './typography';
+@use './theme' as theme;
+
+.ng-input,
+.ng-select,
+.ng-textarea {
+  @extend %body-01;
+  color: var(--primary-contrast);
+  background: var(--color-foreground);
+  border: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 2rem;
+}
+
+.ng-input {
+  &::placeholder {
+    color: var(--tertiary-contrast);
+  }
+
+  &.size-mid {
+    padding: 0.25rem 0.75rem;
+  }
+
+  &.size-compact {
+    padding: 0.1rem 0.5rem;
+  }
+}
+
+.ng-select {
+  position: relative;
+  appearance: none;
+  padding-right: 2rem;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: 18px;
+  background-position: top 50% right 0.375rem;
+  background-image: url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="black"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg>');
+
+  &.size-mid {
+    padding: 0.25rem 2rem 0.25rem 0.75rem;
+  }
+
+  &.size-compact {
+    padding: 0.1rem 2rem 0.1rem 0.5rem;
+  }
+}
+
+/* We can't use the theme mixins on top-level styles due to `:host-context` */
+:root.#{theme.$dark-theme-class} {
+  .ng-select {
+    background-image: url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="white"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg>');
+  }
+}
+
+.ng-textarea {
+  border-radius: 0.75rem;
+}
