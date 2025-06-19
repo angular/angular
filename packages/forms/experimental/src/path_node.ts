@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FieldPath} from './api/types';
+import {FieldPath, SchemaFn} from './api/types';
 import {DYNAMIC, Predicate} from './logic_node';
 import {LogicNodeBuilder} from './logic_node_2';
 
@@ -46,18 +46,7 @@ export class FieldPathNode {
   }
 
   mergeIn(other: FieldRootPathNode, predicate?: Predicate) {
-    // Copy over the prefix lists for each subroot in the other node.
-    for (const [subroot, prefixes] of other.subroots) {
-      // Initialize the prefix list for this node if it doesn't exist yet.
-      if (!this.root.subroots.has(subroot)) {
-        this.root.subroots.set(subroot, []);
-      }
-      // Copy over the prefixes from the other subroot into our list.
-      const existingPrefixes = this.root.subroots.get(subroot)!;
-      for (const prefix of prefixes) {
-        existingPrefixes.push([...this.keys, ...prefix]);
-      }
-    }
+    other.compile();
     this.logic.mergeIn(other.logic, predicate);
   }
 
@@ -66,23 +55,52 @@ export class FieldPathNode {
   }
 }
 
-export class FieldRootPathNode extends FieldPathNode {
-  /**
-   * Maps each sub-FieldRootPathNode to all of the prefixes for which that path has been applied.
-   * It is possible for it to map to multiple prefixes, since a precompiled schema can be applied
-   * to multiple different properties within the schema. For example:
-   *
-   * const addrSchema = schema<Address>(...)
-   * const orderSchema = shcema<Order>(p => {
-   *   apply(p.shippingAddress, addrSchema);
-   *   apply(p.billingAddress, addrScheam);
-   * });
-   */
-  // TODO: Might need to keep the prefixes sorted from longest to shortest?
-  readonly subroots = new Map<FieldRootPathNode, PropertyKey[][]>([[this, [[]]]]);
+let currentRoot: FieldRootPathNode | undefined = undefined;
 
-  constructor() {
+export function assertPathIsCurrent(path: FieldPath<unknown>): void {
+  if (currentRoot !== FieldPathNode.unwrapFieldPath(path).root) {
+    throw new Error(`🚨👮 Wrong path! 👮🚨
+
+This error happens when using a path from outside of schema:
+
+applyWhen(
+      path,
+      condition,
+      (pathWhenTrue /* <-- Use this, not path  */) => {
+        // ✅ This works
+        applyEach(pathWhenTrue.friends, friendSchema);
+        // 🚨 👮 🚓  You have to use nested path
+        // This produces a this error:
+        applyEach(path /*has to be pathWhenTrue*/.friends, friendSchema);
+      }
+    );
+
+    `);
+  }
+}
+
+export class FieldRootPathNode extends FieldPathNode {
+  private isCompiled = false;
+
+  constructor(private schemaFn: SchemaFn<unknown> | undefined) {
     super([], LogicNodeBuilder.newRoot(), undefined);
+  }
+
+  compile() {
+    if (this.isCompiled) {
+      return;
+    }
+    this.isCompiled = true;
+    if (!this.schemaFn) {
+      return;
+    }
+    const prevRoot = currentRoot;
+    try {
+      currentRoot = this;
+      this.schemaFn(currentRoot.fieldPathProxy);
+    } finally {
+      currentRoot = prevRoot;
+    }
   }
 }
 

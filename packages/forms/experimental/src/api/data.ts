@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {computed, Resource, ResourceRef, Signal} from '@angular/core';
-import {FieldPathNode} from '../path_node';
-import {assertPathIsCurrent} from '../schema';
+import {assertPathIsCurrent, FieldPathNode} from '../path_node';
 import type {FieldContext, FieldPath, LogicFn} from './types';
 
 export class DataKey<TValue> {

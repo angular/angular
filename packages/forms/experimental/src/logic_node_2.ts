@@ -48,6 +48,13 @@ export abstract class AbstractLogicNodeBuilder {
   abstract getChild(key: PropertyKey): LogicNodeBuilder;
 
   /**
+   * Checks whether a particular `AbstractLogicNodeBuilder` has been merged into this one.
+   * @param builder The builder to check for.
+   * @returns True if the builder has been merged, false otherwise.
+   */
+  abstract hasLogic(builder: AbstractLogicNodeBuilder): boolean;
+
+  /**
    * Builds the `LogicNode` from the accumulated rules and child builders.
    * @returns The constructed `LogicNode`.
    */
@@ -108,6 +115,13 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
     return this.getCurrent().getChild(key);
+  }
+
+  override hasLogic(builder: AbstractLogicNodeBuilder): boolean {
+    if (this === builder) {
+      return true;
+    }
+    return this.all.some(({builder: subBuilder}) => subBuilder.hasLogic(builder));
   }
 
   /**
@@ -204,6 +218,10 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
       this.children.set(key, new LogicNodeBuilder());
     }
     return this.children.get(key)!;
+  }
+
+  override hasLogic(builder: AbstractLogicNodeBuilder): boolean {
+    return this === builder;
   }
 }
 
@@ -325,6 +343,14 @@ export interface LogicNode {
    * @returns The `LogicNode` for the specified child.
    */
   getChild(key: PropertyKey): LogicNode;
+
+  /**
+   * Checks whether the logic from a particular `AbstractLogicNodeBuilder` has been merged into this
+   * node.
+   * @param builder The builder to check for.
+   * @returns True if the builder has been merged, false otherwise.
+   */
+  hasLogic(builder: AbstractLogicNodeBuilder): boolean;
 }
 
 /**
@@ -371,6 +397,16 @@ class LeafLogicNode implements LogicNode {
       return new CompositeLogicNode(builtNodes);
     }
   }
+
+  /**
+   * Checks whether the logic from a particular `AbstractLogicNodeBuilder` has been merged into this
+   * node.
+   * @param builder The builder to check for.
+   * @returns True if the builder has been merged, false otherwise.
+   */
+  hasLogic(builder: AbstractLogicNodeBuilder): boolean {
+    return this.builder?.hasLogic(builder) ?? false;
+  }
 }
 
 /**
@@ -401,6 +437,16 @@ class CompositeLogicNode implements LogicNode {
    */
   getChild(key: PropertyKey): LogicNode {
     return new CompositeLogicNode(this.all.flatMap((child) => child.getChild(key)));
+  }
+
+  /**
+   * Checks whether the logic from a particular `AbstractLogicNodeBuilder` has been merged into this
+   * node.
+   * @param builder The builder to check for.
+   * @returns True if the builder has been merged, false otherwise.
+   */
+  hasLogic(builder: AbstractLogicNodeBuilder): boolean {
+    return this.all.some((node) => node.hasLogic(builder));
   }
 }
 

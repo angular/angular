@@ -7,8 +7,7 @@
  */
 
 import {MetadataKey} from '../api/metadata';
-import {FieldPathNode} from '../path_node';
-import {assertPathIsCurrent} from '../schema';
+import {assertPathIsCurrent, FieldPathNode} from '../path_node';
 import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
 
 /**

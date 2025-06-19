@@ -916,21 +916,22 @@ describe('FieldNode', () => {
     });
   });
 
-  describe('precompiled schema', () => {
-    it('should not run precpmpiled schema function on form creation', () => {
+  describe('predefined schema', () => {
+    it('should not compile schema function multiple times', () => {
       const schemaFn = jasmine.createSpy('schemaFn');
       expect(schemaFn).not.toHaveBeenCalled();
 
       const s: Schema<string> = schema(schemaFn);
-      expect(schemaFn).toHaveBeenCalledTimes(1);
+      expect(schemaFn).toHaveBeenCalledTimes(0);
 
       const opts = {injector: TestBed.inject(Injector)};
       form(signal(''), s, opts);
+      expect(schemaFn).toHaveBeenCalledTimes(1);
       form(signal(''), s, opts);
       expect(schemaFn).toHaveBeenCalledTimes(1);
     });
 
-    it('should resolve precompiled paths within the local context', () => {
+    it('should resolve predefined schema paths within the local context', () => {
       const s = schema<{a: string; b: string}>((p) => {
         disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
       });
@@ -948,7 +949,7 @@ describe('FieldNode', () => {
       expect(f.second.b().disabled()).toBe(true);
     });
 
-    it('should resolve precompiled paths deeply nested within the schema', () => {
+    it('should resolve predefined schema paths deeply nested within the schema', () => {
       const s = schema<{a: string; b: string}>((p) => {
         disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
       });
@@ -966,9 +967,10 @@ describe('FieldNode', () => {
       expect(f.first.second.b().disabled()).toBe(true);
     });
 
-    it('should error on resolving precompiled path that is not part of the form', () => {
+    it('should error on resolving predefined schema path that is not part of the form', () => {
       let otherP: FieldPath<any>;
       const s = schema<string>((p) => (otherP = p));
+      s.compile();
 
       const f = form(
         signal(''),
@@ -982,6 +984,55 @@ describe('FieldNode', () => {
       );
 
       expect(() => f().disabled()).toThrowError('Path is not part of this field tree.');
+    });
+
+    it('should support recursive logic', () => {
+      interface TreeData {
+        level: number;
+        next: TreeData;
+      }
+      const s = schema<TreeData>((p) => {
+        disabled(p.level, ({valueOf}) => {
+          return valueOf(p.level) % 2 === 0;
+        });
+        apply(p.next, s);
+      });
+      const f = form<TreeData>(
+        signal({level: 0, next: {level: 1, next: {level: 2, next: {level: 3, next: null!}}}}),
+        s,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f.level().disabled()).toBe(true);
+      expect(f.next.level().disabled()).toBe(false);
+      expect(f.next.next.level().disabled()).toBe(true);
+      expect(f.next.next.next.level().disabled()).toBe(false);
+    });
+
+    it('should support co-recursive logic', () => {
+      interface TreeData {
+        level: number;
+        next: TreeData;
+      }
+      const s1: Schema<TreeData> = schema((p) => {
+        disabled(p.level, ({valueOf}) => valueOf(p.level) % 2 === 0);
+        apply(p.next, s2);
+      });
+      const s2: Schema<TreeData> = schema((p) => {
+        disabled(p.level, ({valueOf}) => valueOf(p.level) % 2 === 0);
+        apply(p.next, s1);
+      });
+      const f = form<TreeData>(
+        signal({
+          level: 0,
+          next: {level: 1, next: {level: 2, next: {level: 3, next: null!}}},
+        }),
+        s1,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f.level().disabled()).toBe(true);
+      expect(f.next.level().disabled()).toBe(false);
+      expect(f.next.next.level().disabled()).toBe(true);
+      expect(f.next.next.next.level().disabled()).toBe(false);
     });
   });
 });
