@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {confirmAsSerializable, Serializable} from '../helpers/serializable';
+import {DtsMetadataReader, TypeScriptReflectionHost} from '@angular/compiler-cli';
+import {confirmAsSerializable} from '../helpers/serializable';
 import {TsurgeComplexMigration} from '../migration';
 import {ProgramInfo} from '../program_info';
+import {projectFile} from '../project_paths';
 import {Replacement, TextUpdate} from '../replacement';
 import {findOutputDeclarationsAndReferences, OutputID} from './output_helpers';
-import {projectFile} from '../project_paths';
 
 type AnalysisUnit = {[id: OutputID]: {seenProblematicUsage: boolean}};
 type GlobalMetadata = {[id: OutputID]: {canBeMigrated: boolean}};

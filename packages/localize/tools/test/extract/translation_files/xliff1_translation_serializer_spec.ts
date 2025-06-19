@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {absoluteFrom, runInEachFileSystem} from '@angular/compiler-cli';
 import {ɵParsedMessage, ɵSourceLocation} from '../../../../index';
 
 import {FormatOptions} from '../../../src/extract/translation_files/format_options';

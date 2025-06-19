@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {initMockFileSystem} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';

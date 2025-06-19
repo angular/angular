@@ -10,11 +10,11 @@ import {
   AbsoluteFsPath,
   FileSystem,
   getFileSystem,
-  setFileSystem,
   InvalidFileSystem,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
-import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
+  loadTestDirectory,
+  MockLogger,
+  setFileSystem,
+} from '@angular/compiler-cli';
 import path from 'path';
 import url from 'url';
 

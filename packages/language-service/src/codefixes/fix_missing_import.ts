@@ -7,17 +7,21 @@
  */
 
 import {ASTWithName, TmplAstElement} from '@angular/compiler';
-import {ErrorCode as NgCompilerErrorCode, ngErrorCode} from '@angular/compiler-cli';
-import {PotentialDirective, PotentialPipe} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  ErrorCode as NgCompilerErrorCode,
+  ngErrorCode,
+  PotentialDirective,
+  PotentialPipe,
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
+import {getDirectiveMatchesForElementTag} from '../utils';
 import {
   getCodeActionToImportTheDirectiveDeclaration,
   getModuleSpecifierFromImportStatement,
   standaloneTraitOrNgModule,
 } from '../utils/ts_utils';
-import {getDirectiveMatchesForElementTag} from '../utils';
 
 import {CodeActionContext, CodeActionMeta, FixIdForCodeFixesAll} from './utils';
 

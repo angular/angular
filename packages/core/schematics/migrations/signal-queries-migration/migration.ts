@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {
+  getAngularDecorators,
+  QueryFunctionName,
+  TypeScriptReflectionHost,
+} from '@angular/compiler-cli';
 import {ImportManager, PartialEvaluator} from '@angular/compiler-cli/private/migrations';
-import {getAngularDecorators, QueryFunctionName} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import assert from 'assert';
 import ts from 'typescript';
 import {
   confirmAsSerializable,
-  MigrationStats,
   ProgramInfo,
   projectFile,
   Replacement,
@@ -27,7 +28,9 @@ import {
   FieldIncompatibilityReason,
   nonIgnorableFieldIncompatibilities,
 } from '../signal-migration/src';
+import {checkInheritanceOfKnownFields} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
 import {checkIncompatiblePatterns} from '../signal-migration/src/passes/problematic_patterns/common_incompatible_patterns';
+import {insertTodoForIncompatibility} from '../signal-migration/src/passes/problematic_patterns/incompatibility_todos';
 import {migrateHostBindings} from '../signal-migration/src/passes/reference_migration/migrate_host_bindings';
 import {migrateTemplateReferences} from '../signal-migration/src/passes/reference_migration/migrate_template_references';
 import {migrateTypeScriptReferences} from '../signal-migration/src/passes/reference_migration/migrate_ts_references';
@@ -49,20 +52,18 @@ import {GroupedTsAstVisitor} from '../signal-migration/src/utils/grouped_ts_ast_
 import {InheritanceGraph} from '../signal-migration/src/utils/inheritance_graph';
 import {computeReplacementsToMigrateQuery} from './convert_query_property';
 import {getClassFieldDescriptorForSymbol, getUniqueIDForClassProperty} from './field_tracking';
-import {ExtractedQuery, extractSourceQueryDefinition} from './identify_queries';
-import {KnownQueries} from './known_queries';
-import {queryFunctionNameToDecorator} from './query_api_names';
-import {removeQueryListToArrayCall} from './fn_to_array_removal';
-import {replaceQueryListGetCall} from './fn_get_replacement';
-import {checkForIncompatibleQueryListAccesses} from './incompatible_query_list_fns';
 import {replaceQueryListFirstAndLastReferences} from './fn_first_last_replacement';
-import {MigrationConfig} from './migration_config';
+import {replaceQueryListGetCall} from './fn_get_replacement';
+import {removeQueryListToArrayCall} from './fn_to_array_removal';
+import {ExtractedQuery, extractSourceQueryDefinition} from './identify_queries';
 import {
   filterBestEffortIncompatibilities,
   markFieldIncompatibleInMetadata,
 } from './incompatibility';
-import {insertTodoForIncompatibility} from '../signal-migration/src/passes/problematic_patterns/incompatibility_todos';
-import {checkInheritanceOfKnownFields} from '../signal-migration/src/passes/problematic_patterns/check_inheritance';
+import {checkForIncompatibleQueryListAccesses} from './incompatible_query_list_fns';
+import {KnownQueries} from './known_queries';
+import {MigrationConfig} from './migration_config';
+import {queryFunctionNameToDecorator} from './query_api_names';
 
 export interface CompilationUnitData {
   knownQueryFields: Record<ClassFieldUniqueKey, {fieldName: string; isMulti: boolean}>;

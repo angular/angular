@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
+import {absoluteFrom, getFileSystem, MockLogger} from '@angular/compiler-cli';
 
 import {MessageExtractor} from '../../src/extract/extraction';
 import {runInNativeFileSystem} from '../helpers';

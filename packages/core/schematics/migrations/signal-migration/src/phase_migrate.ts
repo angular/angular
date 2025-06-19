@@ -12,7 +12,7 @@ import {MigrationHost} from './migration_host';
 import {pass6__migrateInputDeclarations} from './passes/6_migrate_input_declarations';
 import {MigrationResult} from './result';
 import {pass10_applyImportManager} from './passes/10_apply_import_manager';
-import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
+import {ImportManager} from '@angular/compiler-cli';
 import {InputDescriptor} from './utils/input_id';
 import {ReferenceMigrationHost} from './passes/reference_migration/reference_migration_host';
 import {pass5__migrateTypeScriptReferences} from './passes/5_migrate_ts_references';

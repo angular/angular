@@ -7,7 +7,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
-      "@angular/compiler-cli/*": ["../../packages/compiler-cli/*"]
+      "@angular/compiler-cli": ["../../packages/compiler-cli/index"]
     }
   }
 }

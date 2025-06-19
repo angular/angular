@@ -11,6 +11,7 @@ import {
   ASTWithSource,
   BindingPipe,
   BindingType,
+  TmplAstBoundEvent as BoundEvent,
   EmptyExpr,
   ImplicitReceiver,
   LiteralPrimitive,
@@ -18,29 +19,28 @@ import {
   ParseSourceSpan,
   PropertyRead,
   SafePropertyRead,
+  TmplAstSwitchBlock as SwitchBlock,
+  TmplAstTextAttribute as TextAttribute,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
-  TmplAstBoundEvent as BoundEvent,
   TmplAstElement,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
-  TmplAstSwitchBlock as SwitchBlock,
   TmplAstTemplate,
   TmplAstText,
   TmplAstTextAttribute,
-  TmplAstTextAttribute as TextAttribute,
-  TmplAstUnknownBlock as UnknownBlock,
   TmplAstVariable,
-  TmplAstLetDeclaration,
+  TmplAstUnknownBlock as UnknownBlock,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
   CompletionKind,
+  NgCompiler,
   PotentialDirective,
   SymbolKind,
   TemplateDeclarationSymbol,
   TemplateTypeChecker,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {
@@ -51,6 +51,8 @@ import {
   buildAttributeCompletionTable,
   getAttributeCompletionSymbol,
 } from './attribute_completions';
+import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
+import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 import {
   DisplayInfo,
   DisplayInfoKind,
@@ -59,14 +61,12 @@ import {
   getTsSymbolDisplayInfo,
   unsafeCastDisplayInfoKindToScriptElementKind,
 } from './utils/display_parts';
-import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
 import {
   findTightestNode,
   getCodeActionToImportTheDirectiveDeclaration,
   getModuleSpecifierFromImportStatement,
   standaloneTraitOrNgModule,
 } from './utils/ts_utils';
-import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 
 type PropertyExpressionCompletionBuilder = CompletionBuilder<
   PropertyRead | EmptyExpr | SafePropertyRead | TmplAstBoundEvent

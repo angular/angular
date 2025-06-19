@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
-import {ReflectionHost, reflectObjectLiteral} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {MigrationHost} from '../migration_host';
-import {getAngularDecorators, ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
+import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler';
 import {
   ExternalTemplateDeclaration,
+  getAngularDecorators,
   InlineTemplateDeclaration,
-} from '@angular/compiler-cli/src/ngtsc/annotations/component/src/resources';
-import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler';
+  PartialEvaluator,
+  ReflectionHost,
+  reflectObjectLiteral,
+  ResourceLoader,
+} from '@angular/compiler-cli';
+import ts from 'typescript';
 
 /**
  * Attempts to extract the `TemplateDefinition` for the given

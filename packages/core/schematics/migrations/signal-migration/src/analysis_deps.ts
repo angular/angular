@@ -8,14 +8,16 @@
 
 import ts from 'typescript';
 
-import {DtsMetadataReader, MetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-
-import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {ReferenceEmitter} from '@angular/compiler-cli/src/ngtsc/imports';
-import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  DtsMetadataReader,
+  MetadataReader,
+  PartialEvaluator,
+  TypeScriptReflectionHost,
+  NgCompiler,
+  ReferenceEmitter,
+  ResourceLoader,
+  TemplateTypeChecker,
+} from '@angular/compiler-cli';
 import {ProgramInfo} from '../../../utils/tsurge/program_info';
 
 /**

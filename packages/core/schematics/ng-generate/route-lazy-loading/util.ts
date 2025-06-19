@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {findAngularDecorator, ReflectionHost} from '@angular/compiler-cli';
 import ts from 'typescript';
-import {findAngularDecorator} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection/index';
 import {findLiteralProperty} from '../../utils/typescript/property_name';
 
 /**

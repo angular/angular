@@ -9,9 +9,6 @@ ts_project(
     ),
     interop_deps = [
         "//packages:types",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/testing",
     ],
     deps = [
         "//packages/localize/tools:tools_rjs",

@@ -6,19 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DtsMetadataReader, PartialEvaluator, TypeScriptReflectionHost} from '@angular/compiler-cli';
 import assert from 'assert';
 import ts from 'typescript';
-import {ReferenceEmitter} from '@angular/compiler-cli/src/ngtsc/imports';
-import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {prepareAndCheckForConversion} from '../convert-input/prepare_and_check';
 import {extractDecoratorInput} from '../input_detection/input_decorator';
 import {isInputContainerNode} from '../input_detection/input_node';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationHost} from '../migration_host';
 import {MigrationResult} from '../result';
 import {getInputDescriptor} from '../utils/input_id';
-import {prepareAndCheckForConversion} from '../convert-input/prepare_and_check';
 import {isFieldIncompatibility} from './problematic_patterns/incompatibility';
 
 /**

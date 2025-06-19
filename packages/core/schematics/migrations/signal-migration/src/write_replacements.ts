@@ -8,7 +8,7 @@
 
 import {applyTextUpdates, Replacement} from '../../../utils/tsurge/replacement';
 import {groupReplacementsByFile} from '../../../utils/tsurge/helpers/group_replacements';
-import {AbsoluteFsPath, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem} from '@angular/compiler-cli';
 
 /** Applies the migration result and applies it to the file system. */
 export function writeMigrationReplacements(

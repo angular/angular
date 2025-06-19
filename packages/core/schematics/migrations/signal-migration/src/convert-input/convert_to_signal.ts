@@ -9,14 +9,13 @@
 import assert from 'assert';
 import ts from 'typescript';
 
-import {ConvertInputPreparation} from './prepare_and_check';
-import {DecoratorInputTransform} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import {removeFromUnionIfPossible} from '../utils/remove_from_union';
-import {MigrationResult} from '../result';
+import {DecoratorInputTransform, ImportManager} from '@angular/compiler-cli';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../utils/tsurge';
 import {insertPrecedingLine} from '../../../../utils/tsurge/helpers/ast/insert_preceding_line';
 import {cutStringToLineLimit} from '../../../../utils/tsurge/helpers/string_manipulation/cut_string_line_length';
+import {MigrationResult} from '../result';
+import {removeFromUnionIfPossible} from '../utils/remove_from_union';
+import {ConvertInputPreparation} from './prepare_and_check';
 
 // TODO: Consider initializations inside the constructor. Those are not migrated right now
 // though, as they are writes.

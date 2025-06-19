@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ImportedSymbolsTracker} from '@angular/compiler-cli/src/ngtsc/imports';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {getInitializerApiJitTransform} from '@angular/compiler-cli/src/ngtsc/transform/jit';
+import {
+  getInitializerApiJitTransform,
+  ImportedSymbolsTracker,
+  TypeScriptReflectionHost,
+} from '@angular/compiler-cli';
 import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';

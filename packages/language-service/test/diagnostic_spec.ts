@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {ErrorCode, initMockFileSystem, ngErrorCode} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';

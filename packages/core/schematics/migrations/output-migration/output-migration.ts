@@ -19,30 +19,29 @@ import {
   TsurgeFunnelMigration,
 } from '../../utils/tsurge';
 
-import {DtsMetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {DtsMetadataReader, TypeScriptReflectionHost} from '@angular/compiler-cli';
 import {PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {
+  calculateCompleteCallReplacement,
+  calculateDeclarationReplacement,
+  calculateImportReplacements,
+  calculateNextFnReplacement,
+  calculateNextFnReplacementInHostBinding,
+  calculateNextFnReplacementInTemplate,
+  calculatePipeCallReplacement,
+} from './output-replacements';
+import {
+  checkNonTsReferenceCallsField,
+  getOutputDecorator,
+  getTargetPropertyDeclaration,
   getUniqueIdForProperty,
-  isTargetOutputDeclaration,
+  isOutputDeclarationEligibleForMigration,
   isPotentialCompleteCallUsage,
   isPotentialNextCallUsage,
   isPotentialPipeCallUsage,
+  isTargetOutputDeclaration,
   isTestRunnerImport,
-  getTargetPropertyDeclaration,
-  checkNonTsReferenceCallsField,
-  getOutputDecorator,
-  isOutputDeclarationEligibleForMigration,
 } from './output_helpers';
-import {
-  calculateImportReplacements,
-  calculateDeclarationReplacement,
-  calculateNextFnReplacement,
-  calculateCompleteCallReplacement,
-  calculatePipeCallReplacement,
-  calculateNextFnReplacementInTemplate,
-  calculateNextFnReplacementInHostBinding,
-} from './output-replacements';
 
 import {createFindAllSourceFileReferencesVisitor} from '../signal-migration/src/passes/reference_resolution';
 import {
@@ -50,8 +49,8 @@ import {
   ClassFieldUniqueKey,
   KnownFields,
 } from '../signal-migration/src/passes/reference_resolution/known_fields';
-import {ReferenceResult} from '../signal-migration/src/passes/reference_resolution/reference_result';
 import {ReferenceKind} from '../signal-migration/src/passes/reference_resolution/reference_kinds';
+import {ReferenceResult} from '../signal-migration/src/passes/reference_resolution/reference_result';
 
 export interface MigrationConfig {
   /**

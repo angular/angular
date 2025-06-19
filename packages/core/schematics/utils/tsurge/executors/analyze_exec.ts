@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NodeJSFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {NodeJSFileSystem} from '@angular/compiler-cli';
 import {TsurgeMigration} from '../migration';
 import {Serializable} from '../helpers/serializable';
 

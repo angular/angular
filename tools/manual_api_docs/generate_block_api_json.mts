@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {
-  DocEntry,
-  DocEntryWithSourceInfo,
-  EntryType,
-} from '@angular/compiler-cli/src/ngtsc/docs';
+import type {DocEntry, DocEntryWithSourceInfo, EntryType} from '@angular/compiler-cli';
 import {readFileSync, writeFileSync} from 'fs';
 import {basename, join} from 'path';
 

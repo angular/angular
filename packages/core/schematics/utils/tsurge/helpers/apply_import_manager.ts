@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {absoluteFrom, ImportManager} from '@angular/compiler-cli';
 import ts from 'typescript';
-import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {Replacement, TextUpdate} from '../replacement';
-import {projectFile} from '../project_paths';
 import {ProgramInfo} from '../program_info';
+import {projectFile} from '../project_paths';
+import {Replacement, TextUpdate} from '../replacement';
 
 /**
  * Applies import manager changes, and writes them as replacements the

@@ -7,14 +7,21 @@
  */
 
 import {AST, TmplAstNode} from '@angular/compiler';
-import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {FileUpdate, ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
-import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  CompilerOptions,
+  ConfigurationHost,
+  ErrorCode,
+  FileUpdate,
+  isNamedClassDeclaration,
+  NgCompiler,
+  ngErrorCode,
+  OptimizeFor,
+  PerfPhase,
+  ProgramDriver,
+  readConfiguration,
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {
@@ -33,6 +40,7 @@ import {CompletionBuilder} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {getOutliningSpans} from './outlining_spans';
 import {QuickInfoBuilder} from './quick_info';
+import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
 import {createLocationKey} from './references_and_rename_utils';
 import {getSignatureHelp} from './signature_help';
@@ -41,14 +49,13 @@ import {
   getTcbNodesOfTemplateAtPosition,
   TargetNodeKind,
 } from './template_target';
+import {getTypeCheckInfoAtPosition, isTypeScriptFile} from './utils';
 import {
   findTightestNode,
   getClassDeclFromDecoratorProp,
   getParentClassDeclaration,
   getPropertyAssignmentFromValue,
 } from './utils/ts_utils';
-import {getTypeCheckInfoAtPosition, isTypeScriptFile} from './utils';
-import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 

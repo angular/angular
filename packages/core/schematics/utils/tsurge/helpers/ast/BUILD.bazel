@@ -7,15 +7,6 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     interop_deps = [
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/annotations/common",
-        "//packages/compiler-cli/src/ngtsc/annotations/component",
-        "//packages/compiler-cli/src/ngtsc/core:api",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/transform",
-        "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/core/schematics/utils/tsurge",
     ],
     deps = [

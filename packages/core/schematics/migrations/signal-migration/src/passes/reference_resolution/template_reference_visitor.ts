@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli';
 import {
   AST,
   Binary,

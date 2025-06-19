@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
+import {isShim} from '@angular/compiler-cli';
 import {AnalysisProgramInfo} from './analysis_deps';
 import {KnownInputs} from './input_detection/known_inputs';
 import {MigrationHost} from './migration_host';

@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Decorator, NgCompilerOptions} from '@angular/compiler-cli';
+import assert from 'assert';
 import ts from 'typescript';
 import {ExtractedInput} from '../input_detection/input_decorator';
+import {InputNode} from '../input_detection/input_node';
 import {
   FieldIncompatibility,
   FieldIncompatibilityReason,
 } from '../passes/problematic_patterns/incompatibility';
-import {InputNode} from '../input_detection/input_node';
-import {Decorator} from '@angular/compiler-cli/src/ngtsc/reflection';
-import assert from 'assert';
-import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 
 /**
  * Interface describing analysis performed when the input

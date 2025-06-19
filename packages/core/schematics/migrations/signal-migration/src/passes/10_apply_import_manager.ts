@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
+import {ImportManager} from '@angular/compiler-cli';
 import ts from 'typescript';
 import {applyImportManagerChanges} from '../../../../utils/tsurge/helpers/apply_import_manager';
 import {MigrationResult} from '../result';

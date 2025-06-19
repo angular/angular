@@ -5,12 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  absoluteFrom,
-  getFileSystem,
-  PathManipulation,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {getFileSystem, PathManipulation, runInEachFileSystem} from '@angular/compiler-cli';
 import {ɵParsedMessage} from '../../../../index';
 
 import {ArbTranslationSerializer} from '../../../src/extract/translation_files/arb_translation_serializer';

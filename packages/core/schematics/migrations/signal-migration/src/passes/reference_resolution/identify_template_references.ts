@@ -7,21 +7,25 @@
  */
 
 import {TmplAstNode} from '@angular/compiler';
-import {ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {extractTemplate} from '@angular/compiler-cli/src/ngtsc/annotations/component/src/resources';
-import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
-import {ClassDeclaration, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {CompilationMode} from '@angular/compiler-cli/src/ngtsc/transform';
-import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  absoluteFrom,
+  ClassDeclaration,
+  CompilationMode,
+  extractTemplate,
+  NgCompilerOptions,
+  OptimizeFor,
+  PartialEvaluator,
+  ReflectionHost,
+  ResourceLoader,
+  TemplateTypeChecker,
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
-import {TemplateReferenceVisitor} from './template_reference_visitor';
 import {attemptExtractTemplateDefinition} from '../../utils/extract_template';
-import {ReferenceResult} from './reference_result';
 import {ClassFieldDescriptor, KnownFields} from './known_fields';
 import {ReferenceKind} from './reference_kinds';
+import {ReferenceResult} from './reference_result';
+import {TemplateReferenceVisitor} from './template_reference_visitor';
 
 /**
  * Checks whether the given class has an Angular template, and resolves

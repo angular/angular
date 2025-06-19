@@ -11,11 +11,6 @@ ts_project(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/annotations/directive",
-        "//packages/compiler-cli/src/ngtsc/diagnostics",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/core/schematics/migrations/signal-migration/src",
         "//packages/core/schematics/utils/tsurge",
     ],
@@ -37,7 +32,6 @@ ts_project(
     interop_deps = [
         ":migration",
         "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/core/schematics/utils/tsurge",
     ],
     deps = [

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MetadataReader} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {MetadataReader} from '@angular/compiler-cli';
 import assert from 'assert';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {InheritanceGraph} from '../utils/inheritance_graph';

@@ -13,13 +13,13 @@ import {
   TmplAstNode,
   TmplAstTextAttribute,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
   DirectiveSymbol,
   DomBindingSymbol,
   ElementSymbol,
   InputBindingSymbol,
   LetDeclarationSymbol,
+  NgCompiler,
   OutputBindingSymbol,
   PipeSymbol,
   ReferenceSymbol,
@@ -29,10 +29,9 @@ import {
   SymbolKind,
   TcbLocation,
   VariableSymbol,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
-import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './utils/display_parts';
 import {
   createDollarAnyQuickInfo,
   createNgTemplateQuickInfo,
@@ -47,6 +46,7 @@ import {
   getDirectiveMatchesForElementTag,
   getTextSpanOfNode,
 } from './utils';
+import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './utils/display_parts';
 
 export class QuickInfoBuilder {
   private readonly typeChecker: ts.TypeChecker;

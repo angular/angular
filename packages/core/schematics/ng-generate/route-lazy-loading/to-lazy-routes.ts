@@ -8,10 +8,7 @@
 
 import ts from 'typescript';
 
-import {
-  ReflectionHost,
-  TypeScriptReflectionHost,
-} from '@angular/compiler-cli/src/ngtsc/reflection/index';
+import {ReflectionHost, TypeScriptReflectionHost} from '@angular/compiler-cli';
 import {ChangeTracker, PendingChange} from '../../utils/change_tracker';
 
 import {findClassDeclaration} from '../../utils/typescript/class_declaration';

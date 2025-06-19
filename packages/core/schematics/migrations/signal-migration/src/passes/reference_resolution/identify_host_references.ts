@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {unwrapExpression} from '@angular/compiler-cli/src/ngtsc/annotations/common';
-import {ReflectionHost, reflectObjectLiteral} from '@angular/compiler-cli/src/ngtsc/reflection';
-import ts from 'typescript';
 import {
   AST,
   ParseLocation,
@@ -18,14 +14,21 @@ import {
   ParsedProperty,
   makeBindingParser,
 } from '@angular/compiler';
+import {
+  ReflectionHost,
+  getAngularDecorators,
+  reflectObjectLiteral,
+  unwrapExpression,
+} from '@angular/compiler-cli';
+import ts from 'typescript';
 import {ProgramInfo, projectFile} from '../../../../../utils/tsurge';
+import {ClassFieldDescriptor, KnownFields} from './known_fields';
+import {ReferenceKind} from './reference_kinds';
+import {ReferenceResult} from './reference_result';
 import {
   TemplateExpressionReferenceVisitor,
   TmplInputExpressionReference,
 } from './template_reference_visitor';
-import {ReferenceResult} from './reference_result';
-import {ClassFieldDescriptor, KnownFields} from './known_fields';
-import {ReferenceKind} from './reference_kinds';
 
 /**
  * Checks host bindings of the given class and tracks all

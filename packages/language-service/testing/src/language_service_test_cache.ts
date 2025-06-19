@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getCachedSourceFile} from '@angular/compiler-cli/src/ngtsc/testing';
+import {getCachedSourceFile} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 interface TsProjectWithInternals {

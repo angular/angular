@@ -6,9 +6,8 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-    ],
     visibility = ["//packages/localize/tools/test:__subpackages__"],
+    deps = [
+        "//packages/compiler-cli:compiler-cli_rjs",
+    ],
 )

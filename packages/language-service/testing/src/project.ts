@@ -7,22 +7,21 @@
  */
 
 import {
-  InternalOptions,
-  LegacyNgcOptions,
-  TypeCheckingOptions,
-} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {
   absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
   getFileSystem,
   getSourceFileOrError,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+  InternalOptions,
+  LegacyNgcOptions,
+  OptimizeFor,
+  TemplateTypeChecker,
+  TypeCheckingOptions,
+} from '@angular/compiler-cli';
 import ts from 'typescript';
 
-import {LanguageService} from '../../src/language_service';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../api';
+import {LanguageService} from '../../src/language_service';
 
 import {OpenBuffer} from './buffer';
 import {patchLanguageServiceProjectsWithTestHost} from './language_service_test_cache';

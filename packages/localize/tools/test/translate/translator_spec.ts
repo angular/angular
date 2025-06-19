@@ -12,10 +12,10 @@ import {
   getFileSystem,
   PathSegment,
   relativeFrom,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+  runInEachFileSystem,
+} from '@angular/compiler-cli';
 
-import {Diagnostics as Diagnostics} from '../../src/diagnostics';
+import {Diagnostics} from '../../src/diagnostics';
 import {OutputPathFn} from '../../src/translate/output_path';
 import {TranslationBundle, TranslationHandler, Translator} from '../../src/translate/translator';
 
