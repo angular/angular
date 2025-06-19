@@ -4,6 +4,7 @@
 @use 'external/npm/node_modules/@angular/material/index' as mat;
 @use './colors' as clr;
 @use './typography' as tg;
+@use './inputs';
 
 @include mat.all-component-typographies();
 @include mat.core();
@@ -111,13 +112,6 @@ body {
   margin: 0;
   background: var(--color-background);
   color: var(--color-text);
-  @extend %body-01;
-}
-
-input,
-select {
-  color: var(--primary-contrast);
-  background: var(--color-foreground);
   @extend %body-01;
 }
 

@@ -7,65 +7,67 @@
   [color]="'accent'"
   [tabPanel]="tabPanel"
 >
-  <div id="nav-buttons">
-    <button (click)="toggleInspector()" matTooltip="Inspect element" aria-label="Inspect element">
-      <mat-icon [class.inspector-active]="inspectorRunning()"> pin_end </mat-icon>
-    </button>
-    <button [matMenuTriggerFor]="menu" matTooltip="Open settings" aria-label="Open settings">
-      <mat-icon> settings </mat-icon>
-    </button>
-    <button [matMenuTriggerFor]="info" matTooltip="Info" aria-label="Info">
-      <mat-icon> info </mat-icon>
-    </button>
-  </div>
+  <div class="nav-wrapper">
+    <div id="nav-buttons">
+      <button (click)="toggleInspector()" matTooltip="Inspect element" aria-label="Inspect element">
+        <mat-icon [class.inspector-active]="inspectorRunning()"> pin_end </mat-icon>
+      </button>
+      <button [matMenuTriggerFor]="menu" matTooltip="Open settings" aria-label="Open settings">
+        <mat-icon> settings </mat-icon>
+      </button>
+      <button [matMenuTriggerFor]="info" matTooltip="Info" aria-label="Info">
+        <mat-icon> info </mat-icon>
+      </button>
+    </div>
 
-  <select
-    matTooltip="Select a frame to inspect with Angular Devtools"
-    class="frame-selector"
-    (change)="emitSelectedFrame($event)"
-  >
-    @for (frame of frameManager.frames(); track frame.id) {
-      <option [value]="frame.id" [selected]="frameManager.isSelectedFrame(frame)">
-        @if (frame.id === TOP_LEVEL_FRAME_ID) {
-          top
-        } @else {
-          {{ frame.name }} ({{ frame.id }})
-        }
-      </option>
-    } @empty {
-      <option value="0" selected>top</option>
+    <select
+      matTooltip="Select a frame to inspect with Angular Devtools"
+      class="ng-select size-compact frame-selector"
+      (change)="emitSelectedFrame($event)"
+    >
+      @for (frame of frameManager.frames(); track frame.id) {
+        <option [value]="frame.id" [selected]="frameManager.isSelectedFrame(frame)">
+          @if (frame.id === TOP_LEVEL_FRAME_ID) {
+            top
+          } @else {
+            {{ frame.name }} ({{ frame.id }})
+          }
+        </option>
+      } @empty {
+        <option value="0" selected>top</option>
+      }
+    </select>
+
+    @for (tab of tabs(); track $index) {
+      <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
+        {{ tab }}
+      </a>
     }
-  </select>
+    @if (angularVersion()) {
+      <section id="app-angular-version">
+        Angular version:
 
-  @for (tab of tabs(); track $index) {
-    <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
-      {{ tab }}
-    </a>
-  }
-  @if (angularVersion()) {
-    <section id="app-angular-version">
-      Angular version:
-
-      @if (majorAngularVersion() > 12 || majorAngularVersion() == 0) {
-        <span id="version-number">
-          {{ angularVersion() }}
-        </span>
-      } @else {
-        <span
-          id="version-number"
-          matTooltip="
+        @if (majorAngularVersion() > 12 || majorAngularVersion() == 0) {
+          <span id="version-number">
+            {{ angularVersion() }}
+          </span>
+        } @else {
+          <span
+            id="version-number"
+            matTooltip="
             Angular Devtools supports Angular versions 12 and above. Some DevTools features may be available in
             older versions of Angular, but it is not officially supported.
           "
-          class="unsupported-version"
-        >
-          {{ angularVersion() }} (unsupported)
-        </span>
-      }
+            class="unsupported-version"
+          >
+            {{ angularVersion() }} (unsupported)
+          </span>
+        }
 
-      | DevTools: {{ extensionVersion() }}
-    </section>
-  }
+        | DevTools: {{ extensionVersion() }}
+      </section>
+    }
+  </div>
 </nav>
 
 <mat-tab-nav-panel #tabPanel>
