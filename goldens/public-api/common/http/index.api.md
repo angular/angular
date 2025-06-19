@@ -18,6 +18,9 @@ import { ValueEqualityFn } from '@angular/core';
 import { WritableResource } from '@angular/core';
 
 // @public
+export function assertInterceptorRegistered(interceptor: HttpInterceptorFn): void;
+
+// @public
 export class FetchBackend implements HttpBackend {
     constructor();
     // (undocumented)
