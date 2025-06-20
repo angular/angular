@@ -1603,7 +1603,7 @@ describe('value accessors', () => {
     });
 
     describe('`ngModel` value accessor inside an OnPush component', () => {
-      it('should run change detection and update the value', fakeAsync(async () => {
+      it('should run change detection and update the value', () => {
         @Component({
           selector: 'parent',
           template: '<child [ngModel]="value"></child>',
@@ -1641,27 +1641,30 @@ describe('value accessors', () => {
           registerOnTouched(): void {}
         }
 
-        const fixture = initTest(Parent, Child);
-        fixture.componentInstance.value = 'Nancy';
-        fixture.detectChanges();
+        fakeAsync(async () => {
+          const fixture = initTest(Parent, Child);
+          fixture.componentInstance.value = 'Nancy';
+          fixture.detectChanges();
 
-        await fixture.whenStable();
-        fixture.detectChanges();
-        await fixture.whenStable();
+          await fixture.whenStable();
+          fixture.detectChanges();
+          await fixture.whenStable();
 
-        const child = fixture.debugElement.query(By.css('child'));
-        // Let's ensure that the initial value has been set, because previously
-        // it wasn't set inside an `OnPush` component.
-        expect(child.nativeElement.innerHTML).toEqual('Value: Nancy');
+          const child = fixture.debugElement.query(By.css('child'));
+          // Let's ensure that the initial value has been set, because previously
+          // it wasn't set inside an `OnPush` component.
+          expect(child.nativeElement.innerHTML).toEqual('Value: Nancy');
 
-        fixture.componentInstance.setTimeoutAndChangeValue();
-        tick(50);
+          fixture.componentInstance.setTimeoutAndChangeValue();
 
-        fixture.detectChanges();
-        await fixture.whenStable();
+          tick(50);
 
-        expect(child.nativeElement.innerHTML).toEqual('Value: Carson');
-      }));
+          fixture.detectChanges();
+          await fixture.whenStable();
+
+          expect(child.nativeElement.innerHTML).toEqual('Value: Carson');
+        });
+      });
     });
   });
 });

@@ -1,5 +1,5 @@
 load("//adev/shared-docs:defaults.bzl", "ts_project")
-load("//tools:defaults.bzl", "esbuild_jasmine_node_test")
+load("//tools:defaults2.bzl", "jasmine_test")
 
 ts_project(
     name = "unit_test_lib",
@@ -15,44 +15,18 @@ ts_project(
     ],
 )
 
-ts_project(
-    name = "bootstrap",
-    testonly = True,
-    srcs = [
-        "bootstrap.init.mts",
-    ],
-    deps = [
-        "//:node_modules/@types/node",
-    ],
-)
-
-esbuild_jasmine_node_test(
+jasmine_test(
     name = "unit_tests",
-    bootstrap = [
-        ":bootstrap",
-    ],
     data = [
-        "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium-for-generation",
-        "@npm//jsdom",
-        "@npm//mermaid",
-        "@npm//playwright-core",
+        ":unit_test_lib_rjs",
+        "@rules_browsers//src/browsers/chromium",
     ] + glob([
         "**/*.md",
         "**/*.svg",
         "**/*.mts",
     ]),
     env = {
-        "CHROME_BIN": "$(CHROMIUM)",
+        "CHROME_HEADLESS_BIN": "$(CHROME-HEADLESS-SHELL)",
     },
-    external = [
-        "playwright-core",
-        "jsdom",
-    ],
-    tags = [
-        "no-remote-exec",
-    ],
-    toolchains = [
-        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
-    ],
-    deps = [":unit_test_lib"],
+    toolchains = ["@rules_browsers//src/browsers/chromium:toolchain_alias"],
 )
