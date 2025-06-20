@@ -139,10 +139,8 @@ export function form<T>(
 export function form<T>(...args: any[]): Field<T> {
   const [model, schema, options] = normalizeFormArgs<T>(args);
   const injector = options?.injector ?? inject(Injector);
-  const pathNode = runInInjectionContext(injector, () =>
-    isSchema(schema) ? schema : new FieldRootPathNode(schema as SchemaFn<unknown>),
-  );
-  pathNode.compile();
+  const pathNode = isSchema(schema) ? schema : new FieldRootPathNode(schema as SchemaFn<unknown>);
+  runInInjectionContext(injector, () => pathNode.compile());
   const fieldManager = new FormFieldManager(injector);
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
