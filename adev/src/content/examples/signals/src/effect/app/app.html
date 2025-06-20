@@ -1,0 +1,15 @@
+<div class="container" [class.dark-theme]="theme() === 'dark'">
+  <h2>Demo: Syncing State to <code>localStorage</code></h2>
+  <p>Toggle the theme. An <code>effect()</code> is listening to the theme signal and will "save" the new value to the display below, simulating a side effect.</p>
+
+  <div class="controls">
+    <span>App Theme:</span>
+    <button (click)="toggleTheme()">Toggle Theme</button>
+    <span class="theme-value">{{ theme() }}</span>
+  </div>
+
+  <div class="result-box">
+    <span>Simulated localStorage:</span>
+    <pre>{{ storageValue() }}</pre>
+  </div>
+</div>
