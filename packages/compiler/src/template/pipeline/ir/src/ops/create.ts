@@ -43,6 +43,7 @@ export type CreateOp =
   | ElementOp
   | ElementStartOp
   | ElementEndOp
+  | StaticHtmlOp
   | ContainerOp
   | ContainerStartOp
   | ContainerEndOp
@@ -653,6 +654,29 @@ export function createEnableBindingsOp(xref: XrefId): EnableBindingsOp {
   return {
     kind: OpKind.EnableBindings,
     xref,
+    ...NEW_OP,
+  };
+}
+
+export interface StaticHtmlOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.StaticHtml;
+  xref: XrefId;
+  html: string;
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createStaticHtmlOp(
+  xref: XrefId,
+  html: string,
+  sourceSpan: ParseSourceSpan,
+): StaticHtmlOp {
+  return {
+    kind: OpKind.StaticHtml,
+    xref,
+    html,
+    sourceSpan,
+    handle: new SlotHandle(),
+    ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };
 }

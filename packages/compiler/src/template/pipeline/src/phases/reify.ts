@@ -151,6 +151,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         }
         ir.OpList.replace(op, ng.i18nAttributes(op.handle.slot!, op.i18nAttributesConfig));
         break;
+      case ir.OpKind.StaticHtml:
+        ir.OpList.replace(op, ng.staticHtml(op.html, op.sourceSpan));
+        break;
       case ir.OpKind.Template:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
