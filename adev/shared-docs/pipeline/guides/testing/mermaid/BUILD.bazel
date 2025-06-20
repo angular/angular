@@ -11,7 +11,7 @@ ts_project(
         "//:node_modules/@types/jsdom",
         "//:node_modules/jsdom",
         "//:node_modules/marked",
-        "//adev/shared-docs/pipeline/guides:guides_rjs",
+        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
     ],
 )
 
