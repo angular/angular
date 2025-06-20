@@ -110,8 +110,6 @@ $theme: mat.m2-define-light-theme((color: (primary: $primary,
 }
 
 .shiki {
-  padding-block: 1rem;
-
   &.cli {
     padding-inline-start: 1rem;
   }
