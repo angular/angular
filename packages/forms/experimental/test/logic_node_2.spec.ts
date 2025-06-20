@@ -5,7 +5,11 @@ import {LogicNodeBuilder} from '../src/logic_node_2';
 
 const fakeFieldContext: FieldContext<unknown> = {
   fieldOf: () => undefined!,
-  stateOf: <P>() => ({context: undefined}) as unknown as FieldState<P>,
+  stateOf: <P>() =>
+    ({
+      context: undefined,
+      structure: {pathKeys: () => [], parent: undefined},
+    }) as unknown as FieldState<P>,
   valueOf: () => undefined!,
   field: undefined!,
   state: undefined!,
@@ -91,7 +95,7 @@ describe('LogicNodeBuilder', () => {
     const pred = signal(true);
     const builder2 = LogicNodeBuilder.newRoot();
     builder2.addSyncErrorRule(() => [{kind: 'err-1'}]);
-    builder.mergeIn(builder2, {fn: pred, path: undefined!});
+    builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([{kind: 'err-1'}]);
@@ -118,7 +122,7 @@ describe('LogicNodeBuilder', () => {
     builder3.addSyncErrorRule(() => [{kind: 'err-1'}]);
 
     builder2.mergeIn(builder3);
-    builder.mergeIn(builder2, {fn: pred, path: undefined!});
+    builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([{kind: 'err-1'}]);
@@ -145,7 +149,7 @@ describe('LogicNodeBuilder', () => {
     builder3.getChild('a').addSyncErrorRule(() => [{kind: 'err-1'}]);
 
     builder2.mergeIn(builder3);
-    builder.mergeIn(builder2, {fn: pred, path: undefined!});
+    builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.getChild('a').logic.syncErrors.compute(fakeFieldContext)).toEqual([
@@ -174,8 +178,8 @@ describe('LogicNodeBuilder', () => {
     const builder3 = LogicNodeBuilder.newRoot();
     builder3.addSyncErrorRule(() => [{kind: 'err-1'}]);
 
-    builder2.getChild('a').mergeIn(builder3, {fn: pred2, path: undefined!});
-    builder.mergeIn(builder2, {fn: pred, path: undefined!});
+    builder2.getChild('a').mergeIn(builder3, {fn: () => pred2(), path: undefined!});
+    builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.getChild('a').logic.syncErrors.compute(fakeFieldContext)).toEqual([
@@ -220,9 +224,9 @@ describe('LogicNodeBuilder', () => {
     const pred3 = signal(true);
     const builder4 = LogicNodeBuilder.newRoot();
     builder4.addSyncErrorRule(() => [{kind: 'err-3'}]);
-    builder3.getChild('b').mergeIn(builder4, {fn: pred3, path: undefined!});
-    builder2.getChild('a').mergeIn(builder3, {fn: pred2, path: undefined!});
-    builder.mergeIn(builder2, {fn: pred, path: undefined!});
+    builder3.getChild('b').mergeIn(builder4, {fn: () => pred3(), path: undefined!});
+    builder2.getChild('a').mergeIn(builder3, {fn: () => pred2(), path: undefined!});
+    builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(
@@ -269,7 +273,7 @@ describe('LogicNodeBuilder', () => {
     builder3.getChild('last').addSyncErrorRule(() => [{kind: 'err-1'}]);
 
     builder2.getChild('items').getChild(DYNAMIC).mergeIn(builder3);
-    builder.mergeIn(builder2, {fn: pred, path: undefined!});
+    builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(
@@ -371,7 +375,7 @@ describe('LogicNodeBuilder', () => {
     const pred = signal(true);
     const builder = LogicNodeBuilder.newRoot();
     builder.addSyncErrorRule(() => [{kind: 'err-1'}]);
-    builder.getChild('next').mergeIn(builder, {fn: pred, path: undefined!});
+    builder.getChild('next').mergeIn(builder, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([{kind: 'err-1'}]);

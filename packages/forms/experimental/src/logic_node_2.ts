@@ -9,10 +9,12 @@ import {
   MetadataKey,
   ValidationResult,
 } from '../public_api';
+import {setBoundPathDepthForResolution} from './field/context';
 import {
   AbstractLogic,
   ArrayMergeLogic,
   BooleanOrLogic,
+  BoundPredicate,
   MetadataMergeLogic,
   Predicate,
 } from './logic_node';
@@ -24,6 +26,11 @@ import {
  * LogicNodeBuilders are 1:1 with nodes in the Schema tree.
  */
 export abstract class AbstractLogicNodeBuilder {
+  constructor(
+    /** The depth of this node in the schema tree. */
+    protected readonly depth: number,
+  ) {}
+
   /** Adds a rule to determine if a field should be hidden. */
   abstract addHiddenRule(logic: LogicFn<any, boolean>): void;
   /** Adds a rule to determine if a field should be disabled, and for what reason. */
@@ -59,7 +66,7 @@ export abstract class AbstractLogicNodeBuilder {
    * @returns The constructed `LogicNode`.
    */
   build(): LogicNode {
-    return new LeafLogicNode(this, []);
+    return new LeafLogicNode(this, [], 0);
   }
 }
 
@@ -69,6 +76,10 @@ export abstract class AbstractLogicNodeBuilder {
  * preserving the order of rule application.
  */
 export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
+  constructor(depth: number) {
+    super(depth);
+  }
+
   /**
    * The current `NonMergableLogicNodeBuilder` being used to add rules directly to this
    * `LogicNodeBuilder`. Do not use this directly, call `getCurrent()` which will create a current
@@ -137,7 +148,13 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     // rules, we close off the current builder to any further edits. If additional logic is added,
     // a new current builder will be created to capture it.
     if (predicate) {
-      this.all.push({builder: other, predicate});
+      this.all.push({
+        builder: other,
+        predicate: {
+          fn: setBoundPathDepthForResolution(predicate.fn, this.depth),
+          path: predicate.path,
+        },
+      });
     } else {
       this.all.push({builder: other});
     }
@@ -153,7 +170,7 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
    */
   private getCurrent(): NonMergableLogicNodeBuilder {
     if (this.current === undefined) {
-      this.current = new NonMergableLogicNodeBuilder();
+      this.current = new NonMergableLogicNodeBuilder(this.depth);
       this.all.push({builder: this.current});
     }
     return this.current;
@@ -164,7 +181,7 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
    * @returns A new instance of `LogicNodeBuilder`.
    */
   static newRoot(): LogicNodeBuilder {
-    return new LogicNodeBuilder();
+    return new LogicNodeBuilder(0);
   }
 }
 
@@ -181,41 +198,45 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
    */
   readonly children = new Map<PropertyKey, LogicNodeBuilder>();
 
+  constructor(depth: number) {
+    super(depth);
+  }
+
   override addHiddenRule(logic: LogicFn<any, boolean>): void {
-    this.logic.hidden.push(logic);
+    this.logic.hidden.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addDisabledReasonRule(logic: LogicFn<any, DisabledReason | undefined>): void {
-    this.logic.disabledReasons.push(logic);
+    this.logic.disabledReasons.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addReadonlyRule(logic: LogicFn<any, boolean>): void {
-    this.logic.readonly.push(logic);
+    this.logic.readonly.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void {
-    this.logic.syncErrors.push(logic);
+    this.logic.syncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addSyncTreeErrorRule(logic: LogicFn<any, FormTreeError[]>): void {
-    this.logic.syncTreeErrors.push(logic);
+    this.logic.syncTreeErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void {
-    this.logic.asyncErrors.push(logic);
+    this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addMetadataRule<T>(key: MetadataKey<T>, logic: LogicFn<any, T>): void {
-    this.logic.getMetadata(key).push(logic);
+    this.logic.getMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addDataFactory<D>(key: DataKey<D>, factory: (ctx: FieldContext<any>) => D): void {
-    this.logic.addDataFactory(key, factory);
+    this.logic.addDataFactory(key, setBoundPathDepthForResolution(factory, this.depth));
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
     if (!this.children.has(key)) {
-      this.children.set(key, new LogicNodeBuilder());
+      this.children.set(key, new LogicNodeBuilder(this.depth + 1));
     }
     return this.children.get(key)!;
   }
@@ -255,7 +276,7 @@ export class LogicContainer {
    * @param predicates An array of predicates that must all be true for the logic
    *   functions within this container to be active.
    */
-  constructor(private predicates: ReadonlyArray<Predicate>) {
+  constructor(private predicates: ReadonlyArray<BoundPredicate>) {
     this.hidden = new BooleanOrLogic(predicates);
     this.disabledReasons = new ArrayMergeLogic(predicates);
     this.readonly = new BooleanOrLogic(predicates);
@@ -337,6 +358,7 @@ export class LogicContainer {
 export interface LogicNode {
   /** The collection of logic rules (hidden, disabled, errors, etc.) for this node. */
   readonly logic: LogicContainer;
+
   /**
    * Retrieves the `LogicNode` for a child identified by the given property key.
    * @param key The property key of the child.
@@ -370,9 +392,11 @@ class LeafLogicNode implements LogicNode {
    */
   constructor(
     private builder: AbstractLogicNodeBuilder | undefined,
-    private predicates: Predicate[],
+    private predicates: BoundPredicate[],
+    /** The depth of this node in the field tree. */
+    private depth: number,
   ) {
-    this.logic = builder ? createLogic(builder, predicates) : new LogicContainer([]);
+    this.logic = builder ? createLogic(builder, predicates, depth) : new LogicContainer([]);
   }
 
   // TODO: cache here, or just rely on the user of this API to do caching?
@@ -386,13 +410,22 @@ class LeafLogicNode implements LogicNode {
     // this logic at the time the child logic node is requested to be created.
     const childBuilders = this.builder ? getAllChildBuilders(this.builder, key) : [];
     if (childBuilders.length === 0) {
-      return new LeafLogicNode(undefined, []);
+      return new LeafLogicNode(undefined, [], this.depth + 1);
     } else if (childBuilders.length === 1) {
       const {builder, predicates} = childBuilders[0];
-      return new LeafLogicNode(builder, [...this.predicates, ...predicates]);
+      return new LeafLogicNode(
+        builder,
+        [...this.predicates, ...predicates.map((p) => bindLevel(p, this.depth))],
+        this.depth + 1,
+      );
     } else {
       const builtNodes = childBuilders.map(
-        ({builder, predicates}) => new LeafLogicNode(builder, [...this.predicates, ...predicates]),
+        ({builder, predicates}) =>
+          new LeafLogicNode(
+            builder,
+            [...this.predicates, ...predicates.map((p) => bindLevel(p, this.depth))],
+            this.depth + 1,
+          ),
       );
       return new CompositeLogicNode(builtNodes);
     }
@@ -490,7 +523,11 @@ function getAllChildBuilders(
  * @param predicates Predicates to apply to the logic derived from the builder.
  * @returns The `Logic` instance.
  */
-function createLogic(builder: AbstractLogicNodeBuilder, predicates: Predicate[]): LogicContainer {
+function createLogic(
+  builder: AbstractLogicNodeBuilder,
+  predicates: BoundPredicate[],
+  depth: number,
+): LogicContainer {
   const logic = new LogicContainer(predicates);
   if (builder instanceof LogicNodeBuilder) {
     // TODO: do we need to bind predicate to a specific field here?
@@ -499,7 +536,11 @@ function createLogic(builder: AbstractLogicNodeBuilder, predicates: Predicate[])
     // have a field context.
     const builtNodes = builder.all.map(
       ({builder, predicate}) =>
-        new LeafLogicNode(builder, predicate ? [...predicates, predicate] : predicates),
+        new LeafLogicNode(
+          builder,
+          predicate ? [...predicates, bindLevel(predicate, depth)] : predicates,
+          depth,
+        ),
     );
     for (const node of builtNodes) {
       logic.mergeIn(node.logic);
@@ -510,4 +551,8 @@ function createLogic(builder: AbstractLogicNodeBuilder, predicates: Predicate[])
     throw new Error('Unknown LogicNodeBuilder type');
   }
   return logic;
+}
+
+function bindLevel(predicate: Predicate, depth: number): BoundPredicate {
+  return {...predicate, depth: depth};
 }

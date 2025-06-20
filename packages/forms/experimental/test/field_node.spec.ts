@@ -1038,13 +1038,7 @@ describe('FieldNode', () => {
     it('should support recursive logic terminated by a when condition', () => {
       const s: Schema<TreeData> = schema((p) => {
         min(p.level, ({valueOf}) => valueOf(p.level));
-        applyWhen(
-          p.next,
-          ({valueOf}) => {
-            return valueOf(p.level) !== 2;
-          },
-          s,
-        );
+        applyWhen(p.next, (ctx) => ctx.valueOf(p.level) !== 2, s);
       });
       const f = form<TreeData>(
         signal({

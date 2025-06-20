@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {untracked} from '@angular/core';
 import {DataKey} from './api/data';
 import {MetadataKey} from './api/metadata';
 import {
@@ -26,6 +27,33 @@ export const DYNAMIC: unique symbol = Symbol('DYNAMIC');
 export interface Predicate {
   readonly fn: LogicFn<any, boolean>;
   readonly path: FieldPath<any>;
+}
+
+/**
+ * Represents a predicate that is bound to a particular depth in the field tree. This is needed for
+ * recursively applied logic to ensure that the predicate is evaluated against the correct
+ * application of that logic.
+ *
+ * Consider the following example:
+ *
+ * ```
+ * const s = schema(p => {
+ *   disabled(p.data);
+ *   applyWhen(p.next, ({valueOf}) => valueOf(p.data) === 1, s);
+ * });
+ *
+ * const f = form(signal({data: 0, next: {data: 1, next: {data: 2, next: undefined}}}), s);
+ *
+ * const isDisabled = f.next.next.data().disabled();
+ * ```
+ *
+ * In order to determine `isDisabled` we need to evaluate the predicate from `applyWhen` *twice*.
+ * Once to see if the schema should be applied to `f.next` and again to see if it should be applied
+ * to `f.next.next`. The `depth` tells us which field we should be evaluating against each time.
+ */
+export interface BoundPredicate extends Predicate {
+  /** The depth in the field tree at which this predicate is bound. */
+  readonly depth: number;
 }
 
 export interface DataDefinition {
@@ -205,7 +233,12 @@ function wrapWithPredicates<TValue, TReturn>(
   }
   return (arg: FieldContext<any>): TReturn => {
     for (const predicate of predicates) {
-      const predicateField = arg.stateOf(predicate.path) as FieldNode;
+      let predicateField = arg.stateOf(predicate.path) as FieldNode;
+      const bp = predicate as BoundPredicate; // TODO: require BoundPredicate in the first place.
+      const levelDiff = untracked(predicateField.structure.pathKeys).length - bp.depth;
+      for (let i = 0; i < levelDiff; i++) {
+        predicateField = predicateField.structure.parent!;
+      }
       if (!predicate.fn(predicateField.context)) {
         // don't actually run the user function
         return defaultValue;
