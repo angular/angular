@@ -10,52 +10,40 @@
       display: none;
     }
   }
-}
 
-.selected-entry {
-  padding: 0px;
-  height: 100%;
+  .selected-entry {
+    padding: 0.75rem;
+    box-sizing: border-box;
 
-  mat-toolbar {
-    @extend %body-medium-01;
-    padding-left: 9px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    line-height: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: auto;
-  }
+    .title {
+      @extend %heading-400;
+      margin: 0 0 0.75rem 0;
+      padding: 0;
+    }
 
-  section {
-    height: 100%;
-    overflow: auto;
-    padding: 10px;
-  }
-}
+    .subtitle {
+      @extend %body-bold-01;
+      margin: 2rem 0 0.5rem 0;
+    }
 
-.entry-statistics {
-  div {
-    padding: 3px;
+    .entry-statistics {
+      .total-time > span {
+        color: var(--dynamic-purple-01);
+      }
 
-    label {
-      opacity: 0.7;
+      ng-execution-details {
+        margin-top: 1.5rem;
+      }
+
+      ul {
+        list-style-type: square;
+        margin-block-start: 0;
+        padding-inline-start: 1.5rem;
+
+        li {
+          margin-bottom: 0.375rem;
+        }
+      }
     }
   }
-
-  span {
-    color: var(--purple-01);
-  }
-}
-
-.txt-total-time {
-  @extend %body-bold-01;
-}
-
-ul {
-  list-style-type: square;
-  margin-block-start: 0px;
-  padding-inline-start: 20px;
 }

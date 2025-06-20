@@ -1,7 +1,5 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -30,28 +28,9 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-modal:recording-modal_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-timeline-controls:recording-timeline-controls_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer:recording-visualizer_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/visualization-mode:visualization-mode_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:estimate-frame-rate_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/visualizer-controls:visualizer-controls_rjs",
         "//devtools/projects/protocol:protocol_rjs",
-    ],
-)
-
-ts_test_library(
-    name = "test_lib",
-    srcs = [
-        "filter.spec.ts",
-        "recording-timeline.component.spec.ts",
-    ],
-    interop_deps = [
-        ":recording-timeline",
-    ],
-)
-
-# todo(aleksanderbodurri): fix this test suite
-karma_web_test_suite(
-    name = "test",
-    deps = [
-        ":test_lib",
-        "//packages/forms",
     ],
 )

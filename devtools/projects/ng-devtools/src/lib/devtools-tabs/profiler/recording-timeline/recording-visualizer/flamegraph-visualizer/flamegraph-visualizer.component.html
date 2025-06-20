@@ -1,8 +1,5 @@
-<div class="level-profile-wrapper">
-  <ngx-flamegraph
-    (frameClick)="selectFrame($event)"
-    [config]="{ data: profilerBars(), color: colors() }"
-    siblingLayout="equal"
-  >
-  </ngx-flamegraph>
-</div>
+<ngx-flamegraph
+  (frameClick)="selectFrame($event)"
+  [config]="{ data: profilerBars(), color: colors() }"
+  siblingLayout="equal"
+/>

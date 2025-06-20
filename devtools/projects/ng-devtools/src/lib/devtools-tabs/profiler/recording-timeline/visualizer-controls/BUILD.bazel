@@ -22,7 +22,7 @@ ng_project(
         "//packages/core",
     ],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/visualization-mode:visualization-mode_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
