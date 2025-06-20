@@ -1,0 +1,31 @@
+<article class="container">
+  <h2>Demo: Fetching User Data</h2>
+  <p>Click the buttons to change the user ID. The <code>resource</code> will automatically re-fetch the data and update the status.</p>
+
+  <section class="button-group">
+    <button (click)="selectUser(1)">User 1</button>
+    <button (click)="selectUser(2)">User 2</button>
+    <button (click)="selectUser(99)" class="error-btn">User 99 (Error)</button>
+  </section>
+
+  <section class="result-box">
+    @switch (userResource.status()) {
+      @case ('loading') {
+        <p>Status: <span class="status-loading">Loading...</span></p>
+      }
+      @case ('resolved') {
+        <p>Status: <span class="status-resolved">Resolved</span></p>
+        @if (userResource.value(); as user) {
+          <p>Name: <strong>{{ user.name }}</strong></p>
+          <p>Email: <strong>{{ user.email }}</strong></p>
+        }
+      }
+      @case ('error') {
+        <p>Status: <span class="status-error">Error</span></p>
+        @if (userResource.error(); as error) {
+          <p>{{ error.message }}</p>
+        }
+      }
+    }
+  </section>
+</article>

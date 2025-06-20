@@ -1,0 +1,52 @@
+:host {
+  display: block;
+  font-family: sans-serif;
+}
+
+.container {
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin: auto;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1.3em;
+  color: #ffffff;
+}
+
+p {
+  color: #b0b0b0;
+  font-size: 0.9em;
+  line-height: 1.6;
+  max-width: 90%;
+}
+
+.layout-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+  align-items: start;
+}
+
+.box {
+  background-color: #1e1e1e;
+  padding: 24px;
+  border-radius: 8px;
+}
+
+.summary-box {
+  border: 1px solid #007bff;
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #ffffff;
+}

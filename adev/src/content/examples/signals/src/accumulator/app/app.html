@@ -1,0 +1,15 @@
+<article class="container">
+  <h2>Demo: Accumulating List</h2>
+  <p>Click "Load More" to trigger the <code>nextPageData</code> source signal. The <code>linkedSignal</code> for <code>allItems</code> will run its computation, appending the new data to the previous list.</p>
+
+  <button (click)="loadNextPage()">Load More</button>
+
+  <section class="list-box">
+    <h3>All Items:</h3>
+    <ul>
+      @for (item of allItems(); track $index) {
+        <li>{{ item }}</li>
+      }
+    </ul>
+  </section>
+</article>

@@ -1,0 +1,17 @@
+<article class="container">
+  <h2>Demo: Reacting to Child State</h2>
+  <p>The parent uses <code>viewChild()</code> to get a reference to the child panel, then uses a <code>computed</code> signal to derive its status.</p>
+
+  <section class="box parent-box">
+    <h3>Parent Component</h3>
+    <button (click)="toggleChild()">Toggle Child Panel</button>
+    <div class="status-display">
+      Child panel status: <strong>{{ childStatus() }}</strong>
+    </div>
+  </section>
+
+  <section class="box child-box">
+    <h3>Simulated Child Panel</h3>
+    <app-child #panel></app-child>
+  </section>
+</article>

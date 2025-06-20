@@ -1,0 +1,20 @@
+<article class="container">
+  <h2>Demo: Live Product Filter</h2>
+  <p>As you type in the search box, a <code>computed</code> signal instantly filters the product list. The logic is purely declarative.</p>
+
+  <div class="form-group">
+    <label for="productSearch">Search Products:</label>
+    <input id="productSearch" type="text" [(ngModel)]="searchTerm" placeholder="e.g., 'Laptop' or 'Elec...'">
+  </div>
+
+  <section class="result-box">
+    <h3>Filtered Products</h3>
+    <ul>
+      @for (product of filteredProducts(); track product.id) {
+        <li>{{ product.name }} ({{ product.category }})</li>
+      } @empty {
+        <p class="placeholder">No products found.</p>
+      }
+    </ul>
+  </section>
+</article>

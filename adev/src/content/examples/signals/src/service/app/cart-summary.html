@@ -1,0 +1,16 @@
+<section class="summary-container">
+  <div class="summary-item">
+    <span class="label">Items:</span>
+    <span class="value">{{ cartService.itemCount() }}</span>
+  </div>
+  <div class="summary-item total">
+    <span class="label">Total:</span>
+    <span class="value">${{ cartService.totalPrice().toFixed(2) }}</span>
+  </div>
+  <hr>
+  <ul class="item-list">
+    @for(item of cartService.items(); track item.product.id) {
+      <li>{{ item.product.name }} (x{{ item.quantity }})</li>
+    }
+  </ul>
+</section>

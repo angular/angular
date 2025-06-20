@@ -1,0 +1,23 @@
+<article class="container">
+  <h2>Demo: Breaking the Reactive Chain</h2>
+  <p>An <code>effect</code> watches the user signal. It reads the activity counter using <code>untracked()</code>, so the effect only runs when the user changes.</p>
+
+  <section class="state-display">
+    <p>Current User: <strong>{{ currentUser().name }}</strong></p>
+    <p>Activity Counter: <strong>{{ activityCounter() }}</strong></p>
+  </section>
+
+  <section class="button-group">
+    <button class="action-btn" (click)="changeUser()">Change User (Triggers Effect)</button>
+    <button (click)="incrementActivity()">Increment Activity (Untracked)</button>
+  </section>
+
+  <section class="result-box">
+    <h3>Simulated Log</h3>
+    <div class="log-output">
+      @for (entry of log(); track $index) {
+        <span>{{ entry }}</span>
+      }
+    </div>
+  </section>
+</article>

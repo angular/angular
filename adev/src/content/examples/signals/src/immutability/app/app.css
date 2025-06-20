@@ -1,0 +1,151 @@
+:host {
+  display: block;
+  font-family: sans-serif;
+}
+
+.container {
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin: auto;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1.3em;
+  color: #ffffff;
+}
+
+p {
+  color: #b0b0b0;
+  font-size: 0.9em;
+  line-height: 1.6;
+  max-width: 100%;
+}
+
+code {
+  background-color: #444;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+label {
+  margin-bottom: 8px;
+  font-size: 0.9em;
+  color: #c0c0c0;
+}
+
+input {
+  background-color: #3a3a3a;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 12px;
+  color: #e0e0e0;
+  font-size: 1em;
+}
+
+input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.layout-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 24px 0;
+  align-items: start;
+}
+
+.box {
+  background-color: #1e1e1e;
+  padding: 24px;
+  border-radius: 8px;
+}
+
+.correct-box {
+  border: 1px solid #28a745;
+}
+
+.incorrect-box {
+  border: 1px solid #c82333;
+}
+
+.result-box {
+  background-color: #1e1e1e;
+  padding: 24px;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.display-section h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #ffffff;
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #ffffff;
+}
+
+.box p {
+  font-size: 0.85em;
+  min-height: 70px;
+}
+
+button {
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: white;
+  background-color: #5a6268;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+button:hover {
+  background-color: #6c757d;
+}
+
+ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+li {
+  padding: 4px 0;
+  color: #d0d0d0;
+}
+
+.list-length {
+  font-size: 1.1em;
+  margin: 0;
+}
+
+.list-length {
+  font-size: 16px;
+  color: #d0d0d0;
+}

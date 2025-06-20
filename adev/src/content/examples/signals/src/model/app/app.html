@@ -1,0 +1,19 @@
+<article class="container">
+  <h2>Demo: Two-Way Bound Counter</h2>
+  <p>Interactions in either component update the state in both places, demonstrating seamless two-way data binding with <code>model()</code>.</p>
+
+  <div class="components-wrapper">
+    <section class="box parent-box">
+      <h3>Parent Component</h3>
+      <div class="parent-content">
+        <p>Parent's count: <strong>{{ currentCount() }}</strong></p>
+        <button (click)="setParentTo100()">Set Parent to 100</button>
+      </div>
+    </section>
+
+    <section class="box child-box">
+      <h3>Child Component (with <code>model</code>)</h3>
+      <app-child [(value)]="currentCount"></app-child>
+    </section>
+  </div>
+</article>

@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 16px;
+}
+
+.card {
+  border-radius: 8px;
+  padding: 24px;
+  width: 250px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.card.dark {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+
+.card.light {
+  background-color: #e0e0e0;
+  color: #1e1e1e;
+  border: 1px solid #ccc;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+p {
+  margin: 0;
+  font-size: 1em;
+}
+
+.card.light p {
+  color: #333;
+}
+
+.card.dark p {
+  color: #b0b0b0;
+}
