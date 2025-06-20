@@ -11,11 +11,14 @@ import {TestBed} from '@angular/core/testing';
 import {
   apply,
   applyEach,
+  applyWhen,
   disabled,
   error,
   FieldPath,
   form,
   FormTreeError,
+  MIN,
+  min,
   readonly,
   required,
   REQUIRED,
@@ -26,6 +29,11 @@ import {
   validate,
   validateTree,
 } from '../public_api';
+
+interface TreeData {
+  level: number;
+  next: TreeData;
+}
 
 const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
 
@@ -987,10 +995,6 @@ describe('FieldNode', () => {
     });
 
     it('should support recursive logic', () => {
-      interface TreeData {
-        level: number;
-        next: TreeData;
-      }
       const s = schema<TreeData>((p) => {
         disabled(p.level, ({valueOf}) => {
           return valueOf(p.level) % 2 === 0;
@@ -1009,10 +1013,6 @@ describe('FieldNode', () => {
     });
 
     it('should support co-recursive logic', () => {
-      interface TreeData {
-        level: number;
-        next: TreeData;
-      }
       const s1: Schema<TreeData> = schema((p) => {
         disabled(p.level, ({valueOf}) => valueOf(p.level) % 2 === 0);
         apply(p.next, s2);
@@ -1033,6 +1033,32 @@ describe('FieldNode', () => {
       expect(f.next.level().disabled()).toBe(false);
       expect(f.next.next.level().disabled()).toBe(true);
       expect(f.next.next.next.level().disabled()).toBe(false);
+    });
+
+    it('should support recursive logic terminated by a when condition', () => {
+      const s: Schema<TreeData> = schema((p) => {
+        min(p.level, ({valueOf}) => valueOf(p.level));
+        applyWhen(
+          p.next,
+          ({valueOf}) => {
+            return valueOf(p.level) !== 2;
+          },
+          s,
+        );
+      });
+      const f = form<TreeData>(
+        signal({
+          level: 0,
+          next: {level: 1, next: {level: 2, next: {level: 3, next: {level: 4, next: null!}}}},
+        }),
+        s,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f.level().metadata(MIN)()).toBe(0);
+      expect(f.next.level().metadata(MIN)()).toBe(1);
+      expect(f.next.next.level().metadata(MIN)()).toBe(2);
+      expect(f.next.next.next.level().metadata(MIN)()).toBe(undefined);
+      expect(f.next.next.next.next.level().metadata(MIN)()).toBe(undefined);
     });
   });
 });
