@@ -18,7 +18,6 @@ import {
   ParsedHostBindings,
   ParseError,
   parseHostBindings,
-  ParserError,
   R3DirectiveMetadata,
   R3HostDirectiveMetadata,
   R3InputMetadata,
@@ -1713,12 +1712,12 @@ function getHostBindingErrorNode(error: ParseError, hostExpr: ts.Expression): ts
   // confidently match the error to its expression by looking at the string value that the parser
   // failed to parse and the initializers for each of the properties. If we fail to match, we fall
   // back to the old behavior where the error is reported on the entire `host` object.
-  if (ts.isObjectLiteralExpression(hostExpr) && error.relatedError instanceof ParserError) {
+  if (ts.isObjectLiteralExpression(hostExpr)) {
     for (const prop of hostExpr.properties) {
       if (
         ts.isPropertyAssignment(prop) &&
         ts.isStringLiteralLike(prop.initializer) &&
-        prop.initializer.text === error.relatedError.input
+        error.msg.includes(`[${prop.initializer.text}]`)
       ) {
         return prop.initializer;
       }
