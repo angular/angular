@@ -11,7 +11,6 @@ import {
   AbsoluteSourceSpan,
   AST,
   ASTWithSource,
-  BindingPipe,
   BindingType,
   BoundElementProperty,
   Call,
@@ -24,7 +23,6 @@ import {
   ParsedProperty,
   ParsedPropertyType,
   ParsedVariable,
-  ParserError,
   PropertyRead,
   TemplateBinding,
   ThisReceiver,
@@ -144,22 +142,23 @@ export class BindingParser {
     sourceSpan: ParseSourceSpan,
     interpolatedTokens: InterpolatedAttributeToken[] | InterpolatedTextToken[] | null,
   ): ASTWithSource {
-    const sourceInfo = sourceSpan.start.toString();
     const absoluteOffset = sourceSpan.fullStart.offset;
 
     try {
       const ast = this._exprParser.parseInterpolation(
         value,
-        sourceInfo,
+        sourceSpan,
         absoluteOffset,
         interpolatedTokens,
         this._interpolationConfig,
       )!;
-      if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
+      if (ast) {
+        this.errors.push(...ast.errors);
+      }
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceSpan, absoluteOffset);
     }
   }
 
@@ -169,20 +168,21 @@ export class BindingParser {
    * This is used for parsing the switch expression in ICUs.
    */
   parseInterpolationExpression(expression: string, sourceSpan: ParseSourceSpan): ASTWithSource {
-    const sourceInfo = sourceSpan.start.toString();
     const absoluteOffset = sourceSpan.start.offset;
 
     try {
       const ast = this._exprParser.parseInterpolationExpression(
         expression,
-        sourceInfo,
+        sourceSpan,
         absoluteOffset,
       );
-      if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
+      if (ast) {
+        this.errors.push(...ast.errors);
+      }
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceSpan, absoluteOffset);
     }
   }
 
@@ -279,17 +279,15 @@ export class BindingParser {
     absoluteKeyOffset: number,
     absoluteValueOffset: number,
   ): TemplateBinding[] {
-    const sourceInfo = sourceSpan.start.toString();
-
     try {
       const bindingsResult = this._exprParser.parseTemplateBindings(
         tplKey,
         tplValue,
-        sourceInfo,
+        sourceSpan,
         absoluteKeyOffset,
         absoluteValueOffset,
       );
-      this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
+      bindingsResult.errors.forEach((e) => this.errors.push(e));
       bindingsResult.warnings.forEach((warning) => {
         this._reportError(warning, sourceSpan, ParseErrorLevel.WARNING);
       });
@@ -500,27 +498,27 @@ export class BindingParser {
     sourceSpan: ParseSourceSpan,
     absoluteOffset: number,
   ): ASTWithSource {
-    const sourceInfo = ((sourceSpan && sourceSpan.start) || '(unknown)').toString();
-
     try {
       const ast = isHostBinding
         ? this._exprParser.parseSimpleBinding(
             value,
-            sourceInfo,
+            sourceSpan,
             absoluteOffset,
             this._interpolationConfig,
           )
         : this._exprParser.parseBinding(
             value,
-            sourceInfo,
+            sourceSpan,
             absoluteOffset,
             this._interpolationConfig,
           );
-      if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
+      if (ast) {
+        this.errors.push(...ast.errors);
+      }
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceSpan, absoluteOffset);
     }
   }
 
@@ -748,27 +746,26 @@ export class BindingParser {
   }
 
   private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
-    const sourceInfo = ((sourceSpan && sourceSpan.start) || '(unknown').toString();
     const absoluteOffset = sourceSpan && sourceSpan.start ? sourceSpan.start.offset : 0;
 
     try {
       const ast = this._exprParser.parseAction(
         value,
-        sourceInfo,
+        sourceSpan,
         absoluteOffset,
         this._interpolationConfig,
       );
       if (ast) {
-        this._reportExpressionParserErrors(ast.errors, sourceSpan);
+        this.errors.push(...ast.errors);
       }
       if (!ast || ast.ast instanceof EmptyExpr) {
         this._reportError(`Empty expressions are not allowed`, sourceSpan);
-        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
+        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceSpan, absoluteOffset);
       }
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceSpan, absoluteOffset);
     }
   }
 
@@ -776,15 +773,8 @@ export class BindingParser {
     message: string,
     sourceSpan: ParseSourceSpan,
     level: ParseErrorLevel = ParseErrorLevel.ERROR,
-    relatedError?: ParserError,
   ) {
-    this.errors.push(new ParseError(sourceSpan, message, level, relatedError));
-  }
-
-  private _reportExpressionParserErrors(errors: ParserError[], sourceSpan: ParseSourceSpan) {
-    for (const error of errors) {
-      this._reportError(error.message, sourceSpan, undefined, error);
-    }
+    this.errors.push(new ParseError(sourceSpan, message, level));
   }
 
   /**

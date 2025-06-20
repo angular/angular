@@ -387,7 +387,7 @@ class _I18nVisitor implements html.Visitor {
     const expression = token.parts[1];
     const expr = this._expressionParser.parseBinding(
       expression,
-      /* location */ token.sourceSpan.start.toString(),
+      /* location */ token.sourceSpan,
       /* absoluteOffset */ token.sourceSpan.start.offset,
       this._interpolationConfig,
     );
