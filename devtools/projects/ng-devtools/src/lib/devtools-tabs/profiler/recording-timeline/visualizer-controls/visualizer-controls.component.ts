@@ -8,7 +8,6 @@
 
 import {ChangeDetectionStrategy, Component, input, model} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
-import {MatCheckbox} from '@angular/material/checkbox';
 
 import {ProfilerFrame} from '../../../../../../../protocol';
 import {VisualizationMode} from '../visualization-mode';
@@ -17,11 +16,11 @@ import {VisualizationMode} from '../visualization-mode';
   selector: 'ng-visualizer-controls',
   templateUrl: './visualizer-controls.component.html',
   styleUrl: './visualizer-controls.component.scss',
-  imports: [MatCheckbox, DecimalPipe],
+  imports: [DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VisualizerControlsComponent {
-  readonly record = input<ProfilerFrame>();
+  readonly record = input.required<ProfilerFrame>();
   readonly estimatedFrameRate = input.required<number>();
 
   readonly visualizationMode = model.required<VisualizationMode>();

@@ -18,7 +18,9 @@ import {
   ElementRef,
   inject,
   input,
+  linkedSignal,
   output,
+  Signal,
   signal,
   viewChild,
 } from '@angular/core';
@@ -28,13 +30,27 @@ import {TabUpdate} from '../../../tab-update/index';
 import {GraphNode} from '../record-formatter/record-formatter';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
-import {MatCard} from '@angular/material/card';
-import {NgStyle} from '@angular/common';
-import {MatIconButton} from '@angular/material/button';
+import {DecimalPipe, NgStyle} from '@angular/common';
 import {ProfilerFrame} from '../../../../../../../protocol';
+import {ButtonComponent} from '../../../../shared/button/button.component';
 
-const ITEM_WIDTH = 25;
+const ITEM_GAP = 2.5;
+const ITEM_WIDTH = 18;
 const MAX_HEIGHT = 100;
+const DRAG_SCROLL_SPEED = 2;
+
+/** Returns a linked signal that resets on source change. */
+function framesBoundSignal<T>(source: Signal<ProfilerFrame[]>, defaultValue: T) {
+  return linkedSignal<ProfilerFrame[], T>({
+    source,
+    computation: (source, prev) => {
+      if (source.length !== prev?.source.length) {
+        return defaultValue;
+      }
+      return prev.value;
+    },
+  });
+}
 
 @Component({
   selector: 'ng-frame-selector',
@@ -44,14 +60,14 @@ const MAX_HEIGHT = 100;
     :host { --max-bar-height: ${MAX_HEIGHT}px }
   `,
   imports: [
-    MatCard,
     MatTooltip,
     MatIcon,
-    MatIconButton,
     CdkVirtualScrollViewport,
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
     NgStyle,
+    ButtonComponent,
+    DecimalPipe,
   ],
 })
 export class FrameSelectorComponent {
@@ -64,9 +80,11 @@ export class FrameSelectorComponent {
 
   readonly viewport = viewChild.required<CdkVirtualScrollViewport>(CdkVirtualScrollViewport);
 
-  readonly startFrameIndex = signal(-1);
-  readonly endFrameIndex = signal(-1);
-  readonly selectedFrameIndexes = signal(new Set<number>());
+  readonly startFrameIndex = framesBoundSignal<number>(this.frames, -1);
+  readonly endFrameIndex = framesBoundSignal<number>(this.frames, -1);
+  readonly selectedFrameIndexes = framesBoundSignal<Set<number>>(this.frames, new Set());
+
+  readonly dragScrolling = signal(false);
   readonly frameCount = computed(() => this.frames().length);
   readonly disableNextFrameButton = computed(
     () => this.endFrameIndex() >= this.frameCount() - 1 || this.selectedFrameIndexes().size > 1,
@@ -84,7 +102,7 @@ export class FrameSelectorComponent {
 
   private _viewportScrollState = {scrollLeft: 0, xCoordinate: 0, isDragScrolling: false};
 
-  readonly itemWidth = ITEM_WIDTH;
+  readonly itemWidth = ITEM_WIDTH + ITEM_GAP;
 
   private readonly maxFrameDuration = computed(() =>
     this.frames().reduce((acc: number, frame: ProfilerFrame) => Math.max(acc, frame.duration), 0),
@@ -212,10 +230,12 @@ export class FrameSelectorComponent {
   }
 
   stopDragScrolling(): void {
+    this.dragScrolling.set(false);
     this._viewportScrollState.isDragScrolling = false;
   }
 
   startDragScroll(event: MouseEvent): void {
+    this.dragScrolling.set(true);
     this._viewportScrollState = {
       xCoordinate: event.clientX,
       scrollLeft: this.viewport().elementRef.nativeElement.scrollLeft,
@@ -228,10 +248,9 @@ export class FrameSelectorComponent {
       return;
     }
 
-    const dragScrollSpeed = 2;
     const dx = event.clientX - this._viewportScrollState.xCoordinate;
     this.viewport().elementRef.nativeElement.scrollLeft =
-      this._viewportScrollState.scrollLeft - dx * dragScrollSpeed;
+      this._viewportScrollState.scrollLeft - dx * DRAG_SCROLL_SPEED;
   }
 
   private getBarStyles(frame: ProfilerFrame, multiplicationFactor: number): GraphNode {
@@ -243,9 +262,7 @@ export class FrameSelectorComponent {
 
     const style = {
       'background-image': `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,
-      cursor: 'pointer',
-      'min-width': '25px',
-      width: '25px',
+      width: ITEM_WIDTH + 'px',
       height: MAX_HEIGHT + 'px',
     };
     const toolTip = `${frame.source} TimeSpent: ${frame.duration.toFixed(3)}ms`;
@@ -254,12 +271,12 @@ export class FrameSelectorComponent {
 
   private getColorByFrameRate(framerate: number): string {
     if (framerate >= 60) {
-      return '#d6f0d1';
-    } else if (framerate < 60 && framerate >= 30) {
-      return '#f2dca2';
-    } else if (framerate < 30 && framerate >= 15) {
-      return '#f9cc9d';
+      return 'var(--dynamic-green-01)';
+    } else if (60 > framerate && framerate >= 30) {
+      return 'var(--dynamic-yellow-01)';
+    } else if (30 > framerate && framerate >= 15) {
+      return 'var(--dynamic-red-03)';
     }
-    return '#fad1d1';
+    return 'var(--dynamic-red-01)';
   }
 }

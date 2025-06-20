@@ -6,6 +6,10 @@
   cursor: pointer;
   padding: 0.375rem 0.75rem;
 
+  &.size-mid {
+    padding: 0.25rem 0.75rem;
+  }
+
   &.size-compact {
     padding: 0.1rem 0.5rem;
   }

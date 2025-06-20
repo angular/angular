@@ -22,7 +22,6 @@ ng_project(
         "//packages/core",
     ],
     deps = [
-        "//:node_modules/@angular/material",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/visualization-mode:visualization-mode_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],

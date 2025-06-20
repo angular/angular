@@ -143,6 +143,17 @@ mat-form-field {
   }
 }
 
+.multiline-tooltip {
+  white-space: pre-line;
+}
+
 [hidden] {
   display: none !important;
+}
+
+.ver-ruler {
+  width: 1px;
+  height: 100%;
+  background-color: var(--color-separator);
+  margin-inline: 0.875rem;
 }

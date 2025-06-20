@@ -18,6 +18,10 @@
     color: var(--tertiary-contrast);
   }
 
+  &[type='checkbox'] {
+    cursor: pointer;
+  }
+
   &.size-mid {
     padding: 0.25rem 0.75rem;
   }
@@ -55,4 +59,8 @@
 
 .ng-textarea {
   border-radius: 0.75rem;
+}
+
+label[for] {
+  cursor: pointer;
 }

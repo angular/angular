@@ -1,44 +1,46 @@
-<mat-card class="bar-graph-container">
-  <p class="txt-frames" matTooltip="{{ selectionLabel() }} / {{ frameCount() }}">
-    {{ selectionLabel() }} / {{ frameCount() }}
-  </p>
+<p class="selected-frame">{{ selectionLabel() }} / {{ frameCount() }}</p>
 
-  <button
-    mat-icon-button
-    (click)="move(-1)"
-    [disabled]="disablePreviousFrameButton()"
-    matTooltip="Select previous frame"
-    aria-label="Select previous frame"
-  >
-    <mat-icon>chevron_left</mat-icon>
-  </button>
+<button
+  ng-button
+  btnType="icon"
+  (click)="move(-1)"
+  [disabled]="disablePreviousFrameButton()"
+  matTooltip="Select previous frame"
+  aria-label="Select previous frame"
+>
+  <mat-icon>chevron_left</mat-icon>
+</button>
 
-  <cdk-virtual-scroll-viewport
-    #barContainer
-    orientation="horizontal"
-    [itemSize]="itemWidth"
-    class="bar-container"
-    (mouseleave)="stopDragScrolling()"
-    (mousedown)="startDragScroll($event)"
-    (mouseup)="stopDragScrolling()"
-    (mousemove)="dragScroll($event)"
-  >
-    <div
-      *cdkVirtualFor="let d of graphData(); let i = index"
-      [ngStyle]="d.style"
-      class="frame-bar"
-      [class.selected]="selectedFrameIndexes().has(i)"
-      (click)="handleFrameSelection(i, $event)"
-    ></div>
-  </cdk-virtual-scroll-viewport>
+<cdk-virtual-scroll-viewport
+  #barContainer
+  orientation="horizontal"
+  [itemSize]="itemWidth"
+  class="bar-container"
+  (mouseleave)="stopDragScrolling()"
+  (mousedown)="startDragScroll($event)"
+  (mouseup)="stopDragScrolling()"
+  (mousemove)="dragScroll($event)"
+  [class.drag-scrolling]="dragScrolling()"
+>
+  <div
+    *cdkVirtualFor="let d of graphData(); let i = index"
+    [ngStyle]="d.style"
+    class="frame-bar"
+    [class.selected]="selectedFrameIndexes().has(i)"
+    (click)="handleFrameSelection(i, $event)"
+    [matTooltip]="'Time spent: ' + (d.frame.duration | number) + 'ms\nSource: ' + d.frame.source"
+    [matTooltipShowDelay]="375"
+    matTooltipClass="multiline-tooltip"
+  ></div>
+</cdk-virtual-scroll-viewport>
 
-  <button
-    mat-icon-button
-    (click)="move(1)"
-    [disabled]="disableNextFrameButton()"
-    matTooltip="Select next frame"
-    aria-label="Select next frame"
-  >
-    <mat-icon>chevron_right</mat-icon>
-  </button>
-</mat-card>
+<button
+  ng-button
+  btnType="icon"
+  (click)="move(1)"
+  [disabled]="disableNextFrameButton()"
+  matTooltip="Select next frame"
+  aria-label="Select next frame"
+>
+  <mat-icon>chevron_right</mat-icon>
+</button>
