@@ -685,11 +685,8 @@ describe('navigation', () => {
           },
         });
 
-        const nextEvent = locals.nextNavigateEvent();
         locals.navigation.pushState(null, '', '/pushed-throw');
-        await new Promise(async (resolve) => {
-          (await nextEvent).signal.onabort = resolve;
-        });
+        await new Promise((resolve) => setTimeout(resolve));
 
         expect(precommitHandlerCalled).toBeTrue();
         expect(locals.navigation.currentEntry.url).not.toBe('https://test.com/pushed-reject');
