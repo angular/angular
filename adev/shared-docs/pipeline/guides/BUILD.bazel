@@ -1,7 +1,56 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 
-ts_project(
+esbuild(
     name = "guides",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    bundle = True,
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    define = {
+        "HANDLE_MERMAID": "true",
+    },
+    entry_point = ":index.mts",
+    external = [
+        "jsdom",
+        "playwright-core",
+    ],
+    format = "esm",
+    output = "guides.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index_rjs",
+    ],
+)
+
+esbuild(
+    name = "guides_no_mermaid",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    bundle = True,
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    define = {
+        "HANDLE_MERMAID": "false",
+    },
+    entry_point = ":index.mts",
+    external = [
+        "jsdom",
+    ],
+    output = "guides-no-mermaid.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index_rjs",
+    ],
+)
+
+ts_project(
+    name = "guides_lib",
     srcs = glob(
         [
             "**/*.mts",
@@ -36,11 +85,7 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":guides_rjs",
+        ":guides_lib_rjs",
         "//:node_modules/@types/node",
     ],
 )
-
-exports_files([
-    "index.mts",
-])

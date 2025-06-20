@@ -18,7 +18,7 @@ ts_project(
         "//:node_modules/tinyglobby",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/pipeline/examples/shared:shared_rjs",
-        "//adev/shared-docs/pipeline/guides:guides_rjs",
+        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
     ],
 )
 
