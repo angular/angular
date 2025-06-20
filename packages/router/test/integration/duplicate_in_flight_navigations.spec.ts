@@ -36,58 +36,60 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
       });
     });
 
-    it('should reset location if a navigation by location is successful', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+    it('should reset location if a navigation by location is successful', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: 'simple',
-          component: SimpleCmp,
-          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: 'simple',
+            component: SimpleCmp,
+            canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
+          },
+        ]);
 
-      // Trigger two location changes to the same URL.
-      // Because of the guard the order will look as follows:
-      // - location change 'simple'
-      // - start processing the change, start a guard
-      // - location change 'simple'
-      // - the first location change gets canceled, the URL gets reset to '/'
-      // - the second location change gets finished, the URL should be reset to '/simple'
-      location.go('/simple');
-      location.historyGo(0);
-      location.historyGo(0);
+        // Trigger two location changes to the same URL.
+        // Because of the guard the order will look as follows:
+        // - location change 'simple'
+        // - start processing the change, start a guard
+        // - location change 'simple'
+        // - the first location change gets canceled, the URL gets reset to '/'
+        // - the second location change gets finished, the URL should be reset to '/simple'
+        location.go('/simple');
+        location.historyGo(0);
+        location.historyGo(0);
 
-      tick(2000);
-      advance(fixture);
+        tick(2000);
+        advance(fixture);
 
-      expect(location.path()).toEqual('/simple');
-    }));
+        expect(location.path()).toEqual('/simple');
+      }));
 
-    it('should skip duplicate location events', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+    it('should skip duplicate location events', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: 'blocked',
-          component: BlankCmp,
-          canActivate: [() => inject(RedirectingGuard).canActivate()],
-        },
-        {path: 'simple', component: SimpleCmp},
-      ]);
-      router.navigateByUrl('/simple');
-      advance(fixture);
+        router.resetConfig([
+          {
+            path: 'blocked',
+            component: BlankCmp,
+            canActivate: [() => inject(RedirectingGuard).canActivate()],
+          },
+          {path: 'simple', component: SimpleCmp},
+        ]);
+        router.navigateByUrl('/simple');
+        advance(fixture);
 
-      location.go('/blocked');
-      location.historyGo(0);
+        location.go('/blocked');
+        location.historyGo(0);
 
-      advance(fixture);
-      expect(fixture.nativeElement.innerHTML).toContain('simple');
-    }));
+        advance(fixture);
+        expect(fixture.nativeElement.innerHTML).toContain('simple');
+      }));
 
     it('should not cause URL thrashing', async () => {
       TestBed.configureTestingModule({
@@ -123,66 +125,68 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
       expect(urlChanges).toEqual(['/blocked', '/simple']);
     });
 
-    it('can render a 404 page without changing the URL', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
-      });
-      const router = TestBed.inject(Router);
-      TestBed.inject(RedirectingGuard).skipLocationChange = true;
-      const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+    it('can render a 404 page without changing the URL', () =>
+      fakeAsync(() => {
+        TestBed.configureTestingModule({
+          providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+        });
+        const router = TestBed.inject(Router);
+        TestBed.inject(RedirectingGuard).skipLocationChange = true;
+        const location = TestBed.inject(Location);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {path: 'home', component: SimpleCmp},
-        {
-          path: 'blocked',
-          component: BlankCmp,
-          canActivate: [() => inject(RedirectingGuard).canActivate()],
-        },
-        {path: 'simple', redirectTo: '404'},
-        {path: '404', component: SimpleCmp},
-      ]);
-      router.navigateByUrl('/home');
-      advance(fixture);
+        router.resetConfig([
+          {path: 'home', component: SimpleCmp},
+          {
+            path: 'blocked',
+            component: BlankCmp,
+            canActivate: [() => inject(RedirectingGuard).canActivate()],
+          },
+          {path: 'simple', redirectTo: '404'},
+          {path: '404', component: SimpleCmp},
+        ]);
+        router.navigateByUrl('/home');
+        advance(fixture);
 
-      location.go('/blocked');
-      location.historyGo(0);
-      advance(fixture);
-      expect(location.path()).toEqual('/blocked');
-      expect(fixture.nativeElement.innerHTML).toContain('simple');
-    }));
+        location.go('/blocked');
+        location.historyGo(0);
+        advance(fixture);
+        expect(location.path()).toEqual('/blocked');
+        expect(fixture.nativeElement.innerHTML).toContain('simple');
+      }));
 
-    it('should accurately track currentNavigation', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      router.resetConfig([
-        {
-          path: 'one',
-          component: SimpleCmp,
-          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
-        },
-        {
-          path: 'two',
-          component: BlankCmp,
-          canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
-        },
-      ]);
+    it('should accurately track currentNavigation', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        router.resetConfig([
+          {
+            path: 'one',
+            component: SimpleCmp,
+            canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
+          },
+          {
+            path: 'two',
+            component: BlankCmp,
+            canActivate: [() => new Promise((resolve) => setTimeout(resolve, 1000))],
+          },
+        ]);
 
-      router.events.subscribe((e) => {
-        if (e instanceof NavigationStart) {
-          if (e.url === '/one') {
-            router.navigateByUrl('two');
-          }
-          router.events.subscribe((e) => {
-            if (e instanceof GuardsCheckEnd) {
-              expect(router.getCurrentNavigation()?.extractedUrl.toString()).toEqual('/two');
-              expect(router.getCurrentNavigation()?.extras).toBeDefined();
+        router.events.subscribe((e) => {
+          if (e instanceof NavigationStart) {
+            if (e.url === '/one') {
+              router.navigateByUrl('two');
             }
-          });
-        }
-      });
+            router.events.subscribe((e) => {
+              if (e instanceof GuardsCheckEnd) {
+                expect(router.getCurrentNavigation()?.extractedUrl.toString()).toEqual('/two');
+                expect(router.getCurrentNavigation()?.extras).toBeDefined();
+              }
+            });
+          }
+        });
 
-      router.navigateByUrl('one');
-      tick(1000);
-    }));
+        router.navigateByUrl('one');
+        tick(1000);
+      }));
   });
 }

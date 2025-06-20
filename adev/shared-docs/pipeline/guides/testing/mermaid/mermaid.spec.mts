@@ -15,6 +15,7 @@ describe('markdown to html', () => {
   let markdownDocument: DocumentFragment;
 
   beforeAll(async () => {
+    (global as any).HANDLE_MERMAID = true;
     // This test was flaky, 1st attemp to fix it is by inlining the markdown content
     const markdownContent = `
 \`\`\`mermaid

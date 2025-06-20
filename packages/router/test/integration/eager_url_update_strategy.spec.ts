@@ -60,186 +60,192 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
       });
     });
 
-    it('should eagerly update the URL', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const location = TestBed.inject(Location);
-      const fixture = TestBed.createComponent(RootCmp);
-      advance(fixture);
+    it('should eagerly update the URL', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = TestBed.createComponent(RootCmp);
+        advance(fixture);
 
-      router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+        router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
 
-      router.navigateByUrl('/team/22');
-      advance(fixture);
-      expect(location.path()).toEqual('/team/22');
+        router.navigateByUrl('/team/22');
+        advance(fixture);
+        expect(location.path()).toEqual('/team/22');
 
-      expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
-
-      router.events.subscribe((e) => {
-        if (!(e instanceof GuardsCheckStart)) {
-          return;
-        }
-        expect(location.path()).toEqual('/team/33');
         expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
-        return of(null);
-      });
-      router.navigateByUrl('/team/33');
 
-      advance(fixture);
-      expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
-    }));
+        router.events.subscribe((e) => {
+          if (!(e instanceof GuardsCheckStart)) {
+            return;
+          }
+          expect(location.path()).toEqual('/team/33');
+          expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+          return of(null);
+        });
+        router.navigateByUrl('/team/33');
 
-    it('should eagerly update the URL', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const location = TestBed.inject(Location);
-      const fixture = TestBed.createComponent(RootCmp);
-      advance(fixture);
+        advance(fixture);
+        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
+      }));
 
-      router.resetConfig([
-        {
-          path: 'team/:id',
-          component: SimpleCmp,
-          canActivate: [
-            () =>
-              new Promise((res) => {
-                setTimeout(() => res(new DefaultUrlSerializer().parse('/login')), 1);
-              }),
-          ],
-        },
-        {path: 'login', component: AbsoluteSimpleLinkCmp},
-      ]);
+    it('should eagerly update the URL', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = TestBed.createComponent(RootCmp);
+        advance(fixture);
 
-      router.navigateByUrl('/team/22');
-      advance(fixture);
-      expect(location.path()).toEqual('/team/22');
+        router.resetConfig([
+          {
+            path: 'team/:id',
+            component: SimpleCmp,
+            canActivate: [
+              () =>
+                new Promise((res) => {
+                  setTimeout(() => res(new DefaultUrlSerializer().parse('/login')), 1);
+                }),
+            ],
+          },
+          {path: 'login', component: AbsoluteSimpleLinkCmp},
+        ]);
 
-      // Redirects to /login
-      advance(fixture, 1);
-      expect(location.path()).toEqual('/login');
+        router.navigateByUrl('/team/22');
+        advance(fixture);
+        expect(location.path()).toEqual('/team/22');
 
-      // Perform the same logic again, and it should produce the same result
-      router.navigateByUrl('/team/22');
-      advance(fixture);
-      expect(location.path()).toEqual('/team/22');
+        // Redirects to /login
+        advance(fixture, 1);
+        expect(location.path()).toEqual('/login');
 
-      // Redirects to /login
-      advance(fixture, 1);
-      expect(location.path()).toEqual('/login');
-    }));
+        // Perform the same logic again, and it should produce the same result
+        router.navigateByUrl('/team/22');
+        advance(fixture);
+        expect(location.path()).toEqual('/team/22');
 
-    it('should eagerly update URL after redirects are applied', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const location = TestBed.inject(Location);
-      const fixture = TestBed.createComponent(RootCmp);
-      advance(fixture);
+        // Redirects to /login
+        advance(fixture, 1);
+        expect(location.path()).toEqual('/login');
+      }));
 
-      router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+    it('should eagerly update URL after redirects are applied', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = TestBed.createComponent(RootCmp);
+        advance(fixture);
 
-      router.navigateByUrl('/team/22');
-      advance(fixture);
-      expect(location.path()).toEqual('/team/22');
+        router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
 
-      expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+        router.navigateByUrl('/team/22');
+        advance(fixture);
+        expect(location.path()).toEqual('/team/22');
 
-      let urlAtNavStart = '';
-      let urlAtRoutesRecognized = '';
-      router.events.subscribe((e) => {
-        if (e instanceof NavigationStart) {
-          urlAtNavStart = location.path();
-        }
-        if (e instanceof RoutesRecognized) {
-          urlAtRoutesRecognized = location.path();
-        }
-      });
+        expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
 
-      router.navigateByUrl('/team/33');
+        let urlAtNavStart = '';
+        let urlAtRoutesRecognized = '';
+        router.events.subscribe((e) => {
+          if (e instanceof NavigationStart) {
+            urlAtNavStart = location.path();
+          }
+          if (e instanceof RoutesRecognized) {
+            urlAtRoutesRecognized = location.path();
+          }
+        });
 
-      advance(fixture);
-      expect(urlAtNavStart).toBe('/team/22');
-      expect(urlAtRoutesRecognized).toBe('/team/33');
-      expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
-    }));
+        router.navigateByUrl('/team/33');
 
-    it('should set `state`', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const location = TestBed.inject(Location);
-      router.resetConfig([
-        {path: '', component: SimpleCmp},
-        {path: 'simple', component: SimpleCmp},
-      ]);
+        advance(fixture);
+        expect(urlAtNavStart).toBe('/team/22');
+        expect(urlAtRoutesRecognized).toBe('/team/33');
+        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
+      }));
 
-      const fixture = createRoot(router, RootCmp);
-      let navigation: Navigation = null!;
-      router.events.subscribe((e) => {
-        if (e instanceof NavigationStart) {
-          navigation = router.getCurrentNavigation()!;
-        }
-      });
+    it('should set `state`', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        router.resetConfig([
+          {path: '', component: SimpleCmp},
+          {path: 'simple', component: SimpleCmp},
+        ]);
 
-      router.navigateByUrl('/simple', {state: {foo: 'bar'}});
-      tick();
+        const fixture = createRoot(router, RootCmp);
+        let navigation: Navigation = null!;
+        router.events.subscribe((e) => {
+          if (e instanceof NavigationStart) {
+            navigation = router.getCurrentNavigation()!;
+          }
+        });
 
-      const state = location.getState() as any;
-      expect(state).toEqual({foo: 'bar', navigationId: 2});
-      expect(navigation.extras.state).toBeDefined();
-      expect(navigation.extras.state).toEqual({foo: 'bar'});
-    }));
+        router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+        tick();
 
-    it('can renavigate to rejected URL', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const canActivate = TestBed.inject(AuthGuard);
-      const location = TestBed.inject(Location);
-      router.resetConfig([
-        {path: '', component: BlankCmp},
-        {
-          path: 'simple',
-          component: SimpleCmp,
-          canActivate: [() => inject(AuthGuard).canActivate()],
-        },
-      ]);
-      const fixture = createRoot(router, RootCmp);
+        const state = location.getState() as any;
+        expect(state).toEqual({foo: 'bar', navigationId: 2});
+        expect(navigation.extras.state).toBeDefined();
+        expect(navigation.extras.state).toEqual({foo: 'bar'});
+      }));
 
-      // Try to navigate to /simple but guard rejects
-      canActivate.canActivateResult = false;
-      router.navigateByUrl('/simple');
-      advance(fixture);
-      expect(location.path()).toEqual('');
-      expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+    it('can renavigate to rejected URL', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const canActivate = TestBed.inject(AuthGuard);
+        const location = TestBed.inject(Location);
+        router.resetConfig([
+          {path: '', component: BlankCmp},
+          {
+            path: 'simple',
+            component: SimpleCmp,
+            canActivate: [() => inject(AuthGuard).canActivate()],
+          },
+        ]);
+        const fixture = createRoot(router, RootCmp);
 
-      // Renavigate to /simple without guard rejection, should succeed.
-      canActivate.canActivateResult = true;
-      router.navigateByUrl('/simple');
-      advance(fixture);
-      expect(location.path()).toEqual('/simple');
-      expect(fixture.nativeElement.innerHTML).toContain('simple');
-    }));
+        // Try to navigate to /simple but guard rejects
+        canActivate.canActivateResult = false;
+        router.navigateByUrl('/simple');
+        advance(fixture);
+        expect(location.path()).toEqual('');
+        expect(fixture.nativeElement.innerHTML).not.toContain('simple');
 
-    it('can renavigate to same URL during in-flight navigation', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const location = TestBed.inject(Location);
-      router.resetConfig([
-        {path: '', component: BlankCmp},
-        {
-          path: 'simple',
-          component: SimpleCmp,
-          canActivate: [() => inject(DelayedGuard).canActivate()],
-        },
-      ]);
-      const fixture = createRoot(router, RootCmp);
+        // Renavigate to /simple without guard rejection, should succeed.
+        canActivate.canActivateResult = true;
+        router.navigateByUrl('/simple');
+        advance(fixture);
+        expect(location.path()).toEqual('/simple');
+        expect(fixture.nativeElement.innerHTML).toContain('simple');
+      }));
 
-      // Start navigating to /simple, but do not flush the guard delay
-      router.navigateByUrl('/simple');
-      tick();
-      // eager update strategy so URL is already updated.
-      expect(location.path()).toEqual('/simple');
-      expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+    it('can renavigate to same URL during in-flight navigation', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        router.resetConfig([
+          {path: '', component: BlankCmp},
+          {
+            path: 'simple',
+            component: SimpleCmp,
+            canActivate: [() => inject(DelayedGuard).canActivate()],
+          },
+        ]);
+        const fixture = createRoot(router, RootCmp);
 
-      // Start an additional navigation to /simple and ensure at least one of those succeeds.
-      // It's not super important which one gets processed, but in the past, the router would
-      // cancel the in-flight one and not process the new one.
-      router.navigateByUrl('/simple');
-      tick(1000);
-      expect(location.path()).toEqual('/simple');
-      expect(fixture.nativeElement.innerHTML).toContain('simple');
-    }));
+        // Start navigating to /simple, but do not flush the guard delay
+        router.navigateByUrl('/simple');
+        tick();
+        // eager update strategy so URL is already updated.
+        expect(location.path()).toEqual('/simple');
+        expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+
+        // Start an additional navigation to /simple and ensure at least one of those succeeds.
+        // It's not super important which one gets processed, but in the past, the router would
+        // cancel the in-flight one and not process the new one.
+        router.navigateByUrl('/simple');
+        tick(1000);
+        expect(location.path()).toEqual('/simple');
+        expect(fixture.nativeElement.innerHTML).toContain('simple');
+      }));
   });
 }
