@@ -7,9 +7,9 @@
  */
 
 import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags';
-import {TokenError, tokenize, TokenizeOptions, TokenizeResult} from '../../src/ml_parser/lexer';
+import {tokenize, TokenizeOptions, TokenizeResult} from '../../src/ml_parser/lexer';
 import {Token, TokenType} from '../../src/ml_parser/tokens';
-import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
+import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
 
 describe('HtmlLexer', () => {
   describe('line/column numbers', () => {
@@ -112,15 +112,11 @@ describe('HtmlLexer', () => {
     });
 
     it('should report <!- without -', () => {
-      expect(tokenizeAndHumanizeErrors('<!-a')).toEqual([
-        [TokenType.COMMENT_START, 'Unexpected character "a"', '0:3'],
-      ]);
+      expect(tokenizeAndHumanizeErrors('<!-a')).toEqual([['Unexpected character "a"', '0:3']]);
     });
 
     it('should report missing end comment', () => {
-      expect(tokenizeAndHumanizeErrors('<!--')).toEqual([
-        [TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:4'],
-      ]);
+      expect(tokenizeAndHumanizeErrors('<!--')).toEqual([['Unexpected character "EOF"', '0:4']]);
     });
 
     it('should accept comments finishing by too many dashes (even number)', () => {
@@ -158,9 +154,7 @@ describe('HtmlLexer', () => {
     });
 
     it('should report missing end doctype', () => {
-      expect(tokenizeAndHumanizeErrors('<!')).toEqual([
-        [TokenType.DOC_TYPE, 'Unexpected character "EOF"', '0:2'],
-      ]);
+      expect(tokenizeAndHumanizeErrors('<!')).toEqual([['Unexpected character "EOF"', '0:2']]);
     });
   });
 
@@ -184,14 +178,12 @@ describe('HtmlLexer', () => {
     });
 
     it('should report <![ without CDATA[', () => {
-      expect(tokenizeAndHumanizeErrors('<![a')).toEqual([
-        [TokenType.CDATA_START, 'Unexpected character "a"', '0:3'],
-      ]);
+      expect(tokenizeAndHumanizeErrors('<![a')).toEqual([['Unexpected character "a"', '0:3']]);
     });
 
     it('should report missing end cdata', () => {
       expect(tokenizeAndHumanizeErrors('<![CDATA[')).toEqual([
-        [TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:9'],
+        ['Unexpected character "EOF"', '0:9'],
       ]);
     });
   });
@@ -1069,7 +1061,6 @@ describe('HtmlLexer', () => {
           tokenizeAndHumanizeErrors(`<p>before { after</p>`, {tokenizeExpansionForms: true}),
         ).toEqual([
           [
-            TokenType.RAW_TEXT,
             `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
             '0:21',
           ],
@@ -1083,7 +1074,6 @@ describe('HtmlLexer', () => {
           }),
         ).toEqual([
           [
-            TokenType.RAW_TEXT,
             `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
             '0:56',
           ],
@@ -1095,7 +1085,7 @@ describe('HtmlLexer', () => {
         const file = new ParseSourceFile(src, 'file://');
         const location = new ParseLocation(file, 12, 123, 456);
         const span = new ParseSourceSpan(location, location);
-        const error = new TokenError('**ERROR**', null!, span);
+        const error = new ParseError(span, '**ERROR**');
         expect(error.toString()).toEqual(
           `**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`,
         );
@@ -1192,15 +1182,15 @@ describe('HtmlLexer', () => {
 
       it('should report an error on an invalid hex sequence', () => {
         expect(tokenizeAndHumanizeErrors('\\xGG', {escapedString: true})).toEqual([
-          [null, 'Invalid hexadecimal escape sequence', '0:2'],
+          ['Invalid hexadecimal escape sequence', '0:2'],
         ]);
 
         expect(tokenizeAndHumanizeErrors('abc \\x xyz', {escapedString: true})).toEqual([
-          [TokenType.TEXT, 'Invalid hexadecimal escape sequence', '0:6'],
+          ['Invalid hexadecimal escape sequence', '0:6'],
         ]);
 
         expect(tokenizeAndHumanizeErrors('abc\\x', {escapedString: true})).toEqual([
-          [TokenType.TEXT, 'Unexpected character "EOF"', '0:5'],
+          ['Unexpected character "EOF"', '0:5'],
         ]);
       });
 
@@ -1213,7 +1203,7 @@ describe('HtmlLexer', () => {
 
       it('should error on an invalid fixed length Unicode sequence', () => {
         expect(tokenizeAndHumanizeErrors('\\uGGGG', {escapedString: true})).toEqual([
-          [null, 'Invalid hexadecimal escape sequence', '0:2'],
+          ['Invalid hexadecimal escape sequence', '0:2'],
         ]);
       });
 
@@ -1225,7 +1215,7 @@ describe('HtmlLexer', () => {
 
       it('should error on an invalid variable length Unicode sequence', () => {
         expect(tokenizeAndHumanizeErrors('\\u{GG}', {escapedString: true})).toEqual([
-          [null, 'Invalid hexadecimal escape sequence', '0:3'],
+          ['Invalid hexadecimal escape sequence', '0:3'],
         ]);
       });
 
@@ -1655,11 +1645,11 @@ describe('HtmlLexer', () => {
 
       it('should report invalid quotes in a parameter', () => {
         expect(tokenizeAndHumanizeErrors(`@foo (a === ") {hello}`)).toEqual([
-          [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:22'],
+          ['Unexpected character "EOF"', '0:22'],
         ]);
 
         expect(tokenizeAndHumanizeErrors(`@foo (a === "hi') {hello}`)).toEqual([
-          [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:25'],
+          ['Unexpected character "EOF"', '0:25'],
         ]);
       });
 
@@ -2017,7 +2007,7 @@ describe('HtmlLexer', () => {
 
     it('should handle @let declaration with invalid syntax in the value', () => {
       expect(tokenizeAndHumanizeErrors(`@let foo = ";`)).toEqual([
-        [TokenType.LET_VALUE, 'Unexpected character "EOF"', '0:13'],
+        ['Unexpected character "EOF"', '0:13'],
       ]);
 
       expect(tokenizeAndHumanizeParts(`@let foo = {a: 1,;`)).toEqual([
@@ -2381,13 +2371,13 @@ describe('HtmlLexer', () => {
 
     it('should report missing closing single quote', () => {
       expect(tokenizeAndHumanizeErrors("<t a='b>")).toEqual([
-        [TokenType.ATTR_VALUE_TEXT, 'Unexpected character "EOF"', '0:8'],
+        ['Unexpected character "EOF"', '0:8'],
       ]);
     });
 
     it('should report missing closing double quote', () => {
       expect(tokenizeAndHumanizeErrors('<t a="b>')).toEqual([
-        [TokenType.ATTR_VALUE_TEXT, 'Unexpected character "EOF"', '0:8'],
+        ['Unexpected character "EOF"', '0:8'],
       ]);
     });
   });
@@ -2422,15 +2412,11 @@ describe('HtmlLexer', () => {
     });
 
     it('should report missing name after </', () => {
-      expect(tokenizeAndHumanizeErrors('</')).toEqual([
-        [TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:2'],
-      ]);
+      expect(tokenizeAndHumanizeErrors('</')).toEqual([['Unexpected character "EOF"', '0:2']]);
     });
 
     it('should report missing >', () => {
-      expect(tokenizeAndHumanizeErrors('</test')).toEqual([
-        [TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:6'],
-      ]);
+      expect(tokenizeAndHumanizeErrors('</test')).toEqual([['Unexpected character "EOF"', '0:6']]);
     });
   });
 
@@ -2475,39 +2461,27 @@ describe('HtmlLexer', () => {
 
     it('should report malformed/unknown entities', () => {
       expect(tokenizeAndHumanizeErrors('&tbo;')).toEqual([
-        [
-          TokenType.ENCODED_ENTITY,
-          'Unknown entity "tbo" - use the "&#<decimal>;" or  "&#x<hex>;" syntax',
-          '0:0',
-        ],
+        ['Unknown entity "tbo" - use the "&#<decimal>;" or  "&#x<hex>;" syntax', '0:0'],
       ]);
       expect(tokenizeAndHumanizeErrors('&#3sdf;')).toEqual([
         [
-          TokenType.ENCODED_ENTITY,
           'Unable to parse entity "&#3s" - decimal character reference entities must end with ";"',
           '0:4',
         ],
       ]);
       expect(tokenizeAndHumanizeErrors('&#xasdf;')).toEqual([
         [
-          TokenType.ENCODED_ENTITY,
           'Unable to parse entity "&#xas" - hexadecimal character reference entities must end with ";"',
           '0:5',
         ],
       ]);
 
-      expect(tokenizeAndHumanizeErrors('&#xABC')).toEqual([
-        [TokenType.ENCODED_ENTITY, 'Unexpected character "EOF"', '0:6'],
-      ]);
+      expect(tokenizeAndHumanizeErrors('&#xABC')).toEqual([['Unexpected character "EOF"', '0:6']]);
     });
 
     it('should not parse js object methods', () => {
       expect(tokenizeAndHumanizeErrors('&valueOf;')).toEqual([
-        [
-          TokenType.ENCODED_ENTITY,
-          'Unknown entity "valueOf" - use the "&#<decimal>;" or  "&#x<hex>;" syntax',
-          '0:0',
-        ],
+        ['Unknown entity "valueOf" - use the "&#<decimal>;" or  "&#x<hex>;" syntax', '0:0'],
       ]);
     });
   });
@@ -3327,7 +3301,6 @@ describe('HtmlLexer', () => {
         tokenizeAndHumanizeErrors(`<p>before { after</p>`, {tokenizeExpansionForms: true}),
       ).toEqual([
         [
-          TokenType.RAW_TEXT,
           `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
           '0:21',
         ],
@@ -3341,7 +3314,6 @@ describe('HtmlLexer', () => {
         }),
       ).toEqual([
         [
-          TokenType.RAW_TEXT,
           `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
           '0:56',
         ],
@@ -3353,7 +3325,7 @@ describe('HtmlLexer', () => {
       const file = new ParseSourceFile(src, 'file://');
       const location = new ParseLocation(file, 12, 123, 456);
       const span = new ParseSourceSpan(location, location);
-      const error = new TokenError('**ERROR**', null!, span);
+      const error = new ParseError(span, '**ERROR**');
       expect(error.toString()).toEqual(
         `**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`,
       );
@@ -3450,15 +3422,15 @@ describe('HtmlLexer', () => {
 
     it('should report an error on an invalid hex sequence', () => {
       expect(tokenizeAndHumanizeErrors('\\xGG', {escapedString: true})).toEqual([
-        [null, 'Invalid hexadecimal escape sequence', '0:2'],
+        ['Invalid hexadecimal escape sequence', '0:2'],
       ]);
 
       expect(tokenizeAndHumanizeErrors('abc \\x xyz', {escapedString: true})).toEqual([
-        [TokenType.TEXT, 'Invalid hexadecimal escape sequence', '0:6'],
+        ['Invalid hexadecimal escape sequence', '0:6'],
       ]);
 
       expect(tokenizeAndHumanizeErrors('abc\\x', {escapedString: true})).toEqual([
-        [TokenType.TEXT, 'Unexpected character "EOF"', '0:5'],
+        ['Unexpected character "EOF"', '0:5'],
       ]);
     });
 
@@ -3471,7 +3443,7 @@ describe('HtmlLexer', () => {
 
     it('should error on an invalid fixed length Unicode sequence', () => {
       expect(tokenizeAndHumanizeErrors('\\uGGGG', {escapedString: true})).toEqual([
-        [null, 'Invalid hexadecimal escape sequence', '0:2'],
+        ['Invalid hexadecimal escape sequence', '0:2'],
       ]);
     });
 
@@ -3483,7 +3455,7 @@ describe('HtmlLexer', () => {
 
     it('should error on an invalid variable length Unicode sequence', () => {
       expect(tokenizeAndHumanizeErrors('\\u{GG}', {escapedString: true})).toEqual([
-        [null, 'Invalid hexadecimal escape sequence', '0:3'],
+        ['Invalid hexadecimal escape sequence', '0:3'],
       ]);
     });
 
@@ -3864,11 +3836,11 @@ describe('HtmlLexer', () => {
 
     it('should report invalid quotes in a parameter', () => {
       expect(tokenizeAndHumanizeErrors(`@foo (a === ") {hello}`)).toEqual([
-        [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:22'],
+        ['Unexpected character "EOF"', '0:22'],
       ]);
 
       expect(tokenizeAndHumanizeErrors(`@foo (a === "hi') {hello}`)).toEqual([
-        [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:25'],
+        ['Unexpected character "EOF"', '0:25'],
       ]);
     });
 
@@ -4121,7 +4093,6 @@ function tokenizeAndHumanizeFullStart(input: string, options?: TokenizeOptions):
 
 function tokenizeAndHumanizeErrors(input: string, options?: TokenizeOptions): any[] {
   return tokenize(input, 'someUrl', getHtmlTagDefinition, options).errors.map((e) => [
-    <any>e.tokenType,
     e.msg,
     humanizeLineColumn(e.span.start),
   ]);
