@@ -10,10 +10,10 @@ import * as html from '../ml_parser/ast';
 import {DEFAULT_CONTAINER_BLOCKS, InterpolationConfig} from '../ml_parser/defaults';
 import {ParseTreeResult} from '../ml_parser/parser';
 import {TokenType} from '../ml_parser/tokens';
+import {ParseError} from '../parse_util';
 
 import * as i18n from './i18n_ast';
 import {createI18nMessageFactory, I18nMessageFactory} from './i18n_parser';
-import {I18nError} from './parse_util';
 import {TranslationBundle} from './translation_bundle';
 
 const _I18N_ATTR = 'i18n';
@@ -51,7 +51,7 @@ export function mergeTranslations(
 export class ExtractionResult {
   constructor(
     public messages: i18n.Message[],
-    public errors: I18nError[],
+    public errors: ParseError[],
   ) {}
 }
 
@@ -87,7 +87,7 @@ class _Visitor implements html.Visitor {
 
   // set to void 0 when not in a section
   private _msgCountAtSectionStart: number | undefined;
-  private _errors!: I18nError[];
+  private _errors!: ParseError[];
   private _mode!: _VisitorMode;
 
   // _VisitorMode.Extract only
@@ -666,7 +666,7 @@ class _Visitor implements html.Visitor {
   }
 
   private _reportError(node: html.Node, msg: string): void {
-    this._errors.push(new I18nError(node.sourceSpan, msg));
+    this._errors.push(new ParseError(node.sourceSpan, msg));
   }
 }
 
