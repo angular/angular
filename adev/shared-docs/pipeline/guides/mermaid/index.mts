@@ -9,8 +9,9 @@
 import {DocsCodeToken} from '../extensions/docs-code/docs-code.mjs';
 import {chromium} from 'playwright-core';
 import {Mermaid, MermaidConfig} from 'mermaid';
-import {runfiles} from '@bazel/runfiles';
+import {resolve, join} from 'path';
 
+const runfilesDir = process.env['RUNFILES']!;
 // Declare mermarid in the context of this file so that typescript doesn't get upset when we
 // access it within the `page.evaluate` function. At runtime the context in with the method
 // is run difference than this file, but this makes typescript happy.
@@ -32,7 +33,7 @@ function getMermaidScriptTagData() {
   }
 
   return (mermaidScriptTagData = {
-    path: runfiles.resolve('npm/node_modules/mermaid/dist/mermaid.js'),
+    path: resolve(join(runfilesDir, 'npm/node_modules/mermaid/dist/mermaid.js')),
   });
 }
 
@@ -47,10 +48,7 @@ export async function processMermaidCodeBlock(token: DocsCodeToken) {
   /** Browser instance to run mermaid within. */
   const browser = await chromium.launch({
     headless: true,
-    // The browser binary needs to be discoverable in a build and test environment, which seems to only
-    // work when provided at the execroot path. We choose to resolve it using the runfiles helper due
-    // to this requirement.
-    executablePath: runfiles.resolveWorkspaceRelative(process.env['CHROME_BIN']!),
+    executablePath: join(runfilesDir, 'angular', process.env['CHROME_HEADLESS_BIN']!),
     args: ['--no-sandbox'],
   });
   /** Page to run mermaid in. */
