@@ -22,14 +22,41 @@ export class RootCmp {}
 
 describe('router_devtools', () => {
   describe('getLoadedRoutes', () => {
-    it('should return loaded routes when called with load children', fakeAsync(() => {
+    it('should return loaded routes when called with load children', () =>
+      fakeAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [
+            RouterModule.forRoot([
+              {
+                path: 'lazy',
+                component: RootCmp,
+                loadChildren: () => [{path: 'simple', component: SimpleStandaloneComponent}],
+              },
+            ]),
+          ],
+        });
+
+        const root = TestBed.createComponent(RootCmp);
+
+        const router = TestBed.inject(Router);
+        router.navigateByUrl('/lazy/simple');
+        advance(root);
+        expect(root.nativeElement.innerHTML).toContain('simple standalone');
+
+        const loadedRoutes = getLoadedRoutes(router.config[0]);
+        const loadedPath = loadedRoutes && loadedRoutes[0].path;
+        expect(loadedPath).toEqual('simple');
+      }));
+  });
+
+  it('should return undefined when called without load children', () =>
+    fakeAsync(() => {
       TestBed.configureTestingModule({
         imports: [
           RouterModule.forRoot([
             {
               path: 'lazy',
               component: RootCmp,
-              loadChildren: () => [{path: 'simple', component: SimpleStandaloneComponent}],
             },
           ]),
         ],
@@ -38,39 +65,14 @@ describe('router_devtools', () => {
       const root = TestBed.createComponent(RootCmp);
 
       const router = TestBed.inject(Router);
-      router.navigateByUrl('/lazy/simple');
+      router.navigateByUrl('/lazy');
       advance(root);
-      expect(root.nativeElement.innerHTML).toContain('simple standalone');
+      expect(root.nativeElement.innerHTML).toContain('');
 
       const loadedRoutes = getLoadedRoutes(router.config[0]);
       const loadedPath = loadedRoutes && loadedRoutes[0].path;
-      expect(loadedPath).toEqual('simple');
+      expect(loadedPath).toEqual(undefined);
     }));
-  });
-
-  it('should return undefined when called without load children', fakeAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        RouterModule.forRoot([
-          {
-            path: 'lazy',
-            component: RootCmp,
-          },
-        ]),
-      ],
-    });
-
-    const root = TestBed.createComponent(RootCmp);
-
-    const router = TestBed.inject(Router);
-    router.navigateByUrl('/lazy');
-    advance(root);
-    expect(root.nativeElement.innerHTML).toContain('');
-
-    const loadedRoutes = getLoadedRoutes(router.config[0]);
-    const loadedPath = loadedRoutes && loadedRoutes[0].path;
-    expect(loadedPath).toEqual(undefined);
-  }));
 });
 
 function advance(fixture: ComponentFixture<unknown>) {

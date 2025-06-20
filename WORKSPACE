@@ -306,3 +306,17 @@ rules_angular_step3(
     angular_compiler_cli = "@angular//tools/bazel/rules_angular_store:node_modules/@angular/compiler-cli",
     typescript = "@angular//:node_modules/typescript",
 )
+
+git_repository(
+    name = "rules_browsers",
+    commit = "fd3b3d37662206a19eaa34f157c757b3291978dc",
+    remote = "https://github.com/devversion/rules_browsers.git",
+)
+
+load("@rules_browsers//setup:step_1.bzl", "rules_browsers_setup_1")
+
+rules_browsers_setup_1()
+
+load("@rules_browsers//setup:step_2.bzl", "rules_browsers_setup_2")
+
+rules_browsers_setup_2()

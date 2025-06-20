@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "zone_compatible_jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
 ts_project(
     name = "test_lib",
@@ -22,13 +22,10 @@ ts_project(
     ],
 )
 
-# Tests rely on `async/await` for change detection.
-# This syntax needs to be downleveled until ZoneJS supports it.
-zone_compatible_jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )
 
