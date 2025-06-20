@@ -7,7 +7,7 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {Component, PLATFORM_ID} from '../src/core';
+import {Component, inject, PLATFORM_ID, ViewContainerRef} from '../src/core';
 import {PendingTasksInternal} from '../src/pending_tasks';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '../testing';
 import {expect} from '@angular/private/testing/matchers';
@@ -427,5 +427,20 @@ describe('DeferFixture', () => {
     await deferBlock.render(DeferBlockState.Complete);
     const fixtures = await deferBlock.getDeferBlocks();
     expect(fixtures.length).toBe(1);
+  });
+
+  it('should resolve defer blocks in components that inject ViewContainerRef', async () => {
+    @Component({template: '@defer {Hello}'})
+    class DeferTestComponent {
+      viewContainerRef = inject(ViewContainerRef);
+    }
+
+    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Manual});
+    const fixture = TestBed.createComponent(DeferTestComponent);
+    fixture.detectChanges();
+
+    const deferBlocks = await fixture.getDeferBlocks();
+    expect(deferBlocks.length).toBe(1);
+    expect(fixture.componentInstance.viewContainerRef).toBeTruthy();
   });
 });
