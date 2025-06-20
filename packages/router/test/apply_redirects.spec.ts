@@ -804,98 +804,100 @@ describe('redirects', () => {
       });
     });
 
-    it('should load all matching configurations of empty path, including an auxiliary outlets', fakeAsync(() => {
-      const loadedConfig = {
-        routes: [{path: '', component: ComponentA}],
-        injector: TestBed.inject(EnvironmentInjector),
-      };
-      let loadCalls = 0;
-      let loaded: string[] = [];
-      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
-        loadChildren: (injector: any, p: Route) => {
-          loadCalls++;
-          return of(loadedConfig).pipe(
-            delay(100 * loadCalls),
-            tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
-          );
-        },
-      };
+    it('should load all matching configurations of empty path, including an auxiliary outlets', () =>
+      fakeAsync(() => {
+        const loadedConfig = {
+          routes: [{path: '', component: ComponentA}],
+          injector: TestBed.inject(EnvironmentInjector),
+        };
+        let loadCalls = 0;
+        let loaded: string[] = [];
+        const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+          loadChildren: (injector: any, p: Route) => {
+            loadCalls++;
+            return of(loadedConfig).pipe(
+              delay(100 * loadCalls),
+              tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
+            );
+          },
+        };
 
-      const config: Routes = [
-        {path: '', loadChildren: jasmine.createSpy('root')},
-        {path: '', loadChildren: jasmine.createSpy('aux'), outlet: 'popup'},
-      ];
+        const config: Routes = [
+          {path: '', loadChildren: jasmine.createSpy('root')},
+          {path: '', loadChildren: jasmine.createSpy('aux'), outlet: 'popup'},
+        ];
 
-      recognize(
-        TestBed.inject(EnvironmentInjector),
-        <any>loader,
-        null,
-        config,
-        tree(''),
-        serializer,
-      ).subscribe();
-      expect(loadCalls).toBe(1);
-      tick(100);
-      expect(loaded).toEqual(['root']);
-      expect(loadCalls).toBe(2);
-      tick(200);
-      expect(loaded).toEqual(['root', 'aux']);
-    }));
+        recognize(
+          TestBed.inject(EnvironmentInjector),
+          <any>loader,
+          null,
+          config,
+          tree(''),
+          serializer,
+        ).subscribe();
+        expect(loadCalls).toBe(1);
+        tick(100);
+        expect(loaded).toEqual(['root']);
+        expect(loadCalls).toBe(2);
+        tick(200);
+        expect(loaded).toEqual(['root', 'aux']);
+      }));
 
-    it('should not try to load any matching configuration if previous load completed', fakeAsync(() => {
-      const loadedConfig = {
-        routes: [{path: 'a', component: ComponentA}],
-        injector: TestBed.inject(EnvironmentInjector),
-      };
-      let loadCalls = 0;
-      let loaded: string[] = [];
-      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
-        loadChildren: (injector: any, p: Route) => {
-          loadCalls++;
-          return of(loadedConfig).pipe(
-            delay(100 * loadCalls),
-            tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
-          );
-        },
-      };
+    it('should not try to load any matching configuration if previous load completed', () =>
+      fakeAsync(() => {
+        const loadedConfig = {
+          routes: [{path: 'a', component: ComponentA}],
+          injector: TestBed.inject(EnvironmentInjector),
+        };
+        let loadCalls = 0;
+        let loaded: string[] = [];
+        const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+          loadChildren: (injector: any, p: Route) => {
+            loadCalls++;
+            return of(loadedConfig).pipe(
+              delay(100 * loadCalls),
+              tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
+            );
+          },
+        };
 
-      const config: Routes = [{path: '**', loadChildren: jasmine.createSpy('children')}];
+        const config: Routes = [{path: '**', loadChildren: jasmine.createSpy('children')}];
 
-      recognize(
-        TestBed.inject(EnvironmentInjector),
-        <any>loader,
-        null,
-        config,
-        tree('xyz/a'),
-        serializer,
-      ).subscribe();
-      expect(loadCalls).toBe(1);
-      tick(50);
-      expect(loaded).toEqual([]);
-      recognize(
-        TestBed.inject(EnvironmentInjector),
-        <any>loader,
-        null,
-        config,
-        tree('xyz/b'),
-        serializer,
-      ).subscribe();
-      tick(50);
-      expect(loaded).toEqual(['children']);
-      expect(loadCalls).toBe(2);
-      tick(200);
-      recognize(
-        TestBed.inject(EnvironmentInjector),
-        <any>loader,
-        null,
-        config,
-        tree('xyz/c'),
-        serializer,
-      ).subscribe();
-      tick(50);
-      expect(loadCalls).toBe(2);
-      tick(300);
-    }));
+        recognize(
+          TestBed.inject(EnvironmentInjector),
+          <any>loader,
+          null,
+          config,
+          tree('xyz/a'),
+          serializer,
+        ).subscribe();
+        expect(loadCalls).toBe(1);
+        tick(50);
+        expect(loaded).toEqual([]);
+        recognize(
+          TestBed.inject(EnvironmentInjector),
+          <any>loader,
+          null,
+          config,
+          tree('xyz/b'),
+          serializer,
+        ).subscribe();
+        tick(50);
+        expect(loaded).toEqual(['children']);
+        expect(loadCalls).toBe(2);
+        tick(200);
+        recognize(
+          TestBed.inject(EnvironmentInjector),
+          <any>loader,
+          null,
+          config,
+          tree('xyz/c'),
+          serializer,
+        ).subscribe();
+        tick(50);
+        expect(loadCalls).toBe(2);
+        tick(300);
+      }));
 
     it('loads only the first match when two Routes with the same outlet have the same path', () => {
       const loadedConfig = {
@@ -930,43 +932,44 @@ describe('redirects', () => {
       expect(loaded).toEqual(['first']);
     });
 
-    it('should load the configuration of empty root path if the entry is an aux outlet', fakeAsync(() => {
-      const loadedConfig = {
-        routes: [{path: '', component: ComponentA}],
-        injector: TestBed.inject(EnvironmentInjector),
-      };
-      let loaded: string[] = [];
-      const rootDelay = 100;
-      const auxDelay = 1;
-      const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
-        loadChildren: (injector: any, p: Route) => {
-          const delayMs =
-            (p.loadChildren! as jasmine.Spy).and.identity === 'aux' ? auxDelay : rootDelay;
-          return of(loadedConfig).pipe(
-            delay(delayMs),
-            tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
-          );
-        },
-      };
+    it('should load the configuration of empty root path if the entry is an aux outlet', () =>
+      fakeAsync(() => {
+        const loadedConfig = {
+          routes: [{path: '', component: ComponentA}],
+          injector: TestBed.inject(EnvironmentInjector),
+        };
+        let loaded: string[] = [];
+        const rootDelay = 100;
+        const auxDelay = 1;
+        const loader: Pick<RouterConfigLoader, 'loadChildren'> = {
+          loadChildren: (injector: any, p: Route) => {
+            const delayMs =
+              (p.loadChildren! as jasmine.Spy).and.identity === 'aux' ? auxDelay : rootDelay;
+            return of(loadedConfig).pipe(
+              delay(delayMs),
+              tap(() => loaded.push((p.loadChildren as jasmine.Spy).and.identity)),
+            );
+          },
+        };
 
-      const config: Routes = [
-        // Define aux route first so it matches before the primary outlet
-        {path: 'modal', loadChildren: jasmine.createSpy('aux'), outlet: 'popup'},
-        {path: '', loadChildren: jasmine.createSpy('root')},
-      ];
+        const config: Routes = [
+          // Define aux route first so it matches before the primary outlet
+          {path: 'modal', loadChildren: jasmine.createSpy('aux'), outlet: 'popup'},
+          {path: '', loadChildren: jasmine.createSpy('root')},
+        ];
 
-      recognize(
-        TestBed.inject(EnvironmentInjector),
-        <any>loader,
-        null,
-        config,
-        tree('(popup:modal)'),
-        serializer,
-      ).subscribe();
-      tick(auxDelay);
-      tick(rootDelay);
-      expect(loaded.sort()).toEqual(['aux', 'root'].sort());
-    }));
+        recognize(
+          TestBed.inject(EnvironmentInjector),
+          <any>loader,
+          null,
+          config,
+          tree('(popup:modal)'),
+          serializer,
+        ).subscribe();
+        tick(auxDelay);
+        tick(rootDelay);
+        expect(loaded.sort()).toEqual(['aux', 'root'].sort());
+      }));
   });
 
   describe('empty paths', () => {

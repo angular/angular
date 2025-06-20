@@ -40,72 +40,74 @@ import {afterNextNavigation} from '../src/utils/navigations';
 
 describe('Integration', () => {
   describe('routerLinkActive', () => {
-    it('should update when the associated routerLinks change - #18469', fakeAsync(() => {
-      @Component({
-        template: `
+    it('should update when the associated routerLinks change - #18469', () =>
+      fakeAsync(() => {
+        @Component({
+          template: `
           <a id="first-link" [routerLink]="[firstLink]" routerLinkActive="active">{{firstLink}}</a>
           <div id="second-link" routerLinkActive="active">
             <a [routerLink]="[secondLink]">{{secondLink}}</a>
           </div>
            `,
-        standalone: false,
-      })
-      class LinkComponent {
-        firstLink = 'link-a';
-        secondLink = 'link-b';
+          standalone: false,
+        })
+        class LinkComponent {
+          firstLink = 'link-a';
+          secondLink = 'link-b';
 
-        changeLinks(): void {
-          const temp = this.secondLink;
-          this.secondLink = this.firstLink;
-          this.firstLink = temp;
+          changeLinks(): void {
+            const temp = this.secondLink;
+            this.secondLink = this.firstLink;
+            this.firstLink = temp;
+          }
         }
-      }
 
-      @Component({
-        template: 'simple',
-        standalone: false,
-      })
-      class SimpleCmp {}
+        @Component({
+          template: 'simple',
+          standalone: false,
+        })
+        class SimpleCmp {}
 
-      TestBed.configureTestingModule({
-        imports: [
-          RouterModule.forRoot([
-            {path: 'link-a', component: SimpleCmp},
-            {path: 'link-b', component: SimpleCmp},
-          ]),
-        ],
-        declarations: [LinkComponent, SimpleCmp],
-      });
+        TestBed.configureTestingModule({
+          imports: [
+            RouterModule.forRoot([
+              {path: 'link-a', component: SimpleCmp},
+              {path: 'link-b', component: SimpleCmp},
+            ]),
+          ],
+          declarations: [LinkComponent, SimpleCmp],
+        });
 
-      const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, LinkComponent);
-      const firstLink = fixture.debugElement.query((p) => p.nativeElement.id === 'first-link');
-      const secondLink = fixture.debugElement.query((p) => p.nativeElement.id === 'second-link');
-      router.navigateByUrl('/link-a');
-      advance(fixture);
+        const router: Router = TestBed.inject(Router);
+        const fixture = createRoot(router, LinkComponent);
+        const firstLink = fixture.debugElement.query((p) => p.nativeElement.id === 'first-link');
+        const secondLink = fixture.debugElement.query((p) => p.nativeElement.id === 'second-link');
+        router.navigateByUrl('/link-a');
+        advance(fixture);
 
-      expect(firstLink.nativeElement.classList).toContain('active');
-      expect(secondLink.nativeElement.classList).not.toContain('active');
+        expect(firstLink.nativeElement.classList).toContain('active');
+        expect(secondLink.nativeElement.classList).not.toContain('active');
 
-      fixture.componentInstance.changeLinks();
-      fixture.detectChanges();
-      advance(fixture);
+        fixture.componentInstance.changeLinks();
+        fixture.detectChanges();
+        advance(fixture);
 
-      expect(firstLink.nativeElement.classList).not.toContain('active');
-      expect(secondLink.nativeElement.classList).toContain('active');
-    }));
+        expect(firstLink.nativeElement.classList).not.toContain('active');
+        expect(secondLink.nativeElement.classList).toContain('active');
+      }));
 
-    it('should not cause infinite loops in the change detection - #15825', fakeAsync(() => {
-      @Component({
-        selector: 'simple',
-        template: 'simple',
-        standalone: false,
-      })
-      class SimpleCmp {}
+    it('should not cause infinite loops in the change detection - #15825', () =>
+      fakeAsync(() => {
+        @Component({
+          selector: 'simple',
+          template: 'simple',
+          standalone: false,
+        })
+        class SimpleCmp {}
 
-      @Component({
-        selector: 'some-root',
-        template: `
+        @Component({
+          selector: 'some-root',
+          template: `
         <div *ngIf="show">
           <ng-container *ngTemplateOutlet="tpl"></ng-container>
         </div>
@@ -113,35 +115,36 @@ describe('Integration', () => {
         <ng-template #tpl>
           <a routerLink="/simple" routerLinkActive="active"></a>
         </ng-template>`,
-        standalone: false,
-      })
-      class MyCmp {
-        show: boolean = false;
-      }
+          standalone: false,
+        })
+        class MyCmp {
+          show: boolean = false;
+        }
 
-      @NgModule({
-        imports: [CommonModule, RouterModule.forRoot([])],
-        declarations: [MyCmp, SimpleCmp],
-      })
-      class MyModule {}
+        @NgModule({
+          imports: [CommonModule, RouterModule.forRoot([])],
+          declarations: [MyCmp, SimpleCmp],
+        })
+        class MyModule {}
 
-      TestBed.configureTestingModule({imports: [MyModule]});
+        TestBed.configureTestingModule({imports: [MyModule]});
 
-      const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, MyCmp);
-      router.resetConfig([{path: 'simple', component: SimpleCmp}]);
+        const router: Router = TestBed.inject(Router);
+        const fixture = createRoot(router, MyCmp);
+        router.resetConfig([{path: 'simple', component: SimpleCmp}]);
 
-      router.navigateByUrl('/simple');
-      advance(fixture);
+        router.navigateByUrl('/simple');
+        advance(fixture);
 
-      const instance = fixture.componentInstance;
-      instance.show = true;
-      expect(() => advance(fixture)).not.toThrow();
-    }));
+        const instance = fixture.componentInstance;
+        instance.show = true;
+        expect(() => advance(fixture)).not.toThrow();
+      }));
 
-    it('should set isActive right after looking at its children -- #18983', fakeAsync(() => {
-      @Component({
-        template: `
+    it('should set isActive right after looking at its children -- #18983', () =>
+      fakeAsync(() => {
+        @Component({
+          template: `
           <div #rla="routerLinkActive" routerLinkActive>
             isActive: {{rla.isActive}}
 
@@ -152,169 +155,172 @@ describe('Integration', () => {
             <ng-container #container></ng-container>
           </div>
         `,
-        standalone: false,
-      })
-      class ComponentWithRouterLink {
-        @ViewChild(TemplateRef, {static: true}) templateRef?: TemplateRef<unknown>;
-        @ViewChild('container', {read: ViewContainerRef, static: true})
-        container?: ViewContainerRef;
+          standalone: false,
+        })
+        class ComponentWithRouterLink {
+          @ViewChild(TemplateRef, {static: true}) templateRef?: TemplateRef<unknown>;
+          @ViewChild('container', {read: ViewContainerRef, static: true})
+          container?: ViewContainerRef;
 
-        addLink() {
-          if (this.templateRef) {
-            this.container?.createEmbeddedView(this.templateRef, {$implicit: '/simple'});
+          addLink() {
+            if (this.templateRef) {
+              this.container?.createEmbeddedView(this.templateRef, {$implicit: '/simple'});
+            }
+          }
+
+          removeLink() {
+            this.container?.clear();
           }
         }
 
-        removeLink() {
-          this.container?.clear();
-        }
-      }
+        @Component({
+          template: 'simple',
+          standalone: false,
+        })
+        class SimpleCmp {}
 
-      @Component({
-        template: 'simple',
-        standalone: false,
-      })
-      class SimpleCmp {}
+        TestBed.configureTestingModule({
+          imports: [RouterModule.forRoot([{path: 'simple', component: SimpleCmp}])],
+          declarations: [ComponentWithRouterLink, SimpleCmp],
+        });
 
-      TestBed.configureTestingModule({
-        imports: [RouterModule.forRoot([{path: 'simple', component: SimpleCmp}])],
-        declarations: [ComponentWithRouterLink, SimpleCmp],
-      });
+        const router: Router = TestBed.inject(Router);
+        const fixture = createRoot(router, ComponentWithRouterLink);
+        router.navigateByUrl('/simple');
+        advance(fixture);
 
-      const router: Router = TestBed.inject(Router);
-      const fixture = createRoot(router, ComponentWithRouterLink);
-      router.navigateByUrl('/simple');
-      advance(fixture);
+        fixture.componentInstance.addLink();
+        fixture.detectChanges();
 
-      fixture.componentInstance.addLink();
-      fixture.detectChanges();
+        fixture.componentInstance.removeLink();
+        advance(fixture);
+        advance(fixture);
 
-      fixture.componentInstance.removeLink();
-      advance(fixture);
-      advance(fixture);
+        expect(fixture.nativeElement.innerHTML).toContain('isActive: false');
+      }));
 
-      expect(fixture.nativeElement.innerHTML).toContain('isActive: false');
-    }));
-
-    it('should set isActive with OnPush change detection - #19934', fakeAsync(() => {
-      @Component({
-        template: `
+    it('should set isActive with OnPush change detection - #19934', () =>
+      fakeAsync(() => {
+        @Component({
+          template: `
              <div routerLink="/simple" #rla="routerLinkActive" routerLinkActive>
                isActive: {{rla.isActive}}
              </div>
            `,
-        changeDetection: ChangeDetectionStrategy.OnPush,
-        standalone: false,
-      })
-      class OnPushComponent {}
+          changeDetection: ChangeDetectionStrategy.OnPush,
+          standalone: false,
+        })
+        class OnPushComponent {}
 
-      @Component({
-        template: 'simple',
-        standalone: false,
-      })
-      class SimpleCmp {}
+        @Component({
+          template: 'simple',
+          standalone: false,
+        })
+        class SimpleCmp {}
 
-      TestBed.configureTestingModule({
-        imports: [RouterModule.forRoot([{path: 'simple', component: SimpleCmp}])],
-        declarations: [OnPushComponent, SimpleCmp],
-      });
+        TestBed.configureTestingModule({
+          imports: [RouterModule.forRoot([{path: 'simple', component: SimpleCmp}])],
+          declarations: [OnPushComponent, SimpleCmp],
+        });
 
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, OnPushComponent);
-      router.navigateByUrl('/simple');
-      advance(fixture);
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, OnPushComponent);
+        router.navigateByUrl('/simple');
+        advance(fixture);
 
-      expect(fixture.nativeElement.innerHTML).toContain('isActive: true');
-    }));
+        expect(fixture.nativeElement.innerHTML).toContain('isActive: true');
+      }));
   });
 
-  it('should not reactivate a deactivated outlet when destroyed and recreated - #41379', fakeAsync(() => {
-    @Component({
-      template: 'simple',
-      standalone: false,
-    })
-    class SimpleComponent {}
-
-    @Component({
-      template: ` <router-outlet *ngIf="outletVisible" name="aux"></router-outlet> `,
-      standalone: false,
-    })
-    class AppComponent {
-      outletVisible = true;
-    }
-
-    TestBed.configureTestingModule({
-      imports: [RouterModule.forRoot([{path: ':id', component: SimpleComponent, outlet: 'aux'}])],
-      declarations: [SimpleComponent, AppComponent],
-    });
-
-    const router = TestBed.inject(Router);
-    const fixture = createRoot(router, AppComponent);
-    const componentCdr = fixture.componentRef.injector.get<ChangeDetectorRef>(ChangeDetectorRef);
-
-    router.navigate([{outlets: {aux: ['1234']}}]);
-    advance(fixture);
-    expect(fixture.nativeElement.innerHTML).toContain('simple');
-
-    router.navigate([{outlets: {aux: null}}]);
-    advance(fixture);
-    expect(fixture.nativeElement.innerHTML).not.toContain('simple');
-
-    fixture.componentInstance.outletVisible = false;
-    componentCdr.detectChanges();
-    expect(fixture.nativeElement.innerHTML).not.toContain('simple');
-    expect(fixture.nativeElement.innerHTML).not.toContain('router-outlet');
-
-    fixture.componentInstance.outletVisible = true;
-    componentCdr.detectChanges();
-    expect(fixture.nativeElement.innerHTML).toContain('router-outlet');
-    expect(fixture.nativeElement.innerHTML).not.toContain('simple');
-  }));
-
-  describe('useHash', () => {
-    it('should restore hash to match current route - #28561', fakeAsync(() => {
-      @Component({
-        selector: 'root-cmp',
-        template: `<router-outlet></router-outlet>`,
-        standalone: false,
-      })
-      class RootCmp {}
-
+  it('should not reactivate a deactivated outlet when destroyed and recreated - #41379', () =>
+    fakeAsync(() => {
       @Component({
         template: 'simple',
         standalone: false,
       })
-      class SimpleCmp {}
+      class SimpleComponent {}
+
       @Component({
-        template: 'one',
+        template: ` <router-outlet *ngIf="outletVisible" name="aux"></router-outlet> `,
         standalone: false,
       })
-      class OneCmp {}
+      class AppComponent {
+        outletVisible = true;
+      }
 
       TestBed.configureTestingModule({
-        imports: [
-          RouterModule.forRoot([
-            {path: '', component: SimpleCmp},
-            {path: 'one', component: OneCmp, canActivate: [() => inject(Router).parseUrl('/')]},
-          ]),
-        ],
-        declarations: [SimpleCmp, RootCmp, OneCmp],
-        providers: [provideLocationMocks()],
+        imports: [RouterModule.forRoot([{path: ':id', component: SimpleComponent, outlet: 'aux'}])],
+        declarations: [SimpleComponent, AppComponent],
       });
 
       const router = TestBed.inject(Router);
-      const location = TestBed.inject(Location) as SpyLocation;
+      const fixture = createRoot(router, AppComponent);
+      const componentCdr = fixture.componentRef.injector.get<ChangeDetectorRef>(ChangeDetectorRef);
 
-      router.navigateByUrl('/');
-      // Will setup location change listeners
-      const fixture = createRoot(router, RootCmp);
-
-      location.simulateHashChange('/one');
+      router.navigate([{outlets: {aux: ['1234']}}]);
       advance(fixture);
+      expect(fixture.nativeElement.innerHTML).toContain('simple');
 
-      expect(location.path()).toEqual('/');
-      expect(fixture.nativeElement.innerHTML).toContain('one');
+      router.navigate([{outlets: {aux: null}}]);
+      advance(fixture);
+      expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+
+      fixture.componentInstance.outletVisible = false;
+      componentCdr.detectChanges();
+      expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+      expect(fixture.nativeElement.innerHTML).not.toContain('router-outlet');
+
+      fixture.componentInstance.outletVisible = true;
+      componentCdr.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toContain('router-outlet');
+      expect(fixture.nativeElement.innerHTML).not.toContain('simple');
     }));
+
+  describe('useHash', () => {
+    it('should restore hash to match current route - #28561', () =>
+      fakeAsync(() => {
+        @Component({
+          selector: 'root-cmp',
+          template: `<router-outlet></router-outlet>`,
+          standalone: false,
+        })
+        class RootCmp {}
+
+        @Component({
+          template: 'simple',
+          standalone: false,
+        })
+        class SimpleCmp {}
+        @Component({
+          template: 'one',
+          standalone: false,
+        })
+        class OneCmp {}
+
+        TestBed.configureTestingModule({
+          imports: [
+            RouterModule.forRoot([
+              {path: '', component: SimpleCmp},
+              {path: 'one', component: OneCmp, canActivate: [() => inject(Router).parseUrl('/')]},
+            ]),
+          ],
+          declarations: [SimpleCmp, RootCmp, OneCmp],
+          providers: [provideLocationMocks()],
+        });
+
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location) as SpyLocation;
+
+        router.navigateByUrl('/');
+        // Will setup location change listeners
+        const fixture = createRoot(router, RootCmp);
+
+        location.simulateHashChange('/one');
+        advance(fixture);
+
+        expect(location.path()).toEqual('/');
+        expect(fixture.nativeElement.innerHTML).toContain('one');
+      }));
   });
 
   describe('duplicate navigation handling (#43447, #43446)', () => {
@@ -368,27 +374,29 @@ describe('Integration', () => {
       fixture = createRoot(router, RootCmp);
     }));
 
-    it('duplicate navigation to same url', fakeAsync(() => {
-      location.go('/one');
-      tick(100);
-      location.go('/one');
-      tick(1000);
-      advance(fixture);
+    it('duplicate navigation to same url', () =>
+      fakeAsync(() => {
+        location.go('/one');
+        tick(100);
+        location.go('/one');
+        tick(1000);
+        advance(fixture);
 
-      expect(location.path()).toEqual('/one');
-      expect(fixture.nativeElement.innerHTML).toContain('one');
-    }));
+        expect(location.path()).toEqual('/one');
+        expect(fixture.nativeElement.innerHTML).toContain('one');
+      }));
 
-    it('works with a duplicate popstate/hashchange navigation (as seen in firefox)', fakeAsync(() => {
-      (location as any)._subject.next({'url': 'one', 'pop': true, 'type': 'popstate'});
-      tick(1);
-      (location as any)._subject.next({'url': 'one', 'pop': true, 'type': 'hashchange'});
-      tick(1000);
-      advance(fixture);
+    it('works with a duplicate popstate/hashchange navigation (as seen in firefox)', () =>
+      fakeAsync(() => {
+        (location as any)._subject.next({'url': 'one', 'pop': true, 'type': 'popstate'});
+        tick(1);
+        (location as any)._subject.next({'url': 'one', 'pop': true, 'type': 'hashchange'});
+        tick(1000);
+        advance(fixture);
 
-      expect(router.routerState.toString()).toContain(`url:'one'`);
-      expect(fixture.nativeElement.innerHTML).toContain('one');
-    }));
+        expect(router.routerState.toString()).toContain(`url:'one'`);
+        expect(fixture.nativeElement.innerHTML).toContain('one');
+      }));
   });
 
   it('should not unregister outlet if a different one already exists #36711, 32453', async () => {
