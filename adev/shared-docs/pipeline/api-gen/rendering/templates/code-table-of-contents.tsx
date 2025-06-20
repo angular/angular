@@ -26,9 +26,5 @@ export function CodeTableOfContents(props: {entry: HasRenderableToc}) {
     ${props.entry.afterCodeGroups}`;
   }
 
-  return (
-    <div class="docs-code">
-      <pre class="docs-mini-scroll-track" dangerouslySetInnerHTML={{__html: html}}></pre>
-    </div>
-  );
+  return <div class="docs-code" dangerouslySetInnerHTML={{__html: html}}></div>;
 }

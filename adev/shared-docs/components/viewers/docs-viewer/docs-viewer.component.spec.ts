@@ -59,11 +59,9 @@ describe('DocViewer', () => {
 
   const exampleContentWithCodeSnippet = `
     <div class="docs-code" path="forms/src/app/actor.ts" header="src/app/actor.ts">
-      <pre class="docs-mini-scroll-track">
         <code>
           <div class="hljs-ln-line"></div>
         </code>
-      </pre>
     </div>
   `;
 
