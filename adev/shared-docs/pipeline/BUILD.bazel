@@ -1,3 +1,4 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 # BEGIN-DEV-ONLY
@@ -7,46 +8,9 @@ load("//tools:defaults.bzl", "esbuild_esm_bundle")
 
 package(default_visibility = ["//adev/shared-docs/pipeline:__subpackages__"])
 
-esbuild_esm_bundle(
-    name = "guides",
-    define = {
-        "HANDLE_MERMAID": "true",
-    },
-    entry_point = "//adev/shared-docs/pipeline/guides:index.mts",
-    # JSDOM should not be bundled because it has workers and dynamic imports.
-    # playwright-core cannot be bundled because of its cjs usage.
-    external = [
-        "jsdom",
-        "playwright-core",
-    ],
-    metafile = False,
-    output = "guides.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/guides:index",
-    ],
-)
-
-esbuild_esm_bundle(
-    name = "guides_no_mermaid",
-    define = {
-        "HANDLE_MERMAID": "false",
-    },
-    entry_point = "//adev/shared-docs/pipeline/guides:index.mts",
-    # JSDOM should not be bundled because it has workers and dynamic imports.
-    external = [
-        "jsdom",
-    ],
-    metafile = False,
-    output = "guides-no-mermaid.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/guides:index",
-    ],
+js_library(
+    name = "esbuild-config",
+    srcs = ["esbuild.config.mjs"],
 )
 
 esbuild_esm_bundle(
@@ -172,18 +136,16 @@ nodejs_binary(
 nodejs_binary(
     name = "markdown",
     data = [
-        "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium-for-generation",
         "@npm//jsdom",
         "@npm//mermaid",
         "@npm//playwright-core",
+        "@rules_browsers//src/browsers/chromium",
     ],
-    entry_point = "//adev/shared-docs/pipeline:guides.mjs",
+    entry_point = "//adev/shared-docs/pipeline/guides:guides.mjs",
     env = {
-        "CHROME_BIN": "$(CHROMIUM)",
+        "CHROME_HEADLESS_BIN": "$(CHROME-HEADLESS-SHELL)",
     },
-    toolchains = [
-        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
-    ],
+    toolchains = ["@rules_browsers//src/browsers/chromium:toolchain_alias"],
     visibility = ["//visibility:public"],
 )
 
@@ -192,7 +154,7 @@ nodejs_binary(
     data = [
         "@npm//jsdom",
     ],
-    entry_point = "//adev/shared-docs/pipeline:guides-no-mermaid.mjs",
+    entry_point = "//adev/shared-docs/pipeline/guides:guides-no-mermaid.mjs",
     visibility = ["//visibility:public"],
 )
 
