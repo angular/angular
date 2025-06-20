@@ -64,9 +64,6 @@ Angular supports the following operators from standard JavaScript.
 | Unary Negation        | `-x`                                     |
 | Unary Plus            | `+y`                                     |
 | Property Accessor     | `person['name']`                         |
-| typeof                | `typeof 42`                              |
-| void                  | `void 1`                                 |
-| in                    | `'model' in car`                         |
 
 Angular expressions additionally also support the following non-standard operators:
 
