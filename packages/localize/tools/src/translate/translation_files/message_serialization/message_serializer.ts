@@ -5,10 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Element, Expansion, ExpansionCase, Node, Text, visitAll} from '@angular/compiler';
+import {
+  Element,
+  Expansion,
+  ExpansionCase,
+  Node,
+  ParseError,
+  Text,
+  visitAll,
+} from '@angular/compiler';
 
 import {BaseVisitor} from '../base_visitor';
-import {TranslationParseError} from '../translation_parsers/translation_parse_error';
 import {getAttribute, getAttrOrThrow} from '../translation_parsers/translation_utils';
 
 import {MessageRenderer} from './message_renderer';
@@ -56,7 +63,7 @@ export class MessageSerializer<T> extends BaseVisitor {
     } else if (this.config.inlineElements.indexOf(element.name) !== -1) {
       visitAll(this, element.children);
     } else {
-      throw new TranslationParseError(element.sourceSpan, `Invalid element found in message.`);
+      throw new ParseError(element.sourceSpan, `Invalid element found in message.`);
     }
   }
 
