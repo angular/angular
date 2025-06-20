@@ -31,6 +31,14 @@ $_colors: (
   purple-02: oklch(57.9% 0.26 295),
   purple-03: oklch(76% 0.15 305),
 
+  /* Yellows */
+  yellow-01: oklch(70% 0.14 81),
+  yellow-02: oklch(83% 0.14 81),
+
+  /* Oranges */
+  orange-01: oklch(69% 0.17 50),
+  orange-02: oklch(79% 0.17 50),
+
   /* Grayscale */
   gray-1000: oklch(16.93% 0 0),
   gray-900: oklch(19.37% 0 0),
@@ -72,6 +80,8 @@ $_colors: (
   --dynamic-blue-01: var(--blue-05);
   --dynamic-blue-02: var(--blue-02);
   --dynamic-purple-01: var(--purple-01);
+  --dynamic-yellow-01: var(--yellow-01);
+  --dynamic-orange-01: var(--orange-01);
 
   --dynamic-transparent-01: var(--transparent-04);
   --dynamic-transparent-02: var(--transparent-02);
@@ -114,6 +124,8 @@ $_colors: (
   --dynamic-blue-01: var(--blue-01);
   --dynamic-blue-02: var(--blue-03);
   --dynamic-purple-01: var(--purple-03);
+  --dynamic-yellow-01: var(--yellow-02);
+  --dynamic-orange-01: var(--orange-02);
 
   --dynamic-transparent-01: var(--transparent-03);
   --dynamic-transparent-02: var(--transparent-01);
