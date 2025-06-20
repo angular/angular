@@ -9,10 +9,10 @@
 import {MissingTranslationStrategy} from '../core';
 import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
+import {ParseError} from '../parse_util';
 import {Console} from '../util';
 
 import * as i18n from './i18n_ast';
-import {I18nError} from './parse_util';
 import {PlaceholderMapper, Serializer} from './serializers/serializer';
 import {escapeXml} from './serializers/xml_helper';
 
@@ -80,7 +80,7 @@ export class TranslationBundle {
 class I18nToHtmlVisitor implements i18n.Visitor {
   // using non-null assertions because they're (re)set by convert()
   private _srcMsg!: i18n.Message;
-  private _errors: I18nError[] = [];
+  private _errors: ParseError[] = [];
   private _contextStack: {msg: i18n.Message; mapper: (name: string) => string}[] = [];
   private _mapper!: (name: string) => string;
 
@@ -93,7 +93,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
     private _console?: Console,
   ) {}
 
-  convert(srcMsg: i18n.Message): {nodes: html.Node[]; errors: I18nError[]} {
+  convert(srcMsg: i18n.Message): {nodes: html.Node[]; errors: ParseError[]} {
     this._contextStack.length = 0;
     this._errors.length = 0;
 
@@ -220,6 +220,6 @@ class I18nToHtmlVisitor implements i18n.Visitor {
   }
 
   private _addError(el: i18n.Node, msg: string) {
-    this._errors.push(new I18nError(el.sourceSpan, msg));
+    this._errors.push(new ParseError(el.sourceSpan, msg));
   }
 }
