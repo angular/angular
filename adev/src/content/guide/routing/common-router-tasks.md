@@ -70,6 +70,7 @@ The following route guards are available in Angular:
   <docs-pill href="api/router/CanActivateFn" title="`canActivate`"/>
   <docs-pill href="api/router/CanActivateChildFn" title="`canActivateChild`"/>
   <docs-pill href="api/router/CanDeactivateFn" title="`canDeactivate`"/>
+  <docs-pill href="api/router/CanDeactivateChildFn" title="`canDeactivateChild`"/>
   <docs-pill href="api/router/CanMatchFn" title="`canMatch`"/>
   <docs-pill href="api/router/ResolveFn" title="`resolve`"/>
   <docs-pill href="api/router/CanLoadFn" title="`canLoad`"/>

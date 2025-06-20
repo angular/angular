@@ -35,6 +35,8 @@ export {
   Scroll,
 } from './events';
 export {
+  CanDeactivateChild,
+  CanDeactivateChildFn,
   CanActivateChildFn,
   MaybeAsync,
   GuardResult,
@@ -139,6 +141,7 @@ export {
   mapToCanActivate,
   mapToCanActivateChild,
   mapToCanDeactivate,
+  mapToCanDeactivateChild,
   mapToCanMatch,
   mapToResolve,
 } from './utils/functional_guards';
