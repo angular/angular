@@ -284,6 +284,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   private renderer = inject(Renderer2);
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
+  private destroyRef = inject(DestroyRef);
 
   // An LCP image observer should be injected only in development mode.
   // Do not assign it to `null` to avoid having a redundant property in the production bundle.
@@ -409,10 +410,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     if (ngDevMode) {
       this.lcpObserver = this.injector.get(LCPImageObserver);
 
-      // Using `DestroyRef` to avoid having an empty `ngOnDestroy` method since this
-      // is only run in development mode.
-      const destroyRef = inject(DestroyRef);
-      destroyRef.onDestroy(() => {
+      this.destroyRef.onDestroy(() => {
         if (!this.priority && this._renderedSrc !== null) {
           this.lcpObserver!.unregisterImage(this._renderedSrc);
         }
@@ -439,7 +437,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
         // This leaves the Angular zone to avoid triggering unnecessary change detection cycles when
         // `load` tasks are invoked on images.
         ngZone.runOutsideAngular(() =>
-          assertNonZeroRenderedHeight(this, this.imgElement, this.renderer),
+          assertNonZeroRenderedHeight(this, this.imgElement, this.renderer, this.destroyRef),
         );
       } else {
         assertNonEmptyWidthAndHeight(this);
@@ -452,7 +450,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
         // Only check for distorted images when not in fill mode, where
         // images may be intentionally stretched, cropped or letterboxed.
         ngZone.runOutsideAngular(() =>
-          assertNoImageDistortion(this, this.imgElement, this.renderer),
+          assertNoImageDistortion(this, this.imgElement, this.renderer, this.destroyRef),
         );
       }
       assertValidLoadingInput(this);
@@ -747,6 +745,13 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
     const removeLoadListenerFn = this.renderer.listen(img, 'load', callback);
     const removeErrorListenerFn = this.renderer.listen(img, 'error', callback);
+
+    // Clean up listeners once the view is destroyed, before the image
+    // loads or fails to load, to avoid element from being captured in memory.
+    this.destroyRef.onDestroy(() => {
+      removeLoadListenerFn();
+      removeErrorListenerFn();
+    });
 
     callOnLoadIfImageIsLoaded(img, callback);
   }
@@ -1056,6 +1061,7 @@ function assertNoImageDistortion(
   dir: NgOptimizedImage,
   img: HTMLImageElement,
   renderer: Renderer2,
+  destroyRef: DestroyRef,
 ) {
   const callback = () => {
     removeLoadListenerFn();
@@ -1163,6 +1169,13 @@ function assertNoImageDistortion(
     removeErrorListenerFn();
   });
 
+  // Clean up listeners once the view is destroyed, before the image
+  // loads or fails to load, to avoid element from being captured in memory.
+  destroyRef.onDestroy(() => {
+    removeLoadListenerFn();
+    removeErrorListenerFn();
+  });
+
   callOnLoadIfImageIsLoaded(img, callback);
 }
 
@@ -1208,6 +1221,7 @@ function assertNonZeroRenderedHeight(
   dir: NgOptimizedImage,
   img: HTMLImageElement,
   renderer: Renderer2,
+  destroyRef: DestroyRef,
 ) {
   const callback = () => {
     removeLoadListenerFn();
@@ -1231,6 +1245,13 @@ function assertNonZeroRenderedHeight(
 
   // See comments in the `assertNoImageDistortion`.
   const removeErrorListenerFn = renderer.listen(img, 'error', () => {
+    removeLoadListenerFn();
+    removeErrorListenerFn();
+  });
+
+  // Clean up listeners once the view is destroyed, before the image
+  // loads or fails to load, to avoid element from being captured in memory.
+  destroyRef.onDestroy(() => {
     removeLoadListenerFn();
     removeErrorListenerFn();
   });
