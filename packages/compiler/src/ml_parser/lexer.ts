@@ -154,10 +154,6 @@ enum CharacterReferenceType {
   DEC = 'decimal',
 }
 
-class _ControlFlowError {
-  constructor(public error: TokenError) {}
-}
-
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
   private _cursor: CharacterCursor;
@@ -530,22 +526,22 @@ class _Tokenizer {
     return token;
   }
 
-  private _createError(msg: string, span: ParseSourceSpan): _ControlFlowError {
+  private _createError(msg: string, span: ParseSourceSpan): TokenError {
     if (this._isInExpansionForm()) {
       msg += ` (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`;
     }
     const error = new TokenError(msg, this._currentTokenType, span);
     this._currentTokenStart = null;
     this._currentTokenType = null;
-    return new _ControlFlowError(error);
+    return error;
   }
 
   private handleError(e: any) {
     if (e instanceof CursorError) {
       e = this._createError(e.msg, this._cursor.getSpan(e.cursor));
     }
-    if (e instanceof _ControlFlowError) {
-      this.errors.push(e.error);
+    if (e instanceof TokenError) {
+      this.errors.push(e);
     } else {
       throw e;
     }
@@ -820,7 +816,7 @@ class _Tokenizer {
         this._consumeTagOpenEnd();
       }
     } catch (e) {
-      if (e instanceof _ControlFlowError) {
+      if (e instanceof TokenError) {
         if (openToken) {
           // We errored before we could close the opening tag, so it is incomplete.
           openToken.type =
