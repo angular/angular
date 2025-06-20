@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 import {ProfilerFrame} from '../../../../../../../../protocol';
 
-import {ThemeService} from '../../../../../application-services/theme_service';
 import {BarGraphFormatter, BargraphNode} from '../../record-formatter/bargraph-formatter/index';
 
 import {formatDirectiveProfile} from '../profile-formatter/profile-formatter';
@@ -24,11 +23,6 @@ import {SelectedDirective, SelectedEntry} from '../recording-visualizer-types';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BargraphVisualizerComponent {
-  public themeService = inject(ThemeService);
-  readonly barColor = computed(() => {
-    return this.themeService.currentTheme() === 'dark-theme' ? '#073d69' : '#cfe8fc';
-  });
-
   readonly nodeSelect = output<SelectedEntry>();
 
   private readonly _formatter = new BarGraphFormatter();

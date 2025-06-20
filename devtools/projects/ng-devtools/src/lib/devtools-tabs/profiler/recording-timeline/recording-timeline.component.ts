@@ -12,13 +12,14 @@ import {Observable} from 'rxjs';
 
 import {createFilter, Filter, noopFilter} from './filter';
 import {mergeFrames} from './record-formatter/frame-merger';
-import {VisualizationMode} from './visualization-mode';
+import {VisualizationMode} from './shared/visualization-mode';
 
 import {RecordingVisualizerComponent} from './recording-visualizer/recording-visualizer.component';
 import {FrameSelectorComponent} from './frame-selector/frame-selector.component';
 import {RecordingTimelineControlsComponent} from './recording-timeline-controls/recording-timeline-controls.component';
 import {RecordingModalComponent} from './recording-modal/recording-modal.component';
 import {VisualizerControlsComponent} from './visualizer-controls/visualizer-controls.component';
+import {estimateFrameRate} from './shared/estimate-frame-rate';
 
 @Component({
   selector: 'ng-recording-timeline',
@@ -54,9 +55,7 @@ export class RecordingTimelineComponent {
     return this.allFrames().filter((node) => filter(node));
   });
 
-  readonly currentFrameRate = computed(() =>
-    RecordingTimelineComponent.estimateFrameRate(this.frame()?.duration ?? 0),
-  );
+  readonly currentFrameRate = computed(() => estimateFrameRate(this.frame()?.duration ?? 0));
 
   readonly hasFrames = computed(() => this.allFrames().length > 0);
 
@@ -73,11 +72,6 @@ export class RecordingTimelineComponent {
       });
       cleanup(() => subscription.unsubscribe());
     });
-  }
-
-  static estimateFrameRate(timeSpent: number): number {
-    const multiplier = Math.max(Math.ceil(timeSpent / 16) - 1, 0);
-    return Math.floor(60 / 2 ** multiplier);
   }
 
   setFilter(filter: string): void {

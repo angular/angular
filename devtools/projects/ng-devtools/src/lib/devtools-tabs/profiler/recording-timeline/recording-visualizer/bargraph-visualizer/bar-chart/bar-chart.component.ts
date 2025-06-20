@@ -18,14 +18,12 @@ import {
 import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 
 import {BargraphNode} from '../../../record-formatter/bargraph-formatter/bargraph-formatter';
-import {MatTooltip} from '@angular/material/tooltip';
 
 interface BarData {
   label: string;
   count: number;
   width: number;
   time: number;
-
   text: string;
 }
 
@@ -39,7 +37,6 @@ interface BarData {
     ]),
     trigger('stagger', [transition(':enter', [query(':enter', stagger('.1s', [animateChild()]))])]),
   ],
-  imports: [MatTooltip],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BarChartComponent {
@@ -61,7 +58,6 @@ export class BarChartComponent {
     return values;
   });
 
-  readonly color = input.required<string>();
   readonly barClick = output<BargraphNode>();
 }
 

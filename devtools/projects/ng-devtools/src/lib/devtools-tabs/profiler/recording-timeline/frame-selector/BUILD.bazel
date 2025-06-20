@@ -28,6 +28,7 @@ ng_project(
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/material",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter:record-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:estimate-frame-rate_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update:tab-update_rjs",
         "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
     ],

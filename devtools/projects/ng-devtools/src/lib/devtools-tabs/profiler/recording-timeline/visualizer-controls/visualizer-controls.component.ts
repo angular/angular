@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, Component, input, model} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
 
 import {ProfilerFrame} from '../../../../../../../protocol';
-import {VisualizationMode} from '../visualization-mode';
+import {VisualizationMode} from '../shared/visualization-mode';
 
 @Component({
   selector: 'ng-visualizer-controls',

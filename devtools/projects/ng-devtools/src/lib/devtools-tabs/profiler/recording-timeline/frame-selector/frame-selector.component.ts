@@ -33,6 +33,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {DecimalPipe, NgStyle} from '@angular/common';
 import {ProfilerFrame} from '../../../../../../../protocol';
 import {ButtonComponent} from '../../../../shared/button/button.component';
+import {estimateFrameRate} from '../shared/estimate-frame-rate';
 
 const ITEM_GAP = 2.5;
 const ITEM_WIDTH = 18;
@@ -223,12 +224,6 @@ export class FrameSelectorComponent {
     }
   }
 
-  // DUPLICATE
-  static estimateFrameRate(timeSpent: number): number {
-    const multiplier = Math.max(Math.ceil(timeSpent / 16) - 1, 0);
-    return Math.floor(60 / 2 ** multiplier);
-  }
-
   stopDragScrolling(): void {
     this.dragScrolling.set(false);
     this._viewportScrollState.isDragScrolling = false;
@@ -256,9 +251,7 @@ export class FrameSelectorComponent {
   private getBarStyles(frame: ProfilerFrame, multiplicationFactor: number): GraphNode {
     const height = frame.duration * multiplicationFactor;
     const colorPercentage = Math.max(10, Math.round((height / MAX_HEIGHT) * 100));
-    const backgroundColor = this.getColorByFrameRate(
-      FrameSelectorComponent.estimateFrameRate(frame.duration),
-    );
+    const backgroundColor = this.getColorByFrameRate(estimateFrameRate(frame.duration));
 
     const style = {
       'background-image': `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,

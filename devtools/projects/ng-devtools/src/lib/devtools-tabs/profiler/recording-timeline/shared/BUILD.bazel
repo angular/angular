@@ -1,0 +1,29 @@
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "visualization-mode",
+    srcs = ["visualization-mode.ts"],
+)
+
+ts_project(
+    name = "estimate-frame-rate",
+    srcs = ["estimate-frame-rate.ts"],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = glob(["*.spec.ts"]),
+    interop_deps = [
+        ":estimate-frame-rate",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

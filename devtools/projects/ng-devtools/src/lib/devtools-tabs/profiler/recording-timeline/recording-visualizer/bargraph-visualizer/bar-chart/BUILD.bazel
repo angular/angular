@@ -22,7 +22,6 @@ ng_project(
         "//packages/animations",
     ],
     deps = [
-        "//:node_modules/@angular/material",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/bargraph-formatter:bargraph-formatter_rjs",
     ],
 )

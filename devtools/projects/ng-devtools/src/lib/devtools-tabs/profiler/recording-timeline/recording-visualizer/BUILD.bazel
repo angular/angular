@@ -36,12 +36,11 @@ ng_project(
     ],
     deps = [
         ":recording-visualizer-types",
-        "//:node_modules/@angular/material",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/bargraph-visualizer:bargraph-visualizer_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/execution-details:execution-details_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/flamegraph-visualizer:flamegraph-visualizer_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/tree-map-visualizer:tree-map-visualizer_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/visualization-mode:visualization-mode_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode_rjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
