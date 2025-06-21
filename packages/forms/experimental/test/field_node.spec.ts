@@ -29,6 +29,7 @@ import {
   validate,
   validateTree,
 } from '../public_api';
+import {pathFromSchema} from '../src/schema';
 
 interface TreeData {
   level: number;
@@ -978,7 +979,7 @@ describe('FieldNode', () => {
     it('should error on resolving predefined schema path that is not part of the form', () => {
       let otherP: FieldPath<any>;
       const s = schema<string>((p) => (otherP = p));
-      s.compile();
+      pathFromSchema(s).compile();
 
       const f = form(
         signal(''),

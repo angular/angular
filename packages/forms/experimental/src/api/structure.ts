@@ -11,7 +11,7 @@ import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {assertPathIsCurrent, FieldPathNode, FieldRootPathNode} from '../path_node';
-import {createSchema, isSchema} from '../schema';
+import {createSchema, isSchema, pathFromSchema} from '../schema';
 import type {
   Field,
   FieldPath,
@@ -128,6 +128,7 @@ export function form<T>(model: WritableSignal<T>, options?: FormOptions): Field<
  */
 export function form<T>(
   model: WritableSignal<T>,
+  // TODO: Decide if we want `NoInfer` or not.
   // Note: `NoInfer<...>` works here when the schema is defined inline, but not when it is defined
   // ahead of time, e.g.
   // const s = (p: FieldPath<string>) => { ... };
@@ -139,7 +140,9 @@ export function form<T>(
 export function form<T>(...args: any[]): Field<T> {
   const [model, schema, options] = normalizeFormArgs<T>(args);
   const injector = options?.injector ?? inject(Injector);
-  const pathNode = isSchema(schema) ? schema : new FieldRootPathNode(schema as SchemaFn<unknown>);
+  const pathNode = isSchema(schema)
+    ? pathFromSchema(schema)
+    : new FieldRootPathNode(schema as SchemaFn<unknown>);
   runInInjectionContext(injector, () => pathNode.compile());
   const fieldManager = new FormFieldManager(injector);
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
@@ -209,7 +212,7 @@ export function apply<T>(path: FieldPath<T>, schema: NoInfer<SchemaOrSchemaFn<T>
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   const schemaRootPathNode = createSchema(schema);
-  pathNode.mergeIn(schemaRootPathNode);
+  pathNode.mergeIn(pathFromSchema(schemaRootPathNode));
 }
 
 /**
@@ -228,7 +231,7 @@ export function applyWhen<T>(
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   const schemaRootPathNode = createSchema(schema);
-  pathNode.mergeIn(schemaRootPathNode, {fn: logic, path});
+  pathNode.mergeIn(pathFromSchema(schemaRootPathNode), {fn: logic, path});
 }
 
 /**

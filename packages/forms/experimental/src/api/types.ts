@@ -7,7 +7,6 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
-import {FieldRootPathNode} from '../path_node';
 import {DataKey} from './data';
 import {MetadataKey} from './metadata';
 
@@ -209,7 +208,7 @@ export type FieldPath<T> = {
 /**
  * Defines logic for a form of type T.
  */
-export type Schema<T> = FieldRootPathNode & {
+export type Schema<T> = {
   // Save type as `T => void` rather than `T` since `Schema` is contravariant on `T`. */
   [ɵɵTYPE]: (_: T) => void;
 };

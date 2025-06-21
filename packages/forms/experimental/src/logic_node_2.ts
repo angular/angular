@@ -301,9 +301,13 @@ export class LogicContainer {
     return this.dataFactories.entries();
   }
 
+  /**
+   * Checks whether this logic container has any data factories associated with it.
+   */
   hasData() {
     return this.dataFactories.size > 0;
   }
+
   /**
    * Retrieves or creates the `AbstractLogic` for a given metadata key.
    * @param key The `MetadataKey` for which to get the logic.

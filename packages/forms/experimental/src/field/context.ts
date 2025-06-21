@@ -43,6 +43,7 @@ let boundPathDepth = 0;
  * @param depth
  * @returns
  */
+// TODO: Is there a way we can do this without needing to wrap each logic function?
 export function setBoundPathDepthForResolution<A extends any[], R>(
   fn: (...args: A) => R,
   depth: number,

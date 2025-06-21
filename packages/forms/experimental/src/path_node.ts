@@ -86,6 +86,9 @@ export class FieldRootPathNode extends FieldPathNode {
     super([], LogicNodeBuilder.newRoot(), undefined);
   }
 
+  // TODO: This probably needs to happen once **per-form** rather than once ever, otherwise it gets
+  // compiled with the injector from the first form that uses it and continues to use that injector
+  // on all future forms.
   compile() {
     if (this.isCompiled) {
       return;
