@@ -39,6 +39,7 @@ export async function initHighlighter() {
       'nginx',
       'markdown',
       'apache',
+      'css',
     ],
   });
 }
@@ -51,7 +52,7 @@ export function highlightCode(token: CodeToken) {
   if (token.language !== 'none' && token.language !== 'file') {
     // Decode the code content to replace HTML entities to characters
     const decodedCode = decode(token.code);
-    const fallbackLanguage = token.path?.endsWith('html') ? 'angular-html' : 'angular-ts';
+    const fallbackLanguage = guessLanguageFromPath(token.path);
     const value = highlighter.codeToHtml(decodedCode, {
       // we chose ts a fallback language as most example are ts.
       // Idealy all examples should have a specified language
@@ -134,5 +135,22 @@ function removeWhitespaceNodes(parent: Element | null) {
     if (node.nodeType === 3 && !/\S/.test(node.nodeValue!)) {
       parent.removeChild(node);
     }
+  }
+}
+
+function guessLanguageFromPath(path: string | undefined): string {
+  const extension = path?.split('.').pop()?.toLowerCase();
+  switch (extension) {
+    case 'ts':
+    case 'js':
+      return 'typescript';
+    case 'html':
+      return 'angular-html';
+    case 'css':
+      return 'css';
+    case 'json':
+      return 'json';
+    default:
+      return 'angular-ts';
   }
 }
