@@ -1,7 +1,3 @@
-// TODO: Working on refactoring all code components & syntax highlighting
-
-/* stylelint-disable */
-
 $code-font-size: 0.875rem;
 
 @mixin docs-code-block {
@@ -101,11 +97,19 @@ $code-font-size: 0.875rem;
       border-color 0.3s ease;
     container: codeblock / inline-size;
 
-    pre {
-      overflow-x: auto;
+    &.compact {
+      code {
+        max-height: 300px;
+      }
     }
+  }
 
+  .shiki {
     code {
+      width: 100%;
+      overflow: auto;
+      padding-block: 1rem;
+
       display: flex;
       flex-direction: column;
       font-size: $code-font-size;
@@ -281,15 +285,9 @@ $code-font-size: 0.875rem;
     }
 
     pre {
-      overflow-x: auto;
       display: flex;
       flex-direction: column;
       align-items: start;
-    }
-
-    pre > * {
-      min-width: 100%;
-      width: auto;
     }
   }
 
