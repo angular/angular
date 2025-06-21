@@ -304,7 +304,7 @@ class Page {
   }
 
   private queryAll<T>(selector: string): T[] {
-    return harness.routeNativeElement!.querySelectorAll(selector) as any as T[];
+    return harness.routeNativeElement!.querySelectorAll(selector) as T[];
   }
 }
 // #enddocregion page
