@@ -85,6 +85,16 @@ const BINARY_OPS = new Map<string, ts.BinaryOperator>([
   ['|', ts.SyntaxKind.BarToken],
   ['??', ts.SyntaxKind.QuestionQuestionToken],
   ['in', ts.SyntaxKind.InKeyword],
+  ['=', ts.SyntaxKind.EqualsToken],
+  ['+=', ts.SyntaxKind.PlusEqualsToken],
+  ['-=', ts.SyntaxKind.MinusEqualsToken],
+  ['*=', ts.SyntaxKind.AsteriskEqualsToken],
+  ['/=', ts.SyntaxKind.SlashEqualsToken],
+  ['%=', ts.SyntaxKind.PercentEqualsToken],
+  ['**=', ts.SyntaxKind.AsteriskAsteriskEqualsToken],
+  ['&&=', ts.SyntaxKind.AmpersandAmpersandEqualsToken],
+  ['||=', ts.SyntaxKind.BarBarEqualsToken],
+  ['??=', ts.SyntaxKind.QuestionQuestionEqualsToken],
 ]);
 
 /**

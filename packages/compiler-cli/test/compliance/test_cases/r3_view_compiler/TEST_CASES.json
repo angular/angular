@@ -19,7 +19,7 @@
     {
       "description": "should handle binary and unary operators",
       "compilerOptions": {
-        "target": "es2020"
+        "target": "es2022"
       },
       "inputFiles": ["operators.ts"],
       "expectations": [

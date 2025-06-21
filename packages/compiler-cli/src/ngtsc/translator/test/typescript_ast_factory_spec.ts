@@ -59,7 +59,7 @@ describe('TypeScriptAstFactory', () => {
         items: [target, value],
         generate,
       } = setupExpressions(`x`, `42`);
-      const assignment = factory.createAssignment(target, value);
+      const assignment = factory.createAssignment(target, '=', value);
       expect(generate(assignment)).toEqual('x = 42');
     });
   });

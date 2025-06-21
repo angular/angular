@@ -31,6 +31,15 @@ export const BINARY_OPERATORS = new Map([
   ['||', o.BinaryOperator.Or],
   ['+', o.BinaryOperator.Plus],
   ['in', o.BinaryOperator.In],
+  ['+=', o.BinaryOperator.AdditionAssignment],
+  ['-=', o.BinaryOperator.SubtractionAssignment],
+  ['*=', o.BinaryOperator.MultiplicationAssignment],
+  ['/=', o.BinaryOperator.DivisionAssignment],
+  ['%=', o.BinaryOperator.RemainderAssignment],
+  ['**=', o.BinaryOperator.ExponentiationAssignment],
+  ['&&=', o.BinaryOperator.AndAssignment],
+  ['||=', o.BinaryOperator.OrAssignment],
+  ['??=', o.BinaryOperator.NullishCoalesceAssignment],
 ]);
 
 export function namespaceForKey(namespacePrefixKey: string | null): ir.Namespace {

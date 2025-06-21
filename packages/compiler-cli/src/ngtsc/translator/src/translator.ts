@@ -45,6 +45,16 @@ const BINARY_OPERATORS = /* @__PURE__ */ new Map<o.BinaryOperator, BinaryOperato
   [o.BinaryOperator.NullishCoalesce, '??'],
   [o.BinaryOperator.Exponentiation, '**'],
   [o.BinaryOperator.In, 'in'],
+  [o.BinaryOperator.Assign, '='],
+  [o.BinaryOperator.AdditionAssignment, '+='],
+  [o.BinaryOperator.SubtractionAssignment, '-='],
+  [o.BinaryOperator.MultiplicationAssignment, '*='],
+  [o.BinaryOperator.DivisionAssignment, '/='],
+  [o.BinaryOperator.RemainderAssignment, '%='],
+  [o.BinaryOperator.ExponentiationAssignment, '**='],
+  [o.BinaryOperator.AndAssignment, '&&='],
+  [o.BinaryOperator.OrAssignment, '||='],
+  [o.BinaryOperator.NullishCoalesceAssignment, '??='],
 ]);
 
 export type RecordWrappedNodeFn<TExpression> = (node: o.WrappedNodeExpr<TExpression>) => void;
@@ -331,19 +341,23 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
   }
 
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, context: Context): TExpression {
-    if (ast.operator === o.BinaryOperator.Assign) {
+    if (!BINARY_OPERATORS.has(ast.operator)) {
+      throw new Error(`Unknown binary operator: ${o.BinaryOperator[ast.operator]}`);
+    }
+
+    const operator = BINARY_OPERATORS.get(ast.operator)!;
+
+    if (ast.isAssignment()) {
       return this.factory.createAssignment(
         ast.lhs.visitExpression(this, context),
+        operator,
         ast.rhs.visitExpression(this, context),
       );
     }
 
-    if (!BINARY_OPERATORS.has(ast.operator)) {
-      throw new Error(`Unknown binary operator: ${o.BinaryOperator[ast.operator]}`);
-    }
     return this.factory.createBinaryExpression(
       ast.lhs.visitExpression(this, context),
-      BINARY_OPERATORS.get(ast.operator)!,
+      operator,
       ast.rhs.visitExpression(this, context),
     );
   }

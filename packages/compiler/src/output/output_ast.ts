@@ -143,6 +143,15 @@ export enum BinaryOperator {
   NullishCoalesce,
   Exponentiation,
   In,
+  AdditionAssignment,
+  SubtractionAssignment,
+  MultiplicationAssignment,
+  DivisionAssignment,
+  RemainderAssignment,
+  ExponentiationAssignment,
+  AndAssignment,
+  OrAssignment,
+  NullishCoalesceAssignment,
 }
 
 export function nullSafeIsEquivalent<T extends {isEquivalent(other: T): boolean}>(
@@ -1162,6 +1171,22 @@ export class BinaryOperatorExpr extends Expression {
       this.rhs.clone(),
       this.type,
       this.sourceSpan,
+    );
+  }
+
+  isAssignment(): boolean {
+    const op = this.operator;
+    return (
+      op === BinaryOperator.Assign ||
+      op === BinaryOperator.AdditionAssignment ||
+      op === BinaryOperator.SubtractionAssignment ||
+      op === BinaryOperator.MultiplicationAssignment ||
+      op === BinaryOperator.DivisionAssignment ||
+      op === BinaryOperator.RemainderAssignment ||
+      op === BinaryOperator.ExponentiationAssignment ||
+      op === BinaryOperator.AndAssignment ||
+      op === BinaryOperator.OrAssignment ||
+      op === BinaryOperator.NullishCoalesceAssignment
     );
   }
 }

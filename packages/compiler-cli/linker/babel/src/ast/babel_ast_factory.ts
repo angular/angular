@@ -37,9 +37,13 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
 
   createArrayLiteral = t.arrayExpression;
 
-  createAssignment(target: t.Expression, value: t.Expression): t.Expression {
+  createAssignment(
+    target: t.Expression,
+    operator: BinaryOperator,
+    value: t.Expression,
+  ): t.Expression {
     assert(target, isLExpression, 'must be a left hand side expression');
-    return t.assignmentExpression('=', target, value);
+    return t.assignmentExpression(operator, target, value);
   }
 
   createBinaryExpression(
@@ -52,6 +56,17 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
       case '||':
       case '??':
         return t.logicalExpression(operator, leftOperand, rightOperand);
+      case '=':
+      case '+=':
+      case '-=':
+      case '*=':
+      case '/=':
+      case '%=':
+      case '**=':
+      case '&&=':
+      case '||=':
+      case '??=':
+        throw new Error(`Unexpected assignment operator ${operator}`);
       default:
         return t.binaryExpression(operator, leftOperand, rightOperand);
     }

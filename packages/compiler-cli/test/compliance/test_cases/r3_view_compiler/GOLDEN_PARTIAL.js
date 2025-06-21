@@ -76,20 +76,18 @@ export class IdentityPipe {
     transform(value) {
         return value;
     }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IdentityPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IdentityPipe, isStandalone: true, name: "identity" });
 }
-IdentityPipe.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IdentityPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
-IdentityPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IdentityPipe, isStandalone: true, name: "identity" });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IdentityPipe, decorators: [{
             type: Pipe,
             args: [{ name: 'identity' }]
         }] });
 export class MyApp {
-    constructor() {
-        this.foo = { bar: 'baz' };
-    }
-}
-MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    foo = { bar: 'baz' };
+    number = 1;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     {{ 1 + 2 }}
     {{ (1 % 2) + 3 / 4 * 5 ** 6 }}
     {{ +1 }}
@@ -100,7 +98,17 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-
     {{ void 'test' }}
     {{ (-1) ** 3 }}
     {{ 'bar' in foo }}
+    <button (click)="number += 1"></button>
+    <button (click)="number -= 1"></button>
+    <button (click)="number *= 1"></button>
+    <button (click)="number /= 1"></button>
+    <button (click)="number %= 1"></button>
+    <button (click)="number **= 1"></button>
+    <button (click)="number &&= 1"></button>
+    <button (click)="number ||= 1"></button>
+    <button (click)="number ??= 1"></button>
   `, isInline: true, dependencies: [{ kind: "pipe", type: IdentityPipe, name: "identity" }] });
+}
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
@@ -115,6 +123,15 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     {{ void 'test' }}
     {{ (-1) ** 3 }}
     {{ 'bar' in foo }}
+    <button (click)="number += 1"></button>
+    <button (click)="number -= 1"></button>
+    <button (click)="number *= 1"></button>
+    <button (click)="number /= 1"></button>
+    <button (click)="number %= 1"></button>
+    <button (click)="number **= 1"></button>
+    <button (click)="number &&= 1"></button>
+    <button (click)="number ||= 1"></button>
+    <button (click)="number ??= 1"></button>
   `,
                     imports: [IdentityPipe],
                 }]
@@ -133,6 +150,7 @@ export declare class MyApp {
     foo: {
         bar?: string;
     };
+    number: number;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }

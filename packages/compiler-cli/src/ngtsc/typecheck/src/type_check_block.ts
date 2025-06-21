@@ -3117,7 +3117,7 @@ class TcbExpressionTranslator {
       return targetExpression;
     } else if (
       ast instanceof Binary &&
-      ast.operation === '=' &&
+      Binary.isAssignmentOperation(ast.operation) &&
       ast.left instanceof PropertyRead &&
       ast.left.receiver instanceof ImplicitReceiver
     ) {

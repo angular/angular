@@ -277,6 +277,21 @@ export class Binary extends AST {
   override visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitBinary(this, context);
   }
+
+  static isAssignmentOperation(op: string): boolean {
+    return (
+      op === '=' ||
+      op === '+=' ||
+      op === '-=' ||
+      op === '*=' ||
+      op === '/=' ||
+      op === '%=' ||
+      op === '**=' ||
+      op === '&&=' ||
+      op === '||=' ||
+      op === '??='
+    );
+  }
 }
 
 /**

@@ -808,7 +808,7 @@ export class SymbolBuilder {
     // Also skipping SafePropertyReads as it breaks nullish coalescing not nullable extended diagnostic
     if (
       expression instanceof Binary &&
-      expression.operation === '=' &&
+      Binary.isAssignmentOperation(expression.operation) &&
       expression.left instanceof PropertyRead
     ) {
       withSpan = expression.left.nameSpan;

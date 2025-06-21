@@ -704,6 +704,10 @@ class _ParseAST {
     }
   }
 
+  private isAssignmentOperator(token: Token): boolean {
+    return token.type === TokenType.Operator && Binary.isAssignmentOperation(token.strValue);
+  }
+
   private expectOperator(operator: string) {
     if (this.consumeOptionalOperator(operator)) return;
     this.error(`Missing expected operator ${operator}`);
@@ -1214,7 +1218,8 @@ class _ParseAST {
     const nameSpan = this.sourceSpan(nameStart);
 
     if (isSafe) {
-      if (this.consumeOptionalOperator('=')) {
+      if (this.isAssignmentOperator(this.next)) {
+        this.advance();
         this.error("The '?.' operator cannot be used in the assignment");
         return new EmptyExpr(this.span(start), this.sourceSpan(start));
       } else {
@@ -1227,7 +1232,10 @@ class _ParseAST {
         );
       }
     } else {
-      if (this.consumeOptionalOperator('=')) {
+      if (this.isAssignmentOperator(this.next)) {
+        const operation = this.next.strValue;
+        this.advance();
+
         if (!(this.parseFlags & ParseFlags.Action)) {
           this.error('Bindings cannot contain assignments');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
@@ -1240,7 +1248,7 @@ class _ParseAST {
           id,
         );
         const value = this.parseConditional();
-        return new Binary(this.span(start), this.sourceSpan(start), '=', receiver, value);
+        return new Binary(this.span(start), this.sourceSpan(start), operation, receiver, value);
       } else {
         return new PropertyRead(
           this.span(start),
@@ -1365,7 +1373,10 @@ class _ParseAST {
       }
       this.rbracketsExpected--;
       this.expectCharacter(chars.$RBRACKET);
-      if (this.consumeOptionalOperator('=')) {
+      if (this.isAssignmentOperator(this.next)) {
+        const operation = this.next.strValue;
+        this.advance();
+
         if (isSafe) {
           this.error("The '?.' operator cannot be used in the assignment");
         } else {
@@ -1376,7 +1387,13 @@ class _ParseAST {
             key,
           );
           const value = this.parseConditional();
-          return new Binary(this.span(start), this.sourceSpan(start), '=', binaryReceiver, value);
+          return new Binary(
+            this.span(start),
+            this.sourceSpan(start),
+            operation,
+            binaryReceiver,
+            value,
+          );
         }
       } else {
         return isSafe
@@ -1607,7 +1624,7 @@ class _ParseAST {
    *       none of the calling productions are not expecting the closing token else we will never
    *       make progress in the case of an extraneous group closing symbol (such as a stray ')').
    *       That is, we skip a closing symbol if we are not in a grouping production.
-   *   - '=' in a `Writable` context
+   *   - Assignment in a `Writable` context
    *     - In this context, we are able to recover after seeing the `=` operator, which
    *       signals the presence of an independent rvalue expression following the `=` operator.
    *
@@ -1623,7 +1640,7 @@ class _ParseAST {
       (this.rparensExpected <= 0 || !n.isCharacter(chars.$RPAREN)) &&
       (this.rbracesExpected <= 0 || !n.isCharacter(chars.$RBRACE)) &&
       (this.rbracketsExpected <= 0 || !n.isCharacter(chars.$RBRACKET)) &&
-      (!(this.context & ParseContextFlags.Writable) || !n.isOperator('='))
+      (!(this.context & ParseContextFlags.Writable) || !this.isAssignmentOperator(n))
     ) {
       if (this.next.isError()) {
         this.errors.push(

@@ -75,6 +75,19 @@ describe('type check blocks', () => {
     expect(tcb('{{!(void a === "object")}}')).toContain('!(((void (((this).a))) === ("object")))');
   });
 
+  it('should handle assignment expressions', () => {
+    expect(tcb('<b (click)="a = b"></b>')).toContain('(((this).a)) = (((this).b));');
+    expect(tcb('<b (click)="a += b"></b>')).toContain('(((this).a)) += (((this).b));');
+    expect(tcb('<b (click)="a -= b"></b>')).toContain('(((this).a)) -= (((this).b));');
+    expect(tcb('<b (click)="a *= b"></b>')).toContain('(((this).a)) *= (((this).b));');
+    expect(tcb('<b (click)="a /= b"></b>')).toContain('(((this).a)) /= (((this).b));');
+    expect(tcb('<b (click)="a %= b"></b>')).toContain('(((this).a)) %= (((this).b));');
+    expect(tcb('<b (click)="a **= b"></b>')).toContain('(((this).a)) **= (((this).b));');
+    expect(tcb('<b (click)="a &&= b"></b>')).toContain('(((this).a)) &&= (((this).b));');
+    expect(tcb('<b (click)="a ||= b"></b>')).toContain('(((this).a)) ||= (((this).b));');
+    expect(tcb('<b (click)="a ??= b"></b>')).toContain('(((this).a)) ??= (((this).b));');
+  });
+
   it('should handle exponentiation expressions', () => {
     expect(tcb('{{a * b ** c + d}}')).toContain(
       '(((((this).a)) * ((((this).b)) ** (((this).c)))) + (((this).d)))',
