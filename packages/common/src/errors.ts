@@ -38,6 +38,9 @@ export const enum RuntimeErrorCode {
   NO_PLURAL_MESSAGE_FOUND = 2308,
   VALUE_NOT_A_NUMBER = 2309,
 
+  // Miscellaneous errors
+  SCROLL_RESTORATION_UNSUPPORTED = 2400,
+
   // Keep 2800 - 2900 for Http Errors.
 
   // Image directive errors
