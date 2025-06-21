@@ -450,11 +450,18 @@ function isResolved<T>(state: ResourceStreamItem<T>): state is {value: T} {
 }
 
 export function encapsulateResourceError(error: unknown): Error {
-  if (error instanceof Error) {
+  if (isErrorLike(error)) {
     return error;
   }
 
   return new ResourceWrappedError(error);
+}
+
+export function isErrorLike(error: unknown): error is Error {
+  return (
+    error instanceof Error ||
+    (typeof error === 'object' && error !== null && 'message' in error && 'name' in error)
+  );
 }
 
 class ResourceValueError extends Error {
