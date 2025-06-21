@@ -66,6 +66,7 @@ import {
   NgTemplateDiagnostic,
   OptimizeFor,
   PotentialDirective,
+  PotentialDirectiveModuleSpecifierResolver,
   PotentialImport,
   PotentialImportKind,
   PotentialImportMode,
@@ -869,7 +870,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return {
       ...withScope,
       isInScope,
-      tsCompletionEntryInfo,
+      /**
+       * The Angular LS only supports displaying one directive at a time when
+       * providing the completion item, even if it's exported by multiple modules.
+       */
+      tsCompletionEntryInfos: tsCompletionEntryInfo !== null ? [tsCompletionEntryInfo] : null,
     };
   }
 
@@ -926,7 +931,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const currentComponentFileName = component.getSourceFile().fileName;
     for (const {symbol, data} of entries ?? []) {
       const symbolFileName = symbol?.declarations?.[0]?.getSourceFile().fileName;
-      if (symbolFileName === undefined) {
+      const symbolName = symbol?.name;
+      if (symbolFileName === undefined || symbolName === undefined) {
         continue;
       }
 
@@ -954,24 +960,26 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
           ref,
         });
       } else {
-        const ngModuleMeta = this.metaReader.getNgModuleMetadata(ref);
-        if (ngModuleMeta === null) {
-          continue;
-        }
-        for (const moduleExports of ngModuleMeta.exports) {
-          const directiveMeta = this.metaReader.getDirectiveMetadata(moduleExports);
-          if (directiveMeta === null) {
-            continue;
-          }
-          directiveDecls.push({
-            meta: directiveMeta,
-            ref: moduleExports,
-          });
-        }
+        const directiveDeclsForNgModule = this.getDirectiveDeclsForNgModule(ref);
+        directiveDecls.push(...directiveDeclsForNgModule);
       }
 
       for (const directiveDecl of directiveDecls) {
+        const cachedCompletionEntryInfos =
+          resultingDirectives.get(directiveDecl.ref.node)?.tsCompletionEntryInfos ?? [];
+
+        cachedCompletionEntryInfos.push({
+          tsCompletionEntryData: data,
+          tsCompletionEntrySymbolFileName: symbolFileName,
+          tsCompletionEntrySymbolName: symbolName,
+        });
+
         if (resultingDirectives.has(directiveDecl.ref.node)) {
+          const directiveInfo = resultingDirectives.get(directiveDecl.ref.node)!;
+          resultingDirectives.set(directiveDecl.ref.node, {
+            ...directiveInfo,
+            tsCompletionEntryInfos: cachedCompletionEntryInfos,
+          });
           continue;
         }
 
@@ -982,14 +990,48 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         resultingDirectives.set(directiveDecl.ref.node, {
           ...withScope,
           isInScope: false,
-          tsCompletionEntryInfo: {
-            tsCompletionEntryData: data,
-            tsCompletionEntrySymbolFileName: symbolFileName,
-          },
+          tsCompletionEntryInfos: cachedCompletionEntryInfos,
         });
       }
     }
     return Array.from(resultingDirectives.values());
+  }
+
+  /**
+   * If the NgModule exports a new module, we need to recursively get its directives.
+   */
+  private getDirectiveDeclsForNgModule(ref: Reference<ClassDeclaration>): {
+    meta: DirectiveMeta;
+    ref: Reference<ClassDeclaration>;
+  }[] {
+    const ngModuleMeta = this.metaReader.getNgModuleMetadata(ref);
+    if (ngModuleMeta === null) {
+      return [];
+    }
+    const directiveDecls: {
+      meta: DirectiveMeta;
+      ref: Reference<ClassDeclaration>;
+    }[] = [];
+
+    for (const moduleExports of ngModuleMeta.exports) {
+      const directiveMeta = this.metaReader.getDirectiveMetadata(moduleExports);
+      if (directiveMeta !== null) {
+        directiveDecls.push({
+          meta: directiveMeta,
+          ref: moduleExports,
+        });
+      } else {
+        const ngModuleMeta = this.metaReader.getNgModuleMetadata(moduleExports);
+        if (ngModuleMeta === null) {
+          continue;
+        }
+        // If the export is an NgModule, we need to recursively get its directives.
+        const nestedDirectiveDecls = this.getDirectiveDeclsForNgModule(moduleExports);
+        directiveDecls.push(...nestedDirectiveDecls);
+      }
+    }
+
+    return directiveDecls;
   }
 
   getPotentialElementTags(
@@ -1136,6 +1178,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     toImport: Reference<ClassDeclaration>,
     inContext: ts.Node,
     importMode: PotentialImportMode,
+    potentialDirectiveModuleSpecifierResolver?: PotentialDirectiveModuleSpecifierResolver,
   ): ReadonlyArray<PotentialImport> {
     const imports: PotentialImport[] = [];
 
@@ -1145,21 +1188,54 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return imports;
     }
 
+    /**
+     * When providing completion items, the Angular Language Service only supports displaying
+     * one directive at a time. If a directive is exported by two different modules,
+     * the Language Service will select the first module. To ensure the most appropriate directive
+     * is shown, move the likely one to the top of the import list.
+     *
+     * When providing the code action for the directive. All the imports will show for the developer to choose.
+     */
+    let highestImportPriority = -1;
+
+    const collectImports = (emit: PotentialImport | null, moduleSpecifier: string | undefined) => {
+      if (emit === null) {
+        return;
+      }
+      imports.push({
+        ...emit,
+        moduleSpecifier: moduleSpecifier ?? emit.moduleSpecifier,
+      });
+      if (moduleSpecifier !== undefined && highestImportPriority === -1) {
+        highestImportPriority = imports.length - 1;
+      }
+    };
+
     if (meta.isStandalone || importMode === PotentialImportMode.ForceDirect) {
       const emitted = this.emit(PotentialImportKind.Standalone, toImport, inContext);
-      if (emitted !== null) {
-        imports.push(emitted);
-      }
+      const moduleSpecifier = potentialDirectiveModuleSpecifierResolver?.resolve(
+        toImport,
+        inContext,
+      );
+      collectImports(emitted, moduleSpecifier);
     }
 
     const exportingNgModules = this.ngModuleIndex.getNgModulesExporting(meta.ref.node);
     if (exportingNgModules !== null) {
       for (const exporter of exportingNgModules) {
         const emittedRef = this.emit(PotentialImportKind.NgModule, exporter, inContext);
-        if (emittedRef !== null) {
-          imports.push(emittedRef);
-        }
+        const moduleSpecifier = potentialDirectiveModuleSpecifierResolver?.resolve(
+          exporter,
+          inContext,
+        );
+        collectImports(emittedRef, moduleSpecifier);
       }
+    }
+
+    // move the import with module specifier from the tsLs to top in the imports array
+    if (highestImportPriority > 0) {
+      const highImport = imports.splice(highestImportPriority, 1)[0];
+      imports.unshift(highImport);
     }
 
     return imports;
@@ -1237,7 +1313,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       selector: dep.selector,
       tsSymbol,
       ngModule,
-      tsCompletionEntryInfo: null,
+      tsCompletionEntryInfos: null,
     };
   }
 
@@ -1253,7 +1329,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       ref: dep.ref,
       name: dep.name,
       tsSymbol,
-      tsCompletionEntryInfo: null,
+      tsCompletionEntryInfos: null,
     };
   }
 }

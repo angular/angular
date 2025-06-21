@@ -261,7 +261,7 @@ export class SymbolBuilder {
           isStructural: meta.isStructural,
           isInScope: true,
           isHostDirective: false,
-          tsCompletionEntryInfo: null,
+          tsCompletionEntryInfos: null,
         };
 
         symbols.push(directiveSymbol);
@@ -310,7 +310,7 @@ export class SymbolBuilder {
           kind: SymbolKind.Directive,
           isStructural: meta.isStructural,
           isInScope: true,
-          tsCompletionEntryInfo: null,
+          tsCompletionEntryInfos: null,
         };
 
         symbols.push(directiveSymbol);
@@ -623,7 +623,7 @@ export class SymbolBuilder {
       ngModule,
       isHostDirective: false,
       isInScope: true, // TODO: this should always be in scope in this context, right?
-      tsCompletionEntryInfo: null,
+      tsCompletionEntryInfos: null,
     };
   }
 

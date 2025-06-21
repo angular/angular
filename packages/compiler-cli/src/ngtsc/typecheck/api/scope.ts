@@ -41,6 +41,14 @@ export interface TsCompletionEntryInfo {
    */
   tsCompletionEntrySymbolFileName: string;
   /**
+   * Sometime the component can be exported with a different name than the class name.
+   * For example, `export {BarComponent as NewBarComponent} from './bar.component';`
+   *
+   * Sometimes, the component is exported by the `NgModule`.
+   */
+  tsCompletionEntrySymbolName: string;
+
+  /**
    * This data is from the tsLs completion entry, and
    * will be used in the `ls.getCompletionEntryDetails`.
    */
@@ -83,7 +91,13 @@ export interface PotentialDirective {
    */
   isInScope: boolean;
 
-  tsCompletionEntryInfo: TsCompletionEntryInfo | null;
+  /**
+   * The directive can be exported by multiple modules,
+   * collecting all the entry information here.
+   *
+   * Filter the appropriate entry information when using it to compute the module specifier.
+   */
+  tsCompletionEntryInfos: TsCompletionEntryInfo[] | null;
 }
 
 /**
@@ -107,7 +121,13 @@ export interface PotentialPipe {
    */
   isInScope: boolean;
 
-  tsCompletionEntryInfo: TsCompletionEntryInfo | null;
+  /**
+   * The pipe can be exported by multiple modules,
+   * collecting all the entry information here.
+   *
+   * Filter the appropriate entry information when using it to compute the module specifier.
+   */
+  tsCompletionEntryInfos: TsCompletionEntryInfo[] | null;
 }
 
 /**
@@ -123,4 +143,8 @@ export enum PotentialImportMode {
    * as a part of the migration.
    */
   ForceDirect,
+}
+
+export interface PotentialDirectiveModuleSpecifierResolver {
+  resolve(toImport: Reference<ClassDeclaration>, importOn: ts.Node | null): string | undefined;
 }

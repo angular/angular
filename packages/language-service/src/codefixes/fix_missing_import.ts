@@ -14,7 +14,6 @@ import ts from 'typescript';
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
 import {
   getCodeActionToImportTheDirectiveDeclaration,
-  getModuleSpecifierFromImportStatement,
   standaloneTraitOrNgModule,
 } from '../utils/ts_utils';
 import {getDirectiveMatchesForElementTag} from '../utils';
@@ -83,28 +82,14 @@ function getCodeActions({typeCheckInfo, start, compiler, tsLs, preferences}: Cod
     return [];
   }
   for (const currMatch of matches.values()) {
-    let moduleSpecifier: string | undefined;
-    if (!currMatch.isInScope) {
-      moduleSpecifier = getModuleSpecifierFromImportStatement(
-        currMatch,
-        checker,
-        typeCheckInfo.declaration,
-        tsLs,
-        currMatch.tsCompletionEntryInfo?.tsCompletionEntryData,
-        preferences.includeCompletionsForModuleExports,
-      );
-    }
     const currentMatchCodeAction =
       getCodeActionToImportTheDirectiveDeclaration(
         compiler,
+        typeCheckInfo.declaration,
         importOn,
         currMatch,
-        moduleSpecifier !== undefined && currMatch.tsCompletionEntryInfo !== null
-          ? {
-              moduleSpecifier,
-              symbolFileName: currMatch.tsCompletionEntryInfo.tsCompletionEntrySymbolFileName,
-            }
-          : null,
+        tsLs,
+        preferences.includeCompletionsForModuleExports,
       ) ?? [];
 
     codeActions.push(

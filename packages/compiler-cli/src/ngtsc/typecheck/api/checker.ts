@@ -38,6 +38,7 @@ import {
 import {GlobalCompletion} from './completion';
 import {
   PotentialDirective,
+  PotentialDirectiveModuleSpecifierResolver,
   PotentialImport,
   PotentialImportMode,
   PotentialPipe,
@@ -243,6 +244,7 @@ export interface TemplateTypeChecker {
     toImport: Reference<ClassDeclaration>,
     inContext: ts.Node,
     importMode: PotentialImportMode,
+    potentialDirectiveModuleSpecifierResolver?: PotentialDirectiveModuleSpecifierResolver,
   ): ReadonlyArray<PotentialImport>;
 
   /**

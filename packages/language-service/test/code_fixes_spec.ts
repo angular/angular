@@ -934,7 +934,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import TwoCmp`, [
-        [``, `import { forwardRef } from "@angular/core";`],
+        [`{Component}`, `{ Component, forwardRef }`],
         [``, `, imports: [forwardRef(() => TwoCmp)]`],
       ]);
     });
@@ -1013,6 +1013,54 @@ describe('code fixes', () => {
       ]);
     });
 
+    it('for a reusable path from the tsconfig', () => {
+      const standaloneFiles = {
+        'src/foo.ts': `
+           import {Component} from '@angular/core';
+           import {BazComponent} from '@app/bar';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar><baz/>',
+             imports: [BazComponent]
+           })
+           export class FooComponent {}
+           `,
+        'component/share/bar.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+           })
+           export class BarComponent {}
+
+           @Component({
+             selector: 'baz',
+             template: '<div>baz</div>',
+           })
+           export class BazComponent {}
+           `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles, {
+        paths: {'@app/*': ['./component/share/*.ts']},
+      });
+      const diags = project.getDiagnosticsForFile('src/foo.ts');
+      const fixFile = project.openFile('src/foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions = project.getCodeFixesAtPosition(
+        'src/foo.ts',
+        fixFile.cursor,
+        fixFile.cursor,
+        [diags[0].code],
+      );
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import BarComponent from '@app/bar' on FooComponent`, [
+        [`{BazComponent}`, `{ BazComponent, BarComponent }`],
+        [`imports: [BazComponent]`, `imports: [BazComponent, BarComponent]`],
+      ]);
+    });
+
     it('for module specifier existing in the file', () => {
       const standaloneFiles = {
         'src/foo.ts': `
@@ -1070,6 +1118,63 @@ describe('code fixes', () => {
           [``, `, imports: [BarModule]`],
         ],
       );
+    });
+
+    it('for NgModule and Component existing in the different file', () => {
+      const standaloneFiles = {
+        'src/foo/foo.ts': `
+           import {Component} from '@angular/core';
+
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: false
+           })
+           export class FooComponent {}
+           `,
+
+        'src/bar/index.ts': `
+           import {Component} from '@angular/core';
+
+           @Component({
+             selector: 'bar',
+             template: '<bar></bar>',
+           })
+           export class BarComponent {}
+           `,
+
+        'src/app.ts': `
+           import {NgModule} from '@angular/core';
+           import {FooComponent} from "./foo/foo";
+
+           @NgModule({
+            declarations: [FooComponent],
+            exports: [],
+            imports: []
+          })
+           export class AppModule {}
+           `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles);
+      const diags = project.getDiagnosticsForFile('src/foo/foo.ts');
+      const fixFile = project.openFile('src/foo/foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions = project.getCodeFixesAtPosition(
+        'src/foo/foo.ts',
+        fixFile.cursor,
+        fixFile.cursor,
+        [diags[0].code],
+      );
+
+      const appModuleContents = project.openFile('src/app.ts').contents;
+
+      const actionChanges = allChangesForCodeActions(appModuleContents, codeActions);
+      actionChangesMatch(actionChanges, `Import BarComponent from './bar' on AppModule`, [
+        [``, `import { BarComponent } from "./bar";`],
+        [`imports: []`, `imports: [BarComponent]`],
+      ]);
     });
   });
 
