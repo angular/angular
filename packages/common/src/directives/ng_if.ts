@@ -158,7 +158,7 @@ import {RuntimeErrorCode} from '../errors';
  * @publicApi
  *
  * @deprecated 20.0
- * Use the @if block instead. Intent to remove in v22
+ * Use the `@if` block instead. Intent to remove in v22
  */
 @Directive({
   selector: '[ngIf]',
@@ -179,7 +179,7 @@ export class NgIf<T = unknown> {
 
   /**
    * The Boolean expression to evaluate as the condition for showing a template.
-   * @deprecated Use the @if block instead. Intent to remove in v22
+   * @deprecated Use the `@if` block instead. Intent to remove in v22
    */
   @Input()
   set ngIf(condition: T) {
@@ -189,7 +189,7 @@ export class NgIf<T = unknown> {
 
   /**
    * A template to show if the condition expression evaluates to true.
-   * @deprecated Use the @if block instead. Intent to remove in v22
+   * @deprecated Use the `@if` block instead. Intent to remove in v22
    */
   @Input()
   set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null) {
@@ -201,7 +201,7 @@ export class NgIf<T = unknown> {
 
   /**
    * A template to show if the condition expression evaluates to false.
-   * @deprecated Use the @if block instead. Intent to remove in v22
+   * @deprecated Use the `@if` block instead. Intent to remove in v22
    */
   @Input()
   set ngIfElse(templateRef: TemplateRef<NgIfContext<T>> | null) {
