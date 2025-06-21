@@ -7,6 +7,9 @@
 // @public (undocumented)
 export function getCurrentInjector(): Injector | undefined | null;
 
+// @public (undocumented)
+export function inject<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;
+
 // @public
 export interface InjectionToken<T> {
     // (undocumented)
@@ -34,6 +37,9 @@ export class NotFoundError extends Error {
     // (undocumented)
     readonly name: string;
 }
+
+// @public (undocumented)
+export function registerInjectable<T>(ctor: unknown, declaration: ɵɵInjectableDeclaration<T>): InjectionToken<T>;
 
 // @public (undocumented)
 export function setCurrentInjector(injector: Injector | null | undefined): Injector | undefined | null;
