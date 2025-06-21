@@ -7,6 +7,7 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     interop_deps = [
         "//packages/private/testing",
+        "//packages/common/http",
     ],
     deps = [
         "//:node_modules/rxjs",

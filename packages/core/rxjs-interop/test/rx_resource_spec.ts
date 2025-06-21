@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {of, Observable, BehaviorSubject} from 'rxjs';
+import {of, Observable, BehaviorSubject, throwError} from 'rxjs';
 import {TestBed} from '../../testing';
 import {ApplicationRef, Injector, signal} from '../../src/core';
 import {rxResource} from '../src';
+import {HttpErrorResponse} from '@angular/common/http';
 
 describe('rxResource()', () => {
   it('should fetch data using an observable loader', async () => {
@@ -76,6 +77,25 @@ describe('rxResource()', () => {
     response.error('fail');
     expect(res.error()).toEqual(jasmine.objectContaining({cause: 'fail'}));
     expect(res.error()!.message).toContain('Resource');
+  });
+
+  // https://angular.dev/api/common/http/HttpErrorResponse#api
+  it('should handle HttpErrorResponse', async () => {
+    const injector = TestBed.inject(Injector);
+    const appRef = TestBed.inject(ApplicationRef);
+
+    const sig = signal(1);
+    const observable = throwError(() => new HttpErrorResponse({}));
+
+    const rxRes = rxResource({
+      params: sig,
+      stream: ({params, abortSignal}) => observable,
+      injector: injector,
+    });
+
+    await appRef.whenStable();
+
+    expect(rxRes.error()).toBeInstanceOf(HttpErrorResponse);
   });
 });
 
