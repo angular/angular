@@ -1,0 +1,23 @@
+<div class="container">
+  <h2>Demo: Custom Equality</h2>
+  <p>An <code>effect</code> is watching the user signal with an equality check on the <code>id</code>. Updates that don't change the ID will not trigger the effect.</p>
+
+  <div class="button-group">
+    <button (click)="updateName()">Update Name (Same ID)</button>
+    <button (click)="setNewUser()">Set New User (New ID)</button>
+  </div>
+
+  <div class="result-box">
+    <div class="display-section">
+      <h3>Current User:</h3>
+      <pre>{{ '{' }}
+  "id": {{ user().id }},
+  "name": "{{ user().name }}"
+{{ '}' }}</pre>
+    </div>
+    <div class="display-section">
+      <h3>Simulated Log:</h3>
+      <pre class="log-output">@for (entry of log(); track $index) {<span>{{ entry }}</span>}</pre>
+    </div>
+  </div>
+</div>
