@@ -53,6 +53,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
     // (undocumented)
+    SCROLL_RESTORATION_UNSUPPORTED = 2400,
+    // (undocumented)
     SUSPICIOUS_DATE_FORMAT = 2300,
     // (undocumented)
     TOO_MANY_PRELOADED_IMAGES = 2961,

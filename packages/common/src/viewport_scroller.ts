@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, ɵɵdefineInjectable, DOCUMENT} from '@angular/core';
+import {
+  inject,
+  ɵɵdefineInjectable,
+  DOCUMENT,
+  ɵformatRuntimeError as formatRuntimeError,
+} from '@angular/core';
+import {RuntimeErrorCode} from './errors';
 
 /**
  * Defines a scroll position manager. Implemented by `BrowserViewportScroller`.
@@ -131,7 +137,22 @@ export class BrowserViewportScroller implements ViewportScroller {
    * Disables automatic scroll restoration provided by the browser.
    */
   setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void {
-    this.window.history.scrollRestoration = scrollRestoration;
+    try {
+      this.window.history.scrollRestoration = scrollRestoration;
+    } catch {
+      console.warn(
+        formatRuntimeError(
+          RuntimeErrorCode.SCROLL_RESTORATION_UNSUPPORTED,
+          ngDevMode &&
+            'Failed to set `window.history.scrollRestoration`. ' +
+              'This may occur when:\n' +
+              '• The script is running inside a sandboxed iframe\n' +
+              '• The window is partially navigated or inactive\n' +
+              '• The script is executed in an untrusted or special context (e.g., test runners, browser extensions, or content previews)\n' +
+              'Scroll position may not be preserved across navigation.',
+        ),
+      );
+    }
   }
 
   /**
