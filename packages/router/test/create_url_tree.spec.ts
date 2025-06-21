@@ -639,106 +639,110 @@ function create(
 }
 
 describe('createUrlTreeFromSnapshot', async () => {
-  it('can create a UrlTree relative to empty path named parent', fakeAsync(() => {
-    @Component({
-      template: `<router-outlet></router-outlet>`,
-      imports: [RouterModule],
-    })
-    class MainPageComponent {
-      constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-      ) {}
+  it('can create a UrlTree relative to empty path named parent', () =>
+    fakeAsync(() => {
+      @Component({
+        template: `<router-outlet></router-outlet>`,
+        imports: [RouterModule],
+      })
+      class MainPageComponent {
+        constructor(
+          private route: ActivatedRoute,
+          private router: Router,
+        ) {}
 
-      navigate() {
-        this.router.navigateByUrl(
-          createUrlTreeFromSnapshot(this.route.snapshot, ['innerRoute'], null, null),
-        );
+        navigate() {
+          this.router.navigateByUrl(
+            createUrlTreeFromSnapshot(this.route.snapshot, ['innerRoute'], null, null),
+          );
+        }
       }
-    }
 
-    @Component({
-      template: 'child works!',
-      standalone: false,
-    })
-    class ChildComponent {}
+      @Component({
+        template: 'child works!',
+        standalone: false,
+      })
+      class ChildComponent {}
 
-    @Component({
-      template: '<router-outlet name="main-page"></router-outlet>',
-      imports: [RouterModule],
-    })
-    class RootCmp {}
+      @Component({
+        template: '<router-outlet name="main-page"></router-outlet>',
+        imports: [RouterModule],
+      })
+      class RootCmp {}
 
-    const routes: Routes = [
-      {
-        path: '',
-        component: MainPageComponent,
-        outlet: 'main-page',
-        children: [{path: 'innerRoute', component: ChildComponent}],
-      },
-    ];
+      const routes: Routes = [
+        {
+          path: '',
+          component: MainPageComponent,
+          outlet: 'main-page',
+          children: [{path: 'innerRoute', component: ChildComponent}],
+        },
+      ];
 
-    TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
-    const router = TestBed.inject(Router);
-    const fixture = TestBed.createComponent(RootCmp);
+      TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
+      const router = TestBed.inject(Router);
+      const fixture = TestBed.createComponent(RootCmp);
 
-    router.initialNavigation();
-    advance(fixture);
-    fixture.debugElement.query(By.directive(MainPageComponent)).componentInstance.navigate();
-    advance(fixture);
-    expect(fixture.nativeElement.innerHTML).toContain('child works!');
-  }));
+      router.initialNavigation();
+      advance(fixture);
+      fixture.debugElement.query(By.directive(MainPageComponent)).componentInstance.navigate();
+      advance(fixture);
+      expect(fixture.nativeElement.innerHTML).toContain('child works!');
+    }));
 
-  it('can navigate to relative to `ActivatedRouteSnapshot` in guard', fakeAsync(() => {
-    @Injectable({providedIn: 'root'})
-    class Guard {
-      constructor(private readonly router: Router) {}
-      canActivate(snapshot: ActivatedRouteSnapshot) {
-        this.router.navigateByUrl(createUrlTreeFromSnapshot(snapshot, ['../sibling'], null, null));
+  it('can navigate to relative to `ActivatedRouteSnapshot` in guard', () =>
+    fakeAsync(() => {
+      @Injectable({providedIn: 'root'})
+      class Guard {
+        constructor(private readonly router: Router) {}
+        canActivate(snapshot: ActivatedRouteSnapshot) {
+          this.router.navigateByUrl(
+            createUrlTreeFromSnapshot(snapshot, ['../sibling'], null, null),
+          );
+        }
       }
-    }
 
-    @Component({
-      template: `main`,
-      imports: [RouterModule],
-    })
-    class GuardedComponent {}
+      @Component({
+        template: `main`,
+        imports: [RouterModule],
+      })
+      class GuardedComponent {}
 
-    @Component({template: 'sibling'})
-    class SiblingComponent {}
+      @Component({template: 'sibling'})
+      class SiblingComponent {}
 
-    @Component({
-      template: '<router-outlet></router-outlet>',
-      imports: [RouterModule],
-    })
-    class RootCmp {}
+      @Component({
+        template: '<router-outlet></router-outlet>',
+        imports: [RouterModule],
+      })
+      class RootCmp {}
 
-    const routes: Routes = [
-      {
-        path: 'parent',
-        component: RootCmp,
-        children: [
-          {
-            path: 'guarded',
-            component: GuardedComponent,
-            canActivate: [Guard],
-          },
-          {
-            path: 'sibling',
-            component: SiblingComponent,
-          },
-        ],
-      },
-    ];
+      const routes: Routes = [
+        {
+          path: 'parent',
+          component: RootCmp,
+          children: [
+            {
+              path: 'guarded',
+              component: GuardedComponent,
+              canActivate: [Guard],
+            },
+            {
+              path: 'sibling',
+              component: SiblingComponent,
+            },
+          ],
+        },
+      ];
 
-    TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
-    const router = TestBed.inject(Router);
-    const fixture = TestBed.createComponent(RootCmp);
+      TestBed.configureTestingModule({imports: [RouterModule.forRoot(routes)]});
+      const router = TestBed.inject(Router);
+      const fixture = TestBed.createComponent(RootCmp);
 
-    router.navigateByUrl('parent/guarded');
-    advance(fixture);
-    expect(router.url).toEqual('/parent/sibling');
-  }));
+      router.navigateByUrl('parent/guarded');
+      advance(fixture);
+      expect(router.url).toEqual('/parent/sibling');
+    }));
 });
 
 function advance(fixture: ComponentFixture<unknown>) {

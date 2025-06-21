@@ -323,40 +323,6 @@ def zone_compatible_jasmine_node_test(name, external = [], srcs = [], deps = [],
         **kwargs
     )
 
-def esbuild_jasmine_node_test(name, specs = [], external = [], bootstrap = [], **kwargs):
-    templated_args = kwargs.pop("templated_args", []) + [
-        # TODO: Disable the linker fully here. Currently it is needed for ESM.
-        "--bazel_patch_module_resolver",
-    ]
-
-    deps = kwargs.pop("deps", []) + [
-        "@npm//chokidar",
-        "@npm//domino",
-        "@npm//jasmine-core",
-        "@npm//reflect-metadata",
-        "@npm//source-map-support",
-        "@npm//tslib",
-        "@npm//xhr2",
-    ]
-
-    spec_bundle(
-        name = "%s_test_bundle" % name,
-        platform = "node",
-        target = "es2020",
-        bootstrap = bootstrap,
-        deps = specs + deps,
-        external = external,
-    )
-
-    _jasmine_node_test(
-        name = name,
-        srcs = [":%s_test_bundle" % name],
-        use_direct_specs = True,
-        templated_args = templated_args,
-        deps = deps,
-        **kwargs
-    )
-
 def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kwargs):
     # Very common dependencies for tests
     deps = kwargs.pop("deps", []) + [

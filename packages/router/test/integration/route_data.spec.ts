@@ -75,248 +75,255 @@ export function routeDataIntegrationSuite() {
       });
     });
 
-    it('should provide resolved data', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmpWithTwoOutlets);
+    it('should provide resolved data', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmpWithTwoOutlets);
 
-      router.resetConfig([
-        {
-          path: 'parent/:id',
-          data: {one: 1},
-          resolve: {two: 'resolveTwo'},
-          children: [
-            {path: '', data: {three: 3}, resolve: {four: 'resolveFour'}, component: RouteCmp},
-            {
-              path: '',
-              data: {five: 5},
-              resolve: {six: 'resolveSix'},
-              component: RouteCmp,
-              outlet: 'right',
-            },
+        router.resetConfig([
+          {
+            path: 'parent/:id',
+            data: {one: 1},
+            resolve: {two: 'resolveTwo'},
+            children: [
+              {path: '', data: {three: 3}, resolve: {four: 'resolveFour'}, component: RouteCmp},
+              {
+                path: '',
+                data: {five: 5},
+                resolve: {six: 'resolveSix'},
+                component: RouteCmp,
+                outlet: 'right',
+              },
+            ],
+          },
+        ]);
+
+        router.navigateByUrl('/parent/1');
+        advance(fixture);
+
+        const primaryCmp = fixture.debugElement.children[1].componentInstance;
+        const rightCmp = fixture.debugElement.children[3].componentInstance;
+
+        expect(primaryCmp.route.snapshot.data).toEqual({one: 1, two: 2, three: 3, four: 4});
+        expect(rightCmp.route.snapshot.data).toEqual({one: 1, two: 2, five: 5, six: 6});
+
+        const primaryRecorded: any[] = [];
+        primaryCmp.route.data.forEach((rec: any) => primaryRecorded.push(rec));
+
+        const rightRecorded: any[] = [];
+        rightCmp.route.data.forEach((rec: any) => rightRecorded.push(rec));
+
+        router.navigateByUrl('/parent/2');
+        advance(fixture);
+
+        expect(primaryRecorded).toEqual([{one: 1, three: 3, two: 2, four: 4}]);
+        expect(rightRecorded).toEqual([{one: 1, five: 5, two: 2, six: 6}]);
+      }));
+
+    it('should handle errors', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {path: 'simple', component: SimpleCmp, resolve: {error: 'resolveError'}},
+        ]);
+
+        const recordedEvents: any[] = [];
+        router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
+
+        let e: any = null;
+        router.navigateByUrl('/simple')!.catch((error) => (e = error));
+        advance(fixture);
+
+        expectEvents(recordedEvents, [
+          [NavigationStart, '/simple'],
+          [RoutesRecognized, '/simple'],
+          [GuardsCheckStart, '/simple'],
+          [GuardsCheckEnd, '/simple'],
+          [ResolveStart, '/simple'],
+          [NavigationError, '/simple'],
+        ]);
+
+        expect(e).toEqual('error');
+      }));
+
+    it('should handle empty errors', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {path: 'simple', component: SimpleCmp, resolve: {error: 'resolveNullError'}},
+        ]);
+
+        const recordedEvents: any[] = [];
+        router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
+
+        let e: any = 'some value';
+        router.navigateByUrl('/simple').catch((error) => (e = error));
+        advance(fixture);
+
+        expect(e).toEqual(null);
+      }));
+
+    it('should not navigate when all resolvers return empty result', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {
+            path: 'simple',
+            component: SimpleCmp,
+            resolve: {e1: 'resolveEmpty', e2: 'resolveEmpty'},
+          },
+        ]);
+
+        const recordedEvents: any[] = [];
+        router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
+
+        let e: any = null;
+        router.navigateByUrl('/simple').catch((error) => (e = error));
+        advance(fixture);
+
+        expectEvents(recordedEvents, [
+          [NavigationStart, '/simple'],
+          [RoutesRecognized, '/simple'],
+          [GuardsCheckStart, '/simple'],
+          [GuardsCheckEnd, '/simple'],
+          [ResolveStart, '/simple'],
+          [NavigationCancel, '/simple'],
+        ]);
+
+        expect((recordedEvents[recordedEvents.length - 1] as NavigationCancel).code).toBe(
+          NavigationCancellationCode.NoDataFromResolver,
+        );
+
+        expect(e).toEqual(null);
+      }));
+
+    it('should not navigate when at least one resolver returns empty result', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {path: 'simple', component: SimpleCmp, resolve: {e1: 'resolveTwo', e2: 'resolveEmpty'}},
+        ]);
+
+        const recordedEvents: any[] = [];
+        router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
+
+        let e: any = null;
+        router.navigateByUrl('/simple').catch((error) => (e = error));
+        advance(fixture);
+
+        expectEvents(recordedEvents, [
+          [NavigationStart, '/simple'],
+          [RoutesRecognized, '/simple'],
+          [GuardsCheckStart, '/simple'],
+          [GuardsCheckEnd, '/simple'],
+          [ResolveStart, '/simple'],
+          [NavigationCancel, '/simple'],
+        ]);
+
+        expect(e).toEqual(null);
+      }));
+
+    it('should not navigate when all resolvers for a child route from forChild() returns empty result', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
+
+        @Component({
+          selector: 'lazy-cmp',
+          template: 'lazy-loaded-1',
+          standalone: false,
+        })
+        class LazyComponent1 {}
+
+        @NgModule({
+          declarations: [LazyComponent1],
+          imports: [
+            RouterModule.forChild([
+              {
+                path: 'loaded',
+                component: LazyComponent1,
+                resolve: {e1: 'resolveEmpty', e2: 'resolveEmpty'},
+              },
+            ]),
           ],
-        },
-      ]);
+        })
+        class LoadedModule {}
 
-      router.navigateByUrl('/parent/1');
-      advance(fixture);
+        router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
 
-      const primaryCmp = fixture.debugElement.children[1].componentInstance;
-      const rightCmp = fixture.debugElement.children[3].componentInstance;
+        const recordedEvents: any[] = [];
+        router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
 
-      expect(primaryCmp.route.snapshot.data).toEqual({one: 1, two: 2, three: 3, four: 4});
-      expect(rightCmp.route.snapshot.data).toEqual({one: 1, two: 2, five: 5, six: 6});
+        let e: any = null;
+        router.navigateByUrl('lazy/loaded').catch((error) => (e = error));
+        advance(fixture);
 
-      const primaryRecorded: any[] = [];
-      primaryCmp.route.data.forEach((rec: any) => primaryRecorded.push(rec));
+        expectEvents(recordedEvents, [
+          [NavigationStart, '/lazy/loaded'],
+          [RoutesRecognized, '/lazy/loaded'],
+          [GuardsCheckStart, '/lazy/loaded'],
+          [GuardsCheckEnd, '/lazy/loaded'],
+          [ResolveStart, '/lazy/loaded'],
+          [NavigationCancel, '/lazy/loaded'],
+        ]);
 
-      const rightRecorded: any[] = [];
-      rightCmp.route.data.forEach((rec: any) => rightRecorded.push(rec));
+        expect(e).toEqual(null);
+      }));
 
-      router.navigateByUrl('/parent/2');
-      advance(fixture);
+    it('should not navigate when at least one resolver for a child route from forChild() returns empty result', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
 
-      expect(primaryRecorded).toEqual([{one: 1, three: 3, two: 2, four: 4}]);
-      expect(rightRecorded).toEqual([{one: 1, five: 5, two: 2, six: 6}]);
-    }));
+        @Component({
+          selector: 'lazy-cmp',
+          template: 'lazy-loaded-1',
+          standalone: false,
+        })
+        class LazyComponent1 {}
 
-    it('should handle errors', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+        @NgModule({
+          declarations: [LazyComponent1],
+          imports: [
+            RouterModule.forChild([
+              {
+                path: 'loaded',
+                component: LazyComponent1,
+                resolve: {e1: 'resolveTwo', e2: 'resolveEmpty'},
+              },
+            ]),
+          ],
+        })
+        class LoadedModule {}
 
-      router.resetConfig([
-        {path: 'simple', component: SimpleCmp, resolve: {error: 'resolveError'}},
-      ]);
+        router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
 
-      const recordedEvents: any[] = [];
-      router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
+        const recordedEvents: any[] = [];
+        router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
 
-      let e: any = null;
-      router.navigateByUrl('/simple')!.catch((error) => (e = error));
-      advance(fixture);
+        let e: any = null;
+        router.navigateByUrl('lazy/loaded').catch((error) => (e = error));
+        advance(fixture);
 
-      expectEvents(recordedEvents, [
-        [NavigationStart, '/simple'],
-        [RoutesRecognized, '/simple'],
-        [GuardsCheckStart, '/simple'],
-        [GuardsCheckEnd, '/simple'],
-        [ResolveStart, '/simple'],
-        [NavigationError, '/simple'],
-      ]);
+        expectEvents(recordedEvents, [
+          [NavigationStart, '/lazy/loaded'],
+          [RoutesRecognized, '/lazy/loaded'],
+          [GuardsCheckStart, '/lazy/loaded'],
+          [GuardsCheckEnd, '/lazy/loaded'],
+          [ResolveStart, '/lazy/loaded'],
+          [NavigationCancel, '/lazy/loaded'],
+        ]);
 
-      expect(e).toEqual('error');
-    }));
-
-    it('should handle empty errors', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
-
-      router.resetConfig([
-        {path: 'simple', component: SimpleCmp, resolve: {error: 'resolveNullError'}},
-      ]);
-
-      const recordedEvents: any[] = [];
-      router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
-
-      let e: any = 'some value';
-      router.navigateByUrl('/simple').catch((error) => (e = error));
-      advance(fixture);
-
-      expect(e).toEqual(null);
-    }));
-
-    it('should not navigate when all resolvers return empty result', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
-
-      router.resetConfig([
-        {
-          path: 'simple',
-          component: SimpleCmp,
-          resolve: {e1: 'resolveEmpty', e2: 'resolveEmpty'},
-        },
-      ]);
-
-      const recordedEvents: any[] = [];
-      router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
-
-      let e: any = null;
-      router.navigateByUrl('/simple').catch((error) => (e = error));
-      advance(fixture);
-
-      expectEvents(recordedEvents, [
-        [NavigationStart, '/simple'],
-        [RoutesRecognized, '/simple'],
-        [GuardsCheckStart, '/simple'],
-        [GuardsCheckEnd, '/simple'],
-        [ResolveStart, '/simple'],
-        [NavigationCancel, '/simple'],
-      ]);
-
-      expect((recordedEvents[recordedEvents.length - 1] as NavigationCancel).code).toBe(
-        NavigationCancellationCode.NoDataFromResolver,
-      );
-
-      expect(e).toEqual(null);
-    }));
-
-    it('should not navigate when at least one resolver returns empty result', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
-
-      router.resetConfig([
-        {path: 'simple', component: SimpleCmp, resolve: {e1: 'resolveTwo', e2: 'resolveEmpty'}},
-      ]);
-
-      const recordedEvents: any[] = [];
-      router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
-
-      let e: any = null;
-      router.navigateByUrl('/simple').catch((error) => (e = error));
-      advance(fixture);
-
-      expectEvents(recordedEvents, [
-        [NavigationStart, '/simple'],
-        [RoutesRecognized, '/simple'],
-        [GuardsCheckStart, '/simple'],
-        [GuardsCheckEnd, '/simple'],
-        [ResolveStart, '/simple'],
-        [NavigationCancel, '/simple'],
-      ]);
-
-      expect(e).toEqual(null);
-    }));
-
-    it('should not navigate when all resolvers for a child route from forChild() returns empty result', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
-
-      @Component({
-        selector: 'lazy-cmp',
-        template: 'lazy-loaded-1',
-        standalone: false,
-      })
-      class LazyComponent1 {}
-
-      @NgModule({
-        declarations: [LazyComponent1],
-        imports: [
-          RouterModule.forChild([
-            {
-              path: 'loaded',
-              component: LazyComponent1,
-              resolve: {e1: 'resolveEmpty', e2: 'resolveEmpty'},
-            },
-          ]),
-        ],
-      })
-      class LoadedModule {}
-
-      router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
-
-      const recordedEvents: any[] = [];
-      router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
-
-      let e: any = null;
-      router.navigateByUrl('lazy/loaded').catch((error) => (e = error));
-      advance(fixture);
-
-      expectEvents(recordedEvents, [
-        [NavigationStart, '/lazy/loaded'],
-        [RoutesRecognized, '/lazy/loaded'],
-        [GuardsCheckStart, '/lazy/loaded'],
-        [GuardsCheckEnd, '/lazy/loaded'],
-        [ResolveStart, '/lazy/loaded'],
-        [NavigationCancel, '/lazy/loaded'],
-      ]);
-
-      expect(e).toEqual(null);
-    }));
-
-    it('should not navigate when at least one resolver for a child route from forChild() returns empty result', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
-
-      @Component({
-        selector: 'lazy-cmp',
-        template: 'lazy-loaded-1',
-        standalone: false,
-      })
-      class LazyComponent1 {}
-
-      @NgModule({
-        declarations: [LazyComponent1],
-        imports: [
-          RouterModule.forChild([
-            {
-              path: 'loaded',
-              component: LazyComponent1,
-              resolve: {e1: 'resolveTwo', e2: 'resolveEmpty'},
-            },
-          ]),
-        ],
-      })
-      class LoadedModule {}
-
-      router.resetConfig([{path: 'lazy', loadChildren: () => LoadedModule}]);
-
-      const recordedEvents: any[] = [];
-      router.events.subscribe((e) => e instanceof RouterEvent && recordedEvents.push(e));
-
-      let e: any = null;
-      router.navigateByUrl('lazy/loaded').catch((error) => (e = error));
-      advance(fixture);
-
-      expectEvents(recordedEvents, [
-        [NavigationStart, '/lazy/loaded'],
-        [RoutesRecognized, '/lazy/loaded'],
-        [GuardsCheckStart, '/lazy/loaded'],
-        [GuardsCheckEnd, '/lazy/loaded'],
-        [ResolveStart, '/lazy/loaded'],
-        [NavigationCancel, '/lazy/loaded'],
-      ]);
-
-      expect(e).toEqual(null);
-    }));
+        expect(e).toEqual(null);
+      }));
 
     it('should include target snapshot in NavigationError when resolver throws', async () => {
       const router = TestBed.inject(Router);
@@ -348,271 +355,280 @@ export function routeDataIntegrationSuite() {
       expect(caughtError?.target).toBeDefined();
     });
 
-    it('should preserve resolved data', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+    it('should preserve resolved data', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: 'parent',
-          resolve: {two: 'resolveTwo'},
-          children: [
-            {path: 'child1', component: CollectParamsCmp},
-            {path: 'child2', component: CollectParamsCmp},
-          ],
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: 'parent',
+            resolve: {two: 'resolveTwo'},
+            children: [
+              {path: 'child1', component: CollectParamsCmp},
+              {path: 'child2', component: CollectParamsCmp},
+            ],
+          },
+        ]);
 
-      router.navigateByUrl('/parent/child1');
-      advance(fixture);
+        router.navigateByUrl('/parent/child1');
+        advance(fixture);
 
-      router.navigateByUrl('/parent/child2');
-      advance(fixture);
+        router.navigateByUrl('/parent/child2');
+        advance(fixture);
 
-      const cmp: CollectParamsCmp = fixture.debugElement.children[1].componentInstance;
-      expect(cmp.route.snapshot.data).toEqual({two: 2});
-    }));
+        const cmp: CollectParamsCmp = fixture.debugElement.children[1].componentInstance;
+        expect(cmp.route.snapshot.data).toEqual({two: 2});
+      }));
 
-    it('should override route static data with resolved data', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+    it('should override route static data with resolved data', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: '',
-          component: NestedComponentWithData,
-          resolve: {prop: 'resolveTwo'},
-          data: {prop: 'static'},
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: '',
+            component: NestedComponentWithData,
+            resolve: {prop: 'resolveTwo'},
+            data: {prop: 'static'},
+          },
+        ]);
 
-      router.navigateByUrl('/');
-      advance(fixture);
-      const cmp = fixture.debugElement.children[1].componentInstance;
+        router.navigateByUrl('/');
+        advance(fixture);
+        const cmp = fixture.debugElement.children[1].componentInstance;
 
-      expect(cmp.data).toEqual([{prop: 2}]);
-    }));
+        expect(cmp.data).toEqual([{prop: 2}]);
+      }));
 
-    it('should correctly override inherited route static data with resolved data', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+    it('should correctly override inherited route static data with resolved data', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: 'a',
-          component: WrapperCmp,
-          resolve: {prop2: 'resolveTwo'},
-          data: {prop: 'wrapper-a'},
-          children: [
-            // will inherit data from this child route because it has `path` and its parent has
-            // component
-            {
-              path: 'b',
-              data: {prop: 'nested-b'},
-              resolve: {prop3: 'resolveFour'},
-              children: [
-                {
-                  path: 'c',
-                  children: [
-                    {path: '', component: NestedComponentWithData, data: {prop3: 'nested'}},
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: 'a',
+            component: WrapperCmp,
+            resolve: {prop2: 'resolveTwo'},
+            data: {prop: 'wrapper-a'},
+            children: [
+              // will inherit data from this child route because it has `path` and its parent has
+              // component
+              {
+                path: 'b',
+                data: {prop: 'nested-b'},
+                resolve: {prop3: 'resolveFour'},
+                children: [
+                  {
+                    path: 'c',
+                    children: [
+                      {path: '', component: NestedComponentWithData, data: {prop3: 'nested'}},
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ]);
 
-      router.navigateByUrl('/a/b/c');
-      advance(fixture);
+        router.navigateByUrl('/a/b/c');
+        advance(fixture);
 
-      const pInj = fixture.debugElement.queryAll(By.directive(NestedComponentWithData))[0]
-        .injector!;
-      const cmp = pInj.get(NestedComponentWithData);
-      expect(cmp.data).toEqual([{prop: 'nested-b', prop3: 'nested'}]);
-    }));
+        const pInj = fixture.debugElement.queryAll(By.directive(NestedComponentWithData))[0]
+          .injector!;
+        const cmp = pInj.get(NestedComponentWithData);
+        expect(cmp.data).toEqual([{prop: 'nested-b', prop3: 'nested'}]);
+      }));
 
-    it('should not override inherited resolved data with inherited static data', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+    it('should not override inherited resolved data with inherited static data', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: 'a',
-          component: WrapperCmp,
-          resolve: {prop2: 'resolveTwo'},
-          data: {prop: 'wrapper-a'},
-          children: [
-            // will inherit data from this child route because it has `path` and its parent has
-            // component
-            {
-              path: 'b',
-              data: {prop2: 'parent-b', prop: 'parent-b'},
-              children: [
-                {
-                  path: 'c',
-                  resolve: {prop2: 'resolveFour'},
-                  children: [
-                    {
-                      path: '',
-                      component: NestedComponentWithData,
-                      data: {prop: 'nested-d'},
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: 'a',
+            component: WrapperCmp,
+            resolve: {prop2: 'resolveTwo'},
+            data: {prop: 'wrapper-a'},
+            children: [
+              // will inherit data from this child route because it has `path` and its parent has
+              // component
+              {
+                path: 'b',
+                data: {prop2: 'parent-b', prop: 'parent-b'},
+                children: [
+                  {
+                    path: 'c',
+                    resolve: {prop2: 'resolveFour'},
+                    children: [
+                      {
+                        path: '',
+                        component: NestedComponentWithData,
+                        data: {prop: 'nested-d'},
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ]);
 
-      router.navigateByUrl('/a/b/c');
-      advance(fixture);
+        router.navigateByUrl('/a/b/c');
+        advance(fixture);
 
-      const pInj = fixture.debugElement.queryAll(By.directive(NestedComponentWithData))[0]
-        .injector!;
-      const cmp = pInj.get(NestedComponentWithData);
-      expect(cmp.data).toEqual([{prop: 'nested-d', prop2: 4}]);
-    }));
+        const pInj = fixture.debugElement.queryAll(By.directive(NestedComponentWithData))[0]
+          .injector!;
+        const cmp = pInj.get(NestedComponentWithData);
+        expect(cmp.data).toEqual([{prop: 'nested-d', prop2: 4}]);
+      }));
 
-    it('should not override nested route static data when both are using resolvers', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+    it('should not override nested route static data when both are using resolvers', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: 'child',
-          component: WrapperCmp,
-          resolve: {prop: 'resolveTwo'},
-          children: [
-            {
-              path: '',
-              pathMatch: 'full',
-              component: NestedComponentWithData,
-              resolve: {prop: 'resolveFour'},
-            },
-          ],
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: 'child',
+            component: WrapperCmp,
+            resolve: {prop: 'resolveTwo'},
+            children: [
+              {
+                path: '',
+                pathMatch: 'full',
+                component: NestedComponentWithData,
+                resolve: {prop: 'resolveFour'},
+              },
+            ],
+          },
+        ]);
 
-      router.navigateByUrl('/child');
-      advance(fixture);
+        router.navigateByUrl('/child');
+        advance(fixture);
 
-      const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
-      const cmp = pInj.get(NestedComponentWithData);
-      expect(cmp.data).toEqual([{prop: 4}]);
-    }));
+        const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
+        const cmp = pInj.get(NestedComponentWithData);
+        expect(cmp.data).toEqual([{prop: 4}]);
+      }));
 
-    it("should not override child route's static data when both are using static data", fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+    it("should not override child route's static data when both are using static data", () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: 'child',
-          component: WrapperCmp,
-          data: {prop: 'wrapper'},
-          children: [
-            {
-              path: '',
-              pathMatch: 'full',
-              component: NestedComponentWithData,
-              data: {prop: 'inner'},
-            },
-          ],
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: 'child',
+            component: WrapperCmp,
+            data: {prop: 'wrapper'},
+            children: [
+              {
+                path: '',
+                pathMatch: 'full',
+                component: NestedComponentWithData,
+                data: {prop: 'inner'},
+              },
+            ],
+          },
+        ]);
 
-      router.navigateByUrl('/child');
-      advance(fixture);
+        router.navigateByUrl('/child');
+        advance(fixture);
 
-      const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
-      const cmp = pInj.get(NestedComponentWithData);
-      expect(cmp.data).toEqual([{prop: 'inner'}]);
-    }));
+        const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
+        const cmp = pInj.get(NestedComponentWithData);
+        expect(cmp.data).toEqual([{prop: 'inner'}]);
+      }));
 
-    it("should not override child route's static data when wrapper is using resolved data and the child route static data", fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+    it("should not override child route's static data when wrapper is using resolved data and the child route static data", () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: 'nested',
-          component: WrapperCmp,
-          resolve: {prop: 'resolveTwo', prop2: 'resolveSix'},
-          data: {prop3: 'wrapper-static', prop4: 'another-static'},
-          children: [
-            {
-              path: '',
-              pathMatch: 'full',
-              component: NestedComponentWithData,
-              data: {prop: 'nested', prop4: 'nested-static'},
-            },
-          ],
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: 'nested',
+            component: WrapperCmp,
+            resolve: {prop: 'resolveTwo', prop2: 'resolveSix'},
+            data: {prop3: 'wrapper-static', prop4: 'another-static'},
+            children: [
+              {
+                path: '',
+                pathMatch: 'full',
+                component: NestedComponentWithData,
+                data: {prop: 'nested', prop4: 'nested-static'},
+              },
+            ],
+          },
+        ]);
 
-      router.navigateByUrl('/nested');
-      advance(fixture);
+        router.navigateByUrl('/nested');
+        advance(fixture);
 
-      const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
-      const cmp = pInj.get(NestedComponentWithData);
-      // Issue 34361 - `prop` should contain value defined in `data` object from the nested
-      // route.
-      expect(cmp.data).toEqual([
-        {prop: 'nested', prop2: 6, prop3: 'wrapper-static', prop4: 'nested-static'},
-      ]);
-    }));
+        const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
+        const cmp = pInj.get(NestedComponentWithData);
+        // Issue 34361 - `prop` should contain value defined in `data` object from the nested
+        // route.
+        expect(cmp.data).toEqual([
+          {prop: 'nested', prop2: 6, prop3: 'wrapper-static', prop4: 'nested-static'},
+        ]);
+      }));
 
-    it('should allow guards alter data resolved by routes', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
+    it('should allow guards alter data resolved by routes', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: 'route',
-          component: NestedComponentWithData,
-          canActivate: [
-            (route: ActivatedRouteSnapshot) => {
-              route.data = {prop: 10};
-              return true;
-            },
-          ],
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: 'route',
+            component: NestedComponentWithData,
+            canActivate: [
+              (route: ActivatedRouteSnapshot) => {
+                route.data = {prop: 10};
+                return true;
+              },
+            ],
+          },
+        ]);
 
-      router.navigateByUrl('/route');
-      advance(fixture);
+        router.navigateByUrl('/route');
+        advance(fixture);
 
-      const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
-      const cmp = pInj.get(NestedComponentWithData);
-      expect(cmp.data).toEqual([{prop: 10}]);
-    }));
+        const pInj = fixture.debugElement.query(By.directive(NestedComponentWithData)).injector!;
+        const cmp = pInj.get(NestedComponentWithData);
+        expect(cmp.data).toEqual([{prop: 10}]);
+      }));
 
-    it('should rerun resolvers when the urls segments of a wildcard route change', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const location = TestBed.inject(Location);
-      const fixture = createRoot(router, RootCmp);
+    it('should rerun resolvers when the urls segments of a wildcard route change', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const location = TestBed.inject(Location);
+        const fixture = createRoot(router, RootCmp);
 
-      router.resetConfig([
-        {
-          path: '**',
-          component: CollectParamsCmp,
-          resolve: {numberOfUrlSegments: 'numberOfUrlSegments'},
-        },
-      ]);
+        router.resetConfig([
+          {
+            path: '**',
+            component: CollectParamsCmp,
+            resolve: {numberOfUrlSegments: 'numberOfUrlSegments'},
+          },
+        ]);
 
-      router.navigateByUrl('/one/two');
-      advance(fixture);
-      const cmp = fixture.debugElement.children[1].componentInstance;
+        router.navigateByUrl('/one/two');
+        advance(fixture);
+        const cmp = fixture.debugElement.children[1].componentInstance;
 
-      expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 2});
+        expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 2});
 
-      router.navigateByUrl('/one/two/three');
-      advance(fixture);
+        router.navigateByUrl('/one/two/three');
+        advance(fixture);
 
-      expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 3});
-    }));
+        expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 3});
+      }));
 
     describe('should run resolvers for the same route concurrently', () => {
       let log: string[];
@@ -648,82 +664,88 @@ export function routeDataIntegrationSuite() {
         });
       });
 
-      it('works', fakeAsync(() => {
+      it('works', () =>
+        fakeAsync(() => {
+          const router = TestBed.inject(Router);
+          const fixture = createRoot(router, RootCmp);
+
+          router.resetConfig([
+            {
+              path: 'a',
+              resolve: {
+                one: 'resolver1',
+                two: 'resolver2',
+              },
+              component: SimpleCmp,
+            },
+          ]);
+
+          router.navigateByUrl('/a');
+          advance(fixture);
+
+          expect(log).toEqual(['resolver2', 'resolver1']);
+        }));
+    });
+
+    it('can resolve symbol keys', () =>
+      fakeAsync(() => {
         const router = TestBed.inject(Router);
         const fixture = createRoot(router, RootCmp);
+        const symbolKey = Symbol('key');
+
+        router.resetConfig([
+          {path: 'simple', component: SimpleCmp, resolve: {[symbolKey]: 'resolveFour'}},
+        ]);
+
+        router.navigateByUrl('/simple');
+        advance(fixture);
+
+        expect(router.routerState.root.snapshot.firstChild!.data[symbolKey]).toEqual(4);
+      }));
+
+    it('should allow resolvers as pure functions', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
+        const user = Symbol('user');
+
+        const userResolver: ResolveFn<string> = (route: ActivatedRouteSnapshot) =>
+          route.params['user'];
+        router.resetConfig([
+          {path: ':user', component: SimpleCmp, resolve: {[user]: userResolver}},
+        ]);
+
+        router.navigateByUrl('/atscott');
+        advance(fixture);
+
+        expect(router.routerState.root.snapshot.firstChild!.data[user]).toEqual('atscott');
+      }));
+
+    it('should allow DI in resolvers as pure functions', () =>
+      fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmp);
+        const user = Symbol('user');
+
+        @Injectable({providedIn: 'root'})
+        class LoginState {
+          user = 'atscott';
+        }
 
         router.resetConfig([
           {
-            path: 'a',
-            resolve: {
-              one: 'resolver1',
-              two: 'resolver2',
-            },
+            path: '**',
             component: SimpleCmp,
+            resolve: {
+              [user]: () => inject(LoginState).user,
+            },
           },
         ]);
 
-        router.navigateByUrl('/a');
+        router.navigateByUrl('/');
         advance(fixture);
 
-        expect(log).toEqual(['resolver2', 'resolver1']);
+        expect(router.routerState.root.snapshot.firstChild!.data[user]).toEqual('atscott');
       }));
-    });
-
-    it('can resolve symbol keys', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
-      const symbolKey = Symbol('key');
-
-      router.resetConfig([
-        {path: 'simple', component: SimpleCmp, resolve: {[symbolKey]: 'resolveFour'}},
-      ]);
-
-      router.navigateByUrl('/simple');
-      advance(fixture);
-
-      expect(router.routerState.root.snapshot.firstChild!.data[symbolKey]).toEqual(4);
-    }));
-
-    it('should allow resolvers as pure functions', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
-      const user = Symbol('user');
-
-      const userResolver: ResolveFn<string> = (route: ActivatedRouteSnapshot) =>
-        route.params['user'];
-      router.resetConfig([{path: ':user', component: SimpleCmp, resolve: {[user]: userResolver}}]);
-
-      router.navigateByUrl('/atscott');
-      advance(fixture);
-
-      expect(router.routerState.root.snapshot.firstChild!.data[user]).toEqual('atscott');
-    }));
-
-    it('should allow DI in resolvers as pure functions', fakeAsync(() => {
-      const router = TestBed.inject(Router);
-      const fixture = createRoot(router, RootCmp);
-      const user = Symbol('user');
-
-      @Injectable({providedIn: 'root'})
-      class LoginState {
-        user = 'atscott';
-      }
-
-      router.resetConfig([
-        {
-          path: '**',
-          component: SimpleCmp,
-          resolve: {
-            [user]: () => inject(LoginState).user,
-          },
-        },
-      ]);
-
-      router.navigateByUrl('/');
-      advance(fixture);
-
-      expect(router.routerState.root.snapshot.firstChild!.data[user]).toEqual('atscott');
-    }));
   });
 }
