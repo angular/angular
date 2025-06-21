@@ -7,19 +7,7 @@
  */
 
 import {SecurityContext} from '../core';
-import {ParseSourceSpan} from '../parse_util';
-
-export class ParserError {
-  public message: string;
-  constructor(
-    message: string,
-    public input: string,
-    public errLocation: string,
-    public ctxLocation?: any,
-  ) {
-    this.message = `Parser Error: ${message} ${errLocation} [${input}] in ${ctxLocation}`;
-  }
-}
+import {ParseError, ParseSourceSpan} from '../parse_util';
 
 export class ParseSpan {
   constructor(
@@ -502,7 +490,7 @@ export class ASTWithSource<T extends AST = AST> extends AST {
     public source: string | null,
     public location: string,
     absoluteOffset: number,
-    public errors: ParserError[],
+    public errors: ParseError[],
   ) {
     super(
       new ParseSpan(0, source === null ? 0 : source.length),

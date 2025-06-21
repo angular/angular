@@ -79,10 +79,7 @@ export class Parser {
     const tokenizeResult = tokenize(source, url, this.getTagDefinition, options);
     const parser = new _TreeBuilder(tokenizeResult.tokens, this.getTagDefinition);
     parser.build();
-    return new ParseTreeResult(
-      parser.rootNodes,
-      (tokenizeResult.errors as ParseError[]).concat(parser.errors),
-    );
+    return new ParseTreeResult(parser.rootNodes, [...tokenizeResult.errors, ...parser.errors]);
   }
 }
 

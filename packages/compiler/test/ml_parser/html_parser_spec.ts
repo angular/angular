@@ -770,7 +770,6 @@ describe('HtmlParser', () => {
         });
         expect(humanizeErrors(p.errors)).toEqual([
           [
-            TokenType.RAW_TEXT,
             'Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ \'{\' }}") to escape it.)',
             '0:36',
           ],
@@ -1857,7 +1856,7 @@ describe('HtmlParser', () => {
         const errors = parser.parse('<!-err--><div></p></div>', 'TestComp').errors;
         expect(errors.length).toEqual(2);
         expect(humanizeErrors(errors)).toEqual([
-          [TokenType.COMMENT_START, 'Unexpected character "e"', '0:3'],
+          ['Unexpected character "e"', '0:3'],
           [
             'p',
             'Unexpected closing tag "p". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags',
@@ -1876,6 +1875,6 @@ export function humanizeErrors(errors: ParseError[]): any[] {
       return [<any>e.elementName, e.msg, humanizeLineColumn(e.span.start)];
     }
     // Tokenizer errors
-    return [(<any>e).tokenType, e.msg, humanizeLineColumn(e.span.start)];
+    return [e.msg, humanizeLineColumn(e.span.start)];
   });
 }

@@ -21,20 +21,10 @@ import {
   TokenType,
 } from './tokens';
 
-export class TokenError extends ParseError {
-  constructor(
-    errorMsg: string,
-    public tokenType: TokenType | null,
-    span: ParseSourceSpan,
-  ) {
-    super(span, errorMsg);
-  }
-}
-
 export class TokenizeResult {
   constructor(
     public tokens: Token[],
-    public errors: TokenError[],
+    public errors: ParseError[],
     public nonNormalizedIcuExpressions: Token[],
   ) {}
 }
@@ -154,10 +144,6 @@ enum CharacterReferenceType {
   DEC = 'decimal',
 }
 
-class _ControlFlowError {
-  constructor(public error: TokenError) {}
-}
-
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
   private _cursor: CharacterCursor;
@@ -175,7 +161,7 @@ class _Tokenizer {
   private readonly _tokenizeLet: boolean;
   private readonly _selectorlessEnabled: boolean;
   tokens: Token[] = [];
-  errors: TokenError[] = [];
+  errors: ParseError[] = [];
   nonNormalizedIcuExpressions: Token[] = [];
 
   /**
@@ -503,17 +489,15 @@ class _Tokenizer {
 
   private _endToken(parts: string[], end?: CharacterCursor): Token {
     if (this._currentTokenStart === null) {
-      throw new TokenError(
-        'Programming error - attempted to end a token when there was no start to the token',
-        this._currentTokenType,
+      throw new ParseError(
         this._cursor.getSpan(end),
+        'Programming error - attempted to end a token when there was no start to the token',
       );
     }
     if (this._currentTokenType === null) {
-      throw new TokenError(
-        'Programming error - attempted to end a token which has no token type',
-        null,
+      throw new ParseError(
         this._cursor.getSpan(this._currentTokenStart),
+        'Programming error - attempted to end a token which has no token type',
       );
     }
     const token = {
@@ -530,22 +514,22 @@ class _Tokenizer {
     return token;
   }
 
-  private _createError(msg: string, span: ParseSourceSpan): _ControlFlowError {
+  private _createError(msg: string, span: ParseSourceSpan): ParseError {
     if (this._isInExpansionForm()) {
       msg += ` (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`;
     }
-    const error = new TokenError(msg, this._currentTokenType, span);
+    const error = new ParseError(span, msg);
     this._currentTokenStart = null;
     this._currentTokenType = null;
-    return new _ControlFlowError(error);
+    return error;
   }
 
   private handleError(e: any) {
     if (e instanceof CursorError) {
       e = this._createError(e.msg, this._cursor.getSpan(e.cursor));
     }
-    if (e instanceof _ControlFlowError) {
-      this.errors.push(e.error);
+    if (e instanceof ParseError) {
+      this.errors.push(e);
     } else {
       throw e;
     }
@@ -820,7 +804,7 @@ class _Tokenizer {
         this._consumeTagOpenEnd();
       }
     } catch (e) {
-      if (e instanceof _ControlFlowError) {
+      if (e instanceof ParseError) {
         if (openToken) {
           // We errored before we could close the opening tag, so it is incomplete.
           openToken.type =

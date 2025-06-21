@@ -423,14 +423,11 @@ describe('XtbTranslationParser', () => {
           XTB,
           /Invalid element found in message/,
           [
-            `Error: Invalid element found in message.`,
-            `At /some/file.xtb@2:4:`,
-            `...`,
-            `  <translation id="deadbeef">`,
-            `    [ERROR ->]<source/>`,
-            `  </translation>`,
-            `...`,
-            ``,
+            'Invalid element found in message. ("<translationbundle>',
+            '  <translation id="deadbeef">',
+            '    [ERROR ->]<source/>',
+            '  </translation>',
+            '</translationbundle>"): /some/file.xtb@2:4',
           ].join('\n'),
         );
       });
@@ -447,12 +444,9 @@ describe('XtbTranslationParser', () => {
           XTB,
           /required "name" attribute/gi,
           [
-            `Error: Missing required "name" attribute:`,
-            `At /some/file.xtb@1:29:`,
-            `...<translationbundle>`,
-            `  <translation id="deadbeef">[ERROR ->]<ph/></translation>`,
-            `</translationbundle>...`,
-            ``,
+            'Missing required "name" attribute: ("<translationbundle>',
+            '  <translation id="deadbeef">[ERROR ->]<ph/></translation>',
+            '</translationbundle>"): /some/file.xtb@1:29',
           ].join('\n'),
         );
       });
