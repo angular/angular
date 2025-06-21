@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, NgModuleRef} from '@angular/core';
+import {ApplicationRef} from '@angular/core';
 
 import {bindAction} from '../../util';
 
-import {JsWebFrameworksComponent, JsWebFrameworksModule, RowData} from './rows';
+import {JsWebFrameworksComponent, RowData} from './rows';
 
 function _random(max: number) {
   return Math.round(Math.random() * 1000) % max;
@@ -88,9 +88,8 @@ const NOUNS = [
   'keyboard',
 ];
 
-export function init(moduleRef: NgModuleRef<JsWebFrameworksModule>) {
+export function init(appRef: ApplicationRef) {
   let component: JsWebFrameworksComponent;
-  let appRef: ApplicationRef;
 
   function create1K() {
     component.data = buildData(1 * 1000);
@@ -123,9 +122,6 @@ export function init(moduleRef: NgModuleRef<JsWebFrameworksModule>) {
     }
     appRef.tick();
   }
-
-  const injector = moduleRef.injector;
-  appRef = injector.get(ApplicationRef);
 
   component = appRef.components[0].instance;
 

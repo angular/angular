@@ -59,15 +59,15 @@ consts: () => {
 },
 template: function MyComponent_Template(rf, ctx) {
   if (rf & 1) {
-    $r3$.ɵɵelementStart(0, "div");
+    $r3$.ɵɵdomElementStart(0, "div");
     $r3$.ɵɵi18nStart(1, 0);
-    $r3$.ɵɵelement(2, "span", 1)(3, "span")(4, "span");
+    $r3$.ɵɵdomElement(2, "span", 1)(3, "span")(4, "span");
     $r3$.ɵɵi18nEnd();
-    $r3$.ɵɵelementEnd();
+    $r3$.ɵɵdomElementEnd();
   }
   if (rf & 2) {
     $r3$.ɵɵadvance(2);
-    $r3$.ɵɵproperty("title", $r3$.ɵɵinterpolate2("", ctx.foo, "-", ctx.foo));
+    $r3$.ɵɵdomProperty("title", $r3$.ɵɵinterpolate2("", ctx.foo, "-", ctx.foo));
     $r3$.ɵɵadvance(2);
     $r3$.ɵɵi18nExp(ctx.foo)(ctx.foo)(ctx.foo)(ctx.foo)(ctx.foo);
     $r3$.ɵɵi18nApply(1);

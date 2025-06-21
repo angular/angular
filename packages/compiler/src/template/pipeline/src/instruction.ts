@@ -73,6 +73,56 @@ function elementOrContainerBase(
   return call(instruction, args, sourceSpan);
 }
 
+function templateBase(
+  instruction: o.ExternalReference,
+  slot: number,
+  templateFnRef: o.Expression,
+  decls: number,
+  vars: number,
+  tag: string | null,
+  constIndex: number | null,
+  localRefs: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  const args = [
+    o.literal(slot),
+    templateFnRef,
+    o.literal(decls),
+    o.literal(vars),
+    o.literal(tag),
+    o.literal(constIndex),
+  ];
+  if (localRefs !== null) {
+    args.push(o.literal(localRefs));
+    args.push(o.importExpr(Identifiers.templateRefExtractor));
+  }
+  while (args[args.length - 1].isEquivalent(o.NULL_EXPR)) {
+    args.pop();
+  }
+  return call(instruction, args, sourceSpan);
+}
+
+function propertyBase(
+  instruction: o.ExternalReference,
+  name: string,
+  expression: o.Expression | ir.Interpolation,
+  sanitizer: o.Expression | null,
+  sourceSpan: ParseSourceSpan,
+): ir.UpdateOp {
+  const args: o.Expression[] = [o.literal(name)];
+
+  if (expression instanceof ir.Interpolation) {
+    args.push(interpolationToExpression(expression, sourceSpan));
+  } else {
+    args.push(expression);
+  }
+
+  if (sanitizer !== null) {
+    args.push(sanitizer);
+  }
+  return call(instruction, args, sourceSpan);
+}
+
 export function elementEnd(sourceSpan: ParseSourceSpan | null): ir.CreateOp {
   return call(Identifiers.elementEnd, [], sourceSpan);
 }
@@ -123,22 +173,17 @@ export function template(
   localRefs: number | null,
   sourceSpan: ParseSourceSpan,
 ): ir.CreateOp {
-  const args = [
-    o.literal(slot),
+  return templateBase(
+    Identifiers.templateCreate,
+    slot,
     templateFnRef,
-    o.literal(decls),
-    o.literal(vars),
-    o.literal(tag),
-    o.literal(constIndex),
-  ];
-  if (localRefs !== null) {
-    args.push(o.literal(localRefs));
-    args.push(o.importExpr(Identifiers.templateRefExtractor));
-  }
-  while (args[args.length - 1].isEquivalent(o.NULL_EXPR)) {
-    args.pop();
-  }
-  return call(Identifiers.templateCreate, args, sourceSpan);
+    decls,
+    vars,
+    tag,
+    constIndex,
+    localRefs,
+    sourceSpan,
+  );
 }
 
 export function disableBindings(): ir.CreateOp {
@@ -543,18 +588,7 @@ export function property(
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const args: o.Expression[] = [o.literal(name)];
-
-  if (expression instanceof ir.Interpolation) {
-    args.push(interpolationToExpression(expression, sourceSpan));
-  } else {
-    args.push(expression);
-  }
-
-  if (sanitizer !== null) {
-    args.push(sanitizer);
-  }
-  return call(Identifiers.property, args, sourceSpan);
+  return propertyBase(Identifiers.property, name, expression, sanitizer, sourceSpan);
 }
 
 export function twoWayProperty(
@@ -643,6 +677,116 @@ export function classMap(
   return call(Identifiers.classMap, [value], sourceSpan);
 }
 
+export function domElement(
+  slot: number,
+  tag: string,
+  constIndex: number | null,
+  localRefIndex: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  return elementOrContainerBase(
+    Identifiers.domElement,
+    slot,
+    tag,
+    constIndex,
+    localRefIndex,
+    sourceSpan,
+  );
+}
+
+export function domElementStart(
+  slot: number,
+  tag: string,
+  constIndex: number | null,
+  localRefIndex: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  return elementOrContainerBase(
+    Identifiers.domElementStart,
+    slot,
+    tag,
+    constIndex,
+    localRefIndex,
+    sourceSpan,
+  );
+}
+
+export function domElementEnd(sourceSpan: ParseSourceSpan | null): ir.CreateOp {
+  return call(Identifiers.domElementEnd, [], sourceSpan);
+}
+
+export function domElementContainerStart(
+  slot: number,
+  constIndex: number | null,
+  localRefIndex: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  return elementOrContainerBase(
+    Identifiers.domElementContainerStart,
+    slot,
+    /* tag */ null,
+    constIndex,
+    localRefIndex,
+    sourceSpan,
+  );
+}
+
+export function domElementContainer(
+  slot: number,
+  constIndex: number | null,
+  localRefIndex: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  return elementOrContainerBase(
+    Identifiers.domElementContainer,
+    slot,
+    /* tag */ null,
+    constIndex,
+    localRefIndex,
+    sourceSpan,
+  );
+}
+
+export function domElementContainerEnd(): ir.CreateOp {
+  return call(Identifiers.domElementContainerEnd, [], null);
+}
+
+export function domListener(
+  name: string,
+  handlerFn: o.Expression,
+  eventTargetResolver: o.ExternalReference | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  const args = [o.literal(name), handlerFn];
+  if (eventTargetResolver !== null) {
+    args.push(o.importExpr(eventTargetResolver));
+  }
+  return call(Identifiers.domListener, args, sourceSpan);
+}
+
+export function domTemplate(
+  slot: number,
+  templateFnRef: o.Expression,
+  decls: number,
+  vars: number,
+  tag: string | null,
+  constIndex: number | null,
+  localRefs: number | null,
+  sourceSpan: ParseSourceSpan,
+): ir.CreateOp {
+  return templateBase(
+    Identifiers.domTemplate,
+    slot,
+    templateFnRef,
+    decls,
+    vars,
+    tag,
+    constIndex,
+    localRefs,
+    sourceSpan,
+  );
+}
+
 const PIPE_BINDINGS: o.ExternalReference[] = [
   Identifiers.pipeBind1,
   Identifiers.pipeBind2,
@@ -683,15 +827,11 @@ export function i18nApply(slot: number, sourceSpan: ParseSourceSpan | null): ir.
 
 export function domProperty(
   name: string,
-  expression: o.Expression,
+  expression: o.Expression | ir.Interpolation,
   sanitizer: o.Expression | null,
-  sourceSpan: ParseSourceSpan | null,
+  sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
-  const args = [o.literal(name), expression];
-  if (sanitizer !== null) {
-    args.push(sanitizer);
-  }
-  return call(Identifiers.domProperty, args, sourceSpan);
+  return propertyBase(Identifiers.domProperty, name, expression, sanitizer, sourceSpan);
 }
 
 export function syntheticHostProperty(

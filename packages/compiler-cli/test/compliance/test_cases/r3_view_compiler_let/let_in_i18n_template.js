@@ -21,9 +21,9 @@ $r3$.ɵɵdefineComponent({
   },
   template: function MyApp_Template(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵelementStart(0, "div");
+      $r3$.ɵɵdomElementStart(0, "div");
       $r3$.ɵɵi18n(1, 0);
-      $r3$.ɵɵelementEnd();
+      $r3$.ɵɵdomElementEnd();
     }
     if (rf & 2) {
       const result_r1 = ctx.value * 2;
