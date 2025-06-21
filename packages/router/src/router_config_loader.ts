@@ -14,6 +14,7 @@ import {
   InjectionToken,
   Injector,
   NgModuleFactory,
+  runInInjectionContext,
   Type,
 } from '@angular/core';
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
@@ -46,7 +47,7 @@ export class RouterConfigLoader {
   onLoadEndListener?: (r: Route) => void;
   private readonly compiler = inject(Compiler);
 
-  loadComponent(route: Route): Observable<Type<unknown>> {
+  loadComponent(injector: EnvironmentInjector, route: Route): Observable<Type<unknown>> {
     if (this.componentLoaders.get(route)) {
       return this.componentLoaders.get(route)!;
     } else if (route._loadedComponent) {
@@ -56,7 +57,9 @@ export class RouterConfigLoader {
     if (this.onLoadStartListener) {
       this.onLoadStartListener(route);
     }
-    const loadRunner = wrapIntoObservable(route.loadComponent!()).pipe(
+    const loadRunner = wrapIntoObservable(
+      runInInjectionContext(injector, () => route.loadComponent!()),
+    ).pipe(
       map(maybeUnwrapDefaultExport),
       tap((component) => {
         if (this.onLoadEndListener) {
@@ -123,7 +126,9 @@ export function loadChildren(
   parentInjector: Injector,
   onLoadEndListener?: (r: Route) => void,
 ): Observable<LoadedRouterConfig> {
-  return wrapIntoObservable(route.loadChildren!()).pipe(
+  return wrapIntoObservable(
+    runInInjectionContext(parentInjector, () => route.loadChildren!()),
+  ).pipe(
     map(maybeUnwrapDefaultExport),
     mergeMap((t) => {
       if (t instanceof NgModuleFactory || Array.isArray(t)) {
