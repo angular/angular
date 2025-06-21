@@ -120,7 +120,7 @@ yarn ng-dev misc build-and-link <path-to-local-project-root>
 When making changes to Angular packages and testing in a local library/project you need to
 run `ng cache disable` to disable the Angular CLI disk cache. If you are making changes that are not
 reflected in your locally served library/project, verify if you
-have [CLI Cache](https://angular.io/guide/workspace-config#cache-options) disabled.
+have [CLI Cache](https://angular.dev/reference/configs/workspace-config#cache-options) disabled.
 
 #### Invoking the Angular CLI
 
