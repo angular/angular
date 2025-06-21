@@ -129,7 +129,7 @@ export interface AfterRenderOptions {
  * }
  * ```
  *
- * @developerPreview
+ * @publicApi 20.0
  */
 export function afterEveryRender<E = never, W = never, M = never>(
   spec: {
@@ -191,7 +191,7 @@ export function afterEveryRender<E = never, W = never, M = never>(
  * }
  * ```
  *
- * @publicApi
+ * @publicApi 20.0
  */
 export function afterEveryRender(
   callback: VoidFunction,
@@ -308,7 +308,7 @@ export function afterEveryRender(
  * }
  * ```
  *
- * @developerPreview
+ * @publicApi 20.0
  */
 export function afterNextRender<E = never, W = never, M = never>(
   spec: {
