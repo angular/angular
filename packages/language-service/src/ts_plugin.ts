@@ -131,6 +131,24 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getRenameInfo(fileName, position);
   }
 
+  function getEncodedSemanticClassifications(
+    fileName: string,
+    span: ts.TextSpan,
+    format?: ts.SemanticClassificationFormat,
+  ): ts.Classifications {
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getEncodedSemanticClassifications(fileName, span, format);
+    } else {
+      const ngClassifications = ngLS.getEncodedSemanticClassifications(fileName, span, format);
+      const tsClassifications = tsLS.getEncodedSemanticClassifications(fileName, span, format);
+      const spans = [...ngClassifications.spans, ...tsClassifications.spans];
+      return {
+        spans,
+        endOfLineState: tsClassifications.endOfLineState,
+      };
+    }
+  }
+
   function getCompletionsAtPosition(
     fileName: string,
     position: number,
@@ -352,6 +370,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getReferencesAtPosition,
     findRenameLocations,
     getRenameInfo,
+    getEncodedSemanticClassifications,
     getCompletionsAtPosition,
     getCompletionEntryDetails,
     getCompletionEntrySymbol,
