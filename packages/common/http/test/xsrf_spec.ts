@@ -17,6 +17,7 @@ import {
 } from '../src/xsrf';
 import {HttpClientTestingBackend} from '../testing/src/backend';
 import {TestBed} from '@angular/core/testing';
+import {from, isObservable, Observable} from 'rxjs';
 
 class SampleTokenExtractor extends HttpXsrfTokenExtractor {
   constructor(private token: string | null) {
@@ -26,6 +27,13 @@ class SampleTokenExtractor extends HttpXsrfTokenExtractor {
   override getToken(): string | null {
     return this.token;
   }
+}
+
+function toObservable<T>(result: Observable<T> | Promise<T>): Observable<T> {
+  if (isObservable(result)) {
+    return result;
+  }
+  return from(result);
 }
 
 describe('HttpXsrfInterceptor', () => {
@@ -53,25 +61,25 @@ describe('HttpXsrfInterceptor', () => {
     backend = new HttpClientTestingBackend();
   });
   it('applies XSRF protection to outgoing requests', () => {
-    interceptor.intercept(new HttpRequest('POST', '/test', {}), backend).subscribe();
+    toObservable(interceptor.intercept(new HttpRequest('POST', '/test', {}), backend)).subscribe();
     const req = backend.expectOne('/test');
     expect(req.request.headers.get('X-XSRF-TOKEN')).toEqual('test');
     req.flush({});
   });
   it('does not apply XSRF protection when request is a GET', () => {
-    interceptor.intercept(new HttpRequest('GET', '/test'), backend).subscribe();
+    toObservable(interceptor.intercept(new HttpRequest('GET', '/test'), backend)).subscribe();
     const req = backend.expectOne('/test');
     expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);
     req.flush({});
   });
   it('does not apply XSRF protection when request is a HEAD', () => {
-    interceptor.intercept(new HttpRequest('HEAD', '/test'), backend).subscribe();
+    toObservable(interceptor.intercept(new HttpRequest('HEAD', '/test'), backend)).subscribe();
     const req = backend.expectOne('/test');
     expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);
     req.flush({});
   });
   it('does not overwrite existing header', () => {
-    interceptor
+    toObservable(interceptor
       .intercept(
         new HttpRequest(
           'POST',
@@ -80,7 +88,7 @@ describe('HttpXsrfInterceptor', () => {
           {headers: new HttpHeaders().set('X-XSRF-TOKEN', 'blah')},
         ),
         backend,
-      )
+      ))
       .subscribe();
     const req = backend.expectOne('/test');
     expect(req.request.headers.get('X-XSRF-TOKEN')).toEqual('blah');
@@ -106,7 +114,7 @@ describe('HttpXsrfInterceptor', () => {
       ],
     });
     interceptor = TestBed.inject(HttpXsrfInterceptor);
-    interceptor.intercept(new HttpRequest('POST', '/test', {}), backend).subscribe();
+    toObservable(interceptor.intercept(new HttpRequest('POST', '/test', {}), backend)).subscribe();
     const req = backend.expectOne('/test');
     expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);
     req.flush({});

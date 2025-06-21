@@ -24,7 +24,7 @@ import {HttpEvent} from './response';
  * @publicApi
  */
 export abstract class HttpHandler {
-  abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
+  abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>> | Promise<HttpEvent<any>>;
 }
 
 /**
@@ -38,5 +38,5 @@ export abstract class HttpHandler {
  * @publicApi
  */
 export abstract class HttpBackend implements HttpHandler {
-  abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
+  abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>> | Promise<HttpEvent<any>>;
 }

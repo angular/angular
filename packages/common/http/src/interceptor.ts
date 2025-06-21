@@ -16,7 +16,7 @@ import {
   ɵformatRuntimeError as formatRuntimeError,
   PendingTasks,
 } from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, from, isObservable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
 import {HttpBackend, HttpHandler} from './backend';
@@ -54,15 +54,23 @@ import {HttpEvent} from './response';
  * loading modules), each import creates a new copy of the `HttpClientModule`, which overwrites the
  * interceptors provided in the root module.
  */
+
+function toObservable<T>(result: Observable<T> | Promise<T>): Observable<T> {
+  if (isObservable(result)) {
+    return result;
+  }
+  return from(result);
+}
+
 export interface HttpInterceptor {
   /**
    * Identifies and handles a given HTTP request.
    * @param req The outgoing request object to handle.
    * @param next The next interceptor in the chain, or the backend
    * if no interceptors remain in the chain.
-   * @returns An observable of the event stream.
+   * @returns An observable or promise of the event stream.
    */
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> | Promise<HttpEvent<any>>;
 }
 
 /**
@@ -84,7 +92,7 @@ export interface HttpInterceptor {
  *
  * @see [HTTP Guide](guide/http/interceptors)
  */
-export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<unknown>>;
+export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<unknown>> | Promise<HttpEvent<unknown>>;
 
 /**
  * An interceptor for HTTP requests made via `HttpClient`.
@@ -130,7 +138,7 @@ export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<
 export type HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
-) => Observable<HttpEvent<unknown>>;
+) => Observable<HttpEvent<unknown>> | Promise<HttpEvent<unknown>>;
 
 /**
  * Function which invokes an HTTP interceptor chain.
@@ -147,12 +155,12 @@ export type HttpInterceptorFn = (
 type ChainedInterceptorFn<RequestT> = (
   req: HttpRequest<RequestT>,
   finalHandlerFn: HttpHandlerFn,
-) => Observable<HttpEvent<RequestT>>;
+) => Observable<HttpEvent<RequestT>> | Promise<HttpEvent<RequestT>>;
 
 function interceptorChainEndFn(
   req: HttpRequest<any>,
   finalHandlerFn: HttpHandlerFn,
-): Observable<HttpEvent<any>> {
+): Observable<HttpEvent<any>> | Promise<HttpEvent<any>> {
   return finalHandlerFn(req);
 }
 
@@ -164,10 +172,15 @@ function adaptLegacyInterceptorToChain(
   chainTailFn: ChainedInterceptorFn<any>,
   interceptor: HttpInterceptor,
 ): ChainedInterceptorFn<any> {
-  return (initialRequest, finalHandlerFn) =>
-    interceptor.intercept(initialRequest, {
-      handle: (downstreamRequest) => chainTailFn(downstreamRequest, finalHandlerFn),
-    });
+  return (initialRequest, finalHandlerFn) => {
+    const handler = {
+      handle: (downstreamRequest: HttpRequest<any>): Observable<HttpEvent<any>> | Promise<HttpEvent<any>> => {
+        return chainTailFn(downstreamRequest, finalHandlerFn);
+      }
+    };
+
+    return interceptor.intercept(initialRequest, handler);
+  };
 }
 
 /**
@@ -182,8 +195,8 @@ function chainedInterceptorFn(
   return (initialRequest, finalHandlerFn) =>
     runInInjectionContext(injector, () =>
       interceptorFn(initialRequest, (downstreamRequest) =>
-        chainTailFn(downstreamRequest, finalHandlerFn),
-      ),
+        chainTailFn(downstreamRequest, finalHandlerFn)
+      )
     );
 }
 
@@ -241,11 +254,14 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
 
     const pendingTasks = inject(PendingTasks);
     const contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
+
+    const result = chain(req, handler);
+
     if (contributeToStability) {
       const removeTask = pendingTasks.add();
-      return chain(req, handler).pipe(finalize(removeTask));
+      return toObservable(result).pipe(finalize(removeTask));
     } else {
-      return chain(req, handler);
+      return result;
     }
   };
 }
@@ -323,15 +339,16 @@ export class HttpInterceptorHandler extends HttpHandler {
       );
     }
 
+    const chainResult = this.chain(initialRequest, (downstreamRequest) =>
+      this.backend.handle(downstreamRequest)
+    );
+    const observableResult = toObservable(chainResult);
+
     if (this.contributeToStability) {
       const removeTask = this.pendingTasks.add();
-      return this.chain(initialRequest, (downstreamRequest) =>
-        this.backend.handle(downstreamRequest),
-      ).pipe(finalize(removeTask));
+      return observableResult.pipe(finalize(removeTask));
     } else {
-      return this.chain(initialRequest, (downstreamRequest) =>
-        this.backend.handle(downstreamRequest),
-      );
+      return observableResult;
     }
   }
 }

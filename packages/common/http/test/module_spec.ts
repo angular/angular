@@ -17,19 +17,26 @@ import {HttpClientTestingModule} from '../testing/src/module';
 import {TestRequest} from '../testing/src/request';
 import {Injectable, Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Observable} from 'rxjs';
+import {from, isObservable, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+
+function toObservable<T>(result: Observable<T> | Promise<T>): Observable<T> {
+  if (isObservable(result)) {
+    return result;
+  }
+  return from(result);
+}
 
 const IS_INTERCEPTOR_C_ENABLED = new HttpContextToken<boolean | undefined>(() => undefined);
 
 class TestInterceptor implements HttpInterceptor {
   constructor(private value: string) {}
 
-  intercept(req: HttpRequest<any>, delegate: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<any>, delegate: HttpHandler): Observable<HttpEvent<any>> | Promise<HttpEvent<any>> {
     const existing = req.headers.get('Intercepted');
     const next = !!existing ? existing + ',' + this.value : this.value;
     req = req.clone({setHeaders: {'Intercepted': next}});
-    return delegate.handle(req).pipe(
+    return toObservable(delegate.handle(req)).pipe(
       map((event) => {
         if (event instanceof HttpResponse) {
           const existing = event.headers.get('Intercepted');
@@ -59,7 +66,7 @@ class InterceptorC extends TestInterceptor {
     super('C');
   }
 
-  override intercept(req: HttpRequest<any>, delegate: HttpHandler): Observable<HttpEvent<any>> {
+  override intercept(req: HttpRequest<any>, delegate: HttpHandler): Observable<HttpEvent<any>> | Promise<HttpEvent<any>> {
     if (req.context.get(IS_INTERCEPTOR_C_ENABLED) === true) {
       return super.intercept(req, delegate);
     }
@@ -71,7 +78,7 @@ class InterceptorC extends TestInterceptor {
 class ReentrantInterceptor implements HttpInterceptor {
   constructor(private client: HttpClient) {}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> | Promise<HttpEvent<any>> {
     return next.handle(req);
   }
 }

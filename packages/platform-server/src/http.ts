@@ -44,7 +44,7 @@ export class ServerXhr implements XhrFactory {
 function relativeUrlsTransformerInterceptorFn(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
-): Observable<HttpEvent<unknown>> {
+): Observable<HttpEvent<unknown>> | Promise<HttpEvent<unknown>> {
   const platformLocation = inject(PlatformLocation);
   const {href, protocol, hostname, port} = platformLocation;
   if (!protocol.startsWith('http')) {

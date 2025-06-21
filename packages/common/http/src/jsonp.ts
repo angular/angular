@@ -282,7 +282,7 @@ export class JsonpClientBackend implements HttpBackend {
 export function jsonpInterceptorFn(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
-): Observable<HttpEvent<unknown>> {
+): Observable<HttpEvent<unknown>> | Promise<HttpEvent<unknown>> {
   if (req.method === 'JSONP') {
     return inject(JsonpClientBackend).handle(req as HttpRequest<never>);
   }
@@ -310,7 +310,7 @@ export class JsonpInterceptor {
    * if no interceptors remain in the chain.
    * @returns An observable of the event stream.
    */
-  intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> | Promise<HttpEvent<any>> {
     return runInInjectionContext(this.injector, () =>
       jsonpInterceptorFn(initialRequest, (downstreamRequest) => next.handle(downstreamRequest)),
     );

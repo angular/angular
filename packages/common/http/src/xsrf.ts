@@ -85,7 +85,7 @@ export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
 export function xsrfInterceptorFn(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
-): Observable<HttpEvent<unknown>> {
+): Observable<HttpEvent<unknown>> | Promise<HttpEvent<unknown>> {
   const lcUrl = req.url.toLowerCase();
   // Skip both non-mutating requests and absolute URLs.
   // Non-mutating requests don't require a token, and absolute URLs require special handling
@@ -118,7 +118,7 @@ export function xsrfInterceptorFn(
 export class HttpXsrfInterceptor implements HttpInterceptor {
   constructor(private injector: EnvironmentInjector) {}
 
-  intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> | Promise<HttpEvent<any>> {
     return runInInjectionContext(this.injector, () =>
       xsrfInterceptorFn(initialRequest, (downstreamRequest) => next.handle(downstreamRequest)),
     );

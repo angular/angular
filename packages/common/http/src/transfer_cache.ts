@@ -20,7 +20,7 @@ import {
   ɵtruncateMiddle as truncateMiddle,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {Observable, of, from, isObservable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
@@ -51,6 +51,13 @@ export type HttpTransferCacheOptions = {
   includePostRequests?: boolean;
   includeRequestsWithAuthHeaders?: boolean;
 };
+
+function toObservable<T>(result: Observable<T> | Promise<T>): Observable<T> {
+  if (isObservable(result)) {
+    return result;
+  }
+  return from(result);
+}
 
 /**
  * If your application uses different HTTP origins to make API calls (via `HttpClient`) on the server and
@@ -124,7 +131,7 @@ const ALLOWED_METHODS = ['GET', 'HEAD'];
 export function transferCacheInterceptorFn(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
-): Observable<HttpEvent<unknown>> {
+): Observable<HttpEvent<unknown>> | Promise<HttpEvent<unknown>> {
   const {isCacheActive, ...globalOptions} = inject(CACHE_OPTIONS);
   const {transferCache: requestOptions, method: requestMethod} = req;
 
@@ -216,7 +223,7 @@ export function transferCacheInterceptorFn(
   }
 
   // Request not found in cache. Make the request and cache it if on the server.
-  return next(req).pipe(
+  return toObservable(next(req)).pipe(
     tap((event: HttpEvent<unknown>) => {
       if (event instanceof HttpResponse && typeof ngServerMode !== 'undefined' && ngServerMode) {
         transferState.set<TransferHttpResponse>(storeKey, {

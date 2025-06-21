@@ -580,7 +580,7 @@ function setCookie(cookie: string): void {
 
 function provideLegacyInterceptor(tag: string): Provider {
   class LegacyTagInterceptor implements HttpInterceptor {
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> | Promise<HttpEvent<any>> {
       return next.handle(addTagToRequest(req, tag));
     }
   }
