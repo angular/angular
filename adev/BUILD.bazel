@@ -43,6 +43,7 @@ APPLICATION_ASSETS = [
     "//adev/src/assets/icons",
     "//adev/src/assets:api",
     "//adev/src/assets:content",
+    "//adev/src/assets:context",
 ]
 
 APPLICATION_DEPS = [

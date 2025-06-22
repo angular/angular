@@ -122,3 +122,13 @@ copy_to_directory(
         "**/": "",
     },
 )
+
+copy_to_directory(
+    name = "context",
+    srcs = [
+        "//adev/src/context",
+    ],
+    replace_prefixes = {
+        "**/": "",
+    },
+)
