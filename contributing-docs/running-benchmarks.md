@@ -21,7 +21,7 @@ If no benchmark target is specified, a prompt will allow you to select an availa
 
 ### Running a comparison in a PR
 
-You can start a comparison by adding a comment as followed to any PR:
+You can start a comparison by adding a comment as follows to any PR:
 
 ```
 /benchmark-compare main //modules/benchmarks/src/expanding_rows:perf_chromium
