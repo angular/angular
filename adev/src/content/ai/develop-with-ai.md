@@ -20,9 +20,9 @@ Several editors, such as <a href="https://studio.firebase.google.com?utm_source=
 
 | Environment/IDE | Rules File                                                      | Installation Instructions                                                                                              |
 |:----------------|:----------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------|
-| Firebase Studio | <a download href="/context/airules.md" target="_blank">airules.md</a>    | <a href="https://firebase.google.com/docs/studio/set-up-gemini#custom-instructions">Configure `airules.md`</a>         |
-| Cursor          | <a download href="/context/angular-20.mdc" target="_blank">cursor.md</a> | <a href="https://docs.cursor.com/context/rules" target="_blank">Configure `cursorrules.md`</a>                         |
-| JetBrains IDEs  | <a download href="/context/guidelines.md" target="_blank">guidelines.md</a>  | <a href="https://www.jetbrains.com/help/junie/customize-guidelines.html" target="_blank">Configure `guidelines.md`</a> |
+| Firebase Studio | <a href="/context/airules.md" target="_blank">airules.md</a>    | <a href="https://firebase.google.com/docs/studio/set-up-gemini#custom-instructions">Configure `airules.md`</a>         |
+| Cursor          | <a href="/context/angular-20.mdc" target="_blank">cursor.md</a> | <a href="https://docs.cursor.com/context/rules" target="_blank">Configure `cursorrules.md`</a>                         |
+| JetBrains IDEs  | <a href="/context/guidelines.md" target="_blank">guidelines.md</a>  | <a href="https://www.jetbrains.com/help/junie/customize-guidelines.html" target="_blank">Configure `guidelines.md`</a> |
 
 ## Providing Context with `llms.txt`
 `llms.txt` is a proposed standard for websites designed to help LLMs better understand and process their content. The Angular team has developed two versions of this file to help LLMs and tools that use LLMs for code generation to create better modern Angular code.
