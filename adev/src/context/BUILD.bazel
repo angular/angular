@@ -1,0 +1,7 @@
+package(default_visibility = ["//adev:__subpackages__"])
+
+filegroup(
+    name = "context",
+    srcs = glob(["**"]),
+    visibility = ["//visibility:public"],
+)
