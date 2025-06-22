@@ -10,7 +10,7 @@ NOTE: These files will be updated on a regular basis staying up to date with Ang
 
 Here is a set of instructions to help LLMs generate correct code that follows Angular best practices. This file can be included as system instructions to your AI tooling or included along with your prompt as context.
 
-<docs-code language="md" path="adev/src/context/best-practices.md" class="compact"/>
+<docs-code language="md" path="adev/src/content/ai/best-practices.md" class="compact"/>
 
 <!-- Note: download doesnt work in devmode but is fine when deployed -->
 <a download href="/ai/best-practices.md" target="_blank">Click here to download the best-practices.md file.</a>
