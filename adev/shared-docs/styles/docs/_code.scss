@@ -115,6 +115,12 @@ $code-font-size: 0.875rem;
       font-size: $code-font-size;
       counter-reset: line;
     }
+
+    &.compact {
+      pre {
+        max-height: 300px;
+      }
+    }
   }
 
   // shell doesn't have a header, for commands only
