@@ -96,9 +96,15 @@ export class HttpXhrBackend implements HttpBackend {
     // for various non-browser environments. We currently limit it to only `ServerXhr`
     // class, which needs to load an XHR implementation.
     const xhrFactory: XhrFactory & {ɵloadImpl?: () => Promise<void>} = this.xhrFactory;
-    const source: Observable<void | null> = xhrFactory.ɵloadImpl
-      ? from(xhrFactory.ɵloadImpl())
-      : of(null);
+    const source: Observable<void | null> =
+      // Note that `ɵloadImpl` is never defined in client bundles and can be
+      // safely dropped whenever we're running in the browser.
+      // This branching is redundant.
+      // The `ngServerMode` guard also enables tree-shaking of the `from()`
+      // function from the common bundle, as it's only used in server code.
+      typeof ngServerMode !== 'undefined' && ngServerMode && xhrFactory.ɵloadImpl
+        ? from(xhrFactory.ɵloadImpl())
+        : of(null);
 
     return source.pipe(
       switchMap(() => {
