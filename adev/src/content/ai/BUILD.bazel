@@ -4,10 +4,10 @@ generate_guides(
     name = "ai",
     srcs = glob([
         "*.md",
+        "*.mdc",
     ]),
     data = [
         "//adev/src/assets/images:what_is_angular.svg",
-        "//adev/src/context",
     ],
     visibility = ["//adev:__subpackages__"],
 )
