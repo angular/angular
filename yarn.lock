@@ -467,12 +467,13 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#2299bd9528d66d65a514b56fb83f14809ded6dde":
-  version "0.0.0-14b8cefa508bef7170ab2d8418863625c82db038"
-  uid "2299bd9528d66d65a514b56fb83f14809ded6dde"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#2299bd9528d66d65a514b56fb83f14809ded6dde"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#c9b62e00819328fe530dd3ce3acad4042a34e00b":
+  version "0.0.0-db18d7175d759fdfb3e40d363a1579621d1fcffd"
+  uid c9b62e00819328fe530dd3ce3acad4042a34e00b
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#c9b62e00819328fe530dd3ce3acad4042a34e00b"
   dependencies:
     "@google-cloud/spanner" "8.0.0"
+    "@google/genai" "^1.4.0"
     "@octokit/rest" "22.0.0"
     "@types/semver" "^7.3.6"
     "@types/supports-color" "^10.0.0"
@@ -2175,6 +2176,16 @@
     stream-events "^1.0.5"
     teeny-request "^10.0.0"
     through2 "^4.0.2"
+
+"@google/genai@^1.4.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@google/genai/-/genai-1.6.0.tgz#7a14d505faebe17957b272476debd574d2eae1e0"
+  integrity sha512-0vn8wMGesjiEsHeFsl10T8+SFqLj7q+RSE6mml66sE+jwI7U9wW2LQ3qYtwUEaI+P8ZYeEYE5IpYmNLcRQUBPQ==
+  dependencies:
+    google-auth-library "^9.14.2"
+    ws "^8.18.0"
+    zod "^3.22.4"
+    zod-to-json-schema "^3.22.4"
 
 "@googleapis/sqladmin@^29.0.0":
   version "29.0.0"
@@ -9917,7 +9928,7 @@ google-auth-library@^10.0.0-rc.1:
     gtoken "^8.0.0"
     jws "^4.0.0"
 
-google-auth-library@^9.11.0, google-auth-library@^9.2.0, google-auth-library@^9.3.0, google-auth-library@^9.7.0:
+google-auth-library@^9.11.0, google-auth-library@^9.14.2, google-auth-library@^9.2.0, google-auth-library@^9.3.0, google-auth-library@^9.7.0:
   version "9.15.1"
   resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-9.15.1.tgz#0c5d84ed1890b2375f1cd74f03ac7b806b392928"
   integrity sha512-Jb6Z0+nvECVz+2lzSMt9u98UsoakXxA2HGHMCxh+so3n90XgYWkq5dur19JAJV7ONiJY22yBTyJB1TSkvPq9Ng==
@@ -18473,12 +18484,12 @@ zip-stream@^6.0.1:
     compress-commons "^6.0.2"
     readable-stream "^4.0.0"
 
-zod-to-json-schema@^3.24.1, zod-to-json-schema@^3.24.5:
+zod-to-json-schema@^3.22.4, zod-to-json-schema@^3.24.1, zod-to-json-schema@^3.24.5:
   version "3.24.5"
   resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.24.5.tgz#d1095440b147fb7c2093812a53c54df8d5df50a3"
   integrity sha512-/AuWwMP+YqiPbsJx5D6TfgRTc4kTLjsh5SOcd4bLsfUg2RcEXrFMJl1DGgdHy2aCfsIA/cr/1JM0xcB2GZji8g==
 
-zod@^3.23.8, zod@^3.24.1, zod@^3.24.3:
+zod@^3.22.4, zod@^3.23.8, zod@^3.24.1, zod@^3.24.3:
   version "3.25.67"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.67.tgz#62987e4078e2ab0f63b491ef0c4f33df24236da8"
   integrity sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==
