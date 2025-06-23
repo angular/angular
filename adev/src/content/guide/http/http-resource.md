@@ -75,7 +75,7 @@ httpResource.arrayBuffer(() => ({ … })); // returns an ArrayBuffer in value()
 
 When fetching data, you may want to validate responses against a predefined schema, often using popular open-source libraries like [Zod](https://zod.dev) or [Valibot](https://valibot.dev). You can integrate validation libraries like this with `httpResource` by specifying a `parse` option. The return type of the `parse` function determines the type of the resource's `value`.
 
-The following example uses Zod to parse and validate the response from the [StarWars API](https://swapi.dev/). The resource is then typed the same as the output type of Zod’s parsing.
+The following example uses Zod to parse and validate the response from the [StarWars API](https://swapi.info/). The resource is then typed the same as the output type of Zod’s parsing.
 
 ```ts
 const starWarsPersonSchema = z.object({
@@ -89,7 +89,7 @@ export class CharacterViewer {
   id = signal(1);
 
   swPersonResource = httpResource(
-    () => `https://swapi.dev/api/people/${this.id()}`,
+    () => `https://swapi.info/api/people/${this.id()}`,
     { parse: starWarsPersonSchema.parse }
   );
 }
