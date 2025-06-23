@@ -208,7 +208,7 @@ export type FieldPath<T> = {
 /**
  * Defines logic for a form of type T.
  */
-export type Schema<T> = {
+export type Schema<in T> = {
   // Save type as `T => void` rather than `T` since `Schema` is contravariant on `T`. */
   [ɵɵTYPE]: (_: T) => void;
 };

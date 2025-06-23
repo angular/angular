@@ -30,7 +30,7 @@ let boundPathDepth = 0;
  *
  * Here we need to know that the `disabled` logic was bound to a path of depth 1. Otherwise we'd
  * attempt to resolve `p.data` in the context of the field corresponding to `p.next`.
- * The reslolution algorithm would start with the field for `p.next` and see that it *does* contain
+ * The resolution algorithm would start with the field for `p.next` and see that it *does* contain
  * the logic for `s` (due to the fact that its recursively applied.) It would then decide not to
  * walk up the field tree at all, and to immediately start walking down the keys for the target path
  * `p.data`, leading it to grab the field corresponding to `p.next.data`.

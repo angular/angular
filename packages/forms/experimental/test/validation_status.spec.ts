@@ -11,10 +11,10 @@ import {TestBed} from '@angular/core/testing';
 import {
   Field,
   form,
+  validateAsync,
   FormError,
   FormTreeError,
   validate,
-  validateAsync,
   validateTree,
 } from '../public_api';
 
