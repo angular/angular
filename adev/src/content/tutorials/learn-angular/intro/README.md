@@ -11,3 +11,8 @@ Each step represents a concept in Angular. You can do one, or all of them.
 If you get stuck, click "Reveal answer" at the top.
 
 Alright, let's [get started](/tutorials/learn-angular/1-components-in-angular).
+
+## Additional resources
+
+* **[Working with AI guide](/ai/develop-with-ai)**: prompts and best practices to set up your IDE for LLM-assisted development
+* **[Essentials guide](/guide/essentials)**: introductory Angular concepts outside the context of a tutorial
