@@ -54,7 +54,13 @@ export interface ServerError {
  * The result of running a validation function. The result may be `undefined` to indicate no errors,
  * a single `FormError`, or a list of `FormError` which can be used to indicate multiple errors.
  */
-export type ValidationResult = FormError | readonly FormError[] | undefined;
+export type ValidationResult = readonly FormError[] | FormError | undefined;
+
+export type AsyncValidationResult =
+  | readonly FormTreeError[]
+  | FormTreeError
+  | 'pending'
+  | undefined;
 
 /**
  * An object that represents a single field in a form. This includes both primitive value fields
