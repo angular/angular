@@ -22,5 +22,5 @@ export class RecordingTimelineControlsComponent {
   protected readonly exportProfile = output<void>();
   protected readonly filter = output<string>();
   protected readonly filterPlaceholder = signal(FILTER_PLACEHOLDER);
-  FILTER_PLACEHOLDER = FILTER_PLACEHOLDER;
+  protected readonly FILTER_PLACEHOLDER = FILTER_PLACEHOLDER;
 }

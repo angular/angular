@@ -28,7 +28,7 @@
     <div class="ver-ruler"></div>
   }
 
-  <select (change)="onVisualizationChange($event)" class="ng-select size-mid">
+  <select #select (change)="onVisualizationChange(select.value)" class="ng-select size-mid">
     <option [value]="VisMode.FlameGraph" [selected]="visualizationMode() === VisMode.FlameGraph">
       Flame graph
     </option>

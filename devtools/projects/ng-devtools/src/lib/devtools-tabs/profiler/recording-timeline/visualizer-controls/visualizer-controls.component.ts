@@ -20,16 +20,16 @@ import {VisualizationMode} from '../shared/visualization-mode';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VisualizerControlsComponent {
-  readonly record = input.required<ProfilerFrame>();
-  readonly estimatedFrameRate = input.required<number>();
+  protected readonly record = input.required<ProfilerFrame>();
+  protected readonly estimatedFrameRate = input.required<number>();
 
-  readonly visualizationMode = model.required<VisualizationMode>();
-  readonly changeDetection = model.required<boolean>();
+  protected readonly visualizationMode = model.required<VisualizationMode>();
+  protected readonly changeDetection = model.required<boolean>();
 
-  VisMode = VisualizationMode;
+  protected readonly VisMode = VisualizationMode;
 
-  onVisualizationChange(e: Event) {
-    const selected = parseInt((e.target as HTMLSelectElement).value, 10);
+  protected onVisualizationChange(value: string) {
+    const selected = parseInt(value, 10);
     this.visualizationMode.set(selected);
   }
 }
