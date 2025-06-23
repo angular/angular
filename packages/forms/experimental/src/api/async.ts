@@ -9,7 +9,8 @@
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
 import {ResourceRef, Signal} from '@angular/core';
 import {FieldNode} from '../field/node';
-import {assertPathIsCurrent, FieldPathNode} from '../path_node';
+import {FieldPathNode} from '../path_node';
+import {assertPathIsCurrent} from '../schema';
 import {defineResource} from './data';
 import {FieldContext, FieldPath, FormTreeError} from './types';
 

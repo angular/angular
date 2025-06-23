@@ -17,7 +17,7 @@ import {
 
 import {DYNAMIC} from '../logic_node';
 import {LogicNode} from '../logic_node_2';
-import type {FieldPathNode, FieldRootPathNode} from '../path_node';
+import type {FieldPathNode} from '../path_node';
 import {deepSignal} from '../util/deep_signal';
 import type {FormFieldManager} from './manager';
 import type {FieldNode} from './node';
@@ -132,7 +132,7 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
 
   constructor(
     private readonly node: FieldNode,
-    logicPath: FieldRootPathNode,
+    logicPath: FieldPathNode,
     logic: LogicNode,
     readonly fieldManager: FormFieldManager,
     readonly value: WritableSignal<unknown>,
@@ -246,7 +246,7 @@ let globalId = 0;
 
 export interface RootFieldNodeOptions {
   readonly kind: 'root';
-  readonly logicPath: FieldRootPathNode;
+  readonly logicPath: FieldPathNode;
   readonly logic: LogicNode;
   readonly value: WritableSignal<unknown>;
   readonly fieldManager: FormFieldManager;

@@ -29,7 +29,7 @@ import {
   validate,
   validateTree,
 } from '../public_api';
-import {pathFromSchema} from '../src/schema';
+import {SchemaImpl} from '../src/schema';
 
 interface TreeData {
   level: number;
@@ -926,18 +926,21 @@ describe('FieldNode', () => {
   });
 
   describe('predefined schema', () => {
-    it('should not compile schema function multiple times', () => {
-      const schemaFn = jasmine.createSpy('schemaFn');
-      expect(schemaFn).not.toHaveBeenCalled();
-
-      const s: Schema<string> = schema(schemaFn);
-      expect(schemaFn).toHaveBeenCalledTimes(0);
-
+    it('should compile schema once per form', () => {
       const opts = {injector: TestBed.inject(Injector)};
-      form(signal(''), s, opts);
-      expect(schemaFn).toHaveBeenCalledTimes(1);
-      form(signal(''), s, opts);
-      expect(schemaFn).toHaveBeenCalledTimes(1);
+      const subFn = jasmine.createSpy('schemaFn');
+      const sub: Schema<string> = schema(subFn);
+      const s = schema((p: FieldPath<{a: string; b: string}>) => {
+        apply(p.a, sub);
+        apply(p.b, sub);
+      });
+      expect(subFn).toHaveBeenCalledTimes(0);
+
+      form(signal({a: '', b: ''}), s, opts);
+      expect(subFn).toHaveBeenCalledTimes(1);
+
+      form(signal({a: '', b: ''}), s, opts);
+      expect(subFn).toHaveBeenCalledTimes(2);
     });
 
     it('should resolve predefined schema paths within the local context', () => {
@@ -979,7 +982,7 @@ describe('FieldNode', () => {
     it('should error on resolving predefined schema path that is not part of the form', () => {
       let otherP: FieldPath<any>;
       const s = schema<string>((p) => (otherP = p));
-      pathFromSchema(s).compile();
+      SchemaImpl.rootCompile(s);
 
       const f = form(
         signal(''),

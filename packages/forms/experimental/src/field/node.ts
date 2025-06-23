@@ -17,7 +17,6 @@ import type {
   FormError,
   SubmittedStatus,
 } from '../api/types';
-import type {FieldRootPathNode} from '../path_node';
 
 import {
   ChildFieldNodeOptions,
@@ -28,6 +27,7 @@ import {
 } from './structure';
 
 import {LogicNode} from '../logic_node_2';
+import {FieldPathNode} from '../path_node';
 import {FieldNodeContext} from './context';
 import {FieldDataState} from './data';
 import type {FormFieldManager} from './manager';
@@ -190,7 +190,7 @@ export class FieldNode implements FieldState<unknown> {
   static newRoot<T>(
     formRoot: FormFieldManager,
     value: WritableSignal<T>,
-    logicPath: FieldRootPathNode,
+    logicPath: FieldPathNode,
   ): FieldNode {
     return new FieldNode({
       kind: 'root',

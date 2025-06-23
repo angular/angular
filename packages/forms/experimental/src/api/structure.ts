@@ -10,8 +10,8 @@ import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/
 
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
-import {assertPathIsCurrent, FieldPathNode, FieldRootPathNode} from '../path_node';
-import {createSchema, isSchema, pathFromSchema} from '../schema';
+import {FieldPathNode} from '../path_node';
+import {assertPathIsCurrent, SchemaImpl} from '../schema';
 import type {
   Field,
   FieldPath,
@@ -36,7 +36,7 @@ function normalizeFormArgs<T>(
   if (args.length === 3) {
     [model, schema, options] = args;
   } else if (args.length === 2) {
-    if (isSchema(args[1]) || typeof args[1] === 'function') {
+    if (args[1] instanceof SchemaImpl || typeof args[1] === 'function') {
       [model, schema] = args;
     } else {
       [model, options] = args;
@@ -140,10 +140,7 @@ export function form<T>(
 export function form<T>(...args: any[]): Field<T> {
   const [model, schema, options] = normalizeFormArgs<T>(args);
   const injector = options?.injector ?? inject(Injector);
-  const pathNode = isSchema(schema)
-    ? pathFromSchema(schema)
-    : new FieldRootPathNode(schema as SchemaFn<unknown>);
-  runInInjectionContext(injector, () => pathNode.compile());
+  const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
   const fieldManager = new FormFieldManager(injector);
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
@@ -211,8 +208,7 @@ export function apply<T>(path: FieldPath<T>, schema: NoInfer<SchemaOrSchemaFn<T>
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const schemaRootPathNode = createSchema(schema);
-  pathNode.mergeIn(pathFromSchema(schemaRootPathNode));
+  pathNode.mergeIn(SchemaImpl.create(schema));
 }
 
 /**
@@ -230,8 +226,7 @@ export function applyWhen<T>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const schemaRootPathNode = createSchema(schema);
-  pathNode.mergeIn(pathFromSchema(schemaRootPathNode), {fn: logic, path});
+  pathNode.mergeIn(SchemaImpl.create(schema), {fn: logic, path});
 }
 
 /**
@@ -310,5 +305,5 @@ export async function submit<T>(
 }
 
 export function schema<T>(fn: SchemaFn<T>): Schema<T> {
-  return createSchema(fn) as Schema<T>;
+  return SchemaImpl.create(fn) as unknown as Schema<T>;
 }

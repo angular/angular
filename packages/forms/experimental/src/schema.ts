@@ -6,35 +6,77 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Schema, SchemaOrSchemaFn} from './api/types';
-import {FieldRootPathNode} from './path_node';
+import {FieldPath, SchemaFn, SchemaOrSchemaFn} from './api/types';
+import {FieldPathNode} from './path_node';
 
-/**
- * Creates a schema.
- * @param s The schema deifinition.
- * @returns A schema based on the given definition:
- *   - If the given definition was a `Schema`, simply returns it.
- *   - If the given definition was a `SchemaFn`, returns a `Schema` containing its logic.
- *   - If the given definition was `undefined`, returns a `Schema` with no logic.
- */
-export function createSchema(s: SchemaOrSchemaFn<any> | undefined) {
-  if (isSchema(s)) {
-    return s;
+let currentRoot: FieldPathNode | undefined = undefined;
+
+let compiledSchemas = new Map<SchemaImpl, FieldPathNode>();
+
+export class SchemaImpl {
+  constructor(private schemaFn: SchemaFn<unknown>) {}
+
+  compile(): FieldPathNode {
+    debugger;
+    if (compiledSchemas.has(this)) {
+      return compiledSchemas.get(this)!;
+    }
+    const path = FieldPathNode.newRoot();
+    compiledSchemas.set(this, path);
+    let prevRoot = currentRoot;
+    try {
+      currentRoot = path;
+      this.schemaFn(path.fieldPathProxy);
+    } finally {
+      currentRoot = prevRoot;
+    }
+    return path;
   }
-  return new FieldRootPathNode(s);
+
+  static create(schema: SchemaImpl | SchemaOrSchemaFn<any> | undefined) {
+    if (schema === undefined) {
+      return undefined;
+    }
+    if (schema instanceof SchemaImpl) {
+      return schema;
+    }
+    return new SchemaImpl(schema as SchemaFn<unknown>);
+  }
+
+  static rootCompile(schema: SchemaImpl | SchemaOrSchemaFn<any> | undefined) {
+    try {
+      compiledSchemas.clear();
+      if (schema === undefined) {
+        return FieldPathNode.newRoot();
+      }
+      if (schema instanceof SchemaImpl) {
+        return schema.compile();
+      }
+      return new SchemaImpl(schema as SchemaFn<unknown>).compile();
+    } finally {
+      compiledSchemas.clear();
+    }
+  }
 }
 
-/**
- * Checks whether the given object is a `Schema`.
- */
-export function isSchema(obj: unknown): obj is Schema<unknown> {
-  return obj instanceof FieldRootPathNode;
-}
+export function assertPathIsCurrent(path: FieldPath<unknown>): void {
+  if (currentRoot !== FieldPathNode.unwrapFieldPath(path).root) {
+    throw new Error(`🚨👮 Wrong path! 👮🚨
 
-/**
- * Gets the `FieldRootPathNode` for the given schema. Also accepts a FieldRootPathNode for
- * convenience.
- */
-export function pathFromSchema(schema: Schema<any> | FieldRootPathNode): FieldRootPathNode {
-  return schema as FieldRootPathNode;
+This error happens when using a path from outside of schema:
+
+applyWhen(
+      path,
+      condition,
+      (pathWhenTrue /* <-- Use this, not path  */) => {
+        // ✅ This works
+        applyEach(pathWhenTrue.friends, friendSchema);
+        // 🚨 👮 🚓  You have to use nested path
+        // This produces a this error:
+        applyEach(path /*has to be pathWhenTrue*/.friends, friendSchema);
+      }
+    );
+
+    `);
+  }
 }
