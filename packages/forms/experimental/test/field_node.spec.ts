@@ -1058,5 +1058,51 @@ describe('FieldNode', () => {
       expect(f.next.next.next.level().metadata(MIN)()).toBe(undefined);
       expect(f.next.next.next.next.level().metadata(MIN)()).toBe(undefined);
     });
+
+    it('should support recursive logic with arrays', () => {
+      interface Dom {
+        tag: string;
+        children: Dom[];
+      }
+
+      const domSchema = schema<Dom>((p) => {
+        applyEach(p.children, domSchema);
+        applyWhen(
+          p.children,
+          ({valueOf}) => valueOf(p.tag) === 'table',
+          (children) => {
+            applyEach(children, (c) => {
+              validate(c.tag, ({value}) =>
+                value() !== 'tr' ? {kind: 'invalid-child'} : undefined,
+              );
+            });
+          },
+        );
+        applyWhen(
+          p.children,
+          ({valueOf}) => valueOf(p.tag) === 'tr',
+          (children) => {
+            applyEach(children, (c) => {
+              validate(c.tag, ({value}) =>
+                value() !== 'td' ? {kind: 'invalid-child'} : undefined,
+              );
+            });
+          },
+        );
+      });
+
+      const data = signal<Dom>({tag: 'div', children: [{tag: 'span', children: []}]});
+      const f = form(data, domSchema, {injector: TestBed.inject(Injector)});
+      expect(f().valid()).toBe(true);
+
+      data.set({tag: 'table', children: [{tag: 'span', children: []}]});
+      expect(f().valid()).toBe(false);
+
+      data.set({tag: 'table', children: [{tag: 'tr', children: [{tag: 'span', children: []}]}]});
+      expect(f().valid()).toBe(false);
+
+      data.set({tag: 'table', children: [{tag: 'tr', children: [{tag: 'td', children: []}]}]});
+      expect(f().valid()).toBe(true);
+    });
   });
 });
