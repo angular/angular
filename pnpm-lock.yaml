@@ -771,9 +771,6 @@ importers:
       domino:
         specifier: https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b
         version: github.com/angular/domino/93e720f143d0296dd2726ffbcf4fc12283363a7b
-      google-closure-compiler:
-        specifier: ^20250615.0.0
-        version: 20250615.0.0
       jest:
         specifier: ^29.0
         version: 29.7.0(@types/node@10.17.60)(ts-node@10.9.2)
@@ -12017,55 +12014,6 @@ packages:
       - supports-color
     dev: true
 
-  /google-closure-compiler-java@20250615.0.0:
-    resolution: {integrity: sha512-gkhCusRw29Q96waXg/grUCg0hg/XQyL6bOtOAAdeiHjjubOpDqR+oHxMQpIUQgAEfK5SIcV0AghajEbAMhU2cw==, tarball: https://registry.npmjs.org/google-closure-compiler-java/-/google-closure-compiler-java-20250615.0.0.tgz}
-    dev: true
-
-  /google-closure-compiler-linux-arm64@20250615.0.0:
-    resolution: {integrity: sha512-7GCB2aFzf0HITf+3MoKZvvNysaJmJL7u9/3D9RAUW3lZWJMx1rwNcrGw7UxsfW6XbmKhEHRtraxiizWfQBLAQQ==, tarball: https://registry.npmjs.org/google-closure-compiler-linux-arm64/-/google-closure-compiler-linux-arm64-20250615.0.0.tgz}
-    cpu: [arm64]
-    os: [linux]
-    dev: true
-    optional: true
-
-  /google-closure-compiler-linux@20250615.0.0:
-    resolution: {integrity: sha512-WyfNTFto0GM010doY1hNptC+OBtNlFhzdLWTSm1CQ+C8HO/KyoWlfuwfQCthPFqe7pnpnNd1sCe8fznAqy5syQ==, tarball: https://registry.npmjs.org/google-closure-compiler-linux/-/google-closure-compiler-linux-20250615.0.0.tgz}
-    cpu: [x32, x64]
-    os: [linux]
-    dev: true
-    optional: true
-
-  /google-closure-compiler-macos@20250615.0.0:
-    resolution: {integrity: sha512-eLm67XKEMWbSP9rUBI2lEeGrUFqEAbD4+n2bDhNiY8ljCWYiBBlm1WaylGQxMlxdmLNuQIfS5F7utLBSFnlVvA==, tarball: https://registry.npmjs.org/google-closure-compiler-macos/-/google-closure-compiler-macos-20250615.0.0.tgz}
-    cpu: [arm64]
-    os: [darwin]
-    dev: true
-    optional: true
-
-  /google-closure-compiler-windows@20250615.0.0:
-    resolution: {integrity: sha512-jeeWwwRv+dvlPgFxGnW6zeO2kmWgN6/ajZjgw/3gfrf+KXV0oxjoGnWpY0/2C7H285f8b9Y3r5bDxgxyBL/GPw==, tarball: https://registry.npmjs.org/google-closure-compiler-windows/-/google-closure-compiler-windows-20250615.0.0.tgz}
-    cpu: [x32, x64]
-    os: [win32]
-    dev: true
-    optional: true
-
-  /google-closure-compiler@20250615.0.0:
-    resolution: {integrity: sha512-/n5+KKP2rOrlqFsivJDaOFEIkED9/yIinCd37f3BZm5KqoS2ijxLWHC0KOCx/Wodm82X8rPkoZIzTpInCwlN6w==, tarball: https://registry.npmjs.org/google-closure-compiler/-/google-closure-compiler-20250615.0.0.tgz}
-    engines: {node: '>=18'}
-    hasBin: true
-    dependencies:
-      chalk: 5.4.1
-      google-closure-compiler-java: 20250615.0.0
-      minimist: 1.2.8
-      vinyl: 3.0.1
-      vinyl-sourcemaps-apply: 0.2.1
-    optionalDependencies:
-      google-closure-compiler-linux: 20250615.0.0
-      google-closure-compiler-linux-arm64: 20250615.0.0
-      google-closure-compiler-macos: 20250615.0.0
-      google-closure-compiler-windows: 20250615.0.0
-    dev: true
-
   /google-gax@4.6.1:
     resolution: {integrity: sha512-V6eky/xz2mcKfAd1Ioxyd6nmA61gao3n01C+YeuIwu3vzM9EDR6wcVzMSIbLMDXWeoi9SHYctXuKYC5uJUT3eQ==, tarball: https://registry.npmjs.org/google-gax/-/google-gax-4.6.1.tgz}
     engines: {node: '>=14'}
@@ -20225,12 +20173,6 @@ packages:
       streamx: 2.22.1
       vinyl: 3.0.1
       vinyl-contents: 2.0.0
-    dev: true
-
-  /vinyl-sourcemaps-apply@0.2.1:
-    resolution: {integrity: sha512-+oDh3KYZBoZC8hfocrbrxbLUeaYtQK7J5WU5Br9VqWqmCll3tFJqKp97GC9GmMsVIL0qnx2DgEDVxdo5EZ5sSw==, tarball: https://registry.npmjs.org/vinyl-sourcemaps-apply/-/vinyl-sourcemaps-apply-0.2.1.tgz}
-    dependencies:
-      source-map: 0.5.7
     dev: true
 
   /vinyl@3.0.1:
