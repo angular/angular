@@ -364,8 +364,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4
         version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/ssr@20.1.0-next.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.42.0)(tsx@4.20.3)(zone.js@packages+zone.js)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#2299bd9528d66d65a514b56fb83f14809ded6dde
-        version: github.com/angular/dev-infra-private-ng-dev-builds/2299bd9528d66d65a514b56fb83f14809ded6dde
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#c9b62e00819328fe530dd3ce3acad4042a34e00b
+        version: github.com/angular/dev-infra-private-ng-dev-builds/c9b62e00819328fe530dd3ce3acad4042a34e00b
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.27.4)
@@ -3707,8 +3707,8 @@ packages:
     engines: {node: '>=18'}
     dependencies:
       '@googleapis/sqladmin': 29.0.0
-      gaxios: 6.7.1
-      google-auth-library: 9.15.1
+      gaxios: 6.7.1(supports-color@10.0.0)
+      google-auth-library: 9.15.1(supports-color@10.0.0)
       p-throttle: 7.0.0
     transitivePeerDependencies:
       - encoding
@@ -3787,7 +3787,7 @@ packages:
       '@opentelemetry/semantic-conventions': 1.30.0
       arrify: 2.0.1
       extend: 3.0.2
-      google-auth-library: 9.15.1
+      google-auth-library: 9.15.1(supports-color@10.0.0)
       google-gax: 4.6.1
       heap-js: 2.6.0
       is-stream-ended: 0.1.4
@@ -3834,6 +3834,26 @@ packages:
       through2: 4.0.2
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /@google/genai@1.6.0(supports-color@10.0.0):
+    resolution: {integrity: sha512-0vn8wMGesjiEsHeFsl10T8+SFqLj7q+RSE6mml66sE+jwI7U9wW2LQ3qYtwUEaI+P8ZYeEYE5IpYmNLcRQUBPQ==, tarball: https://registry.npmjs.org/@google/genai/-/genai-1.6.0.tgz}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@modelcontextprotocol/sdk': ^1.11.0
+    peerDependenciesMeta:
+      '@modelcontextprotocol/sdk':
+        optional: true
+    dependencies:
+      google-auth-library: 9.15.1(supports-color@10.0.0)
+      ws: 8.18.2
+      zod: 3.25.67
+      zod-to-json-schema: 3.24.5(zod@3.25.67)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - utf-8-validate
     dev: true
 
   /@googleapis/sqladmin@29.0.0:
@@ -4688,8 +4708,8 @@ packages:
       express-rate-limit: 7.5.0(express@5.1.0)
       pkce-challenge: 5.0.0
       raw-body: 3.0.0
-      zod: 3.25.64
-      zod-to-json-schema: 3.24.5(zod@3.25.64)
+      zod: 3.25.67
+      zod-to-json-schema: 3.24.5(zod@3.25.67)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -8733,7 +8753,7 @@ packages:
     dependencies:
       devtools-protocol: 0.0.1452169
       mitt: 3.0.1
-      zod: 3.25.64
+      zod: 3.25.67
     dev: true
 
   /ci-info@2.0.0:
@@ -11349,9 +11369,9 @@ packages:
       form-data: 4.0.3
       fs-extra: 10.1.0
       fuzzy: 0.1.3
-      gaxios: 6.7.1
+      gaxios: 6.7.1(supports-color@10.0.0)
       glob: 10.4.5
-      google-auth-library: 9.15.1
+      google-auth-library: 9.15.1(supports-color@10.0.0)
       ignore: 7.0.5
       js-yaml: 3.14.1
       jsonwebtoken: 9.0.2
@@ -11390,8 +11410,8 @@ packages:
       winston-transport: 4.9.0
       ws: 7.5.10
       yaml: 2.8.0
-      zod: 3.25.64
-      zod-to-json-schema: 3.24.5(zod@3.25.64)
+      zod: 3.25.67
+      zod-to-json-schema: 3.24.5(zod@3.25.67)
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -11663,7 +11683,7 @@ packages:
     engines: {node: '>= 0.6.0'}
     dev: true
 
-  /gaxios@6.7.1:
+  /gaxios@6.7.1(supports-color@10.0.0):
     resolution: {integrity: sha512-LDODD4TMYx7XXdpwxAVRAIAuB0bzv0s+ywFonY46k126qzQHT9ygyoa9tncmOiQmmDrik65UYsEkv3lbfqQ3yQ==, tarball: https://registry.npmjs.org/gaxios/-/gaxios-6.7.1.tgz}
     engines: {node: '>=14'}
     dependencies:
@@ -11688,11 +11708,11 @@ packages:
       - supports-color
     dev: true
 
-  /gcp-metadata@6.1.1:
+  /gcp-metadata@6.1.1(supports-color@10.0.0):
     resolution: {integrity: sha512-a4tiq7E0/5fTjxPAaH4jpjkSv/uCaU2p5KC6HVGrvl0cDjA8iBZv4vv1gyzlmK0ZUKqwpOyQMKzZQe3lTit77A==, tarball: https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-6.1.1.tgz}
     engines: {node: '>=14'}
     dependencies:
-      gaxios: 6.7.1
+      gaxios: 6.7.1(supports-color@10.0.0)
       google-logging-utils: 0.0.2
       json-bigint: 1.0.0
     transitivePeerDependencies:
@@ -11999,15 +12019,15 @@ packages:
       - supports-color
     dev: true
 
-  /google-auth-library@9.15.1:
+  /google-auth-library@9.15.1(supports-color@10.0.0):
     resolution: {integrity: sha512-Jb6Z0+nvECVz+2lzSMt9u98UsoakXxA2HGHMCxh+so3n90XgYWkq5dur19JAJV7ONiJY22yBTyJB1TSkvPq9Ng==, tarball: https://registry.npmjs.org/google-auth-library/-/google-auth-library-9.15.1.tgz}
     engines: {node: '>=14'}
     dependencies:
       base64-js: 1.5.1
       ecdsa-sig-formatter: 1.0.11
-      gaxios: 6.7.1
-      gcp-metadata: 6.1.1
-      gtoken: 7.1.0
+      gaxios: 6.7.1(supports-color@10.0.0)
+      gcp-metadata: 6.1.1(supports-color@10.0.0)
+      gtoken: 7.1.0(supports-color@10.0.0)
       jws: 4.0.0
     transitivePeerDependencies:
       - encoding
@@ -12023,7 +12043,7 @@ packages:
       '@types/long': 4.0.2
       abort-controller: 3.0.0
       duplexify: 4.1.3
-      google-auth-library: 9.15.1
+      google-auth-library: 9.15.1(supports-color@10.0.0)
       node-fetch: 2.7.0
       object-hash: 3.0.0
       proto3-json-serializer: 2.0.2
@@ -12073,8 +12093,8 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       extend: 3.0.2
-      gaxios: 6.7.1
-      google-auth-library: 9.15.1
+      gaxios: 6.7.1(supports-color@10.0.0)
+      google-auth-library: 9.15.1(supports-color@10.0.0)
       qs: 6.14.0
       url-template: 2.0.8
       uuid: 9.0.1
@@ -12121,11 +12141,11 @@ packages:
       '@grpc/grpc-js': 1.13.4
     dev: true
 
-  /gtoken@7.1.0:
+  /gtoken@7.1.0(supports-color@10.0.0):
     resolution: {integrity: sha512-pCcEwRi+TKpMlxAQObHDQ56KawURgyAf6jtIY046fJ5tIv3zDe/LEIubckAO8fj6JnAxLdmWkUfNyulQ2iKdEw==, tarball: https://registry.npmjs.org/gtoken/-/gtoken-7.1.0.tgz}
     engines: {node: '>=14.0.0'}
     dependencies:
-      gaxios: 6.7.1
+      gaxios: 6.7.1(supports-color@10.0.0)
       jws: 4.0.0
     transitivePeerDependencies:
       - encoding
@@ -21265,16 +21285,16 @@ packages:
       readable-stream: 4.7.0
     dev: true
 
-  /zod-to-json-schema@3.24.5(zod@3.25.64):
+  /zod-to-json-schema@3.24.5(zod@3.25.67):
     resolution: {integrity: sha512-/AuWwMP+YqiPbsJx5D6TfgRTc4kTLjsh5SOcd4bLsfUg2RcEXrFMJl1DGgdHy2aCfsIA/cr/1JM0xcB2GZji8g==, tarball: https://registry.npmjs.org/zod-to-json-schema/-/zod-to-json-schema-3.24.5.tgz}
     peerDependencies:
       zod: ^3.24.1
     dependencies:
-      zod: 3.25.64
+      zod: 3.25.67
     dev: true
 
-  /zod@3.25.64:
-    resolution: {integrity: sha512-hbP9FpSZf7pkS7hRVUrOjhwKJNyampPgtXKc3AN6DsWtoHsg2Sb4SQaS4Tcay380zSwd2VPo9G9180emBACp5g==, tarball: https://registry.npmjs.org/zod/-/zod-3.25.64.tgz}
+  /zod@3.25.67:
+    resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==, tarball: https://registry.npmjs.org/zod/-/zod-3.25.67.tgz}
     dev: true
 
   /zwitch@2.0.4:
@@ -21354,13 +21374,14 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/2299bd9528d66d65a514b56fb83f14809ded6dde:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/2299bd9528d66d65a514b56fb83f14809ded6dde}
+  github.com/angular/dev-infra-private-ng-dev-builds/c9b62e00819328fe530dd3ce3acad4042a34e00b:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c9b62e00819328fe530dd3ce3acad4042a34e00b}
     name: '@angular/ng-dev'
-    version: 0.0.0-14b8cefa508bef7170ab2d8418863625c82db038
+    version: 0.0.0-db18d7175d759fdfb3e40d363a1579621d1fcffd
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 8.0.0(supports-color@10.0.0)
+      '@google/genai': 1.6.0(supports-color@10.0.0)
       '@octokit/rest': 22.0.0
       '@types/semver': 7.7.0
       '@types/supports-color': 10.0.0
@@ -21372,6 +21393,11 @@ packages:
       typescript: 4.9.5
       which: 5.0.0
       yaml: 2.8.0
+    transitivePeerDependencies:
+      - '@modelcontextprotocol/sdk'
+      - bufferutil
+      - encoding
+      - utf-8-validate
     dev: true
 
   github.com/angular/domino/93e720f143d0296dd2726ffbcf4fc12283363a7b:
