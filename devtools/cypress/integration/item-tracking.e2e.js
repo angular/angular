@@ -6,29 +6,31 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+require('cypress-iframe');
+
 describe('Tracking items from application to component tree', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
   it('should have only one todo item on start', () => {
-    cy.enterIframe('#sample-app').then((getBody) => {
+    cy.enter('#sample-app').then((getBody) => {
       getBody().find('app-todo').contains('Buy milk');
     });
 
     cy.get('.tree-wrapper')
-      .find('ng-tree-node:contains("app-todo[TooltipDirective]")')
+      .find('.tree-node:contains("app-todo[TooltipDirective]")')
       .its('length')
       .should('eq', 2);
   });
 
   it('should be able to detect a new todo from user and add it to the tree', () => {
-    cy.enterIframe('#sample-app')
+    cy.enter('#sample-app')
       .then((getBody) => {
         getBody().find('input.new-todo').type('Buy cookies{enter}');
       })
       .then(() => {
-        cy.enterIframe('#sample-app').then((getBody) => {
+        cy.enter('#sample-app').then((getBody) => {
           getBody().find('app-todo').contains('Buy milk');
 
           getBody().find('app-todo').contains('Build something fun!');
@@ -37,7 +39,7 @@ describe('Tracking items from application to component tree', () => {
         });
       });
 
-    cy.get('.tree-wrapper ng-tree-node:contains("app-todo[TooltipDirective]")').should(
+    cy.get('.tree-wrapper .tree-node:contains("app-todo[TooltipDirective]")').should(
       'have.length',
       3,
     );

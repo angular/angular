@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+require('cypress-iframe');
+
 describe('edit properties of directive in the property view tab', () => {
   beforeEach(() => {
     cy.visit('/');
@@ -15,13 +17,13 @@ describe('edit properties of directive in the property view tab', () => {
     beforeEach(() => {
       // select todo node in component tree
       cy.get('.tree-wrapper')
-        .find('ng-tree-node:contains("app-todo[TooltipDirective]")')
+        .find('.tree-node:contains("app-todo[TooltipDirective]")')
         .first()
         .click({force: true});
     });
 
     it('should be able to enable editMode', () => {
-      cy.enterIframe('#sample-app').then((getBody) => {
+      cy.enter('#sample-app').then((getBody) => {
         getBody().find('app-todo input.edit').should('not.be.visible');
       });
 
@@ -34,38 +36,61 @@ describe('edit properties of directive in the property view tab', () => {
         .type('true')
         .type('{enter}');
 
-      cy.enterIframe('#sample-app').then((getBody) => {
+      cy.enter('#sample-app').then((getBody) => {
         getBody().find('app-todo input.edit').should('be.visible');
       });
     });
-  });
 
-  describe('edit title property', () => {
-    beforeEach(() => {
-      cy.get('.tree-wrapper')
-        .find('ng-tree-node:contains("app-todos")')
-        .first()
-        .click({force: true});
-    });
-
-    it('should change title in app when edited', () => {
-      cy.enterIframe('#sample-app').then((getBody) => {
-        getBody().find('#demo-app-title').contains('Angular Todo');
+    describe('edit todo property', () => {
+      beforeEach(() => {
+        // expand todo state
+        cy.get('.explorer-panel:contains("app-todo")')
+          .find('ng-property-view mat-tree-node:contains("todo")')
+          .click();
       });
 
-      // find title variable and run through edit logic
-      cy.get('.explorer-panel:contains("app-todos")')
-        .find('ng-property-view mat-tree-node:contains("title")')
-        .find('ng-property-editor .editor')
-        .click()
-        .find('.editor-input')
-        .clear()
-        .type('Hello World')
-        .type('{enter}');
+      it('should change todo label in app when edited', () => {
+        // check initial todo label
+        cy.enter('#sample-app').then((getBody) => {
+          getBody().find('app-todo').contains('Buy milk').its('length').should('eq', 1);
+        });
 
-      // assert that the page has been updated
-      cy.enterIframe('#sample-app').then((getBody) => {
-        getBody().find('#demo-app-title').contains('Hello World');
+        // find label variable and run through edit logic
+        cy.get('.explorer-panel:contains("app-todo")')
+          .find('ng-property-view mat-tree-node:contains("label")')
+          .find('ng-property-editor .editor')
+          .click()
+          .find('.editor-input')
+          .clear()
+          .type('Buy cookies')
+          .type('{enter}');
+
+        // assert that the page has been updated
+        cy.enter('#sample-app').then((getBody) => {
+          getBody().find('app-todo').contains('Buy cookies').its('length').should('eq', 1);
+        });
+      });
+
+      it('should change todo completed in app when edited', () => {
+        // check initial todo completed status
+        cy.enter('#sample-app').then((getBody) => {
+          getBody().find('app-todo li').not('.completed').its('length').should('eq', 2);
+        });
+
+        // find completed variable and run through edit logic
+        cy.get('.explorer-panel:contains("app-todo")')
+          .find('ng-property-view mat-tree-node:contains("completed")')
+          .find('ng-property-editor .editor')
+          .click()
+          .find('.editor-input')
+          .clear()
+          .type('true')
+          .type('{enter}');
+
+        // assert that the page has been updated
+        cy.enter('#sample-app').then((getBody) => {
+          getBody().find('app-todo li.completed').its('length').should('eq', 1);
+        });
       });
     });
   });
