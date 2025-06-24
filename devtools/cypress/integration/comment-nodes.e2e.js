@@ -8,7 +8,7 @@
 
 function showComments() {
   cy.get('#nav-buttons > button:nth-child(2)').click();
-  cy.get('.cdk-overlay-container mat-slide-toggle label:contains("Show comment nodes")').click();
+  cy.get('#mat-slide-toggle-3 > label > div').click();
 }
 
 describe('Comment nodes', () => {
@@ -17,14 +17,14 @@ describe('Comment nodes', () => {
   });
 
   it('should not find any comment nodes by default', () => {
-    const nodes = cy.$$('ng-tree-node:contains("#comment")');
+    const nodes = cy.$$('.tree-node:contains("#comment")');
     expect(nodes.length).to.eql(0);
   });
 
   it('should find comment nodes when the setting is enabled', () => {
     showComments();
     cy.get('.tree-wrapper')
-      .find('ng-tree-node:contains("#comment")')
+      .find('.tree-node:contains("#comment")')
       .its('length')
       .should('not.eq', 0);
   });

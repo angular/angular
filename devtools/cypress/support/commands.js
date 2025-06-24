@@ -6,25 +6,28 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-/**
- * Selects an Iframe and returns its body when it's done loading.
- * @param {string} selector - The selector for the iframe.
- * @returns {Function} A function that returns the wrapped body of the iframe.
- */
-function enterIframe(selector) {
-  return cy.get(selector, {log: false}).then({timeout: 30000}, async (frame) => {
-    const contentWindow = frame.prop('contentWindow');
-
-    while (
-      contentWindow.location.toString() === 'about:blank' ||
-      contentWindow.document.readyState !== 'complete'
-    ) {
-      await new Promise((resolve) => setTimeout(resolve));
-    }
-
-    // return the body of the iframe wrapped in cypress
-    return () => cy.wrap(contentWindow.document.body);
-  });
-}
-
-Cypress.Commands.add('enterIframe', enterIframe);
+// ***********************************************
+// This example commands.js shows you how to
+// create various custom commands and overwrite
+// existing commands.
+//
+// For more comprehensive examples of custom
+// commands please read more here:
+// https://on.cypress.io/custom-commands
+// ***********************************************
+//
+//
+// -- This is a parent command --
+// Cypress.Commands.add("login", (email, password) => { ... })
+//
+//
+// -- This is a child command --
+// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
+//
+//
+// -- This is a dual command --
+// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
+//
+//
+// -- This will overwrite an existing command --
+// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
