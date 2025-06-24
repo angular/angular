@@ -22,9 +22,9 @@ describe('regex validator', () => {
     );
 
     expect(f.name().errors()).toEqual([
-      jasmine.objectContaining({
+      {
         kind: 'regex',
-      }),
+      },
     ]);
   });
 
@@ -39,9 +39,9 @@ describe('regex validator', () => {
     );
 
     expect(f.name().errors()).toEqual([
-      jasmine.objectContaining({
+      {
         kind: 'custom',
-      }),
+      },
     ]);
   });
 
@@ -90,18 +90,18 @@ describe('regex validator', () => {
       );
 
       expect(f.name().errors()).toEqual([
-        jasmine.objectContaining({
+        {
           kind: 'regex',
-        }),
+        },
       ]);
 
       regexSignal.set(/p.*/);
       expect(f.name().errors()).toEqual([]);
       regexSignal.set(/meow/);
       expect(f.name().errors()).toEqual([
-        jasmine.objectContaining({
+        {
           kind: 'regex',
-        }),
+        },
       ]);
 
       regexSignal.set(undefined);

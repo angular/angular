@@ -80,3 +80,8 @@ export const PATTERN = new MetadataKey<(string | undefined)[]>(
   () => [],
   (prev, next) => [...prev, ...next],
 );
+
+export const REGEX = new MetadataKey<(RegExp | undefined)[]>(
+  () => [],
+  (prev, next) => [...prev, ...next],
+);

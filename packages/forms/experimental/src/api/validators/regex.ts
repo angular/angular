@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {metadata, validate} from '../logic';
-import {PATTERN, REGEX} from '../metadata';
+import {REGEX} from '../metadata';
 import {FieldPath, LogicFn} from '../types';
 import {BaseValidatorConfig} from './types';
 
@@ -36,7 +36,7 @@ export function regex(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'regex', regex};
+        return {kind: 'regex'};
       }
     }
 
