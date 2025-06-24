@@ -125,7 +125,7 @@ function getEntriesFromMembers(entry: DocEntry): string[] {
 }
 
 function hasMembers(entry: DocEntry): entry is InterfaceEntry | ClassEntry {
-  return 'members' in entry;
+  return 'members' in entry && Array.isArray(entry.members);
 }
 
 main();
