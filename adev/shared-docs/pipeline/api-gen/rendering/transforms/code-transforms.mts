@@ -12,6 +12,7 @@ import {
   FunctionSignatureMetadata,
   GenericEntry,
   MemberEntry,
+  DecoratorEntry,
   MemberTags,
   ParameterEntry,
   PropertyEntry,
@@ -34,11 +35,20 @@ import {
 import {CodeLineRenderable} from '../entities/renderables.mjs';
 import {HasModuleName, HasRenderableToc} from '../entities/traits.mjs';
 import {getModuleName} from '../symbol-context.mjs';
-import {codeToHtml, replaceKeywordFromShikiHtml} from '../shiki/shiki.mjs';
+import {
+  codeToHtml,
+  insertParenthesesForDecoratorInShikiHtml,
+  replaceKeywordFromShikiHtml,
+} from '../shiki/shiki.mjs';
 
 import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transforms.mjs';
 import {getLinkToModule} from './url-transforms.mjs';
 import {formatJs} from './format-code.mjs';
+
+const INDENT = '  ';
+const SPACE = ' ';
+const LN_BREAK = '\n';
+const INDENTED_NEW_LINE = `${LN_BREAK}${INDENT}`;
 
 // Allows to generate links for code lines.
 interface CodeTableOfContentsData {
@@ -71,7 +81,7 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
 
   // For now we only format functions with prettier
   let formattedCode: string | null = null;
-  if (entry.entryType === EntryType.Function) {
+  if (entry.entryType === EntryType.Function || entry.entryType === EntryType.Decorator) {
     formattedCode = await formatJs(metadata.contents);
   }
 
@@ -81,11 +91,22 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
     // Shiki requires a keyword for correct formating of Decorators
     // We use an interface and then replace it with a '@'
     codeWithSyntaxHighlighting = replaceKeywordFromShikiHtml(
-      'interface',
+      'class|function',
       codeWithSyntaxHighlighting,
       '@',
     );
+    // if (entry.entryType === EntryType.InterfaceLikeDecorator) {
+    // We need to add parentheses around the curly braces for this kind of decorators
+    codeWithSyntaxHighlighting = insertParenthesesForDecoratorInShikiHtml(
+      codeWithSyntaxHighlighting,
+    );
+    // }
   }
+
+  // Note: Don't expect enum value in signatures to be linked correctly
+  // as shiki already splits them into separate span blocks.
+  // Only the enum itself will recieve a link
+  codeWithSyntaxHighlighting = addApiLinksToHtml(codeWithSyntaxHighlighting);
 
   // shiki returns the lines wrapped by 2 node : 1 pre node, 1 code node.
   // As leveraging jsdom isn't trivial here, we rely on a regex to extract the line nodes
@@ -104,12 +125,7 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   const insideCode = match[2];
   const afterCode = match[3];
 
-  // Note: Don't expect enum value in signatures to be linked correctly
-  // as skihi already splits them into separate span blocks.
-  // Only the enum itself will recieve a link
-  const codeWithLinks = addApiLinksToHtml(insideCode);
-
-  const lines = splitLines(codeWithLinks);
+  const lines = splitLines(insideCode);
   const groups = groupCodeLines(lines, metadata, entry);
 
   return {
@@ -142,17 +158,27 @@ function groupCodeLines(lines: string[], metadata: CodeTableOfContentsData, entr
   }, new Map<string, CodeLineRenderable[]>());
 }
 
-export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
+function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   const isDeprecated = isDeprecatedEntry(entry);
   const deprecatedLineNumbers = isDeprecated ? [0] : [];
 
-  if (isClassEntry(entry)) {
-    const members = filterLifecycleMethods(mergeGettersAndSetters(entry.members));
-    return getCodeTocData(members, true, isDeprecated);
+  if (isClassEntry(entry) || (isDecoratorEntry(entry) && isClassLikeDecorator(entry))) {
+    const members = filterLifecycleMethods(mergeGettersAndSetters(entry.members!));
+    return getCodeTocData(members, isDeprecated);
   }
 
-  if (isDecoratorEntry(entry)) {
-    return getCodeTocData(entry.members, true, isDeprecated);
+  if (isDecoratorEntry(entry) && !isClassLikeDecorator(entry)) {
+    return {
+      contents: entry
+        .signatures!.map((sig) =>
+          sig.parameters
+            .map((param) => `${param.name}${param.isOptional ? '?' : ''}: ${param.type}`)
+            .join(', '),
+        )
+        .join(LN_BREAK),
+      codeLineNumbersWithIdentifiers: new Map<number, string>(),
+      deprecatedLineNumbers: [],
+    };
   }
 
   if (isConstantEntry(entry)) {
@@ -164,17 +190,18 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   }
 
   if (isEnumEntry(entry)) {
-    return getCodeTocData(entry.members, true, isDeprecated);
+    return getCodeTocData(entry.members, isDeprecated);
   }
 
   if (isInterfaceEntry(entry)) {
-    return getCodeTocData(mergeGettersAndSetters(entry.members), true, isDeprecated);
+    return getCodeTocData(mergeGettersAndSetters(entry.members), isDeprecated);
   }
 
   if (isFunctionEntry(entry)) {
     const codeLineNumbersWithIdentifiers = new Map<number, string>();
     const hasSingleSignature = entry.signatures.length === 1;
 
+    // Specifically handling the case of overloaded functions
     if (entry.signatures.length > 0) {
       const initialMetadata: CodeTableOfContentsData = {
         contents: '',
@@ -186,7 +213,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
         (acc: CodeTableOfContentsData, curr: FunctionSignatureMetadata, index: number) => {
           const lineNumber = index;
           acc.codeLineNumbersWithIdentifiers.set(lineNumber, `${curr.name}_${index}`);
-          acc.contents += getMethodCodeLine(curr, [], hasSingleSignature, true);
+          acc.contents += getFunctionCodeLine(curr, []);
 
           // We don't want to add line break after the last item
           if (!hasSingleSignature && index < entry.signatures.length - 1) {
@@ -203,8 +230,7 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
     }
 
     return {
-      // It is important to add the function keyword as shiki will only highlight valid ts
-      contents: `function ${getMethodCodeLine(entry.implementation, [], true)}`,
+      contents: getMethodCodeLine(entry.implementation, []),
       codeLineNumbersWithIdentifiers,
       deprecatedLineNumbers,
     };
@@ -281,25 +307,20 @@ export function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   };
 }
 
+// TODO(matthieu): This whole part should be refactored to rely on a formatter (like prettier)
+// to handle formatting (See also #59211)
 /** Generate code ToC data for list of members. */
-function getCodeTocData(
-  members: MemberEntry[],
-  hasPrefixLine: boolean,
-  isDeprecated: boolean,
-): CodeTableOfContentsData {
+function getCodeTocData(members: MemberEntry[], isDeprecated: boolean): CodeTableOfContentsData {
   const initialMetadata: CodeTableOfContentsData = {
     contents: '',
     codeLineNumbersWithIdentifiers: new Map<number, string>(),
     deprecatedLineNumbers: isDeprecated ? [0] : [],
   };
-  // In case when hasPrefixLine is true we should take it into account when we're generating
-  // `codeLineNumbersWithIdentifiers` below.
-  const skip = !!hasPrefixLine ? 1 : 0;
-  let lineNumber = skip;
+  let lineNumber = 1;
 
   return members.reduce((acc: CodeTableOfContentsData, curr: MemberEntry, index: number) => {
     const setTocData = (entry: DocEntry | MemberEntry, content: string) => {
-      acc.contents += `  ${content.trim()}\n`;
+      acc.contents += `${INDENTED_NEW_LINE}${content}`;
       acc.codeLineNumbersWithIdentifiers.set(lineNumber, entry.name);
       if (isDeprecatedEntry(entry)) {
         acc.deprecatedLineNumbers.push(lineNumber);
@@ -309,14 +330,17 @@ function getCodeTocData(
     };
 
     if (isClassMethodEntry(curr)) {
+      // class methods
       if (curr.signatures.length > 0) {
         curr.signatures.forEach((signature) => {
           setTocData(signature, getMethodCodeLine(signature, curr.memberTags));
         });
       } else {
+        // Constructors, methods on interfaces, Decorators
         setTocData(curr, getMethodCodeLine(curr.implementation, curr.memberTags));
       }
     } else {
+      // class props
       setTocData(curr, getCodeLine(curr));
     }
     return acc;
@@ -337,24 +361,21 @@ function getPropertyCodeLine(member: PropertyEntry): string {
   const isOptional = isOptionalMember(member);
   const tags = getTags(member);
 
-  return `${tags.join(' ')} ${member.name}${markOptional(isOptional)}: ${member.type};`;
+  return `${tags.join(SPACE)}${tags.length ? SPACE : ''}${member.name}${markOptional(isOptional)}: ${member.type};`;
 }
 
 /** Map method entry to text */
-function getMethodCodeLine(
-  member: FunctionSignatureMetadata,
-  memberTags: MemberTags[] = [],
-  displayParamsInNewLines: boolean = false,
-  isFunction: boolean = false,
-): string {
+function getMethodCodeLine(member: FunctionSignatureMetadata, memberTags: MemberTags[]): string {
   const generics = makeGenericsText(member.generics);
+  return (
+    `${memberTags.join(SPACE)}${memberTags.length ? ' ' : ''}${member.name}${generics}(` +
+    `${member.params.map((param) => mapParamEntry(param)).join(`, `)}` +
+    `): ${member.returnType};`
+  );
+}
 
-  displayParamsInNewLines &&= member.params.length > 0;
-  return `${isFunction ? 'function' : ''}${memberTags.join(' ')} ${member.name}${generics}(${displayParamsInNewLines ? '\n  ' : ''}${member.params
-    .map((param) => mapParamEntry(param))
-    .join(`,${displayParamsInNewLines ? '\n  ' : ' '}`)}${
-    displayParamsInNewLines ? '\n' : ''
-  }): ${member.returnType};`.trim();
+function getFunctionCodeLine(member: FunctionSignatureMetadata, memberTags: MemberTags[]) {
+  return `function ${getMethodCodeLine(member, memberTags).trim()}`;
 }
 
 function mapParamEntry(entry: ParameterEntry) {
@@ -366,13 +387,13 @@ function mapParamEntry(entry: ParameterEntry) {
 function getGetterCodeLine(member: PropertyEntry): string {
   const tags = getTags(member);
 
-  return `${tags.join(' ')} get ${member.name}(): ${member.type};`;
+  return `${tags.join(SPACE)} get ${member.name}(): ${member.type};`;
 }
 
 function getSetterCodeLine(member: PropertyEntry): string {
   const tags = getTags(member);
 
-  return `${tags.join(' ')} set ${member.name}(value: ${member.type});`;
+  return `${tags.join(SPACE)} set ${member.name}(value: ${member.type});`;
 }
 
 function markOptional(isOptional: boolean): string {
@@ -455,33 +476,40 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
     firstLine: string,
     lastLine: string,
   ) => {
-    data.contents = `${firstLine}\n${data.contents}${lastLine}`;
+    data.contents = `${firstLine}${data.contents}${lastLine}`;
   };
 
   if (isClassEntry(entry) || isInterfaceEntry(entry)) {
     const generics = makeGenericsText(entry.generics);
     const extendsStr = entry.extends ? ` extends ${entry.extends}` : '';
-    // TODO: remove the ? when we distinguish Class & Decorator entries
     const implementsStr =
-      entry.implements?.length > 0 ? ` implements ${entry.implements.join(' ,')}` : '';
+      entry.implements.length > 0 ? ` implements ${entry.implements.join(' ,')}` : '';
 
     const signature = `${entry.name}${generics}${extendsStr}${implementsStr}`;
     if (isClassEntry(entry)) {
       const abstractPrefix = entry.isAbstract ? 'abstract ' : '';
-      appendFirstAndLastLines(codeTocData, `${abstractPrefix}class ${signature} {`, `}`);
+      appendFirstAndLastLines(codeTocData, `${abstractPrefix}class ${signature} {`, `\n}`);
     }
 
     if (isInterfaceEntry(entry)) {
-      appendFirstAndLastLines(codeTocData, `interface ${signature} {`, `}`);
+      appendFirstAndLastLines(codeTocData, `interface ${signature} {`, `\n}`);
     }
   }
 
   if (isEnumEntry(entry)) {
-    appendFirstAndLastLines(codeTocData, `enum ${entry.name} {`, `}`);
+    appendFirstAndLastLines(codeTocData, `enum ${entry.name} {`, `\n}`);
   }
-
   if (isDecoratorEntry(entry)) {
-    appendFirstAndLastLines(codeTocData, `interface ${entry.name} ({`, `})`);
+    if (isClassLikeDecorator(entry)) {
+      appendFirstAndLastLines(codeTocData, `class ${entry.name} {`, `\n}`);
+    } else {
+      let lines = splitLines(codeTocData.contents);
+      if (lines.length === 0) {
+        codeTocData.contents = `function ${entry.name}()`;
+      } else {
+        codeTocData.contents = lines.map((line) => `function ${entry.name}(${line})`).join('\n');
+      }
+    }
   }
 }
 
@@ -497,11 +525,11 @@ export function addApiLinksToHtml(htmlString: string): string {
     //                                         The captured content ==>  vvvvvvvv
     /(?<!<a[^>]*>)(<(?:(?:span)|(?:code))(?!\sdata-skip-anchor)[^>]*>\s*)([^<]*?)(\s*<\/(?:span|code)>)/g,
     (type: string, span1: string, potentialSymbolName: string, span2: string) => {
-      let [symbol, subSymbol] = potentialSymbolName.split(/(?:#|\.)/) as [string, string?];
+      const [symbol, subSymbol] = potentialSymbolName.split(/(?:#|\.)/) as [string, string?];
 
       // mySymbol() => mySymbol
       const symbolWithoutInvocation = symbol.replace(/\([^)]*\);?/g, '');
-      const moduleName = getModuleName(symbolWithoutInvocation)!;
+      const moduleName = getModuleName(symbolWithoutInvocation);
 
       if (moduleName) {
         return `${span1}<a href="${getLinkToModule(moduleName, symbol, subSymbol)}">${potentialSymbolName}</a>${span2}`;
@@ -554,4 +582,8 @@ export function makeGenericsText(generics: GenericEntry[] | undefined): string {
   parts.push('>');
 
   return parts.join('');
+}
+
+function isClassLikeDecorator(entry: DecoratorEntry): boolean {
+  return !!entry.members;
 }
