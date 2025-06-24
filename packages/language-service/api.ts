@@ -110,6 +110,9 @@ export interface NgLanguageService extends ts.LanguageService {
   ): Promise<ApplyRefactoringResult | undefined>;
 
   hasCodeFixesForErrorCode(errorCode: number): boolean;
+
+  getTokenTypeFromClassification(classification: number): number | undefined;
+  getTokenModifierFromClassification(classification: number): number;
 }
 
 export function isNgLanguageService(
