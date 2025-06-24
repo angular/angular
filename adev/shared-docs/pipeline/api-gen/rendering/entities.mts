@@ -120,7 +120,11 @@ export interface EnumEntry extends DocEntry {
 /** Documentation entity for an Angular decorator. */
 export interface DecoratorEntry extends DocEntry {
   decoratorType: DecoratorType;
-  members: PropertyEntry[];
+  signatures?: {
+    parameters: ParameterEntry[];
+    jsdocTags: JsDocTagEntry[];
+  }[];
+  members: MemberEntry[];
 }
 
 /** Documentation entity for an Angular directives and components. */
