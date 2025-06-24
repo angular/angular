@@ -8,11 +8,7 @@
 
 import {Fragment, h} from 'preact';
 import {PipeEntry} from '../entities.mjs';
-import {
-  ClassEntryRenderable,
-  DecoratorEntryRenderable,
-  PipeEntryRenderable,
-} from '../entities/renderables.mjs';
+import {ClassEntryRenderable, PipeEntryRenderable} from '../entities/renderables.mjs';
 import {ClassMemberList} from './class-member-list';
 import {HeaderApi} from './header-api';
 import {
@@ -29,9 +25,7 @@ import {RawHtml} from './raw-html';
 import {DeprecationWarning} from './deprecation-warning';
 
 /** Component to render a class API reference document. */
-export function ClassReference(
-  entry: ClassEntryRenderable | DecoratorEntryRenderable | PipeEntryRenderable,
-) {
+export function ClassReference(entry: ClassEntryRenderable | PipeEntryRenderable) {
   return (
     <div className={API_REFERENCE_CONTAINER}>
       <HeaderApi entry={entry} />
