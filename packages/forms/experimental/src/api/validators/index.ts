@@ -14,3 +14,4 @@ export {required} from './required';
 export {requiredTrue} from './required_true';
 export {maxLength} from './max_length';
 export {minLength} from './min_length';
+export {regex} from './regex';
