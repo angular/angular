@@ -11,9 +11,9 @@
     "@externs/nodejs": "^1.5.0",
     "@types/node": "^10.9.4",
     "domino": "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b",
-    "jest": "^29.0",
-    "jest-environment-jsdom": "^29.0.3",
-    "jest-environment-node": "^29.0.3",
+    "jest": "^30.0.0",
+    "jest-environment-jsdom": "^30.0.0",
+    "jest-environment-node": "^30.0.0",
     "mocha": "^11.0.0",
     "mock-require": "3.0.3",
     "tslib": "^2.3.0",
@@ -21,8 +21,8 @@
   },
   "scripts": {
     "electrontest": "cd test/extra && node electron.js",
-    "jest:test": "jest --config ./test/jest/jest.config.js ./test/jest/jest.spec.js",
-    "jest:nodetest": "jest --config ./test/jest/jest.node.config.js ./test/jest/jest.spec.js",
+    "jest:test": "jest --config ./test/jest/jest.config.js",
+    "jest:nodetest": "jest --config ./test/jest/jest.node.config.js",
     "vitest:test": "vitest ./test/vitest/vitest.spec.js",
     "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs"
   },
