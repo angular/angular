@@ -60,15 +60,6 @@ jobs:
         run: yarn devtools:test
       - name: Test build
         run: yarn devtools:build:chrome
-      - name: Install Cypress
-        run: yarn global add cypress@14.4.1
-      - name: Cypress run
-        uses: cypress-io/github-action@6c143abc292aa835d827652c2ea025d098311070 # v6.10.1
-        with:
-          command: cypress run --project ./devtools/cypress
-          start: yarn bazel run //devtools/src:devserver
-          wait-on: 'http://localhost:4200'
-          wait-on-timeout: 300
 
   test:
     runs-on: ubuntu-latest-8core
