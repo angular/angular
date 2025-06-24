@@ -778,7 +778,6 @@
       "stringifyForError",
       "subscribeOn",
       "syncViewWithBlueprint",
-      "tap",
       "throwCyclicDependencyError",
       "throwError",
       "throwInvalidWriteToSignalErrorFn",
