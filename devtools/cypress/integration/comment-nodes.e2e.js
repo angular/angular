@@ -7,7 +7,7 @@
  */
 
 function showComments() {
-  cy.get('#nav-buttons > button:nth-child(2)').click();
+  cy.get('#main-toolbar > .tools > button:nth-child(2)').click();
   cy.get('#mat-slide-toggle-3 > label > div').click();
 }
 

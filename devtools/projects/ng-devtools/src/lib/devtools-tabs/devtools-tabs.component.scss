@@ -12,35 +12,32 @@
   height: calc(100% - 31px);
 }
 
-nav {
+#main-toolbar {
   border-bottom: 1px solid var(--color-separator);
-
-  .nav-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-  }
-}
-
-#nav-buttons {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 
-  button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    opacity: 0.8;
-    color: var(--secondary-contrast);
+  .tools {
+    display: flex;
 
-    &:active {
-      opacity: 1;
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      opacity: 0.8;
+      color: var(--secondary-contrast);
+
+      &:active {
+        opacity: 1;
+      }
+    }
+
+    .inspector-active {
+      color: var(--blue-02) !important;
     }
   }
-}
-
-.inspector-active {
-  color: var(--blue-02) !important;
 }
 
 #app-angular-version {
