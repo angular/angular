@@ -49,7 +49,7 @@ import {
 } from './utils/ts_utils';
 import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './utils';
 import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
-import {getClassificationsForTemplate} from './semantic_tokens';
+import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
@@ -361,6 +361,17 @@ export class LanguageService {
 
       return getClassificationsForTemplate(compiler, typeCheckInfo, span);
     }
+  }
+
+  getTokenTypeFromClassification(classification: number): number | undefined {
+    if (classification > TokenEncodingConsts.modifierMask) {
+      return (classification >> TokenEncodingConsts.typeOffset) - 1;
+    }
+    return undefined;
+  }
+
+  getTokenModifierFromClassification(classification: number) {
+    return classification & TokenEncodingConsts.modifierMask;
   }
 
   getCompletionsAtPosition(

@@ -149,6 +149,13 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     }
   }
 
+  function getTokenTypeFromClassification(classification: number): number | undefined {
+    return ngLS.getTokenTypeFromClassification(classification);
+  }
+  function getTokenModifierFromClassification(classification: number): number {
+    return ngLS.getTokenModifierFromClassification(classification);
+  }
+
   function getCompletionsAtPosition(
     fileName: string,
     position: number,
@@ -371,6 +378,8 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     findRenameLocations,
     getRenameInfo,
     getEncodedSemanticClassifications,
+    getTokenTypeFromClassification,
+    getTokenModifierFromClassification,
     getCompletionsAtPosition,
     getCompletionEntryDetails,
     getCompletionEntrySymbol,
