@@ -10,7 +10,7 @@ import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {REGEX, form, regex} from '../../../public_api';
 
-fdescribe('regex validator', () => {
+describe('regex validator', () => {
   it('validates whether a value matches the regex', () => {
     const cat = signal({name: 'pelmeni-the-cat'});
     const f = form(
