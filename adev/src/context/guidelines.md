@@ -99,3 +99,16 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Routing
+- Use `provideRouter()` with standalone components instead of RouterModule.forRoot()
+- Implement lazy loading using loadComponent for feature routes and standalone components
+- Use functional route guards (`CanActivateFn`, `CanDeactivateFn`) instead of class-based guards
+- Configure preloading strategies:
+  - Use NoPreloading as default (conserves bandwidth)
+  - Implement custom strategies for critical routes only
+- Structure routes hierarchically with clear parent-child relationships
+- Keep your routing configuration clean and maintainable by separating routes into their own files, especially for different features.
+- Define wildcard routes (`**`) for 404 handling when needed
+- Use route resolvers to pre-fetch critical data before component activation
+- Implement redirect patterns using `RedirectCommand`
