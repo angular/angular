@@ -131,6 +131,7 @@ groups:
         - atscott
         - crisbeto
         - devversion
+        - thePunderWoman
         - kirjs
         - JoostK
         - mmalerba
@@ -218,7 +219,17 @@ groups:
         ])
     reviewers:
       users:
-        - JiaLiPassion
+        - ~JiaLiPassion
+        - ~jelbourn
+        - alxhub
+        - AndrewKushnir
+        - atscott
+        - crisbeto
+        - devversion
+        - kirjs
+        - thePunderWoman
+        - pkozlowski-opensource
+        - mmalerba
 
   # =========================================================
   #  Tooling: Compiler API shared with Angular CLI
