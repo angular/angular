@@ -1,3 +1,43 @@
+<a name="20.1.0-next.3"></a>
+# 20.1.0-next.3 (2025-06-25)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0dcf230d52](https://github.com/angular/angular/commit/0dcf230d52694e6d3d6e55d6e675d55f9cf236bc) | feat | add support for new binary assignment operators ([#62064](https://github.com/angular/angular/pull/62064)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ed5062a91c](https://github.com/angular/angular/commit/ed5062a91cbd96c078736cc354925de15496aa57) | fix | add suggestion when pipe is missing ([#62146](https://github.com/angular/angular/pull/62146)) |
+| [d25a6a0120](https://github.com/angular/angular/commit/d25a6a0120b111f3ddbd701d5a67a8baefd2ca0e) | fix | handle initializer APIs wrapped in type casts ([#62203](https://github.com/angular/angular/pull/62203)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [737b35b684](https://github.com/angular/angular/commit/737b35b684663bb641939f05ae12fa11b3395159) | feat | Add `destroyed` property to `EnvironmentInjector` ([#61951](https://github.com/angular/angular/pull/61951)) |
+| [36a193139a](https://github.com/angular/angular/commit/36a193139ac02ee619a26445669b7c253f33ebb8) | fix | allow to set a resource in an error state ([#62253](https://github.com/angular/angular/pull/62253)) |
+| [c4dd258658](https://github.com/angular/angular/commit/c4dd258658fc5e93a83c0eae13fbd8768e7b6619) | fix | avoid injecting `ErrorHandler` from a destroyed injector ([#61886](https://github.com/angular/angular/pull/61886)) |
+| [3eee19d892](https://github.com/angular/angular/commit/3eee19d8926d306c7dab238e7d32c8c39bfa7a57) | fix | unable to retrieve defer blocks in tests when component injects ViewContainerRef ([#62156](https://github.com/angular/angular/pull/62156)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73269cf5ce](https://github.com/angular/angular/commit/73269cf5ceb4c32473a81a101a79decd06cfe274) | feat | add keepalive support for fetch requests in httpResource ([#61833](https://github.com/angular/angular/pull/61833)) |
+| [9791ab1b6f](https://github.com/angular/angular/commit/9791ab1b6f8694ada6a0e359003243d89d6c7c97) | feat | Add support for fetch request cache and priority options ([#61766](https://github.com/angular/angular/pull/61766)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [20c1f991e6](https://github.com/angular/angular/commit/20c1f991e63b8fc3023a302964d0438bfbfba8f0) | feat | add semantic tokens for templates ([#60260](https://github.com/angular/angular/pull/60260)) |
+| [5d2e85920e](https://github.com/angular/angular/commit/5d2e85920e714560e8d06bfb9c41d9312eeaae3b) | feat | support to fix missing required inputs diagnostic ([#50911](https://github.com/angular/angular/pull/50911)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9833d9ea47](https://github.com/angular/angular/commit/9833d9ea47b717293c9df0d8a5c285a3c4ad35d0) | feat | Run `loadComponent` and `loadChildren` functions in the route's injection context ([#62133](https://github.com/angular/angular/pull/62133)) |
+| [7600bec71d](https://github.com/angular/angular/commit/7600bec71d65366f5eaed94a54d6b848e0a670b5) | fix | handle scrollRestoration error in restricted environments ([#62186](https://github.com/angular/angular/pull/62186)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [900cd37f68](https://github.com/angular/angular/commit/900cd37f68c0beca0f19ccba2e3ccd4c34bdab91) | fix | Make zoneless work with hybrid apps ([#61660](https://github.com/angular/angular/pull/61660)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.5"></a>
 # 20.0.5 (2025-06-25)
 ### compiler-cli
