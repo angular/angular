@@ -7,16 +7,94 @@
  */
 
 import {DevToolsNode, SerializedInjector} from '../../../../../protocol';
-
 import {
-  InjectorTreeD3Node,
-  InjectorTreeNode,
-} from '../dependency-injection/injector-tree-visualizer';
+  SvgD3Link,
+  SvgD3Node,
+  TreeD3Node,
+  TreeNode,
+  TreeVisualizer,
+} from '../../shared/tree-visualizer-host/tree-visualizer';
+
+// Types
 
 export interface InjectorPath {
   node: DevToolsNode;
   path: SerializedInjector[];
 }
+
+export type InjectorTreeVisualizer = TreeVisualizer<InjectorTreeNode>;
+
+export interface InjectorTreeNode extends TreeNode {
+  injector: SerializedInjector;
+  children: InjectorTreeNode[];
+}
+
+export type InjectorTreeD3Node = TreeD3Node<InjectorTreeNode>;
+
+// Consts
+
+const ANGULAR_DIRECTIVES = [
+  'NgClass',
+  'NgComponentOutlet',
+  'NgFor',
+  'NgForOf',
+  'NgIf',
+  'NgOptimizedImage',
+  'NgPlural',
+  'NgPluralCase',
+  'NgStyle',
+  'NgSwitch',
+  'NgSwitchCase',
+  'NgSwitchDefault',
+  'NgTemplateOutlet',
+  'AbstractFormGroupDirective',
+  'CheckboxControlValueAccessor',
+  'CheckboxRequiredValidator',
+  'DefaultValueAccessor',
+  'EmailValidator',
+  'FormArrayName',
+  'FormControlDirective',
+  'FormControlName',
+  'FormGroupDirective',
+  'FormGroupName',
+  'MaxLengthValidator',
+  'MaxValidator',
+  'MinLengthValidator',
+  'MinValidator',
+  'NgControlStatus',
+  'NgControlStatusGroup',
+  'NgForm',
+  'NgModel',
+  'NgModelGroup',
+  'NgSelectOption',
+  'NumberValueAccessor',
+  'PatternValidator',
+  'RadioControlValueAccessor',
+  'RangeValueAccessor',
+  'RequiredValidator',
+  'SelectControlValueAccessor',
+  'SelectMultipleControlValueAccessor',
+  'RouterLink',
+  'RouterLinkActive',
+  'RouterLinkWithHref',
+  'RouterOutlet',
+  'UpgradeComponent',
+];
+
+const IGNORED_ANGULAR_INJECTORS = new Set([
+  'Null Injector',
+  ...ANGULAR_DIRECTIVES,
+  ...ANGULAR_DIRECTIVES.map((directive) => `_${directive}`),
+]);
+
+const INJECTOR_TYPE_CLASS_MAP = new Map<SerializedInjector['type'], string>([
+  ['imported-module', 'node-imported-module'],
+  ['environment', 'node-environment'],
+  ['element', 'node-element'],
+  ['null', 'node-null'],
+]);
+
+// Functions
 
 export function getInjectorIdsToRootFromNode(node: InjectorTreeD3Node): string[] {
   const ids: string[] = [];
@@ -71,8 +149,9 @@ export function transformInjectorResolutionPathsIntoTree(
         continue;
       }
 
-      const next = {
-        injector: injector,
+      const next: InjectorTreeNode = {
+        label: injector.name || '',
+        injector,
         children: [],
       };
       next.injector.node = injectorIdToNode.get(next.injector.id);
@@ -81,12 +160,11 @@ export function transformInjectorResolutionPathsIntoTree(
     }
   }
 
-  const hiddenRoot = {
+  return {
+    label: '',
     injector: {name: '', type: 'hidden', id: 'N/A'},
     children: injectorTree,
   };
-
-  return hiddenRoot as any;
 }
 
 export function grabInjectorPathsFromDirectiveForest(
@@ -160,60 +238,6 @@ export function splitInjectorPathsIntoElementAndEnvironmentPaths(injectorPaths: 
   };
 }
 
-const ANGULAR_DIRECTIVES = [
-  'NgClass',
-  'NgComponentOutlet',
-  'NgFor',
-  'NgForOf',
-  'NgIf',
-  'NgOptimizedImage',
-  'NgPlural',
-  'NgPluralCase',
-  'NgStyle',
-  'NgSwitch',
-  'NgSwitchCase',
-  'NgSwitchDefault',
-  'NgTemplateOutlet',
-  'AbstractFormGroupDirective',
-  'CheckboxControlValueAccessor',
-  'CheckboxRequiredValidator',
-  'DefaultValueAccessor',
-  'EmailValidator',
-  'FormArrayName',
-  'FormControlDirective',
-  'FormControlName',
-  'FormGroupDirective',
-  'FormGroupName',
-  'MaxLengthValidator',
-  'MaxValidator',
-  'MinLengthValidator',
-  'MinValidator',
-  'NgControlStatus',
-  'NgControlStatusGroup',
-  'NgForm',
-  'NgModel',
-  'NgModelGroup',
-  'NgSelectOption',
-  'NumberValueAccessor',
-  'PatternValidator',
-  'RadioControlValueAccessor',
-  'RangeValueAccessor',
-  'RequiredValidator',
-  'SelectControlValueAccessor',
-  'SelectMultipleControlValueAccessor',
-  'RouterLink',
-  'RouterLinkActive',
-  'RouterLinkWithHref',
-  'RouterOutlet',
-  'UpgradeComponent',
-];
-
-const ignoredAngularInjectors = new Set([
-  'Null Injector',
-  ...ANGULAR_DIRECTIVES,
-  ...ANGULAR_DIRECTIVES.map((directive) => `_${directive}`),
-]);
-
 export function filterOutInjectorsWithNoProviders(injectorPaths: InjectorPath[]): InjectorPath[] {
   for (const injectorPath of injectorPaths) {
     injectorPath.path = injectorPath.path.filter(
@@ -226,6 +250,43 @@ export function filterOutInjectorsWithNoProviders(injectorPaths: InjectorPath[])
 
 export function filterOutAngularInjectors(injectorPaths: InjectorPath[]): InjectorPath[] {
   return injectorPaths.map(({node, path}) => {
-    return {node, path: path.filter((injector) => !ignoredAngularInjectors.has(injector.name))};
+    return {node, path: path.filter((injector) => !IGNORED_ANGULAR_INJECTORS.has(injector.name))};
   });
+}
+
+export function d3InjectorTreeLinkModifier(link: SvgD3Link<InjectorTreeNode>) {
+  link
+    .attr('hidden', (node: InjectorTreeD3Node) => {
+      const parentId = node.parent?.data.injector.id;
+      return parentId === 'N/A' ? 'true' : null;
+    })
+    .attr('data-id', (node: InjectorTreeD3Node) => {
+      const from = node.data.injector.id;
+      const to = node.parent?.data.injector.id;
+
+      if (from && to) {
+        return `${from}-to-${to}`;
+      }
+      return '';
+    });
+}
+
+export function d3InjectorTreeNodeModifier(d3Node: SvgD3Node<InjectorTreeNode>) {
+  d3Node
+    .attr('class', (node: InjectorTreeD3Node) => {
+      return [d3Node.attr('class'), INJECTOR_TYPE_CLASS_MAP.get(node.data.injector.type) ?? '']
+        .filter((c) => !!c)
+        .join(' ');
+    })
+    .attr('hidden', (node: InjectorTreeD3Node) => (node.data.injector.id === 'N/A' ? 'true' : null))
+    .attr('data-id', (node: InjectorTreeD3Node) => {
+      return node.data.injector.id;
+    })
+    .attr('data-component-id', (node: InjectorTreeD3Node) => {
+      if (node.data.injector.type === 'element') {
+        const injector = node.data.injector;
+        return injector.node?.component?.id ?? -1;
+      }
+      return -1;
+    });
 }
