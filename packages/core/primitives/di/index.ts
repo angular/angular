@@ -11,4 +11,4 @@ export type {Injector} from './src/injector';
 export {NOT_FOUND, NotFoundError, isNotFound} from './src/not_found';
 export type {NotFound} from './src/not_found';
 export type {InjectionToken, ɵɵInjectableDeclaration} from './src/injection_token';
-export {registerInjectable} from './src/injection_token';
+export {defineInjectable, registerInjectable} from './src/injection_token';

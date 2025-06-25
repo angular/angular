@@ -5,10 +5,17 @@
 ```ts
 
 // @public (undocumented)
+export function defineInjectable<T>(opts: {
+    token: unknown;
+    providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'environment' | null;
+    factory: () => T;
+}): unknown;
+
+// @public (undocumented)
 export function getCurrentInjector(): Injector | undefined | null;
 
 // @public (undocumented)
-export function inject<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;
+export function inject<T>(token: InjectionToken<T> | Constructor<T>, options?: unknown): T | NotFound;
 
 // @public
 export interface InjectionToken<T> {
