@@ -364,8 +364,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4
         version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/ssr@20.1.0-next.2)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.43.1)(tsx@4.20.3)(zone.js@packages+zone.js)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#f2e0ea6a2b1df8fb1cc674792771c7f0c45752c7
-        version: github.com/angular/dev-infra-private-ng-dev-builds/f2e0ea6a2b1df8fb1cc674792771c7f0c45752c7
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#af92dd0055dbfb437c73fd2ab963149a4341d018
+        version: github.com/angular/dev-infra-private-ng-dev-builds/af92dd0055dbfb437c73fd2ab963149a4341d018
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.27.4)
@@ -773,7 +773,7 @@ importers:
         version: github.com/angular/domino/93e720f143d0296dd2726ffbcf4fc12283363a7b
       jest:
         specifier: ^30.0.0
-        version: 30.0.2(@types/node@10.17.60)(ts-node@10.9.2)
+        version: 30.0.3(@types/node@10.17.60)(ts-node@10.9.2)
       jest-environment-jsdom:
         specifier: ^30.0.0
         version: 30.0.2
@@ -4214,8 +4214,8 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /@jest/core@30.0.2(ts-node@10.9.2):
-    resolution: {integrity: sha512-mUMFdDtYWu7la63NxlyNIhgnzynszxunXWrtryR7bV24jV9hmi7XCZTzZHaLJjcBU66MeUAPZ81HjwASVpYhYQ==, tarball: https://registry.npmjs.org/@jest/core/-/core-30.0.2.tgz}
+  /@jest/core@30.0.3(ts-node@10.9.2):
+    resolution: {integrity: sha512-Mgs1N+NSHD3Fusl7bOq1jyxv1JDAUwjy+0DhVR93Q6xcBP9/bAQ+oZhXb5TTnP5sQzAHgb7ROCKQ2SnovtxYtg==, tarball: https://registry.npmjs.org/@jest/core/-/core-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     peerDependencies:
       node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
@@ -4236,15 +4236,15 @@ packages:
       exit-x: 0.2.2
       graceful-fs: 4.2.11
       jest-changed-files: 30.0.2
-      jest-config: 30.0.2(@types/node@24.0.3)(ts-node@10.9.2)
+      jest-config: 30.0.3(@types/node@24.0.3)(ts-node@10.9.2)
       jest-haste-map: 30.0.2
       jest-message-util: 30.0.2
       jest-regex-util: 30.0.1
       jest-resolve: 30.0.2
-      jest-resolve-dependencies: 30.0.2
-      jest-runner: 30.0.2
-      jest-runtime: 30.0.2
-      jest-snapshot: 30.0.2
+      jest-resolve-dependencies: 30.0.3
+      jest-runner: 30.0.3
+      jest-runtime: 30.0.3
+      jest-snapshot: 30.0.3
       jest-util: 30.0.2
       jest-validate: 30.0.2
       jest-watcher: 30.0.2
@@ -4293,19 +4293,19 @@ packages:
       jest-mock: 30.0.2
     dev: true
 
-  /@jest/expect-utils@30.0.2:
-    resolution: {integrity: sha512-FHF2YdtFBUQOo0/qdgt+6UdBFcNPF/TkVzcc+4vvf8uaBzUlONytGBeeudufIHHW1khRfM1sBbRT1VCK7n/0dQ==, tarball: https://registry.npmjs.org/@jest/expect-utils/-/expect-utils-30.0.2.tgz}
+  /@jest/expect-utils@30.0.3:
+    resolution: {integrity: sha512-SMtBvf2sfX2agcT0dA9pXwcUrKvOSDqBY4e4iRfT+Hya33XzV35YVg+98YQFErVGA/VR1Gto5Y2+A6G9LSQ3Yg==, tarball: https://registry.npmjs.org/@jest/expect-utils/-/expect-utils-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
       '@jest/get-type': 30.0.1
     dev: true
 
-  /@jest/expect@30.0.2:
-    resolution: {integrity: sha512-blWRFPjv2cVfh42nLG6L3xIEbw+bnuiZYZDl/BZlsNG/i3wKV6FpPZ2EPHguk7t5QpLaouIu+7JmYO4uBR6AOg==, tarball: https://registry.npmjs.org/@jest/expect/-/expect-30.0.2.tgz}
+  /@jest/expect@30.0.3:
+    resolution: {integrity: sha512-73BVLqfCeWjYWPEQoYjiRZ4xuQRhQZU0WdgvbyXGRHItKQqg5e6mt2y1kVhzLSuZpmUnccZHbGynoaL7IcLU3A==, tarball: https://registry.npmjs.org/@jest/expect/-/expect-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
-      expect: 30.0.2
-      jest-snapshot: 30.0.2
+      expect: 30.0.3
+      jest-snapshot: 30.0.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4327,12 +4327,12 @@ packages:
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dev: true
 
-  /@jest/globals@30.0.2:
-    resolution: {integrity: sha512-DwTtus9jjbG7b6jUdkcVdptf0wtD1v153A+PVwWB/zFwXhqu6hhtSd+uq88jofMhmYPtkmPmVGUBRNCZEKXn+w==, tarball: https://registry.npmjs.org/@jest/globals/-/globals-30.0.2.tgz}
+  /@jest/globals@30.0.3:
+    resolution: {integrity: sha512-fIduqNyYpMeeSr5iEAiMn15KxCzvrmxl7X7VwLDRGj7t5CoHtbF+7K3EvKk32mOUIJ4kIvFRlaixClMH2h/Vaw==, tarball: https://registry.npmjs.org/@jest/globals/-/globals-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
       '@jest/environment': 30.0.2
-      '@jest/expect': 30.0.2
+      '@jest/expect': 30.0.3
       '@jest/types': 30.0.1
       jest-mock: 30.0.2
     transitivePeerDependencies:
@@ -8785,7 +8785,7 @@ packages:
       check-error: 2.1.1
       deep-eql: 5.0.2
       loupe: 3.1.4
-      pathval: 2.0.0
+      pathval: 2.0.1
     dev: true
 
   /chainsaw@0.0.9:
@@ -11108,13 +11108,13 @@ packages:
     engines: {node: '>=12.0.0'}
     dev: true
 
-  /expect@30.0.2:
-    resolution: {integrity: sha512-YN9Mgv2mtTWXVmifQq3QT+ixCL/uLuLJw+fdp8MOjKqu8K3XQh3o5aulMM1tn+O2DdrWNxLZTeJsCY/VofUA0A==, tarball: https://registry.npmjs.org/expect/-/expect-30.0.2.tgz}
+  /expect@30.0.3:
+    resolution: {integrity: sha512-HXg6NvK35/cSYZCUKAtmlgCFyqKM4frEPbzrav5hRqb0GMz0E0lS5hfzYjSaiaE5ysnp/qI2aeZkeyeIAOeXzQ==, tarball: https://registry.npmjs.org/expect/-/expect-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
-      '@jest/expect-utils': 30.0.2
+      '@jest/expect-utils': 30.0.3
       '@jest/get-type': 30.0.1
-      jest-matcher-utils: 30.0.2
+      jest-matcher-utils: 30.0.3
       jest-message-util: 30.0.2
       jest-mock: 30.0.2
       jest-util: 30.0.2
@@ -13649,12 +13649,12 @@ packages:
       p-limit: 3.1.0
     dev: true
 
-  /jest-circus@30.0.2:
-    resolution: {integrity: sha512-NRozwx4DaFHcCUtwdEd/0jBLL1imyMrCbla3vF//wdsB2g6jIicMbjx9VhqE/BYU4dwsOQld+06ODX0oZ9xOLg==, tarball: https://registry.npmjs.org/jest-circus/-/jest-circus-30.0.2.tgz}
+  /jest-circus@30.0.3:
+    resolution: {integrity: sha512-rD9qq2V28OASJHJWDRVdhoBdRs6k3u3EmBzDYcyuMby8XCO3Ll1uq9kyqM41ZcC4fMiPulMVh3qMw0cBvDbnyg==, tarball: https://registry.npmjs.org/jest-circus/-/jest-circus-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
       '@jest/environment': 30.0.2
-      '@jest/expect': 30.0.2
+      '@jest/expect': 30.0.3
       '@jest/test-result': 30.0.2
       '@jest/types': 30.0.1
       '@types/node': 24.0.3
@@ -13663,10 +13663,10 @@ packages:
       dedent: 1.6.0
       is-generator-fn: 2.1.0
       jest-each: 30.0.2
-      jest-matcher-utils: 30.0.2
+      jest-matcher-utils: 30.0.3
       jest-message-util: 30.0.2
-      jest-runtime: 30.0.2
-      jest-snapshot: 30.0.2
+      jest-runtime: 30.0.3
+      jest-snapshot: 30.0.3
       jest-util: 30.0.2
       p-limit: 3.1.0
       pretty-format: 30.0.2
@@ -13678,8 +13678,8 @@ packages:
       - supports-color
     dev: true
 
-  /jest-cli@30.0.2(@types/node@10.17.60)(ts-node@10.9.2):
-    resolution: {integrity: sha512-yQ6Qz747oUbMYLNAqOlEby+hwXx7WEJtCl0iolBRpJhr2uvkBgiVMrvuKirBc8utwQBnkETFlDUkYifbRpmBrQ==, tarball: https://registry.npmjs.org/jest-cli/-/jest-cli-30.0.2.tgz}
+  /jest-cli@30.0.3(@types/node@10.17.60)(ts-node@10.9.2):
+    resolution: {integrity: sha512-UWDSj0ayhumEAxpYRlqQLrssEi29kdQ+kddP94AuHhZknrE+mT0cR0J+zMHKFe9XPfX3dKQOc2TfWki3WhFTsA==, tarball: https://registry.npmjs.org/jest-cli/-/jest-cli-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
@@ -13688,13 +13688,13 @@ packages:
       node-notifier:
         optional: true
     dependencies:
-      '@jest/core': 30.0.2(ts-node@10.9.2)
+      '@jest/core': 30.0.3(ts-node@10.9.2)
       '@jest/test-result': 30.0.2
       '@jest/types': 30.0.1
       chalk: 4.1.2
       exit-x: 0.2.2
       import-local: 3.2.0
-      jest-config: 30.0.2(@types/node@10.17.60)(ts-node@10.9.2)
+      jest-config: 30.0.3(@types/node@10.17.60)(ts-node@10.9.2)
       jest-util: 30.0.2
       jest-validate: 30.0.2
       yargs: 17.7.2
@@ -13706,8 +13706,8 @@ packages:
       - ts-node
     dev: true
 
-  /jest-config@30.0.2(@types/node@10.17.60)(ts-node@10.9.2):
-    resolution: {integrity: sha512-vo0fVq+uzDcXETFVnCUyr5HaUCM8ES6DEuS9AFpma34BVXMRRNlsqDyiW5RDHaEFoeFlJHoI4Xjh/WSYIAL58g==, tarball: https://registry.npmjs.org/jest-config/-/jest-config-30.0.2.tgz}
+  /jest-config@30.0.3(@types/node@10.17.60)(ts-node@10.9.2):
+    resolution: {integrity: sha512-j0L4oRCtJwNyZktXIqwzEiDVQXBbQ4dqXuLD/TZdn++hXIcIfZmjHgrViEy5s/+j4HvITmAXbexVZpQ/jnr0bg==, tarball: https://registry.npmjs.org/jest-config/-/jest-config-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     peerDependencies:
       '@types/node': '*'
@@ -13733,12 +13733,12 @@ packages:
       deepmerge: 4.3.1
       glob: 10.4.5
       graceful-fs: 4.2.11
-      jest-circus: 30.0.2
+      jest-circus: 30.0.3
       jest-docblock: 30.0.1
       jest-environment-node: 30.0.2
       jest-regex-util: 30.0.1
       jest-resolve: 30.0.2
-      jest-runner: 30.0.2
+      jest-runner: 30.0.3
       jest-util: 30.0.2
       jest-validate: 30.0.2
       micromatch: 4.0.8
@@ -13752,8 +13752,8 @@ packages:
       - supports-color
     dev: true
 
-  /jest-config@30.0.2(@types/node@24.0.3)(ts-node@10.9.2):
-    resolution: {integrity: sha512-vo0fVq+uzDcXETFVnCUyr5HaUCM8ES6DEuS9AFpma34BVXMRRNlsqDyiW5RDHaEFoeFlJHoI4Xjh/WSYIAL58g==, tarball: https://registry.npmjs.org/jest-config/-/jest-config-30.0.2.tgz}
+  /jest-config@30.0.3(@types/node@24.0.3)(ts-node@10.9.2):
+    resolution: {integrity: sha512-j0L4oRCtJwNyZktXIqwzEiDVQXBbQ4dqXuLD/TZdn++hXIcIfZmjHgrViEy5s/+j4HvITmAXbexVZpQ/jnr0bg==, tarball: https://registry.npmjs.org/jest-config/-/jest-config-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     peerDependencies:
       '@types/node': '*'
@@ -13779,12 +13779,12 @@ packages:
       deepmerge: 4.3.1
       glob: 10.4.5
       graceful-fs: 4.2.11
-      jest-circus: 30.0.2
+      jest-circus: 30.0.3
       jest-docblock: 30.0.1
       jest-environment-node: 30.0.2
       jest-regex-util: 30.0.1
       jest-resolve: 30.0.2
-      jest-runner: 30.0.2
+      jest-runner: 30.0.3
       jest-util: 30.0.2
       jest-validate: 30.0.2
       micromatch: 4.0.8
@@ -13798,8 +13798,8 @@ packages:
       - supports-color
     dev: true
 
-  /jest-diff@30.0.2:
-    resolution: {integrity: sha512-2UjrNvDJDn/oHFpPrUTVmvYYDNeNtw2DlY3er8bI6vJJb9Fb35ycp/jFLd5RdV59tJ8ekVXX3o/nwPcscgXZJQ==, tarball: https://registry.npmjs.org/jest-diff/-/jest-diff-30.0.2.tgz}
+  /jest-diff@30.0.3:
+    resolution: {integrity: sha512-Q1TAV0cUcBTic57SVnk/mug0/ASyAqtSIOkr7RAlxx97llRYsM74+E8N5WdGJUlwCKwgxPAkVjKh653h1+HA9A==, tarball: https://registry.npmjs.org/jest-diff/-/jest-diff-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
       '@jest/diff-sequences': 30.0.1
@@ -13885,13 +13885,13 @@ packages:
       pretty-format: 30.0.2
     dev: true
 
-  /jest-matcher-utils@30.0.2:
-    resolution: {integrity: sha512-1FKwgJYECR8IT93KMKmjKHSLyru0DqguThov/aWpFccC0wbiXGOxYEu7SScderBD7ruDOpl7lc5NG6w3oxKfaA==, tarball: https://registry.npmjs.org/jest-matcher-utils/-/jest-matcher-utils-30.0.2.tgz}
+  /jest-matcher-utils@30.0.3:
+    resolution: {integrity: sha512-hMpVFGFOhYmIIRGJ0HgM9htC5qUiJ00famcc9sRFchJJiLZbbVKrAztcgE6VnXLRxA3XZ0bvNA7hQWh3oHXo/A==, tarball: https://registry.npmjs.org/jest-matcher-utils/-/jest-matcher-utils-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
       '@jest/get-type': 30.0.1
       chalk: 4.1.2
-      jest-diff: 30.0.2
+      jest-diff: 30.0.3
       pretty-format: 30.0.2
     dev: true
 
@@ -13936,12 +13936,12 @@ packages:
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dev: true
 
-  /jest-resolve-dependencies@30.0.2:
-    resolution: {integrity: sha512-Lp1iIXpsF5fGM4vyP8xHiIy2H5L5yO67/nXoYJzH4kz+fQmO+ZMKxzYLyWxYy4EeCLeNQ6a9OozL+uHZV2iuEA==, tarball: https://registry.npmjs.org/jest-resolve-dependencies/-/jest-resolve-dependencies-30.0.2.tgz}
+  /jest-resolve-dependencies@30.0.3:
+    resolution: {integrity: sha512-FlL6u7LiHbF0Oe27k7DHYMq2T2aNpPhxnNo75F7lEtu4A6sSw+TKkNNUGNcVckdFoL0RCWREJsC1HsKDwKRZzQ==, tarball: https://registry.npmjs.org/jest-resolve-dependencies/-/jest-resolve-dependencies-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
       jest-regex-util: 30.0.1
-      jest-snapshot: 30.0.2
+      jest-snapshot: 30.0.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -13960,8 +13960,8 @@ packages:
       unrs-resolver: 1.9.2
     dev: true
 
-  /jest-runner@30.0.2:
-    resolution: {integrity: sha512-6H+CIFiDLVt1Ix6jLzASXz3IoIiDukpEIxL9FHtDQ2BD/k5eFtDF5e5N9uItzRE3V1kp7VoSRyrGBytXKra4xA==, tarball: https://registry.npmjs.org/jest-runner/-/jest-runner-30.0.2.tgz}
+  /jest-runner@30.0.3:
+    resolution: {integrity: sha512-CxYBzu9WStOBBXAKkLXGoUtNOWsiS1RRmUQb6SsdUdTcqVncOau7m8AJ4cW3Mz+YL1O9pOGPSYLyvl8HBdFmkQ==, tarball: https://registry.npmjs.org/jest-runner/-/jest-runner-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
       '@jest/console': 30.0.2
@@ -13980,7 +13980,7 @@ packages:
       jest-leak-detector: 30.0.2
       jest-message-util: 30.0.2
       jest-resolve: 30.0.2
-      jest-runtime: 30.0.2
+      jest-runtime: 30.0.3
       jest-util: 30.0.2
       jest-watcher: 30.0.2
       jest-worker: 30.0.2
@@ -13990,13 +13990,13 @@ packages:
       - supports-color
     dev: true
 
-  /jest-runtime@30.0.2:
-    resolution: {integrity: sha512-H1a51/soNOeAjoggu6PZKTH7DFt8JEGN4mesTSwyqD2jU9PXD04Bp6DKbt2YVtQvh2JcvH2vjbkEerCZ3lRn7A==, tarball: https://registry.npmjs.org/jest-runtime/-/jest-runtime-30.0.2.tgz}
+  /jest-runtime@30.0.3:
+    resolution: {integrity: sha512-Xjosq0C48G9XEQOtmgrjXJwPaUPaq3sPJwHDRaiC+5wi4ZWxO6Lx6jNkizK/0JmTulVNuxP8iYwt77LGnfg3/w==, tarball: https://registry.npmjs.org/jest-runtime/-/jest-runtime-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
       '@jest/environment': 30.0.2
       '@jest/fake-timers': 30.0.2
-      '@jest/globals': 30.0.2
+      '@jest/globals': 30.0.3
       '@jest/source-map': 30.0.1
       '@jest/test-result': 30.0.2
       '@jest/transform': 30.0.2
@@ -14012,7 +14012,7 @@ packages:
       jest-mock: 30.0.2
       jest-regex-util: 30.0.1
       jest-resolve: 30.0.2
-      jest-snapshot: 30.0.2
+      jest-snapshot: 30.0.3
       jest-util: 30.0.2
       slash: 3.0.0
       strip-bom: 4.0.0
@@ -14020,8 +14020,8 @@ packages:
       - supports-color
     dev: true
 
-  /jest-snapshot@30.0.2:
-    resolution: {integrity: sha512-KeoHikoKGln3OlN7NS7raJ244nIVr2K46fBTNdfuxqYv2/g4TVyWDSO4fmk08YBJQMjs3HNfG1rlLfL/KA+nUw==, tarball: https://registry.npmjs.org/jest-snapshot/-/jest-snapshot-30.0.2.tgz}
+  /jest-snapshot@30.0.3:
+    resolution: {integrity: sha512-F05JCohd3OA1N9+5aEPXA6I0qOfZDGIx0zTq5Z4yMBg2i1p5ELfBusjYAWwTkC12c7dHcbyth4QAfQbS7cRjow==, tarball: https://registry.npmjs.org/jest-snapshot/-/jest-snapshot-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
       '@babel/core': 7.27.4
@@ -14029,17 +14029,17 @@ packages:
       '@babel/plugin-syntax-jsx': 7.27.1(@babel/core@7.27.4)
       '@babel/plugin-syntax-typescript': 7.27.1(@babel/core@7.27.4)
       '@babel/types': 7.27.6
-      '@jest/expect-utils': 30.0.2
+      '@jest/expect-utils': 30.0.3
       '@jest/get-type': 30.0.1
       '@jest/snapshot-utils': 30.0.1
       '@jest/transform': 30.0.2
       '@jest/types': 30.0.1
       babel-preset-current-node-syntax: 1.1.0(@babel/core@7.27.4)
       chalk: 4.1.2
-      expect: 30.0.2
+      expect: 30.0.3
       graceful-fs: 4.2.11
-      jest-diff: 30.0.2
-      jest-matcher-utils: 30.0.2
+      jest-diff: 30.0.3
+      jest-matcher-utils: 30.0.3
       jest-message-util: 30.0.2
       jest-util: 30.0.2
       pretty-format: 30.0.2
@@ -14116,8 +14116,8 @@ packages:
       supports-color: 8.1.1
     dev: true
 
-  /jest@30.0.2(@types/node@10.17.60)(ts-node@10.9.2):
-    resolution: {integrity: sha512-HlSEiHRcmTuGwNyeawLTEzpQUMFn+f741FfoNg7RXG2h0WLJKozVCpcQLT0GW17H6kNCqRwGf+Ii/I1YVNvEGQ==, tarball: https://registry.npmjs.org/jest/-/jest-30.0.2.tgz}
+  /jest@30.0.3(@types/node@10.17.60)(ts-node@10.9.2):
+    resolution: {integrity: sha512-Uy8xfeE/WpT2ZLGDXQmaYNzw2v8NUKuYeKGtkS6sDxwsdQihdgYCXaKIYnph1h95DN5H35ubFDm0dfmsQnjn4Q==, tarball: https://registry.npmjs.org/jest/-/jest-30.0.3.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
@@ -14126,10 +14126,10 @@ packages:
       node-notifier:
         optional: true
     dependencies:
-      '@jest/core': 30.0.2(ts-node@10.9.2)
+      '@jest/core': 30.0.3(ts-node@10.9.2)
       '@jest/types': 30.0.1
       import-local: 3.2.0
-      jest-cli: 30.0.2(@types/node@10.17.60)(ts-node@10.9.2)
+      jest-cli: 30.0.3(@types/node@10.17.60)(ts-node@10.9.2)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -16474,8 +16474,8 @@ packages:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==, tarball: https://registry.npmjs.org/pathe/-/pathe-2.0.3.tgz}
     dev: true
 
-  /pathval@2.0.0:
-    resolution: {integrity: sha512-vE7JKRyES09KiunauX7nd2Q9/L7lhok4smP9RZTDeD4MVs72Dp2qNFVz39Nz5a0FVEW0BJR6C0DYrq6unoziZA==, tarball: https://registry.npmjs.org/pathval/-/pathval-2.0.0.tgz}
+  /pathval@2.0.1:
+    resolution: {integrity: sha512-//nshmD55c46FuFw26xV/xFAaB5HF9Xdap7HJBBnrKdAd6/GxDBaNA1870O79+9ueg61cZLSVc+OaFlfmObYVQ==, tarball: https://registry.npmjs.org/pathval/-/pathval-2.0.1.tgz}
     engines: {node: '>= 14.16'}
     dev: true
 
@@ -21562,10 +21562,10 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/f2e0ea6a2b1df8fb1cc674792771c7f0c45752c7:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/f2e0ea6a2b1df8fb1cc674792771c7f0c45752c7}
+  github.com/angular/dev-infra-private-ng-dev-builds/af92dd0055dbfb437c73fd2ab963149a4341d018:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/af92dd0055dbfb437c73fd2ab963149a4341d018}
     name: '@angular/ng-dev'
-    version: 0.0.0-92edde46390984cf9182d3d1e5c4c7651f75171f
+    version: 0.0.0-f3ac6ef8b4291287e19d23c2a708dbc4ac24293a
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 8.0.0(supports-color@10.0.0)
