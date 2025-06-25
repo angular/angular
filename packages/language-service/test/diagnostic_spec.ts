@@ -193,7 +193,7 @@ describe('getSemanticDiagnostics', () => {
     expect(category).toBe(ts.DiagnosticCategory.Error);
     expect(file?.fileName).toBe('/test/app.html');
     expect(messageText).toContain(
-      `Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = true}}]`,
+      `Parser Error: Bindings cannot contain assignments at column 8 in [nope = true]`,
     );
   });
 
@@ -231,13 +231,13 @@ describe('getSemanticDiagnostics', () => {
       'app.ts': `
       import {Component, NgModule} from '@angular/core';
 
-      @Component({ 
+      @Component({
         templateUrl: './app1.html',
         standalone: false,
       })
       export class AppComponent1 { nope = false; }
 
-      @Component({ 
+      @Component({
         templateUrl: './app2.html',
         standalone: false,
       })
@@ -262,13 +262,13 @@ describe('getSemanticDiagnostics', () => {
     const diags1 = project.getDiagnosticsForFile('app1.html');
     expect(diags1.length).toBe(1);
     expect(diags1[0].messageText).toBe(
-      'Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = false}}] in /test/app1.html@0:0',
+      'Parser Error: Bindings cannot contain assignments at column 8 in [nope = false] in /test/app1.html@0:0',
     );
 
     const diags2 = project.getDiagnosticsForFile('app2.html');
     expect(diags2.length).toBe(1);
     expect(diags2[0].messageText).toBe(
-      'Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = true}}] in /test/app2.html@0:0',
+      'Parser Error: Bindings cannot contain assignments at column 8 in [nope = true] in /test/app2.html@0:0',
     );
   });
 
@@ -386,7 +386,7 @@ describe('getSemanticDiagnostics', () => {
     const files = {
       'app.ts': `
         import {Component} from '@angular/core';
-        @Component({ 
+        @Component({
           template: '',
           standalone: false,
         })

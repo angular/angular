@@ -10022,7 +10022,7 @@ runInEachFileSystem((os: string) => {
           expect(diags.length).toBe(2);
           expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
           expect(diags[1].messageText).toContain(
-            'Parser Error: Bindings cannot contain assignments at column 5 in [ {{x = 2}}]',
+            'Parser Error: Bindings cannot contain assignments at column 5 in [x = 2]',
           );
         });
       });
