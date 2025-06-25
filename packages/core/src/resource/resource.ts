@@ -269,11 +269,17 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       return;
     }
 
-    const current = untracked(this.value);
+    const error = untracked(this.error);
     const state = untracked(this.state);
 
-    if (state.status === 'local' && (this.equal ? this.equal(current, value) : current === value)) {
-      return;
+    if (!error) {
+      const current = untracked(this.value);
+      if (
+        state.status === 'local' &&
+        (this.equal ? this.equal(current, value) : current === value)
+      ) {
+        return;
+      }
     }
 
     // Enter Local state with the user-defined value.
