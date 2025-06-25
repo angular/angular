@@ -8,6 +8,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { DoCheck } from '@angular/core';
 import { DOCUMENT } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import { EnvironmentInjector } from '@angular/core';
 import * as i0 from '@angular/core';
 import { ɵIMAGE_CONFIG as IMAGE_CONFIG } from '@angular/core';
 import { ɵImageConfig as ImageConfig } from '@angular/core';
@@ -495,6 +496,8 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     // (undocumented)
     ngComponentOutletContent?: any[][];
     // (undocumented)
+    ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
+    // (undocumented)
     ngComponentOutletInjector?: Injector;
     // (undocumented)
     ngComponentOutletInputs?: Record<string, unknown>;
@@ -506,7 +509,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet<any>, "[ngComponentOutlet]", ["ngComponentOutlet"], { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet<any>, "[ngComponentOutlet]", ["ngComponentOutlet"], { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletEnvironmentInjector": { "alias": "ngComponentOutletEnvironmentInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet<any>, never>;
 }
