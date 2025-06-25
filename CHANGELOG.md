@@ -1,3 +1,27 @@
+<a name="20.0.5"></a>
+# 20.0.5 (2025-06-25)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [de0d525ad7](https://github.com/angular/angular/commit/de0d525ad7a5a9bfcc78b66ac627a507c8709064) | fix | add suggestion when pipe is missing ([#62146](https://github.com/angular/angular/pull/62146)) |
+| [3eb5a79a83](https://github.com/angular/angular/commit/3eb5a79a8324c96d438f4ad004a098295efad769) | fix | handle initializer APIs wrapped in type casts ([#62203](https://github.com/angular/angular/pull/62203)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a2e6f317a7](https://github.com/angular/angular/commit/a2e6f317a732495602caf2ab871d38981a742e05) | fix | allow to set a resource in an error state ([#62253](https://github.com/angular/angular/pull/62253)) |
+| [4c00238a69](https://github.com/angular/angular/commit/4c00238a69ab7f6c5b53d12d4030cb172454ab39) | fix | avoid injecting `ErrorHandler` from a destroyed injector ([#61886](https://github.com/angular/angular/pull/61886)) |
+| [369f03ad7f](https://github.com/angular/angular/commit/369f03ad7f3132240db938ea2b4de2de2e38c867) | fix | unable to retrieve defer blocks in tests when component injects ViewContainerRef ([#62156](https://github.com/angular/angular/pull/62156)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [65c59dd796](https://github.com/angular/angular/commit/65c59dd7964cd9643244b46094031e7227252875) | fix | handle scrollRestoration error in restricted environments ([#62186](https://github.com/angular/angular/pull/62186)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [144c429230](https://github.com/angular/angular/commit/144c429230c864ae7a94c6a40738a9cd1223581b) | fix | Make zoneless work with hybrid apps ([#61660](https://github.com/angular/angular/pull/61660)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.0-next.2"></a>
 # 20.1.0-next.2 (2025-06-18)
 ### core
