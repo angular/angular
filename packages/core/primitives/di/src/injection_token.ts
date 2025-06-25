@@ -80,7 +80,7 @@ export function defineInjectable<T>(opts: {
   } as ɵɵInjectableDeclaration<T>;
 }
 
-type Constructor<T> = Function & {prototype: T};
+export type Constructor<T> = Function & {prototype: T};
 
 export function registerInjectable<T>(
   ctor: unknown,
