@@ -729,6 +729,34 @@ describe('resource', () => {
     expect(res.error()).toEqual(new Error('fail'));
   });
 
+  it('should allow to set a value on when in error state', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    let res = resource({
+      stream: async () => signal({error: new Error('fail')}),
+      injector: TestBed.inject(Injector),
+    });
+
+    await appRef.whenStable();
+    expect(res.status()).toBe('error');
+
+    res.set('new value');
+    expect(res.status()).toBe('local');
+    expect(res.value()).toBe('new value');
+
+    // also via setting the value on the signal directly
+    res = resource({
+      stream: async () => signal({error: new Error('fail')}),
+      injector: TestBed.inject(Injector),
+    });
+
+    await appRef.whenStable();
+    expect(res.status()).toBe('error');
+
+    res.value.set('new value');
+    expect(res.status()).toBe('local');
+    expect(res.value()).toBe('new value');
+  });
+
   it('should transition across streamed states', async () => {
     const appRef = TestBed.inject(ApplicationRef);
     const stream = signal<{value: number} | {error: Error}>({value: 1});
