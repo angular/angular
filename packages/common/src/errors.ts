@@ -40,6 +40,8 @@ export const enum RuntimeErrorCode {
 
   // Miscellaneous errors
   SCROLL_RESTORATION_UNSUPPORTED = 2400,
+  PUSH_STATE_UNSUPPORTED = 2401,
+  REPLACE_STATE_UNSUPPORTED = 2402,
 
   // Keep 2800 - 2900 for Http Errors.
 

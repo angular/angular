@@ -51,6 +51,10 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PRIORITY_IMG_MISSING_PRECONNECT_TAG = 2956,
     // (undocumented)
+    PUSH_STATE_UNSUPPORTED = 2401,
+    // (undocumented)
+    REPLACE_STATE_UNSUPPORTED = 2402,
+    // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
     // (undocumented)
     SCROLL_RESTORATION_UNSUPPORTED = 2400,

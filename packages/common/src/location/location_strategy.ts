@@ -14,10 +14,12 @@ import {
   InjectionToken,
   OnDestroy,
   Optional,
+  ɵformatRuntimeError as formatRuntimeError,
 } from '@angular/core';
 
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams} from './util';
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * Enables the `Location` service to read route state from the browser's URL.
@@ -157,12 +159,38 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
 
   override pushState(state: any, title: string, url: string, queryParams: string) {
     const externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
-    this._platformLocation.pushState(state, title, externalUrl);
+    try {
+      this._platformLocation.pushState(state, title, externalUrl);
+    } catch {
+      console.warn(
+        formatRuntimeError(
+          RuntimeErrorCode.PUSH_STATE_UNSUPPORTED,
+          ngDevMode &&
+            'Failed to call `history.pushState`. This can happen in restricted environments, such as:\n' +
+              '• A sandboxed iframe\n' +
+              '• A partially loaded or inactive window\n' +
+              '• An untrusted context (e.g., test runner, browser extension, or content preview)',
+        ),
+      );
+    }
   }
 
   override replaceState(state: any, title: string, url: string, queryParams: string) {
     const externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
-    this._platformLocation.replaceState(state, title, externalUrl);
+    try {
+      this._platformLocation.replaceState(state, title, externalUrl);
+    } catch {
+      console.warn(
+        formatRuntimeError(
+          RuntimeErrorCode.REPLACE_STATE_UNSUPPORTED,
+          ngDevMode &&
+            'Failed to call `history.replaceState`. This can happen in restricted environments, such as:\n' +
+              '• A sandboxed iframe\n' +
+              '• A partially loaded or inactive window\n' +
+              '• An untrusted context (e.g., test runner, browser extension, or content preview)',
+        ),
+      );
+    }
   }
 
   override forward(): void {
