@@ -784,6 +784,41 @@ describe('R3 template transform', () => {
       expect(errors[1].msg).toContain('Invalid character [#]');
       expect(errors[2].msg).toContain(`Unexpected token ')'`);
     });
+
+    it('should report parsing errors on the specific interpolated expressions', () => {
+      const errors = parse(
+        `
+          bunch of text bunch of text bunch of text bunch of text bunch of text bunch of text
+          bunch of text bunch of text bunch of text bunch of text
+
+          {{foo[0}} bunch of text bunch of text bunch of text bunch of text {{.bar}}
+
+          bunch of text
+          bunch of text
+          bunch of text
+          bunch of text
+          bunch of text {{one + #two + baz}}
+        `,
+        {
+          ignoreError: true,
+        },
+      ).errors;
+
+      expect(errors.map((e) => e.span.toString())).toEqual([
+        '{{foo[0}}',
+        '{{.bar}}',
+        '{{one + #two + baz}}',
+      ]);
+
+      expect(errors.map((e) => e.msg)).toEqual([
+        jasmine.stringContaining('Missing expected ] at the end of the expression [foo[0]'),
+        jasmine.stringContaining('Unexpected token . at column 1 in [.bar]'),
+        jasmine.stringContaining(
+          'Private identifiers are not supported. Unexpected private identifier: ' +
+            '#two at column 7 in [one + #two + baz]',
+        ),
+      ]);
+    });
   });
 
   describe('Ignored elements', () => {

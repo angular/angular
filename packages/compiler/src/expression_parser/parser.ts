@@ -268,12 +268,16 @@ export class Parser {
     const expressionNodes: AST[] = [];
 
     for (let i = 0; i < expressions.length; ++i) {
+      // If we have a token for the specific expression, it's preferrable to use it because it
+      // allows us to produce more accurate error messages. The expressions are always at the odd
+      // indexes inside the tokens.
+      const expressionSpan = interpolatedTokens?.[i * 2 + 1]?.sourceSpan;
       const expressionText = expressions[i].text;
       const sourceToLex = this._stripComments(expressionText);
       const tokens = this._lexer.tokenize(sourceToLex);
       const ast = new _ParseAST(
-        input,
-        parseSourceSpan,
+        expressionSpan ? expressionText : input,
+        expressionSpan || parseSourceSpan,
         absoluteOffset,
         tokens,
         ParseFlags.None,
