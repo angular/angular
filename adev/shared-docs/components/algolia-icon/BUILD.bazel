@@ -10,11 +10,11 @@ ng_project(
     assets = [
         "algolia-icon.component.html",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
         "//adev/shared-docs/components/search-dialog:__pkg__",
+    ],
+    deps = [
+        "//packages/core:core_rjs",
     ],
 )

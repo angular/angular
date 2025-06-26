@@ -1,5 +1,5 @@
 load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -8,12 +8,12 @@ ng_project(
     srcs = [
         "click-outside.directive.ts",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     visibility = [
         "//adev/shared-docs/directives:__pkg__",
+    ],
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
     ],
 )
 
@@ -23,17 +23,17 @@ ts_project(
     srcs = glob(
         ["*.spec.ts"],
     ),
-    interop_deps = [
-        ":click-outside",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/router",
-        "//packages/router/testing",
+    deps = [
+        ":click-outside_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/router:router_rjs",
+        "//packages/router/testing:testing_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
-    deps = [":test_lib"],
+    deps = [":test_lib_rjs"],
 )

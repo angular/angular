@@ -1,6 +1,6 @@
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -32,9 +32,9 @@ ts_test_library(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
     deps = [
-        ":responsive-split_test",
+        ":responsive-split_test_rjs",
     ],
 )

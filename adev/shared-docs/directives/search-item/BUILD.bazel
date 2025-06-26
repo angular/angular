@@ -7,14 +7,12 @@ ng_project(
     srcs = [
         "search-item.directive.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     visibility = [
         "//adev/shared-docs/directives:__pkg__",
     ],
     deps = [
         "//:node_modules/@angular/cdk",
         "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//packages/core:core_rjs",
     ],
 )

@@ -5,6 +5,7 @@ load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ng_package.bzl", _ng_package = "ng_package")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
+load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _zoneless_web_test_suite = "zoneless_web_test_suite")
 
 npm_package = _npm_package
 ts_config = _ts_config
@@ -12,6 +13,8 @@ ng_package = _ng_package
 jasmine_test = _jasmine_test
 angular_jasmine_test = _angular_jasmine_test
 zoneless_jasmine_test = _zoneless_jasmine_test
+ng_web_test_suite = _ng_web_test_suite
+zoneless_web_test_suite = _zoneless_web_test_suite
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):

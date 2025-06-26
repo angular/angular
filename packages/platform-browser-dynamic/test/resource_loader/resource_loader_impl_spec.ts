@@ -13,7 +13,7 @@ if (isBrowser) {
   describe('ResourceLoaderImpl', () => {
     let resourceLoader: ResourceLoaderImpl;
 
-    const url200 = '/base/angular/packages/platform-browser/test/browser/static_assets/200.html';
+    const url200 = '/packages/platform-browser/test/browser/static_assets/200.html';
     const url404 = '/bad/path/404.html';
 
     beforeEach(() => {
