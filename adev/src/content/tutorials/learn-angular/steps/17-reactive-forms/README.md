@@ -43,7 +43,7 @@ Reactive forms use the `FormControl` class to represent the form controls (e.g.,
 Add `FormControl` and `FormGroup` to the import from `@angular/forms` so that you can create a FormGroup for each form, with the properties `name` and `email` as FormControls.
 
 ```ts
-import {ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 ...
 export class App {
   profileForm = new FormGroup({

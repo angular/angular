@@ -11,7 +11,7 @@ In this activity, you will create a custom pipe and use it in your template.
 A pipe is a TypeScript class with a `@Pipe` decorator. Here's an example:
 
 ```ts
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'star',

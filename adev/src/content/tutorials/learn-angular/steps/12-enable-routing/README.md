@@ -18,7 +18,7 @@ Inside `app.routes.ts`, make the following changes:
 2. Export a constant called `routes` of type `Routes`, assign it `[]` as the value.
 
 ```ts
-import {Routes} from '@angular/router';
+import { Routes } from '@angular/router';
 
 export const routes: Routes = [];
 ```
@@ -34,9 +34,9 @@ In `app.config.ts`, configure the app to Angular Router with the following steps
 1. Call the `provideRouter` function with `routes` passed in as an argument in the `providers` array.
 
 <docs-code language="ts" highlight="[2,3,6]">
-import {ApplicationConfig} from '@angular/core';
-import {provideRouter} from '@angular/router';
-import {routes} from './app.routes';
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
 providers: [provideRouter(routes)],
@@ -52,7 +52,7 @@ Finally, to make sure your app is ready to use the Angular Router, you need to t
 Update the template for `App` by adding `<router-outlet />`
 
 <docs-code language="angular-ts" highlight="[11]">
-import {RouterOutlet} from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
 ...
