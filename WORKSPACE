@@ -339,3 +339,13 @@ register_toolchains(
     "@devinfra//bazel/git-toolchain:git_macos_arm64_toolchain",
     "@devinfra//bazel/git-toolchain:git_windows_toolchain",
 )
+
+git_repository(
+    name = "rules_sass",
+    commit = "3cd198e291caf21ba8f7105d53963dd3df62ef6d",
+    remote = "https://github.com/devversion/rules_sass.git",
+)
+
+load("@rules_sass//src/toolchain:repositories.bzl", "setup_rules_sass")
+
+setup_rules_sass()
