@@ -22,7 +22,7 @@ export class FieldMetadataState {
   get<M>(key: MetadataKey<M>): Signal<M> {
     cast<MetadataKey<unknown>>(key);
     if (!this.metadataMap.has(key)) {
-      const logic = this.node.logic.getMetadata(key);
+      const logic = this.node.logicNode.logic.getMetadata(key);
       const result = computed(() => logic.compute(this.node.context));
       this.metadataMap.set(key, result);
     }

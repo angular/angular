@@ -7,9 +7,9 @@
  */
 
 import {computed, signal, Signal} from '@angular/core';
+import type {DisabledReason} from '../api/types';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitTrue} from './util';
-import type {DisabledReason} from '../api/types';
 
 /**
  * State associated with a `FieldNode`, such as touched and dirty status, as well as derived logical
@@ -61,7 +61,7 @@ export class FieldNodeState {
    */
   readonly disabledReasons: Signal<readonly DisabledReason[]> = computed(() => [
     ...(this.node.structure.parent?.nodeState.disabledReasons() ?? []),
-    ...this.node.logic.disabledReasons.compute(this.node.context),
+    ...this.node.logicNode.logic.disabledReasons.compute(this.node.context),
   ]);
 
   /**
@@ -81,7 +81,7 @@ export class FieldNodeState {
   readonly readonly: Signal<boolean> = computed(
     () =>
       (this.node.structure.parent?.nodeState.readonly() ||
-        this.node.logic.readonly.compute(this.node.context)) ??
+        this.node.logicNode.logic.readonly.compute(this.node.context)) ??
       false,
   );
 
@@ -94,7 +94,7 @@ export class FieldNodeState {
   readonly hidden: Signal<boolean> = computed(
     () =>
       (this.node.structure.parent?.nodeState.hidden() ||
-        this.node.logic.hidden.compute(this.node.context)) ??
+        this.node.logicNode.logic.hidden.compute(this.node.context)) ??
       false,
   );
 }

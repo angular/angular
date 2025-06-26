@@ -18,12 +18,12 @@ export class FieldDataState {
 
   constructor(private readonly node: FieldNode) {
     // Instantiate data dependencies.
-    if (this.node.logic.dataFactories.size === 0) {
+    if (!this.node.logicNode.logic.hasData()) {
       return;
     }
     untracked(() =>
       runInInjectionContext(this.node.structure.injector, () => {
-        for (const [key, factory] of this.node.logic.dataFactories) {
+        for (const [key, factory] of this.node.logicNode.logic.getDataFactoryEntries()) {
           this.dataMap.set(key, factory(this.node.context));
         }
       }),

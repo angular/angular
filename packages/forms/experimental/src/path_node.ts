@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FieldPath} from './api/types';
-import {DYNAMIC, FieldLogicNode, Predicate} from './logic_node';
+import {DYNAMIC, Predicate} from './logic_node';
+import {LogicNodeBuilder} from './logic_node_2';
+import {SchemaImpl} from './schema';
 
 /**
  * Special key which is used to retrieve the `FieldPathNode` instance from its `FieldPath` proxy wrapper.
@@ -14,7 +16,7 @@ import {DYNAMIC, FieldLogicNode, Predicate} from './logic_node';
 const PATH = Symbol('PATH');
 
 export class FieldPathNode {
-  readonly root: FieldRootPathNode;
+  readonly root: FieldPathNode;
   private readonly children = new Map<PropertyKey, FieldPathNode>();
 
   readonly fieldPathProxy: FieldPath<any> = new Proxy(
@@ -24,10 +26,10 @@ export class FieldPathNode {
 
   protected constructor(
     readonly keys: PropertyKey[],
-    readonly logic: FieldLogicNode,
-    root: FieldRootPathNode | undefined,
+    readonly logic: LogicNodeBuilder,
+    root: FieldPathNode,
   ) {
-    this.root = root ?? (this as unknown as FieldRootPathNode);
+    this.root = root ?? this;
   }
 
   get element(): FieldPathNode {
@@ -44,23 +46,19 @@ export class FieldPathNode {
     return this.children.get(key)!;
   }
 
-  mergeIn(other: FieldRootPathNode) {
-    this.logic.mergeIn(other.logic);
-    for (const [root, pathKeys] of other.subroots) {
-      this.root.subroots.set(root, [...this.keys, ...pathKeys]);
+  mergeIn(other: SchemaImpl | undefined, predicate?: Predicate) {
+    if (other !== undefined) {
+      const path = other.compile();
+      this.logic.mergeIn(path.logic, predicate);
     }
   }
 
   static unwrapFieldPath(formPath: FieldPath<unknown>): FieldPathNode {
     return (formPath as any)[PATH] as FieldPathNode;
   }
-}
 
-export class FieldRootPathNode extends FieldPathNode {
-  readonly subroots = new Map<FieldPathNode, PropertyKey[]>([[this, []]]);
-
-  constructor(predicate: Predicate | undefined) {
-    super([], FieldLogicNode.newRoot(predicate), undefined);
+  static newRoot() {
+    return new FieldPathNode([], LogicNodeBuilder.newRoot(), undefined!);
   }
 }
 

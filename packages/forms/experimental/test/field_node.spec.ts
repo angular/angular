@@ -9,20 +9,32 @@
 import {computed, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  disabled,
-  required,
-  error,
-  readonly,
-  validate,
-  validateTree,
-  REQUIRED,
-  FormTreeError,
-  SchemaOrSchemaFn,
   apply,
   applyEach,
+  applyWhen,
+  disabled,
+  error,
+  FieldPath,
   form,
+  FormTreeError,
+  MIN,
+  min,
+  readonly,
+  required,
+  REQUIRED,
+  Schema,
+  schema,
+  SchemaOrSchemaFn,
   submit,
+  validate,
+  validateTree,
 } from '../public_api';
+import {SchemaImpl} from '../src/schema';
+
+interface TreeData {
+  level: number;
+  next: TreeData;
+}
 
 const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
 
@@ -910,6 +922,187 @@ describe('FieldNode', () => {
       );
 
       expect(f.address.street().disabled()).toBe(true);
+    });
+  });
+
+  describe('predefined schema', () => {
+    it('should compile schema once per form', () => {
+      const opts = {injector: TestBed.inject(Injector)};
+      const subFn = jasmine.createSpy('schemaFn');
+      const sub: Schema<string> = schema(subFn);
+      const s = schema((p: FieldPath<{a: string; b: string}>) => {
+        apply(p.a, sub);
+        apply(p.b, sub);
+      });
+      expect(subFn).toHaveBeenCalledTimes(0);
+
+      form(signal({a: '', b: ''}), s, opts);
+      expect(subFn).toHaveBeenCalledTimes(1);
+
+      form(signal({a: '', b: ''}), s, opts);
+      expect(subFn).toHaveBeenCalledTimes(2);
+    });
+
+    it('should resolve predefined schema paths within the local context', () => {
+      const s = schema<{a: string; b: string}>((p) => {
+        disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
+      });
+
+      const f = form(
+        signal({first: {a: '', b: ''}, second: {a: 'disable-b', b: ''}}),
+        (p) => {
+          apply(p.first, s);
+          apply(p.second, s);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.first.b().disabled()).toBe(false);
+      expect(f.second.b().disabled()).toBe(true);
+    });
+
+    it('should resolve predefined schema paths deeply nested within the schema', () => {
+      const s = schema<{a: string; b: string}>((p) => {
+        disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
+      });
+
+      const f = form(
+        signal({first: {second: {a: 'disable-b', b: ''}}}),
+        (p) => {
+          apply(p.first, (p) => {
+            apply(p.second, s);
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.first.second.b().disabled()).toBe(true);
+    });
+
+    it('should error on resolving predefined schema path that is not part of the form', () => {
+      let otherP: FieldPath<any>;
+      const s = schema<string>((p) => (otherP = p));
+      SchemaImpl.rootCompile(s);
+
+      const f = form(
+        signal(''),
+        (p) => {
+          disabled(p, ({fieldOf}) => {
+            fieldOf(otherP);
+            return true;
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(() => f().disabled()).toThrowError('Path is not part of this field tree.');
+    });
+
+    it('should support recursive logic', () => {
+      const s = schema<TreeData>((p) => {
+        disabled(p.level, ({valueOf}) => {
+          return valueOf(p.level) % 2 === 0;
+        });
+        apply(p.next, s);
+      });
+      const f = form<TreeData>(
+        signal({level: 0, next: {level: 1, next: {level: 2, next: {level: 3, next: null!}}}}),
+        s,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f.level().disabled()).toBe(true);
+      expect(f.next.level().disabled()).toBe(false);
+      expect(f.next.next.level().disabled()).toBe(true);
+      expect(f.next.next.next.level().disabled()).toBe(false);
+    });
+
+    it('should support co-recursive logic', () => {
+      const s1: Schema<TreeData> = schema((p) => {
+        disabled(p.level, ({valueOf}) => valueOf(p.level) % 2 === 0);
+        apply(p.next, s2);
+      });
+      const s2: Schema<TreeData> = schema((p) => {
+        disabled(p.level, ({valueOf}) => valueOf(p.level) % 2 === 0);
+        apply(p.next, s1);
+      });
+      const f = form<TreeData>(
+        signal({
+          level: 0,
+          next: {level: 1, next: {level: 2, next: {level: 3, next: null!}}},
+        }),
+        s1,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f.level().disabled()).toBe(true);
+      expect(f.next.level().disabled()).toBe(false);
+      expect(f.next.next.level().disabled()).toBe(true);
+      expect(f.next.next.next.level().disabled()).toBe(false);
+    });
+
+    it('should support recursive logic terminated by a when condition', () => {
+      const s: Schema<TreeData> = schema((p) => {
+        min(p.level, ({valueOf}) => valueOf(p.level));
+        applyWhen(p.next, (ctx) => ctx.valueOf(p.level) !== 2, s);
+      });
+      const f = form<TreeData>(
+        signal({
+          level: 0,
+          next: {level: 1, next: {level: 2, next: {level: 3, next: {level: 4, next: null!}}}},
+        }),
+        s,
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f.level().metadata(MIN)()).toBe(0);
+      expect(f.next.level().metadata(MIN)()).toBe(1);
+      expect(f.next.next.level().metadata(MIN)()).toBe(2);
+      expect(f.next.next.next.level().metadata(MIN)()).toBe(undefined);
+      expect(f.next.next.next.next.level().metadata(MIN)()).toBe(undefined);
+    });
+
+    it('should support recursive logic with arrays', () => {
+      interface Dom {
+        tag: string;
+        children: Dom[];
+      }
+
+      const domSchema = schema<Dom>((p) => {
+        applyEach(p.children, domSchema);
+        applyWhen(
+          p.children,
+          ({valueOf}) => valueOf(p.tag) === 'table',
+          (children) => {
+            applyEach(children, (c) => {
+              validate(c.tag, ({value}) =>
+                value() !== 'tr' ? {kind: 'invalid-child'} : undefined,
+              );
+            });
+          },
+        );
+        applyWhen(
+          p.children,
+          ({valueOf}) => valueOf(p.tag) === 'tr',
+          (children) => {
+            applyEach(children, (c) => {
+              validate(c.tag, ({value}) =>
+                value() !== 'td' ? {kind: 'invalid-child'} : undefined,
+              );
+            });
+          },
+        );
+      });
+
+      const data = signal<Dom>({tag: 'div', children: [{tag: 'span', children: []}]});
+      const f = form(data, domSchema, {injector: TestBed.inject(Injector)});
+      expect(f().valid()).toBe(true);
+
+      data.set({tag: 'table', children: [{tag: 'span', children: []}]});
+      expect(f().valid()).toBe(false);
+
+      data.set({tag: 'table', children: [{tag: 'tr', children: [{tag: 'span', children: []}]}]});
+      expect(f().valid()).toBe(false);
+
+      data.set({tag: 'table', children: [{tag: 'tr', children: [{tag: 'td', children: []}]}]});
+      expect(f().valid()).toBe(true);
     });
   });
 });
