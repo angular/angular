@@ -1,5 +1,6 @@
 <ngx-flamegraph
   (frameClick)="selectFrame($event)"
   [config]="{ data: profilerBars(), color: colors() }"
+  [tooltipEnabled]="true"
   siblingLayout="equal"
 />
