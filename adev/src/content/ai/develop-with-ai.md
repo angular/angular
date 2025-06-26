@@ -12,7 +12,7 @@ Here is a set of instructions to help LLMs generate correct code that follows An
 
 <docs-code language="md" path="adev/src/context/best-practices.md" class="compact"/>
 
-<a download href="/context/best-practices.md" target="_blank">Click here to download the best-practices.md file.</a> 
+<a download href="/assets/context/best-practices.md" target="_blank">Click here to download the best-practices.md file.</a> 
 
 ## Rules Files
 Several editors, such as <a href="https://studio.firebase.google.com?utm_source=adev&utm_medium=website&utm_campaign=BUILD_WITH_AI_ANGULAR&utm_term=angular_devrel&utm_content=build_with_ai_angular_firebase_studio">Firebase Studio</a> have rules files useful for providing critical context to LLMs.
