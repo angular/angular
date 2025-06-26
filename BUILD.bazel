@@ -77,8 +77,8 @@ nodejs_binary(
 alias(
     name = "sauce_connect",
     actual = select({
-        "@npm//@angular/build-tooling/bazel/constraints:linux_x64": "@sauce_connect_linux_amd64//:bin/sc",
-        "@npm//@angular/build-tooling/bazel/constraints:macos_x64": "@sauce_connect_mac//:bin/sc",
-        "@npm//@angular/build-tooling/bazel/constraints:macos_arm64": "@sauce_connect_mac//:bin/sc",
+        "@devinfra//bazel/constraints:linux_x64": "@sauce_connect_linux_amd64//:bin/sc",
+        "@devinfra//bazel/constraints:macos_x64": "@sauce_connect_mac//:bin/sc",
+        "@devinfra//bazel/constraints:macos_arm64": "@sauce_connect_mac//:bin/sc",
     }),
 )

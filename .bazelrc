@@ -109,9 +109,9 @@ build:remote --cpu=k8
 build:remote --host_cpu=k8
 
 # Toolchain and platform related flags
-build:remote --extra_execution_platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
-build:remote --host_platform=@npm//@angular/build-tooling/bazel/remote-execution:platform
-build:remote --platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
+build:remote --extra_execution_platforms=@devinfra//bazel/remote-execution:platform_with_network
+build:remote --host_platform=@devinfra//bazel/remote-execution:platform_with_network
+build:remote --platforms=@devinfra//bazel/remote-execution:platform_with_network
 
 # Remote instance and caching
 build:remote --remote_instance_name=projects/internal-200822/instances/primary_instance
