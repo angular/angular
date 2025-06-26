@@ -1,5 +1,5 @@
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
+load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,7 +19,7 @@ ts_project(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "highlighter_test",
     deps = [
         ":highlighter_test_lib_rjs",
@@ -81,15 +81,15 @@ ts_test_library(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "property_mutation_test",
-    deps = [":property_mutation_test_lib"],
+    deps = [":property_mutation_test_lib_rjs"],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "router_tree_test",
     deps = [
-        ":router_tree_test_lib",
+        ":router_tree_test_lib_rjs",
     ],
 )
 
@@ -143,10 +143,10 @@ ts_project(
     srcs = ["version.ts"],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "client_event_subscribers_test",
     deps = [
-        ":client_event_subscribers_test_lib",
+        ":client_event_subscribers_test_lib_rjs",
     ],
 )
 

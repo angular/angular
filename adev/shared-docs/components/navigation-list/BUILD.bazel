@@ -13,11 +13,6 @@ ng_project(
         ":navigation-list.component.css",
         "navigation-list.component.html",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
     ],
@@ -27,6 +22,9 @@ ng_project(
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/pipes:pipes_rjs",
         "//adev/shared-docs/services:services_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
@@ -44,15 +42,15 @@ ts_project(
     srcs = glob(
         ["*.spec.ts"],
     ),
-    interop_deps = [
-        ":navigation-list",
-        "//adev/shared-docs/interfaces",
-        "//adev/shared-docs/services",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/router",
-        "//packages/router/testing",
+    deps = [
+        ":navigation-list_rjs",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/services:services_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/router:router_rjs",
+        "//packages/router/testing:testing_rjs",
     ],
 )
 

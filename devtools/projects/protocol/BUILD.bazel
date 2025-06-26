@@ -1,5 +1,5 @@
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
+load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -35,9 +35,9 @@ ts_test_library(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
     deps = [
-        "//devtools/projects/protocol:protocol_test",
+        ":protocol_test_rjs",
     ],
 )

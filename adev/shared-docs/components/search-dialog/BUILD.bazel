@@ -13,12 +13,6 @@ ng_project(
         ":search-dialog.component.css",
         "search-dialog.component.html",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/forms",
-        "//packages/router",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
     ],
@@ -32,6 +26,10 @@ ng_project(
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/pipes:pipes_rjs",
         "//adev/shared-docs/services:services_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/forms:forms_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
@@ -46,18 +44,18 @@ ts_project(
     srcs = glob(
         ["*.spec.ts"],
     ),
-    interop_deps = [
-        ":search-dialog",
-        "//adev/shared-docs/components/algolia-icon",
-        "//adev/shared-docs/interfaces",
-        "//adev/shared-docs/providers",
-        "//adev/shared-docs/services",
-        "//adev/shared-docs/testing",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/router",
-        "//packages/router/testing",
+    deps = [
+        ":search-dialog_rjs",
+        "//adev/shared-docs/components/algolia-icon:algolia-icon_rjs",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/services:services_rjs",
+        "//adev/shared-docs/testing:testing_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/router:router_rjs",
+        "//packages/router/testing:testing_rjs",
     ],
 )
 
