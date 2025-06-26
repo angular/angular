@@ -121,7 +121,7 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 - Run test with `_debug` appended to the target name,
   e.g. `yarn bazel run packages/core/test:test_web_debug`.
-  Every `karma_web_test_suite` target has an additional `_debug` target.
+  Every `ng_web_test_suite` target has an additional `_debug` target.
 - Open any browser at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
 - Open the browser's DevTools to debug the tests (after, for example, having focused on specific
   tests via `fit` and/or `fdescribe` or having added `debugger` statements in them)

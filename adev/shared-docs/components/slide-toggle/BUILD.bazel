@@ -1,6 +1,6 @@
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -13,13 +13,13 @@ ng_project(
         ":slide-toggle.component.css",
         "slide-toggle.component.html",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/forms",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
+    ],
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/forms:forms_rjs",
     ],
 )
 
@@ -34,14 +34,14 @@ ts_project(
     srcs = glob(
         ["*.spec.ts"],
     ),
-    interop_deps = [
-        ":slide-toggle",
-        "//packages/core",
-        "//packages/core/testing",
+    deps = [
+        ":slide-toggle_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
-    deps = [":test_lib"],
+    deps = [":test_lib_rjs"],
 )

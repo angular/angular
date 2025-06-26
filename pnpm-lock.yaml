@@ -125,9 +125,6 @@ importers:
       '@types/jasmine':
         specifier: ^5.0.0
         version: 5.1.8
-      '@types/jasmine-ajax':
-        specifier: ^3.3.1
-        version: 3.3.5
       '@types/jasminewd2':
         specifier: ^2.0.8
         version: 2.0.13
@@ -224,9 +221,6 @@ importers:
       jasmine:
         specifier: ~5.8.0
         version: 5.8.0
-      jasmine-ajax:
-        specifier: ^4.0.0
-        version: 4.0.0
       jasmine-core:
         specifier: ^5.0.0
         version: 5.8.0
@@ -3034,7 +3028,6 @@ packages:
 
   /@bazel/typescript@5.8.1(typescript@5.7.3):
     resolution: {integrity: sha512-NAJ8WQHZL1WE1YmRoCrq/1hhG15Mvy/viWh6TkvFnBeEhNUiQUsA5GYyhU1ztnBIYW03nATO3vwhAEfO7Q0U5g==, tarball: https://registry.npmjs.org/@bazel/typescript/-/typescript-5.8.1.tgz}
-    deprecated: No longer maintained, https://github.com/aspect-build/rules_ts is the recommended replacement
     hasBin: true
     peerDependencies:
       typescript: '>=3.0.0'
@@ -6760,10 +6753,6 @@ packages:
     dependencies:
       '@types/istanbul-lib-report': 3.0.3
     dev: true
-
-  /@types/jasmine-ajax@3.3.5:
-    resolution: {integrity: sha512-kq6u6TuwcyxAMN8f9GHKmMFhDC3D7aLIMR6Va1KgTji9g64KUsAE6Xw+/flPtuU/o2EQpYpdlQjg6chdBOdVzQ==, tarball: https://registry.npmjs.org/@types/jasmine-ajax/-/jasmine-ajax-3.3.5.tgz}
-    dev: false
 
   /@types/jasmine@5.1.8:
     resolution: {integrity: sha512-u7/CnvRdh6AaaIzYjCgUuVbREFgulhX05Qtf6ZtW+aOcjCKKVvKgpkPYJBFTZSHtFBYimzU4zP0V2vrEsq9Wcg==, tarball: https://registry.npmjs.org/@types/jasmine/-/jasmine-5.1.8.tgz}
@@ -13584,10 +13573,6 @@ packages:
       '@isaacs/cliui': 8.0.2
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
-
-  /jasmine-ajax@4.0.0:
-    resolution: {integrity: sha512-htTxNw38BSHxxmd8RRMejocdPqLalGHU6n3HWFbzp/S8AuTQd1MYjkSH3dYDsbZ7EV1Xqx/b94m3tKaVSVBV2A==, tarball: https://registry.npmjs.org/jasmine-ajax/-/jasmine-ajax-4.0.0.tgz}
-    dev: false
 
   /jasmine-core@2.8.0:
     resolution: {integrity: sha512-SNkOkS+/jMZvLhuSx1fjhcNWUC/KG6oVyFUGkSBEr9n1axSNduWU8GlI7suaHXr4yxjet6KjrUZxUTE5WzzWwQ==, tarball: https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.8.0.tgz}
