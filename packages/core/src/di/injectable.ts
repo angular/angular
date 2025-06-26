@@ -81,8 +81,7 @@ export interface Injectable {
    * - `Type<any>` - associates the injectable with an `@NgModule` or other `InjectorType`. This
    * option is DEPRECATED.
    * - 'null' : Equivalent to `undefined`. The injectable is not provided in any scope automatically
-   * and must be added to a `providers` array of an [@NgModule](api/core/NgModule#providers),
-   * [@Component](api/core/Directive#providers) or [@Directive](api/core/Directive#providers).
+   * and must be added to a `providers` array.
    *
    * The following options specify that this injectable should be provided in one of the following
    * injectors:
