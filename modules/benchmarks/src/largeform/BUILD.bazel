@@ -6,12 +6,10 @@ ts_project(
     name = "perf_tests_lib",
     testonly = 1,
     srcs = ["largeform.perf-spec.ts"],
-    interop_deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-    ],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
     ],
 )
 
@@ -19,11 +17,9 @@ ts_project(
     name = "e2e_tests_lib",
     testonly = 1,
     srcs = ["largeform.e2e-spec.ts"],
-    interop_deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-    ],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
     ],
 )

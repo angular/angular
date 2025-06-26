@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  runBenchmark,
-  verifyNoBrowserErrors,
-} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {runBenchmark, verifyNoBrowserErrors} from '../../../utilities/index';
 import {$} from 'protractor';
 
 interface Worker {
@@ -45,7 +42,7 @@ const AllComponentsDirtyWorker: Worker = {
 // name. We determine the name of the Bazel package where this test runs from the current test
 // target. The Bazel target
 // looks like: "//modules/benchmarks/src/change_detection/{pkg_name}:{target_name}".
-const testPackageName = process.env['BAZEL_TARGET']!.split(':')[0].split('/').pop();
+const testPackageName = process.env['JS_BINARY__TARGET']!.split(':')[0].split('/').pop();
 
 describe('change detection benchmark perf', () => {
   afterEach(verifyNoBrowserErrors);
