@@ -71,7 +71,7 @@ export function defineInjectable<T>(opts: {
   token: unknown;
   providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'environment' | null;
   factory: () => T;
-}): unknown {
+}): ɵɵInjectableDeclaration<T> {
   return {
     token: opts.token,
     providedIn: (opts.providedIn as any) || null,

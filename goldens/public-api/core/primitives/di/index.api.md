@@ -9,7 +9,7 @@ export function defineInjectable<T>(opts: {
     token: unknown;
     providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'environment' | null;
     factory: () => T;
-}): unknown;
+}): ɵɵInjectableDeclaration<T>;
 
 // @public (undocumented)
 export function getCurrentInjector(): Injector | undefined | null;
