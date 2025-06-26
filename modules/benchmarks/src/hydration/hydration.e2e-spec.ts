@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  openBrowser,
-  verifyNoBrowserErrors,
-} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {openBrowser, verifyNoBrowserErrors} from '../../../utilities/index';
 import {$} from 'protractor';
 
 describe('hydration benchmark', () => {

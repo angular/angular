@@ -6,11 +6,9 @@ ts_project(
     name = "perf_lib",
     testonly = True,
     srcs = ["ng_template_outlet_context.perf-spec.ts"],
-    interop_deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-    ],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
     ],
 )

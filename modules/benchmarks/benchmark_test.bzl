@@ -7,7 +7,7 @@ load("@rules_browsers//src/protractor_test:index.bzl", "protractor_test")
   with `@angular/benchpress`.
 """
 
-def e2e_test(name, deps = [], server = None):
+def benchmark_test(name, deps = [], server = None, tags = []):
     spec_bundle(
         name = "%s_bundle" % name,
         testonly = True,
@@ -27,8 +27,17 @@ def e2e_test(name, deps = [], server = None):
         name = name,
         deps = [":%s_bundle" % name],
         server = server,
+        enable_perf_logging = True,
+        # Benchmark targets should not run on CI by default.
+        tags = tags + [
+            "benchmark-test",
+            "manual",
+            "no-remote-exec",
+        ],
         data = [
-            "//:node_modules/protractor",
-            "//:node_modules/selenium-webdriver",
+            "//modules:node_modules/@angular/benchpress",
+            "//:node_modules/tslib",
+            "//modules:node_modules/protractor",
+            "//modules:node_modules/selenium-webdriver",
         ],
     )

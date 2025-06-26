@@ -13,12 +13,10 @@ ts_project(
     name = "test_utils_lib",
     testonly = 1,
     srcs = ["test_utils.ts"],
-    interop_deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-    ],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
     ],
 )
 

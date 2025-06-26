@@ -7,9 +7,5 @@
     "strict": true,
     "sourceMap": true,
     "declaration": true,
-    "paths": {
-      // TODO(devversion): Consider dropping the dependency on this utilities, or put them somewhere else.
-      "@angular/build-tooling/*": ["../../external/npm/@angular/build-tooling/*"]
-    }
   }
 }
