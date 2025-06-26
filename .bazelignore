@@ -57,4 +57,5 @@ packages/platform-browser-dynamic/node_modules
 packages/router/node_modules
 packages/zone.js/node_modules
 packages/upgrade/node_modules
+packages/benchpress/node_modules
 tools/bazel/rules_angular_store/node_modules

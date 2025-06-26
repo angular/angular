@@ -1,11 +1,8 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
 load("//tools:defaults.bzl", "http_server")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
-
-# Exported since the e2e test needs to read the source file in order to
-# ensure that the source map properly maps back to the source file.
-exports_files(["main.ts"])
 
 optimize_angular_app(
     name = "bundles",
@@ -37,5 +34,13 @@ http_server(
     deps = [
         ":app_bundle",
         "//modules:node_modules/zone.js",
+    ],
+)
+
+copy_to_bin(
+    name = "assets",
+    srcs = [
+        "main.ts",
+        ":bundles",
     ],
 )

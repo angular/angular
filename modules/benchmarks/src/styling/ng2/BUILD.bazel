@@ -1,5 +1,5 @@
-load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 load("//tools:defaults.bzl", "http_server")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
@@ -42,5 +42,5 @@ http_server(
 benchmark_test(
     name = "perf",
     server = ":prodserver",
-    deps = ["//modules/benchmarks/src/styling:tests_lib"],
+    deps = ["//modules/benchmarks/src/styling:tests_lib_rjs"],
 )

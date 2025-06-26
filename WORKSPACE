@@ -113,6 +113,7 @@ npm_translate_lock(
         "//integration:package.json",
         "//modules:package.json",
         "//packages/animations:package.json",
+        "//packages/benchpress:package.json",
         "//packages/common:package.json",
         "//packages/compiler:package.json",
         "//packages/compiler-cli:package.json",
@@ -309,7 +310,7 @@ rules_angular_step3(
 
 git_repository(
     name = "rules_browsers",
-    commit = "0952071cdc67acf1124c20c32a9b7e2e85da0aa3",
+    commit = "06b02f8968c754ab93539cd9191243bdc445e390",
     remote = "https://github.com/devversion/rules_browsers.git",
 )
 
