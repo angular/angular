@@ -1,6 +1,4 @@
-load("//tools:defaults.bzl", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
-load("//tools/bazel:jasmine_test.bzl", "angular_jasmine_test")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
 
 ts_project(
     name = "test_lib",
@@ -29,7 +27,7 @@ angular_jasmine_test(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test_web",
     tags = [
         # disabled on 2020-04-14 due to failure on saucelabs monitor job
@@ -41,6 +39,6 @@ karma_web_test_suite(
         "fixme-saucelabs",
     ],
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )

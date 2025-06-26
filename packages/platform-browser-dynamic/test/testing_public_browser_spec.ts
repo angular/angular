@@ -47,11 +47,9 @@ if (isBrowser) {
 
       it('should run async tests with ResourceLoaders', waitForAsync(() => {
         const resourceLoader = new ResourceLoaderImpl();
-        resourceLoader
-          .get('/base/angular/packages/platform-browser/test/static_assets/test.html')
-          .then(() => {
-            actuallyDone = true;
-          });
+        resourceLoader.get('/packages/platform-browser/test/static_assets/test.html').then(() => {
+          actuallyDone = true;
+        });
       }), 10000); // Long timeout here because this test makes an actual ResourceLoader.
     });
 

@@ -18,10 +18,6 @@ ng_project(
         "search-history.component.html",
         ":styles",
     ],
-    interop_deps = [
-        "//packages/core",
-        "//packages/router",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
         "//adev/shared-docs/components/search-dialog:__pkg__",
@@ -31,6 +27,8 @@ ng_project(
         "//adev/shared-docs/directives:directives_rjs",
         "//adev/shared-docs/pipes:pipes_rjs",
         "//adev/shared-docs/services:services_rjs",
+        "//packages/core:core_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
@@ -38,13 +36,13 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = ["search-history.component.spec.ts"],
-    interop_deps = [
-        ":search-history",
-        "//adev/shared-docs/services",
-        "//adev/shared-docs/testing",
-        "//packages/core/testing",
-        "//packages/core",
-        "//packages/platform-browser",
+    deps = [
+        ":search-history_rjs",
+        "//adev/shared-docs/services:services_rjs",
+        "//adev/shared-docs/testing:testing_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
     ],
 )
 

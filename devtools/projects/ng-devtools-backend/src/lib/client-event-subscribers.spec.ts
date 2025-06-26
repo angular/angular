@@ -60,10 +60,8 @@ function mockAngular() {
   (appNode as any).__ngContext__ = true;
   document.body.appendChild(appNode);
 
-  (window as any) = {
-    ng: {
-      getComponent: () => {},
-    },
+  (window as any).ng = {
+    getComponent: () => {},
   };
   return appNode;
 }

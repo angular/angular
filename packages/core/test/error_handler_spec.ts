@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed} from '../testing';
+import {fakeAsync, TestBed} from '../testing';
 import {ErrorHandler, provideBrowserGlobalErrorListeners} from '../src/error_handler';
 import {isNode, withBody} from '@angular/private/testing';
 import {ApplicationRef, Component, destroyPlatform, inject} from '../src/core';
@@ -43,7 +43,7 @@ describe('ErrorHandler', () => {
     expect(errorToString(undefined)).toBe('ERROR#undefined');
   });
 
-  it('installs global error handler once', async () => {
+  it('installs global error handler once', () => () => {
     if (isNode) {
       return;
     }
@@ -56,7 +56,7 @@ describe('ErrorHandler', () => {
     });
 
     const spy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
-    await new Promise((resolve) => {
+    new Promise((resolve) => {
       setTimeout(() => {
         throw new Error('abc');
       });
@@ -68,7 +68,7 @@ describe('ErrorHandler', () => {
     window.onerror = originalWindowOnError;
   });
 
-  it('handles error events without error', async () => {
+  it('handles error events without error', () => () => {
     if (isNode) {
       return;
     }
@@ -81,7 +81,7 @@ describe('ErrorHandler', () => {
     });
 
     const spy = spyOn(TestBed.inject(ErrorHandler), 'handleError');
-    await new Promise((resolve) => {
+    new Promise((resolve) => {
       setTimeout(() => {
         window.dispatchEvent(new ErrorEvent('error', {message: 'error event without error'}));
       });

@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "nodejs_binary", "npm_package_bin")
-load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project", "ts_project")
+load("//tools:defaults.bzl", "nodejs_binary", "npm_package_bin")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -85,16 +85,16 @@ angular_jasmine_test(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test_jit_web",
     deps = [
-        ":test_jit_lib",
+        ":test_jit_lib_rjs",
     ],
 )

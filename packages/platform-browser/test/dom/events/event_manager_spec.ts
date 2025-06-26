@@ -299,7 +299,7 @@ import type {} from 'zone.js';
 
     // This test is reliant on `zone_event_unpatched_init.js` and verifies
     // that the Zone unpatched event setting applies to the event manager.
-    it('should run unpatchedEvents handler outside of ngZone', () => {
+    it('should run unpatchedEvents handler outside of ngZone', () => () => {
       const element = el('<div><div></div></div>');
       const zone = new NgZone({enableLongStackTrace: true});
       const manager = new EventManager([domEventPlugin], zone);

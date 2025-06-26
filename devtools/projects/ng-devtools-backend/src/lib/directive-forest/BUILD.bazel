@@ -1,5 +1,5 @@
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
+load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,13 +23,6 @@ ts_project(
     ],
 )
 
-karma_web_test_suite(
-    name = "test",
-    deps = [
-        ":test_lib",
-    ],
-)
-
 ts_test_library(
     name = "test_lib",
     srcs = [
@@ -42,5 +35,12 @@ ts_test_library(
         ":directive-forest_rjs",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
         "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib_rjs",
     ],
 )

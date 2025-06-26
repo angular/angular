@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -28,35 +27,33 @@ ts_project(
             "**/*_node_only_spec.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/animations",
-        "//packages/animations/browser",
-        "//packages/animations/browser/testing",
-        "//packages/common",
-        "//packages/common/locales",
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/rxjs-interop",
-        "//packages/core/src/di/interface",
-        "//packages/core/src/interface",
-        "//packages/core/src/reflection",
-        "//packages/core/src/util",
-        "//packages/core/testing",
-        "//packages/localize/init",
-        "//packages/platform-browser",
-        "//packages/platform-browser/animations",
-        "//packages/platform-browser/testing",
-        "//packages/platform-server",
-        "//packages/private/testing",
-        "//packages/router",
-        "//packages/router/testing",
-    ],
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         ":test_utils_rjs",
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/locales:locales_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/rxjs-interop:rxjs-interop_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
+        "//packages/core/src/interface:interface_rjs",
+        "//packages/core/src/reflection:reflection_rjs",
+        "//packages/core/src/util:util_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/localize/init:init_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/private/testing:testing_rjs",
+        "//packages/router:router_rjs",
+        "//packages/router/testing:testing_rjs",
     ],
 )
 
@@ -67,18 +64,16 @@ ts_project(
         ["**/*_node_only_spec.ts"],
         exclude = UTILS,
     ),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/src/compiler",
-        "//packages/core/testing",
-        "//packages/platform-server",
-        "//packages/platform-server/testing",
-        "//packages/private/testing",
-    ],
     deps = [
         ":test_lib_rjs",
         ":test_utils_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/src/compiler:compiler_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/platform-server/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
@@ -91,10 +86,10 @@ angular_jasmine_test(
     shard_count = 4,
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test_web",
     external = ["@angular/platform-server"],
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )

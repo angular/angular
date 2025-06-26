@@ -17,6 +17,7 @@ ts_project(
 
 jasmine_test(
     name = "test",
+    timeout = "moderate",
     data = [
         ":test_lib_rjs",
         "//:node_modules/shelljs",
