@@ -30,7 +30,7 @@ export const DEFER_BLOCK_DEFAULT_BEHAVIOR = DeferBlockBehavior.Playthrough;
  * @publicApi
  */
 export class TestComponentRenderer {
-  insertRootElement(rootElementId: string) {}
+  insertRootElement(rootElementId: string, tagName?: string) {}
   removeAllRootElements?() {}
 }
 

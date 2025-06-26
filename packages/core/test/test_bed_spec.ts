@@ -2400,6 +2400,32 @@ describe('TestBed', () => {
       });
     });
   });
+
+  describe('tag names', () => {
+    it('should infer the tag of the root component from the selector', () => {
+      @Component({selector: 'my-test-comp[foo]', template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('MY-TEST-COMP');
+    });
+
+    it('should fall back to `div` if the test component does not have a tag selector', () => {
+      @Component({selector: '[foo]', template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('DIV');
+    });
+
+    it('should fall back to `div` if the test component does not have any selector', () => {
+      @Component({template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('DIV');
+    });
+  });
 });
 
 describe('TestBed defer block behavior', () => {
