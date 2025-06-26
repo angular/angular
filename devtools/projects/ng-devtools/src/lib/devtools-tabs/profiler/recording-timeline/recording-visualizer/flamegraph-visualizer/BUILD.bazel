@@ -6,6 +6,9 @@ package(default_visibility = ["//devtools:__subpackages__"])
 sass_binary(
     name = "flamegraph-visualizer_styles",
     src = "flamegraph-visualizer.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
 )
 
 ng_project(
