@@ -11,7 +11,7 @@ import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
-import {assertPathIsCurrent, SchemaImpl} from '../schema';
+import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema';
 import type {
   Field,
   FieldPath,
@@ -36,7 +36,7 @@ function normalizeFormArgs<T>(
   if (args.length === 3) {
     [model, schema, options] = args;
   } else if (args.length === 2) {
-    if (args[1] instanceof SchemaImpl || typeof args[1] === 'function') {
+    if (isSchemaOrSchemaFn(args[1])) {
       [model, schema] = args;
     } else {
       [model, options] = args;
