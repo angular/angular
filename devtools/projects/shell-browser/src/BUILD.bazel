@@ -1,11 +1,11 @@
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_project")
 load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
 load("//tools:defaults.bzl", "esbuild")
+load("//tools:defaults2.bzl", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 

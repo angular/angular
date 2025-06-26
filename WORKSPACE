@@ -236,6 +236,14 @@ sass_repositories(
     yarn_script = YARN_LABEL,
 )
 
+# Register git toolchains
+register_toolchains(
+    "@npm//@angular/build-tooling/bazel/git-toolchain:git_linux_toolchain",
+    "@npm//@angular/build-tooling/bazel/git-toolchain:git_macos_x86_toolchain",
+    "@npm//@angular/build-tooling/bazel/git-toolchain:git_macos_arm64_toolchain",
+    "@npm//@angular/build-tooling/bazel/git-toolchain:git_windows_toolchain",
+)
+
 # Fetch sauce connect (tool to open Saucelabs tunnel for Saucelabs browser tests)
 http_archive(
     name = "sauce_connect_linux_amd64",
@@ -342,7 +350,7 @@ register_toolchains(
 
 git_repository(
     name = "rules_sass",
-    commit = "3cd198e291caf21ba8f7105d53963dd3df62ef6d",
+    commit = "cafb5de3136cd4e1d832e8814ad5733d68dbad10",
     remote = "https://github.com/devversion/rules_sass.git",
 )
 
