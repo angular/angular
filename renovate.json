@@ -34,7 +34,8 @@
     "convert-source-map",
     "selenium-webdriver",
     "systemjs",
-    "patch-package"
+    "patch-package",
+    "ngx-flamegraph"
   ],
   "packageRules": [
     {
