@@ -8,49 +8,9 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FieldPath, SchemaFn, validate, apply, applyEach, form, applyWhen} from '../public_api';
-import {FieldPathNode, FieldRootPathNode} from '../src/path_node';
+import {apply, applyEach, applyWhen, form, validate} from '../public_api';
 
 describe('path', () => {
-  describe('roots', () => {
-    it('should lift all root paths to top', () => {
-      let rootPath!: FieldPath<unknown>;
-      const paths: FieldPath<unknown>[] = [];
-      const savePath = <T>(fn?: SchemaFn<T>) => {
-        return (p: FieldPath<T>) => {
-          paths.push(p);
-          fn?.(p);
-        };
-      };
-      const f = form(
-        signal({a: {b: {c: ''}}}),
-        savePath((root) => {
-          rootPath = root;
-          apply(root, savePath());
-          apply(
-            root.a,
-            savePath((a) => {
-              apply(
-                a.b,
-                savePath((b) => {
-                  apply(b.c, savePath());
-                }),
-              );
-            }),
-          );
-        }),
-        {injector: TestBed.inject(Injector)},
-      );
-      const topRoots = (FieldPathNode.unwrapFieldPath(rootPath) as FieldRootPathNode).subroots;
-      expect(topRoots.size).toBe(5);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[0]))).toEqual([]);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[1]))).toEqual([]);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[2]))).toEqual(['a']);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[3]))).toEqual(['a', 'b']);
-      expect(topRoots.get(FieldPathNode.unwrapFieldPath(paths[4]))).toEqual(['a', 'b', 'c']);
-    });
-  });
-
   describe('Active path', () => {
     it('Disallows using parent paths for applyWhen', () => {
       const data = signal({first: '', needLastName: false, last: ''});

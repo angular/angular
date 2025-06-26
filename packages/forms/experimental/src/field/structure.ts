@@ -16,10 +16,11 @@ import {
 } from '@angular/core';
 
 import {DYNAMIC} from '../logic_node';
+import {LogicNode} from '../logic_node_2';
 import type {FieldPathNode} from '../path_node';
 import {deepSignal} from '../util/deep_signal';
-import type {FieldNode} from './node';
 import type {FormFieldManager} from './manager';
+import type {FieldNode} from './node';
 
 export interface DataEntry {
   value: unknown;
@@ -67,7 +68,10 @@ export abstract class FieldNodeStructure {
     return this._injector;
   }
 
-  constructor(readonly logicPath: FieldPathNode) {}
+  constructor(
+    readonly logicPath: FieldPathNode,
+    readonly logic: LogicNode,
+  ) {}
 
   children(): Iterable<FieldNode> {
     return this.childrenMap()?.values() ?? [];
@@ -129,16 +133,18 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
   constructor(
     private readonly node: FieldNode,
     logicPath: FieldPathNode,
+    logic: LogicNode,
     readonly fieldManager: FormFieldManager,
     readonly value: WritableSignal<unknown>,
     createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
   ) {
-    super(logicPath);
+    super(logicPath, logic);
     this.childrenMap = makeChildrenMapSignal(
       node,
       value,
       this.identitySymbol,
       this.logicPath,
+      this.logic,
       createChildNode,
     );
   }
@@ -159,12 +165,13 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
   constructor(
     node: FieldNode,
     logicPath: FieldPathNode,
+    logic: LogicNode,
     readonly parent: FieldNode,
     identityInParent: TrackingKey | undefined,
     initialKeyInParent: string | number,
     createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
   ) {
-    super(logicPath);
+    super(logicPath, logic);
 
     this.root = this.parent.structure.root;
 
@@ -223,6 +230,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
       this.value,
       this.identitySymbol,
       this.logicPath,
+      this.logic,
       createChildNode,
     );
 
@@ -239,6 +247,7 @@ let globalId = 0;
 export interface RootFieldNodeOptions {
   readonly kind: 'root';
   readonly logicPath: FieldPathNode;
+  readonly logic: LogicNode;
   readonly value: WritableSignal<unknown>;
   readonly fieldManager: FormFieldManager;
 }
@@ -247,6 +256,7 @@ export interface ChildFieldNodeOptions {
   readonly kind: 'child';
   readonly parent: FieldNode;
   readonly logicPath: FieldPathNode;
+  readonly logic: LogicNode;
   readonly initialKeyInParent: string | number;
   readonly identityInParent: TrackingKey | undefined;
 }
@@ -263,6 +273,7 @@ function makeChildrenMapSignal(
   valueSignal: WritableSignal<unknown>,
   identitySymbol: symbol,
   logicPath: FieldPathNode,
+  logic: LogicNode,
   createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
 ): Signal<Map<TrackingKey, FieldNode> | undefined> {
   // We use a `linkedSignal` to preserve the instances of `FieldNode` for each child field even if
@@ -337,13 +348,16 @@ function makeChildrenMapSignal(
 
         // Determine the logic for the field that we're defining.
         let childPath: FieldPathNode | undefined;
+        let childLogic: LogicNode;
         if (isArray) {
           // Fields for array elements have their logic defined by the `element` mechanism.
           // TODO: other dynamic data
           childPath = logicPath.getChild(DYNAMIC);
+          childLogic = logic.getChild(DYNAMIC);
         } else {
           // Fields for plain properties exist in our logic node's child map.
           childPath = logicPath.getChild(key);
+          childLogic = logic.getChild(key);
         }
 
         childrenMap ??= new Map<TrackingKey, FieldNode>();
@@ -353,6 +367,7 @@ function makeChildrenMapSignal(
             kind: 'child',
             parent: node,
             logicPath: childPath,
+            logic: childLogic,
             initialKeyInParent: key,
             identityInParent: trackingId,
           }),

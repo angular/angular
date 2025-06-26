@@ -11,19 +11,68 @@ import {FieldPathNode} from './path_node';
 
 let currentRoot: FieldPathNode | undefined = undefined;
 
-export class SchemaImpl {
-  constructor(readonly schema: SchemaOrSchemaFn<any>) {}
+let compiledSchemas = new Map<SchemaImpl, FieldPathNode>();
 
-  apply(path: FieldPathNode): void {
-    const schemaFn = this.schema as unknown as SchemaFn<any>;
-    const prevRoot = currentRoot;
+export class SchemaImpl {
+  constructor(private schemaFn: SchemaFn<unknown>) {}
+
+  /**
+   * Compiles this schema within the current compilation context. If the schema was previoulsy
+   * compiled within this context, we reuse the cached FieldPathNode, otherwise we create a new one
+   * and cache it in the compilation context.
+   */
+  compile(): FieldPathNode {
+    if (compiledSchemas.has(this)) {
+      return compiledSchemas.get(this)!;
+    }
+    const path = FieldPathNode.newRoot();
+    compiledSchemas.set(this, path);
+    let prevRoot = currentRoot;
     try {
-      currentRoot = path.root;
-      schemaFn(path.fieldPathProxy);
+      currentRoot = path;
+      this.schemaFn(path.fieldPathProxy);
     } finally {
+      // Use a try/finally to ensrue we restore the previous root upon completion,
+      // even if there are errors while compiling the shcema.
       currentRoot = prevRoot;
     }
+    return path;
   }
+
+  /**
+   * Creates a SchemaImpl from the given SchemaOrSchemaFn.
+   */
+  static create(schema: SchemaImpl | SchemaOrSchemaFn<any>) {
+    if (schema instanceof SchemaImpl) {
+      return schema;
+    }
+    return new SchemaImpl(schema as SchemaFn<unknown>);
+  }
+
+  /**
+   * Compiles the given schema in a fresh compilation context. This clears the cached results of any
+   * previous compilations.
+   */
+  static rootCompile(schema: SchemaImpl | SchemaOrSchemaFn<any> | undefined) {
+    try {
+      compiledSchemas.clear();
+      if (schema === undefined) {
+        return FieldPathNode.newRoot();
+      }
+      if (schema instanceof SchemaImpl) {
+        return schema.compile();
+      }
+      return new SchemaImpl(schema as SchemaFn<unknown>).compile();
+    } finally {
+      // Use a try/finally to ensure we properly reset the compilation context upon completion,
+      // even if there are errors while compiling the shcema.
+      compiledSchemas.clear();
+    }
+  }
+}
+
+export function isSchemaOrSchemaFn(schema: unknown): schema is SchemaOrSchemaFn<unknown> {
+  return schema instanceof SchemaImpl || typeof schema === 'function';
 }
 
 export function assertPathIsCurrent(path: FieldPath<unknown>): void {

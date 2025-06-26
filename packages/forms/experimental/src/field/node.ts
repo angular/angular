@@ -17,7 +17,6 @@ import type {
   FormError,
   SubmittedStatus,
 } from '../api/types';
-import type {FieldPathNode} from '../path_node';
 
 import {
   ChildFieldNodeOptions,
@@ -27,15 +26,16 @@ import {
   RootFieldNodeStructure,
 } from './structure';
 
-import {FieldValidationState} from './validation';
+import {LogicNode} from '../logic_node_2';
+import {FieldPathNode} from '../path_node';
 import {FieldNodeContext} from './context';
-import type {FormFieldManager} from './manager';
-import {FieldLogicNode} from '../logic_node';
-import {FIELD_PROXY_HANDLER} from './proxy';
 import {FieldDataState} from './data';
-import {FieldNodeState} from './state';
+import type {FormFieldManager} from './manager';
 import {FieldMetadataState} from './metadata';
+import {FIELD_PROXY_HANDLER} from './proxy';
+import {FieldNodeState} from './state';
 import {FieldSubmitState} from './submit';
+import {FieldValidationState} from './validation';
 
 /**
  * Internal node in the form graph for a given field.
@@ -72,6 +72,7 @@ export class FieldNode implements FieldState<unknown> {
         ? new RootFieldNodeStructure(
             this,
             options.logicPath,
+            options.logic,
             options.fieldManager,
             options.value,
             FieldNode.newChild,
@@ -79,6 +80,7 @@ export class FieldNode implements FieldState<unknown> {
         : new ChildFieldNodeStructure(
             this,
             options.logicPath,
+            options.logic,
             options.parent,
             options.identityInParent,
             options.initialKeyInParent,
@@ -92,8 +94,8 @@ export class FieldNode implements FieldState<unknown> {
     this.submitState = new FieldSubmitState(this);
   }
 
-  get logic(): FieldLogicNode {
-    return this.structure.logicPath.logic;
+  get logicNode(): LogicNode {
+    return this.structure.logic;
   }
 
   get value(): WritableSignal<unknown> {
@@ -195,6 +197,7 @@ export class FieldNode implements FieldState<unknown> {
       fieldManager: formRoot,
       value,
       logicPath,
+      logic: logicPath.logic.build(),
     });
   }
 

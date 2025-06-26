@@ -41,7 +41,7 @@ export function validateAsync<TValue, TRequest, TData>(
     factory: opts.factory,
   });
 
-  pathNode.logic.asyncErrors.push((ctx) => {
+  pathNode.logic.addAsyncErrorRule((ctx) => {
     const res = ctx.state.data(dataKey)!;
     switch (res.status()) {
       case 'idle':

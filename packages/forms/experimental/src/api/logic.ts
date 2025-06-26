@@ -25,7 +25,7 @@ export function disabled<T>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.disabledReasons.push((ctx) => {
+  pathNode.logic.addDisabledReasonRule((ctx) => {
     const result = logic(ctx);
     if (!result) {
       return undefined;
@@ -51,7 +51,7 @@ export function readonly<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolea
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.readonly.push(logic);
+  pathNode.logic.addReadonlyRule(logic);
 }
 
 /**
@@ -66,7 +66,7 @@ export function hidden<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.hidden.push(logic);
+  pathNode.logic.addHiddenRule(logic);
 }
 
 /**
@@ -80,14 +80,14 @@ export function validate<T>(path: FieldPath<T>, logic: NoInfer<Validator<T>>): v
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.syncErrors.push(logic);
+  pathNode.logic.addSyncErrorRule(logic);
 }
 
 export function validateTree<T>(path: FieldPath<T>, logic: NoInfer<TreeValidator<T>>): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.syncTreeErrors.push(logic);
+  pathNode.logic.addSyncTreeErrorRule(logic);
 }
 
 /**
@@ -107,7 +107,7 @@ export function metadata<T, M>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.getMetadata(key).push(logic);
+  pathNode.logic.addMetadataRule(key, logic);
 }
 
 /**

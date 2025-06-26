@@ -7,9 +7,9 @@
  */
 
 import {computed, Signal} from '@angular/core';
+import type {FormError, FormTreeError, ValidationResult} from '../api/types';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitFalse} from './util';
-import type {FormError, FormTreeError, ValidationResult} from '../api/types';
 
 /**
  * State of a `FieldNode` that's associated with form validation.
@@ -23,7 +23,7 @@ export class FieldValidationState {
     }
 
     return [
-      ...(this.node.logic.syncTreeErrors.compute(this.node.context) ?? []).map((err) =>
+      ...(this.node.logicNode.logic.syncTreeErrors.compute(this.node.context) ?? []).map((err) =>
         !err.field ? {...err, field: this.node.fieldProxy} : err,
       ),
       ...(this.node.structure.parent?.validationState.rawSyncTreeErrors() ?? []),
@@ -37,7 +37,7 @@ export class FieldValidationState {
     }
 
     return [
-      ...(this.node.logic.syncErrors.compute(this.node.context) ?? []),
+      ...(this.node.logicNode.logic.syncErrors.compute(this.node.context) ?? []),
       ...this.syncTreeErrors(),
       ...normalizeErrors(this.node.submitState.serverErrors()),
     ];
@@ -70,7 +70,7 @@ export class FieldValidationState {
 
     return [
       // TODO: add field in `validateAsync` and remove this map
-      ...(this.node.logic.asyncErrors.compute(this.node.context) ?? []).map((err) => {
+      ...(this.node.logicNode.logic.asyncErrors.compute(this.node.context) ?? []).map((err) => {
         if (err !== 'pending' && !err.field) {
           return {...err, field: this.node.fieldProxy};
         } else {

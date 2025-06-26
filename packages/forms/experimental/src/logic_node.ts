@@ -6,16 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DataKey} from './api/data';
+import {untracked} from '@angular/core';
 import {MetadataKey} from './api/metadata';
-import {
-  DisabledReason,
-  FormTreeError,
-  type FieldContext,
-  type FieldPath,
-  type FormError,
-  type LogicFn,
-} from './api/types';
+import {type FieldContext, type FieldPath, type LogicFn} from './api/types';
 import {FieldNode} from './field/node';
 
 /**
@@ -28,99 +21,42 @@ export interface Predicate {
   readonly path: FieldPath<any>;
 }
 
+/**
+ * Represents a predicate that is bound to a particular depth in the field tree. This is needed for
+ * recursively applied logic to ensure that the predicate is evaluated against the correct
+ * application of that logic.
+ *
+ * Consider the following example:
+ *
+ * ```
+ * const s = schema(p => {
+ *   disabled(p.data);
+ *   applyWhen(p.next, ({valueOf}) => valueOf(p.data) === 1, s);
+ * });
+ *
+ * const f = form(signal({data: 0, next: {data: 1, next: {data: 2, next: undefined}}}), s);
+ *
+ * const isDisabled = f.next.next.data().disabled();
+ * ```
+ *
+ * In order to determine `isDisabled` we need to evaluate the predicate from `applyWhen` *twice*.
+ * Once to see if the schema should be applied to `f.next` and again to see if it should be applied
+ * to `f.next.next`. The `depth` tells us which field we should be evaluating against each time.
+ */
+export interface BoundPredicate extends Predicate {
+  /** The depth in the field tree at which this predicate is bound. */
+  readonly depth: number;
+}
+
 export interface DataDefinition {
   readonly factory: LogicFn<unknown, unknown>;
   readonly initializer?: (value: unknown) => void;
 }
 
-/**
- * Logic associated with a particular location (path) in a form.
- *
- * This can be logic associated with a specific field, or with all fields within in array or other
- * dynamic structure.
- */
-export class FieldLogicNode {
-  readonly hidden: BooleanOrLogic;
-  readonly disabledReasons: ArrayMergeLogic<DisabledReason>;
-  readonly readonly: BooleanOrLogic;
-  readonly syncErrors: ArrayMergeLogic<FormError>;
-  readonly syncTreeErrors: ArrayMergeLogic<FormTreeError>;
-  readonly asyncErrors: ArrayMergeLogic<FormTreeError | 'pending'>;
-
-  private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
-
-  readonly dataFactories = new Map<DataKey<unknown>, (ctx: FieldContext<unknown>) => unknown>();
-  private readonly children = new Map<PropertyKey, FieldLogicNode>();
-  private readonly predicates: Predicate[];
-
-  private constructor(predicate: Predicate | undefined) {
-    this.predicates = predicate !== undefined ? [predicate] : [];
-    this.hidden = new BooleanOrLogic(this.predicates);
-    this.disabledReasons = new ArrayMergeLogic(this.predicates);
-    this.readonly = new BooleanOrLogic(this.predicates);
-    this.syncErrors = new ArrayMergeLogic<FormError>(this.predicates);
-    this.syncTreeErrors = new ArrayMergeLogic<FormTreeError>(this.predicates);
-    this.asyncErrors = new ArrayMergeLogic<FormTreeError | 'pending'>(this.predicates);
-  }
-
-  get element(): FieldLogicNode {
-    return this.getChild(DYNAMIC);
-  }
-
-  getMetadata<T>(key: MetadataKey<T>): AbstractLogic<T> {
-    if (!this.metadata.has(key as MetadataKey<unknown>)) {
-      this.metadata.set(key as MetadataKey<unknown>, new MetadataMergeLogic(this.predicates, key));
-    }
-    return this.metadata.get(key as MetadataKey<unknown>)! as AbstractLogic<T>;
-  }
-
-  /**
-   * Get or create a child `LogicNode` for the given property.
-   */
-  getChild(key: PropertyKey): FieldLogicNode {
-    if (!this.children.has(key)) {
-      this.children.set(key, new FieldLogicNode(this.predicates[0]));
-    }
-    return this.children.get(key)!;
-  }
-
-  mergeIn(other: FieldLogicNode) {
-    // Merge standard logic.
-    this.hidden.mergeIn(other.hidden);
-    this.disabledReasons.mergeIn(other.disabledReasons);
-    this.readonly.mergeIn(other.readonly);
-    this.syncErrors.mergeIn(other.syncErrors);
-
-    // Merge data
-    for (const [key, def] of other.dataFactories) {
-      if (this.dataFactories.has(key)) {
-        // TODO: name the key in the error message?
-        throw new Error(`Duplicate definition`);
-      }
-      this.dataFactories.set(key, def);
-    }
-
-    // Merge metadata.
-    for (const key of other.metadata.keys()) {
-      this.getMetadata(key).mergeIn(other.getMetadata(key));
-    }
-
-    // Merge children.
-    for (const [key, otherChild] of other.children) {
-      const child = this.getChild(key);
-      child.mergeIn(otherChild);
-    }
-  }
-
-  static newRoot(predicate: Predicate | undefined): FieldLogicNode {
-    return new FieldLogicNode(predicate);
-  }
-}
-
 export abstract class AbstractLogic<TReturn, TValue = TReturn> {
   protected readonly fns: Array<LogicFn<any, TValue>> = [];
 
-  constructor(private predicates: ReadonlyArray<Predicate>) {}
+  constructor(private predicates: ReadonlyArray<BoundPredicate>) {}
 
   abstract compute(arg: FieldContext<any>): TReturn;
 
@@ -177,7 +113,7 @@ export class MetadataMergeLogic<T> extends AbstractLogic<T> {
   }
 
   constructor(
-    predicates: ReadonlyArray<Predicate>,
+    predicates: ReadonlyArray<BoundPredicate>,
     private key: MetadataKey<T>,
   ) {
     super(predicates);
@@ -196,7 +132,7 @@ export class MetadataMergeLogic<T> extends AbstractLogic<T> {
 }
 
 function wrapWithPredicates<TValue, TReturn>(
-  predicates: ReadonlyArray<Predicate>,
+  predicates: ReadonlyArray<BoundPredicate>,
   logicFn: LogicFn<TValue, TReturn>,
   defaultValue: TReturn,
 ) {
@@ -205,9 +141,18 @@ function wrapWithPredicates<TValue, TReturn>(
   }
   return (arg: FieldContext<any>): TReturn => {
     for (const predicate of predicates) {
-      const predicateField = arg.stateOf(predicate.path) as FieldNode;
+      let predicateField = arg.stateOf(predicate.path) as FieldNode;
+      // Check the depth of the current field vs the depth this predicate is supposed to be
+      // evaluated at. If necessary, walk up the field tree to grab the correct context field.
+      // We can check the pathKeys as an untracked read since we know the structure of our fields
+      // doesn't change.
+      const depthDiff = untracked(predicateField.structure.pathKeys).length - predicate.depth;
+      for (let i = 0; i < depthDiff; i++) {
+        predicateField = predicateField.structure.parent!;
+      }
+      // If any of the predicates don't match, don't actually run the logic function, just return
+      // the default value.
       if (!predicate.fn(predicateField.context)) {
-        // don't actually run the user function
         return defaultValue;
       }
     }
