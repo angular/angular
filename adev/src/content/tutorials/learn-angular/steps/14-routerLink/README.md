@@ -16,7 +16,7 @@ In `app.ts` add the `RouterLink` directive import to the existing import stateme
 
 ```ts
 ...
-import { RouterLink, RouterOutlet } from '@angular/router';
+import {RouterLink, RouterOutlet} from '@angular/router';
 
 @Component({
   imports: [RouterLink, RouterOutlet],
@@ -31,7 +31,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 To use the `RouterLink` directive, replace the `href` attributes with `routerLink`. Update the template with this change.
 
 ```angular-ts
-import { RouterLink, RouterOutlet } from '@angular/router';
+import {RouterLink, RouterOutlet} from '@angular/router';
 
 @Component({
   ...

@@ -20,9 +20,9 @@ To define a route, add a route object to the `routes` array in `app.routes.ts` t
 - The `component` that you want the route to display
 
 ```ts
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
-import { Home } from './home/home';
+import {Home} from './home/home';
 
 export const routes: Routes = [
   {
@@ -45,9 +45,9 @@ In addition to defining the routes correctly, Angular Router also enables you to
 In `app.routes.ts`, add the `title` property to the default route (`path: ''`) and the `user` route. Here's an example:
 
 <docs-code language="ts" highlight="[8]">
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
-import { Home } from './home/home';
+import {Home} from './home/home';
 
 export const routes: Routes = [
 {

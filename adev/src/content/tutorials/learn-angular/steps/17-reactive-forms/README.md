@@ -15,7 +15,7 @@ In this activity, you'll learn how to set up reactive forms.
 In `app.ts`, import `ReactiveFormsModule` from `@angular/forms` and add it to the `imports` array of the component.
 
 ```angular-ts
-import { ReactiveFormsModule } from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -43,7 +43,7 @@ Reactive forms use the `FormControl` class to represent the form controls (e.g.,
 Add `FormControl` and `FormGroup` to the import from `@angular/forms` so that you can create a FormGroup for each form, with the properties `name` and `email` as FormControls.
 
 ```ts
-import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
+import {ReactiveFormsModule, FormControl, FormGroup} from '@angular/forms';
 ...
 export class App {
   profileForm = new FormGroup({

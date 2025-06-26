@@ -11,7 +11,7 @@ In this activity, you will import a pipe and use it in the template.
 To use a pipe in a template include it in an interpolated expression. Check out this example:
 
 <docs-code language="angular-ts" highlight="[1,5,6]">
-import { UpperCasePipe } from '@angular/common';
+import {UpperCasePipe} from '@angular/common';
 
 @Component({
 ...
@@ -31,7 +31,7 @@ Now, it's your turn to give this a try:
 First, update `app.ts` by adding the file level import for `LowerCasePipe` from `@angular/common`.
 
 ```ts
-import { LowerCasePipe } from '@angular/common';
+import {LowerCasePipe} from '@angular/common';
 ```
 
 </docs-step>

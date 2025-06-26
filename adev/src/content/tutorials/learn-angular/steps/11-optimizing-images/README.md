@@ -17,7 +17,7 @@ In this activity, you'll learn how to use `NgOptimizedImage` to ensure your imag
 In order to leverage the `NgOptimizedImage` directive, first import it from the `@angular/common` library and add it to the component `imports` array.
 
 ```ts
-import { NgOptimizedImage } from '@angular/common';
+import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   imports: [NgOptimizedImage],
@@ -32,7 +32,7 @@ import { NgOptimizedImage } from '@angular/common';
 To enable the `NgOptimizedImage` directive, swap out the `src` attribute for `ngSrc`. This applies for both static image sources (i.e., `src`) and dynamic image sources (i.e., `[src]`).
 
 <docs-code language="angular-ts" highlight="[[9], [13]]">
-import { NgOptimizedImage } from '@angular/common';
+import {NgOptimizedImage} from '@angular/common';
 
 @Component({
 template: `     ...
