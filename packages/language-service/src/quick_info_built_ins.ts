@@ -139,22 +139,22 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
 } = {
   '@defer': {
     docString: `A type of block that can be used to defer load the JavaScript for components, directives and pipes used inside a component template.`,
-    links: ['[Reference](https://angular.dev/guide/defer#defer)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#defer)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   '@placeholder': {
     docString: `A block for content shown prior to defer loading (Optional)`,
-    links: ['[Reference](https://angular.dev/guide/defer#placeholder)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#placeholder)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   '@error': {
     docString: `A block for content shown when defer loading errors occur (Optional)`,
-    links: ['[Reference](https://angular.dev/guide/defer#error)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#error)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   '@loading': {
     docString: `A block for content shown during defer loading (Optional)`,
-    links: ['[Reference](https://angular.dev/guide/defer#loading)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#loading)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
   '@empty': {
@@ -173,38 +173,38 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
   },
   'idle': {
     docString: triggerDescriptionPreamble + `the browser reports idle state (default).`,
-    links: ['[Reference](https://angular.dev/guide/defer#on-idle)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#on-idle)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'immediate': {
     docString: triggerDescriptionPreamble + `the page finishes rendering.`,
-    links: ['[Reference](https://angular.dev/guide/defer#on-immediate)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#on-immediate)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'hover': {
     docString: triggerDescriptionPreamble + `the element has been hovered.`,
-    links: ['[Reference](https://angular.dev/guide/defer#on-hover)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#on-hover)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'timer': {
     docString: triggerDescriptionPreamble + `a specific timeout.`,
-    links: ['[Reference](https://angular.dev/guide/defer#on-timer)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#on-timer)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'interaction': {
     docString: triggerDescriptionPreamble + `the element is clicked, touched, or focused.`,
-    links: ['[Reference](https://angular.dev/guide/defer#on-interaction)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#on-interaction)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'viewport': {
     docString: triggerDescriptionPreamble + `the element enters the viewport.`,
-    links: ['[Reference](https://angular.dev/guide/defer#on-viewport)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#on-viewport)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },
   'prefetch': {
     docString:
       'Keyword that indicates that the trigger configures when prefetching the defer block contents should start. You can use `on` and `when` conditions as prefetch triggers.',
-    links: ['[Reference](https://angular.dev/guide/defer#prefetching)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#prefetching)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'hydrate': {
@@ -217,13 +217,13 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
   'when': {
     docString:
       'Keyword that starts the expression-based trigger section. Should be followed by an expression that returns a boolean.',
-    links: ['[Reference](https://angular.dev/guide/defer#triggers)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#triggers)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'on': {
     docString:
       'Keyword that starts the event-based trigger section. Should be followed by one of the built-in triggers.',
-    links: ['[Reference](https://angular.dev/guide/defer#triggers)'],
+    links: ['[Reference](https://angular.dev/guide/templates/defer#triggers)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
 };

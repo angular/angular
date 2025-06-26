@@ -8,7 +8,7 @@ Deferrable views let you define content to be shown in different loading states.
       <td><code>@placeholder</code></td>
       <td>
         By default, defer blocks do not render any content before they are triggered. The <code>@placeholder</code> is an optional block that declares content to show before the deferred content loads. Angular replaces the placeholder with the deferred content after loading completes. While this block is optional, the Angular team recommends always including a placeholder.
-        <a href="https://angular.dev/guide/defer#triggers" target="_blank">
+        <a href="https://angular.dev/guide/templates/defer#triggers" target="_blank">
           Learn more in the full deferrable views documentation
         </a>
       </td>
