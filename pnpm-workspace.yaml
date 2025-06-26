@@ -15,6 +15,7 @@ packages:
   - packages/platform-browser-dynamic/
   - packages/router/
   - packages/localize/
+  - packages/benchpress/
   - packages/upgrade/
   - packages/zone.js/
   - tools/bazel/rules_angular_store/

@@ -4,8 +4,7 @@ example_test(
     name = "sourcemap",
     srcs = glob(["**/*.ts"]),
     data = [
-        "//modules/playground/src/sourcemap:bundles",
-        "//modules/playground/src/sourcemap:main.ts",
+        "//modules/playground/src/sourcemap:assets",
     ],
     # Source-Map is using WASM and cannot be bundled for specs.
     external = ["source-map"],
