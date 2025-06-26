@@ -1,13 +1,13 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
 load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//tools:defaults2.bzl", "npm_sass_library", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 
-sass_library(
+npm_sass_library(
     name = "todo_mvc",
-    srcs = [
-        "@npm//:node_modules/todomvc-app-css/index.css",
-        "@npm//:node_modules/todomvc-common/base.css",
+    deps = [
+        "//:node_modules/todomvc-app-css",
+        "//:node_modules/todomvc-common",
     ],
 )
 
