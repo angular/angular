@@ -67,7 +67,7 @@ importers:
         version: 5.8.1(protractor@7.0.0)
       '@bazel/rollup':
         specifier: 5.8.1
-        version: 5.8.1(rollup@4.44.0)
+        version: 5.8.1(rollup@4.44.1)
       '@bazel/runfiles':
         specifier: 6.3.1
         version: 6.3.1
@@ -85,13 +85,13 @@ importers:
         version: 7.52.8(@types/node@18.19.112)
       '@rollup/plugin-babel':
         specifier: ^6.0.0
-        version: 6.0.4(@babel/core@7.27.4)(@types/babel__core@7.20.5)(rollup@4.44.0)
+        version: 6.0.4(@babel/core@7.27.4)(@types/babel__core@7.20.5)(rollup@4.44.1)
       '@rollup/plugin-commonjs':
         specifier: ^28.0.0
-        version: 28.0.6(rollup@4.44.0)
+        version: 28.0.6(rollup@4.44.1)
       '@rollup/plugin-node-resolve':
         specifier: ^16.0.0
-        version: 16.0.1(rollup@4.44.0)
+        version: 16.0.1(rollup@4.44.1)
       '@schematics/angular':
         specifier: 20.0.4
         version: 20.0.4(chokidar@4.0.3)
@@ -270,17 +270,17 @@ importers:
         specifier: ^2.3.6
         version: 2.3.7
       rollup:
-        specifier: 4.44.0
-        version: 4.44.0
+        specifier: 4.44.1
+        version: 4.44.1
       rollup-plugin-dts:
         specifier: ^6.1.1
-        version: 6.2.1(rollup@4.44.0)(typescript@5.8.3)
+        version: 6.2.1(rollup@4.44.1)(typescript@5.8.3)
       rollup-plugin-preserve-shebang:
         specifier: ^1.0.1
         version: 1.0.1
       rollup-plugin-sourcemaps:
         specifier: ^0.6.3
-        version: 0.6.3(@types/node@18.19.112)(rollup@4.44.0)
+        version: 0.6.3(@types/node@18.19.112)(rollup@4.44.1)
       rxjs:
         specifier: ^7.0.0
         version: 7.8.2
@@ -533,7 +533,7 @@ importers:
         version: 3.6.0
       rollup-plugin-sourcemaps2:
         specifier: ^0.5.1
-        version: 0.5.2(@types/node@18.19.112)(rollup@4.44.0)
+        version: 0.5.2(@types/node@18.19.112)(rollup@4.44.1)
       semver:
         specifier: ^7.3.5
         version: 7.7.2
@@ -3081,14 +3081,14 @@ packages:
     dependencies:
       protractor: 7.0.0
 
-  /@bazel/rollup@5.8.1(rollup@4.44.0):
+  /@bazel/rollup@5.8.1(rollup@4.44.1):
     resolution: {integrity: sha512-Ys+UWbRp1TY2j+z15N+SZgID/nuqAtJTgJDsz0NZVjm8F8KzmgXxLDnBb/cUKFVk83pNOAi84G/bq1tINjMSNA==, tarball: https://registry.npmjs.org/@bazel/rollup/-/rollup-5.8.1.tgz}
     hasBin: true
     peerDependencies:
       rollup: '>=2.3.0 <3.0.0'
     dependencies:
       '@bazel/worker': 5.8.1
-      rollup: 4.44.0
+      rollup: 4.44.1
     dev: false
 
   /@bazel/runfiles@5.8.1:
@@ -5650,7 +5650,7 @@ packages:
       - supports-color
     dev: true
 
-  /@rollup/plugin-babel@6.0.4(@babel/core@7.27.4)(@types/babel__core@7.20.5)(rollup@4.44.0):
+  /@rollup/plugin-babel@6.0.4(@babel/core@7.27.4)(@types/babel__core@7.20.5)(rollup@4.44.1):
     resolution: {integrity: sha512-YF7Y52kFdFT/xVSuVdjkV5ZdX/3YtmX0QulG+x0taQOtJdHYzVU61aSSkAgVJ7NOv6qPkIYiJSgSWWN/DM5sGw==, tarball: https://registry.npmjs.org/@rollup/plugin-babel/-/plugin-babel-6.0.4.tgz}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -5665,14 +5665,14 @@ packages:
     dependencies:
       '@babel/core': 7.27.4
       '@babel/helper-module-imports': 7.27.1
-      '@rollup/pluginutils': 5.2.0(rollup@4.44.0)
+      '@rollup/pluginutils': 5.2.0(rollup@4.44.1)
       '@types/babel__core': 7.20.5
-      rollup: 4.44.0
+      rollup: 4.44.1
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@rollup/plugin-commonjs@28.0.6(rollup@4.44.0):
+  /@rollup/plugin-commonjs@28.0.6(rollup@4.44.1):
     resolution: {integrity: sha512-XSQB1K7FUU5QP+3lOQmVCE3I0FcbbNvmNT4VJSj93iUjayaARrTQeoRdiYQoftAJBLrR9t2agwAd3ekaTgHNlw==, tarball: https://registry.npmjs.org/@rollup/plugin-commonjs/-/plugin-commonjs-28.0.6.tgz}
     engines: {node: '>=16.0.0 || 14 >= 14.17'}
     peerDependencies:
@@ -5681,17 +5681,17 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.2.0(rollup@4.44.0)
+      '@rollup/pluginutils': 5.2.0(rollup@4.44.1)
       commondir: 1.0.1
       estree-walker: 2.0.2
       fdir: 6.4.6(picomatch@4.0.2)
       is-reference: 1.2.1
       magic-string: 0.30.17
       picomatch: 4.0.2
-      rollup: 4.44.0
+      rollup: 4.44.1
     dev: false
 
-  /@rollup/plugin-node-resolve@16.0.1(rollup@4.44.0):
+  /@rollup/plugin-node-resolve@16.0.1(rollup@4.44.1):
     resolution: {integrity: sha512-tk5YCxJWIG81umIvNkSod2qK5KyQW19qcBF/B78n1bjtOON6gzKoVeSzAE8yHCZEDmqkHKkxplExA8KzdJLJpA==, tarball: https://registry.npmjs.org/@rollup/plugin-node-resolve/-/plugin-node-resolve-16.0.1.tgz}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -5700,15 +5700,15 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.2.0(rollup@4.44.0)
+      '@rollup/pluginutils': 5.2.0(rollup@4.44.1)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-module: 1.0.0
       resolve: 1.22.10
-      rollup: 4.44.0
+      rollup: 4.44.1
     dev: false
 
-  /@rollup/pluginutils@3.1.0(rollup@4.44.0):
+  /@rollup/pluginutils@3.1.0(rollup@4.44.1):
     resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==, tarball: https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-3.1.0.tgz}
     engines: {node: '>= 8.0.0'}
     peerDependencies:
@@ -5717,10 +5717,10 @@ packages:
       '@types/estree': 0.0.39
       estree-walker: 1.0.1
       picomatch: 2.3.1
-      rollup: 4.44.0
+      rollup: 4.44.1
     dev: false
 
-  /@rollup/pluginutils@5.1.4(rollup@4.44.0):
+  /@rollup/pluginutils@5.1.4(rollup@4.44.1):
     resolution: {integrity: sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ==, tarball: https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-5.1.4.tgz}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -5732,10 +5732,10 @@ packages:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
       picomatch: 4.0.2
-      rollup: 4.44.0
+      rollup: 4.44.1
     dev: true
 
-  /@rollup/pluginutils@5.2.0(rollup@4.44.0):
+  /@rollup/pluginutils@5.2.0(rollup@4.44.1):
     resolution: {integrity: sha512-qWJ2ZTbmumwiLFomfzTyt5Kng4hwPi9rwCYN4SHb6eaRU1KNO4ccxINHr/VhH4GgPlt1XfSTLX2LBTme8ne4Zw==, tarball: https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-5.2.0.tgz}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -5747,7 +5747,7 @@ packages:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
       picomatch: 4.0.2
-      rollup: 4.44.0
+      rollup: 4.44.1
     dev: false
 
   /@rollup/rollup-android-arm-eabi@4.30.1:
@@ -5764,8 +5764,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-android-arm-eabi@4.44.0:
-    resolution: {integrity: sha512-xEiEE5oDW6tK4jXCAyliuntGR+amEMO7HLtdSshVuhFnKTYoeYMyXQK7pLouAJJj5KHdwdn87bfHAR2nSdNAUA==, tarball: https://registry.npmjs.org/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.44.0.tgz}
+  /@rollup/rollup-android-arm-eabi@4.44.1:
+    resolution: {integrity: sha512-JAcBr1+fgqx20m7Fwe1DxPUl/hPkee6jA6Pl7n1v2EFiktAHenTaXl5aIFjUIEsfn9w3HE4gK1lEgNGMzBDs1w==, tarball: https://registry.npmjs.org/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.44.1.tgz}
     cpu: [arm]
     os: [android]
     optional: true
@@ -5784,8 +5784,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-android-arm64@4.44.0:
-    resolution: {integrity: sha512-uNSk/TgvMbskcHxXYHzqwiyBlJ/lGcv8DaUfcnNwict8ba9GTTNxfn3/FAoFZYgkaXXAdrAA+SLyKplyi349Jw==, tarball: https://registry.npmjs.org/@rollup/rollup-android-arm64/-/rollup-android-arm64-4.44.0.tgz}
+  /@rollup/rollup-android-arm64@4.44.1:
+    resolution: {integrity: sha512-RurZetXqTu4p+G0ChbnkwBuAtwAbIwJkycw1n6GvlGlBuS4u5qlr5opix8cBAYFJgaY05TWtM+LaoFggUmbZEQ==, tarball: https://registry.npmjs.org/@rollup/rollup-android-arm64/-/rollup-android-arm64-4.44.1.tgz}
     cpu: [arm64]
     os: [android]
     optional: true
@@ -5804,8 +5804,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-darwin-arm64@4.44.0:
-    resolution: {integrity: sha512-VGF3wy0Eq1gcEIkSCr8Ke03CWT+Pm2yveKLaDvq51pPpZza3JX/ClxXOCmTYYq3us5MvEuNRTaeyFThCKRQhOA==, tarball: https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.44.0.tgz}
+  /@rollup/rollup-darwin-arm64@4.44.1:
+    resolution: {integrity: sha512-fM/xPesi7g2M7chk37LOnmnSTHLG/v2ggWqKj3CCA1rMA4mm5KVBT1fNoswbo1JhPuNNZrVwpTvlCVggv8A2zg==, tarball: https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.44.1.tgz}
     cpu: [arm64]
     os: [darwin]
     optional: true
@@ -5824,8 +5824,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-darwin-x64@4.44.0:
-    resolution: {integrity: sha512-fBkyrDhwquRvrTxSGH/qqt3/T0w5Rg0L7ZIDypvBPc1/gzjJle6acCpZ36blwuwcKD/u6oCE/sRWlUAcxLWQbQ==, tarball: https://registry.npmjs.org/@rollup/rollup-darwin-x64/-/rollup-darwin-x64-4.44.0.tgz}
+  /@rollup/rollup-darwin-x64@4.44.1:
+    resolution: {integrity: sha512-gDnWk57urJrkrHQ2WVx9TSVTH7lSlU7E3AFqiko+bgjlh78aJ88/3nycMax52VIVjIm3ObXnDL2H00e/xzoipw==, tarball: https://registry.npmjs.org/@rollup/rollup-darwin-x64/-/rollup-darwin-x64-4.44.1.tgz}
     cpu: [x64]
     os: [darwin]
     optional: true
@@ -5844,8 +5844,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-freebsd-arm64@4.44.0:
-    resolution: {integrity: sha512-u5AZzdQJYJXByB8giQ+r4VyfZP+walV+xHWdaFx/1VxsOn6eWJhK2Vl2eElvDJFKQBo/hcYIBg/jaKS8ZmKeNQ==, tarball: https://registry.npmjs.org/@rollup/rollup-freebsd-arm64/-/rollup-freebsd-arm64-4.44.0.tgz}
+  /@rollup/rollup-freebsd-arm64@4.44.1:
+    resolution: {integrity: sha512-wnFQmJ/zPThM5zEGcnDcCJeYJgtSLjh1d//WuHzhf6zT3Md1BvvhJnWoy+HECKu2bMxaIcfWiu3bJgx6z4g2XA==, tarball: https://registry.npmjs.org/@rollup/rollup-freebsd-arm64/-/rollup-freebsd-arm64-4.44.1.tgz}
     cpu: [arm64]
     os: [freebsd]
     optional: true
@@ -5864,8 +5864,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-freebsd-x64@4.44.0:
-    resolution: {integrity: sha512-qC0kS48c/s3EtdArkimctY7h3nHicQeEUdjJzYVJYR3ct3kWSafmn6jkNCA8InbUdge6PVx6keqjk5lVGJf99g==, tarball: https://registry.npmjs.org/@rollup/rollup-freebsd-x64/-/rollup-freebsd-x64-4.44.0.tgz}
+  /@rollup/rollup-freebsd-x64@4.44.1:
+    resolution: {integrity: sha512-uBmIxoJ4493YATvU2c0upGz87f99e3wop7TJgOA/bXMFd2SvKCI7xkxY/5k50bv7J6dw1SXT4MQBQSLn8Bb/Uw==, tarball: https://registry.npmjs.org/@rollup/rollup-freebsd-x64/-/rollup-freebsd-x64-4.44.1.tgz}
     cpu: [x64]
     os: [freebsd]
     optional: true
@@ -5884,8 +5884,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-arm-gnueabihf@4.44.0:
-    resolution: {integrity: sha512-x+e/Z9H0RAWckn4V2OZZl6EmV0L2diuX3QB0uM1r6BvhUIv6xBPL5mrAX2E3e8N8rEHVPwFfz/ETUbV4oW9+lQ==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm-gnueabihf/-/rollup-linux-arm-gnueabihf-4.44.0.tgz}
+  /@rollup/rollup-linux-arm-gnueabihf@4.44.1:
+    resolution: {integrity: sha512-n0edDmSHlXFhrlmTK7XBuwKlG5MbS7yleS1cQ9nn4kIeW+dJH+ExqNgQ0RrFRew8Y+0V/x6C5IjsHrJmiHtkxQ==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm-gnueabihf/-/rollup-linux-arm-gnueabihf-4.44.1.tgz}
     cpu: [arm]
     os: [linux]
     optional: true
@@ -5904,8 +5904,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-arm-musleabihf@4.44.0:
-    resolution: {integrity: sha512-1exwiBFf4PU/8HvI8s80icyCcnAIB86MCBdst51fwFmH5dyeoWVPVgmQPcKrMtBQ0W5pAs7jBCWuRXgEpRzSCg==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm-musleabihf/-/rollup-linux-arm-musleabihf-4.44.0.tgz}
+  /@rollup/rollup-linux-arm-musleabihf@4.44.1:
+    resolution: {integrity: sha512-8WVUPy3FtAsKSpyk21kV52HCxB+me6YkbkFHATzC2Yd3yuqHwy2lbFL4alJOLXKljoRw08Zk8/xEj89cLQ/4Nw==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm-musleabihf/-/rollup-linux-arm-musleabihf-4.44.1.tgz}
     cpu: [arm]
     os: [linux]
     optional: true
@@ -5924,8 +5924,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-arm64-gnu@4.44.0:
-    resolution: {integrity: sha512-ZTR2mxBHb4tK4wGf9b8SYg0Y6KQPjGpR4UWwTFdnmjB4qRtoATZ5dWn3KsDwGa5Z2ZBOE7K52L36J9LueKBdOQ==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm64-gnu/-/rollup-linux-arm64-gnu-4.44.0.tgz}
+  /@rollup/rollup-linux-arm64-gnu@4.44.1:
+    resolution: {integrity: sha512-yuktAOaeOgorWDeFJggjuCkMGeITfqvPgkIXhDqsfKX8J3jGyxdDZgBV/2kj/2DyPaLiX6bPdjJDTu9RB8lUPQ==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm64-gnu/-/rollup-linux-arm64-gnu-4.44.1.tgz}
     cpu: [arm64]
     os: [linux]
     optional: true
@@ -5944,8 +5944,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-arm64-musl@4.44.0:
-    resolution: {integrity: sha512-GFWfAhVhWGd4r6UxmnKRTBwP1qmModHtd5gkraeW2G490BpFOZkFtem8yuX2NyafIP/mGpRJgTJ2PwohQkUY/Q==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm64-musl/-/rollup-linux-arm64-musl-4.44.0.tgz}
+  /@rollup/rollup-linux-arm64-musl@4.44.1:
+    resolution: {integrity: sha512-W+GBM4ifET1Plw8pdVaecwUgxmiH23CfAUj32u8knq0JPFyK4weRy6H7ooxYFD19YxBulL0Ktsflg5XS7+7u9g==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm64-musl/-/rollup-linux-arm64-musl-4.44.1.tgz}
     cpu: [arm64]
     os: [linux]
     optional: true
@@ -5964,8 +5964,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-loongarch64-gnu@4.44.0:
-    resolution: {integrity: sha512-xw+FTGcov/ejdusVOqKgMGW3c4+AgqrfvzWEVXcNP6zq2ue+lsYUgJ+5Rtn/OTJf7e2CbgTFvzLW2j0YAtj0Gg==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-loongarch64-gnu/-/rollup-linux-loongarch64-gnu-4.44.0.tgz}
+  /@rollup/rollup-linux-loongarch64-gnu@4.44.1:
+    resolution: {integrity: sha512-1zqnUEMWp9WrGVuVak6jWTl4fEtrVKfZY7CvcBmUUpxAJ7WcSowPSAWIKa/0o5mBL/Ij50SIf9tuirGx63Ovew==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-loongarch64-gnu/-/rollup-linux-loongarch64-gnu-4.44.1.tgz}
     cpu: [loong64]
     os: [linux]
     optional: true
@@ -5984,8 +5984,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-powerpc64le-gnu@4.44.0:
-    resolution: {integrity: sha512-bKGibTr9IdF0zr21kMvkZT4K6NV+jjRnBoVMt2uNMG0BYWm3qOVmYnXKzx7UhwrviKnmK46IKMByMgvpdQlyJQ==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-powerpc64le-gnu/-/rollup-linux-powerpc64le-gnu-4.44.0.tgz}
+  /@rollup/rollup-linux-powerpc64le-gnu@4.44.1:
+    resolution: {integrity: sha512-Rl3JKaRu0LHIx7ExBAAnf0JcOQetQffaw34T8vLlg9b1IhzcBgaIdnvEbbsZq9uZp3uAH+JkHd20Nwn0h9zPjA==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-powerpc64le-gnu/-/rollup-linux-powerpc64le-gnu-4.44.1.tgz}
     cpu: [ppc64]
     os: [linux]
     optional: true
@@ -6004,8 +6004,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-riscv64-gnu@4.44.0:
-    resolution: {integrity: sha512-vV3cL48U5kDaKZtXrti12YRa7TyxgKAIDoYdqSIOMOFBXqFj2XbChHAtXquEn2+n78ciFgr4KIqEbydEGPxXgA==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-riscv64-gnu/-/rollup-linux-riscv64-gnu-4.44.0.tgz}
+  /@rollup/rollup-linux-riscv64-gnu@4.44.1:
+    resolution: {integrity: sha512-j5akelU3snyL6K3N/iX7otLBIl347fGwmd95U5gS/7z6T4ftK288jKq3A5lcFKcx7wwzb5rgNvAg3ZbV4BqUSw==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-riscv64-gnu/-/rollup-linux-riscv64-gnu-4.44.1.tgz}
     cpu: [riscv64]
     os: [linux]
     optional: true
@@ -6017,8 +6017,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-riscv64-musl@4.44.0:
-    resolution: {integrity: sha512-TDKO8KlHJuvTEdfw5YYFBjhFts2TR0VpZsnLLSYmB7AaohJhM8ctDSdDnUGq77hUh4m/djRafw+9zQpkOanE2Q==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-riscv64-musl/-/rollup-linux-riscv64-musl-4.44.0.tgz}
+  /@rollup/rollup-linux-riscv64-musl@4.44.1:
+    resolution: {integrity: sha512-ppn5llVGgrZw7yxbIm8TTvtj1EoPgYUAbfw0uDjIOzzoqlZlZrLJ/KuiE7uf5EpTpCTrNt1EdtzF0naMm0wGYg==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-riscv64-musl/-/rollup-linux-riscv64-musl-4.44.1.tgz}
     cpu: [riscv64]
     os: [linux]
     optional: true
@@ -6037,8 +6037,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-s390x-gnu@4.44.0:
-    resolution: {integrity: sha512-8541GEyktXaw4lvnGp9m84KENcxInhAt6vPWJ9RodsB/iGjHoMB2Pp5MVBCiKIRxrxzJhGCxmNzdu+oDQ7kwRA==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-s390x-gnu/-/rollup-linux-s390x-gnu-4.44.0.tgz}
+  /@rollup/rollup-linux-s390x-gnu@4.44.1:
+    resolution: {integrity: sha512-Hu6hEdix0oxtUma99jSP7xbvjkUM/ycke/AQQ4EC5g7jNRLLIwjcNwaUy95ZKBJJwg1ZowsclNnjYqzN4zwkAw==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-s390x-gnu/-/rollup-linux-s390x-gnu-4.44.1.tgz}
     cpu: [s390x]
     os: [linux]
     optional: true
@@ -6057,8 +6057,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-x64-gnu@4.44.0:
-    resolution: {integrity: sha512-iUVJc3c0o8l9Sa/qlDL2Z9UP92UZZW1+EmQ4xfjTc1akr0iUFZNfxrXJ/R1T90h/ILm9iXEY6+iPrmYB3pXKjw==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.44.0.tgz}
+  /@rollup/rollup-linux-x64-gnu@4.44.1:
+    resolution: {integrity: sha512-EtnsrmZGomz9WxK1bR5079zee3+7a+AdFlghyd6VbAjgRJDbTANJ9dcPIPAi76uG05micpEL+gPGmAKYTschQw==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.44.1.tgz}
     cpu: [x64]
     os: [linux]
     optional: true
@@ -6077,8 +6077,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-linux-x64-musl@4.44.0:
-    resolution: {integrity: sha512-PQUobbhLTQT5yz/SPg116VJBgz+XOtXt8D1ck+sfJJhuEsMj2jSej5yTdp8CvWBSceu+WW+ibVL6dm0ptG5fcA==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.44.0.tgz}
+  /@rollup/rollup-linux-x64-musl@4.44.1:
+    resolution: {integrity: sha512-iAS4p+J1az6Usn0f8xhgL4PaU878KEtutP4hqw52I4IO6AGoyOkHCxcc4bqufv1tQLdDWFx8lR9YlwxKuv3/3g==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.44.1.tgz}
     cpu: [x64]
     os: [linux]
     optional: true
@@ -6097,8 +6097,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-win32-arm64-msvc@4.44.0:
-    resolution: {integrity: sha512-M0CpcHf8TWn+4oTxJfh7LQuTuaYeXGbk0eageVjQCKzYLsajWS/lFC94qlRqOlyC2KvRT90ZrfXULYmukeIy7w==, tarball: https://registry.npmjs.org/@rollup/rollup-win32-arm64-msvc/-/rollup-win32-arm64-msvc-4.44.0.tgz}
+  /@rollup/rollup-win32-arm64-msvc@4.44.1:
+    resolution: {integrity: sha512-NtSJVKcXwcqozOl+FwI41OH3OApDyLk3kqTJgx8+gp6On9ZEt5mYhIsKNPGuaZr3p9T6NWPKGU/03Vw4CNU9qg==, tarball: https://registry.npmjs.org/@rollup/rollup-win32-arm64-msvc/-/rollup-win32-arm64-msvc-4.44.1.tgz}
     cpu: [arm64]
     os: [win32]
     optional: true
@@ -6117,8 +6117,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-win32-ia32-msvc@4.44.0:
-    resolution: {integrity: sha512-3XJ0NQtMAXTWFW8FqZKcw3gOQwBtVWP/u8TpHP3CRPXD7Pd6s8lLdH3sHWh8vqKCyyiI8xW5ltJScQmBU9j7WA==, tarball: https://registry.npmjs.org/@rollup/rollup-win32-ia32-msvc/-/rollup-win32-ia32-msvc-4.44.0.tgz}
+  /@rollup/rollup-win32-ia32-msvc@4.44.1:
+    resolution: {integrity: sha512-JYA3qvCOLXSsnTR3oiyGws1Dm0YTuxAAeaYGVlGpUsHqloPcFjPg+X0Fj2qODGLNwQOAcCiQmHub/V007kiH5A==, tarball: https://registry.npmjs.org/@rollup/rollup-win32-ia32-msvc/-/rollup-win32-ia32-msvc-4.44.1.tgz}
     cpu: [ia32]
     os: [win32]
     optional: true
@@ -6137,8 +6137,8 @@ packages:
     dev: false
     optional: true
 
-  /@rollup/rollup-win32-x64-msvc@4.44.0:
-    resolution: {integrity: sha512-Q2Mgwt+D8hd5FIPUuPDsvPR7Bguza6yTkJxspDGkZj7tBRn2y4KSWYuIXpftFSjBra76TbKerCV7rgFPQrn+wQ==, tarball: https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.44.0.tgz}
+  /@rollup/rollup-win32-x64-msvc@4.44.1:
+    resolution: {integrity: sha512-J8o22LuF0kTe7m+8PvW9wk3/bRq5+mRo5Dqo6+vXb7otCm3TPhYOJqOaQtGU9YMWQSL3krMnoOxMr0+9E6F3Ug==, tarball: https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.44.1.tgz}
     cpu: [x64]
     os: [win32]
     optional: true
@@ -17760,7 +17760,7 @@ packages:
   /robust-predicates@3.0.2:
     resolution: {integrity: sha512-IXgzBWvWQwE6PrDI05OvmXUIruQTcoMDzRsOd5CDvHCVLcLHMTSYvOK5Cm46kWqlV3yAbuSpBZdJ5oP5OUoStg==, tarball: https://registry.npmjs.org/robust-predicates/-/robust-predicates-3.0.2.tgz}
 
-  /rollup-plugin-dts@6.2.1(rollup@4.44.0)(typescript@5.8.3):
+  /rollup-plugin-dts@6.2.1(rollup@4.44.1)(typescript@5.8.3):
     resolution: {integrity: sha512-sR3CxYUl7i2CHa0O7bA45mCrgADyAQ0tVtGSqi3yvH28M+eg1+g5d7kQ9hLvEz5dorK3XVsH5L2jwHLQf72DzA==, tarball: https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-6.2.1.tgz}
     engines: {node: '>=16'}
     peerDependencies:
@@ -17768,7 +17768,7 @@ packages:
       typescript: ^4.5 || ^5.0
     dependencies:
       magic-string: 0.30.17
-      rollup: 4.44.0
+      rollup: 4.44.1
       typescript: 5.8.3
     optionalDependencies:
       '@babel/code-frame': 7.27.1
@@ -17790,7 +17790,7 @@ packages:
       magic-string: 0.25.9
     dev: false
 
-  /rollup-plugin-sourcemaps2@0.5.2(@types/node@18.19.112)(rollup@4.44.0):
+  /rollup-plugin-sourcemaps2@0.5.2(@types/node@18.19.112)(rollup@4.44.1):
     resolution: {integrity: sha512-NTz5Y5ySYH9cZZF+qteTHN2x3dnFggTKzCtiN3NhtMvIEXdkOsZVBh6r6xrwsyDnZAhmKRsttwTfXfJVoanM6w==, tarball: https://registry.npmjs.org/rollup-plugin-sourcemaps2/-/rollup-plugin-sourcemaps2-0.5.2.tgz}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -17800,12 +17800,12 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.1.4(rollup@4.44.0)
+      '@rollup/pluginutils': 5.1.4(rollup@4.44.1)
       '@types/node': 18.19.112
-      rollup: 4.44.0
+      rollup: 4.44.1
     dev: true
 
-  /rollup-plugin-sourcemaps@0.6.3(@types/node@18.19.112)(rollup@4.44.0):
+  /rollup-plugin-sourcemaps@0.6.3(@types/node@18.19.112)(rollup@4.44.1):
     resolution: {integrity: sha512-paFu+nT1xvuO1tPFYXGe+XnQvg4Hjqv/eIhG8i5EspfYYPBKL57X7iVbfv55aNVASg3dzWvES9dmWsL2KhfByw==, tarball: https://registry.npmjs.org/rollup-plugin-sourcemaps/-/rollup-plugin-sourcemaps-0.6.3.tgz}
     engines: {node: '>=10.0.0'}
     peerDependencies:
@@ -17815,9 +17815,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@rollup/pluginutils': 3.1.0(rollup@4.44.0)
+      '@rollup/pluginutils': 3.1.0(rollup@4.44.1)
       '@types/node': 18.19.112
-      rollup: 4.44.0
+      rollup: 4.44.1
       source-map-resolve: 0.6.0
     dev: false
 
@@ -17902,33 +17902,33 @@ packages:
       fsevents: 2.3.3
     dev: false
 
-  /rollup@4.44.0:
-    resolution: {integrity: sha512-qHcdEzLCiktQIfwBq420pn2dP+30uzqYxv9ETm91wdt2R9AFcWfjNAmje4NWlnCIQ5RMTzVf0ZyisOKqHR6RwA==, tarball: https://registry.npmjs.org/rollup/-/rollup-4.44.0.tgz}
+  /rollup@4.44.1:
+    resolution: {integrity: sha512-x8H8aPvD+xbl0Do8oez5f5o8eMS3trfCghc4HhLAnCkj7Vl0d1JWGs0UF/D886zLW2rOj2QymV/JcSSsw+XDNg==, tarball: https://registry.npmjs.org/rollup/-/rollup-4.44.1.tgz}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
     dependencies:
       '@types/estree': 1.0.8
     optionalDependencies:
-      '@rollup/rollup-android-arm-eabi': 4.44.0
-      '@rollup/rollup-android-arm64': 4.44.0
-      '@rollup/rollup-darwin-arm64': 4.44.0
-      '@rollup/rollup-darwin-x64': 4.44.0
-      '@rollup/rollup-freebsd-arm64': 4.44.0
-      '@rollup/rollup-freebsd-x64': 4.44.0
-      '@rollup/rollup-linux-arm-gnueabihf': 4.44.0
-      '@rollup/rollup-linux-arm-musleabihf': 4.44.0
-      '@rollup/rollup-linux-arm64-gnu': 4.44.0
-      '@rollup/rollup-linux-arm64-musl': 4.44.0
-      '@rollup/rollup-linux-loongarch64-gnu': 4.44.0
-      '@rollup/rollup-linux-powerpc64le-gnu': 4.44.0
-      '@rollup/rollup-linux-riscv64-gnu': 4.44.0
-      '@rollup/rollup-linux-riscv64-musl': 4.44.0
-      '@rollup/rollup-linux-s390x-gnu': 4.44.0
-      '@rollup/rollup-linux-x64-gnu': 4.44.0
-      '@rollup/rollup-linux-x64-musl': 4.44.0
-      '@rollup/rollup-win32-arm64-msvc': 4.44.0
-      '@rollup/rollup-win32-ia32-msvc': 4.44.0
-      '@rollup/rollup-win32-x64-msvc': 4.44.0
+      '@rollup/rollup-android-arm-eabi': 4.44.1
+      '@rollup/rollup-android-arm64': 4.44.1
+      '@rollup/rollup-darwin-arm64': 4.44.1
+      '@rollup/rollup-darwin-x64': 4.44.1
+      '@rollup/rollup-freebsd-arm64': 4.44.1
+      '@rollup/rollup-freebsd-x64': 4.44.1
+      '@rollup/rollup-linux-arm-gnueabihf': 4.44.1
+      '@rollup/rollup-linux-arm-musleabihf': 4.44.1
+      '@rollup/rollup-linux-arm64-gnu': 4.44.1
+      '@rollup/rollup-linux-arm64-musl': 4.44.1
+      '@rollup/rollup-linux-loongarch64-gnu': 4.44.1
+      '@rollup/rollup-linux-powerpc64le-gnu': 4.44.1
+      '@rollup/rollup-linux-riscv64-gnu': 4.44.1
+      '@rollup/rollup-linux-riscv64-musl': 4.44.1
+      '@rollup/rollup-linux-s390x-gnu': 4.44.1
+      '@rollup/rollup-linux-x64-gnu': 4.44.1
+      '@rollup/rollup-linux-x64-musl': 4.44.1
+      '@rollup/rollup-win32-arm64-msvc': 4.44.1
+      '@rollup/rollup-win32-ia32-msvc': 4.44.1
+      '@rollup/rollup-win32-x64-msvc': 4.44.1
       fsevents: 2.3.3
 
   /roughjs@4.6.6:
@@ -20554,7 +20554,7 @@ packages:
       '@types/node': 18.19.112
       esbuild: 0.24.2
       postcss: 8.5.6
-      rollup: 4.44.0
+      rollup: 4.44.1
       sass: 1.83.1
       terser: 5.43.1
       tsx: 4.20.3
@@ -20607,7 +20607,7 @@ packages:
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
       postcss: 8.5.6
-      rollup: 4.44.0
+      rollup: 4.44.1
       terser: 5.43.1
       tinyglobby: 0.2.14
       tsx: 4.20.3
@@ -20661,7 +20661,7 @@ packages:
       less: 4.3.0
       picomatch: 4.0.2
       postcss: 8.5.6
-      rollup: 4.44.0
+      rollup: 4.44.1
       sass: 1.88.0
       terser: 5.39.1
       tinyglobby: 0.2.14
@@ -20715,7 +20715,7 @@ packages:
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
       postcss: 8.5.6
-      rollup: 4.44.0
+      rollup: 4.44.1
       sass: 1.88.0
       terser: 5.43.1
       tinyglobby: 0.2.14
