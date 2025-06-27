@@ -15,7 +15,7 @@ export function defineInjectable<T>(opts: {
 export function getCurrentInjector(): Injector | undefined | null;
 
 // @public (undocumented)
-export function inject<T>(token: InjectionToken<T> | Constructor<T>, options?: unknown): T | NotFound;
+export function inject<T>(token: InjectionToken<T> | Constructor<T>): T;
 
 // @public
 export interface InjectionToken<T> {
