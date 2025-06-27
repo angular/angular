@@ -31,18 +31,19 @@ import {
 } from '../../../../../protocol';
 
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
-import {
-  InjectorTreeD3Node,
-  InjectorTreeVisualizer,
-} from '../dependency-injection/injector-tree-visualizer';
-import {TreeVisualizerHostComponent} from '../tree-visualizer-host/tree-visualizer-host.component';
+import {TreeVisualizer} from '../../shared/tree-visualizer-host/tree-visualizer';
+import {TreeVisualizerHostComponent} from '../../shared/tree-visualizer-host/tree-visualizer-host.component';
 import {InjectorProvidersComponent} from './injector-providers/injector-providers.component';
 import {
+  d3InjectorTreeLinkModifier,
+  d3InjectorTreeNodeModifier,
   filterOutAngularInjectors,
   filterOutInjectorsWithNoProviders,
   generateEdgeIdsFromNodeIds,
   getInjectorIdsToRootFromNode,
   grabInjectorPathsFromDirectiveForest,
+  InjectorTreeD3Node,
+  InjectorTreeVisualizer,
   splitInjectorPathsIntoElementAndEnvironmentPaths,
   transformInjectorResolutionPathsIntoTree,
 } from './injector-tree-fns';
@@ -305,7 +306,10 @@ export class InjectorTreeComponent {
     const g = environmentTree.group().nativeElement;
 
     this.injectorTreeGraph?.cleanup?.();
-    this.injectorTreeGraph = new InjectorTreeVisualizer(svg, g);
+    this.injectorTreeGraph = new TreeVisualizer(svg, g, {
+      d3NodeModifier: d3InjectorTreeNodeModifier,
+      d3LinkModifier: d3InjectorTreeLinkModifier,
+    });
   }
 
   setUpElementInjectorVisualizer(): void {
@@ -318,7 +322,11 @@ export class InjectorTreeComponent {
     const g = elementTree.group().nativeElement;
 
     this.elementInjectorTreeGraph?.cleanup?.();
-    this.elementInjectorTreeGraph = new InjectorTreeVisualizer(svg, g, {nodeSeparation: () => 1});
+    this.elementInjectorTreeGraph = new TreeVisualizer(svg, g, {
+      nodeSeparation: () => 1,
+      d3NodeModifier: d3InjectorTreeNodeModifier,
+      d3LinkModifier: d3InjectorTreeLinkModifier,
+    });
   }
 
   highlightPathFromSelectedInjector(): void {

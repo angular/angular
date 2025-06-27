@@ -2,7 +2,7 @@ load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
 load("//tools:defaults2.bzl", "ng_web_test_suite", "sass_binary")
 
-package(default_visibility = ["//:__subpackages__"])
+package(default_visibility = ["//devtools:__subpackages__"])
 
 sass_binary(
     name = "resolution_path_styles",

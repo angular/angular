@@ -32,11 +32,9 @@ ng_project(
         "//:node_modules/@types/d3",
         "//:node_modules/d3",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path:resolution-path_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree/injector-providers:injector-providers_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host:tree-visualizer-host_rjs",
         "//devtools/projects/ng-devtools/src/lib/shared/responsive-split:responsive-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
@@ -56,7 +54,6 @@ ts_test_library(
     ],
     deps = [
         ":injector_tree_fns_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
@@ -65,7 +62,7 @@ ts_project(
     name = "injector_tree_fns",
     srcs = ["injector-tree-fns.ts"],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
