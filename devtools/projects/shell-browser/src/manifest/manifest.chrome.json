@@ -4,7 +4,6 @@
   "name": "Angular DevTools",
   "description": "Angular DevTools extends Chrome DevTools adding Angular specific debugging and profiling capabilities.",
   "version": "1.0.37",
-  "version_name": "1.0.37",
   "minimum_chrome_version": "102",
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
