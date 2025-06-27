@@ -2145,7 +2145,6 @@ export interface HttpResourceRequest {
     priority?: RequestPriority | (string & {});
     redirect?: RequestRedirect | (string & {});
     reportProgress?: boolean;
-    timeout?: number;
     transferCache?: {
         includeHeaders?: string[];
     } | boolean;

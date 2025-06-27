@@ -213,7 +213,6 @@ describe('httpResource', () => {
         withCredentials: true,
         keepalive: true,
         transferCache: {includeHeaders: ['Y-Tag']},
-        timeout: 1234,
       }),
       {
         injector: TestBed.inject(Injector),
@@ -229,7 +228,6 @@ describe('httpResource', () => {
     expect(req.request.reportProgress).toEqual(true);
     expect(req.request.keepalive).toBe(true);
     expect(req.request.transferCache).toEqual({includeHeaders: ['Y-Tag']});
-    expect(req.request.timeout).toBe(1234);
   });
 
   it('should allow mapping data to an arbitrary type', async () => {

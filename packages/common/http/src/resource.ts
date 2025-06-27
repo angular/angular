@@ -286,7 +286,6 @@ function normalizeRequest(
       responseType,
       context: unwrappedRequest.context,
       transferCache: unwrappedRequest.transferCache,
-      timeout: unwrappedRequest.timeout,
     },
   );
 }
