@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, signal} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {MIN, form, min} from '../../../public_api';
+import { Injector, signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { MIN, form, min } from '../../../../public_api';
 
 describe('min validator', () => {
   it('returns min error when the value is smaller', () => {

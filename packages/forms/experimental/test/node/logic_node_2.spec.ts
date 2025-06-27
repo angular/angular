@@ -1,7 +1,7 @@
 import {signal} from '@angular/core';
-import {FieldContext, FieldState} from '../public_api';
-import {DYNAMIC} from '../src/logic_node';
-import {LogicNodeBuilder} from '../src/logic_node_2';
+import {FieldContext, FieldState} from '../../public_api';
+import {DYNAMIC} from '../../src/logic_node';
+import {LogicNodeBuilder} from '../../src/logic_node_2';
 
 const fakeFieldContext: FieldContext<unknown> = {
   fieldOf: () => undefined!,
