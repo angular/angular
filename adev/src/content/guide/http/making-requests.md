@@ -231,6 +231,82 @@ http.get('/api/config', {
 });
 </docs-code>
 
+## Advanced fetch options
+
+When using the `withFetch()` provider, Angular's `HttpClient` provides access to advanced fetch API options that can improve performance and user experience. These options are only available when using the fetch backend.
+
+### Keep-alive connections
+
+The `keepalive` option allows a request to outlive the page that initiated it. This is particularly useful for analytics or logging requests that need to complete even if the user navigates away from the page.
+
+<docs-code language="ts">
+http.post('/api/analytics', analyticsData, {
+  keepalive: true
+}).subscribe();
+</docs-code>
+
+
+### HTTP caching control
+
+The `cache` option controls how the request interacts with the browser's HTTP cache, which can significantly improve performance for repeated requests.
+
+<docs-code language="ts">
+//  Use cached response regardless of freshness
+http.get('/api/config', {
+  cache: 'force-cache'
+}).subscribe(config => {
+  // ...
+});
+
+// Always fetch from network, bypass cache
+http.get('/api/live-data', {
+  cache: 'no-cache'
+}).subscribe(data => {
+  // ...
+});
+
+// Use cached response only, fail if not in cache
+http.get('/api/static-data', {
+  cache: 'only-if-cached'
+}).subscribe(data => {
+  // ...
+});
+</docs-code>
+
+### Request priority for Core Web Vitals
+
+The `priority` option allows you to indicate the relative importance of a request, helping browsers optimize resource loading for better Core Web Vitals scores.
+
+<docs-code language="ts">
+// High priority for critical resources
+http.get('/api/user-profile', {
+  priority: 'high'
+}).subscribe(profile => {
+  // ...
+});
+
+// Low priority for non-critical resources
+http.get('/api/recommendations', {
+  priority: 'low'
+}).subscribe(recommendations => {
+  // ...
+});
+
+// Auto priority (default) lets the browser decide
+http.get('/api/settings', {
+  priority: 'auto'
+}).subscribe(settings => {
+  // ...
+});
+</docs-code>
+
+Available `priority` values:
+- `'high'`: High priority, loaded early (e.g., critical user data, above-the-fold content)
+- `'low'`: Low priority, loaded when resources are available (e.g., analytics, prefetch data)
+- `'auto'`: Browser determines priority based on request context (default)
+
+TIP: Use `priority: 'high'` for requests that affect Largest Contentful Paint (LCP) and `priority: 'low'` for requests that don't impact initial user experience.
+
 ## Http `Observable`s
 
 Each request method on `HttpClient` constructs and returns an `Observable` of the requested response type. Understanding how these `Observable`s work is important when using `HttpClient`.
