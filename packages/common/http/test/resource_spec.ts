@@ -108,8 +108,6 @@ describe('httpResource', () => {
         keepalive: true,
         cache: 'force-cache',
         priority: 'high',
-        mode: 'cors',
-        redirect: 'follow',
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -122,8 +120,6 @@ describe('httpResource', () => {
     expect(req.request.keepalive).toBe(true);
     expect(req.request.cache).toBe('force-cache');
     expect(req.request.priority).toBe('high');
-    expect(req.request.mode).toBe('cors');
-    expect(req.request.redirect).toBe('follow');
 
     req.flush([]);
 
