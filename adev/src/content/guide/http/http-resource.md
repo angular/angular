@@ -40,7 +40,9 @@ user = httpResource(() => ({
   reportProgress: true,
   withCredentials: true,
   transferCache: true,
-  keepalive: true,
+  keepalive: true,  
+  priority: 'high',
+  cache : 'force-cache'
 }));
 ```
 
