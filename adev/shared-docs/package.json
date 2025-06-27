@@ -20,7 +20,7 @@
     "fflate": "^0.8.2",
     "html-entities": "~2.6.0",
     "jsdom": "~26.1.0",
-    "marked": "~15.0.0",
+    "marked": "~16.0.0",
     "mermaid": "^11.0.0",
     "shiki": "^3.0.0",
     "tinyglobby": "^0.2.12"
