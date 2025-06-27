@@ -27,8 +27,6 @@ interface HttpRequestInit {
   priority?: RequestPriority;
   cache?: RequestCache;
   timeout?: number;
-  mode?: RequestMode;
-  redirect?: RequestRedirect;
 }
 
 /**
@@ -186,18 +184,6 @@ export class HttpRequest<T> {
   readonly priority!: RequestPriority;
 
   /**
-   * The mode of the request, which determines how the request will interact with the browser's security model.
-   * This can affect things like CORS (Cross-Origin Resource Sharing) and same-origin policies.
-   */
-  readonly mode!: RequestMode;
-
-  /**
-   * The redirect mode of the request, which determines how redirects are handled.
-   * This can affect whether the request follows redirects automatically, or if it fails when a redirect occurs.
-   */
-  readonly redirect!: RequestRedirect;
-
-  /**
    * The expected response type of the server.
    *
    * This is used to parse the response appropriately before returning it to
@@ -250,8 +236,6 @@ export class HttpRequest<T> {
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
-      mode?: RequestMode;
-      redirect?: RequestRedirect;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -278,8 +262,6 @@ export class HttpRequest<T> {
       priority?: RequestPriority;
       cache?: RequestCache;
       timeout?: number;
-      mode?: RequestMode;
-      redirect?: RequestRedirect;
     },
   );
   constructor(
@@ -296,8 +278,6 @@ export class HttpRequest<T> {
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
-      mode?: RequestMode;
-      redirect?: RequestRedirect;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -325,8 +305,6 @@ export class HttpRequest<T> {
       priority?: RequestPriority;
       cache?: RequestCache;
       timeout?: number;
-      mode?: RequestMode;
-      redirect?: RequestRedirect;
     },
   );
   constructor(
@@ -343,8 +321,6 @@ export class HttpRequest<T> {
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
-      mode?: RequestMode;
-      redirect?: RequestRedirect;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -372,8 +348,6 @@ export class HttpRequest<T> {
           keepalive?: boolean;
           priority?: RequestPriority;
           cache?: RequestCache;
-          mode?: RequestMode;
-          redirect?: RequestRedirect;
           transferCache?: {includeHeaders?: string[]} | boolean;
           timeout?: number;
         }
@@ -388,8 +362,6 @@ export class HttpRequest<T> {
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
-      mode?: RequestMode;
-      redirect?: RequestRedirect;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -422,23 +394,23 @@ export class HttpRequest<T> {
       }
 
       // Override headers if they're provided.
-      if (options.headers) {
+      if (!!options.headers) {
         this.headers = options.headers;
       }
 
-      if (options.context) {
+      if (!!options.context) {
         this.context = options.context;
       }
 
-      if (options.params) {
+      if (!!options.params) {
         this.params = options.params;
       }
 
-      if (options.priority) {
+      if (!!options.priority) {
         this.priority = options.priority;
       }
 
-      if (options.cache) {
+      if (!!options.cache) {
         this.cache = options.cache;
       }
 
@@ -451,14 +423,6 @@ export class HttpRequest<T> {
         }
 
         this.timeout = options.timeout;
-      }
-
-      if (options.mode) {
-        this.mode = options.mode;
-      }
-
-      if (options.redirect) {
-        this.redirect = options.redirect;
       }
 
       // We do want to assign transferCache even if it's falsy (false is valid value)
@@ -589,8 +553,6 @@ export class HttpRequest<T> {
     keepalive?: boolean;
     priority?: RequestPriority;
     cache?: RequestCache;
-    mode?: RequestMode;
-    redirect?: RequestRedirect;
     transferCache?: {includeHeaders?: string[]} | boolean;
     timeout?: number;
     body?: T | null;
@@ -608,8 +570,6 @@ export class HttpRequest<T> {
     keepalive?: boolean;
     priority?: RequestPriority;
     cache?: RequestCache;
-    mode?: RequestMode;
-    redirect?: RequestRedirect;
     withCredentials?: boolean;
     transferCache?: {includeHeaders?: string[]} | boolean;
     timeout?: number;
@@ -630,8 +590,6 @@ export class HttpRequest<T> {
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
-      mode?: RequestMode;
-      redirect?: RequestRedirect;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
       body?: any | null;
@@ -649,8 +607,6 @@ export class HttpRequest<T> {
     const keepalive = update.keepalive ?? this.keepalive;
     const priority = update.priority || this.priority;
     const cache = update.cache || this.cache;
-    const mode = update.mode || this.mode;
-    const redirect = update.redirect || this.redirect;
     // Carefully handle the transferCache to differentiate between
     // `false` and `undefined` in the update args.
     const transferCache = update.transferCache ?? this.transferCache;
@@ -707,8 +663,6 @@ export class HttpRequest<T> {
       cache,
       priority,
       timeout,
-      mode,
-      redirect,
     });
   }
 }
