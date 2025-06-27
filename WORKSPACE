@@ -350,7 +350,7 @@ register_toolchains(
 
 git_repository(
     name = "rules_sass",
-    commit = "cafb5de3136cd4e1d832e8814ad5733d68dbad10",
+    commit = "cc1e845339fc45d3c8390445014d5824b85a0948",
     remote = "https://github.com/devversion/rules_sass.git",
 )
 
