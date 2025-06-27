@@ -2127,11 +2127,13 @@ export interface HttpResourceRef<T> extends WritableResource<T>, ResourceRef<T> 
 // @public
 export interface HttpResourceRequest {
     body?: unknown;
+    cache?: RequestCache | (string & {});
     context?: HttpContext;
     headers?: HttpHeaders | Record<string, string | ReadonlyArray<string>>;
     keepalive?: boolean;
     method?: string;
     params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
+    priority?: RequestPriority | (string & {});
     reportProgress?: boolean;
     transferCache?: {
         includeHeaders?: string[];
