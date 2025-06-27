@@ -54,6 +54,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<ArrayBuffer>;
     delete(url: string, options: {
@@ -67,6 +69,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<Blob>;
     delete(url: string, options: {
@@ -80,6 +84,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<string>;
     delete(url: string, options: {
@@ -93,6 +99,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpEvent<ArrayBuffer>>;
     delete(url: string, options: {
@@ -106,6 +114,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpEvent<Blob>>;
     delete(url: string, options: {
@@ -119,6 +129,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpEvent<string>>;
     delete(url: string, options: {
@@ -132,6 +144,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpEvent<Object>>;
     delete<T>(url: string, options: {
@@ -145,6 +159,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpEvent<T>>;
     delete(url: string, options: {
@@ -158,6 +174,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpResponse<ArrayBuffer>>;
     delete(url: string, options: {
@@ -171,6 +189,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpResponse<Blob>>;
     delete(url: string, options: {
@@ -184,6 +204,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpResponse<string>>;
     delete(url: string, options: {
@@ -197,6 +219,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpResponse<Object>>;
     delete<T>(url: string, options: {
@@ -210,6 +234,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<HttpResponse<T>>;
     delete(url: string, options?: {
@@ -223,6 +249,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<Object>;
     delete<T>(url: string, options?: {
@@ -236,6 +264,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         body?: any | null;
     }): Observable<T>;
     get(url: string, options: {
@@ -249,6 +279,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -264,6 +296,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -279,6 +313,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -294,6 +330,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -309,6 +347,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -324,6 +364,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -339,6 +381,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -354,6 +398,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -369,6 +415,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -384,6 +432,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -399,6 +449,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -414,6 +466,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -429,6 +483,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -444,6 +500,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -459,6 +517,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -474,6 +534,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -489,6 +551,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -504,6 +568,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -519,6 +585,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -534,6 +602,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -549,6 +619,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -564,6 +636,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -579,6 +653,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -594,6 +670,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -609,6 +687,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -624,6 +704,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -639,6 +721,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -654,6 +738,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -669,6 +755,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -684,6 +772,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -701,6 +791,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<ArrayBuffer>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -713,6 +805,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<Blob>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -725,6 +819,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<string>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -737,6 +833,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<ArrayBuffer>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -749,6 +847,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<Blob>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -761,6 +861,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<string>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -773,6 +875,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<Object>>;
     options<T>(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -785,6 +889,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<T>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -797,6 +903,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<ArrayBuffer>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -809,6 +917,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<Blob>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -821,6 +931,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<string>>;
     options(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -833,6 +945,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<Object>>;
     options<T>(url: string, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -845,6 +959,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<T>>;
     options(url: string, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -857,6 +973,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<Object>;
     options<T>(url: string, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -869,6 +987,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<T>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -881,6 +1001,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<ArrayBuffer>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -893,6 +1015,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<Blob>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -905,6 +1029,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<string>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -917,6 +1043,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<ArrayBuffer>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -929,6 +1057,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<Blob>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -941,6 +1071,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<string>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -953,6 +1085,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<Object>>;
     patch<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -965,6 +1099,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<T>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -977,6 +1113,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<ArrayBuffer>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -989,6 +1127,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<Blob>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1001,6 +1141,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<string>>;
     patch(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1013,6 +1155,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<Object>>;
     patch<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1025,6 +1169,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<T>>;
     patch(url: string, body: any | null, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1037,6 +1183,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<Object>;
     patch<T>(url: string, body: any | null, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1049,6 +1197,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<T>;
     post(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1061,6 +1211,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1076,6 +1228,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1091,6 +1245,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1106,6 +1262,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1121,6 +1279,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1136,6 +1296,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1151,6 +1313,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1166,6 +1330,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1181,6 +1347,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1196,6 +1364,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1211,6 +1381,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1226,6 +1398,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1241,6 +1415,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1256,6 +1432,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1271,6 +1449,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1286,6 +1466,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<ArrayBuffer>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1298,6 +1480,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<Blob>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1310,6 +1494,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<string>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1322,6 +1508,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<ArrayBuffer>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1334,6 +1522,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<Blob>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1346,6 +1536,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<string>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1358,6 +1550,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<Object>>;
     put<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1370,6 +1564,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpEvent<T>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1382,6 +1578,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<ArrayBuffer>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1394,6 +1592,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<Blob>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1406,6 +1606,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<string>>;
     put(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1418,6 +1620,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<Object>>;
     put<T>(url: string, body: any | null, options: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1430,6 +1634,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<T>>;
     put(url: string, body: any | null, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1442,6 +1648,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<Object>;
     put<T>(url: string, body: any | null, options?: {
         headers?: HttpHeaders | Record<string, string | string[]>;
@@ -1454,6 +1662,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<T>;
     request<R>(req: HttpRequest<any>): Observable<HttpEvent<R>>;
     request(method: string, url: string, options: {
@@ -1467,6 +1677,8 @@ export class HttpClient {
         withCredentials?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1483,6 +1695,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1499,6 +1713,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1515,6 +1731,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1531,6 +1749,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1547,6 +1767,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1563,6 +1785,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1579,6 +1803,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1595,6 +1821,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1611,6 +1839,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1627,6 +1857,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1643,6 +1875,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     }): Observable<HttpResponse<Object>>;
     request<R>(method: string, url: string, options: {
         body?: any;
@@ -1656,6 +1890,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1672,6 +1908,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1688,6 +1926,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1704,6 +1944,8 @@ export class HttpClient {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1935,6 +2177,8 @@ export class HttpRequest<T> {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1951,6 +2195,8 @@ export class HttpRequest<T> {
         priority?: RequestPriority;
         cache?: RequestCache;
         timeout?: number;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     });
     constructor(method: 'POST', url: string, body: T | null, init?: {
         headers?: HttpHeaders;
@@ -1962,6 +2208,8 @@ export class HttpRequest<T> {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -1978,6 +2226,8 @@ export class HttpRequest<T> {
         priority?: RequestPriority;
         cache?: RequestCache;
         timeout?: number;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
     });
     constructor(method: string, url: string, body: T | null, init?: {
         headers?: HttpHeaders;
@@ -1989,6 +2239,8 @@ export class HttpRequest<T> {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -2009,6 +2261,8 @@ export class HttpRequest<T> {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -2033,6 +2287,8 @@ export class HttpRequest<T> {
         keepalive?: boolean;
         priority?: RequestPriority;
         cache?: RequestCache;
+        mode?: RequestMode;
+        redirect?: RequestRedirect;
         withCredentials?: boolean;
         transferCache?: {
             includeHeaders?: string[];
@@ -2053,8 +2309,10 @@ export class HttpRequest<T> {
     readonly headers: HttpHeaders;
     readonly keepalive: boolean;
     readonly method: string;
+    readonly mode: RequestMode;
     readonly params: HttpParams;
     readonly priority: RequestPriority;
+    readonly redirect: RequestRedirect;
     readonly reportProgress: boolean;
     readonly responseType: 'arraybuffer' | 'blob' | 'json' | 'text';
     serializeBody(): ArrayBuffer | Blob | FormData | URLSearchParams | string | null;
