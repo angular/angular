@@ -106,6 +106,8 @@ describe('httpResource', () => {
         },
         withCredentials: true,
         keepalive: true,
+        cache: 'force-cache',
+        priority: 'high',
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -116,6 +118,8 @@ describe('httpResource', () => {
     expect(req.request.headers.get('X-Special')).toBe('true');
     expect(req.request.withCredentials).toBe(true);
     expect(req.request.keepalive).toBe(true);
+    expect(req.request.cache).toBe('force-cache');
+    expect(req.request.priority).toBe('high');
 
     req.flush([]);
 

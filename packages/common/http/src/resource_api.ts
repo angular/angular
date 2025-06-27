@@ -76,6 +76,17 @@ export interface HttpResourceRequest {
   keepalive?: boolean;
 
   /**
+   * Controls how the request will interact with the browser's HTTP cache.
+   * This affects whether a response is retrieved from the cache, how it is stored, or if it bypasses the cache altogether.
+   */
+  cache?: RequestCache | (string & {});
+
+  /**
+   * Indicates the relative priority of the request. This may be used by the browser to decide the order in which requests are dispatched and resources fetched.
+   */
+  priority?: RequestPriority | (string & {});
+
+  /**
    * Configures the server-side rendering transfer cache for this request.
    *
    * See the documentation on the transfer cache for more information.
