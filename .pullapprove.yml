@@ -393,6 +393,7 @@ groups:
         - mmalerba
         - crisbeto
         - devversion
+        - ~jkrems
         - ~iteriani
         - ~tbondwilkinson
         - ~rahatarmanahmed
