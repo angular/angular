@@ -87,6 +87,18 @@ export interface HttpResourceRequest {
   priority?: RequestPriority | (string & {});
 
   /**
+   * The mode of the request, which determines how the request will interact with the browser's security model.
+   * This can affect things like CORS (Cross-Origin Resource Sharing) and same-origin policies.
+   */
+  mode?: RequestMode | (string & {});
+
+  /**
+   * The redirect mode of the request, which determines how redirects are handled.
+   * This can affect whether the request follows redirects automatically, or if it fails when a redirect occurs.
+   */
+  redirect?: RequestRedirect | (string & {});
+
+  /**
    * Configures the server-side rendering transfer cache for this request.
    *
    * See the documentation on the transfer cache for more information.
