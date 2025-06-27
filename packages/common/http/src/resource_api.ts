@@ -92,6 +92,11 @@ export interface HttpResourceRequest {
    * See the documentation on the transfer cache for more information.
    */
   transferCache?: {includeHeaders?: string[]} | boolean;
+
+  /**
+   * The timeout for the backend HTTP request in ms.
+   */
+  timeout?: number;
 }
 
 /**
