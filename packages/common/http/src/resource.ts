@@ -279,6 +279,8 @@ function normalizeRequest(
       reportProgress: unwrappedRequest.reportProgress,
       withCredentials: unwrappedRequest.withCredentials,
       keepalive: unwrappedRequest.keepalive,
+      cache: unwrappedRequest.cache as RequestCache,
+      priority: unwrappedRequest.priority as RequestPriority,
       responseType,
       context: unwrappedRequest.context,
       transferCache: unwrappedRequest.transferCache,
