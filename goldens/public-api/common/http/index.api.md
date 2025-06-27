@@ -2143,6 +2143,7 @@ export interface HttpResourceRequest {
     params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
     priority?: RequestPriority | (string & {});
     reportProgress?: boolean;
+    timeout?: number;
     transferCache?: {
         includeHeaders?: string[];
     } | boolean;
