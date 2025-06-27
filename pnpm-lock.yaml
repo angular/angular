@@ -358,8 +358,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4
         version: github.com/angular/dev-infra-private-build-tooling-builds/5db176c0f3211663830fd3ff4064c1dff0eaccb4(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/ssr@20.1.0-next.3)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(rxjs@7.8.2)(terser@5.43.1)(tsx@4.20.3)(zone.js@packages+zone.js)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#f56bdc58ebba6615c0abd26718a9854044907335
-        version: github.com/angular/dev-infra-private-ng-dev-builds/f56bdc58ebba6615c0abd26718a9854044907335
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#f2d9c9f63fa45781b6b2d6e77dbf284614b19eec
+        version: github.com/angular/dev-infra-private-ng-dev-builds/f2d9c9f63fa45781b6b2d6e77dbf284614b19eec
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.27.4)
@@ -3028,6 +3028,7 @@ packages:
 
   /@bazel/typescript@5.8.1(typescript@5.7.3):
     resolution: {integrity: sha512-NAJ8WQHZL1WE1YmRoCrq/1hhG15Mvy/viWh6TkvFnBeEhNUiQUsA5GYyhU1ztnBIYW03nATO3vwhAEfO7Q0U5g==, tarball: https://registry.npmjs.org/@bazel/typescript/-/typescript-5.8.1.tgz}
+    deprecated: No longer maintained, https://github.com/aspect-build/rules_ts is the recommended replacement
     hasBin: true
     peerDependencies:
       typescript: '>=3.0.0'
@@ -21445,10 +21446,10 @@ packages:
       - zone.js
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/f56bdc58ebba6615c0abd26718a9854044907335:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/f56bdc58ebba6615c0abd26718a9854044907335}
+  github.com/angular/dev-infra-private-ng-dev-builds/f2d9c9f63fa45781b6b2d6e77dbf284614b19eec:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/f2d9c9f63fa45781b6b2d6e77dbf284614b19eec}
     name: '@angular/ng-dev'
-    version: 0.0.0-5a3a86f416ca80bb31a1672985f555b760242388
+    version: 0.0.0-110186fb5b3fc7646e804e67d4b89122e1421b5f
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 8.0.0(supports-color@10.0.0)
