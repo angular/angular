@@ -7,8 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
-import {NgxFlamegraphModule} from 'ngx-flamegraph';
-import {Color, RawData} from 'ngx-flamegraph/lib/utils';
+import {NgxFlamegraphModule, FlamegraphColor, RawData} from 'ngx-flamegraph';
 import {ProfilerFrame} from '../../../../../../../../protocol';
 
 import {ThemeService} from '../../../../../application-services/theme_service';
@@ -42,7 +41,7 @@ export class FlamegraphVisualizerComponent {
   view: [number, number] = [235, 200];
 
   private readonly _formatter = new FlamegraphFormatter();
-  readonly colors = computed<Color>(() => {
+  readonly colors = computed<FlamegraphColor>(() => {
     return this.themeService.currentTheme() === 'dark-theme'
       ? {
           hue: [210, 90],
