@@ -218,7 +218,7 @@
     "karma-jasmine-html-reporter": "^2.1.0",
     "karma-sauce-launcher": "^4.3.6",
     "live-server": "^1.2.2",
-    "marked": "^15.0.0",
+    "marked": "^16.0.0",
     "mermaid": "^11.0.0",
     "patch-package": "^7.0.0",
     "playwright-core": "^1.41.2",
