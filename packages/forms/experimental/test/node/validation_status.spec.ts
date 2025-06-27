@@ -11,12 +11,12 @@ import {TestBed} from '@angular/core/testing';
 import {
   Field,
   form,
-  validateAsync,
   FormError,
   FormTreeError,
   validate,
+  validateAsync,
   validateTree,
-} from '../public_api';
+} from '../../public_api';
 
 function validateValue(value: string): FormError[] {
   return value === 'INVALID' ? [{kind: 'error'}] : [];

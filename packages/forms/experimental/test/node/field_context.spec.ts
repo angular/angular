@@ -7,7 +7,7 @@
  */
 import {signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FieldContext, FieldPath, form, validate} from '../public_api';
+import {FieldContext, FieldPath, form, validate} from '../../public_api';
 
 function testContext<T>(
   s: WritableSignal<T>,
