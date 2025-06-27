@@ -2398,8 +2398,10 @@ export interface HttpResourceRequest {
     headers?: HttpHeaders | Record<string, string | ReadonlyArray<string>>;
     keepalive?: boolean;
     method?: string;
+    mode?: RequestMode | (string & {});
     params?: HttpParams | Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>;
     priority?: RequestPriority | (string & {});
+    redirect?: RequestRedirect | (string & {});
     reportProgress?: boolean;
     timeout?: number;
     transferCache?: {
