@@ -250,6 +250,8 @@ export interface FieldContext<T> {
    * A signal of the value of the field that the logic function is bound to.
    */
   readonly value: Signal<T>;
+  readonly key: Signal<string>;
+  readonly index: Signal<number>;
   readonly state: FieldState<T>;
   readonly field: Field<T>;
   readonly valueOf: <P>(p: FieldPath<P>) => P;
