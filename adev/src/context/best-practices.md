@@ -36,3 +36,12 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Routing
+- Use `provideRouter()` with standalone components instead of RouterModule.forRoot()
+- Implement lazy loading using loadComponent for feature routes and standalone components
+- Use functional route guards (`CanActivateFn`, `CanDeactivateFn`) instead of class-based guards
+- Configure preloading strategies:
+  - Use NoPreloading as default (conserves bandwidth)
+  - Implement custom strategies for critical routes only
+- Structure routes hierarchically with clear parent-child relationships
