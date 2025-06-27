@@ -6,22 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Component,
-  Injector,
-  signal,
-  ElementRef,
-  ViewChild,
-  Signal,
-  WritableSignal,
-} from '@angular/core';
-import {TestBed, ComponentFixture} from '@angular/core/testing';
-import {form, Field, Control, min} from '../../public_api'; // Assuming public_api exports Field
+import {Component, Injector, signal, WritableSignal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {Control, Field, form, min} from '../../../public_api';
 
 describe('control directive with native input', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [], // Import FormsModule or your experimental forms module
+      imports: [],
     });
   });
 
@@ -29,7 +21,7 @@ describe('control directive with native input', () => {
     @Component({
       template: `<input [control]="catForm.name"/>`,
       standalone: true,
-      imports: [Control], // Ensure FormsModule or your directive's module is here
+      imports: [Control],
     })
     class TestHostComponent {
       readonly cat = cat;

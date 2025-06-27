@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {apply, applyEach, applyWhen, form, validate} from '../public_api';
+import {apply, applyEach, applyWhen, form, validate} from '../../public_api';
 
 describe('path', () => {
   describe('Active path', () => {

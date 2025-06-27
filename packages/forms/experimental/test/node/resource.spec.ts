@@ -12,14 +12,14 @@ import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 
 import {
-  define,
-  validateAsync,
-  validateHttp,
   applyEach,
-  validate,
+  define,
   form,
   SchemaOrSchemaFn,
-} from '../public_api';
+  validate,
+  validateAsync,
+  validateHttp,
+} from '../../public_api';
 
 interface Cat {
   name: string;
