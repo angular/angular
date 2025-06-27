@@ -90,19 +90,25 @@ export class FetchBackend implements HttpBackend {
         observer.error(new HttpErrorResponse({error})),
       );
 
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
       if (request.timeout) {
         // TODO: Replace with AbortSignal.any([aborter.signal, AbortSignal.timeout(request.timeout)])
         // when AbortSignal.any support is Baseline widely available (NET nov. 2026)
-        this.ngZone.runOutsideAngular(() => {
+        timeoutId = this.ngZone.runOutsideAngular(() =>
           setTimeout(() => {
             if (!aborter.signal.aborted) {
               aborter.abort(new DOMException('signal timed out', 'TimeoutError'));
             }
-          }, request.timeout);
-        });
+          }, request.timeout),
+        );
       }
 
-      return () => aborter.abort();
+      return () => {
+        if (timeoutId !== undefined) {
+          clearTimeout(timeoutId);
+        }
+        aborter.abort();
+      };
     });
   }
 
