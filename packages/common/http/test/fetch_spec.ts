@@ -346,6 +346,34 @@ describe('FetchBackend', async () => {
     fetchMock.mockTimeoutEvent();
   });
 
+  it('should pass mode option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {mode: 'cors'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        mode: 'cors',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('should pass redirect option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {redirect: 'follow'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        redirect: 'follow',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
   describe('progress events', () => {
     it('are emitted for download progress', (done) => {
       backend

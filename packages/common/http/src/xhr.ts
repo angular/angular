@@ -57,6 +57,50 @@ function getResponseUrl(xhr: any): string | null {
 }
 
 /**
+ * Validates whether the request is compatible with the XHR backend.
+ * Show a warning if the request contains options that are not supported by XHR.
+ */
+function validateXhrCompatibility(req: HttpRequest<any>) {
+  const unsupportedOptions: {
+    property: keyof HttpRequest<any>;
+    errorCode: RuntimeErrorCode;
+  }[] = [
+    {
+      property: 'keepalive',
+      errorCode: RuntimeErrorCode.KEEPALIVE_NOT_SUPPORTED_WITH_XHR,
+    },
+    {
+      property: 'cache',
+      errorCode: RuntimeErrorCode.CACHE_NOT_SUPPORTED_WITH_XHR,
+    },
+    {
+      property: 'priority',
+      errorCode: RuntimeErrorCode.PRIORITY_NOT_SUPPORTED_WITH_XHR,
+    },
+    {
+      property: 'mode',
+      errorCode: RuntimeErrorCode.MODE_NOT_SUPPORTED_WITH_XHR,
+    },
+    {
+      property: 'redirect',
+      errorCode: RuntimeErrorCode.REDIRECT_NOT_SUPPORTED_WITH_XHR,
+    },
+  ];
+
+  // Check each unsupported option and warn if present
+  for (const {property, errorCode} of unsupportedOptions) {
+    if (property in req) {
+      console.warn(
+        formatRuntimeError(
+          errorCode,
+          `Angular detected that a \`HttpClient\` request with the \`${property}\` option was sent using XHR, which does not support it. To use the \`${property}\` option, enable Fetch API support by passing \`withFetch()\` as an argument to \`provideHttpClient()\`.`,
+        ),
+      );
+    }
+  }
+}
+
+/**
  * Uses `XMLHttpRequest` to send requests to a backend server.
  * @see {@link HttpHandler}
  * @see {@link JsonpClientBackend}
@@ -83,32 +127,8 @@ export class HttpXhrBackend implements HttpBackend {
       );
     }
 
-    if (req.keepalive && ngDevMode) {
-      console.warn(
-        formatRuntimeError(
-          RuntimeErrorCode.KEEPALIVE_NOT_SUPPORTED_WITH_XHR,
-          `Angular detected that a \`HttpClient\` request with the \`keepalive\` option was sent using XHR, which does not support it. To use the \`keepalive\` option, enable Fetch API support by passing \`withFetch()\` as an argument to \`provideHttpClient()\`.`,
-        ),
-      );
-    }
-
-    if (req.cache && ngDevMode) {
-      console.warn(
-        formatRuntimeError(
-          RuntimeErrorCode.CACHE_NOT_SUPPORTED_WITH_XHR,
-          `Angular detected that a \`HttpClient\` request with the \`cache\` option was sent using XHR, which does not support it. To use the \`cache\` option, enable Fetch API support by passing \`withFetch()\` as an argument to \`provideHttpClient()\`.`,
-        ),
-      );
-    }
-
-    if (req.priority && ngDevMode) {
-      console.warn(
-        formatRuntimeError(
-          RuntimeErrorCode.PRIORITY_NOT_SUPPORTED_WITH_XHR,
-          `Angular detected that a \`HttpClient\` request with the \`priority\` option was sent using XHR, which does not support it. To use the \`priority\` option, enable Fetch API support by passing \`withFetch()\` as an argument to \`provideHttpClient()\`.`,
-        ),
-      );
-    }
+    // Validate that the request is compatible with the XHR backend.
+    ngDevMode && validateXhrCompatibility(req);
 
     // Check whether this factory has a special function to load an XHR implementation
     // for various non-browser environments. We currently limit it to only `ServerXhr`
