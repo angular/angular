@@ -7,32 +7,22 @@ Publishing Angular DevTools is achieved through the following steps:
 On the `main` branch, run:
 
 ```shell
+git checkout main
+git pull upstream main
 git log "HEAD...$(git log HEAD~1 --grep="release:.*Angular DevTools" --format=format:%H | head -n 1)~1" --format=format:%s |
-    grep "(devtools):\|release:.*Angular DevTools" --color=never |
-    grep -v "^refactor" --color=never
+    grep -E "(fix|feat|perf)\(devtools\):|release:.*Angular DevTools" -i --color=never
 ```
 
 If this displays any commits since the most recent release commit, then there's something to publish.
 If it only shows the most recent release commit, then the DevTools release can be skipped.
 
-## 1. Sync workspace
-
-Before starting anything, make sure your workspace is up to date with latest changes and dependencies.
-
-```shell
-git checkout main
-git pull upstream main
-nvm install
-yarn --immutable
-```
-
-## 2. Update extension version numbers
+## 1. Update extension version numbers
 
 Bump the version numbers listed in
 [`manifest.chrome.json`](/devtools/projects/shell-browser/src/manifest/manifest.chrome.json)
 and [`manifest.firefox.json`](/devtools/projects/shell-browser/src/manifest/manifest.firefox.json).
 
-### 3. Commit and merge
+## 2. Commit and merge
 
 Commit the version bump:
 
@@ -42,11 +32,13 @@ git add . && git commit -m "release: bump Angular DevTools version to ${VERSION}
 git push -u origin devtools-release
 ```
 
-Then create and merge a PR targeting `patch` with this change. Merging this PR does not
+Then create and merge a PR targeting `minor` with this change. Merging this PR does not
 have any automation associated with it and can be merged at any time.
 
-Once the PR is merged, pull and check out that specific commit hash on `main` and reinstall
-dependencies as they might have changed.
+## 3. Sync to merged commit
+
+Once the PR is merged, pull and check out that specific commit hash on `main` and install
+dependencies as they might have changed since your last install.
 
 ```shell
 git fetch upstream main
@@ -115,7 +107,7 @@ need to upload the entire monorepo. Package it without dependencies and generate
 following command and upload it.
 
 ```shell
-rm -rf dist/ **/node_modules/ && zip -r ~/angular-source.zip * -x ".git/*" -x "node_modules/*"
+git archive HEAD -o ~/angular-source.zip
 ```
 
 ### Changelog
@@ -125,8 +117,7 @@ with the following command:
 
 ```shell
 git log "HEAD~1...$(git log HEAD~1 --grep="release:.*Angular DevTools" --format=format:%H | head -n 1)" --format=format:%s |
-    grep "(devtools):" --color=never |
-    grep -v "^refactor" --color=never |
+    grep -E "(fix|feat|perf)\(devtools\):|release:.*Angular DevTools" -i --color=never |
     sed "s,^,* ,g" |
     sed -E "s,\(#([0-9]+)\),([#\1](https://github.com/angular/angular/pull/\1/)),g"
 ```
