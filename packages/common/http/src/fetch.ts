@@ -313,7 +313,16 @@ export class FetchBackend implements HttpBackend {
     // We could share some of this logic with the XhrBackend
 
     const headers: Record<string, string> = {};
-    const credentials: RequestCredentials | undefined = req.withCredentials ? 'include' : undefined;
+    let credentials: RequestCredentials | undefined;
+
+    // If the request has a credentials property, use it.
+    // Otherwise, if the request has withCredentials set to true, use 'include'.
+    credentials = req.credentials;
+
+    // If withCredentials is true should be set to 'include', for compatibility
+    if (req.withCredentials) {
+      credentials = 'include';
+    }
 
     // Setting all the requested headers.
     req.headers.forEach((name, values) => (headers[name] = values.join(',')));

@@ -85,6 +85,10 @@ function validateXhrCompatibility(req: HttpRequest<any>) {
       property: 'redirect',
       errorCode: RuntimeErrorCode.REDIRECT_NOT_SUPPORTED_WITH_XHR,
     },
+    {
+      property: 'credentials',
+      errorCode: RuntimeErrorCode.CREDENTIALS_NOT_SUPPORTED_WITH_XHR,
+    },
   ];
 
   // Check each unsupported option and warn if present

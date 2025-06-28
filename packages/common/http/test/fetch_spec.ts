@@ -374,6 +374,20 @@ describe('FetchBackend', async () => {
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
   });
 
+  it('should pass credentials option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {credentials: 'omit'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        credentials: 'omit',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
   describe('progress events', () => {
     it('are emitted for download progress', (done) => {
       backend

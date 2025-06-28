@@ -96,6 +96,7 @@ describe('HttpRequest', () => {
       cache: 'only-if-cached',
       priority: 'high',
       timeout: 1000,
+      credentials: 'same-origin',
     });
     it('in the base case', () => {
       const clone = req.clone();
@@ -112,6 +113,7 @@ describe('HttpRequest', () => {
       expect(clone.cache).toBe('only-if-cached');
       expect(clone.priority).toBe('high');
       expect(clone.timeout).toBe(1000);
+      expect(clone.credentials).toBe('same-origin');
     });
     it('and updates the url', () => {
       expect(req.clone({url: '/changed'}).url).toBe('/changed');
@@ -134,6 +136,15 @@ describe('HttpRequest', () => {
     });
     it('and updates the timeout', () => {
       expect(req.clone({timeout: 5000}).timeout).toBe(5000);
+    });
+    it('and updates the cache', () => {
+      expect(req.clone({cache: 'default'}).cache).toBe('default');
+    });
+    it('and updates the priority', () => {
+      expect(req.clone({priority: 'low'}).priority).toBe('low');
+    });
+    it('and updates the credentials', () => {
+      expect(req.clone({credentials: 'omit'}).credentials).toBe('omit');
     });
   });
   describe('content type detection', () => {
