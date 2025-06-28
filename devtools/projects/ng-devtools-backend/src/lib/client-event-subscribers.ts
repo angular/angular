@@ -63,6 +63,7 @@ import {serializeDirectiveState, serializeValue} from './state-serializer/state-
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 import {getSupportedApis} from './ng-debug-api/supported-apis';
+import {sanitizeObject} from './serialization-utils';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
@@ -321,7 +322,9 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
   const route = getRouterConfigFromRoot(rootInjector);
   if (!route) return;
 
-  messageBus.emit('updateRouterTree', [[route]]);
+  const sanitizedRoute = sanitizeRouteData(route);
+
+  messageBus.emit('updateRouterTree', [[sanitizedRoute]]);
 };
 
 const getSerializedProviderRecords = (injector: SerializedInjector) => {
@@ -711,3 +714,16 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
   }
 };
+
+// Route data needs to be serializable to be sent over the message bus.
+export function sanitizeRouteData(route: Route): Route {
+  if (route.data) {
+    route.data = sanitizeObject(route.data);
+  }
+
+  if (route.children) {
+    route.children = route.children.map(sanitizeRouteData);
+  }
+
+  return route;
+}

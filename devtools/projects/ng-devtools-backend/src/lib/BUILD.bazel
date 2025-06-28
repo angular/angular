@@ -131,10 +131,30 @@ ts_project(
 
 ts_project(
     name = "utils",
-    srcs = ["utils.ts"],
+    srcs = [
+        "serialization-utils.ts",
+        "utils.ts",
+    ],
     interop_deps = [
         "//packages/core",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+    ],
+)
+
+ng_web_test_suite(
+    name = "utils_test",
+    deps = [
+        ":utils_test_lib_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "utils_test_lib",
+    srcs = [
+        "serialization-utils.spec.ts",
+    ],
+    deps = [
+        ":utils_rjs",
     ],
 )
 
