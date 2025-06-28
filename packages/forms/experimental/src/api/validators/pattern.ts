@@ -35,7 +35,13 @@ export function pattern(
   config?: BaseValidatorConfig<string>,
 ) {
   const reactivePatternValue = typeof pattern === 'string' ? () => pattern : pattern;
-  metadata(path, PATTERN, (ctx) => [reactivePatternValue(ctx)]);
+  metadata(path, PATTERN, (ctx) => {
+    const result = reactivePatternValue(ctx);
+    if (result === undefined) {
+      return [];
+    }
+    return [result];
+  });
 
   return validate(path, (ctx) => {
     const value = reactivePatternValue(ctx);

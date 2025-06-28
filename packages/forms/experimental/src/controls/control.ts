@@ -32,7 +32,6 @@ import {
   illegallySetComponentInput as illegallySetInputSignal,
 } from '../illegal';
 import {InteropNgControl} from './interop_ng_control';
-import {MAX, MetadataKey, MIN} from '@angular/forms/experimental';
 
 @Directive({
   selector: '[control]',
