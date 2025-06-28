@@ -8,6 +8,8 @@
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
+import {parseDigitInfo} from './intl/helpers';
+import {formatIntlCurrency, formatIntlNumber, formatIntlPercent} from './intl/numbers';
 import {
   getLocaleNumberFormat,
   getLocaleNumberSymbol,
@@ -17,7 +19,6 @@ import {
 } from './locale_data_api';
 import {RuntimeErrorCode} from '../errors';
 
-export const NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 const MAX_DIGITS = 22;
 const DECIMAL_SEP = '.';
 const ZERO_CHAR = '0';
@@ -51,33 +52,11 @@ function formatNumberToLocaleString(
       parsedNumber = toPercent(parsedNumber);
     }
 
-    let minInt = pattern.minInt;
-    let minFraction = pattern.minFrac;
-    let maxFraction = pattern.maxFrac;
-
-    if (digitsInfo) {
-      const parts = digitsInfo.match(NUMBER_FORMAT_REGEXP);
-      if (parts === null) {
-        throw new RuntimeError(
-          RuntimeErrorCode.INVALID_DIGIT_INFO,
-          ngDevMode && `${digitsInfo} is not a valid digit info`,
-        );
-      }
-      const minIntPart = parts[1];
-      const minFractionPart = parts[3];
-      const maxFractionPart = parts[5];
-      if (minIntPart != null) {
-        minInt = parseIntAutoRadix(minIntPart);
-      }
-      if (minFractionPart != null) {
-        minFraction = parseIntAutoRadix(minFractionPart);
-      }
-      if (maxFractionPart != null) {
-        maxFraction = parseIntAutoRadix(maxFractionPart);
-      } else if (minFractionPart != null && minFraction > maxFraction) {
-        maxFraction = minFraction;
-      }
-    }
+    let {
+      minimumIntegerDigits: minInt,
+      minimumFractionDigits: minFraction,
+      maximumFractionDigits: maxFraction,
+    } = parseDigitInfo(digitsInfo, pattern.minInt, pattern.minFrac, pattern.maxFrac);
 
     roundNumber(parsedNumber, minFraction, maxFraction);
 
@@ -172,6 +151,16 @@ export function formatCurrency(
   currencyCode?: string,
   digitsInfo?: string,
 ): string {
+  return formatCurrencyImpl(value, locale, currency, currencyCode, digitsInfo);
+}
+
+function formatCurrencyLegacy(
+  value: number,
+  locale: string,
+  currency: string,
+  currencyCode?: string,
+  digitsInfo?: string,
+): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Currency);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
 
@@ -219,6 +208,10 @@ export function formatCurrency(
  *
  */
 export function formatPercent(value: number, locale: string, digitsInfo?: string): string {
+  return formatPercentImpl(value, locale, digitsInfo);
+}
+
+export function formatPercentLegacy(value: number, locale: string, digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Percent);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
   const res = formatNumberToLocaleString(
@@ -254,6 +247,10 @@ export function formatPercent(value: number, locale: string, digitsInfo?: string
  * @publicApi
  */
 export function formatNumber(value: number, locale: string, digitsInfo?: string): string {
+  return formatNumberImpl(value, locale, digitsInfo);
+}
+
+export function formatNumberLegacy(value: number, locale: string, digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Decimal);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
   return formatNumberToLocaleString(
@@ -514,13 +511,22 @@ function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: numbe
   }
 }
 
-export function parseIntAutoRadix(text: string): number {
-  const result: number = parseInt(text);
-  if (isNaN(result)) {
-    throw new RuntimeError(
-      RuntimeErrorCode.INVALID_INTEGER_LITERAL,
-      ngDevMode && 'Invalid integer literal when parsing ' + text,
-    );
-  }
-  return result;
+let formatNumberImpl = formatNumberLegacy;
+let formatCurrencyImpl = formatCurrencyLegacy;
+let formatPercentImpl = formatPercentLegacy;
+
+export function isUsingLegacyImplementation() {
+  return formatNumberImpl === formatNumberLegacy;
+}
+
+export function useNumberIntlImplementation() {
+  formatNumberImpl = formatIntlNumber;
+  formatPercentImpl = formatIntlPercent;
+  formatCurrencyImpl = formatIntlCurrency;
+}
+
+export function useNumberLegacyImplementation() {
+  formatNumberImpl = formatNumberLegacy;
+  formatPercentImpl = formatPercentLegacy;
+  formatCurrencyImpl = formatCurrencyLegacy;
 }
