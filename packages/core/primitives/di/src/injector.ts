@@ -33,13 +33,17 @@ export function setCurrentInjector(
   return former;
 }
 
+export function inject<T>(token: InjectionToken<T> | Constructor<T>): T;
 export function inject<T>(
   token: InjectionToken<T> | Constructor<T>,
   options?: unknown,
 ): T | NotFound {
   const currentInjector = getCurrentInjector();
-  if (!currentInjector || !(token as InjectionToken<T>).ɵprov) {
-    return NOT_FOUND;
+  if (!currentInjector) {
+    throw new Error('Current injector is not set.');
+  }
+  if (!(token as InjectionToken<T>).ɵprov) {
+    throw new Error('Token is not an injectable');
   }
   return currentInjector.retrieve(token as InjectionToken<T>, options);
 }
