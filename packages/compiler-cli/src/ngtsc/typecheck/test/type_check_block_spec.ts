@@ -211,11 +211,9 @@ describe('type check blocks', () => {
       ];
       const actual = tcb(TEMPLATE, DIRECTIVES);
       expect(actual).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "fieldA" | "fieldB">) => i0.Dir<T> = null!;',
+        'const _ctor1: <NgBoundInputs extends keyof i0.Dir>() => <T extends string = any>(init: Pick<Pick<i0.Dir<T>, "fieldA" | "fieldB">, NgBoundInputs>) => i0.Dir<T> = null!;',
       );
-      expect(actual).toContain(
-        'var _t1 = _ctor1({ "fieldA": (((this).foo)), "fieldB": 0 as any });',
-      );
+      expect(actual).toContain('var _t1 = _ctor1<"fieldA">()({ "fieldA": (((this).foo)) });');
     });
 
     it('should handle multiple bindings to the same property', () => {
@@ -271,10 +269,12 @@ describe('type check blocks', () => {
 
       const actual = tcb(TEMPLATE, DIRECTIVES);
       expect(actual).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "input">) => i0.Dir<T> = null!;',
+        'const _ctor1: <NgBoundInputs extends keyof i0.Dir>() => <T extends string = any>(init: Pick<Pick<i0.Dir<T>, "input">, NgBoundInputs>) => i0.Dir<T> = null!;',
       );
       expect(actual).toContain(
-        'var _t2 = _ctor1({ "input": (null!) }); ' + 'var _t1 = _t2; ' + '_t2.input = (_t1);',
+        'var _t2 = _ctor1<"input">()({ "input": (null!) }); ' +
+          'var _t1 = _t2; ' +
+          '_t2.input = (_t1);',
       );
     });
 
@@ -303,12 +303,12 @@ describe('type check blocks', () => {
       ];
       const actual = tcb(TEMPLATE, DIRECTIVES);
       expect(actual).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.DirA<T>, "inputA">) => i0.DirA<T> = null!; const _ctor2: <T extends string = any>(init: Pick<i0.DirB<T>, "inputB">) => i0.DirB<T> = null!;',
+        'const _ctor1: <NgBoundInputs extends keyof i0.DirA>() => <T extends string = any>(init: Pick<Pick<i0.DirA<T>, "inputA">, NgBoundInputs>) => i0.DirA<T> = null!; const _ctor2: <NgBoundInputs extends keyof i0.DirB>() => <T extends string = any>(init: Pick<Pick<i0.DirB<T>, "inputB">, NgBoundInputs>) => i0.DirB<T> = null!;',
       );
       expect(actual).toContain(
-        'var _t4 = _ctor1({ "inputA": (null!) }); ' +
+        'var _t4 = _ctor1<"inputA">()({ "inputA": (null!) }); ' +
           'var _t3 = _t4; ' +
-          'var _t2 = _ctor2({ "inputB": (_t3) }); ' +
+          'var _t2 = _ctor2<"inputB">()({ "inputB": (_t3) }); ' +
           'var _t1 = _t2; ' +
           '_t4.inputA = (_t1); ' +
           '_t2.inputB = (_t3);',
@@ -798,10 +798,10 @@ describe('type check blocks', () => {
     ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain(
-      'const _ctor1: <T extends string = any>(init: Pick<i0.TwoWay<T>, "input">) => i0.TwoWay<T> = null!',
+      'const _ctor1: <NgBoundInputs extends keyof i0.TwoWay>() => <T extends string = any>(init: Pick<Pick<i0.TwoWay<T>, "input">, NgBoundInputs>) => i0.TwoWay<T> = null!',
     );
     expect(block).toContain(
-      'var _t1 = _ctor1({ "input": (i1.ɵunwrapWritableSignal(((this).value))) });',
+      'var _t1 = _ctor1<"input">()({ "input": (i1.ɵunwrapWritableSignal(((this).value))) });',
     );
     expect(block).toContain('_t1.input = i1.ɵunwrapWritableSignal((((this).value)));');
     expect(block).toContain('var _t2 = i1.ɵunwrapWritableSignal(((this).value));');
