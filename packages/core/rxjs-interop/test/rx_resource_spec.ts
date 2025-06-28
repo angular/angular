@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {of, Observable, BehaviorSubject} from 'rxjs';
+import {of, Observable, BehaviorSubject, throwError} from 'rxjs';
 import {TestBed} from '../../testing';
 import {ApplicationRef, Injector, signal} from '../../src/core';
 import {rxResource} from '../src';
@@ -76,6 +76,31 @@ describe('rxResource()', () => {
     response.error('fail');
     expect(res.error()).toEqual(jasmine.objectContaining({cause: 'fail'}));
     expect(res.error()!.message).toContain('Resource');
+  });
+
+  it('should handle Error like objects', async () => {
+    class FooError implements Error {
+      name = 'FooError';
+      message = 'This is a FooError';
+    }
+
+    const injector = TestBed.inject(Injector);
+    const appRef = TestBed.inject(ApplicationRef);
+
+    const sig = signal(1);
+    const observable = throwError(() => new FooError());
+
+    const rxRes = rxResource({
+      params: sig,
+      stream: () => observable,
+      injector: injector,
+    });
+
+    await appRef.whenStable();
+
+    expect(rxRes.error()).toBeInstanceOf(FooError);
+
+    expect(() => rxRes.value()).toThrowError(/This is a FooError/);
   });
 });
 
