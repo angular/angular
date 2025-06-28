@@ -9,6 +9,7 @@
   <ng-property-tab-body
     (inspect)="inspect.emit($event)"
     (viewSource)="viewSource.emit($event)"
+    (showSignalGraph)="showSignalGraph.emit($event)"
     [currentSelectedElement]="currentSelectedElement"
   />
 

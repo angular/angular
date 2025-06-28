@@ -173,4 +173,12 @@ export class SignalsTabComponent implements OnDestroy {
       frame!,
     );
   }
+
+  toggleLogging() {
+    const selected = this.selected();
+    if (!selected) {
+      return;
+    }
+    this.messageBus.emit('toggleLogging', [{element: this.currentElement()!, signalId: selected}]);
+  }
 }
