@@ -34,6 +34,9 @@ interface MacroTaskOptions {
   callbackArgs?: any;
 }
 
+// Need this because mock clocks might be installed (other than fakeAsync!)
+const originalSetImmediate = global.setImmediate;
+const originalTimeout = global.setTimeout;
 const OriginalDate = global.Date;
 // Since when we compile this file to `es2015`, and if we define
 // this `FakeDate` as `class FakeDate`, and then set `FakeDate.prototype`
@@ -300,10 +303,18 @@ class Scheduler {
     }
     // Find the last task currently queued in the scheduler queue and tick
     // till that time.
+    const tickTime = this.timeUntilLastTimer();
+    this.tick(tickTime, doTick);
+    return tickTime;
+  }
+
+  timeUntilLastTimer(): number {
+    if (this._schedulerQueue.length === 0) {
+      return 0;
+    }
     const startTime = this._currentTickTime;
     const lastTask = this._schedulerQueue[this._schedulerQueue.length - 1];
-    this.tick(lastTask.endTime - startTime, doTick);
-    return this._currentTickTime - startTime;
+    return lastTask.endTime - startTime;
   }
 
   private flushNonPeriodic(limit: number, doTick?: (elapsed: number) => void): number {
@@ -547,6 +558,99 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     FakeAsyncTestZoneSpec.resetDate();
   }
 
+  private tickMode: {counter: number; mode: 'manual' | 'automatic'} = {
+    counter: 0,
+    mode: 'manual',
+  };
+
+  /** @experimental */
+  setTickMode(mode: 'manual' | 'automatic', doTick?: (elapsed: number) => void) {
+    if (mode === this.tickMode.mode) {
+      return;
+    }
+    this.tickMode.counter++;
+    this.tickMode.mode = mode;
+    if (mode === 'automatic') {
+      this.advanceUntilModeChanges(doTick);
+    }
+  }
+
+  private advanceUntilModeChanges(doTick?: (elapsed: number) => void): void {
+    FakeAsyncTestZoneSpec.assertInZone();
+    const specZone = Zone.current;
+    const {counter} = this.tickMode;
+
+    Zone.root.run(async () => {
+      // autoTick with fakeAsync is a bit awkward because microtasks are
+      // controlled by the scheduler as well. This means that we have to
+      // manually flush microtasks before allowing real macrotasks to execute.
+      // Waiting for a macrotask would otherwise allow the browser to execute
+      // macrotasks before the current microtasks are flushed.
+      await safeAsync(async () => {
+        await void 0;
+        specZone.run(() => {
+          this.flushMicrotasks();
+        });
+      });
+
+      if (this.tickMode.counter !== counter) {
+        return;
+      }
+
+      while (true) {
+        await safeAsync(() => this.newMacrotask(specZone));
+
+        if (this.tickMode.counter !== counter) {
+          return;
+        }
+
+        await safeAsync(() =>
+          specZone.run(() => {
+            this.tickToNext(1, doTick);
+          }),
+        );
+      }
+    });
+  }
+
+  // Waits until a new macro task.
+  //
+  // Used with autoTick(), which is meant to act when the test is waiting, we
+  // need to insert ourselves in the macro task queue.
+  //
+  // @return {!Promise<undefined>}
+  private async newMacrotask(specZone: Zone) {
+    if (originalSetImmediate) {
+      // setImmediate is much faster than setTimeout in node
+      await new Promise((resolve) => {
+        originalSetImmediate(resolve);
+      });
+    } else {
+      // MessageChannel ensures that setTimeout is not throttled to 4ms.
+      // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#reasons_for_delays_longer_than_specified
+      // https://stackblitz.com/edit/stackblitz-starters-qtlpcc
+      // Note: This trick does not work in Safari, which will still throttle the
+      // setTimeout
+      const channel = new MessageChannel();
+      await new Promise((resolve) => {
+        channel.port1.onmessage = resolve;
+        channel.port2.postMessage(undefined);
+      });
+      channel.port1.close();
+      channel.port2.close();
+      // setTimeout ensures that we interleave with other setTimeouts.
+      await new Promise((resolve) => {
+        originalTimeout(resolve);
+      });
+    }
+
+    // flush any microtasks that were scheduled from the tasks that ran during
+    // the timeout.
+    specZone.run(() => {
+      this.flushMicrotasks();
+    });
+  }
+
   tickToNext(
     steps: number = 1,
     doTick?: (elapsed: number) => void,
@@ -676,10 +780,16 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
             );
             break;
           case 'XMLHttpRequest.send':
-            throw new Error(
-              'Cannot make XHRs from within a fake async test. Request URL: ' +
-                (task.data as any)['url'],
-            );
+            if (this.tickMode.mode === 'manual') {
+              throw new Error(
+                'Cannot make XHRs from within a fake async test. Request URL: ' +
+                  (task.data as any)['url'],
+              );
+            }
+            // When using automatic ticking, we allow the XHR to be handled in a truly async form
+            // by the parent/delegate Zone because auto ticking FakeAsync is not strictly synchronous.
+            task = delegate.scheduleTask(target, task);
+            break;
           case 'requestAnimationFrame':
           case 'webkitRequestAnimationFrame':
           case 'mozRequestAnimationFrame':
@@ -1033,4 +1143,20 @@ export function patchFakeAsyncTest(Zone: ZoneType): void {
   };
 
   Scheduler.nextId = Scheduler.getNextId();
+}
+
+async function safeAsync(fn: () => Promise<void>): Promise<void> {
+  try {
+    return await fn();
+  } catch (e) {
+    hostReportError(e);
+  }
+}
+
+function hostReportError(e: unknown) {
+  Zone.root.run(() => {
+    originalTimeout(() => {
+      throw e;
+    });
+  });
 }
