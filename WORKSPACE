@@ -311,7 +311,7 @@ rules_angular_step3(
 
 git_repository(
     name = "rules_browsers",
-    commit = "06b02f8968c754ab93539cd9191243bdc445e390",
+    commit = "800d91c06d3ac174b789ad6a9b6772f358230c40",
     remote = "https://github.com/devversion/rules_browsers.git",
 )
 
