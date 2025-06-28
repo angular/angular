@@ -7,6 +7,8 @@
  */
 
 import {computed, Signal, WritableSignal} from '@angular/core';
+import {DataDefinition} from '../api/data';
+import {StaticMetadataKey} from '../api/metadata';
 import {Field, FieldContext, FieldPath, FieldState} from '../api/types';
 import {FieldPathNode} from '../path_node';
 import {FieldNode} from './node';
@@ -119,4 +121,9 @@ export class FieldNodeContext implements FieldContext<unknown> {
   readonly fieldOf = <P>(p: FieldPath<P>) => this.resolve(p);
   readonly stateOf = <P>(p: FieldPath<P>) => this.resolve(p)();
   readonly valueOf = <P>(p: FieldPath<P>) => this.resolve(p)().value();
+
+  readonly data = <D>(d: DataDefinition<D>) =>
+    this.node.metadata(d as unknown as StaticMetadataKey<D>);
+  readonly dataOf = <P, D>(p: FieldPath<P>, d: DataDefinition<D>) =>
+    this.stateOf(p).metadata(d as unknown as StaticMetadataKey<D>);
 }

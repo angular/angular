@@ -14,6 +14,8 @@ const fakeFieldContext: FieldContext<unknown> = {
   field: undefined!,
   state: undefined!,
   value: undefined!,
+  data: () => undefined,
+  dataOf: () => undefined,
 };
 
 describe('LogicNodeBuilder', () => {

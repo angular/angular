@@ -42,7 +42,7 @@ export function validateAsync<TValue, TRequest, TData>(
   });
 
   pathNode.logic.addAsyncErrorRule((ctx) => {
-    const res = ctx.state.data(dataKey)!;
+    const res = ctx.data(dataKey)!;
     switch (res.status()) {
       case 'idle':
         return undefined;

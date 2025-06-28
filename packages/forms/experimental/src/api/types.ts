@@ -7,8 +7,8 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
-import {DataKey} from './data';
-import {MetadataKey} from './metadata';
+import {DataDefinition} from './data';
+import {ReactiveMetadataKey, StaticMetadataKey} from './metadata';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -167,13 +167,17 @@ export interface FieldState<T, TKey extends string | number = string | number> {
    */
   readonly keyInParent: Signal<TKey>;
 
-  data<D>(key: DataKey<D>): D | undefined;
-
   /**
-   * Reactviely reads a metadata value from the field.
+   * Reads a reactive metadata value from the field.
    * @param key The metadata key to read.
    */
-  metadata<M>(key: MetadataKey<M>): Signal<M>;
+  metadata<M>(key: ReactiveMetadataKey<M>): Signal<M>;
+
+  /**
+   * Reads a static metadata value from the field.
+   * @param key The metadata key to read.
+   */
+  metadata<M>(key: StaticMetadataKey<M>): M | undefined;
 
   /**
    * Sets the touched status of the field to `true`.
@@ -255,4 +259,6 @@ export interface FieldContext<T> {
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
+  readonly data: <D>(key: DataDefinition<D>) => D | undefined;
+  readonly dataOf: <P, D>(p: FieldPath<P>, key: DataDefinition<D>) => D | undefined;
 }

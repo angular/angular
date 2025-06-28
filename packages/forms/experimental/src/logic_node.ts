@@ -7,7 +7,7 @@
  */
 
 import {untracked} from '@angular/core';
-import {MetadataKey} from './api/metadata';
+import {ReactiveMetadataKey} from '../public_api';
 import {type FieldContext, type FieldPath, type LogicFn} from './api/types';
 import {FieldNode} from './field/node';
 
@@ -114,7 +114,7 @@ export class MetadataMergeLogic<T> extends AbstractLogic<T> {
 
   constructor(
     predicates: ReadonlyArray<BoundPredicate>,
-    private key: MetadataKey<T>,
+    private key: ReactiveMetadataKey<T>,
   ) {
     super(predicates);
   }
