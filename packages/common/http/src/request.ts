@@ -22,6 +22,7 @@ interface HttpRequestInit {
   params?: HttpParams;
   responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
   withCredentials?: boolean;
+  credentials?: RequestCredentials;
   transferCache?: {includeHeaders?: string[]} | boolean;
   keepalive?: boolean;
   priority?: RequestPriority;
@@ -170,6 +171,12 @@ export class HttpRequest<T> {
   readonly withCredentials: boolean = false;
 
   /**
+   *  The credentials mode of the request, which determines how cookies and HTTP authentication are handled.
+   *  This can affect whether cookies are sent with the request, and how authentication is handled.
+   */
+  readonly credentials!: RequestCredentials;
+
+  /**
    * When using the fetch implementation and set to `true`, the browser will not abort the associated request if the page that initiated it is unloaded before the request is complete.
    */
   readonly keepalive: boolean = false;
@@ -247,6 +254,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
@@ -274,6 +282,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
@@ -293,6 +302,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
@@ -321,6 +331,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
@@ -340,6 +351,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
@@ -369,6 +381,7 @@ export class HttpRequest<T> {
           params?: HttpParams;
           responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
           withCredentials?: boolean;
+          credentials?: RequestCredentials;
           keepalive?: boolean;
           priority?: RequestPriority;
           cache?: RequestCache;
@@ -385,6 +398,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
@@ -416,6 +430,7 @@ export class HttpRequest<T> {
       this.reportProgress = !!options.reportProgress;
       this.withCredentials = !!options.withCredentials;
       this.keepalive = !!options.keepalive;
+
       // Override default response type of 'json' if one is provided.
       if (!!options.responseType) {
         this.responseType = options.responseType;
@@ -440,6 +455,10 @@ export class HttpRequest<T> {
 
       if (options.cache) {
         this.cache = options.cache;
+      }
+
+      if (options.credentials) {
+        this.credentials = options.credentials;
       }
 
       if (typeof options.timeout === 'number') {
@@ -586,6 +605,7 @@ export class HttpRequest<T> {
     params?: HttpParams;
     responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
     withCredentials?: boolean;
+    credentials?: RequestCredentials;
     keepalive?: boolean;
     priority?: RequestPriority;
     cache?: RequestCache;
@@ -611,6 +631,7 @@ export class HttpRequest<T> {
     mode?: RequestMode;
     redirect?: RequestRedirect;
     withCredentials?: boolean;
+    credentials?: RequestCredentials;
     transferCache?: {includeHeaders?: string[]} | boolean;
     timeout?: number;
     body?: V | null;
@@ -627,6 +648,7 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
@@ -651,6 +673,7 @@ export class HttpRequest<T> {
     const cache = update.cache || this.cache;
     const mode = update.mode || this.mode;
     const redirect = update.redirect || this.redirect;
+    const credentials = update.credentials || this.credentials;
     // Carefully handle the transferCache to differentiate between
     // `false` and `undefined` in the update args.
     const transferCache = update.transferCache ?? this.transferCache;
@@ -709,6 +732,7 @@ export class HttpRequest<T> {
       timeout,
       mode,
       redirect,
+      credentials,
     });
   }
 }
