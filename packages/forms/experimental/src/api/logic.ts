@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
+import {ReactiveMetadataKey} from './metadata';
 import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
 
 /**
@@ -101,7 +101,7 @@ export function validateTree<T>(path: FieldPath<T>, logic: NoInfer<TreeValidator
  */
 export function metadata<T, M>(
   path: FieldPath<T>,
-  key: MetadataKey<M>,
+  key: ReactiveMetadataKey<M>,
   logic: NoInfer<LogicFn<T, M>>,
 ): void {
   assertPathIsCurrent(path);
