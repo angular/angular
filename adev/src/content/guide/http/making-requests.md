@@ -307,6 +307,79 @@ Available `priority` values:
 
 TIP: Use `priority: 'high'` for requests that affect Largest Contentful Paint (LCP) and `priority: 'low'` for requests that don't impact initial user experience.
 
+### Request mode
+
+The `mode` option controls how the request handles cross-origin requests and determines the response type.
+
+<docs-code language="ts">
+// Same-origin requests only
+http.get('/api/local-data', {
+  mode: 'same-origin'
+}).subscribe(data => {
+  // ...
+});
+
+// CORS-enabled cross-origin requests
+http.get('https://api.external.com/data', {
+  mode: 'cors'
+}).subscribe(data => {
+  // ...
+});
+
+// No-CORS mode for simple cross-origin requests
+http.get('https://external-api.com/public-data', {
+  mode: 'no-cors'
+}).subscribe(data => {
+  // ...
+});
+</docs-code>
+
+Available `mode` values:
+- `'same-origin'`: Only allow same-origin requests, fail for cross-origin requests
+- `'cors'`: Allow cross-origin requests with CORS (default)
+- `'no-cors'`: Allow simple cross-origin requests without CORS, response is opaque
+
+TIP: Use `mode: 'same-origin'` for sensitive requests that should never go cross-origin.
+
+### Redirect handling
+
+The `redirect` option specifies how to handle redirect responses from the server.
+
+<docs-code language="ts">
+// Follow redirects automatically (default behavior)
+http.get('/api/resource', {
+  redirect: 'follow'
+}).subscribe(data => {
+  // ...
+});
+
+// Prevent automatic redirects
+http.get('/api/resource', {
+  redirect: 'manual'
+}).subscribe(response => {
+  // Handle redirect manually
+});
+
+// Treat redirects as errors
+http.get('/api/resource', {
+  redirect: 'error'
+}).subscribe({
+  next: data => {
+    // Success response
+  },
+  error: err => {
+    // Redirect responses will trigger this error handler
+  }
+});
+</docs-code>
+
+Available `redirect` values:
+- `'follow'`: Automatically follow redirects (default)
+- `'error'`: Treat redirects as errors
+- `'manual'`: Don't follow redirects automatically, return redirect response
+
+TIP: Use `redirect: 'manual'` when you need to handle redirects with custom logic.
+
 ## Http `Observable`s
 
 Each request method on `HttpClient` constructs and returns an `Observable` of the requested response type. Understanding how these `Observable`s work is important when using `HttpClient`.
