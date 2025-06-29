@@ -235,7 +235,11 @@ http.get('/api/config', {
 
 When using the `withFetch()` provider, Angular's `HttpClient` provides access to advanced fetch API options that can improve performance and user experience. These options are only available when using the fetch backend.
 
-### Keep-alive connections
+### Fetch options
+
+The following options provide fine-grained control over request behavior when using the fetch backend.
+
+#### Keep-alive connections
 
 The `keepalive` option allows a request to outlive the page that initiated it. This is particularly useful for analytics or logging requests that need to complete even if the user navigates away from the page.
 
@@ -245,8 +249,7 @@ http.post('/api/analytics', analyticsData, {
 }).subscribe();
 </docs-code>
 
-
-### HTTP caching control
+#### HTTP caching control
 
 The `cache` option controls how the request interacts with the browser's HTTP cache, which can significantly improve performance for repeated requests.
 
@@ -273,7 +276,7 @@ http.get('/api/static-data', {
 });
 </docs-code>
 
-### Request priority for Core Web Vitals
+#### Request priority for Core Web Vitals
 
 The `priority` option allows you to indicate the relative importance of a request, helping browsers optimize resource loading for better Core Web Vitals scores.
 
@@ -307,7 +310,7 @@ Available `priority` values:
 
 TIP: Use `priority: 'high'` for requests that affect Largest Contentful Paint (LCP) and `priority: 'low'` for requests that don't impact initial user experience.
 
-### Request mode
+#### Request mode
 
 The `mode` option controls how the request handles cross-origin requests and determines the response type.
 
@@ -341,7 +344,7 @@ Available `mode` values:
 
 TIP: Use `mode: 'same-origin'` for sensitive requests that should never go cross-origin.
 
-### Redirect handling
+#### Redirect handling
 
 The `redirect` option specifies how to handle redirect responses from the server.
 
