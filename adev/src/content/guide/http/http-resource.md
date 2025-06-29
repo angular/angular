@@ -41,6 +41,8 @@ user = httpResource(() => ({
   withCredentials: true,
   transferCache: true,
   keepalive: true,  
+  mode: 'cors', 
+  redirect: 'error',
   priority: 'high',
   cache : 'force-cache'
 }));
