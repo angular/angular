@@ -8,10 +8,9 @@
 
 import {Component} from '@angular/core';
 import {ExternalLink} from './external-link.directive';
-import {RouterLink} from '@angular/router';
+import {provideRouter, RouterLink} from '@angular/router';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {WINDOW} from '../../providers';
-import {RouterTestingModule} from '@angular/router/testing';
 import {By} from '@angular/platform-browser';
 
 describe('ExternalLink', () => {
@@ -24,7 +23,7 @@ describe('ExternalLink', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ExampleComponentWithLinks, RouterTestingModule],
+      imports: [ExampleComponentWithLinks, provideRouter([])],
       providers: [
         {
           provide: WINDOW,

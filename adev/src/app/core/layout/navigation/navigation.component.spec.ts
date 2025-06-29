@@ -9,7 +9,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {Navigation} from './navigation.component';
-import {RouterTestingModule} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
 import {By} from '@angular/platform-browser';
 import {PagePrefix} from '../../enums/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
@@ -38,7 +38,7 @@ describe('Navigation', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Navigation, RouterTestingModule],
+      imports: [Navigation, provideRouter([])],
       providers: [
         {
           provide: WINDOW,

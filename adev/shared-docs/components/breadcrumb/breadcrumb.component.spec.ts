@@ -12,7 +12,7 @@ import {Breadcrumb} from './breadcrumb.component';
 import {NavigationState} from '../../services';
 import {NavigationItem} from '../../interfaces';
 import {By} from '@angular/platform-browser';
-import {RouterTestingModule} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
 import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('Breadcrumb', () => {
@@ -23,7 +23,7 @@ describe('Breadcrumb', () => {
     navigationStateSpy = jasmine.createSpyObj('NavigationState', ['activeNavigationItem']);
 
     TestBed.configureTestingModule({
-      imports: [Breadcrumb, RouterTestingModule],
+      imports: [Breadcrumb, provideRouter([])],
       providers: [
         provideZonelessChangeDetection(),
         {
