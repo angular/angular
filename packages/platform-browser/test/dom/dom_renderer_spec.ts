@@ -35,6 +35,7 @@ describe('DefaultDomRendererV2', () => {
         CmpEncapsulationEmulated,
         CmpEncapsulationNone,
         CmpEncapsulationShadow,
+        CmpEncapsulationShadowWithChildren,
       ],
     });
     renderer = TestBed.createComponent(TestCmp).componentInstance.renderer;
@@ -130,8 +131,9 @@ describe('DefaultDomRendererV2', () => {
     const fixture = TestBed.createComponent(ShadowComponentParentApp);
     fixture.detectChanges();
 
-    const cmp = fixture.debugElement.query(By.css('cmp-shadow')).nativeElement;
-    const shadowRoot = cmp.shadowRoot;
+    const shadowcmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
+    const shadowRoot = shadowcmp.shadowRoot;
+
     const shadow = shadowRoot.querySelector('.shadow');
     expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');
 
@@ -146,8 +148,10 @@ describe('DefaultDomRendererV2', () => {
     const fixture = TestBed.createComponent(ShadowComponentParentApp);
     fixture.detectChanges();
 
-    const cmp = fixture.debugElement.query(By.css('cmp-shadow')).nativeElement;
-    const shadowRoot = cmp.shadowRoot;
+    const host = fixture.debugElement;
+    console.log(host);
+    const shadowcmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
+    const shadowRoot = shadowcmp.shadowRoot;
     const shadow = shadowRoot.querySelector('.shadow');
     expect(window.getComputedStyle(shadow).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
 
@@ -162,7 +166,7 @@ describe('DefaultDomRendererV2', () => {
     const fixture = TestBed.createComponent(ShadowComponentParentApp);
     fixture.detectChanges();
 
-    const cmp = fixture.debugElement.query(By.css('cmp-shadow')).nativeElement;
+    const cmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
     const shadowRoot = cmp.shadowRoot;
     const shadow = shadowRoot.querySelector('.shadow');
     expect(window.getComputedStyle(shadow).backgroundColor).not.toEqual('rgb(0, 0, 255)');
@@ -470,9 +474,7 @@ class CmpEncapsulationNoneWithSourceMap {}
 @Component({
   selector: 'cmp-shadow',
   template: `
-    <div class="shadow">
-      <ng-content></ng-content>
-    </div>`,
+    <div class="shadow"></div>`,
   styles: [
     `.shadow {
       color: red;
@@ -482,6 +484,23 @@ class CmpEncapsulationNoneWithSourceMap {}
   standalone: false,
 })
 class CmpEncapsulationShadow {}
+
+@Component({
+  selector: 'cmp-shadow-children',
+  template: `
+    <div class="shadow">
+      <cmp-emulated></cmp-emulated>
+      <cmp-none></cmp-none>
+    </div>`,
+  styles: [
+    `.shadow {
+      color: red;
+    }`,
+  ],
+  encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: false,
+})
+class CmpEncapsulationShadowWithChildren {}
 
 @Component({
   selector: 'some-app',
@@ -495,12 +514,10 @@ class CmpEncapsulationShadow {}
 export class SomeApp {}
 
 @Component({
-  selector: 'shadow-parent-app',
+  selector: 'shadow-parent-app-with-children',
   template: `
-    <cmp-shadow>
-      <cmp-emulated></cmp-emulated>
-      <cmp-none></cmp-none>
-    </cmp-shadow>
+    <cmp-shadow-children>
+    </cmp-shadow-children>
   `,
   standalone: false,
 })
