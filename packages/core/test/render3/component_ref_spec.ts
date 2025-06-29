@@ -377,7 +377,7 @@ describe('ComponentFactory', () => {
       fixture.componentRef.setInput('doesNotExist', '');
 
       const msgL1 = `NG0303: Can't set value of the 'doesNotExist' input on the 'NoInputsCmp' component. `;
-      const msgL2 = `Make sure that the 'doesNotExist' property is annotated with @Input() or a mapped @Input('doesNotExist') exists.`;
+      const msgL2 = `Make sure that the 'doesNotExist' property is declared as an input using the @Input() decorator or the input() function.`;
       expect(console.error).toHaveBeenCalledWith(msgL1 + msgL2);
     });
 

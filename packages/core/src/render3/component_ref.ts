@@ -535,7 +535,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     if (ngDevMode && !hasSetInput) {
       const cmpNameForError = stringifyForError(this.componentType);
       let message = `Can't set value of the '${name}' input on the '${cmpNameForError}' component. `;
-      message += `Make sure that the '${name}' property is annotated with @Input() or a mapped @Input('${name}') exists.`;
+      message += `Make sure that the '${name}' property is declared as an input using the @Input() decorator or the input() function.`;
       reportUnknownPropertyError(message);
     }
   }
