@@ -14,8 +14,7 @@ import {ALGOLIA_CLIENT, Search} from '../../services';
 import {FakeEventTarget} from '../../testing/index';
 import {By} from '@angular/platform-browser';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
-import {RouterTestingModule} from '@angular/router/testing';
-import {Router} from '@angular/router';
+import {Router, provideRouter} from '@angular/router';
 import {ApplicationRef, provideZonelessChangeDetection, ResourceStatus} from '@angular/core';
 import {SearchResult} from '../../interfaces';
 
@@ -32,7 +31,7 @@ describe('SearchDialog', () => {
     searchResults.and.returnValue([]);
 
     TestBed.configureTestingModule({
-      imports: [SearchDialog, RouterTestingModule],
+      imports: [SearchDialog, provideRouter([])],
       providers: [
         provideZonelessChangeDetection(),
         {provide: ENVIRONMENT, useValue: {algolia: {index: 'fakeIndex'}}},
