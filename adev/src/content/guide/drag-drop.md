@@ -76,7 +76,7 @@ The `cdkDropListConnectedTo` directive works both with a direct reference to ano
 <docs-code language="html">
 <!-- This is valid -->
 <div cdkDropList #listOne="cdkDropList" [cdkDropListConnectedTo]="[listTwo]"></div>
-<div cdkDropList #listTwo="cdkDropList" [cdkDropListConnectedTo]="[listOne"></div>
+<div cdkDropList #listTwo="cdkDropList" [cdkDropListConnectedTo]="[listOne]"></div>
 
 <!-- This is valid as well -->
 <div cdkDropList id="list-one" [cdkDropListConnectedTo]="['list-two']"></div>
