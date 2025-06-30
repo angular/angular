@@ -29,13 +29,27 @@ $typography: mat.m2-define-typography-config(
 // Light theme
 $light-primary: mat.m2-define-palette(mat.$m2-grey-palette, 700, 200);
 $light-accent: mat.m2-define-palette(mat.$m2-blue-palette, 800);
-$light-theme: mat.m2-define-light-theme($light-primary, $light-accent);
+$light-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $light-primary,
+      accent: $light-accent,
+    ),
+  )
+);
 
 // Dark theme
 $dark-primary: mat.m2-define-palette(mat.$m2-blue-grey-palette, 50);
 $dark-accent: mat.m2-define-palette(mat.$m2-blue-palette, 200);
 $dark-theme: map.deep-merge(
-  mat.m2-define-dark-theme($dark-primary, $dark-accent),
+  mat.m2-define-dark-theme(
+    (
+      color: (
+        primary: $dark-primary,
+        accent: $dark-accent,
+      ),
+    )
+  ),
   (
     'color': (
       'background': (
