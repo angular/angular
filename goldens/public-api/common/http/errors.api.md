@@ -43,7 +43,9 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     RESPONSE_IS_NOT_AN_ARRAY_BUFFER = 2806,
     // (undocumented)
-    UNHANDLED_OBSERVE_TYPE = 2809
+    UNHANDLED_OBSERVE_TYPE = 2809,
+    // (undocumented)
+    WITH_CREDENTIALS_OVERRIDES_EXPLICIT_CREDENTIALS = 2819
 }
 
 // (No @packageDocumentation comment for this package)
