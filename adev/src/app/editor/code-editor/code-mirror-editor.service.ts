@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DestroyRef, Injectable, inject, signal} from '@angular/core';
+import {DestroyRef, Injectable, Injector, effect, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Subject, Subscription, debounceTime, filter, map} from 'rxjs';
 
@@ -16,7 +16,6 @@ import {EditorView, placeholder as placeholderExtension} from '@codemirror/view'
 
 import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
-import {TypingsLoader} from '../typings-loader.service';
 
 import {FileAndContentRecord} from '@angular/docs';
 import {CODE_EDITOR_EXTENSIONS} from './constants/code-editor-extensions';
@@ -29,6 +28,8 @@ import {TsVfsWorkerActions} from './workers/enums/actions';
 import {CodeChangeRequest} from './workers/interfaces/code-change-request';
 import {ActionMessage} from './workers/interfaces/message';
 import {NodeRuntimeState} from '../node-runtime-state.service';
+import {setupTypeAcquisition} from '@typescript/ata';
+import ts from 'typescript';
 
 export interface EditorFile {
   filename: string;
@@ -64,7 +65,6 @@ const INITIAL_STATES = {
 
 @Injectable({providedIn: 'root'})
 export class CodeMirrorEditor {
-  // TODO: handle files created by the user, e.g. after running `ng generate component`
   files = signal<EditorFile[]>(INITIAL_STATES.files);
   openFiles = signal<EditorFile[]>(INITIAL_STATES.files);
   currentFile = signal<EditorFile>(INITIAL_STATES.currentFile);
@@ -75,10 +75,10 @@ export class CodeMirrorEditor {
   // EventManager gives ability to communicate between tsVfsWorker and CodeMirror instance
   private readonly eventManager$ = new Subject<ActionMessage>();
 
+  private readonly injector = inject(Injector);
   private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox);
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
-  private readonly typingsLoader = inject(TypingsLoader);
   private readonly destroyRef = inject(DestroyRef);
   private readonly diagnosticsState = inject(DiagnosticsState);
 
@@ -196,12 +196,11 @@ export class CodeMirrorEditor {
   }
 
   private saveLibrariesTypes(): void {
-    this.typingsLoader.typings$
-      .pipe(
-        filter((typings) => typings.length > 0),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((typings) => {
+    effect(
+      async () => {
+        const content = this.currentFile().content;
+        const typings = await this.loadTypesForContent(content);
+
         this.sendRequestToTsVfs({
           action: TsVfsWorkerActions.DEFINE_TYPES_REQUEST,
           data: typings,
@@ -209,7 +208,9 @@ export class CodeMirrorEditor {
 
         // Reset current file to trigger diagnostics after preload @angular libraries.
         this._editorView?.setState(this._editorStates.get(this.currentFile().filename)!);
-      });
+      },
+      {injector: this.injector},
+    );
   }
 
   // Method is responsible for sending request to Typescript VFS worker.
@@ -481,5 +482,28 @@ export class CodeMirrorEditor {
       });
 
     return tutorialFiles;
+  }
+
+  private async loadTypesForContent(content: string): Promise<{content: string; path: string}[]> {
+    // TODO: This uses ATA which pulls type from the latest version via a CDN. 
+    // This is not idea as we could load from the local node_modules directory.
+    const typings: {path: string; content: string}[] = [];
+    const ata = setupTypeAcquisition({
+      projectName: 'My ATA Project',
+      typescript: ts,
+      logger: console,
+      delegate: {
+        receivedFile: (content: string, path: string) => {
+          if (path.endsWith('.d.ts')) {
+            typings.push({path, content});
+          }
+        },
+        started: () => {},
+        progress: () => {},
+        finished: () => {},
+      },
+    });
+    await ata(content);
+    return typings;
   }
 }

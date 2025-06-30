@@ -70,6 +70,7 @@ APPLICATION_DEPS = [
     "@npm//xhr2",
     "@npm//typescript",
     "@npm//@typescript/vfs",
+    "@npm//@typescript/ata",
     "@npm//@codemirror/state",
     "@npm//@codemirror/view",
     "@npm//@codemirror/language",

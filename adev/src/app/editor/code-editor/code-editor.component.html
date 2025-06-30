@@ -7,7 +7,7 @@
         that's why we're not placing this element as content of mat-tab, just to
         not call another time init method from CodeMirrorEditor service.
       -->
-      @for (file of files(); track file) {
+      @for (file of files(); track $index) {
         <mat-tab #tab>
           <ng-template mat-tab-label>
             @if (tab.isActive && isRenamingFile()) {

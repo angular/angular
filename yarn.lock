@@ -320,7 +320,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4":
   version "0.0.0-d44be7e28087c3499d70dda9859d51c1cd3fe1bf"
-  uid "5db176c0f3211663830fd3ff4064c1dff0eaccb4"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4"
   dependencies:
     "@angular/benchpress" "0.3.0"
@@ -470,7 +469,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#8fe809d31ea3536087ca56cf7ff9ddd544dba658":
   version "0.0.0-dfe138678e4edb4789fbe40ae7792c046de3b4bd"
-  uid "8fe809d31ea3536087ca56cf7ff9ddd544dba658"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#8fe809d31ea3536087ca56cf7ff9ddd544dba658"
   dependencies:
     "@google-cloud/spanner" "8.0.0"
@@ -4839,6 +4837,11 @@
   dependencies:
     "@types/node" "*"
 
+"@typescript/ata@^0.9.8":
+  version "0.9.8"
+  resolved "https://registry.yarnpkg.com/@typescript/ata/-/ata-0.9.8.tgz#97fe634905ad6140197bc812a696d3ebe315d519"
+  integrity sha512-+M815CeDRJS5H5ciWfhFCKp25nNfF+LFWawWAaBhNlquFb2wS5IIMDI+2bKWN3GuU6mpj+FzySsOD29M4nG8Xg==
+
 "@typescript/vfs@^1.5.0":
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/@typescript/vfs/-/vfs-1.6.1.tgz#fe7087d5a43715754f7ea9bf6e0b905176c9eebd"
@@ -8038,8 +8041,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b":
-  version "2.1.6+git"
-  uid "93e720f143d0296dd2726ffbcf4fc12283363a7b"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b"
 
 dompurify@^3.2.5:

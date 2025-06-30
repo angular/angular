@@ -54,7 +54,6 @@ export class NodeRuntimeSandbox {
   private readonly terminalHandler = inject(TerminalHandler);
   private embeddedTutorialManager = inject(EmbeddedTutorialManager);
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
-  private readonly typingsLoader = inject(TypingsLoader);
 
   private readonly _isProjectInitialized = signal(false);
   private readonly _isAngularCliInitialized = signal(false);
@@ -196,10 +195,7 @@ export class NodeRuntimeSandbox {
     if (![PROCESS_EXIT_CODE.SIGTERM, PROCESS_EXIT_CODE.SUCCESS].includes(exitCode))
       throw new Error('Installation failed');
 
-    await Promise.all([
-      this.loadTypes(),
-      startDevServer ? this.startDevServer() : Promise.resolve(),
-    ]);
+    await (startDevServer ? this.startDevServer() : Promise.resolve());
     this.setLoading(LoadingStep.READY);
   }
 
@@ -247,7 +243,7 @@ export class NodeRuntimeSandbox {
     // errors in the console
     this.devServerProcess?.kill();
     await this.installDependencies();
-    await Promise.all([this.loadTypes(), this.startDevServer()]);
+    await this.startDevServer();
   }
 
   async writeFile(path: string, content: string | Uint8Array): Promise<void> {
@@ -426,11 +422,6 @@ export class NodeRuntimeSandbox {
     // Simulate pressing `Enter` in shell
     this.interactiveShellWriter?.write('\x0D');
     return code;
-  }
-
-  private async loadTypes() {
-    const webContainer = await this.webContainerPromise!;
-    await this.typingsLoader.retrieveTypeDefinitions(webContainer!);
   }
 
   private async startDevServer(): Promise<void> {

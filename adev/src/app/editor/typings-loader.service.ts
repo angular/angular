@@ -10,6 +10,8 @@ import {Injectable, signal} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {WebContainer} from '@webcontainer/api';
 import {Typing} from './code-editor/workers/interfaces/define-types-request';
+import {setupTypeAcquisition} from '@typescript/ata';
+import ts from 'typescript';
 
 /**
  * This service is responsible for retrieving the types definitions for the
@@ -41,15 +43,37 @@ export class TypingsLoader {
 
     const typesDefinitions: Typing[] = [];
 
+    const ata = setupTypeAcquisition({
+      projectName: 'My ATA Project',
+      typescript: ts,
+      logger: console,
+      delegate: {
+        receivedFile: (content: string, path: string) => {
+          if (path.endsWith('.d.ts')) {
+            typesDefinitions.push({path, content});
+          }
+        },
+        started: () => {},
+        progress: () => {},
+        finished: () => {},
+      },
+    });
+
     try {
       const filesToRead = await this.getFilesToRead();
 
       if (filesToRead && filesToRead.length > 0) {
         await Promise.all(
           filesToRead.map((path) =>
-            webContainer.fs.readFile(path, 'utf-8').then((content) => {
-              typesDefinitions.push({path, content});
-            }),
+            webContainer.fs
+              .readFile(path, 'utf-8')
+              .then(async (content) => {
+                await ata(content);
+                return content;
+              })
+              .then((content) => {
+                typesDefinitions.push({path, content});
+              }),
           ),
         );
 

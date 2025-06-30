@@ -444,6 +444,9 @@ importers:
       '@types/tmp':
         specifier: ^0.2.6
         version: 0.2.6
+      '@typescript/ata':
+        specifier: ^0.9.8
+        version: 0.9.8(typescript@5.8.3)
       '@typescript/vfs':
         specifier: ^1.5.0
         version: 1.6.1(typescript@5.8.3)
@@ -7314,6 +7317,14 @@ packages:
       '@types/node': 24.0.7
     dev: true
     optional: true
+
+  /@typescript/ata@0.9.8(typescript@5.8.3):
+    resolution: {integrity: sha512-+M815CeDRJS5H5ciWfhFCKp25nNfF+LFWawWAaBhNlquFb2wS5IIMDI+2bKWN3GuU6mpj+FzySsOD29M4nG8Xg==, tarball: https://registry.npmjs.org/@typescript/ata/-/ata-0.9.8.tgz}
+    peerDependencies:
+      typescript: '>=4.4.4'
+    dependencies:
+      typescript: 5.8.3
+    dev: true
 
   /@typescript/vfs@1.6.1(typescript@5.8.3):
     resolution: {integrity: sha512-JwoxboBh7Oz1v38tPbkrZ62ZXNHAk9bJ7c9x0eI5zBfBnBYGhURdbnh7Z4smN/MV48Y5OCcZb58n972UtbazsA==, tarball: https://registry.npmjs.org/@typescript/vfs/-/vfs-1.6.1.tgz}
