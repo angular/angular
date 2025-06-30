@@ -6,6 +6,13 @@
   </div>
 </div>
 <as-split unit="percent" direction="horizontal" [gutterSize]="9" class="visualization">
+  <aside class="legend" aria-hidden="true">
+    <ul>
+      <li class="eager">Eager-loaded route</li>
+      <li class="lazy">Lazy-loaded route</li>
+      <li class="active">Active route</li>
+    </ul>
+  </aside>
   <as-split-area size="70">
     <as-split unit="percent" direction="vertical" [gutterSize]="9">
       <as-split-area size="100">
