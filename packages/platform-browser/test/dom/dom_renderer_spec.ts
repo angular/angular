@@ -148,8 +148,6 @@ describe('DefaultDomRendererV2', () => {
     const fixture = TestBed.createComponent(ShadowComponentParentApp);
     fixture.detectChanges();
 
-    const host = fixture.debugElement;
-    console.log(host);
     const shadowcmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
     const shadowRoot = shadowcmp.shadowRoot;
     const shadow = shadowRoot.querySelector('.shadow');
