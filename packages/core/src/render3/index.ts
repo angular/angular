@@ -159,6 +159,10 @@ export {
   ɵɵstoreLet,
   ɵɵreadContextLet,
   ɵɵattachSourceLocations,
+  ɵɵanimateEnter,
+  ɵɵanimateEnterListener,
+  ɵɵanimateLeave,
+  ɵɵanimateLeaveListener,
 } from './instructions/all';
 export {
   ɵɵdeferEnableTimerScheduling,

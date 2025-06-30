@@ -11,6 +11,7 @@ import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {
+  AnimationKind,
   BindingKind,
   DeferOpModifierKind,
   DeferTriggerKind,
@@ -28,11 +29,12 @@ import {
   ConsumesVarsTrait,
   TRAIT_CONSUMES_SLOT,
   TRAIT_CONSUMES_VARS,
+  TRAIT_DEPENDS_ON_SLOT_CONTEXT,
 } from '../traits';
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
-import type {UpdateOp} from './update';
+import type {Interpolation, UpdateOp} from './update';
 
 /**
  * An operation usable on the creation side of the IR.
@@ -73,6 +75,7 @@ export type CreateOp =
   | I18nContextOp
   | I18nAttributesOp
   | DeclareLetOp
+  | AnimationListenerOp
   | SourceLocationOp;
 
 /**
@@ -789,6 +792,89 @@ export function createListenerOp(
     consumesDollarEvent: false,
     isLegacyAnimationListener: legacyAnimationPhase !== null,
     legacyAnimationPhase: legacyAnimationPhase,
+    eventTarget,
+    sourceSpan,
+    ...NEW_OP,
+  };
+}
+
+export interface AnimationListenerOp extends Op<CreateOp> {
+  kind: OpKind.AnimationListener;
+
+  target: XrefId;
+  targetSlot: SlotHandle;
+
+  /**
+   * Whether this listener is from a host binding.
+   */
+  hostListener: boolean;
+
+  /**
+   * Name of the event which is being listened to.
+   */
+  name: string;
+
+  /**
+   * Whether the event is on enter or leave
+   */
+  animationKind: AnimationKind;
+
+  /**
+   * Tag name of the element on which this listener is placed. Might be null, if this listener
+   * belongs to a host binding.
+   */
+  tag: string | null;
+
+  /**
+   * A list of `UpdateOp`s representing the body of the event listener.
+   */
+  handlerOps: OpList<UpdateOp>;
+
+  /**
+   * Name of the function
+   */
+  handlerFnName: string | null;
+
+  /**
+   * Whether this listener is known to consume `$event` in its body.
+   */
+  consumesDollarEvent: boolean;
+
+  /**
+   * Some event listeners can have a target, e.g. in `document:dragover`.
+   */
+  eventTarget: string | null;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create a `ListenerOp`. Host bindings reuse all the listener logic.
+ */
+export function createAnimationListenerOp(
+  target: XrefId,
+  targetSlot: SlotHandle,
+  name: string,
+  tag: string | null,
+  handlerOps: Array<UpdateOp>,
+  animationKind: AnimationKind,
+  eventTarget: string | null,
+  hostListener: boolean,
+  sourceSpan: ParseSourceSpan,
+): AnimationListenerOp {
+  const handlerList = new OpList<UpdateOp>();
+  handlerList.push(handlerOps);
+  return {
+    kind: OpKind.AnimationListener,
+    target,
+    targetSlot,
+    tag,
+    hostListener,
+    name,
+    animationKind,
+    handlerOps: handlerList,
+    handlerFnName: null,
+    consumesDollarEvent: false,
     eventTarget,
     sourceSpan,
     ...NEW_OP,

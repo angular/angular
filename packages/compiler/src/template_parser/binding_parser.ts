@@ -39,6 +39,7 @@ import {splitAtColon, splitAtPeriod} from '../util';
 
 const PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';
+const ANIMATE_PREFIX = 'animate';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 const TEMPLATE_ATTR_PREFIX = '*';
@@ -399,6 +400,16 @@ export class BindingParser {
         targetMatchableAttrs,
         targetProps,
       );
+    } else if (name.startsWith(ANIMATE_PREFIX)) {
+      this._parseAnimation(
+        name,
+        this.parseBinding(expression, isHost, valueSpan || sourceSpan, absoluteOffset),
+        sourceSpan,
+        keySpan,
+        valueSpan,
+        targetMatchableAttrs,
+        targetProps,
+      );
     } else {
       this._parsePropertyAst(
         name,
@@ -460,6 +471,21 @@ export class BindingParser {
         keySpan,
         valueSpan,
       ),
+    );
+  }
+
+  private _parseAnimation(
+    name: string,
+    ast: ASTWithSource,
+    sourceSpan: ParseSourceSpan,
+    keySpan: ParseSourceSpan,
+    valueSpan: ParseSourceSpan | undefined,
+    targetMatchableAttrs: string[][],
+    targetProps: ParsedProperty[],
+  ) {
+    targetMatchableAttrs.push([name, ast.source!]);
+    targetProps.push(
+      new ParsedProperty(name, ast, ParsedPropertyType.ANIMATION, sourceSpan, keySpan, valueSpan),
     );
   }
 
@@ -585,6 +611,10 @@ export class BindingParser {
         boundPropertyName = parts[1];
         bindingType = BindingType.Style;
         securityContexts = [SecurityContext.STYLE];
+      } else if (parts[0] == ANIMATE_PREFIX) {
+        boundPropertyName = boundProp.name;
+        bindingType = BindingType.Animation;
+        securityContexts = [SecurityContext.NONE];
       }
     }
 
@@ -617,7 +647,6 @@ export class BindingParser {
     );
   }
 
-  // TODO: keySpan should be required but was made optional to avoid changing VE parser.
   parseEvent(
     name: string,
     expression: string,
@@ -744,16 +773,16 @@ export class BindingParser {
       this._reportError('Unsupported expression in a two-way binding', sourceSpan);
     }
 
+    let eventType = ParsedEventType.Regular;
+    if (isAssignmentEvent) {
+      eventType = ParsedEventType.TwoWay;
+    }
+    if (name.startsWith(ANIMATE_PREFIX)) {
+      eventType = ParsedEventType.Animation;
+    }
+
     targetEvents.push(
-      new ParsedEvent(
-        eventName,
-        target,
-        isAssignmentEvent ? ParsedEventType.TwoWay : ParsedEventType.Regular,
-        ast,
-        sourceSpan,
-        handlerSpan,
-        keySpan,
-      ),
+      new ParsedEvent(eventName, target, eventType, ast, sourceSpan, handlerSpan, keySpan),
     );
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs

@@ -279,6 +279,16 @@ export enum OpKind {
    * Creation op that attaches the location at which an element was defined in a template to it.
    */
   SourceLocation,
+
+  /**
+   * An operation to bind animation css classes to an element.
+   */
+  Animation,
+
+  /**
+   * An operation to bind animation events to an element.
+   */
+  AnimationListener,
 }
 
 /**
@@ -504,6 +514,11 @@ export enum BindingKind {
    * Property side of a two-way binding.
    */
   TwoWayProperty,
+
+  /**
+   * Property side of an animation binding.
+   */
+  Animation,
 }
 
 /**
@@ -606,6 +621,23 @@ export enum TemplateKind {
   NgTemplate,
   Structural,
   Block,
+}
+
+/**
+ * Kinds of animations
+ */
+export const enum AnimationKind {
+  ENTER = 'enter',
+  LEAVE = 'leave',
+}
+
+/**
+ * Animation Binding Type
+ */
+export const enum AnimationBindingType {
+  STRING,
+  EVENT,
+  VALUE,
 }
 
 /**

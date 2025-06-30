@@ -52,9 +52,26 @@ function addNamesToView(
     switch (op.kind) {
       case ir.OpKind.Property:
       case ir.OpKind.DomProperty:
-        if (op.isLegacyAnimationTrigger) {
+        if (op.bindingKind === ir.BindingKind.LegacyAnimation) {
           op.name = '@' + op.name;
         }
+        break;
+      case ir.OpKind.AnimationListener:
+        if (op.handlerFnName !== null) {
+          break;
+        }
+        if (!op.hostListener && op.targetSlot.slot === null) {
+          throw new Error(`Expected a slot to be assigned`);
+        }
+        const animationKind = op.name.replace('animate.', '');
+        if (op.hostListener) {
+          op.handlerFnName = `${baseName}_${animationKind}${op.name}_HostBindingHandler`;
+        } else {
+          op.handlerFnName = `${unit.fnName}_${op.tag!.replace('-', '_')}_${animationKind}${op.name}_${
+            op.targetSlot.slot
+          }_listener`;
+        }
+        op.handlerFnName = sanitizeIdentifier(op.handlerFnName);
         break;
       case ir.OpKind.Listener:
         if (op.handlerFnName !== null) {

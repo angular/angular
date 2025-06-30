@@ -24,7 +24,10 @@ export function extractAttributes(job: CompilationJob): void {
           extractAttributeOp(unit, op, elements);
           break;
         case ir.OpKind.Property:
-          if (!op.isLegacyAnimationTrigger) {
+          if (
+            op.bindingKind !== ir.BindingKind.LegacyAnimation &&
+            op.bindingKind !== ir.BindingKind.Animation
+          ) {
             let bindingKind: ir.BindingKind;
             if (op.i18nMessage !== null && op.templateKind === null) {
               // If the binding has an i18n context, it is an i18n attribute, and should have that
@@ -89,6 +92,33 @@ export function extractAttributes(job: CompilationJob): void {
                 /* i18nMessage */ null,
                 SecurityContext.STYLE,
               ),
+              lookupElement(elements, op.target),
+            );
+          }
+          break;
+        case ir.OpKind.AnimationListener:
+          const extractedAttributeOp = ir.createExtractedAttributeOp(
+            op.target,
+            ir.BindingKind.Property,
+            null,
+            op.name,
+            /* expression */ null,
+            /* i18nContext */ null,
+            /* i18nMessage */ null,
+            SecurityContext.NONE,
+          );
+          if (job.kind === CompilationJobKind.Host) {
+            if (job.compatibility) {
+              // TemplateDefinitionBuilder does not extract listener bindings to the const array
+              // (which is honestly pretty inconsistent).
+              break;
+            }
+            // This attribute will apply to the enclosing host binding compilation unit, so order
+            // doesn't matter.
+            unit.create.push(extractedAttributeOp);
+          } else {
+            ir.OpList.insertBefore<ir.CreateOp>(
+              extractedAttributeOp,
               lookupElement(elements, op.target),
             );
           }

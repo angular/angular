@@ -63,6 +63,7 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
           op.trackByOps.prepend(generateVariablesInScopeForView(view, scope, false));
         }
         break;
+      case ir.OpKind.AnimationListener:
       case ir.OpKind.Listener:
       case ir.OpKind.TwoWayListener:
         // Prepend variables to listener handler functions.
