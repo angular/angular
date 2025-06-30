@@ -87,8 +87,10 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
   }
 }
 
-const CHANGE_DETECTION_COLOR_LIGHT = '#5cadd3';
-const CHANGE_DETECTION_COLOR_DARK = '#073d69';
+// Represent dynamic-purple-01
+const CHANGE_DETECTION_COLOR_LIGHT = 'oklch(47.5% 0.26 295)';
+const CHANGE_DETECTION_COLOR_DARK = 'oklch(76% 0.15 305)';
+
 const NO_CHANGE_DETECTION_COLOR = 'transparent';
 
 const didRunChangeDetection = (profile: ElementProfile) => {

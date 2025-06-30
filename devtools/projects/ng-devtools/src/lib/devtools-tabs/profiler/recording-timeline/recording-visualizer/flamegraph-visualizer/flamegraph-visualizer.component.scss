@@ -1,3 +1,5 @@
+@use '../../../../../../styles/typography' as tg;
+
 :host {
   display: block;
   user-select: text;
@@ -7,22 +9,7 @@
 
   ngx-flamegraph {
     position: relative;
-
-    ::ng-deep {
-      .ngx-fg-label {
-        font-weight: 500;
-        font-size: 1em;
-        color: var(--senary-contrast);
-      }
-
-      .ngx-fg-rect {
-        stroke: var(--secondary-contrast);
-        transition: none;
-      }
-
-      .ngx-fg-svg-g {
-        transition: none;
-      }
-    }
+    --ngx-fg-bar-font-size: #{tg.$font-size};
+    --ngx-fg-bar-text-color: var(--septenary-contrast);
   }
 }

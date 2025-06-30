@@ -1,11 +1,14 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//tools:defaults2.bzl", "sass_binary")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
 sass_binary(
     name = "flamegraph-visualizer_styles",
     src = "flamegraph-visualizer.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
 )
 
 ng_project(

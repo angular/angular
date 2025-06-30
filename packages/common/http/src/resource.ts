@@ -279,9 +279,14 @@ function normalizeRequest(
       reportProgress: unwrappedRequest.reportProgress,
       withCredentials: unwrappedRequest.withCredentials,
       keepalive: unwrappedRequest.keepalive,
+      cache: unwrappedRequest.cache as RequestCache,
+      priority: unwrappedRequest.priority as RequestPriority,
+      mode: unwrappedRequest.mode as RequestMode,
+      redirect: unwrappedRequest.redirect as RequestRedirect,
       responseType,
       context: unwrappedRequest.context,
       transferCache: unwrappedRequest.transferCache,
+      timeout: unwrappedRequest.timeout,
     },
   );
 }

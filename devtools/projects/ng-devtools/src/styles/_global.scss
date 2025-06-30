@@ -1,7 +1,7 @@
 /* Global styles imported in the main styles.scss of the app wrapper (shell, demo apps). */
 
 @use 'sass:map';
-@use 'external/npm/node_modules/@angular/material/index' as mat;
+@use '@angular/material' as mat;
 @use './colors' as clr;
 @use './typography' as tg;
 @use './inputs';

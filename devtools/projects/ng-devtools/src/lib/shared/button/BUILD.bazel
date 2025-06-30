@@ -1,7 +1,6 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//tools:defaults2.bzl", "ng_web_test_suite", "sass_binary")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -34,10 +33,9 @@ ts_test_library(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
-    visibility = ["//visibility:public"],
     deps = [
-        ":button_test",
+        ":button_test_rjs",
     ],
 )

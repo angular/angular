@@ -76,11 +76,39 @@ export interface HttpResourceRequest {
   keepalive?: boolean;
 
   /**
+   * Controls how the request will interact with the browser's HTTP cache.
+   * This affects whether a response is retrieved from the cache, how it is stored, or if it bypasses the cache altogether.
+   */
+  cache?: RequestCache | (string & {});
+
+  /**
+   * Indicates the relative priority of the request. This may be used by the browser to decide the order in which requests are dispatched and resources fetched.
+   */
+  priority?: RequestPriority | (string & {});
+
+  /**
+   * The mode of the request, which determines how the request will interact with the browser's security model.
+   * This can affect things like CORS (Cross-Origin Resource Sharing) and same-origin policies.
+   */
+  mode?: RequestMode | (string & {});
+
+  /**
+   * The redirect mode of the request, which determines how redirects are handled.
+   * This can affect whether the request follows redirects automatically, or if it fails when a redirect occurs.
+   */
+  redirect?: RequestRedirect | (string & {});
+
+  /**
    * Configures the server-side rendering transfer cache for this request.
    *
    * See the documentation on the transfer cache for more information.
    */
   transferCache?: {includeHeaders?: string[]} | boolean;
+
+  /**
+   * The timeout for the backend HTTP request in ms.
+   */
+  timeout?: number;
 }
 
 /**

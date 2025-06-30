@@ -1,6 +1,5 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "ng_web_test_suite", "sass_binary")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -13,16 +12,14 @@ ng_project(
         ":cookie-popup.component.css",
         "cookie-popup.component.html",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
     ],
     deps = [
         "//adev/shared-docs/providers:providers_rjs",
         "//adev/shared-docs/utils:utils_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
     ],
 )
 
@@ -37,16 +34,16 @@ ts_project(
     srcs = glob(
         ["*.spec.ts"],
     ),
-    interop_deps = [
-        ":cookie-popup",
-        "//adev/shared-docs/providers",
-        "//adev/shared-docs/testing",
-        "//packages/core",
-        "//packages/core/testing",
+    deps = [
+        ":cookie-popup_rjs",
+        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/testing:testing_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
-    deps = [":test_lib"],
+    deps = [":test_lib_rjs"],
 )

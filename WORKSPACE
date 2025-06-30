@@ -114,6 +114,7 @@ npm_translate_lock(
         "//integration:package.json",
         "//modules:package.json",
         "//packages/animations:package.json",
+        "//packages/benchpress:package.json",
         "//packages/common:package.json",
         "//packages/compiler:package.json",
         "//packages/compiler-cli:package.json",
@@ -275,7 +276,7 @@ yarn_install(
 
 git_repository(
     name = "devinfra",
-    commit = "f3ac6ef8b4291287e19d23c2a708dbc4ac24293a",
+    commit = "dfe138678e4edb4789fbe40ae7792c046de3b4bd",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
@@ -310,7 +311,7 @@ rules_angular_step3(
 
 git_repository(
     name = "rules_browsers",
-    commit = "fd3b3d37662206a19eaa34f157c757b3291978dc",
+    commit = "800d91c06d3ac174b789ad6a9b6772f358230c40",
     remote = "https://github.com/devversion/rules_browsers.git",
 )
 
@@ -339,3 +340,21 @@ esbuild_register_toolchains(
     name = "esbuild",
     esbuild_version = LATEST_ESBUILD_VERSION,
 )
+
+# Register git toolchains
+register_toolchains(
+    "@devinfra//bazel/git-toolchain:git_linux_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_x86_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_arm64_toolchain",
+    "@devinfra//bazel/git-toolchain:git_windows_toolchain",
+)
+
+git_repository(
+    name = "rules_sass",
+    commit = "cc1e845339fc45d3c8390445014d5824b85a0948",
+    remote = "https://github.com/devversion/rules_sass.git",
+)
+
+load("@rules_sass//src/toolchain:repositories.bzl", "setup_rules_sass")
+
+setup_rules_sass()

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, effect, input, output, signal} from '@angular/core';
+import {Component, computed, effect, input, linkedSignal, output, signal} from '@angular/core';
 import {ProfilerFrame} from '../../../../../../protocol';
 import {Observable} from 'rxjs';
 
@@ -49,7 +49,14 @@ export class RecordingTimelineComponent {
   private readonly _filter = signal<Filter>(noopFilter);
   protected readonly visualizing = signal(false);
 
-  private readonly allFrames = signal<ProfilerFrame[]>([]);
+  // Ensure that `allFrames` is always cleaned if the stream changes.
+  // This is a safe guard in case the component is not destroyed when a recording is cleared
+  // (i.e. don't rely on the UI).
+  private readonly allFrames = linkedSignal<Observable<ProfilerFrame[]>, ProfilerFrame[]>({
+    source: this.stream,
+    computation: () => [],
+  });
+
   protected readonly frames = computed(() => {
     const filter = this._filter();
     return this.allFrames().filter((node) => filter(node));
@@ -64,7 +71,7 @@ export class RecordingTimelineComponent {
       const data = this.stream();
       const subscription = data.subscribe({
         next: (frames: ProfilerFrame[]): void => {
-          this.allFrames.set(frames);
+          this.allFrames.update((all) => all.concat(frames));
         },
         complete: (): void => {
           this.visualizing.set(true);

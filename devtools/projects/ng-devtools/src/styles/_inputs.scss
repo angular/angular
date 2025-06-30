@@ -11,6 +11,7 @@
   border: none;
   padding: 0.375rem 0.75rem;
   border-radius: 2rem;
+  box-sizing: border-box;
 }
 
 .ng-input {
@@ -61,6 +62,7 @@
   border-radius: 0.75rem;
 }
 
-label[for] {
+label[for],
+input[type='checkbox'] {
   cursor: pointer;
 }

@@ -85,10 +85,30 @@ export class FetchBackend implements HttpBackend {
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
       const aborter = new AbortController();
+
       this.doRequest(request, aborter.signal, observer).then(noop, (error) =>
         observer.error(new HttpErrorResponse({error})),
       );
-      return () => aborter.abort();
+
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
+      if (request.timeout) {
+        // TODO: Replace with AbortSignal.any([aborter.signal, AbortSignal.timeout(request.timeout)])
+        // when AbortSignal.any support is Baseline widely available (NET nov. 2026)
+        timeoutId = this.ngZone.runOutsideAngular(() =>
+          setTimeout(() => {
+            if (!aborter.signal.aborted) {
+              aborter.abort(new DOMException('signal timed out', 'TimeoutError'));
+            }
+          }, request.timeout),
+        );
+      }
+
+      return () => {
+        if (timeoutId !== undefined) {
+          clearTimeout(timeoutId);
+        }
+        aborter.abort();
+      };
     });
   }
 
@@ -293,7 +313,16 @@ export class FetchBackend implements HttpBackend {
     // We could share some of this logic with the XhrBackend
 
     const headers: Record<string, string> = {};
-    const credentials: RequestCredentials | undefined = req.withCredentials ? 'include' : undefined;
+    let credentials: RequestCredentials | undefined;
+
+    // If the request has a credentials property, use it.
+    // Otherwise, if the request has withCredentials set to true, use 'include'.
+    credentials = req.credentials;
+
+    // If withCredentials is true should be set to 'include', for compatibility
+    if (req.withCredentials) {
+      credentials = 'include';
+    }
 
     // Setting all the requested headers.
     req.headers.forEach((name, values) => (headers[name] = values.join(',')));
@@ -320,6 +349,8 @@ export class FetchBackend implements HttpBackend {
       keepalive: req.keepalive,
       cache: req.cache,
       priority: req.priority,
+      mode: req.mode,
+      redirect: req.redirect,
     };
   }
 

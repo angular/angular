@@ -1,5 +1,5 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//tools:defaults2.bzl", "sass_binary")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -12,6 +12,8 @@ sass_binary(
 ng_project(
     name = "tree-visualizer-host",
     srcs = [
+        "graph-renderer.ts",
+        "tree-visualizer.ts",
         "tree-visualizer-host.component.ts",
     ],
     angular_assets = [
@@ -19,5 +21,9 @@ ng_project(
     ],
     interop_deps = [
         "//packages/core",
+    ],
+    deps = [
+        "//:node_modules/@types/d3",
+        "//:node_modules/d3",
     ],
 )

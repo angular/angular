@@ -22,10 +22,14 @@ interface HttpRequestInit {
   params?: HttpParams;
   responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
   withCredentials?: boolean;
+  credentials?: RequestCredentials;
   transferCache?: {includeHeaders?: string[]} | boolean;
   keepalive?: boolean;
   priority?: RequestPriority;
   cache?: RequestCache;
+  timeout?: number;
+  mode?: RequestMode;
+  redirect?: RequestRedirect;
 }
 
 /**
@@ -167,6 +171,12 @@ export class HttpRequest<T> {
   readonly withCredentials: boolean = false;
 
   /**
+   *  The credentials mode of the request, which determines how cookies and HTTP authentication are handled.
+   *  This can affect whether cookies are sent with the request, and how authentication is handled.
+   */
+  readonly credentials!: RequestCredentials;
+
+  /**
    * When using the fetch implementation and set to `true`, the browser will not abort the associated request if the page that initiated it is unloaded before the request is complete.
    */
   readonly keepalive: boolean = false;
@@ -181,6 +191,18 @@ export class HttpRequest<T> {
    * Indicates the relative priority of the request. This may be used by the browser to decide the order in which requests are dispatched and resources fetched.
    */
   readonly priority!: RequestPriority;
+
+  /**
+   * The mode of the request, which determines how the request will interact with the browser's security model.
+   * This can affect things like CORS (Cross-Origin Resource Sharing) and same-origin policies.
+   */
+  readonly mode!: RequestMode;
+
+  /**
+   * The redirect mode of the request, which determines how redirects are handled.
+   * This can affect whether the request follows redirects automatically, or if it fails when a redirect occurs.
+   */
+  readonly redirect!: RequestRedirect;
 
   /**
    * The expected response type of the server.
@@ -217,6 +239,11 @@ export class HttpRequest<T> {
    */
   readonly transferCache?: {includeHeaders?: string[]} | boolean;
 
+  /**
+   * The timeout for the backend HTTP request in ms.
+   */
+  readonly timeout?: number;
+
   constructor(
     method: 'GET' | 'HEAD',
     url: string,
@@ -227,9 +254,12 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
+      mode?: RequestMode;
+      redirect?: RequestRedirect;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -239,6 +269,7 @@ export class HttpRequest<T> {
        * particular request
        */
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
     },
   );
   constructor(
@@ -251,9 +282,13 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
+      timeout?: number;
+      mode?: RequestMode;
+      redirect?: RequestRedirect;
     },
   );
   constructor(
@@ -267,9 +302,12 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
+      mode?: RequestMode;
+      redirect?: RequestRedirect;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -279,6 +317,7 @@ export class HttpRequest<T> {
        * particular request
        */
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
     },
   );
   constructor(
@@ -292,9 +331,13 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
+      timeout?: number;
+      mode?: RequestMode;
+      redirect?: RequestRedirect;
     },
   );
   constructor(
@@ -308,9 +351,12 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
+      mode?: RequestMode;
+      redirect?: RequestRedirect;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -320,6 +366,7 @@ export class HttpRequest<T> {
        * particular request
        */
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
     },
   );
   constructor(
@@ -334,10 +381,14 @@ export class HttpRequest<T> {
           params?: HttpParams;
           responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
           withCredentials?: boolean;
+          credentials?: RequestCredentials;
           keepalive?: boolean;
           priority?: RequestPriority;
           cache?: RequestCache;
+          mode?: RequestMode;
+          redirect?: RequestRedirect;
           transferCache?: {includeHeaders?: string[]} | boolean;
+          timeout?: number;
         }
       | null,
     fourth?: {
@@ -347,10 +398,14 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
+      mode?: RequestMode;
+      redirect?: RequestRedirect;
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
     },
   ) {
     this.method = method.toUpperCase();
@@ -375,30 +430,54 @@ export class HttpRequest<T> {
       this.reportProgress = !!options.reportProgress;
       this.withCredentials = !!options.withCredentials;
       this.keepalive = !!options.keepalive;
+
       // Override default response type of 'json' if one is provided.
       if (!!options.responseType) {
         this.responseType = options.responseType;
       }
 
       // Override headers if they're provided.
-      if (!!options.headers) {
+      if (options.headers) {
         this.headers = options.headers;
       }
 
-      if (!!options.context) {
+      if (options.context) {
         this.context = options.context;
       }
 
-      if (!!options.params) {
+      if (options.params) {
         this.params = options.params;
       }
 
-      if (!!options.priority) {
+      if (options.priority) {
         this.priority = options.priority;
       }
 
-      if (!!options.cache) {
+      if (options.cache) {
         this.cache = options.cache;
+      }
+
+      if (options.credentials) {
+        this.credentials = options.credentials;
+      }
+
+      if (typeof options.timeout === 'number') {
+        // XHR will ignore any value below 1. AbortSignals only accept unsigned integers.
+
+        if (options.timeout < 1 || !Number.isInteger(options.timeout)) {
+          // TODO: create a runtime error
+          throw new Error(ngDevMode ? '`timeout` must be a positive integer value' : '');
+        }
+
+        this.timeout = options.timeout;
+      }
+
+      if (options.mode) {
+        this.mode = options.mode;
+      }
+
+      if (options.redirect) {
+        this.redirect = options.redirect;
       }
 
       // We do want to assign transferCache even if it's falsy (false is valid value)
@@ -526,10 +605,14 @@ export class HttpRequest<T> {
     params?: HttpParams;
     responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
     withCredentials?: boolean;
+    credentials?: RequestCredentials;
     keepalive?: boolean;
     priority?: RequestPriority;
     cache?: RequestCache;
+    mode?: RequestMode;
+    redirect?: RequestRedirect;
     transferCache?: {includeHeaders?: string[]} | boolean;
+    timeout?: number;
     body?: T | null;
     method?: string;
     url?: string;
@@ -545,8 +628,12 @@ export class HttpRequest<T> {
     keepalive?: boolean;
     priority?: RequestPriority;
     cache?: RequestCache;
+    mode?: RequestMode;
+    redirect?: RequestRedirect;
     withCredentials?: boolean;
+    credentials?: RequestCredentials;
     transferCache?: {includeHeaders?: string[]} | boolean;
+    timeout?: number;
     body?: V | null;
     method?: string;
     url?: string;
@@ -561,10 +648,14 @@ export class HttpRequest<T> {
       params?: HttpParams;
       responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
       withCredentials?: boolean;
+      credentials?: RequestCredentials;
       keepalive?: boolean;
       priority?: RequestPriority;
       cache?: RequestCache;
+      mode?: RequestMode;
+      redirect?: RequestRedirect;
       transferCache?: {includeHeaders?: string[]} | boolean;
+      timeout?: number;
       body?: any | null;
       method?: string;
       url?: string;
@@ -580,9 +671,14 @@ export class HttpRequest<T> {
     const keepalive = update.keepalive ?? this.keepalive;
     const priority = update.priority || this.priority;
     const cache = update.cache || this.cache;
+    const mode = update.mode || this.mode;
+    const redirect = update.redirect || this.redirect;
+    const credentials = update.credentials || this.credentials;
     // Carefully handle the transferCache to differentiate between
     // `false` and `undefined` in the update args.
     const transferCache = update.transferCache ?? this.transferCache;
+
+    const timeout = update.timeout ?? this.timeout;
 
     // The body is somewhat special - a `null` value in update.body means
     // whatever current body is present is being overridden with an empty
@@ -633,6 +729,10 @@ export class HttpRequest<T> {
       keepalive,
       cache,
       priority,
+      timeout,
+      mode,
+      redirect,
+      credentials,
     });
   }
 }

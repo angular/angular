@@ -106,6 +106,10 @@ describe('httpResource', () => {
         },
         withCredentials: true,
         keepalive: true,
+        cache: 'force-cache',
+        priority: 'high',
+        mode: 'cors',
+        redirect: 'follow',
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -116,6 +120,10 @@ describe('httpResource', () => {
     expect(req.request.headers.get('X-Special')).toBe('true');
     expect(req.request.withCredentials).toBe(true);
     expect(req.request.keepalive).toBe(true);
+    expect(req.request.cache).toBe('force-cache');
+    expect(req.request.priority).toBe('high');
+    expect(req.request.mode).toBe('cors');
+    expect(req.request.redirect).toBe('follow');
 
     req.flush([]);
 
@@ -205,6 +213,7 @@ describe('httpResource', () => {
         withCredentials: true,
         keepalive: true,
         transferCache: {includeHeaders: ['Y-Tag']},
+        timeout: 1234,
       }),
       {
         injector: TestBed.inject(Injector),
@@ -220,6 +229,7 @@ describe('httpResource', () => {
     expect(req.request.reportProgress).toEqual(true);
     expect(req.request.keepalive).toBe(true);
     expect(req.request.transferCache).toEqual({includeHeaders: ['Y-Tag']});
+    expect(req.request.timeout).toBe(1234);
   });
 
   it('should allow mapping data to an arbitrary type', async () => {

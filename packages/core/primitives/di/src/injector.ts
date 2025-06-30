@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken} from './injection_token';
+import {Constructor, InjectionToken} from './injection_token';
 import {NotFound, NOT_FOUND} from './not_found';
 
 export interface Injector {
@@ -33,10 +33,17 @@ export function setCurrentInjector(
   return former;
 }
 
-export function inject<T>(token: InjectionToken<T>, options?: unknown): T | NotFound {
+export function inject<T>(token: InjectionToken<T> | Constructor<T>): T;
+export function inject<T>(
+  token: InjectionToken<T> | Constructor<T>,
+  options?: unknown,
+): T | NotFound {
   const currentInjector = getCurrentInjector();
   if (!currentInjector) {
-    return NOT_FOUND;
+    throw new Error('Current injector is not set.');
   }
-  return currentInjector.retrieve(token, options);
+  if (!(token as InjectionToken<T>).ɵprov) {
+    throw new Error('Token is not an injectable');
+  }
+  return currentInjector.retrieve(token as InjectionToken<T>, options);
 }

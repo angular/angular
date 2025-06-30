@@ -8,10 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {afterNextRender, Component, effect, inject, input, signal, viewChild} from '@angular/core';
-import {MatInputModule} from '@angular/material/input';
-import {RouterTreeD3Node, RouterTreeVisualizer} from './router-tree-visualizer';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {TreeVisualizerHostComponent} from '../tree-visualizer-host/tree-visualizer-host.component';
+import {TreeVisualizerHostComponent} from '../../shared/tree-visualizer-host/tree-visualizer-host.component';
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
@@ -20,6 +17,14 @@ import {RouteDetailsRowComponent} from './route-details-row.component';
 import {MatTableModule} from '@angular/material/table';
 import {FrameManager} from '../../application-services/frame_manager';
 import {Events, MessageBus, Route} from '../../../../../protocol';
+import {SvgD3Node, TreeVisualizer} from '../../shared/tree-visualizer-host/tree-visualizer';
+import {
+  RouterTreeVisualizer,
+  RouterTreeD3Node,
+  transformRoutesIntoVisTree,
+  RouterTreeNode,
+  getRouteLabel,
+} from './router-tree-fns';
 
 const DEFAULT_FILTER = /.^/;
 
@@ -29,8 +34,6 @@ const DEFAULT_FILTER = /.^/;
   styleUrls: ['./router-tree.component.scss'],
   imports: [
     CommonModule,
-    MatInputModule,
-    MatCheckboxModule,
     TreeVisualizerHostComponent,
     SplitComponent,
     SplitAreaDirective,
@@ -88,8 +91,9 @@ export class RouterTreeComponent {
     const group = this.routerTree().group().nativeElement;
 
     this.routerTreeVisualizer?.cleanup?.();
-    this.routerTreeVisualizer = new RouterTreeVisualizer(container, group, {
+    this.routerTreeVisualizer = new TreeVisualizer(container, group, {
       nodeSeparation: () => 1,
+      d3NodeModifier: (n) => this.d3NodeModifier(n),
     });
 
     this.visualizerReady.set(true);
@@ -103,9 +107,13 @@ export class RouterTreeComponent {
   }
 
   renderGraph(routes: Route[]): void {
-    this.routerTreeVisualizer?.render(routes[0], this.filterRegex, this.showFullPath);
+    const root = transformRoutesIntoVisTree(routes[0], this.showFullPath);
+    this.routerTreeVisualizer?.render(root);
     this.routerTreeVisualizer?.onNodeClick((_, node) => {
       this.selectedRoute.set(node);
+      setTimeout(() => {
+        this.routerTreeVisualizer?.snapToNode(node, 0.7);
+      });
     });
   }
 
@@ -123,5 +131,26 @@ export class RouterTreeComponent {
 
   navigateRoute(route: any): void {
     this.messageBus.emit('navigateRoute', [route.data.path]);
+  }
+
+  private d3NodeModifier(d3Node: SvgD3Node<RouterTreeNode>) {
+    d3Node.attr('class', (node: RouterTreeD3Node) => {
+      const name = getRouteLabel(node.data, node.parent?.data, this.showFullPath);
+      const isMatched = this.filterRegex.test(name.toLowerCase());
+
+      const nodeClasses = [d3Node.attr('class')];
+      if (node.data.isActive) {
+        nodeClasses.push('node-element');
+      } else if (node.data.isLazy) {
+        nodeClasses.push('node-lazy');
+      } else {
+        nodeClasses.push('node-environment');
+      }
+
+      if (isMatched) {
+        nodeClasses.push('node-search');
+      }
+      return nodeClasses.join(' ');
+    });
   }
 }

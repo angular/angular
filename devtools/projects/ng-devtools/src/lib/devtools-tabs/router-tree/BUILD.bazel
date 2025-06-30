@@ -1,7 +1,7 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//tools:defaults2.bzl", "sass_binary")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -22,7 +22,7 @@ ng_project(
     srcs = [
         "route-details-row.component.ts",
         "router-tree.component.ts",
-        "router-tree-visualizer.ts",
+        "router-tree-fns.ts",
     ],
     angular_assets = [
         ":router-tree.component.html",
@@ -41,7 +41,7 @@ ng_project(
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host:tree-visualizer-host_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
@@ -52,6 +52,7 @@ ts_test_library(
     srcs = [
         "route-details-row.component.spec.ts",
         "router-tree.component.spec.ts",
+        "router-tree-fns.spec.ts",
     ],
     interop_deps = [
         ":router-tree",

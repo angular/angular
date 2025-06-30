@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -24,9 +23,9 @@ angular_jasmine_test(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "selectorless_web",
     deps = [
-        ":selectorless_test_lib",
+        ":selectorless_test_lib_rjs",
     ],
 )

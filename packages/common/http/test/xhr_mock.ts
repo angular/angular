@@ -40,6 +40,7 @@ export class MockXMLHttpRequest {
   // Directly settable interface.
   withCredentials: boolean = false;
   responseType: string = 'text';
+  timeout: number | undefined = undefined;
 
   // Mocked response interface.
   response: any | undefined = undefined;

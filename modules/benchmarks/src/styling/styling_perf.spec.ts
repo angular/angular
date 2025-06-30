@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  openBrowser,
-  runBenchmark,
-  verifyNoBrowserErrors,
-} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {openBrowser, runBenchmark, verifyNoBrowserErrors} from '../../../utilities/index';
 import {$, by, element} from 'protractor';
 
 /** List of possible scenarios that should be tested.  */

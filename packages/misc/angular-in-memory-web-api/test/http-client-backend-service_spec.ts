@@ -5,9 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-
-import 'jasmine-ajax';
-
 import {
   FetchBackend,
   HTTP_INTERCEPTORS,
@@ -17,6 +14,7 @@ import {
   HttpEvent,
   HttpEventType,
   HttpHandler,
+  HttpHeaders,
   HttpInterceptor,
   HttpRequest,
   HttpResponse,
@@ -26,7 +24,7 @@ import {
 import {importProvidersFrom, Injectable} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {HttpClientBackendService, HttpClientInMemoryWebApiModule} from 'angular-in-memory-web-api';
-import {Observable, zip} from 'rxjs';
+import {Observable, zip, of} from 'rxjs';
 import {concatMap, map, tap} from 'rxjs/operators';
 
 import {Hero} from './fixtures/hero';
@@ -548,6 +546,11 @@ describe('HttpClient Backend Service', () => {
     let http: HttpClient;
     let httpBackend: HttpClientBackendService;
     let createPassThruBackend: jasmine.Spy;
+    const mockPassThroughResponse = of({
+      status: 200,
+      headers: new HttpHeaders({'Content-Type': 'application/json'}),
+      body: JSON.stringify([{id: 42, name: 'Dude'}]),
+    } as HttpEvent<any>);
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -563,14 +566,7 @@ describe('HttpClient Backend Service', () => {
       http = TestBed.inject(HttpClient);
       httpBackend = TestBed.inject<any>(HttpBackend);
       createPassThruBackend = spyOn(<any>httpBackend, 'createPassThruBackend').and.callThrough();
-    });
-
-    beforeEach(() => {
-      jasmine.Ajax.install();
-    });
-
-    afterEach(() => {
-      jasmine.Ajax.uninstall();
+      spyOn(httpBackend, 'handle').and.returnValue(mockPassThroughResponse);
     });
 
     it('can get heroes (no passthru)', waitForAsync(() => {
@@ -584,24 +580,12 @@ describe('HttpClient Backend Service', () => {
     // so requests for it should pass thru to the "real" server
 
     it('can GET passthru', waitForAsync(() => {
-      jasmine.Ajax.stubRequest('api/passthru').andReturn({
-        'status': 200,
-        'contentType': 'application/json',
-        'response': JSON.stringify([{id: 42, name: 'Dude'}]),
-      });
-
       http.get<any[]>('api/passthru').subscribe((passthru) => {
         expect(passthru.length).toBeGreaterThan(0, 'should have passthru data');
       }, failRequest);
     }));
 
     it('can ADD to passthru', waitForAsync(() => {
-      jasmine.Ajax.stubRequest('api/passthru').andReturn({
-        'status': 200,
-        'contentType': 'application/json',
-        'response': JSON.stringify({id: 42, name: 'Dude'}),
-      });
-
       http.post<any>('api/passthru', {name: 'Dude'}).subscribe((passthru) => {
         expect(passthru).toBeDefined('should have passthru data');
         expect(passthru.id).toBe(42, 'passthru object should have id 42');

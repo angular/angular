@@ -1,5 +1,5 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//adev/shared-docs:defaults.bzl", "ng_project")
+load("//tools:defaults2.bzl", "sass_binary")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -11,10 +11,6 @@ ng_project(
     assets = [
         ":icon.component.css",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
         "//adev/shared-docs/components/copy-source-code-button:__pkg__",
@@ -23,6 +19,10 @@ ng_project(
         "//adev/shared-docs/components/text-field:__pkg__",
         "//adev/shared-docs/components/top-level-banner:__pkg__",
         "//adev/shared-docs/components/viewers:__pkg__",
+    ],
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
     ],
 )
 

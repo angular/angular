@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {runfiles} from '@bazel/runfiles';
 import {readFileSync} from 'fs';
 import {$, browser} from 'protractor';
 import {logging} from 'selenium-webdriver';
 import {RawSourceMap, SourceMapConsumer} from 'source-map';
+import {resolve} from 'path';
 
 describe('sourcemaps', function () {
   const URL = '/';
@@ -36,15 +36,14 @@ describe('sourcemaps', function () {
     expect(errorColumn).not.toBeNull();
 
     const mapContent = readFileSync(
-      runfiles.resolvePackageRelative('../../src/sourcemap/bundles/main.js.map'),
-    ).toString('utf8');
+      resolve('./modules/playground/src/sourcemap/bundles/main.js.map'),
+      'utf-8',
+    );
     const decoder = await new SourceMapConsumer(JSON.parse(mapContent) as RawSourceMap);
     const originalPosition = decoder.originalPositionFor({line: errorLine!, column: errorColumn!});
     const sourceCodeLines = readFileSync(
-      runfiles.resolvePackageRelative('../../src/sourcemap/main.ts'),
-      {
-        encoding: 'utf-8',
-      },
+      resolve('./modules/playground/src/sourcemap/main.ts'),
+      'utf-8',
     ).split('\n');
     expect(sourceCodeLines[originalPosition.line! - 1]).toMatch(
       /throw new Error\(\'Sourcemap test\'\)/,

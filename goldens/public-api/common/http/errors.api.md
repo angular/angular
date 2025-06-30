@@ -11,6 +11,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     CANNOT_SPECIFY_BOTH_FROM_STRING_AND_FROM_OBJECT = 2805,
     // (undocumented)
+    CREDENTIALS_NOT_SUPPORTED_WITH_XHR = 2818,
+    // (undocumented)
     HEADERS_ALTERED_BY_TRANSFER_CACHE = 2802,
     // (undocumented)
     HTTP_ORIGIN_MAP_CONTAINS_PATH = 2804,
@@ -27,9 +29,13 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_JSONP_MODULE = -2800,
     // (undocumented)
+    MODE_NOT_SUPPORTED_WITH_XHR = 2816,
+    // (undocumented)
     NOT_USING_FETCH_BACKEND_IN_SSR = 2801,
     // (undocumented)
     PRIORITY_NOT_SUPPORTED_WITH_XHR = 2815,
+    // (undocumented)
+    REDIRECT_NOT_SUPPORTED_WITH_XHR = 2817,
     // (undocumented)
     RESPONSE_IS_NOT_A_BLOB = 2807,
     // (undocumented)

@@ -71,7 +71,7 @@ export function defineInjectable<T>(opts: {
   token: unknown;
   providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'environment' | null;
   factory: () => T;
-}): unknown {
+}): ɵɵInjectableDeclaration<T> {
   return {
     token: opts.token,
     providedIn: (opts.providedIn as any) || null,
@@ -80,7 +80,7 @@ export function defineInjectable<T>(opts: {
   } as ɵɵInjectableDeclaration<T>;
 }
 
-type Constructor<T> = Function & {prototype: T};
+export type Constructor<T> = Function & {prototype: T};
 
 export function registerInjectable<T>(
   ctor: unknown,

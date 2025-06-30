@@ -1,5 +1,5 @@
-load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
 load("//tools:defaults.bzl", "http_server")
 
@@ -48,8 +48,8 @@ benchmark_test(
     name = "perf",
     server = ":prodserver",
     deps = [
-        "//modules/benchmarks/src/tree:detect_changes_perf_tests_lib",
-        "//modules/benchmarks/src/tree:perf_tests_lib",
+        "//modules/benchmarks/src/tree:detect_changes_perf_tests_lib_rjs",
+        "//modules/benchmarks/src/tree:perf_tests_lib_rjs",
     ],
 )
 
@@ -57,7 +57,7 @@ e2e_test(
     name = "e2e",
     server = ":prodserver",
     deps = [
-        "//modules/benchmarks/src/tree:detect_changes_e2e_tests_lib",
-        "//modules/benchmarks/src/tree:e2e_tests_lib",
+        "//modules/benchmarks/src/tree:detect_changes_e2e_tests_lib_rjs",
+        "//modules/benchmarks/src/tree:e2e_tests_lib_rjs",
     ],
 )
