@@ -21,27 +21,16 @@
     }
 
     .options {
-      padding: 0.25rem;
+      padding: 0.75rem;
       display: flex;
       align-items: center;
       gap: 2rem;
       border-bottom: 1px solid var(--color-separator);
 
-      mat-checkbox {
-        $checkbox-size: 14px;
-        --mdc-checkbox-state-layer-size: 2rem;
-        --mat-checkbox-label-text-size: 0.8rem;
-
-        ::ng-deep .mdc-checkbox {
-          width: $checkbox-size;
-          height: $checkbox-size;
-          flex: 0 0 $checkbox-size;
-
-          &__background {
-            width: $checkbox-size;
-            height: $checkbox-size;
-          }
-        }
+      .option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
     }
 

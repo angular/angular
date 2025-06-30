@@ -1,3 +1,5 @@
+@use '../../../../../styles/typography';
+
 .filter {
   display: flex;
   padding: 0px;
@@ -23,6 +25,7 @@
     }
 
     .filter-input {
+      @extend %body-01;
       border: none;
       padding: 1px;
       width: 100%;

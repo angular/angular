@@ -18,7 +18,6 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import {MatCheckbox} from '@angular/material/checkbox';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {
@@ -66,7 +65,6 @@ const HIERARCHY_HOR_SIZE = 50;
     TreeVisualizerHostComponent,
     MatIcon,
     MatTooltip,
-    MatCheckbox,
     ResponsiveSplitDirective,
   ],
   templateUrl: `./injector-tree.component.html`,

@@ -5,12 +5,18 @@
 } @else {
   <div class="wrapper">
     <div class="options">
-      <mat-checkbox (change)="toggleHideInjectorsWithNoProviders()">
-        Hide injectors with no providers
-      </mat-checkbox>
-      <mat-checkbox (change)="toggleHideAngularInjectors()">
-        Hide framework injectors
-      </mat-checkbox>
+      <div class="option">
+        <input
+          id="hide-injectors-no-providers"
+          type="checkbox"
+          (change)="toggleHideInjectorsWithNoProviders()"
+        />
+        <label for="hide-injectors-no-providers">Hide injectors with no providers</label>
+      </div>
+      <div class="option">
+        <input id="hide-fw-injectors" type="checkbox" (change)="toggleHideAngularInjectors()" />
+        <label for="hide-fw-injectors">Hide framework injectors</label>
+      </div>
     </div>
     <as-split class="trees" unit="percent" direction="horizontal" [gutterSize]="9">
       <as-split-area size="60">
