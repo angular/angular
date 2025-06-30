@@ -111,8 +111,8 @@ importers:
         specifier: ^3.5.27
         version: 3.5.42
       '@types/chrome':
-        specifier: ^0.0.326
-        version: 0.0.326
+        specifier: ^0.0.328
+        version: 0.0.328
       '@types/convert-source-map':
         specifier: ^2.0.0
         version: 2.0.3
@@ -282,8 +282,8 @@ importers:
         specifier: 3.5.0
         version: 3.5.0
       selenium-webdriver4:
-        specifier: npm:selenium-webdriver@4.33.0
-        version: /selenium-webdriver@4.33.0
+        specifier: npm:selenium-webdriver@4.34.0
+        version: /selenium-webdriver@4.34.0
       semver-dsl:
         specifier: ^1.0.1
         version: 1.0.1
@@ -584,7 +584,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 20.0.4
-        version: 20.0.4(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.4)(@types/node@24.0.5)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.8.3)
+        version: 20.0.4(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.4)(@types/node@24.0.7)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.8.3)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -613,8 +613,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/upgrade
       '@types/node':
-        specifier: 24.0.5
-        version: 24.0.5
+        specifier: 24.0.7
+        version: 24.0.7
       '@types/selenium-webdriver':
         specifier: 3.0.7
         version: 3.0.7
@@ -1307,7 +1307,7 @@ packages:
       - yaml
     dev: true
 
-  /@angular/build@20.0.4(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.4)(@types/node@24.0.5)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.8.3):
+  /@angular/build@20.0.4(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.0.4)(@types/node@24.0.7)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.8.3):
     resolution: {integrity: sha512-SIYLg2st05Q5hgFrxwj6L4i9j2j2JNWYoYgacXp+mw9YVhFiC02Ymbakc9fq+3+sWlm0XTX5JgrupV2ac1ytNQ==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.0.4.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1364,7 +1364,7 @@ packages:
       '@babel/core': 7.27.1
       '@babel/helper-annotate-as-pure': 7.27.1
       '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 5.1.10(@types/node@24.0.5)
+      '@inquirer/confirm': 5.1.10(@types/node@24.0.7)
       '@vitejs/plugin-basic-ssl': 2.0.0(vite@6.3.5)
       beasties: 0.3.4
       browserslist: 4.25.0
@@ -1386,7 +1386,7 @@ packages:
       tinyglobby: 0.2.13
       tslib: 2.8.1
       typescript: 5.8.3
-      vite: 6.3.5(@types/node@24.0.5)(sass@1.88.0)(terser@5.43.1)(tsx@4.20.3)
+      vite: 6.3.5(@types/node@24.0.7)(sass@1.88.0)(terser@5.43.1)(tsx@4.20.3)
       watchpack: 2.4.2
     optionalDependencies:
       lmdb: 3.3.0
@@ -4207,7 +4207,7 @@ packages:
       '@types/node': 18.19.112
     dev: false
 
-  /@inquirer/confirm@5.1.10(@types/node@24.0.5):
+  /@inquirer/confirm@5.1.10(@types/node@24.0.7):
     resolution: {integrity: sha512-FxbQ9giWxUWKUk2O5XZ6PduVnH2CZ/fmMKMBkH71MHJvWr7WL5AHKevhzF1L5uYWB2P548o1RzVxrNd3dpmk6g==, tarball: https://registry.npmjs.org/@inquirer/confirm/-/confirm-5.1.10.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4216,9 +4216,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.13(@types/node@24.0.5)
-      '@inquirer/type': 3.0.7(@types/node@24.0.5)
-      '@types/node': 24.0.5
+      '@inquirer/core': 10.1.13(@types/node@24.0.7)
+      '@inquirer/type': 3.0.7(@types/node@24.0.7)
+      '@types/node': 24.0.7
     dev: false
 
   /@inquirer/confirm@5.1.12(@types/node@18.19.112):
@@ -4253,7 +4253,7 @@ packages:
       wrap-ansi: 6.2.0
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/core@10.1.13(@types/node@24.0.5):
+  /@inquirer/core@10.1.13(@types/node@24.0.7):
     resolution: {integrity: sha512-1viSxebkYN2nJULlzCxES6G9/stgHSepZ9LqqfdIGPHj5OHhiBUXVS0a6R0bEC2A+VL4D9w6QB66ebCr6HGllA==, tarball: https://registry.npmjs.org/@inquirer/core/-/core-10.1.13.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4263,8 +4263,8 @@ packages:
         optional: true
     dependencies:
       '@inquirer/figures': 1.0.12
-      '@inquirer/type': 3.0.7(@types/node@24.0.5)
-      '@types/node': 24.0.5
+      '@inquirer/type': 3.0.7(@types/node@24.0.7)
+      '@types/node': 24.0.7
       ansi-escapes: 4.3.2
       cli-width: 4.1.0
       mute-stream: 2.0.0
@@ -4452,7 +4452,7 @@ packages:
     dependencies:
       '@types/node': 18.19.112
 
-  /@inquirer/type@3.0.7(@types/node@24.0.5):
+  /@inquirer/type@3.0.7(@types/node@24.0.7):
     resolution: {integrity: sha512-PfunHQcjwnju84L+ycmcMKB/pTPIngjUJvfnRhKY6FKPuYXlM4aQCb/nIdTFR6BEhMjFvngzvng/vBAJMZpLSA==, tarball: https://registry.npmjs.org/@inquirer/type/-/type-3.0.7.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4461,7 +4461,7 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@types/node': 24.0.5
+      '@types/node': 24.0.7
     dev: false
 
   /@isaacs/cliui@8.0.2:
@@ -6691,7 +6691,7 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.4
       '@types/keyv': 3.1.4
-      '@types/node': 24.0.5
+      '@types/node': 24.0.7
       '@types/responselike': 1.0.3
 
   /@types/caseless@0.12.5:
@@ -6704,8 +6704,8 @@ packages:
       '@types/deep-eql': 4.0.2
     dev: true
 
-  /@types/chrome@0.0.326:
-    resolution: {integrity: sha512-WS7jKf3ZRZFHOX7dATCZwqNJgdfiSF0qBRFxaO0LhIOvTNBrfkab26bsZwp6EBpYtqp8loMHJTnD6vDTLWPKYw==, tarball: https://registry.npmjs.org/@types/chrome/-/chrome-0.0.326.tgz}
+  /@types/chrome@0.0.328:
+    resolution: {integrity: sha512-Mv/TQMFMpGBTqWQOQsYcAd3qDncH/Q+Dz7iJVjkwb98uLeM8xZVEYH3VR5Jh+su9IBksbumJeazakK8WqBAgFA==, tarball: https://registry.npmjs.org/@types/chrome/-/chrome-0.0.328.tgz}
     dependencies:
       '@types/filesystem': 0.0.36
       '@types/har-format': 1.2.16
@@ -7083,7 +7083,7 @@ packages:
   /@types/keyv@3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==, tarball: https://registry.npmjs.org/@types/keyv/-/keyv-3.1.4.tgz}
     dependencies:
-      '@types/node': 24.0.5
+      '@types/node': 24.0.7
 
   /@types/live-server@1.2.3:
     resolution: {integrity: sha512-s8SQNTnUgaYQemV1Nt7SILh5ChYbWVg8ONLBbcmjHcpAwpyHh7MXBIpwgwPNvx19lIbBWszQJ3k8ynNIHLtlyg==, tarball: https://registry.npmjs.org/@types/live-server/-/live-server-1.2.3.tgz}
@@ -7146,8 +7146,8 @@ packages:
     dependencies:
       undici-types: 7.8.0
 
-  /@types/node@24.0.5:
-    resolution: {integrity: sha512-CXEG9E7GCTOZIre0WdDznmnhvF7xi7AmnP/zF496trmLiqlfdtxp9nPRgLVqfmJ8jgtcKcs0EcvOu2yDZSuvTg==, tarball: https://registry.npmjs.org/@types/node/-/node-24.0.5.tgz}
+  /@types/node@24.0.7:
+    resolution: {integrity: sha512-YIEUUr4yf8q8oQoXPpSlnvKNVKDQlPMWrmOcgzoduo7kvA2UF0/BwJ/eMKFTiTtkNL17I0M6Xe2tvwFU7be6iw==, tarball: https://registry.npmjs.org/@types/node/-/node-24.0.7.tgz}
     dependencies:
       undici-types: 7.8.0
 
@@ -7224,7 +7224,7 @@ packages:
   /@types/responselike@1.0.3:
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==, tarball: https://registry.npmjs.org/@types/responselike/-/responselike-1.0.3.tgz}
     dependencies:
-      '@types/node': 24.0.5
+      '@types/node': 24.0.7
 
   /@types/retry@0.12.2:
     resolution: {integrity: sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==, tarball: https://registry.npmjs.org/@types/retry/-/retry-0.12.2.tgz}
@@ -7513,7 +7513,7 @@ packages:
     peerDependencies:
       vite: ^6.0.0
     dependencies:
-      vite: 6.3.5(@types/node@24.0.5)(sass@1.88.0)(terser@5.43.1)(tsx@4.20.3)
+      vite: 6.3.5(@types/node@24.0.7)(sass@1.88.0)(terser@5.43.1)(tsx@4.20.3)
     dev: false
 
   /@vitest/expect@3.2.4:
@@ -15928,8 +15928,8 @@ packages:
       - supports-color
     dev: true
 
-  /napi-postinstall@0.2.4:
-    resolution: {integrity: sha512-ZEzHJwBhZ8qQSbknHqYcdtQVr8zUgGyM/q6h6qAyhtyVMNrSgDhrC4disf03dYW0e+czXyLnZINnCTEkWy0eJg==, tarball: https://registry.npmjs.org/napi-postinstall/-/napi-postinstall-0.2.4.tgz}
+  /napi-postinstall@0.2.5:
+    resolution: {integrity: sha512-kmsgUvCRIJohHjbZ3V8avP0I1Pekw329MVAMDzVxsrkjgdnqiwvMX5XwR+hWV66vsAtZ+iM+fVnq8RTQawUmCQ==, tarball: https://registry.npmjs.org/napi-postinstall/-/napi-postinstall-0.2.5.tgz}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
     hasBin: true
     dev: true
@@ -18327,9 +18327,9 @@ packages:
       tmp: 0.0.30
       xml2js: 0.4.23
 
-  /selenium-webdriver@4.33.0:
-    resolution: {integrity: sha512-5vRhk4iI0B9nYbEitfnCjPDXBfG6o9DNhj5DG2355eQo8idETknhj1tigqqlkHsGephSZwLZqEm/d+3e1stGUA==, tarball: https://registry.npmjs.org/selenium-webdriver/-/selenium-webdriver-4.33.0.tgz}
-    engines: {node: '>= 18.20.5'}
+  /selenium-webdriver@4.34.0:
+    resolution: {integrity: sha512-zGfQFcsASAv3KrYzYh+iw4fFqB7iZAgHW7BU6rRz7isK1i1X4x3LvjmZad4bUUgHDwTnAhlqTzDh21byB+zHMg==, tarball: https://registry.npmjs.org/selenium-webdriver/-/selenium-webdriver-4.34.0.tgz}
+    engines: {node: '>= 20.0.0'}
     dependencies:
       '@bazel/runfiles': 6.3.1
       jszip: 3.10.1
@@ -20415,7 +20415,7 @@ packages:
   /unrs-resolver@1.9.2:
     resolution: {integrity: sha512-VUyWiTNQD7itdiMuJy+EuLEErLj3uwX/EpHQF8EOf33Dq3Ju6VW1GXm+swk6+1h7a49uv9fKZ+dft9jU7esdLA==, tarball: https://registry.npmjs.org/unrs-resolver/-/unrs-resolver-1.9.2.tgz}
     dependencies:
-      napi-postinstall: 0.2.4
+      napi-postinstall: 0.2.5
     optionalDependencies:
       '@unrs/resolver-binding-android-arm-eabi': 1.9.2
       '@unrs/resolver-binding-android-arm64': 1.9.2
@@ -20909,7 +20909,7 @@ packages:
       fsevents: 2.3.3
     dev: false
 
-  /vite@6.3.5(@types/node@24.0.5)(sass@1.88.0)(terser@5.43.1)(tsx@4.20.3):
+  /vite@6.3.5(@types/node@24.0.7)(sass@1.88.0)(terser@5.43.1)(tsx@4.20.3):
     resolution: {integrity: sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==, tarball: https://registry.npmjs.org/vite/-/vite-6.3.5.tgz}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
@@ -20949,7 +20949,7 @@ packages:
       yaml:
         optional: true
     dependencies:
-      '@types/node': 24.0.5
+      '@types/node': 24.0.7
       esbuild: 0.25.5
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
@@ -21879,7 +21879,7 @@ packages:
       browser-sync: 3.0.4
       prettier: 3.4.2
       protractor: 7.0.0
-      selenium-webdriver: 4.33.0
+      selenium-webdriver: 4.34.0
       send: 1.2.0
       source-map: 0.7.4
       tmp: 0.2.3
