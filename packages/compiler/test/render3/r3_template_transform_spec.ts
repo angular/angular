@@ -377,6 +377,42 @@ describe('R3 template transform', () => {
     });
   });
 
+  describe('animation bindings', () => {
+    it('should support animate.enter', () => {
+      expectFromHtml('<div animate.enter="foo"></div>').toEqual([
+        ['Element', 'div'],
+        ['TextAttribute', 'animate.enter', 'foo'],
+      ]);
+
+      expectFromHtml(`<div [animate.enter]="['foo', 'bar']"></div>`).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', 6, 'animate.enter', '["foo", "bar"]'],
+      ]);
+
+      expectFromHtml(`<div (animate.enter)="animateFn($event)"></div>`).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', 3, 'animate.enter', null, 'animateFn($event)'],
+      ]);
+    });
+
+    it('should support animate.leave', () => {
+      expectFromHtml('<div animate.leave="foo"></div>').toEqual([
+        ['Element', 'div'],
+        ['TextAttribute', 'animate.leave', 'foo'],
+      ]);
+
+      expectFromHtml(`<div [animate.leave]="['foo', 'bar']"></div>`).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', 6, 'animate.leave', '["foo", "bar"]'],
+      ]);
+
+      expectFromHtml(`<div (animate.leave)="animateFn($event)"></div>`).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', 3, 'animate.leave', null, 'animateFn($event)'],
+      ]);
+    });
+  });
+
   describe('templates', () => {
     it('should support * directives', () => {
       expectFromHtml('<div *ngIf></div>').toEqual([

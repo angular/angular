@@ -42,6 +42,10 @@ const CHAIN_COMPATIBILITY = new Map<o.ExternalReference, o.ExternalReference>([
   [R3.domElementContainerEnd, R3.domElementContainerEnd],
   [R3.domListener, R3.domListener],
   [R3.domTemplate, R3.domTemplate],
+  [R3.animationEnter, R3.animationEnter],
+  [R3.animationLeave, R3.animationLeave],
+  [R3.animationEnterListener, R3.animationEnterListener],
+  [R3.animationLeaveListener, R3.animationLeaveListener],
 ]);
 
 /**

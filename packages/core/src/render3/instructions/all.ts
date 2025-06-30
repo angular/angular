@@ -28,6 +28,7 @@
 export * from '../../defer/instructions';
 export * from './advance';
 export * from './attribute';
+export * from './animation';
 export * from './change_detection';
 export * from './component_instance';
 export * from './control_flow';

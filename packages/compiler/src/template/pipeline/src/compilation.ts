@@ -197,7 +197,12 @@ export abstract class CompilationUnit {
   *ops(): Generator<ir.CreateOp | ir.UpdateOp> {
     for (const op of this.create) {
       yield op;
-      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
+      if (
+        op.kind === ir.OpKind.Listener ||
+        op.kind === ir.OpKind.Animation ||
+        op.kind === ir.OpKind.AnimationListener ||
+        op.kind === ir.OpKind.TwoWayListener
+      ) {
         for (const listenerOp of op.handlerOps) {
           yield listenerOp;
         }

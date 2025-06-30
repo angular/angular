@@ -301,10 +301,8 @@ describe('HtmlParser', () => {
         expect(
           humanizeDom(
             parser.parse(
-              `<app-component
-                        [attr]="[
-                        {text: 'some text',url:'//www.google.com'},
-                        {text:'other text',url:'//www.google.com'}]"></app-component>`,
+              `<app-component\n                        [attr]="[\n                        {text: 'some text',url:'//www.google.com'},\n                        {text:'other text',url:'//www.google.com'}]">` +
+                `</app-component>`,
               'TestComp',
             ),
           ),
@@ -313,13 +311,9 @@ describe('HtmlParser', () => {
           [
             html.Attribute,
             '[attr]',
-            `[
-                        {text: 'some text',url:'//www.google.com'},
-                        {text:'other text',url:'//www.google.com'}]`,
+            `[\n                        {text: 'some text',url:'//www.google.com'},\n                        {text:'other text',url:'//www.google.com'}]`,
             [
-              `[
-                        {text: 'some text',url:'//www.google.com'},
-                        {text:'other text',url:'//www.google.com'}]`,
+              `[\n                        {text: 'some text',url:'//www.google.com'},\n                        {text:'other text',url:'//www.google.com'}]`,
             ],
           ],
         ]);
@@ -343,10 +337,8 @@ describe('HtmlParser', () => {
         expect(
           humanizeDom(
             parser.parse(
-              `<app-component
-                        [attr]="[
-                        {text: 'some text',url:'//www.google.com'},
-                        {text:'other text',url:'//www.google.com'}]"></app-component>`,
+              `<app-component\n                        [attr]="[\n                        {text: 'some text',url:'//www.google.com'},\n                        {text:'other text',url:'//www.google.com'}]">` +
+                `</app-component>`,
               'TestComp',
             ),
           ),
@@ -355,13 +347,9 @@ describe('HtmlParser', () => {
           [
             html.Attribute,
             '[attr]',
-            `[
-                        {text: 'some text',url:'//www.google.com'},
-                        {text:'other text',url:'//www.google.com'}]`,
+            `[\n                        {text: 'some text',url:'//www.google.com'},\n                        {text:'other text',url:'//www.google.com'}]`,
             [
-              `[
-                        {text: 'some text',url:'//www.google.com'},
-                        {text:'other text',url:'//www.google.com'}]`,
+              `[\n                        {text: 'some text',url:'//www.google.com'},\n                        {text:'other text',url:'//www.google.com'}]`,
             ],
           ],
         ]);
@@ -430,6 +418,89 @@ describe('HtmlParser', () => {
           [html.Element, 'span', 1, '<span></span>', '<span>', '</span>'],
         ]);
         expect(humanizeErrors(errors)).toEqual([]);
+      });
+
+      describe('animate instructions', () => {
+        it('should parse animate.enter as a static attribute', () => {
+          expect(humanizeDom(parser.parse(`<div animate.enter="foo"></div>`, 'TestComp'))).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, 'animate.enter', 'foo', ['foo']],
+          ]);
+        });
+
+        it('should parse animate.leave as a static attribute', () => {
+          expect(humanizeDom(parser.parse(`<div animate.leave="bar"></div>`, 'TestComp'))).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, 'animate.leave', 'bar', ['bar']],
+          ]);
+        });
+
+        it('should parse both animate.enter and animate.leave as static attributes', () => {
+          expect(
+            humanizeDom(
+              parser.parse(`<div animate.enter="foo" animate.leave="bar"></div>`, 'TestComp'),
+            ),
+          ).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, 'animate.enter', 'foo', ['foo']],
+            [html.Attribute, 'animate.leave', 'bar', ['bar']],
+          ]);
+        });
+
+        it('should parse animate.enter as a property binding', () => {
+          expect(
+            humanizeDom(parser.parse(`<div [animate.enter]="'foo'"></div>`, 'TestComp')),
+          ).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, '[animate.enter]', `'foo'`, [`'foo'`]],
+          ]);
+        });
+
+        it('should parse animate.leave as a property binding with a string array', () => {
+          expect(
+            humanizeDom(parser.parse(`<div [animate.leave]="['bar', 'baz']"></div>`, 'TestComp')),
+          ).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, '[animate.leave]', `['bar', 'baz']`, [`['bar', 'baz']`]],
+          ]);
+        });
+
+        it('should parse animate.enter as an event binding', () => {
+          expect(
+            humanizeDom(
+              parser.parse(`<div (animate.enter)="onAnimation($event)"></div>`, 'TestComp'),
+            ),
+          ).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, '(animate.enter)', 'onAnimation($event)', ['onAnimation($event)']],
+          ]);
+        });
+
+        it('should parse animate.leave as an event binding', () => {
+          expect(
+            humanizeDom(
+              parser.parse(`<div (animate.leave)="onAnimation($event)"></div>`, 'TestComp'),
+            ),
+          ).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, '(animate.leave)', 'onAnimation($event)', ['onAnimation($event)']],
+          ]);
+        });
+
+        it('should parse a combination of animate property and event bindings', () => {
+          expect(
+            humanizeDom(
+              parser.parse(
+                `<div [animate.enter]="'foo'" (animate.leave)="onAnimation($event)"></div>`,
+                'TestComp',
+              ),
+            ),
+          ).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, '[animate.enter]', `'foo'`, [`'foo'`]],
+            [html.Attribute, '(animate.leave)', 'onAnimation($event)', ['onAnimation($event)']],
+          ]);
+        });
       });
     });
 

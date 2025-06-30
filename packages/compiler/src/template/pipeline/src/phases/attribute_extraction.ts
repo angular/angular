@@ -24,7 +24,10 @@ export function extractAttributes(job: CompilationJob): void {
           extractAttributeOp(unit, op, elements);
           break;
         case ir.OpKind.Property:
-          if (!op.isLegacyAnimationTrigger) {
+          if (
+            op.bindingKind !== ir.BindingKind.LegacyAnimation &&
+            op.bindingKind !== ir.BindingKind.Animation
+          ) {
             let bindingKind: ir.BindingKind;
             if (op.i18nMessage !== null && op.templateKind === null) {
               // If the binding has an i18n context, it is an i18n attribute, and should have that

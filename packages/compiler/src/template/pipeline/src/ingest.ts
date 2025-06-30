@@ -38,6 +38,9 @@ const domSchema = new DomElementSchemaRegistry();
 // Tag name of the `ng-template` element.
 const NG_TEMPLATE_TAG_NAME = 'ng-template';
 
+// prefix for any animation binding
+const ANIMATE_PREFIX = 'animate.';
+
 export function isI18nRootNode(meta?: i18n.I18nMeta): meta is i18n.Message {
   return meta instanceof i18n.Message;
 }
@@ -111,6 +114,9 @@ export function ingestHostBinding(
     }
     if (property.isLegacyAnimation) {
       bindingKind = ir.BindingKind.LegacyAnimation;
+    }
+    if (property.isAnimation) {
+      bindingKind = ir.BindingKind.Animation;
     }
     const securityContexts = bindingParser
       .calcPossibleSecurityContexts(
@@ -1226,6 +1232,7 @@ const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
   [e.BindingType.Class, ir.BindingKind.ClassName],
   [e.BindingType.Style, ir.BindingKind.StyleProperty],
   [e.BindingType.LegacyAnimation, ir.BindingKind.LegacyAnimation],
+  [e.BindingType.Animation, ir.BindingKind.Animation],
 ]);
 
 /**
@@ -1272,7 +1279,6 @@ function ingestElementBindings(
   element: t.Element,
 ): void {
   let bindings = new Array<ir.BindingOp | ir.ExtractedAttributeOp | null>();
-
   let i18nAttributeBindingNames = new Set<string>();
 
   for (const attr of element.attributes) {
@@ -1343,6 +1349,20 @@ function ingestElementBindings(
           output.sourceSpan,
         ),
       );
+    } else if (output.type === e.ParsedEventType.Animation) {
+      unit.create.push(
+        ir.createAnimationListenerOp(
+          op.xref,
+          op.handle,
+          output.name,
+          op.tag,
+          makeListenerHandlerOps(unit, output.handler, output.handlerSpan),
+          output.name.endsWith('enter') ? ir.AnimationKind.ENTER : ir.AnimationKind.LEAVE,
+          output.target,
+          false,
+          output.sourceSpan,
+        ),
+      );
     } else {
       unit.create.push(
         ir.createListenerOp(
@@ -1380,7 +1400,6 @@ function ingestTemplateBindings(
   templateKind: ir.TemplateKind | null,
 ): void {
   let bindings = new Array<ir.BindingOp | ir.ExtractedAttributeOp | null>();
-
   for (const attr of template.templateAttrs) {
     if (attr instanceof t.TextAttribute) {
       const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, attr.name, true);
@@ -1604,7 +1623,9 @@ function createTemplateBinding(
 
     if (
       !isTextBinding &&
-      (type === e.BindingType.Attribute || type === e.BindingType.LegacyAnimation)
+      (type === e.BindingType.Attribute ||
+        type === e.BindingType.LegacyAnimation ||
+        type === e.BindingType.Animation)
     ) {
       // Again, this binding doesn't really target the ng-template; it actually targets the element
       // inside the structural template. In the case of non-text attribute or animation bindings,
@@ -1811,29 +1832,35 @@ function ingestControlFlowInsertionPoint(
   if (root !== null) {
     // Collect the static attributes for content projection purposes.
     for (const attr of root.attributes) {
-      const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, attr.name, true);
-      unit.update.push(
-        ir.createBindingOp(
-          xref,
-          ir.BindingKind.Attribute,
-          attr.name,
-          o.literal(attr.value),
-          null,
-          securityContext,
-          true,
-          false,
-          null,
-          asMessage(attr.i18n),
-          attr.sourceSpan,
-        ),
-      );
+      if (!attr.name.startsWith(ANIMATE_PREFIX)) {
+        const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, attr.name, true);
+        unit.update.push(
+          ir.createBindingOp(
+            xref,
+            ir.BindingKind.Attribute,
+            attr.name,
+            o.literal(attr.value),
+            null,
+            securityContext,
+            true,
+            false,
+            null,
+            asMessage(attr.i18n),
+            attr.sourceSpan,
+          ),
+        );
+      }
     }
 
     // Also collect the inputs since they participate in content projection as well.
     // Note that TDB used to collect the outputs as well, but it wasn't passing them into
     // the template instruction. Here we just don't collect them.
     for (const attr of root.inputs) {
-      if (attr.type !== e.BindingType.LegacyAnimation && attr.type !== e.BindingType.Attribute) {
+      if (
+        attr.type !== e.BindingType.LegacyAnimation &&
+        attr.type !== e.BindingType.Animation &&
+        attr.type !== e.BindingType.Attribute
+      ) {
         const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, attr.name, true);
         unit.create.push(
           ir.createExtractedAttributeOp(

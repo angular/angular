@@ -192,7 +192,6 @@ function createNodeFromHostLiteralProperty(
     const {attrName, type} = inferBoundAttribute(name.text.slice(1, -1));
     const valueSpan = createStaticExpressionSpan(initializer);
     const ast = parser.parseBinding(initializer.text, true, valueSpan, valueSpan.start.offset);
-
     if (ast.errors.length > 0) {
       return; // See TODO above.
     }
@@ -213,6 +212,7 @@ function createNodeFromHostLiteralProperty(
     );
   } else if (name.text.startsWith('(') && name.text.endsWith(')')) {
     const events: ParsedEvent[] = [];
+
     parser.parseEvent(
       name.text.slice(1, -1),
       initializer.text,
@@ -428,7 +428,8 @@ function inferBoundAttribute(name: string): {attrName: string; type: BindingType
   const attrPrefix = 'attr.';
   const classPrefix = 'class.';
   const stylePrefix = 'style.';
-  const animationPrefix = '@';
+  const animationPrefix = 'animate.';
+  const legacyAnimationPrefix = '@';
   let attrName: string;
   let type: BindingType;
 
@@ -443,7 +444,10 @@ function inferBoundAttribute(name: string): {attrName: string; type: BindingType
     attrName = name.slice(stylePrefix.length);
     type = BindingType.Style;
   } else if (name.startsWith(animationPrefix)) {
-    attrName = name.slice(animationPrefix.length);
+    attrName = name;
+    type = BindingType.Animation;
+  } else if (name.startsWith(legacyAnimationPrefix)) {
+    attrName = name.slice(legacyAnimationPrefix.length);
     type = BindingType.LegacyAnimation;
   } else {
     attrName = name;
