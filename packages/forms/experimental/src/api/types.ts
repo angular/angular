@@ -198,30 +198,53 @@ export interface FieldState<T, TKey extends string | number = string | number> {
  * @template T The type of the data which the form is wrapped around.
  */
 export type FieldPath<T> = {
-  [ɵɵTYPE]: T;
+  [ɵɵTYPE]: [T];
 } & (T extends any[]
   ? {}
   : T extends Record<PropertyKey, any>
-    ? {[K in keyof T]: FieldPath<T[K]>}
+    ? {[K in keyof T]: ChildFieldPath<T[K]>}
+    : {});
+export type ChildFieldPath<T> = {
+  [ɵɵTYPE]: [T, 'child'];
+} & (T extends any[]
+  ? {}
+  : T extends Record<PropertyKey, any>
+    ? {[K in keyof T]: ChildFieldPath<T[K]>}
+    : {});
+export type ItemFieldPath<T> = {
+  [ɵɵTYPE]: [T, 'item'];
+} & (T extends any[]
+  ? {}
+  : T extends Record<PropertyKey, any>
+    ? {[K in keyof T]: ChildFieldPath<T[K]>}
     : {});
 
 /**
  * Defines logic for a form of type T.
  */
 export type Schema<in T> = {
-  // Save type as `T => void` rather than `T` since `Schema` is contravariant on `T`. */
-  [ɵɵTYPE]: (_: T) => void;
+  [ɵɵTYPE]: SchemaFn<T>;
+};
+export type ChildSchema<in T> = {
+  [ɵɵTYPE]: ChildSchemaFn<T>;
+};
+export type ItemSchema<in T> = {
+  [ɵɵTYPE]: ItemSchemaFn<T>;
 };
 
 /**
  * Function that defines rules for a schema.
  */
 export type SchemaFn<T> = (p: FieldPath<T>) => void;
+export type ChildSchemaFn<T> = (p: ChildFieldPath<T>) => void;
+export type ItemSchemaFn<T> = (p: ItemFieldPath<T>) => void;
 
 /**
  * A schema or schema definition function.
  */
 export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
+export type ChildSchemaOrSchemaFn<T> = ChildSchema<T> | ChildSchemaFn<T>;
+export type ItemSchemaOrSchemaFn<T> = ItemSchema<T> | ItemSchemaFn<T>;
 
 /**
  * A function that recevies the `FieldContext` for the field the logic is bound to and returns
@@ -231,6 +254,8 @@ export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
  * @template TReturn The type of the result returned by the logic function.
  */
 export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
+export type ChildLogicFn<TValue, TReturn> = (ctx: ChildFieldContext<TValue>) => TReturn;
+export type ItemLogicFn<TValue, TReturn> = (ctx: ItemFieldContext<TValue>) => TReturn;
 
 /**
  * A Validator is a function that
@@ -239,6 +264,8 @@ export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
  *  @template T Value type
  */
 export type Validator<T> = LogicFn<T, ValidationResult>;
+export type ChildValidator<T> = ChildLogicFn<T, ValidationResult>;
+export type ItemValidator<T> = ItemLogicFn<T, ValidationResult>;
 
 export type TreeValidator<T> = LogicFn<T, FormTreeError[]>;
 
@@ -250,11 +277,15 @@ export interface FieldContext<T> {
    * A signal of the value of the field that the logic function is bound to.
    */
   readonly value: Signal<T>;
-  readonly key: Signal<string>;
-  readonly index: Signal<number>;
   readonly state: FieldState<T>;
   readonly field: Field<T>;
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
+}
+export interface ChildFieldContext<T> extends FieldContext<T> {
+  readonly key: Signal<string>;
+}
+export interface ItemFieldContext<T> extends FieldContext<T> {
+  readonly index: Signal<number>;
 }

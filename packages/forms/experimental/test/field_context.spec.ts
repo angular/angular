@@ -7,7 +7,15 @@
  */
 import {Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {applyEach, FieldContext, FieldPath, form, validate} from '../public_api';
+import {
+  applyEach,
+  ChildFieldContext,
+  FieldContext,
+  FieldPath,
+  form,
+  ItemFieldContext,
+  validate,
+} from '../public_api';
 
 function testContext<T>(
   s: WritableSignal<T>,
@@ -55,7 +63,7 @@ describe('Field Context', () => {
 
   it('key', () => {
     const keys: string[] = [];
-    const recordKey = ({key}: FieldContext<unknown>) => {
+    const recordKey = ({key}: ChildFieldContext<unknown>) => {
       try {
         keys.push(key());
       } catch (e) {
@@ -67,7 +75,7 @@ describe('Field Context', () => {
     const f = form(
       cat,
       (p) => {
-        validate(p, recordKey);
+        //validate(p, recordKey);
         validate(p.name, recordKey);
         validate(p.age, recordKey);
       },
@@ -75,7 +83,7 @@ describe('Field Context', () => {
     );
     f().valid();
     expect(keys).toEqual([
-      'RuntimeError: the top-level field in the form has no parent',
+      //'RuntimeError: the top-level field in the form has no parent',
       'name',
       'age',
     ]);
@@ -83,7 +91,7 @@ describe('Field Context', () => {
 
   it('index', () => {
     const indices: (string | number)[] = [];
-    const recordIndex = ({index}: FieldContext<unknown>) => {
+    const recordIndex = ({index}: ItemFieldContext<unknown>) => {
       try {
         indices.push(index());
       } catch (e) {
@@ -101,20 +109,19 @@ describe('Field Context', () => {
     const f = form(
       pets,
       (p) => {
-        validate(p, recordIndex);
+        //validate(p, recordIndex);
         applyEach(p.cats, (cat) => {
           validate(cat, recordIndex);
         });
-        validate(p.owner, recordIndex);
+        //validate(p.owner, recordIndex);
       },
       {injector: TestBed.inject(Injector)},
     );
     f().valid();
     expect(indices).toEqual([
-      'RuntimeError: the top-level field in the form has no parent',
-      0,
-      1,
-      'RuntimeError: cannot access index, parent field is not an array',
+      //'RuntimeError: the top-level field in the form has no parent',
+      0, 1,
+      //'RuntimeError: cannot access index, parent field is not an array',
     ]);
   });
 

@@ -6,11 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LogicFn, ValidationResult} from '../types';
+import {ChildLogicFn, ItemLogicFn, LogicFn, ValidationResult} from '../types';
 
 // TODO(kirjs): Consider using {length: number}
 export type ValueWithLength = Array<unknown> | string;
 
 export interface BaseValidatorConfig<T> {
   errors?: LogicFn<T, ValidationResult>;
+}
+export interface ChildBaseValidatorConfig<T> {
+  errors?: ChildLogicFn<T, ValidationResult>;
+}
+export interface ItemBaseValidatorConfig<T> {
+  errors?: ItemLogicFn<T, ValidationResult>;
 }

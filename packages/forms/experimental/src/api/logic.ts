@@ -9,7 +9,16 @@
 import {MetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
+import type {
+  ChildFieldPath,
+  ChildValidator,
+  FieldPath,
+  ItemFieldPath,
+  ItemValidator,
+  LogicFn,
+  TreeValidator,
+  Validator,
+} from './types';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -76,11 +85,17 @@ export function hidden<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>
  * @param logic A `Validator<T>` that returns the current validation errors.
  * @template T The data type of the field the logic is being added to.
  */
-export function validate<T>(path: FieldPath<T>, logic: NoInfer<Validator<T>>): void {
-  assertPathIsCurrent(path);
+export function validate<T>(path: FieldPath<T>, logic: NoInfer<Validator<T>>): void;
+export function validate<T>(path: ChildFieldPath<T>, logic: NoInfer<ChildValidator<T>>): void;
+export function validate<T>(path: ItemFieldPath<T>, logic: NoInfer<ItemValidator<T>>): void;
+export function validate<T>(
+  path: FieldPath<T> | ChildFieldPath<T> | ItemFieldPath<T>,
+  logic: NoInfer<Validator<T> | ChildValidator<T> | ItemValidator<T>>,
+): void {
+  assertPathIsCurrent(path as FieldPath<T>);
 
-  const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addSyncErrorRule(logic);
+  const pathNode = FieldPathNode.unwrapFieldPath(path as FieldPath<T>);
+  pathNode.logic.addSyncErrorRule(logic as Validator<T>);
 }
 
 export function validateTree<T>(path: FieldPath<T>, logic: NoInfer<TreeValidator<T>>): void {

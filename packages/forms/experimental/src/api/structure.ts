@@ -13,8 +13,11 @@ import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema';
 import type {
+  ChildFieldPath,
   Field,
   FieldPath,
+  ItemFieldPath,
+  ItemSchemaOrSchemaFn,
   LogicFn,
   Schema,
   SchemaFn,
@@ -181,11 +184,14 @@ export function form<T>(...args: any[]): Field<T> {
  * element of the array.
  * @template T The data type of an element in the array.
  */
-export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<SchemaOrSchemaFn<T>>): void {
-  assertPathIsCurrent(path);
+export function applyEach<T>(
+  path: FieldPath<T[]> | ChildFieldPath<T[]> | ItemFieldPath<T[]>,
+  schema: NoInfer<ItemSchemaOrSchemaFn<T>>,
+): void {
+  assertPathIsCurrent(path as FieldPath<T[]>);
 
-  const elementPath = FieldPathNode.unwrapFieldPath(path).element.fieldPathProxy;
-  apply(elementPath, schema);
+  const elementPath = FieldPathNode.unwrapFieldPath(path as FieldPath<T[]>).element.fieldPathProxy;
+  apply(elementPath, schema as unknown as SchemaOrSchemaFn<T>);
 }
 
 /**
