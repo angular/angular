@@ -193,19 +193,10 @@
     ora "8.2.0"
     rxjs "7.8.2"
 
-"@angular/benchpress@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@angular/benchpress/-/benchpress-0.3.0.tgz#0adf14156ff31dfee3ef607c0088e9ee6fb08777"
-  integrity sha512-ApxoY5lTj1S0QFLdq5ZdTfdkIds1m3tma9EJOZpNVHRU9eCj2D/5+VFb5tlWsv9NHQ2S0XXkJjauFOAdfzT8uw==
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#d6f2b1159c52268160c02e701b80646e8f311257":
+  version "0.0.0-16978de33ad399cd865cf3c06aae8ff622129f18"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#d6f2b1159c52268160c02e701b80646e8f311257"
   dependencies:
-    "@angular/core" "^13.0.0 || ^14.0.0-0"
-    reflect-metadata "^0.1.13"
-
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4":
-  version "0.0.0-d44be7e28087c3499d70dda9859d51c1cd3fe1bf"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#5db176c0f3211663830fd3ff4064c1dff0eaccb4"
-  dependencies:
-    "@angular/benchpress" "0.3.0"
     "@angular/build" "19.1.0-rc.0"
     "@babel/core" "^7.16.0"
     "@babel/plugin-proposal-async-generator-functions" "^7.20.1"
@@ -335,13 +326,6 @@
     resolve "1.22.10"
     semver "7.7.2"
     yargs "18.0.0"
-
-"@angular/core@^13.0.0 || ^14.0.0-0":
-  version "14.3.0"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-14.3.0.tgz#7f44c59b6e866fa4cee7221495040c1ead433895"
-  integrity sha512-wYiwItc0Uyn4FWZ/OAx/Ubp2/WrD3EgUJ476y1XI7yATGPF8n9Ld5iCXT08HOvc4eBcYlDfh90kTXR6/MfhzdQ==
-  dependencies:
-    tslib "^2.3.0"
 
 "@angular/material@20.1.0-rc.0":
   version "20.1.0-rc.0"
@@ -13657,11 +13641,6 @@ rechoir@^0.8.0:
   integrity sha512-/vxpCXddiX8NGfGO/mTafwjq4aFa/71pvamip0++IQk3zG8cbCj0fifNPrjjF1XMXUne91jL9OoxmdykoEtifQ==
   dependencies:
     resolve "^1.20.0"
-
-reflect-metadata@^0.1.13:
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.14.tgz#24cf721fe60677146bb77eeb0e1f9dece3d65859"
-  integrity sha512-ZhYeb6nRaXCfhnndflDK8qI6ZQ/YcWZCISRAWICW9XYqMUwjZM9Z0DveWX/ABN01oxSHwVxKQmxeYZSsm0jh5A==
 
 reflect-metadata@^0.2.0:
   version "0.2.2"
