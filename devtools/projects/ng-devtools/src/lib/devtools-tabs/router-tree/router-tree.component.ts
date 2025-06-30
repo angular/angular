@@ -8,8 +8,6 @@
 
 import {CommonModule} from '@angular/common';
 import {afterNextRender, Component, effect, inject, input, signal, viewChild} from '@angular/core';
-import {MatInputModule} from '@angular/material/input';
-import {MatCheckboxModule} from '@angular/material/checkbox';
 import {TreeVisualizerHostComponent} from '../../shared/tree-visualizer-host/tree-visualizer-host.component';
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {MatIconModule} from '@angular/material/icon';
@@ -36,8 +34,6 @@ const DEFAULT_FILTER = /.^/;
   styleUrls: ['./router-tree.component.scss'],
   imports: [
     CommonModule,
-    MatInputModule,
-    MatCheckboxModule,
     TreeVisualizerHostComponent,
     SplitComponent,
     SplitAreaDirective,
