@@ -220,6 +220,11 @@ Blog post: https://blog.angular.dev/announcing-angular-v20-b5c9c06cf301
   `void` operator, which would make the above example invalid. If you have
   existing expressions that need to refer to a property named `void`,
   change the expression to use `this.void` instead: `{{this.void}}`.
+- Parenthesis are always respected. 
+
+  This can lead to runtime breakages when a nullish coalescing operator is nested within parentheses. 
+  eg. `{{ (foo?.bar).baz }}` will throw if `foo` is nullish. This is the same behavior as native JavaScript. 
+
 ### core
 - TypeScript versions less than 5.8 are no longer supported.
 - the `TestBed.flushEffects()` was removed - use

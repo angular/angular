@@ -2734,4 +2734,12 @@ export const RECOMMENDATIONS: Step[] = [
     action:
       'Review `DatePipe` usages. Using the `Y` (week-numbering year) formatter without also including `w` (week number) is now detected as suspicious. Use `y` (year) if that was the intent, or include `w` alongside `Y`.',
   },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
+    level: ApplicationComplexity.Medium,
+    step: '20.0.0_handle_uncaught_listener_errors_in_tests',
+    action:
+      'In templates parentheses are now always respected. This can lead to runtime breakages when nullish coalescing were nested in parathesis. eg `(foo?.bar).baz` will throw if `foo` is nullish as it would in native JavaScript.',
+  },
 ];
