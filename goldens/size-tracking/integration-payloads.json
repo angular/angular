@@ -47,7 +47,7 @@
   },
   "defer": {
     "uncompressed": {
-      "main": 12709,
+      "main": 12014,
       "polyfills": 33807,
       "defer.component": 345
     }
