@@ -258,6 +258,37 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.DeclareLet:
         ir.OpList.replace(op, ng.declareLet(op.handle.slot!, op.sourceSpan));
         break;
+      case ir.OpKind.AnimationString:
+        ir.OpList.replace(
+          op,
+          ng.animationString(op.animationKind, op.expression, op.sanitizer, op.sourceSpan),
+        );
+        break;
+      case ir.OpKind.Animation:
+        const animationCallbackFn = reifyListenerHandler(
+          unit,
+          op.handlerFnName!,
+          op.handlerOps,
+          /* consumesDollarEvent */ false,
+        );
+        ir.OpList.replace(
+          op,
+          ng.animation(op.animationKind, animationCallbackFn, op.sanitizer, op.sourceSpan),
+        );
+        break;
+      case ir.OpKind.AnimationListener:
+        const animationListenerFn = reifyListenerHandler(
+          unit,
+          op.handlerFnName!,
+          op.handlerOps,
+          op.consumesDollarEvent,
+        );
+
+        ir.OpList.replace(
+          op,
+          ng.animationListener(op.animationKind, animationListenerFn, null, op.sourceSpan),
+        );
+        break;
       case ir.OpKind.Listener:
         const listenerFn = reifyListenerHandler(
           unit,
@@ -561,7 +592,9 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
       case ir.OpKind.Property:
         ir.OpList.replace(
           op,
-          unit.job.mode === TemplateCompilationMode.DomOnly && !op.isLegacyAnimationTrigger
+          unit.job.mode === TemplateCompilationMode.DomOnly &&
+            op.bindingKind !== ir.BindingKind.LegacyAnimation &&
+            op.bindingKind !== ir.BindingKind.Animation
             ? ng.domProperty(
                 DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
                 op.expression,
@@ -611,7 +644,10 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
         if (op.expression instanceof ir.Interpolation) {
           throw new Error('not yet handled');
         } else {
-          if (op.isLegacyAnimationTrigger) {
+          if (
+            op.bindingKind === ir.BindingKind.LegacyAnimation ||
+            op.bindingKind === ir.BindingKind.Animation
+          ) {
             ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression, op.sourceSpan));
           } else {
             ir.OpList.replace(

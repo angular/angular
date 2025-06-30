@@ -20,6 +20,10 @@ import * as r3 from '../index';
  * This should be kept up to date with the public exports of @angular/core.
  */
 export const angularCoreEnv: {[name: string]: unknown} = (() => ({
+  'ɵɵanimateEnter': r3.ɵɵanimateEnter,
+  'ɵɵanimateEnterListener': r3.ɵɵanimateEnterListener,
+  'ɵɵanimateLeave': r3.ɵɵanimateLeave,
+  'ɵɵanimateLeaveListener': r3.ɵɵanimateLeaveListener,
   'ɵɵattribute': r3.ɵɵattribute,
   'ɵɵdefineComponent': r3.ɵɵdefineComponent,
   'ɵɵdefineDirective': r3.ɵɵdefineDirective,

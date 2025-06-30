@@ -29,6 +29,7 @@ import {chain} from './phases/chaining';
 import {collapseSingletonInterpolations} from './phases/collapse_singleton_interpolations';
 import {generateConditionalExpressions} from './phases/conditionals';
 import {collectElementConsts} from './phases/const_collection';
+import {convertAnimations} from './phases/convert_animations';
 import {convertI18nBindings} from './phases/convert_i18n_bindings';
 import {createI18nContexts} from './phases/create_i18n_contexts';
 import {deduplicateTextBindings} from './phases/deduplicate_text_bindings';
@@ -107,6 +108,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: deduplicateTextBindings},
   {kind: Kind.Both, fn: specializeStyleBindings},
   {kind: Kind.Both, fn: specializeBindings},
+  {kind: Kind.Both, fn: convertAnimations},
   {kind: Kind.Both, fn: extractAttributes},
   {kind: Kind.Tmpl, fn: createI18nContexts},
   {kind: Kind.Both, fn: parseExtractedStyles},

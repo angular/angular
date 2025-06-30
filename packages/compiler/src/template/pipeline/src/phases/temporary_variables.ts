@@ -81,7 +81,12 @@ function generateTemporaries(
     );
     opCount++;
 
-    if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
+    if (
+      op.kind === ir.OpKind.Listener ||
+      op.kind === ir.OpKind.Animation ||
+      op.kind === ir.OpKind.AnimationListener ||
+      op.kind === ir.OpKind.TwoWayListener
+    ) {
       op.handlerOps.prepend(generateTemporaries(op.handlerOps) as ir.UpdateOp[]);
     } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
       op.trackByOps.prepend(generateTemporaries(op.trackByOps) as ir.UpdateOp[]);

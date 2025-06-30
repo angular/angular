@@ -31,7 +31,12 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
     ]);
 
     for (const op of unit.create) {
-      if (op.kind !== ir.OpKind.Listener && op.kind !== ir.OpKind.TwoWayListener) {
+      if (
+        op.kind !== ir.OpKind.Listener &&
+        op.kind !== ir.OpKind.TwoWayListener &&
+        op.kind !== ir.OpKind.Animation &&
+        op.kind !== ir.OpKind.AnimationListener
+      ) {
         continue;
       }
 
@@ -58,7 +63,7 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
 
 function addSaveRestoreViewOperationToListener(
   unit: ViewCompilationUnit,
-  op: ir.ListenerOp | ir.TwoWayListenerOp,
+  op: ir.ListenerOp | ir.TwoWayListenerOp | ir.AnimationOp | ir.AnimationListenerOp,
 ) {
   op.handlerOps.prepend([
     ir.createVariableOp<ir.UpdateOp>(
