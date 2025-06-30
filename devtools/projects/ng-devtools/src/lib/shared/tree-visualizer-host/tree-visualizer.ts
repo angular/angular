@@ -47,6 +47,14 @@ export interface TreeVisualizerConfig<T extends TreeNode> {
   d3LinkModifier: (link: SvgD3Link<T>) => void;
 }
 
+// For easier compatability with d3 v5
+// Inspired by https://www.mulberryhousesoftware.com/articles/supporting-two-major-versions-of-d3
+function wrapEvent<E, V>(fn: (e: E) => void): (e: E) => void;
+function wrapEvent<E, V>(fn: (e: E, node: V) => void): (e: E, node: V) => void;
+function wrapEvent<E, V>(fn: (e: E, node: V) => void): (e: E, node: V) => void {
+  return (e: E, node: V) => fn(e, node);
+}
+
 export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer<T, TreeD3Node<T>> {
   private zoomController: d3.ZoomBehavior<HTMLElement, unknown> | null = null;
   private readonly config: TreeVisualizerConfig<T>;
@@ -119,15 +127,18 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     // cleanup old graph
     this.cleanup();
 
-    const data = d3.hierarchy(graph, (node: T) => node.children as Iterable<T>);
+    const data = d3.hierarchy(graph, (node: T) => node.children as Array<T>);
     const tree = d3.tree<T>();
     const svg = d3.select(this.containerElement);
     const g = d3.select<HTMLElement, TreeD3Node<T>>(this.graphElement);
 
     this.zoomController = d3.zoom<HTMLElement, unknown>().scaleExtent([0.1, 2]);
-    this.zoomController.on('start zoom end', (e: {transform: number}) => {
-      g.attr('transform', e.transform);
-    });
+    this.zoomController.on(
+      'start zoom end',
+      wrapEvent((e: {transform: number}) => {
+        g.attr('transform', e.transform);
+      }),
+    );
     svg.call(this.zoomController);
 
     // Compute the new tree layout.
@@ -214,15 +225,24 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .enter()
       .append('g')
       .attr('class', 'node-group')
-      .on('click', (pointerEvent: PointerEvent, node: TreeD3Node<T>) => {
-        this.nodeClickListeners.forEach((listener) => listener(pointerEvent, node));
-      })
-      .on('mouseover', (pointerEvent: PointerEvent, node: TreeD3Node<T>) => {
-        this.nodeMouseoverListeners.forEach((listener) => listener(pointerEvent, node));
-      })
-      .on('mouseout', (pointerEvent: PointerEvent, node: TreeD3Node<T>) => {
-        this.nodeMouseoutListeners.forEach((listener) => listener(pointerEvent, node));
-      })
+      .on(
+        'click',
+        wrapEvent((pointerEvent: PointerEvent, node: TreeD3Node<T>) => {
+          this.nodeClickListeners.forEach((listener) => listener(pointerEvent, node));
+        }),
+      )
+      .on(
+        'mouseover',
+        wrapEvent((pointerEvent: PointerEvent, node: TreeD3Node<T>) => {
+          this.nodeMouseoverListeners.forEach((listener) => listener(pointerEvent, node));
+        }),
+      )
+      .on(
+        'mouseout',
+        wrapEvent((pointerEvent: PointerEvent, node: TreeD3Node<T>) => {
+          this.nodeMouseoutListeners.forEach((listener) => listener(pointerEvent, node));
+        }),
+      )
       .attr('transform', (node: TreeD3Node<T>) => {
         const {x, y} = this.getNodeCoor(node);
         return `translate(${x},${y})`;
