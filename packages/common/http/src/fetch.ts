@@ -6,8 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DestroyRef, inject, Injectable, InjectionToken, NgZone} from '@angular/core';
+import {
+  DestroyRef,
+  inject,
+  Injectable,
+  InjectionToken,
+  NgZone,
+  ɵformatRuntimeError as formatRuntimeError,
+} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
+import {RuntimeErrorCode} from './errors';
 
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
@@ -321,6 +329,8 @@ export class FetchBackend implements HttpBackend {
 
     // If withCredentials is true should be set to 'include', for compatibility
     if (req.withCredentials) {
+      // A warning is logged in development mode if the request has both
+      (typeof ngDevMode === 'undefined' || ngDevMode) && warningOptionsMessage(req);
       credentials = 'include';
     }
 
@@ -374,6 +384,17 @@ export abstract class FetchFactory {
 }
 
 function noop(): void {}
+
+function warningOptionsMessage(req: HttpRequest<any>) {
+  if (req.credentials && req.withCredentials) {
+    console.warn(
+      formatRuntimeError(
+        RuntimeErrorCode.WITH_CREDENTIALS_OVERRIDES_EXPLICIT_CREDENTIALS,
+        `Angular detected that a \`HttpClient\` request has both \`withCredentials: true\` and \`credentials: '${req.credentials}'\` options. The \`withCredentials\` option is overriding the explicit \`credentials\` setting to 'include'. Consider removing \`withCredentials\` and using \`credentials: '${req.credentials}'\` directly for clarity.`,
+      ),
+    );
+  }
+}
 
 /**
  * Zone.js treats a rejected promise that has not yet been awaited
