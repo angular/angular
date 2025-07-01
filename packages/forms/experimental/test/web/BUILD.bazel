@@ -4,8 +4,6 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    # Visible to //:saucelabs_unit_tests_poc target
-    visibility = ["//:__pkg__"],
     deps = [
         "//packages/core",
         "//packages/core/testing",
@@ -19,7 +17,7 @@ ts_library(
 )
 
 # To run this:
-# yarn bazel test //packages/forms/experimental/test:test
+# yarn bazel test //packages/forms/experimental/test/web:test
 
 karma_web_test_suite(
     name = "test",

@@ -1,15 +1,24 @@
-import {computed, resource} from '@angular/core';
+import {computed, resource, ɵisPromise} from '@angular/core';
 import {validateAsync} from './async';
 import {define} from './data';
 import {validateTree} from './logic';
 import {StandardSchemaV1} from './standard_schema_types';
-import {Field, FieldPath} from './types';
+import {Field, FieldPath, FormTreeError} from './types';
+
+/**
+ * A validation error produced by running a standard schema validator.
+ */
+interface StandardSchemaFormTreeError extends FormTreeError {
+  issue: StandardSchemaV1.Issue;
+}
 
 /**
  * Validates a field using a `StandardSchemaV1` compatible validator (e.g. a zod validator).
  *
+ * See https://github.com/standard-schema/standard-schema for more about standard schema.
+ *
  * @param path The `FieldPath` to the field to validate.
- * @param schema The standard schema copatible validator to use for validation.
+ * @param schema The standard schema compatible validator to use for validation.
  * @template T The type of the field being validated.
  */
 export function validateStandardSchema<T>(
@@ -28,7 +37,7 @@ export function validateStandardSchema<T>(
   validateTree(path, ({state, fieldOf}) => {
     // Skip sync validation if the result is a Promise.
     const result = state.data(schemaResult)!();
-    if (isPromise(result)) {
+    if (ɵisPromise(result)) {
       return [];
     }
     return result.issues?.map((issue) => standardIssueToFormTreeError(fieldOf(path), issue)) ?? [];
@@ -38,7 +47,7 @@ export function validateStandardSchema<T>(
     params: ({state}) => {
       // Skip async validation if the result is *not* a Promise.
       const result = state.data(schemaResult)!();
-      return isPromise(result) ? result : undefined;
+      return ɵisPromise(result) ? result : undefined;
     },
     factory: (params) => {
       return resource({
@@ -59,7 +68,10 @@ export function validateStandardSchema<T>(
  * @param issue The `StandardSchemaV1.Issue` to convert.
  * @returns A `FormTreeError` representing the issue.
  */
-export function standardIssueToFormTreeError(field: Field<unknown>, issue: StandardSchemaV1.Issue) {
+export function standardIssueToFormTreeError(
+  field: Field<unknown>,
+  issue: StandardSchemaV1.Issue,
+): StandardSchemaFormTreeError {
   let target = field as Field<Record<PropertyKey, unknown>>;
   for (const pathPart of issue.path ?? []) {
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
@@ -70,16 +82,4 @@ export function standardIssueToFormTreeError(field: Field<unknown>, issue: Stand
     field: target,
     issue,
   };
-}
-
-/**
- * Checks if a value is a Promise.
- * Use this function rather than `instanceof Promise` because the value could be a thenable rather
- * than a proper `Promise` (e.g. from nodejs)
- *
- * @param value The value to check.
- * @returns `true` if the value is a Promise, `false` otherwise.
- */
-export function isPromise(value: Object): value is Promise<unknown> {
-  return typeof (value as Promise<unknown>).then === 'function';
 }

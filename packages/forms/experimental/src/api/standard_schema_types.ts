@@ -1,3 +1,6 @@
+// DO NOT EDIT: This file is copy/pasted from https://github.com/standard-schema/standard-schema
+// TODO: should we keep this copy/pasted version of depend on it from npm?
+
 /** The Standard Schema interface. */
 export interface StandardSchemaV1<Input = unknown, Output = Input> {
   /** The Standard Schema properties. */
