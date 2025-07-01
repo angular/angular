@@ -110,6 +110,7 @@ describe('httpResource', () => {
         priority: 'high',
         mode: 'cors',
         redirect: 'follow',
+        credentials: 'include',
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -124,6 +125,7 @@ describe('httpResource', () => {
     expect(req.request.priority).toBe('high');
     expect(req.request.mode).toBe('cors');
     expect(req.request.redirect).toBe('follow');
+    expect(req.request.credentials).toBe('include');
 
     req.flush([]);
 
