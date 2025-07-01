@@ -55,38 +55,44 @@
       background-color: color-mix(in srgb, var(--color-background) 80%, transparent 20%);
       backdrop-filter: blur(8px);
 
-      p {
+      ul {
+        list-style-type: none;
+        padding: 0;
         margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.375rem;
-        color: var(--tertiary-contrast);
 
-        &:not(:last-child) {
-          margin-bottom: 0.75rem;
-        }
+        li {
+          margin: 0;
+          display: flex;
+          align-items: center;
+          gap: 0.375rem;
+          color: var(--tertiary-contrast);
 
-        &::before {
-          content: '';
-          display: block;
-          width: 12px;
-          height: 12px;
-          border: 1px solid;
-        }
+          &:not(:last-child) {
+            margin-bottom: 0.75rem;
+          }
 
-        &.eager::before {
-          border-color: var(--red-05);
-          background-color: var(--red-06);
-        }
+          &::before {
+            content: '';
+            display: block;
+            width: 12px;
+            height: 12px;
+            border: 1px solid;
+          }
 
-        &.lazy::before {
-          border-color: var(--blue-02);
-          background-color: var(--blue-03);
-        }
+          &.eager::before {
+            border-color: var(--red-05);
+            background-color: var(--red-06);
+          }
 
-        &.active::before {
-          border-color: var(--green-02);
-          background-color: var(--green-03);
+          &.lazy::before {
+            border-color: var(--blue-02);
+            background-color: var(--blue-03);
+          }
+
+          &.active::before {
+            border-color: var(--green-02);
+            background-color: var(--green-03);
+          }
         }
       }
     }
