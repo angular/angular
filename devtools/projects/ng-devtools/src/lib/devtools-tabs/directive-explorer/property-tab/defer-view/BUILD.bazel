@@ -18,10 +18,8 @@ ng_project(
         "defer-view.component.html",
         "defer_view.component.scss_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
         "//devtools/projects/protocol:protocol_rjs",

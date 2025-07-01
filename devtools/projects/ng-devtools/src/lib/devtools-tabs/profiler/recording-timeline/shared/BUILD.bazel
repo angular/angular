@@ -1,5 +1,5 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
-load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -16,13 +16,14 @@ ts_project(
 ts_test_library(
     name = "test_lib",
     srcs = glob(["*.spec.ts"]),
-    interop_deps = [
-        ":estimate-frame-rate",
+    deps = [
+        ":estimate-frame-rate_rjs",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
+    tsconfig = "//tools:tsconfig_build",
     deps = [
         ":test_lib_rjs",
     ],

@@ -19,10 +19,8 @@ ng_project(
     angular_assets = [
         ":tree_visualizer_host_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/@types/d3",
         "//:node_modules/d3",
     ],

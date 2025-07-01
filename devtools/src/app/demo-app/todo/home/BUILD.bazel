@@ -25,9 +25,9 @@ ng_project(
         "todo.component.html",
         ":home_styles",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
     ],
 )

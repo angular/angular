@@ -17,10 +17,8 @@ ng_project(
         "recording-dialog.component.html",
         ":recording-dialog_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
     ],
 )

@@ -18,10 +18,8 @@ ng_project(
         "recording-timeline.component.html",
         ":recording-timeline_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/frame-selector:frame-selector_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter:record-formatter_rjs",

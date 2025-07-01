@@ -1,5 +1,5 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
-load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -15,10 +15,8 @@ ts_project(
             "frame-merger.spec.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
@@ -27,12 +25,10 @@ ts_project(
 ts_project(
     name = "record_formatter_spec_constants",
     srcs = ["record-formatter-spec-constants.ts"],
-    interop_deps = [
-        "//packages/core",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter:flamegraph-formatter_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
@@ -43,12 +39,10 @@ ts_test_library(
         "frame-merger.spec.ts",
         "record-formatter.spec.ts",
     ],
-    interop_deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter",
-    ],
     deps = [
         ":record-formatter_rjs",
         ":record_formatter_spec_constants_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter:flamegraph-formatter_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

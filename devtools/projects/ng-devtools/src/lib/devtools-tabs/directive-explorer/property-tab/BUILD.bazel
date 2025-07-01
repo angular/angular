@@ -37,11 +37,9 @@ ng_project(
         "property-tab-header.component.html",
         "component-metadata.component.html",
     ] + _STYLE_LABELS,
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",

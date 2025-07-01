@@ -1,16 +1,14 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
-load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
 ng_project(
     name = "responsive-split",
     srcs = ["responsive-split.directive.ts"],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
         "//devtools/projects/ng-devtools/src/lib/shared/utils:utils_rjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
@@ -20,13 +18,10 @@ ng_project(
 ts_test_library(
     name = "responsive-split_test",
     srcs = ["responsive-split.directive.spec.ts"],
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-    ],
     deps = [
         ":responsive-split_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
         "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
     ],

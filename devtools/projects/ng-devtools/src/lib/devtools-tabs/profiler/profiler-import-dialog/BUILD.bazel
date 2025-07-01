@@ -17,10 +17,8 @@ ng_project(
         "profiler-import-dialog.component.html",
         ":profiler-import-dialog_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
     ],
 )

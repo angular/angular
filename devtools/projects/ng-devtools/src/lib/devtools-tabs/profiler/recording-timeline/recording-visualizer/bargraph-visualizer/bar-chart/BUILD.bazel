@@ -17,11 +17,9 @@ ng_project(
         "bar-chart.component.html",
         ":bar-chart_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-        "//packages/animations",
-    ],
     deps = [
+        "//:node_modules/@angular/animations",
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/bargraph-formatter:bargraph-formatter_rjs",
     ],
 )
