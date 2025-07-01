@@ -2524,6 +2524,7 @@ export interface HttpResourceRequest {
     body?: unknown;
     cache?: RequestCache | (string & {});
     context?: HttpContext;
+    credentials?: RequestCredentials | (string & {});
     headers?: HttpHeaders | Record<string, string | ReadonlyArray<string>>;
     keepalive?: boolean;
     method?: string;
