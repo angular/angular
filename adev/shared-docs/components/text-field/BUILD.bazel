@@ -17,10 +17,10 @@ ng_project(
         "//adev/shared-docs/components/search-dialog:__pkg__",
     ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
         "//adev/shared-docs/components/icon:icon_rjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/forms:forms_rjs",
     ],
 )
 
@@ -37,12 +37,12 @@ ts_project(
     ),
     deps = [
         ":text-field_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//:node_modules/@angular/core",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
+    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [":test_lib_rjs"],
 )

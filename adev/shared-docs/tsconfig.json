@@ -12,8 +12,6 @@
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
     "types": ["node"],
-    "paths": {
-      "@angular/*": ["../../packages/*"]
-    }
+    "paths": {},
   }
 }

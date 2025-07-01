@@ -25,8 +25,8 @@ ng_project(
         ],
     ),
     deps = [
+        "//:node_modules/@angular/core",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/utils:utils_rjs",
-        "//packages/core:core_rjs",
     ],
 )

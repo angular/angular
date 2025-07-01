@@ -270,7 +270,7 @@ describe('ExampleViewer', () => {
       By.css('button.docs-example-copy-link'),
     ).nativeElement;
     button.click();
-    expect(spy.calls.argsFor(0)[0].trim()).toBe(`${window.origin}/context.html#example-1`);
+    expect(spy.calls.argsFor(0)[0].trim()).toBe(`${window.location.href}#example-1`);
   }));
 });
 

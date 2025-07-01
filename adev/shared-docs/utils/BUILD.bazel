@@ -14,10 +14,10 @@ ts_project(
     ),
     visibility = ["//adev/shared-docs:__subpackages__"],
     deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
         "//:node_modules/fflate",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/providers:providers_rjs",
-        "//packages/core:core_rjs",
-        "//packages/router:router_rjs",
     ],
 )

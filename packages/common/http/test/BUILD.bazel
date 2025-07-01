@@ -6,19 +6,17 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages:types",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/private/testing",
-    ],
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",
+        "//packages:types_rjs",
         "//packages/common:common_rjs",
         "//packages/common/http:http_rjs",
         "//packages/common/http/testing:testing_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
