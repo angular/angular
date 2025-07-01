@@ -1,5 +1,5 @@
 // #docregion
-import {Component, inject, input} from '@angular/core';
+import {Component, computed, inject, input} from '@angular/core';
 import {FormGroup, ReactiveFormsModule} from '@angular/forms';
 
 import {DynamicFormQuestionComponent} from './dynamic-form-question.component';
@@ -17,10 +17,12 @@ export class DynamicFormComponent {
   private readonly qcs = inject(QuestionControlService);
 
   questions = input<QuestionBase<string>[] | null>([]);
-  form: FormGroup = this.qcs.toFormGroup(this.questions() as QuestionBase<string>[]);
+  form = computed<FormGroup>(() =>
+    this.qcs.toFormGroup(this.questions() as QuestionBase<string>[])
+  );
   payLoad = '';
 
   onSubmit() {
-    this.payLoad = JSON.stringify(this.form.getRawValue());
+    this.payLoad = JSON.stringify(this.form().getRawValue());
   }
 }
