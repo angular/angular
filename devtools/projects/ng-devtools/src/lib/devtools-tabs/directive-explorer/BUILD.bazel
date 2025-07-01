@@ -60,6 +60,7 @@ ts_test_library(
     deps = [
         "//:node_modules/tslib",
         "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
