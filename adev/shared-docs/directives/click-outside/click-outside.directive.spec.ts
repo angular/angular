@@ -18,7 +18,8 @@ describe('ClickOutside', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ExampleComponent, provideRouter([])],
+      imports: [ExampleComponent],
+      providers: [provideRouter([])],
     });
     fixture = TestBed.createComponent(ExampleComponent);
     component = fixture.componentInstance;

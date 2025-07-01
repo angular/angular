@@ -41,8 +41,9 @@ describe('TableOfContents', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TableOfContents, provideRouter([])],
+      imports: [TableOfContents],
       providers: [
+        provideRouter([]),
         provideZonelessChangeDetection(),
         {
           provide: WINDOW,

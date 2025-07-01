@@ -31,8 +31,9 @@ describe('SearchDialog', () => {
     searchResults.and.returnValue([]);
 
     TestBed.configureTestingModule({
-      imports: [SearchDialog, provideRouter([])],
+      imports: [SearchDialog],
       providers: [
+        provideRouter([]),
         provideZonelessChangeDetection(),
         {provide: ENVIRONMENT, useValue: {algolia: {index: 'fakeIndex'}}},
         {provide: ALGOLIA_CLIENT, useValue: {search: searchResults}},

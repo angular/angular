@@ -23,8 +23,9 @@ describe('Breadcrumb', () => {
     navigationStateSpy = jasmine.createSpyObj('NavigationState', ['activeNavigationItem']);
 
     TestBed.configureTestingModule({
-      imports: [Breadcrumb, provideRouter([])],
+      imports: [Breadcrumb],
       providers: [
+        provideRouter([]),
         provideZonelessChangeDetection(),
         {
           provide: NavigationState,

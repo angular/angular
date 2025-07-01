@@ -38,8 +38,9 @@ describe('Navigation', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Navigation, provideRouter([])],
+      imports: [Navigation],
       providers: [
+        provideRouter([]),
         {
           provide: WINDOW,
           useValue: fakeWindow,

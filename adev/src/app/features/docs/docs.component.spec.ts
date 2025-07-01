@@ -25,8 +25,9 @@ describe('DocsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DocsComponent, provideRouter([])],
+      imports: [DocsComponent],
       providers: [
+        provideRouter([]),
         {
           provide: WINDOW,
           useValue: fakeWindow,

@@ -23,8 +23,9 @@ describe('Footer', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [Footer, provideRouter([])],
+      imports: [Footer],
       providers: [
+        provideRouter([]),
         {
           provide: WINDOW,
           useValue: fakeWindow,

@@ -23,8 +23,9 @@ describe('ExternalLink', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ExampleComponentWithLinks, provideRouter([])],
+      imports: [ExampleComponentWithLinks],
       providers: [
+        provideRouter([]),
         {
           provide: WINDOW,
           useValue: fakeWindow,
