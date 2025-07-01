@@ -11,8 +11,6 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    # Visible to //:saucelabs_unit_tests_poc target
-    visibility = ["//:__pkg__"],
     deps = [
         "//packages/common/http",
         "//packages/common/http/testing",
@@ -28,7 +26,7 @@ ts_library(
 )
 
 # To run this:
-# yarn bazel test //packages/forms/experimental/test:test
+# yarn bazel test //packages/forms/experimental/test/node:test
 
 jasmine_node_test(
     name = "test",
@@ -38,7 +36,7 @@ jasmine_node_test(
     ],
 )
 
-# yarn bazel test //packages/forms/experimental/test:test_web_chromium
+# yarn bazel test //packages/forms/experimental/test/node:test_web_chromium
 karma_web_test_suite(
     name = "test_web",
     tags = ["manual"],

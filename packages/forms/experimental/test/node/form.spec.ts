@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, InjectionToken, Injector, runInInjectionContext, signal} from '@angular/core';
+import {inject, Injector, runInInjectionContext, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, validate} from '../public_api';
+import {form, validate} from '../../public_api';
 
 describe('form', () => {
   describe('injection context', () => {

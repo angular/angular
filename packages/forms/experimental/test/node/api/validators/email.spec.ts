@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, email} from '../../../public_api';
+import {email, form} from '../../../../public_api';
 
 describe('email validator', () => {
   it('returns requiredTrue error when the value is false', () => {

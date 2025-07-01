@@ -7,8 +7,8 @@
  */
 
 import {Injector, signal} from '@angular/core';
-import {form} from '../public_api';
 import {TestBed} from '@angular/core/testing';
+import {form} from '../../public_api';
 
 const noop = () => {};
 
