@@ -17,11 +17,9 @@ ng_project(
         "visualizer-controls.component.html",
         ":visualizer-controls_styles",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],

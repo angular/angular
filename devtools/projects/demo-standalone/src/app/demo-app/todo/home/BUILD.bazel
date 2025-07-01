@@ -10,9 +10,9 @@ ng_project(
         "todos.component.ts",
         "tooltip.directive.ts",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
     ],
 )

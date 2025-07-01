@@ -7,6 +7,7 @@ def ng_project(name, srcs = [], angular_assets = [], **kwargs):
 
     _ng_project(
         name = name,
+        enable_runtime_rnjs_interop = False,
         tsconfig = "//devtools:tsconfig_build",
         srcs = srcs,
         assets = angular_assets,

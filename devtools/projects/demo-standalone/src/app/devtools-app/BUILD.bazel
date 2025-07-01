@@ -5,12 +5,10 @@ package(default_visibility = ["//visibility:public"])
 ng_project(
     name = "devtools-app",
     srcs = ["devtools-app.component.ts"],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
         "//devtools/projects/ng-devtools:ng-devtools_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
         "//devtools/projects/protocol:protocol_rjs",

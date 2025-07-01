@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
 load("//tools:defaults2.bzl", "sass_binary")
@@ -30,11 +30,9 @@ ng_project(
         ":route-details-row.component.html",
         ":router_details_row_styles",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/@types/d3",
         "//:node_modules/d3",
@@ -54,18 +52,15 @@ ts_test_library(
         "router-tree.component.spec.ts",
         "router-tree-fns.spec.ts",
     ],
-    interop_deps = [
-        ":router-tree",
-        "//packages/common",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/forms",
-        "//packages/platform-browser",
-    ],
     visibility = [
         "//visibility:private",
     ],
     deps = [
+        ":router-tree_rjs",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
+        "//:node_modules/@angular/platform-browser",
         "//devtools/projects/ng-devtools",
         "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
@@ -73,9 +68,9 @@ ts_test_library(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
     deps = [
-        ":router_tree_test",
+        ":router_tree_test_rjs",
     ],
 )

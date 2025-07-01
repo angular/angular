@@ -19,11 +19,9 @@ ng_project(
     angular_assets = [
         ":split_styles",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
     ],
 )

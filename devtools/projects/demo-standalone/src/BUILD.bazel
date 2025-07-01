@@ -1,8 +1,8 @@
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
-load("//tools:defaults.bzl", "esbuild", "http_server")
+load("//tools:defaults.bzl", "http_server")
 load("//tools:defaults2.bzl", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -41,29 +41,34 @@ copy_to_directory(
 ng_project(
     name = "demo",
     srcs = ["main.ts"],
-    interop_deps = [
-        "//devtools/src:demo_application_environment",
-        "//devtools/src:demo_application_operations",
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/core",
-        "//packages/core/src/util",
-        "//packages/platform-browser",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
         "//devtools/projects/demo-standalone/src/app:app_rjs",
+        "//devtools/src:demo_application_environment_rjs",
+        "//devtools/src:demo_application_operations_rjs",
     ],
 )
 
 esbuild(
     name = "bundle",
+    srcs = [
+        "//:node_modules/@angular/build-tooling",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_esm",
+    ],
     config = "//devtools/tools/esbuild:esbuild_config_esm",
     entry_points = [":main.ts"],
     platform = "browser",
     splitting = True,
     target = "es2016",
-    deps = LINKER_PROCESSED_FW_PACKAGES + [":demo"],
+    deps = [
+        ":demo_rjs",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/material",
+    ],
 )
 
 exports_files(["index.html"])

@@ -8,8 +8,8 @@ ng_project(
         "about.component.ts",
         "about.routes.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-        "//packages/router",
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
     ],
 )

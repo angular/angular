@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("//tools:defaults.bzl", "esbuild_config")
 
 package(default_visibility = ["//visibility:public"])
@@ -6,10 +6,12 @@ package(default_visibility = ["//visibility:public"])
 js_library(
     name = "esbuild_base",
     srcs = ["esbuild-base.config.mjs"],
-    deps = [
+    data = [
         "//packages:package_json",
-        "//packages/compiler-cli/private",
-        "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
+    ],
+    deps = [
+        "//:node_modules/@angular/build-tooling",
+        "//:node_modules/@angular/compiler-cli",
     ],
 )
 
