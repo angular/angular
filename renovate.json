@@ -5,7 +5,7 @@
   ],
   "baseBranches": [
     "main",
-    "main"
+    "20.1.x"
   ],
   "postUpgradeTasks": {
     "commands": [
