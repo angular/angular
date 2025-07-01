@@ -12,13 +12,13 @@ import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 
 import {
-  define,
-  validateAsync,
-  validateHttp,
   applyEach,
-  validate,
+  define,
   form,
   SchemaOrSchemaFn,
+  validate,
+  validateAsync,
+  validateHttp,
 } from '../public_api';
 
 interface Cat {
@@ -54,8 +54,8 @@ describe('resources', () => {
         });
       });
 
-      validate(p.name, ({state}) => {
-        const remote = state.data(res)!;
+      validate(p.name, ({data}) => {
+        const remote = data(res)!;
         if (remote.hasValue()) {
           return {kind: 'whatever', message: remote.value()!.toString()};
         } else {
@@ -96,8 +96,8 @@ describe('resources', () => {
           });
         });
 
-        validate(p.name, ({state}) => {
-          const remote = state.data(res)!;
+        validate(p.name, ({data}) => {
+          const remote = data(res)!;
           if (remote.hasValue()) {
             return {kind: 'whatever', message: remote.value()!.toString()};
           } else {
