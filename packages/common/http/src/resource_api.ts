@@ -82,6 +82,12 @@ export interface HttpResourceRequest {
   cache?: RequestCache | (string & {});
 
   /**
+   * The credentials mode of the request, which determines how cookies and other authentication information are handled.
+   * This can affect whether credentials are sent with cross-origin requests or not.
+   */
+  credentials?: RequestCredentials | (string & {});
+
+  /**
    * Indicates the relative priority of the request. This may be used by the browser to decide the order in which requests are dispatched and resources fetched.
    */
   priority?: RequestPriority | (string & {});
