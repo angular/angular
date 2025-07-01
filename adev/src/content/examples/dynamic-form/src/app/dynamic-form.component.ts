@@ -18,7 +18,7 @@ export class DynamicFormComponent {
 
   questions = input<QuestionBase<string>[] | null>([]);
   form = computed<FormGroup>(() =>
-    this.qcs.toFormGroup(this.questions() as QuestionBase<string>[])
+    this.qcs.toFormGroup(this.questions() as QuestionBase<string>[]),
   );
   payLoad = '';
 
