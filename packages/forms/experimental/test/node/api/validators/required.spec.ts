@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, signal} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {form, required} from '../../../public_api';
+import { Injector, signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { form, required } from '../../../../public_api';
 
 describe('required validator', () => {
   it('returns required Error when the value is not present', () => {

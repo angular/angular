@@ -28,8 +28,8 @@ import {
   submit,
   validate,
   validateTree,
-} from '../public_api';
-import {SchemaImpl} from '../src/schema';
+} from '../../public_api';
+import {SchemaImpl} from '../../src/schema';
 
 interface TreeData {
   level: number;

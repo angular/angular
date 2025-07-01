@@ -9,13 +9,13 @@
 import {Injector, Signal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  validate,
   SchemaOrSchemaFn,
   applyEach,
   applyWhen,
   applyWhenValue,
   form,
-} from '../../public_api';
+  validate,
+} from '../../../public_api';
 
 export interface User {
   first: string;
