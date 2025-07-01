@@ -590,7 +590,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 20.1.0-next.3
-        version: 20.1.0-next.3(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.1.0-next.3)(@types/node@24.0.7)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.8.3)
+        version: 20.1.0-next.3(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.1.0-next.3)(@types/node@24.0.8)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.8.3)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -619,8 +619,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/upgrade
       '@types/node':
-        specifier: 24.0.7
-        version: 24.0.7
+        specifier: 24.0.8
+        version: 24.0.8
       '@types/selenium-webdriver':
         specifier: 3.0.7
         version: 3.0.7
@@ -1313,7 +1313,7 @@ packages:
       - yaml
     dev: true
 
-  /@angular/build@20.1.0-next.3(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.1.0-next.3)(@types/node@24.0.7)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.8.3):
+  /@angular/build@20.1.0-next.3(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/ssr@20.1.0-next.3)(@types/node@24.0.8)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.8.3):
     resolution: {integrity: sha512-YOKCFk9kHngYWOSvVY5K0epmqspVEtDxzBnIAgIWKAKkePhSW1UZz71O6NhWEG9GXa1QXIJH3phmYvcE2hSyHw==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.1.0-next.3.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1370,7 +1370,7 @@ packages:
       '@babel/core': 7.27.4
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 5.1.12(@types/node@24.0.7)
+      '@inquirer/confirm': 5.1.12(@types/node@24.0.8)
       '@vitejs/plugin-basic-ssl': 2.0.0(vite@7.0.0)
       beasties: 0.3.4
       browserslist: 4.25.1
@@ -1392,7 +1392,7 @@ packages:
       tinyglobby: 0.2.14
       tslib: 2.8.1
       typescript: 5.8.3
-      vite: 7.0.0(@types/node@24.0.7)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
+      vite: 7.0.0(@types/node@24.0.8)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
       watchpack: 2.4.4
     optionalDependencies:
       lmdb: 3.4.0
@@ -4201,7 +4201,7 @@ packages:
       '@inquirer/type': 3.0.7(@types/node@18.19.113)
       '@types/node': 18.19.113
 
-  /@inquirer/confirm@5.1.12(@types/node@24.0.7):
+  /@inquirer/confirm@5.1.12(@types/node@24.0.8):
     resolution: {integrity: sha512-dpq+ielV9/bqgXRUbNH//KsY6WEw9DrGPmipkpmgC1Y46cwuBTNx7PXFWTjc3MQ+urcc0QxoVHcMI0FW4Ok0hg==, tarball: https://registry.npmjs.org/@inquirer/confirm/-/confirm-5.1.12.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4210,9 +4210,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.13(@types/node@24.0.7)
-      '@inquirer/type': 3.0.7(@types/node@24.0.7)
-      '@types/node': 24.0.7
+      '@inquirer/core': 10.1.13(@types/node@24.0.8)
+      '@inquirer/type': 3.0.7(@types/node@24.0.8)
+      '@types/node': 24.0.8
     dev: false
 
   /@inquirer/core@10.1.13(@types/node@18.19.113):
@@ -4234,7 +4234,7 @@ packages:
       wrap-ansi: 6.2.0
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/core@10.1.13(@types/node@24.0.7):
+  /@inquirer/core@10.1.13(@types/node@24.0.8):
     resolution: {integrity: sha512-1viSxebkYN2nJULlzCxES6G9/stgHSepZ9LqqfdIGPHj5OHhiBUXVS0a6R0bEC2A+VL4D9w6QB66ebCr6HGllA==, tarball: https://registry.npmjs.org/@inquirer/core/-/core-10.1.13.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4244,8 +4244,8 @@ packages:
         optional: true
     dependencies:
       '@inquirer/figures': 1.0.12
-      '@inquirer/type': 3.0.7(@types/node@24.0.7)
-      '@types/node': 24.0.7
+      '@inquirer/type': 3.0.7(@types/node@24.0.8)
+      '@types/node': 24.0.8
       ansi-escapes: 4.3.2
       cli-width: 4.1.0
       mute-stream: 2.0.0
@@ -4410,7 +4410,7 @@ packages:
     dependencies:
       '@types/node': 18.19.113
 
-  /@inquirer/type@3.0.7(@types/node@24.0.7):
+  /@inquirer/type@3.0.7(@types/node@24.0.8):
     resolution: {integrity: sha512-PfunHQcjwnju84L+ycmcMKB/pTPIngjUJvfnRhKY6FKPuYXlM4aQCb/nIdTFR6BEhMjFvngzvng/vBAJMZpLSA==, tarball: https://registry.npmjs.org/@inquirer/type/-/type-3.0.7.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4419,7 +4419,7 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@types/node': 24.0.7
+      '@types/node': 24.0.8
     dev: false
 
   /@isaacs/cliui@8.0.2:
@@ -6662,7 +6662,7 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.4
       '@types/keyv': 3.1.4
-      '@types/node': 24.0.7
+      '@types/node': 24.0.8
       '@types/responselike': 1.0.3
 
   /@types/caseless@0.12.5:
@@ -7050,7 +7050,7 @@ packages:
   /@types/keyv@3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==, tarball: https://registry.npmjs.org/@types/keyv/-/keyv-3.1.4.tgz}
     dependencies:
-      '@types/node': 24.0.7
+      '@types/node': 24.0.8
 
   /@types/live-server@1.2.3:
     resolution: {integrity: sha512-s8SQNTnUgaYQemV1Nt7SILh5ChYbWVg8ONLBbcmjHcpAwpyHh7MXBIpwgwPNvx19lIbBWszQJ3k8ynNIHLtlyg==, tarball: https://registry.npmjs.org/@types/live-server/-/live-server-1.2.3.tgz}
@@ -7110,6 +7110,11 @@ packages:
 
   /@types/node@24.0.7:
     resolution: {integrity: sha512-YIEUUr4yf8q8oQoXPpSlnvKNVKDQlPMWrmOcgzoduo7kvA2UF0/BwJ/eMKFTiTtkNL17I0M6Xe2tvwFU7be6iw==, tarball: https://registry.npmjs.org/@types/node/-/node-24.0.7.tgz}
+    dependencies:
+      undici-types: 7.8.0
+
+  /@types/node@24.0.8:
+    resolution: {integrity: sha512-WytNrFSgWO/esSH9NbpWUfTMGQwCGIKfCmNlmFDNiI5gGhgMmEA+V1AEvKLeBNvvtBnailJtkrEa2OIISwrVAA==, tarball: https://registry.npmjs.org/@types/node/-/node-24.0.8.tgz}
     dependencies:
       undici-types: 7.8.0
 
@@ -7186,7 +7191,7 @@ packages:
   /@types/responselike@1.0.3:
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==, tarball: https://registry.npmjs.org/@types/responselike/-/responselike-1.0.3.tgz}
     dependencies:
-      '@types/node': 24.0.7
+      '@types/node': 24.0.8
 
   /@types/retry@0.12.2:
     resolution: {integrity: sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==, tarball: https://registry.npmjs.org/@types/retry/-/retry-0.12.2.tgz}
@@ -7475,7 +7480,7 @@ packages:
     peerDependencies:
       vite: ^6.0.0
     dependencies:
-      vite: 7.0.0(@types/node@24.0.7)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
+      vite: 7.0.0(@types/node@24.0.8)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
     dev: false
 
   /@vitest/expect@3.2.4:
@@ -20765,7 +20770,7 @@ packages:
       fsevents: 2.3.3
     dev: false
 
-  /vite@7.0.0(@types/node@24.0.7)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3):
+  /vite@7.0.0(@types/node@24.0.8)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3):
     resolution: {integrity: sha512-ixXJB1YRgDIw2OszKQS9WxGHKwLdCsbQNkpJN171udl6szi/rIySHL6/Os3s2+oE4P/FLD4dxg4mD7Wust+u5g==, tarball: https://registry.npmjs.org/vite/-/vite-7.0.0.tgz}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
@@ -20805,7 +20810,7 @@ packages:
       yaml:
         optional: true
     dependencies:
-      '@types/node': 24.0.7
+      '@types/node': 24.0.8
       esbuild: 0.25.5
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
