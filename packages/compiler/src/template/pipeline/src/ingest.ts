@@ -109,8 +109,8 @@ export function ingestHostBinding(
       property.name = property.name.substring('attr.'.length);
       bindingKind = ir.BindingKind.Attribute;
     }
-    if (property.isAnimation) {
-      bindingKind = ir.BindingKind.Animation;
+    if (property.isLegacyAnimation) {
+      bindingKind = ir.BindingKind.LegacyAnimation;
     }
     const securityContexts = bindingParser
       .calcPossibleSecurityContexts(
@@ -195,7 +195,7 @@ export function ingestHostAttribute(
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
   const [phase, target] =
-    event.type !== e.ParsedEventType.Animation
+    event.type !== e.ParsedEventType.LegacyAnimation
       ? [null, event.targetOrPhase]
       : [event.targetOrPhase, null];
   const eventBinding = ir.createListenerOp(
@@ -1225,7 +1225,7 @@ const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
   [e.BindingType.Attribute, ir.BindingKind.Attribute],
   [e.BindingType.Class, ir.BindingKind.ClassName],
   [e.BindingType.Style, ir.BindingKind.StyleProperty],
-  [e.BindingType.Animation, ir.BindingKind.Animation],
+  [e.BindingType.LegacyAnimation, ir.BindingKind.LegacyAnimation],
 ]);
 
 /**
@@ -1328,7 +1328,7 @@ function ingestElementBindings(
   unit.update.push(bindings.filter((b): b is ir.BindingOp => b?.kind === ir.OpKind.Binding));
 
   for (const output of element.outputs) {
-    if (output.type === e.ParsedEventType.Animation && output.phase === null) {
+    if (output.type === e.ParsedEventType.LegacyAnimation && output.phase === null) {
       throw Error('Animation listener should have a phase');
     }
 
@@ -1463,7 +1463,7 @@ function ingestTemplateBindings(
   unit.update.push(bindings.filter((b): b is ir.BindingOp => b?.kind === ir.OpKind.Binding));
 
   for (const output of template.outputs) {
-    if (output.type === e.ParsedEventType.Animation && output.phase === null) {
+    if (output.type === e.ParsedEventType.LegacyAnimation && output.phase === null) {
       throw Error('Animation listener should have a phase');
     }
 
@@ -1497,7 +1497,7 @@ function ingestTemplateBindings(
     }
     if (
       templateKind === ir.TemplateKind.Structural &&
-      output.type !== e.ParsedEventType.Animation
+      output.type !== e.ParsedEventType.LegacyAnimation
     ) {
       // Animation bindings are excluded from the structural template's const array.
       const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, output.name, false);
@@ -1602,7 +1602,10 @@ function createTemplateBinding(
       }
     }
 
-    if (!isTextBinding && (type === e.BindingType.Attribute || type === e.BindingType.Animation)) {
+    if (
+      !isTextBinding &&
+      (type === e.BindingType.Attribute || type === e.BindingType.LegacyAnimation)
+    ) {
       // Again, this binding doesn't really target the ng-template; it actually targets the element
       // inside the structural template. In the case of non-text attribute or animation bindings,
       // the binding doesn't even show up on the ng-template const array, so we just skip it
@@ -1830,7 +1833,7 @@ function ingestControlFlowInsertionPoint(
     // Note that TDB used to collect the outputs as well, but it wasn't passing them into
     // the template instruction. Here we just don't collect them.
     for (const attr of root.inputs) {
-      if (attr.type !== e.BindingType.Animation && attr.type !== e.BindingType.Attribute) {
+      if (attr.type !== e.BindingType.LegacyAnimation && attr.type !== e.BindingType.Attribute) {
         const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, attr.name, true);
         unit.create.push(
           ir.createExtractedAttributeOp(

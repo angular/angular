@@ -133,7 +133,7 @@ export class BoundEvent implements Node {
     const target: string | null =
       event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
     const phase: string | null =
-      event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
+      event.type === ParsedEventType.LegacyAnimation ? event.targetOrPhase : null;
     if (event.keySpan === undefined) {
       throw new Error(
         `Unexpected state: keySpan must be defined for bound event but was not for ${event.name}: ${event.sourceSpan}`,

@@ -7,7 +7,7 @@
  */
 
 import {
-  AnimationTriggerNames,
+  LegacyAnimationTriggerNames,
   BoundTarget,
   compileClassDebugInfo,
   compileHmrInitializer,
@@ -187,8 +187,8 @@ import {
 } from './resources';
 import {ComponentSymbol} from './symbol';
 import {
-  animationTriggerResolver,
-  collectAnimationNames,
+  legacyAnimationTriggerResolver,
+  collectLegacyAnimationNames,
   validateAndFlattenComponentImports,
 } from './util';
 import {getTemplateDiagnostics, createHostElement} from '../../../typecheck';
@@ -534,16 +534,16 @@ export class ComponentDecoratorHandler
     }
 
     let animations: o.Expression | null = null;
-    let animationTriggerNames: AnimationTriggerNames | null = null;
+    let legacyAnimationTriggerNames: LegacyAnimationTriggerNames | null = null;
     if (component.has('animations')) {
       const animationExpression = component.get('animations')!;
       animations = new o.WrappedNodeExpr(animationExpression);
       const animationsValue = this.evaluator.evaluate(
         animationExpression,
-        animationTriggerResolver,
+        legacyAnimationTriggerResolver,
       );
-      animationTriggerNames = {includesDynamicAnimations: false, staticTriggerNames: []};
-      collectAnimationNames(animationsValue, animationTriggerNames);
+      legacyAnimationTriggerNames = {includesDynamicAnimations: false, staticTriggerNames: []};
+      collectLegacyAnimationNames(animationsValue, legacyAnimationTriggerNames);
     }
 
     // Go through the root directories for this project, and select the one with the smallest
@@ -991,7 +991,7 @@ export class ComponentDecoratorHandler
           hostBindings: hostBindingResources,
         },
         isPoisoned,
-        animationTriggerNames,
+        legacyAnimationTriggerNames: legacyAnimationTriggerNames,
         rawImports,
         resolvedImports,
         rawDeferredImports,
@@ -1047,7 +1047,7 @@ export class ComponentDecoratorHandler
       imports: analysis.resolvedImports,
       rawImports: analysis.rawImports,
       deferredImports: analysis.resolvedDeferredImports,
-      animationTriggerNames: analysis.animationTriggerNames,
+      animationTriggerNames: analysis.legacyAnimationTriggerNames,
       schemas: analysis.schemas,
       decorator: analysis.decorator,
       assumedToExportProviders: false,

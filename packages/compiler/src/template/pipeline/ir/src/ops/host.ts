@@ -24,7 +24,7 @@ export interface DomPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
   kind: OpKind.DomProperty;
   name: string;
   expression: o.Expression | Interpolation;
-  isAnimationTrigger: boolean;
+  isLegacyAnimationTrigger: boolean;
 
   i18nContext: XrefId | null;
 
@@ -38,7 +38,7 @@ export interface DomPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
 export function createDomPropertyOp(
   name: string,
   expression: o.Expression | Interpolation,
-  isAnimationTrigger: boolean,
+  isLegacyAnimationTrigger: boolean,
   i18nContext: XrefId | null,
   securityContext: SecurityContext | SecurityContext[],
   sourceSpan: ParseSourceSpan,
@@ -47,7 +47,7 @@ export function createDomPropertyOp(
     kind: OpKind.DomProperty,
     name,
     expression,
-    isAnimationTrigger,
+    isLegacyAnimationTrigger,
     i18nContext,
     securityContext,
     sanitizer: null,

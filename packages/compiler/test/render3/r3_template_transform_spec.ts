@@ -636,7 +636,7 @@ describe('R3 template transform', () => {
     it('should parse bound animation events when event name is empty', () => {
       expectFromHtml('<div (@)="onAnimationEvent($event)"></div>', true).toEqual([
         ['Element', 'div'],
-        ['BoundEvent', ParsedEventType.Animation, '', null, 'onAnimationEvent($event)'],
+        ['BoundEvent', ParsedEventType.LegacyAnimation, '', null, 'onAnimationEvent($event)'],
       ]);
       expect(() => parse('<div (@)></div>')).toThrowError(
         /Animation event name is missing in binding/,

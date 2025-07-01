@@ -67,14 +67,14 @@ export function specializeBindings(job: CompilationJob): void {
           }
           break;
         case ir.BindingKind.Property:
-        case ir.BindingKind.Animation:
+        case ir.BindingKind.LegacyAnimation:
           if (job.kind === CompilationJobKind.Host) {
             ir.OpList.replace<ir.UpdateOp>(
               op,
               ir.createDomPropertyOp(
                 op.name,
                 op.expression,
-                op.bindingKind === ir.BindingKind.Animation,
+                op.bindingKind === ir.BindingKind.LegacyAnimation,
                 op.i18nContext,
                 op.securityContext,
                 op.sourceSpan,
@@ -87,7 +87,7 @@ export function specializeBindings(job: CompilationJob): void {
                 op.target,
                 op.name,
                 op.expression,
-                op.bindingKind === ir.BindingKind.Animation,
+                op.bindingKind === ir.BindingKind.LegacyAnimation,
                 op.securityContext,
                 op.isStructuralTemplateAttribute,
                 op.templateKind,

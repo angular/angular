@@ -31,7 +31,7 @@ import {isNode} from '@angular/private/testing';
   // Buggy in Chromium 39, see https://github.com/angular/angular/issues/15793
   if (isNode) return;
 
-  describe('animation integration tests using web animations', function () {
+  describe('legacy animation integration tests using web animations', function () {
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [{provide: AnimationDriver, useClass: ɵWebAnimationsDriver}],

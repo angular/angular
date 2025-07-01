@@ -1528,7 +1528,7 @@ export class TcbDirectiveOutputsOp extends TcbOp {
 
     for (const output of this.node.outputs) {
       if (
-        output.type === ParsedEventType.Animation ||
+        output.type === ParsedEventType.LegacyAnimation ||
         !outputs.hasBindingPropertyName(output.name)
       ) {
         continue;
@@ -1622,7 +1622,7 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         }
       }
 
-      if (output.type === ParsedEventType.Animation) {
+      if (output.type === ParsedEventType.LegacyAnimation) {
         // Animation output bindings always have an `$event` parameter of type `AnimationEvent`.
         const eventType = this.tcb.env.config.checkTypeOfAnimationEvents
           ? this.tcb.env.referenceExternalType('@angular/animations', 'AnimationEvent')
