@@ -1,3 +1,8 @@
+<a name="20.0.6"></a>
+# 20.0.6 (2025-07-01)
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.0-next.3"></a>
 # 20.1.0-next.3 (2025-06-25)
 ### compiler
