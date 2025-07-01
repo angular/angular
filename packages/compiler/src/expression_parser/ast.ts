@@ -731,7 +731,7 @@ export class RecursiveAstVisitor implements AstVisitor {
 
 export class ParsedProperty {
   public readonly isLiteral: boolean;
-  public readonly isAnimation: boolean;
+  public readonly isLegacyAnimation: boolean;
 
   constructor(
     public name: string,
@@ -742,29 +742,29 @@ export class ParsedProperty {
     public valueSpan: ParseSourceSpan | undefined,
   ) {
     this.isLiteral = this.type === ParsedPropertyType.LITERAL_ATTR;
-    this.isAnimation = this.type === ParsedPropertyType.ANIMATION;
+    this.isLegacyAnimation = this.type === ParsedPropertyType.LEGACY_ANIMATION;
   }
 }
 
 export enum ParsedPropertyType {
   DEFAULT,
   LITERAL_ATTR,
-  ANIMATION,
+  LEGACY_ANIMATION,
   TWO_WAY,
 }
 
 export enum ParsedEventType {
   // DOM or Directive event
   Regular,
-  // Animation specific event
-  Animation,
+  // Legacy animation specific event
+  LegacyAnimation,
   // Event side of a two-way binding (e.g. `[(property)]="expression"`).
   TwoWay,
 }
 
 export class ParsedEvent {
   // Regular events have a target
-  // Animation events have a phase
+  // Legacy Animation events have a phase
   constructor(
     name: string,
     targetOrPhase: string | null,
@@ -818,8 +818,8 @@ export enum BindingType {
   Class,
   // A binding to a style rule (e.g. `[style.rule]="expression"`).
   Style,
-  // A binding to an animation reference (e.g. `[animate.key]="expression"`).
-  Animation,
+  // A binding to a legacy animation reference (e.g. `[animate.key]="expression"`).
+  LegacyAnimation,
   // Property side of a two-way binding (e.g. `[(property)]="expression"`).
   TwoWay,
 }

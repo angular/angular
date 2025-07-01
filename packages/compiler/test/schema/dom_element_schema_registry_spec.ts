@@ -198,39 +198,49 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
 
   describe('normalizeAnimationStyleProperty', () => {
     it('should normalize the given CSS property to camelCase', () => {
-      expect(registry.normalizeAnimationStyleProperty('border-radius')).toBe('borderRadius');
-      expect(registry.normalizeAnimationStyleProperty('zIndex')).toBe('zIndex');
-      expect(registry.normalizeAnimationStyleProperty('-webkit-animation')).toBe('WebkitAnimation');
+      expect(registry.normalizeLegacyAnimationStyleProperty('border-radius')).toBe('borderRadius');
+      expect(registry.normalizeLegacyAnimationStyleProperty('zIndex')).toBe('zIndex');
+      expect(registry.normalizeLegacyAnimationStyleProperty('-webkit-animation')).toBe(
+        'WebkitAnimation',
+      );
     });
   });
 
   describe('normalizeAnimationStyleValue', () => {
     it('should normalize the given dimensional CSS style value to contain a PX value when numeric', () => {
       expect(
-        registry.normalizeAnimationStyleValue('borderRadius', 'border-radius', 10)['value'],
+        registry.normalizeLegacyAnimationStyleValue('borderRadius', 'border-radius', 10)['value'],
       ).toBe('10px');
     });
 
     it('should not normalize any values that are of zero', () => {
-      expect(registry.normalizeAnimationStyleValue('opacity', 'opacity', 0)['value']).toBe('0');
-      expect(registry.normalizeAnimationStyleValue('width', 'width', 0)['value']).toBe('0');
+      expect(registry.normalizeLegacyAnimationStyleValue('opacity', 'opacity', 0)['value']).toBe(
+        '0',
+      );
+      expect(registry.normalizeLegacyAnimationStyleValue('width', 'width', 0)['value']).toBe('0');
     });
 
     it("should retain the given dimensional CSS style value's unit if it already exists", () => {
       expect(
-        registry.normalizeAnimationStyleValue('borderRadius', 'border-radius', '10em')['value'],
+        registry.normalizeLegacyAnimationStyleValue('borderRadius', 'border-radius', '10em')[
+          'value'
+        ],
       ).toBe('10em');
     });
 
     it('should trim the provided CSS style value', () => {
-      expect(registry.normalizeAnimationStyleValue('color', 'color', '   red ')['value']).toBe(
-        'red',
-      );
+      expect(
+        registry.normalizeLegacyAnimationStyleValue('color', 'color', '   red ')['value'],
+      ).toBe('red');
     });
 
     it('should stringify all non dimensional numeric style values', () => {
-      expect(registry.normalizeAnimationStyleValue('zIndex', 'zIndex', 10)['value']).toBe('10');
-      expect(registry.normalizeAnimationStyleValue('opacity', 'opacity', 0.5)['value']).toBe('0.5');
+      expect(registry.normalizeLegacyAnimationStyleValue('zIndex', 'zIndex', 10)['value']).toBe(
+        '10',
+      );
+      expect(registry.normalizeLegacyAnimationStyleValue('opacity', 'opacity', 0.5)['value']).toBe(
+        '0.5',
+      );
     });
   });
 });

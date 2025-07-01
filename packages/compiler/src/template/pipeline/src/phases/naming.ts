@@ -52,7 +52,7 @@ function addNamesToView(
     switch (op.kind) {
       case ir.OpKind.Property:
       case ir.OpKind.DomProperty:
-        if (op.isAnimationTrigger) {
+        if (op.isLegacyAnimationTrigger) {
           op.name = '@' + op.name;
         }
         break;
@@ -64,8 +64,8 @@ function addNamesToView(
           throw new Error(`Expected a slot to be assigned`);
         }
         let animation = '';
-        if (op.isAnimationListener) {
-          op.name = `@${op.name}.${op.animationPhase}`;
+        if (op.isLegacyAnimationListener) {
+          op.name = `@${op.name}.${op.legacyAnimationPhase}`;
           animation = 'animation';
         }
         if (op.hostListener) {

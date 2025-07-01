@@ -24,7 +24,7 @@ function kindWithInterpolationTest(
 
 function basicListenerKindTest(op: ir.CreateOp): boolean {
   return (
-    (op.kind === ir.OpKind.Listener && !(op.hostListener && op.isAnimationListener)) ||
+    (op.kind === ir.OpKind.Listener && !(op.hostListener && op.isLegacyAnimationListener)) ||
     op.kind === ir.OpKind.TwoWayListener
   );
 }
@@ -47,7 +47,7 @@ interface Rule<T extends ir.CreateOp | ir.UpdateOp> {
  * the groups in the order defined here.
  */
 const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
-  {test: (op) => op.kind === ir.OpKind.Listener && op.hostListener && op.isAnimationListener},
+  {test: (op) => op.kind === ir.OpKind.Listener && op.hostListener && op.isLegacyAnimationListener},
   {test: basicListenerKindTest},
 ];
 

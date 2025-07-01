@@ -264,13 +264,13 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
           op,
           unit.job.mode === TemplateCompilationMode.DomOnly &&
             !op.hostListener &&
-            !op.isAnimationListener
+            !op.isLegacyAnimationListener
             ? ng.domListener(op.name, listenerFn, eventTargetResolver, op.sourceSpan)
             : ng.listener(
                 op.name,
                 listenerFn,
                 eventTargetResolver,
-                op.hostListener && op.isAnimationListener,
+                op.hostListener && op.isLegacyAnimationListener,
                 op.sourceSpan,
               ),
         );
@@ -548,7 +548,7 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
       case ir.OpKind.Property:
         ir.OpList.replace(
           op,
-          unit.job.mode === TemplateCompilationMode.DomOnly && !op.isAnimationTrigger
+          unit.job.mode === TemplateCompilationMode.DomOnly && !op.isLegacyAnimationTrigger
             ? ng.domProperty(op.name, op.expression, op.sanitizer, op.sourceSpan)
             : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan),
         );
@@ -593,7 +593,7 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
         if (op.expression instanceof ir.Interpolation) {
           throw new Error('not yet handled');
         } else {
-          if (op.isAnimationTrigger) {
+          if (op.isLegacyAnimationTrigger) {
             ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression, op.sourceSpan));
           } else {
             ir.OpList.replace(

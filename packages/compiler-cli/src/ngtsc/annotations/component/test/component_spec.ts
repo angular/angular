@@ -907,11 +907,11 @@ runInEachFileSystem(() => {
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       handler.register(TestCmp, analysis!);
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
-      expect(meta?.animationTriggerNames?.staticTriggerNames).toEqual([
+      expect(meta?.legacyAnimationTriggerNames?.staticTriggerNames).toEqual([
         'animationName',
         'nestedAnimationName',
       ]);
-      expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeFalse();
+      expect(meta?.legacyAnimationTriggerNames?.includesDynamicAnimations).toBeFalse();
     });
 
     it('should tell if the animations include a dynamic value', () => {
@@ -954,8 +954,8 @@ runInEachFileSystem(() => {
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       handler.register(TestCmp, analysis!);
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
-      expect(meta?.animationTriggerNames?.staticTriggerNames).toEqual(['animationName']);
-      expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
+      expect(meta?.legacyAnimationTriggerNames?.staticTriggerNames).toEqual(['animationName']);
+      expect(meta?.legacyAnimationTriggerNames?.includesDynamicAnimations).toBeTrue();
     });
 
     it('should treat complex animations expressions as dynamic', () => {
@@ -995,8 +995,8 @@ runInEachFileSystem(() => {
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       handler.register(TestCmp, analysis!);
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
-      expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
-      expect(meta?.animationTriggerNames?.staticTriggerNames.length).toBe(0);
+      expect(meta?.legacyAnimationTriggerNames?.includesDynamicAnimations).toBeTrue();
+      expect(meta?.legacyAnimationTriggerNames?.staticTriggerNames.length).toBe(0);
     });
 
     describe('localCompilation', () => {

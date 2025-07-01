@@ -227,7 +227,7 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * Whether this property is an animation trigger.
    */
-  isAnimationTrigger: boolean;
+  isLegacyAnimationTrigger: boolean;
 
   /**
    * The security context of the binding.
@@ -260,7 +260,7 @@ export function createPropertyOp(
   target: XrefId,
   name: string,
   expression: o.Expression | Interpolation,
-  isAnimationTrigger: boolean,
+  isLegacyAnimationTrigger: boolean,
   securityContext: SecurityContext | SecurityContext[],
   isStructuralTemplateAttribute: boolean,
   templateKind: TemplateKind | null,
@@ -273,7 +273,7 @@ export function createPropertyOp(
     target,
     name,
     expression,
-    isAnimationTrigger,
+    isLegacyAnimationTrigger,
     securityContext,
     sanitizer: null,
     isStructuralTemplateAttribute,

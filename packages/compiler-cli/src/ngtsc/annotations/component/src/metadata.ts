@@ -7,7 +7,7 @@
  */
 
 import {
-  AnimationTriggerNames,
+  LegacyAnimationTriggerNames,
   DeclarationListEmitMode,
   DeferBlockDepsEmitMode,
   R3ClassDebugInfo,
@@ -88,7 +88,7 @@ export interface ComponentAnalysisData {
   inlineStyles: string[] | null;
 
   isPoisoned: boolean;
-  animationTriggerNames: AnimationTriggerNames | null;
+  legacyAnimationTriggerNames: LegacyAnimationTriggerNames | null;
 
   rawImports: ts.Expression | null;
   resolvedImports: Reference<ClassDeclaration>[] | null;

@@ -75,10 +75,10 @@ class MockSchemaRegistry implements ElementSchemaRegistry {
     }
   }
 
-  normalizeAnimationStyleProperty(propName: string): string {
+  normalizeLegacyAnimationStyleProperty(propName: string): string {
     return propName;
   }
-  normalizeAnimationStyleValue(
+  normalizeLegacyAnimationStyleValue(
     camelCaseProp: string,
     userProvidedProp: string,
     val: string | number,

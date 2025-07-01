@@ -42,7 +42,7 @@ const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 const TEMPLATE_ATTR_PREFIX = '*';
-const ANIMATE_PROP_PREFIX = 'animate-';
+const LEGACY_ANIMATE_PROP_PREFIX = 'animate-';
 
 export interface HostProperties {
   [key: string]: string;
@@ -308,7 +308,7 @@ export class BindingParser {
     targetProps: ParsedProperty[],
     keySpan: ParseSourceSpan,
   ) {
-    if (isAnimationLabel(name)) {
+    if (isLegacyAnimationLabel(name)) {
       name = name.substring(1);
       if (keySpan !== undefined) {
         keySpan = moveParseSourceSpan(
@@ -324,7 +324,7 @@ export class BindingParser {
           ParseErrorLevel.ERROR,
         );
       }
-      this._parseAnimation(
+      this._parseLegacyAnimation(
         name,
         value,
         sourceSpan,
@@ -364,21 +364,21 @@ export class BindingParser {
       this._reportError(`Property name is missing in binding`, sourceSpan);
     }
 
-    let isAnimationProp = false;
-    if (name.startsWith(ANIMATE_PROP_PREFIX)) {
-      isAnimationProp = true;
-      name = name.substring(ANIMATE_PROP_PREFIX.length);
+    let isLegacyAnimationProp = false;
+    if (name.startsWith(LEGACY_ANIMATE_PROP_PREFIX)) {
+      isLegacyAnimationProp = true;
+      name = name.substring(LEGACY_ANIMATE_PROP_PREFIX.length);
       if (keySpan !== undefined) {
         keySpan = moveParseSourceSpan(
           keySpan,
           new AbsoluteSourceSpan(
-            keySpan.start.offset + ANIMATE_PROP_PREFIX.length,
+            keySpan.start.offset + LEGACY_ANIMATE_PROP_PREFIX.length,
             keySpan.end.offset,
           ),
         );
       }
-    } else if (isAnimationLabel(name)) {
-      isAnimationProp = true;
+    } else if (isLegacyAnimationLabel(name)) {
+      isLegacyAnimationProp = true;
       name = name.substring(1);
       if (keySpan !== undefined) {
         keySpan = moveParseSourceSpan(
@@ -388,8 +388,8 @@ export class BindingParser {
       }
     }
 
-    if (isAnimationProp) {
-      this._parseAnimation(
+    if (isLegacyAnimationProp) {
+      this._parseLegacyAnimation(
         name,
         expression,
         sourceSpan,
@@ -463,7 +463,7 @@ export class BindingParser {
     );
   }
 
-  private _parseAnimation(
+  private _parseLegacyAnimation(
     name: string,
     expression: string | null,
     sourceSpan: ParseSourceSpan,
@@ -488,7 +488,14 @@ export class BindingParser {
     );
     targetMatchableAttrs.push([name, ast.source!]);
     targetProps.push(
-      new ParsedProperty(name, ast, ParsedPropertyType.ANIMATION, sourceSpan, keySpan, valueSpan),
+      new ParsedProperty(
+        name,
+        ast,
+        ParsedPropertyType.LEGACY_ANIMATION,
+        sourceSpan,
+        keySpan,
+        valueSpan,
+      ),
     );
   }
 
@@ -528,10 +535,10 @@ export class BindingParser {
     skipValidation: boolean = false,
     mapPropertyName: boolean = true,
   ): BoundElementProperty {
-    if (boundProp.isAnimation) {
+    if (boundProp.isLegacyAnimation) {
       return new BoundElementProperty(
         boundProp.name,
-        BindingType.Animation,
+        BindingType.LegacyAnimation,
         SecurityContext.NONE,
         boundProp.expression,
         null,
@@ -625,7 +632,7 @@ export class BindingParser {
       this._reportError(`Event name is missing in binding`, sourceSpan);
     }
 
-    if (isAnimationLabel(name)) {
+    if (isLegacyAnimationLabel(name)) {
       name = name.slice(1);
       if (keySpan !== undefined) {
         keySpan = moveParseSourceSpan(
@@ -633,7 +640,14 @@ export class BindingParser {
           new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset),
         );
       }
-      this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents, keySpan);
+      this._parseLegacyAnimationEvent(
+        name,
+        expression,
+        sourceSpan,
+        handlerSpan,
+        targetEvents,
+        keySpan,
+      );
     } else {
       this._parseRegularEvent(
         name,
@@ -662,12 +676,12 @@ export class BindingParser {
     return {eventName: eventName!, target};
   }
 
-  parseAnimationEventName(rawName: string): {eventName: string; phase: string | null} {
+  parseLegacyAnimationEventName(rawName: string): {eventName: string; phase: string | null} {
     const matches = splitAtPeriod(rawName, [rawName, null]);
     return {eventName: matches[0]!, phase: matches[1] === null ? null : matches[1].toLowerCase()};
   }
 
-  private _parseAnimationEvent(
+  private _parseLegacyAnimationEvent(
     name: string,
     expression: string,
     sourceSpan: ParseSourceSpan,
@@ -675,13 +689,13 @@ export class BindingParser {
     targetEvents: ParsedEvent[],
     keySpan: ParseSourceSpan,
   ) {
-    const {eventName, phase} = this.parseAnimationEventName(name);
+    const {eventName, phase} = this.parseLegacyAnimationEventName(name);
     const ast = this._parseAction(expression, handlerSpan);
     targetEvents.push(
       new ParsedEvent(
         eventName,
         phase,
-        ParsedEventType.Animation,
+        ParsedEventType.LegacyAnimation,
         ast,
         sourceSpan,
         handlerSpan,
@@ -827,7 +841,7 @@ export class BindingParser {
   }
 }
 
-function isAnimationLabel(name: string): boolean {
+function isLegacyAnimationLabel(name: string): boolean {
   return name[0] == '@';
 }
 

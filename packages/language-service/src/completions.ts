@@ -901,8 +901,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
   private isAnimationCompletion(): this is ElementAnimationCompletionBuilder {
     return (
-      (this.node instanceof TmplAstBoundAttribute && this.node.type === BindingType.Animation) ||
-      (this.node instanceof TmplAstBoundEvent && this.node.type === ParsedEventType.Animation)
+      (this.node instanceof TmplAstBoundAttribute &&
+        this.node.type === BindingType.LegacyAnimation) ||
+      (this.node instanceof TmplAstBoundEvent && this.node.type === ParsedEventType.LegacyAnimation)
     );
   }
 
@@ -911,7 +912,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     if (this.node instanceof TmplAstBoundAttribute) {
       const animations = this.compiler.getTemplateTypeChecker().getDirectiveMetadata(this.component)
-        ?.animationTriggerNames?.staticTriggerNames;
+        ?.legacyAnimationTriggerNames?.staticTriggerNames;
       const replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.keySpan);
 
       if (animations === undefined) {
@@ -935,7 +936,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       if (isWithin(this.position, animationNameSpan)) {
         const animations = this.compiler
           .getTemplateTypeChecker()
-          .getDirectiveMetadata(this.component)?.animationTriggerNames?.staticTriggerNames;
+          .getDirectiveMetadata(this.component)?.legacyAnimationTriggerNames?.staticTriggerNames;
         const replacementSpan = makeReplacementSpanFromParseSourceSpan(animationNameSpan);
 
         if (animations === undefined) {

@@ -496,9 +496,9 @@ export enum BindingKind {
   I18n,
 
   /**
-   * Animation property bindings.
+   * Legacy animation property bindings.
    */
-  Animation,
+  LegacyAnimation,
 
   /**
    * Property side of a two-way binding.

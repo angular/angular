@@ -134,7 +134,7 @@ runInEachFileSystem(() => {
         name: 'Dir',
         selector: '[dir]',
         isStructural: false,
-        animationTriggerNames: null,
+        legacyAnimationTriggerNames: null,
         ngContentSelectors: null,
         preserveWhitespaces: false,
       };
