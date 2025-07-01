@@ -5,7 +5,7 @@ import {form} from '../../public_api';
 import {validateStandardSchema} from '../../src/api/standard_schema';
 
 // Note: Must run as a web test, since our node tests down-level `Promise` and zod relies on
-// `instanceof Promise` working correclty.
+// `instanceof Promise` working correctly.
 
 describe('standard schema integration', () => {
   it('should perform sync validation using a standard schema', async () => {
