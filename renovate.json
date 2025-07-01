@@ -1,7 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>angular/dev-infra//renovate-presets/default.json5"],
-  "baseBranches": ["main", "20.0.x"],
+  "extends": [
+    "github>angular/dev-infra//renovate-presets/default.json5"
+  ],
+  "baseBranches": [
+    "main",
+    "main"
+  ],
   "postUpgradeTasks": {
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
@@ -38,12 +43,20 @@
   ],
   "packageRules": [
     {
-      "matchBaseBranches": ["main"],
-      "addLabels": ["target: minor"]
+      "matchBaseBranches": [
+        "main"
+      ],
+      "addLabels": [
+        "target: minor"
+      ]
     },
     {
-      "matchBaseBranches": ["!main"],
-      "addLabels": ["target: patch"]
+      "matchBaseBranches": [
+        "!main"
+      ],
+      "addLabels": [
+        "target: rc"
+      ]
     },
     {
       "matchFileNames": [

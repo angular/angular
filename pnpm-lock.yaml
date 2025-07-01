@@ -647,7 +647,7 @@ importers:
     dependencies:
       '@angular/core':
         specifier: ^20.1.0-next
-        version: 20.1.0-next.3(@angular/compiler@packages+compiler)(rxjs@7.8.2)(zone.js@packages+zone.js)
+        version: 20.1.0-rc.0(@angular/compiler@packages+compiler)(rxjs@7.8.2)(zone.js@packages+zone.js)
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -1654,11 +1654,11 @@ packages:
       zone.js: link:packages/zone.js
     dev: true
 
-  /@angular/core@20.1.0-next.3(@angular/compiler@packages+compiler)(rxjs@7.8.2)(zone.js@packages+zone.js):
-    resolution: {integrity: sha512-QUYew+W6NyP7oiQ5XgKP1fPeT2MJiy+SlzkxxfP2tzQBh/c5tjSlHvj12hF+WeyKe94wirz3sMnCP7tfMB6jlA==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.1.0-next.3.tgz}
+  /@angular/core@20.1.0-rc.0(@angular/compiler@packages+compiler)(rxjs@7.8.2)(zone.js@packages+zone.js):
+    resolution: {integrity: sha512-dsyi29ieAjKEMspq8I9/CEtg6yPVleHk6Ii31wN3iMtKuEfAu30EZNtFgCqKzv3j4ZvJH/sBV4yh0FSZJSfgCA==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.1.0-rc.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/compiler': 20.1.0-next.3
+      '@angular/compiler': 20.1.0-rc.0
       rxjs: ^6.5.3 || ^7.4.0
       zone.js: ~0.15.0
     peerDependenciesMeta:
