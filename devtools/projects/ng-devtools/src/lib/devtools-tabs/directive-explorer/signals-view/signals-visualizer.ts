@@ -122,6 +122,8 @@ export class SignalsGraphVisualizer {
           this.animationMap.set(n.id, count + 1);
           prev.epoch = n.epoch;
           d3.select(prev.label).classed('animating', true);
+          const body = prev.label.querySelector('.body');
+          body.textContent = getBodyText(n);
         }
       } else {
         this.graph.setNode(n.id, {
