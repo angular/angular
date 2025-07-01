@@ -12,9 +12,11 @@ packages:
   - packages/core/test/bundling
   - packages/forms/
   - packages/platform-browser/
+  - packages/platform-server/
   - packages/platform-browser-dynamic/
   - packages/router/
   - packages/localize/
+  - packages/elements/
   - packages/benchpress/
   - packages/upgrade/
   - packages/zone.js/

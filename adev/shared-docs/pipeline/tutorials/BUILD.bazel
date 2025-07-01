@@ -13,6 +13,7 @@ ts_project(
             "tutorial.mts",
         ],
     ),
+    enable_runtime_rnjs_interop = True,
     deps = [
         "//:node_modules/@types/node",
         "//:node_modules/@webcontainer/api",
@@ -26,6 +27,7 @@ ts_project(
     srcs = [
         "playground.mts",
     ],
+    enable_runtime_rnjs_interop = True,
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],

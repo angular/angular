@@ -1,11 +1,12 @@
 load("@devinfra//bazel/spec-bundling:index_rjs.bzl", "spec_bundle")
 load("@rules_browsers//src/wtr:index.bzl", "wtr_test")
 
-def _web_test(name, tags = [], deps = [], bootstrap = [], **kwargs):
+def _web_test(name, tags = [], deps = [], bootstrap = [], tsconfig = "//packages:tsconfig_build", **kwargs):
     spec_bundle(
         name = "%s_bundle" % name,
         testonly = True,
-        srcs = ["//packages:tsconfig_build"],
+        srcs = [tsconfig],
+        tsconfig = tsconfig,
         bootstrap = bootstrap,
         deps = deps,
         tags = [
@@ -13,7 +14,6 @@ def _web_test(name, tags = [], deps = [], bootstrap = [], **kwargs):
         ],
         config = {
             "resolveExtensions": [".js", ".mjs"],
-            "tsconfig": "./packages/tsconfig-build.json",
         },
         platform = "browser",
         external = kwargs.pop("external", []),

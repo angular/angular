@@ -28,6 +28,7 @@ ts_project(
             "entities.mts",
         ],
     ),
+    enable_runtime_rnjs_interop = True,
     deps = [
         ":entities_rjs",
         "//:node_modules/@bazel/runfiles",

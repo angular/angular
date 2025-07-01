@@ -1,6 +1,5 @@
 load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "sass_binary")
+load("//tools:defaults2.bzl", "ng_web_test_suite", "sass_binary")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -24,11 +23,11 @@ ng_project(
     ],
     deps = [
         "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
         "//adev/shared-docs/directives:directives_rjs",
         "//adev/shared-docs/pipes:pipes_rjs",
         "//adev/shared-docs/services:services_rjs",
-        "//packages/core:core_rjs",
-        "//packages/router:router_rjs",
     ],
 )
 
@@ -38,15 +37,15 @@ ts_project(
     srcs = ["search-history.component.spec.ts"],
     deps = [
         ":search-history_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
         "//adev/shared-docs/services:services_rjs",
         "//adev/shared-docs/testing:testing_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
-    deps = [":test_lib"],
+    tsconfig = "//adev/shared-docs:tsconfig_test",
+    deps = [":test_lib_rjs"],
 )

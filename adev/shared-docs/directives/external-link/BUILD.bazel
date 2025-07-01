@@ -12,11 +12,11 @@ ng_project(
         "//adev/shared-docs/directives:__pkg__",
     ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
         "//adev/shared-docs/providers:providers_rjs",
         "//adev/shared-docs/utils:utils_rjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/router:router_rjs",
     ],
 )
 
@@ -28,16 +28,15 @@ ts_project(
     ),
     deps = [
         ":external-link_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+        "//:node_modules/@angular/router",
         "//adev/shared-docs/providers:providers_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/router:router_rjs",
-        "//packages/router/testing:testing_rjs",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
+    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [":test_lib_rjs"],
 )

@@ -26,15 +26,14 @@ ng_project(
         ],
     ),
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
         "//:node_modules/algoliasearch",
         "//:node_modules/rxjs",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/providers:providers_rjs",
         "//adev/shared-docs/utils:utils_rjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/rxjs-interop:rxjs-interop_rjs",
-        "//packages/router:router_rjs",
     ],
 )
 
@@ -46,16 +45,16 @@ ts_project(
     ),
     deps = [
         ":lib_rjs",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/providers:providers_rjs",
         "//adev/shared-docs/testing:testing_rjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
+    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [":test_lib_rjs"],
 )

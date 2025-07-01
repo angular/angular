@@ -25,9 +25,9 @@ ng_project(
         ],
     ),
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
         "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/router:router_rjs",
     ],
 )
