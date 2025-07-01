@@ -8,6 +8,15 @@ function readPackage(pkg, context) {
       // are resolved via these locally-built versions. e.g. compiler-cli's peer deps.
       '@angular/compiler': 'workspace:*',
       '@angular/compiler-cli': 'workspace:*',
+      '@angular/core': 'workspace:*',
+      '@angular/common': 'workspace:*',
+      '@angular/router': 'workspace:*',
+      '@angular/platform-browser': 'workspace:*',
+      '@angular/platform-browser-dynamic': 'workspace:*',
+      '@angular/platform-server': 'workspace:*',
+      '@angular/forms': 'workspace:*',
+      '@angular/elements': 'workspace:*',
+      '@angular/animations': 'workspace:*',
     };
   }
 
@@ -21,6 +30,21 @@ function readPackage(pkg, context) {
       'typescript': '5.8.3',
     };
   }
+
+  Object.entries(pkg.peerDependencies).forEach(([key, version]) => {
+    if (key === 'rxjs') {
+      pkg.dependencies = {
+        ...pkg.dependencies,
+        'rxjs': version,
+      };
+    }
+    if (version === '0.0.0-PLACEHOLDER') {
+      pkg.dependencies = {
+        ...pkg.dependencies,
+        [key]: 'workspace: *',
+      };
+    }
+  });
 
   return pkg;
 }

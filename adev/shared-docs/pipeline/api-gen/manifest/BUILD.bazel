@@ -23,10 +23,8 @@ esbuild_esm_bundle(
 ts_project(
     name = "generate_api_manifest_lib",
     srcs = glob(["**/*.mts"]),
-    interop_deps = [
-        "@angular//packages/compiler-cli",
-    ],
     deps = [
+        "//:node_modules/@angular/compiler-cli",
         "//:node_modules/@bazel/runfiles",
         "//:node_modules/@types/node",
     ],

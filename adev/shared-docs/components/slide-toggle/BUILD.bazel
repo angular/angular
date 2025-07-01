@@ -16,9 +16,9 @@ ng_project(
         "//adev/shared-docs/components:__pkg__",
     ],
     deps = [
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/forms:forms_rjs",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
     ],
 )
 
@@ -35,12 +35,12 @@ ts_project(
     ),
     deps = [
         ":slide-toggle_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//:node_modules/@angular/core",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
+    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [":test_lib_rjs"],
 )

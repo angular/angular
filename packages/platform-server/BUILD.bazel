@@ -1,6 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//tools:defaults.bzl", "api_golden_test_npm_package", "esbuild", "generate_api_docs", "tsec_test")
-load("//tools:defaults2.bzl", "ng_package", "ng_project")
+load("//tools:defaults2.bzl", "ng_package", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -78,6 +78,14 @@ ng_package(
         "//packages/platform-server/init:init_rjs",
         "//packages/platform-server/testing:testing_rjs",
     ],
+)
+
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )
 
 api_golden_test_npm_package(

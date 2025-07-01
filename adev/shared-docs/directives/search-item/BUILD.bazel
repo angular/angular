@@ -12,7 +12,7 @@ ng_project(
     ],
     deps = [
         "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
         "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//packages/core:core_rjs",
     ],
 )

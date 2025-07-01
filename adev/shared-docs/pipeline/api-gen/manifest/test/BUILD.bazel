@@ -27,10 +27,8 @@ ts_project(
     srcs = [
         "manifest.spec.mts",
     ],
-    interop_deps = [
-        "//packages/compiler-cli",
-    ],
     deps = [
+        "//:node_modules/@angular/compiler-cli",
         "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib_rjs",
     ],
 )

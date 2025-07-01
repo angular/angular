@@ -51,8 +51,10 @@ packages/compiler-cli/linker/babel/test/node_modules
 packages/compiler/node_modules
 packages/core/node_modules
 packages/core/test/bundling/node_modules
+packages/elements/node_modules
 packages/forms/node_modules
 packages/platform-browser/node_modules
+packages/platform-server/node_modules
 packages/platform-browser-dynamic/node_modules
 packages/router/node_modules
 packages/zone.js/node_modules

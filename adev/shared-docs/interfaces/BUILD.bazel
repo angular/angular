@@ -25,9 +25,9 @@ ts_project(
         ],
     ),
     deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
         "//:node_modules/@types/node",
         "//:node_modules/@webcontainer/api",
-        "//packages/core:core_rjs",
-        "//packages/router:router_rjs",
     ],
 )
