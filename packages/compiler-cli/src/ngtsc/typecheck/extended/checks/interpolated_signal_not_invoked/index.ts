@@ -72,7 +72,7 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
           // or an attribute binding like `[attr.role]="mySignal"`
           node.type === BindingType.Attribute ||
           // or an animation binding like `[@myAnimation]="mySignal"`
-          node.type === BindingType.Animation) &&
+          node.type === BindingType.LegacyAnimation) &&
         nodeAst
       ) {
         return buildDiagnosticForSignal(ctx, nodeAst, component);

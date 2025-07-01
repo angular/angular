@@ -41,7 +41,7 @@ import {HostListener} from '../../src/metadata/directives';
   // these tests are only meant to be run within the DOM (for now)
   if (isNode) return;
 
-  describe('animation query tests', function () {
+  describe('legacy animation query tests', function () {
     function getLog(): MockAnimationPlayer[] {
       return MockAnimationDriver.log as MockAnimationPlayer[];
     }

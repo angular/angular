@@ -393,8 +393,8 @@ function createNodeFromListenerDecorator(
   let target: string | null;
 
   if (eventNameNode.text.startsWith('@')) {
-    const parsedName = parser.parseAnimationEventName(eventNameNode.text);
-    type = ParsedEventType.Animation;
+    const parsedName = parser.parseLegacyAnimationEventName(eventNameNode.text);
+    type = ParsedEventType.LegacyAnimation;
     eventName = parsedName.eventName;
     phase = parsedName.phase;
     target = null;
@@ -444,7 +444,7 @@ function inferBoundAttribute(name: string): {attrName: string; type: BindingType
     type = BindingType.Style;
   } else if (name.startsWith(animationPrefix)) {
     attrName = name.slice(animationPrefix.length);
-    type = BindingType.Animation;
+    type = BindingType.LegacyAnimation;
   } else {
     attrName = name;
     type = BindingType.Property;

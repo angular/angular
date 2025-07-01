@@ -32,7 +32,7 @@ import {isNode} from '@angular/private/testing';
   // these tests are only meant to be run within the DOM (for now)
   if (isNode) return;
 
-  describe('Animation Router Tests', function () {
+  describe('Legacy Animation Router Tests', function () {
     function getLog(): MockAnimationPlayer[] {
       return MockAnimationDriver.log as MockAnimationPlayer[];
     }

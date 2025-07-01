@@ -52,7 +52,7 @@ const DEFAULT_COMPONENT_ID = '1';
   // these tests are only meant to be run within the DOM (for now)
   if (isNode) return;
 
-  describe('animation tests', function () {
+  describe('legacy animation tests', function () {
     function getLog(): MockAnimationPlayer[] {
       return MockAnimationDriver.log as MockAnimationPlayer[];
     }

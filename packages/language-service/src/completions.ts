@@ -901,8 +901,9 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
   private isAnimationCompletion(): this is ElementAnimationCompletionBuilder {
     return (
-      (this.node instanceof TmplAstBoundAttribute && this.node.type === BindingType.Animation) ||
-      (this.node instanceof TmplAstBoundEvent && this.node.type === ParsedEventType.Animation)
+      (this.node instanceof TmplAstBoundAttribute &&
+        this.node.type === BindingType.LegacyAnimation) ||
+      (this.node instanceof TmplAstBoundEvent && this.node.type === ParsedEventType.LegacyAnimation)
     );
   }
 

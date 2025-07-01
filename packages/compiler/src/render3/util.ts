@@ -36,13 +36,13 @@ export interface R3CompiledExpression {
   statements: o.Statement[];
 }
 
-const ANIMATE_SYMBOL_PREFIX = '@';
+const LEGACY_ANIMATE_SYMBOL_PREFIX = '@';
 export function prepareSyntheticPropertyName(name: string) {
-  return `${ANIMATE_SYMBOL_PREFIX}${name}`;
+  return `${LEGACY_ANIMATE_SYMBOL_PREFIX}${name}`;
 }
 
 export function prepareSyntheticListenerName(name: string, phase: string) {
-  return `${ANIMATE_SYMBOL_PREFIX}${name}.${phase}`;
+  return `${LEGACY_ANIMATE_SYMBOL_PREFIX}${name}.${phase}`;
 }
 
 export function getSafePropertyAccessString(accessor: string, name: string): string {

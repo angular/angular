@@ -746,12 +746,12 @@ export interface ListenerOp extends Op<CreateOp> {
   /**
    * Whether the listener is listening for an animation event.
    */
-  isAnimationListener: boolean;
+  isLegacyAnimationListener: boolean;
 
   /**
    * The animation phase of the listener.
    */
-  animationPhase: string | null;
+  legacyAnimationPhase: string | null;
 
   /**
    * Some event listeners can have a target, e.g. in `document:dragover`.
@@ -770,7 +770,7 @@ export function createListenerOp(
   name: string,
   tag: string | null,
   handlerOps: Array<UpdateOp>,
-  animationPhase: string | null,
+  legacyAnimationPhase: string | null,
   eventTarget: string | null,
   hostListener: boolean,
   sourceSpan: ParseSourceSpan,
@@ -787,8 +787,8 @@ export function createListenerOp(
     handlerOps: handlerList,
     handlerFnName: null,
     consumesDollarEvent: false,
-    isAnimationListener: animationPhase !== null,
-    animationPhase,
+    isLegacyAnimationListener: legacyAnimationPhase !== null,
+    legacyAnimationPhase: legacyAnimationPhase,
     eventTarget,
     sourceSpan,
     ...NEW_OP,
