@@ -13,6 +13,7 @@ import {ApplicationEnvironment, ApplicationOperations} from '../../projects/ng-d
 
 import {DemoApplicationEnvironment} from '../demo-application-environment';
 import {DemoApplicationOperations} from '../demo-application-operations';
+import {provideLocalStorage} from '../local-storage.provider';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,6 +30,7 @@ export const appConfig: ApplicationConfig = {
         loadChildren: () => import('./demo-app/demo-app.routes').then((m) => m.DEMO_ROUTES),
       },
     ]),
+    provideLocalStorage(),
     {
       provide: ApplicationOperations,
       useClass: DemoApplicationOperations,

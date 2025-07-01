@@ -20,6 +20,7 @@ import {Frame} from './application-environment';
 import {BrowserStylesService} from './application-services/browser_styles_service';
 import {WINDOW_PROVIDER} from './application-providers/window_provider';
 import {MatIconRegistry} from '@angular/material/icon';
+import {SettingsStoreService} from './application-services/settings_store_service';
 
 const DETECT_ANGULAR_ATTEMPTS = 10;
 
@@ -54,7 +55,7 @@ const LAST_SUPPORTED_VERSION = 9;
     ]),
   ],
   imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
-  providers: [WINDOW_PROVIDER, ThemeService],
+  providers: [WINDOW_PROVIDER, ThemeService, SettingsStoreService],
 })
 export class DevToolsComponent implements OnDestroy {
   readonly AngularStatus = AngularStatus;

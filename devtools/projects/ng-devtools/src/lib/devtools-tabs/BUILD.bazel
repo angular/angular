@@ -30,6 +30,7 @@ ng_project(
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:settings_store_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:theme_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer:directive-explorer_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree:injector_tree_rjs",

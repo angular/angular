@@ -20,6 +20,7 @@ import {DevToolsTabsComponent} from './devtools-tabs.component';
 import {TabUpdate} from './tab-update/index';
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {FrameManager} from '../application-services/frame_manager';
+import {SettingsStoreService} from '../application-services/settings_store_service';
 
 @Component({
   selector: 'ng-directive-explorer',
@@ -41,6 +42,7 @@ describe('DevtoolsTabsComponent', () => {
       imports: [MatTooltip, MatMenuModule, DevToolsTabsComponent],
       providers: [
         TabUpdate,
+        SettingsStoreService,
         {provide: ThemeService, useFactory: () => ({currentTheme: new Subject<Theme>()})},
         {provide: MessageBus, useValue: messageBusMock},
         {provide: ApplicationEnvironment, useValue: applicationEnvironmentMock},
