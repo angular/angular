@@ -66,7 +66,7 @@ export function validateStandardSchema<T>(
  *
  * @param field The root field to which the issue's path is relative.
  * @param issue The `StandardSchemaV1.Issue` to convert.
- * @returns A `FormTreeError` representing the issue.
+ * @returns A `StandardSchemaFormTreeError` representing the issue.
  */
 export function standardIssueToFormTreeError(
   field: Field<unknown>,
