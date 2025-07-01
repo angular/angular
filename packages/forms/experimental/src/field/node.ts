@@ -165,7 +165,7 @@ export class FieldNode implements FieldState<unknown> {
     } else if (key instanceof ReactiveMetadataKey) {
       return this.metadataState.get(key);
     }
-    throw Error('Unreocgnized MetadataKey type');
+    throw Error('Unrecognized MetadataKey type');
   }
 
   /**
