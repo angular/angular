@@ -383,6 +383,57 @@ Available `redirect` values:
 
 TIP: Use `redirect: 'manual'` when you need to handle redirects with custom logic.
 
+#### Credentials handling
+
+The `credentials` option controls whether cookies, authorization headers, and other credentials are sent with cross-origin requests. This is particularly important for authentication scenarios.
+
+<docs-code language="ts">
+// Include credentials for cross-origin requests
+http.get('https://api.example.com/protected-data', {
+  credentials: 'include'
+}).subscribe(data => {
+  // ...
+});
+
+// Never send credentials (default for cross-origin)
+http.get('https://api.example.com/public-data', {
+  credentials: 'omit'
+}).subscribe(data => {
+  // ...
+});
+
+// Send credentials only for same-origin requests
+http.get('/api/user-data', {
+  credentials: 'same-origin'
+}).subscribe(data => {
+  // ...
+});
+
+// withCredentials overrides credentials setting
+http.get('https://api.example.com/data', {
+  credentials: 'omit',        // This will be ignored
+  withCredentials: true       // This forces credentials: 'include'
+}).subscribe(data => {
+  // Request will include credentials despite credentials: 'omit'
+});
+
+// Legacy approach (still supported)
+http.get('https://api.example.com/data', {
+  withCredentials: true
+}).subscribe(data => {
+  // Equivalent to credentials: 'include'
+});
+</docs-code>
+
+IMPORTANT: The `withCredentials` option takes precedence over the `credentials` option. If both are specified, `withCredentials: true` will always result in `credentials: 'include'`, regardless of the explicit `credentials` value.
+
+Available `credentials` values:
+- `'omit'`: Never send credentials
+- `'same-origin'`: Send credentials only for same-origin requests (default)
+- `'include'`: Always send credentials, even for cross-origin requests
+
+TIP: Use `credentials: 'include'` when you need to send authentication cookies or headers to a different domain that supports CORS. Avoid mixing `credentials` and `withCredentials` options to prevent confusion.
+
 ## Http `Observable`s
 
 Each request method on `HttpClient` constructs and returns an `Observable` of the requested response type. Understanding how these `Observable`s work is important when using `HttpClient`.
