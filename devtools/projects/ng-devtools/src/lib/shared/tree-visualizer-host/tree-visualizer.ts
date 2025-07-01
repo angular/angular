@@ -10,6 +10,7 @@ import * as d3 from 'd3';
 import {GraphRenderer} from './graph-renderer';
 
 let arrowDefId = 0;
+let instanceIdx = 0;
 
 const MAX_NODE_LABEL_LENGTH = 25;
 
@@ -64,6 +65,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     config: Partial<TreeVisualizerConfig<T>> = {},
   ) {
     super();
+    instanceIdx++;
 
     this.config = {
       ...this.defaultConfig,
@@ -164,6 +166,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .data(nodes.descendants().slice(1))
       .enter()
       .append('path')
+      .attr('aria-labelledby', (_, idx) => `tree-link-${instanceIdx}-${idx}`)
       .attr('class', 'link')
       .attr('marker-end', `url(#end${arrowDefId})`)
       .attr('d', (node: TreeD3Node<T>) => {
@@ -189,8 +192,23 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
 
     this.config.d3LinkModifier(d3Link);
 
+    // Set accessibility title
+    d3Link
+      .append('title')
+      .attr('id', (_, idx) => `tree-link-${instanceIdx}-${idx}`)
+      .text((node: TreeD3Node<T>) => {
+        const parentLabel = node.parent!.data.label;
+        const nodeLabel = node.data.label;
+        if (parentLabel && nodeLabel) {
+          return `${parentLabel}-${nodeLabel}`;
+        }
+        const definedLabel = nodeLabel || parentLabel || 'Disconnected';
+
+        return definedLabel + ' link';
+      });
+
     // Declare the nodes
-    const d3Node = g
+    const d3NodeG = g
       .selectAll('g.node-group')
       .data(nodes.descendants())
       .enter()
@@ -209,6 +227,15 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
         const {x, y} = this.getNodeCoor(node);
         return `translate(${x},${y})`;
       })
+      .attr('aria-labelledby', (_, idx) => `tree-node-${instanceIdx}-${idx}`);
+
+    // Set accessibility title
+    d3NodeG
+      .append('title')
+      .attr('id', (_, idx) => `tree-node-${instanceIdx}-${idx}`)
+      .text((node: TreeD3Node<T>) => `${node.data.label || 'Empty'} node`);
+
+    const d3Node = d3NodeG
       .append('foreignObject')
       .attr('width', labelWidth)
       .attr('height', labelHeight)
@@ -216,10 +243,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .attr('y', -halfLabelHeight)
       .append('xhtml:div')
       .attr('class', 'node')
-      .attr('title', (node: TreeD3Node<T>) => {
-        return node.data.label;
-      })
-      .html((node: TreeD3Node<T>) => {
+      .text((node: TreeD3Node<T>) => {
         const label = node.data.label;
         return label.length > MAX_NODE_LABEL_LENGTH
           ? label.slice(0, MAX_NODE_LABEL_LENGTH - '...'.length) + '...'
