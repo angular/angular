@@ -1,8 +1,13 @@
 load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "theme_types",
+    srcs = ["theme_types.ts"],
+)
 
 ng_project(
     name = "browser_styles",
@@ -29,9 +34,34 @@ ng_project(
     name = "theme",
     srcs = ["theme_service.ts"],
     deps = [
+        ":settings_rjs",
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+    ],
+)
+
+ng_project(
+    name = "settings_store",
+    srcs = ["settings_store.ts"],
+    interop_deps = [
+        "//packages/core",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
+    ],
+)
+
+ng_project(
+    name = "settings",
+    srcs = ["settings.ts"],
+    interop_deps = [
+        "//packages/core",
+    ],
+    deps = [
+        ":settings_store_rjs",
+        ":theme_types_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
     ],
 )
@@ -42,12 +72,15 @@ ts_test_library(
     deps = [
         ":browser_styles_rjs",
         ":frame_manager_rjs",
+        ":settings_store_rjs",
         ":theme_rjs",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services/test-utils:app_operations_mock_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services/test-utils:settings_store_mock_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

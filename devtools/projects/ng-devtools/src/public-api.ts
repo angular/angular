@@ -13,3 +13,5 @@
 export {DevToolsComponent} from './lib/devtools.component';
 export * from './lib/application-operations';
 export * from './lib/application-environment';
+export * from './lib/application-providers/settings_provider';
+export * from './lib/application-providers/window_provider';

@@ -10,6 +10,7 @@ import {TestBed} from '@angular/core/testing';
 import {DOCUMENT} from '@angular/common';
 import {ThemeService} from './theme_service';
 import {WINDOW} from '../application-providers/window_provider';
+import {SETTINGS_STORE_MOCK} from './test-utils/settings_store_mock';
 
 function configureTestingModuleWithWindowMock(mock: Partial<Window>) {
   TestBed.configureTestingModule({
@@ -19,6 +20,7 @@ function configureTestingModuleWithWindowMock(mock: Partial<Window>) {
         useValue: mock,
       },
       ThemeService,
+      SETTINGS_STORE_MOCK,
     ],
   });
 }
@@ -56,6 +58,8 @@ describe('ThemeService', () => {
     const service = TestBed.inject(ThemeService);
     const doc = TestBed.inject(DOCUMENT);
 
+    TestBed.tick();
+
     expect(service.currentTheme()).toEqual('light-theme');
     expect(doc.documentElement.classList.contains('light-theme')).toBeTrue();
   });
@@ -67,6 +71,8 @@ describe('ThemeService', () => {
 
     const service = TestBed.inject(ThemeService);
     const doc = TestBed.inject(DOCUMENT);
+
+    TestBed.tick();
 
     expect(service.currentTheme()).toEqual('dark-theme');
     expect(doc.documentElement.classList.contains('dark-theme')).toBeTrue();
@@ -80,6 +86,7 @@ describe('ThemeService', () => {
     const service = TestBed.inject(ThemeService);
     // Toggle dark mode.
     service.toggleDarkMode(true);
+    TestBed.tick();
 
     const doc = TestBed.inject(DOCUMENT);
 
@@ -94,6 +101,7 @@ describe('ThemeService', () => {
     const service = TestBed.inject(ThemeService);
     // Initialize the watcher.
     service.initializeThemeWatcher();
+    TestBed.tick();
 
     const docClassList = TestBed.inject(DOCUMENT).documentElement.classList;
 
@@ -102,6 +110,7 @@ describe('ThemeService', () => {
 
     // This should simulate a system theme change, as if the user did it on OS level.
     switchTheme('dark');
+    TestBed.tick();
 
     expect(service.currentTheme()).toEqual('dark-theme');
     expect(docClassList.contains('dark-theme')).toBeTrue();

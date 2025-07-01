@@ -8,7 +8,7 @@
 
 import {ApplicationConfig, inject, NgZone} from '@angular/core';
 import {provideAnimations} from '@angular/platform-browser/animations';
-import {ApplicationEnvironment, ApplicationOperations} from '../../../ng-devtools';
+import {ApplicationEnvironment, ApplicationOperations, provideSettings} from '../../../ng-devtools';
 
 import {ChromeApplicationEnvironment} from './chrome-application-environment';
 import {ChromeApplicationOperations} from './chrome-application-operations';
@@ -41,5 +41,6 @@ export const appConfig: ApplicationConfig = {
         return new PriorityAwareMessageBus(new ZoneAwareChromeMessageBus(port, ngZone));
       },
     },
+    provideSettings(),
   ],
 };

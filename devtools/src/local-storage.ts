@@ -8,7 +8,7 @@
 
 import {InjectionToken} from '@angular/core';
 
-export const WINDOW = new InjectionToken<Window>('WINDOW', {
+export const LOCAL_STORAGE = new InjectionToken<typeof localStorage>('LOCAL_STORAGE', {
   providedIn: 'root',
-  factory: () => window,
+  factory: () => localStorage,
 });

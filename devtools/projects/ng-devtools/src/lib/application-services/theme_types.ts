@@ -6,9 +6,4 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken} from '@angular/core';
-
-export const WINDOW = new InjectionToken<Window>('WINDOW', {
-  providedIn: 'root',
-  factory: () => window,
-});
+export type Theme = 'dark-theme' | 'light-theme';
