@@ -1,6 +1,7 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
-load("//tools:defaults2.bzl", "ng_web_test_suite", "sass_binary")
+load("//tools:defaults2.bzl", "sass_binary")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -22,10 +23,8 @@ ng_project(
         ":resolution-path.component.html",
         ":resolution_path_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
@@ -33,16 +32,13 @@ ng_project(
 ts_test_library(
     name = "resolution_path_test",
     srcs = ["resolution-path.component.spec.ts"],
-    interop_deps = [
-        "//packages/core",
-        ":resolution-path",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-    ],
     visibility = [
         "//visibility:private",
     ],
     deps = [
+        ":resolution-path_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

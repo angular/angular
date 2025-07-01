@@ -20,14 +20,12 @@ ng_project(
         "dialog.component.html",
         ":app_todo_component_styles",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/forms",
-        "//packages/router",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
         "//:node_modules/@angular/material",
+        "//:node_modules/@angular/router",
         "//devtools/src/app/demo-app/todo/about:about_rjs",
         "//devtools/src/app/demo-app/todo/home:home_rjs",
         "//devtools/src/app/demo-app/todo/routes:routes_rjs",

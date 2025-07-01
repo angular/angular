@@ -17,10 +17,8 @@ ng_project(
         "execution-details.component.html",
         ":execution-details_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer:recording-visualizer-types_rjs",
     ],
 )

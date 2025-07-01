@@ -5,7 +5,6 @@ load("@devinfra//bazel:extract_js_module_output.bzl", "extract_js_module_output"
 load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config", _esbuild_esm_bundle = "esbuild_esm_bundle")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
-load("@devinfra//bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@devinfra//bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
@@ -160,76 +159,6 @@ def pkg_npm(name, deps = [], validate = True, **kwargs):
         tags = ["manual"],
         visibility = visibility,
     )
-
-def karma_web_test_suite(
-        name,
-        external = [],
-        zoneless = False,
-        browsers = [
-            "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium",
-            "@npm//@angular/build-tooling/bazel/browsers/firefox:firefox",
-        ],
-        **kwargs):
-    """Default values for karma_web_test_suite"""
-
-    # Default value for bootstrap
-    bootstrap = kwargs.pop("bootstrap", [])
-    bootstrap.extend(["//tools/testing:browser_zoneless"] if zoneless else ["//tools/testing:browser"])
-
-    # Add common deps
-    deps = kwargs.pop("deps", [])
-    data = kwargs.pop("data", [])
-    tags = kwargs.pop("tags", [])
-
-    spec_bundle(
-        name = "%s_bundle" % name,
-        # Specs from this attribute are filtered and will be executed. We
-        # add bootstrap here for discovery of the module mappings aspect.
-        deps = deps + bootstrap,
-        bootstrap = bootstrap,
-        workspace_name = "angular",
-        external = external,
-        platform = "browser",
-    )
-
-    _karma_web_test_suite(
-        name = name,
-        deps = [":%s_bundle" % name],
-        browsers = browsers,
-        data = data,
-        tags = tags,
-        **kwargs
-    )
-
-    # Add a saucelabs target for Karma tests in `//packages/`.
-    if native.package_name().startswith("packages/"):
-        _karma_web_test(
-            name = "{}_saucelabs".format(name),
-            # Default timeout is moderate (5min). This causes the test to be terminated while
-            # Saucelabs browsers keep running. Ultimately resulting in failing tests and browsers
-            # unnecessarily being acquired. Our specified Saucelabs idle timeout is 10min, so we use
-            # Bazel's long timeout (15min). This ensures that Karma can shut down properly.
-            timeout = "long",
-            config_file = "//:karma-js.conf.js",
-            deps = [
-                ":%s_bundle" % name,
-            ],
-            data = data + [
-                "//:browser-providers.conf.js",
-                "//tools/saucelabs-daemon/launcher:launcher_cjs",
-            ],
-            tags = tags + [
-                "manual",
-                "no-remote-exec",
-                # Requires network to be able to access saucelabs daemon
-                "requires-network",
-                # Prevent the sandbox from being used so that it can communicate with the saucelabs daemon
-                "no-sandbox",
-                "saucelabs",
-            ],
-            configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
-            **kwargs
-        )
 
 def protractor_web_test_suite(
         name,

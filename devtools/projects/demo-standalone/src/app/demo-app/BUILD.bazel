@@ -30,12 +30,10 @@ ng_project(
         "demo-app.component.html",
         ":demo_app_component_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-        "//packages/elements",
-        "//packages/router",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/elements",
+        "//:node_modules/@angular/router",
         "//devtools/projects/demo-standalone/src/app/demo-app/todo:todo_rjs",
         "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
         "//devtools/src:zone-unaware-iframe_message_bus_rjs",

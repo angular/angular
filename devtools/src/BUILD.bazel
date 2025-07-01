@@ -1,8 +1,8 @@
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
-load("//tools:defaults.bzl", "esbuild", "http_server")
+load("//tools:defaults.bzl", "http_server")
 load("//tools:defaults2.bzl", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
@@ -40,14 +40,10 @@ copy_to_directory(
 ng_project(
     name = "demo",
     srcs = ["main.ts"],
-    interop_deps = [
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/core",
-        "//packages/core/src/util",
-        "//packages/platform-browser",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
         "//devtools/src/app:app_rjs",
     ],
@@ -55,6 +51,11 @@ ng_project(
 
 esbuild(
     name = "bundle",
+    srcs = [
+        "//:node_modules/@angular/build-tooling",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_esm",
+    ],
     config = "//devtools/tools/esbuild:esbuild_config_esm",
     entry_points = [":main.ts"],
     platform = "browser",
@@ -65,7 +66,10 @@ esbuild(
     # Targeting esnext or es2022 will cause the static initializer blocks that attach these static properties on class
     # constructors to reference a class constructor variable that they do not have access to.
     target = "es2020",
-    deps = LINKER_PROCESSED_FW_PACKAGES + [":demo"],
+    deps = [
+        ":demo_rjs",
+        "//:node_modules/@angular/cdk",
+    ],
 )
 
 exports_files(["index.html"])

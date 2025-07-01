@@ -1,5 +1,5 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
-load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -16,18 +16,16 @@ ts_project(
 ts_project(
     name = "component-tree",
     srcs = ["component-tree.ts"],
-    interop_deps = [
-        "//packages/core",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
-        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
-    ],
     deps = [
         ":core-enums_rjs",
         ":get-roots_rjs",
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
         "//devtools/projects/ng-devtools-backend/src/lib:property_mutation_rjs",
         "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:directive-forest_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api:ng-debug-api_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer:state-serializer_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
@@ -35,12 +33,10 @@ ts_project(
 ts_test_library(
     name = "test_lib",
     srcs = glob(["*.spec.ts"]),
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
         ":component-tree_rjs",
         ":get-roots_rjs",
+        "//:node_modules/@angular/core",
         "//:node_modules/jasmine",
     ],
 )

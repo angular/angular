@@ -7,10 +7,8 @@ ts_project(
     srcs = [
         "index.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
     ],
 )

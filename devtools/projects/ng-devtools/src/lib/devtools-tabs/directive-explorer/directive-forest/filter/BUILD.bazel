@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
 load("//tools:defaults2.bzl", "sass_binary")
@@ -22,11 +22,9 @@ ng_project(
         "filter.component.html",
         ":filter_component_styles",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
     ],
@@ -35,18 +33,18 @@ ng_project(
 ts_test_library(
     name = "filter_test",
     srcs = ["filter.component.spec.ts"],
-    interop_deps = [
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        ":filter",
+    deps = [
+        ":filter_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
     ],
 )
 
 ts_project(
     name = "directive-forest-filter-fn-generator",
     srcs = ["directive-forest-filter-fn-generator.ts"],
-    interop_deps = [
-        ":filter",
+    deps = [
+        ":filter_rjs",
     ],
 )
 
@@ -58,10 +56,10 @@ ts_test_library(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
     deps = [
-        ":directive-forest-filter-fn-generator_test",
-        ":filter_test",
+        ":directive-forest-filter-fn-generator_test_rjs",
+        ":filter_test_rjs",
     ],
 )

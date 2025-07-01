@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 ng_project(
     name = "window",
     srcs = ["window_provider.ts"],
-    interop_deps = [
-        "//packages/core",
+    deps = [
+        "//:node_modules/@angular/core",
     ],
 )

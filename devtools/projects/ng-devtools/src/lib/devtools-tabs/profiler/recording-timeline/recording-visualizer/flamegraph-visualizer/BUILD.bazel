@@ -20,10 +20,8 @@ ng_project(
         "flamegraph-visualizer.component.html",
         ":flamegraph-visualizer_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/ngx-flamegraph",
         "//devtools/projects/ng-devtools/src/lib/application-services:theme_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter:flamegraph-formatter_rjs",

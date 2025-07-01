@@ -9,11 +9,9 @@ ng_project(
             "*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split_rjs",
     ],

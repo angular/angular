@@ -1,6 +1,6 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
-load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -22,10 +22,8 @@ ts_test_library(
         "prop-type.spec.ts",
         "state-serializer.spec.ts",
     ],
-    interop_deps = [
-        ":state-serializer",
-    ],
     deps = [
+        ":state-serializer_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

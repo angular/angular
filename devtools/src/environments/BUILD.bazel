@@ -8,6 +8,6 @@ ts_project(
         "environment.ts",
     ],
     deps = [
-        "//packages/platform-browser",
+        "//:node_modules/@angular/platform-browser",
     ],
 )

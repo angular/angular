@@ -11,5 +11,6 @@ import createConfig from './esbuild-base.config.mjs';
 export default {
   ...(await createConfig({enableLinker: true, optimize: false})),
   format: 'esm',
-  keepNames: true
+  keepNames: true,
+  resolveExtensions: ['.js', '.mjs'],
 };

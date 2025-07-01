@@ -1,5 +1,5 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
-load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,8 +17,8 @@ ts_project(
             "src/test.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core",
+    deps = [
+        "//:node_modules/@angular/core",
     ],
 )
 
@@ -27,11 +27,9 @@ ts_test_library(
     srcs = glob(
         ["**/*.spec.ts"],
     ),
-    interop_deps = [
-        "//packages/core/testing",
-    ],
     deps = [
         ":protocol_rjs",
+        "//:node_modules/@angular/core",
     ],
 )
 

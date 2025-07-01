@@ -17,10 +17,8 @@ ng_project(
         "recording-timeline-controls.component.html",
         ":recording-timeline-controls_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
     ],
 )

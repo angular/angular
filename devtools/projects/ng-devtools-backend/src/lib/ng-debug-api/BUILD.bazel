@@ -1,6 +1,6 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
 load("//devtools/tools:ng_project.bzl", "ng_project")
 load("//devtools/tools:typescript.bzl", "ts_test_library")
-load("//tools:defaults2.bzl", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,10 +10,8 @@ ng_project(
         include = ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree:core-enums_rjs",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree:get-roots_rjs",
         "//devtools/projects/protocol:protocol_rjs",
@@ -23,11 +21,9 @@ ng_project(
 ts_test_library(
     name = "ng-debug-api_test_lib",
     srcs = ["ng-debug-api.spec.ts"],
-    interop_deps = [
-        "//packages/core",
-        ":ng-debug-api",
-    ],
     deps = [
+        ":ng-debug-api_rjs",
+        "//:node_modules/@angular/core",
         "//:node_modules/jasmine",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree:core-enums_rjs",
     ],

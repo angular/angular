@@ -1,18 +1,17 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//tools:defaults.bzl", "esbuild", "http_server")
+load("//tools:defaults.bzl", "http_server")
 
 package(default_visibility = ["//:__subpackages__"])
 
 ng_project(
     name = "src",
     srcs = ["main.ts"],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/platform-browser",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
         "//devtools/projects/demo-no-zone/src/app:app_rjs",
     ],
@@ -20,12 +19,17 @@ ng_project(
 
 esbuild(
     name = "bundle",
+    srcs = [
+        "//:node_modules/@angular/build-tooling",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_esm",
+    ],
     config = "//devtools/tools/esbuild:esbuild_config_esm",
     entry_points = [":main.ts"],
     platform = "browser",
     splitting = False,
     target = "es2016",
-    deps = [":src"],
+    deps = [":src_rjs"],
 )
 
 exports_files([

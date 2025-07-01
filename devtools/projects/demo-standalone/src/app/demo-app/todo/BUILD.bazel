@@ -8,14 +8,12 @@ ng_project(
         "dialog.component.ts",
         "todo-app.component.ts",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/forms",
-        "//packages/router",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
         "//:node_modules/@angular/material",
+        "//:node_modules/@angular/router",
         "//devtools/projects/demo-standalone/src/app/demo-app/todo/about:about_rjs",
         "//devtools/projects/demo-standalone/src/app/demo-app/todo/home:home_rjs",
     ],
