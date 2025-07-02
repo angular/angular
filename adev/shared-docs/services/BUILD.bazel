@@ -1,5 +1,4 @@
-load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
-load("//tools:defaults2.bzl", "ng_web_test_suite")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -55,6 +54,5 @@ ts_project(
 
 ng_web_test_suite(
     name = "test",
-    tsconfig = "//adev/shared-docs:tsconfig_test",
     deps = [":test_lib_rjs"],
 )

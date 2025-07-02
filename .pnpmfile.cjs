@@ -32,12 +32,16 @@ function readPackage(pkg, context) {
   }
 
   Object.entries(pkg.peerDependencies).forEach(([key, version]) => {
+    // Any package that has a peerDependency on rxjs, should instead treat the peerDependency as a
+    // regular dependency.
     if (key === 'rxjs') {
       pkg.dependencies = {
         ...pkg.dependencies,
         'rxjs': version,
       };
     }
+    // Change all locally generated packages to directly depend on the other local packages, instead
+    // of expecting them as peerDependencies automatically as we do not auto install peer deps.
     if (version === '0.0.0-PLACEHOLDER') {
       pkg.dependencies = {
         ...pkg.dependencies,

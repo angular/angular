@@ -1,4 +1,9 @@
-load("//tools:defaults2.bzl", _ng_project = "ng_project", _ts_project = "ts_project")
+load(
+    "//tools:defaults2.bzl",
+    _ng_project = "ng_project",
+    _ng_web_test_suite = "ng_web_test_suite",
+    _ts_project = "ts_project",
+)
 
 def ts_project(name, tsconfig = None, testonly = False, enable_runtime_rnjs_interop = False, **kwargs):
     if tsconfig == None:
@@ -23,5 +28,18 @@ def ng_project(name, tsconfig = None, testonly = False, enable_runtime_rnjs_inte
         enable_runtime_rnjs_interop = enable_runtime_rnjs_interop,
         tsconfig = tsconfig,
         testonly = testonly,
+        **kwargs
+    )
+
+def ng_web_test_suite(deps = [], **kwargs):
+    # Provide required modules for the imports in //tools/testing/browser_tests.init.mts
+    deps = deps + [
+        "//:node_modules/@angular/compiler",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+    ]
+    _ng_web_test_suite(
+        deps = deps,
+        tsconfig = "//adev/shared-docs:tsconfig_test",
         **kwargs
     )

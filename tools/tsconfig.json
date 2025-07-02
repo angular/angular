@@ -9,7 +9,7 @@
     "moduleResolution": "node",
     "types": ["node"],
     "paths": {
-      
+      "@angular/*": ["../packages/*/index"],
     }
   }
 }
