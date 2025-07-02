@@ -11,6 +11,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     BROWSER_MODULE_ALREADY_LOADED = 5100,
     // (undocumented)
+    HYDRATION_CONFLICTING_FEATURES = 5001,
+    // (undocumented)
     NO_PLUGIN_FOR_EVENT = 5101,
     // (undocumented)
     ROOT_NODE_NOT_FOUND = -5104,
