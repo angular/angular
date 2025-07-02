@@ -388,6 +388,34 @@ describe('FetchBackend', async () => {
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
   });
 
+  it('should pass referrer option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {referrer: 'about:client'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        referrer: 'about:client',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('should pass integrity option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {integrity: 'sha256-...'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        integrity: 'sha256-...',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
   describe('progress events', () => {
     it('are emitted for download progress', (done) => {
       backend
