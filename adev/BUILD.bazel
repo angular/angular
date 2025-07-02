@@ -1,41 +1,20 @@
-load("@bazel_skylib//lib:collections.bzl", "collections")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
-load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
-load("@devinfra//bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
-load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
-load("//adev/tools/local_deps:index.bzl", "ensure_local_package_deps", "link_local_packages")
-load("//tools:defaults.bzl", "http_server")
+load("@npm2//:defs.bzl", "npm_link_all_packages")
+load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
+load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
+load("@rules_angular//src/architect:ng_test.bzl", "ng_test")
 
 package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
 
 exports_files([
     "tsconfig.json",
 ])
 
-# All source and configuration files required to build the docs app
 APPLICATION_FILES = [
-    "angular.json",
-    "tsconfig.app.json",
-    "tsconfig.json",
-    "tsconfig.worker.json",
-] + glob(
-    ["src/**/*"],
-    exclude = [
-        "src/**/*.spec.ts",
-    ],
-) + [
-    "//adev/src/content/examples:embeddable",
-]
-
-TEST_FILES = APPLICATION_FILES + [
-    "karma.conf.js",
-    "test-main.ts",
-    "tsconfig.spec.json",
-] + glob(
-    ["src/**/*.spec.ts"],
-)
-
-APPLICATION_ASSETS = [
     "//adev/src/assets/images",
     "//adev/src/assets/others",
     "//adev/src/assets/previews",
@@ -44,77 +23,75 @@ APPLICATION_ASSETS = [
     "//adev/src/assets:api",
     "//adev/src/assets:content",
     "//adev/src/assets:context",
-]
+    "//adev/src/content/examples:embeddable",
+] + glob(
+    ["src/**/*"],
+    exclude = ["src/**/*.spec.ts"],
+)
 
 APPLICATION_DEPS = [
-    "@npm//@angular/docs",
-    "@npm//@angular/build",
-    "@npm//@angular-devkit/build-angular",
-    "@npm//@angular/animations",
-    "@npm//@angular/cdk",
-    "@npm//@angular/common",
-    "@npm//@angular/compiler",
-    "@npm//@angular/compiler-cli",
-    "@npm//@angular/core",
-    "@npm//@angular/forms",
-    "@npm//@angular/material",
-    "@npm//@angular/platform-browser",
-    "@npm//@angular/platform-server",
-    "@npm//@angular/router",
-    "@npm//@angular/ssr",
-    "@npm//@types/dom-navigation",
-    "@npm//fflate",
-    "@npm//marked",
-    "@npm//ngx-progressbar",
-    "@npm//rxjs",
-    "@npm//xhr2",
-    "@npm//typescript",
-    "@npm//@typescript/vfs",
-    "@npm//@codemirror/state",
-    "@npm//@codemirror/view",
-    "@npm//@codemirror/language",
-    "@npm//@codemirror/commands",
-    "@npm//@codemirror/search",
-    "@npm//@codemirror/autocomplete",
-    "@npm//@codemirror/lint",
-    "@npm//@codemirror/lang-html",
-    "@npm//@codemirror/lang-angular",
-    "@npm//@codemirror/lang-css",
-    "@npm//@codemirror/lang-sass",
-    "@npm//@codemirror/lang-javascript",
-    "@npm//@lezer/highlight",
-    "@npm//@lezer/javascript",
-    "@npm//@lezer/common",
-    "@npm//@stackblitz/sdk",
-    "@npm//open-in-idx",
-    "@npm//@webcontainer/api",
-    "@npm//@xterm/xterm",
-    "@npm//@xterm/addon-fit",
-    "@npm//algoliasearch",
-    "@npm//angular-split",
+    "//adev:node_modules/@angular-devkit/build-angular",
+    "//adev:node_modules/@codemirror/autocomplete",
+    "//adev:node_modules/@codemirror/commands",
+    "//adev:node_modules/@codemirror/lang-angular",
+    "//adev:node_modules/@codemirror/lang-css",
+    "//adev:node_modules/@codemirror/lang-html",
+    "//adev:node_modules/@codemirror/lang-javascript",
+    "//adev:node_modules/@codemirror/lang-sass",
+    "//adev:node_modules/@codemirror/language",
+    "//adev:node_modules/@codemirror/lint",
+    "//adev:node_modules/@codemirror/search",
+    "//adev:node_modules/@codemirror/state",
+    "//adev:node_modules/@codemirror/view",
+    "//adev:node_modules/@lezer/common",
+    "//adev:node_modules/@lezer/highlight",
+    "//adev:node_modules/@lezer/javascript",
+    "//adev:node_modules/@stackblitz/sdk",
+    "//adev:node_modules/@typescript/vfs",
+    "//adev:node_modules/@webcontainer/api",
+    "//adev:node_modules/@xterm/addon-fit",
+    "//adev:node_modules/@xterm/xterm",
+    "//adev:node_modules/algoliasearch",
+    "//adev:node_modules/angular-split",
+    "//adev:node_modules/fflate",
+    "//adev:node_modules/marked",
+    "//adev:node_modules/ngx-progressbar",
+    "//adev:node_modules/open-in-idx",
+    "//adev:node_modules/typescript",
+    "//adev:node_modules/xhr2",
+    "//adev:node_modules/@types/node",
+    "//adev:node_modules/@types/dom-navigation",
+
+    # Deep imports
+    "//adev:node_modules/@algolia/client-common",
+    "//adev:node_modules/@algolia/requester-browser-xhr",
+    "//adev:node_modules/@algolia/requester-node-http",
+    "//adev:node_modules/@lezer/css",
+    "//adev:node_modules/@lezer/html",
+    "//adev:node_modules/@lezer/lr",
+    "//adev:node_modules/@lezer/sass",
+    "//adev:node_modules/@marijn/find-cluster-break",
+    "//adev:node_modules/crelt",
+    "//adev:node_modules/style-mod",
+    "//adev:node_modules/w3c-keyname",
 ]
 
-TEST_DEPS = APPLICATION_DEPS + [
-    "@npm//@types/jasmine",
-    "@npm//@types/node",
-    "@npm//jasmine",
-    "@npm//jasmine-core",
-    "@npm//karma-chrome-launcher",
-    "@npm//karma-coverage",
-    "@npm//karma-jasmine",
-    "@npm//karma-jasmine-html-reporter",
+TEST_FILES = APPLICATION_FILES + [
+    "karma.conf.js",
+    "test-main.ts",
+] + glob(["src/**/*.spec.ts"])
+
+TEST_DEPS = [
+    dep
+    for dep in APPLICATION_DEPS
+    if dep != "//adev:node_modules/@types/node"
+] + [
+    "@rules_browsers//src/browsers/chromium",
+    "@rules_browsers//src/browsers/firefox",
+    "//adev/tools:windows-chromium-path",
 ]
 
-# Create `npm_link` targets for all dependencies that correspond to a
-# first-party Angular package that can be built from `HEAD`.
-link_local_packages(
-    all_deps = collections.uniq(APPLICATION_DEPS + TEST_DEPS),
-)
-
-copy_to_bin(
-    name = "application_files_bin",
-    srcs = APPLICATION_FILES,
-)
+ng_config(name = "ng_config")
 
 bool_flag(
     name = "full_build_adev",
@@ -146,57 +123,38 @@ config_based_architect_env = select({
 
 config_based_architect_flags = select({
     ":dev_build": [
-        "angular-dev:build:development",
+        "--configuration",
+        "development",
     ],
     ":prod_build": [
-        "angular-dev:build:production",
+        "--configuration",
+        "production",
     ],
 })
 
-architect(
+ng_application(
     name = "build",
-    args = config_based_architect_flags + [
-        "--output-path=build",
-        "",
-    ],
-    chdir = "$(RULEDIR)",
-    data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
-        ":application_files_bin",
-    ],
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = config_based_architect_flags,
     env = config_based_architect_env,
-    # Network is required to inline fonts.
-    exec_properties = ENABLE_NETWORK,
-    output_dir = True,
-    tags = [
-        "no-remote-exec",
-    ],
+    ng_config = ":ng_config",
+    node_modules = "//adev:node_modules",
+    project_name = "angular-dev",
 )
 
-http_server(
-    name = "serve",
-    additional_root_paths = [
-        "angular/adev/build/browser",
-    ],
-    enable_dev_ui = True,
-    relax_cors = True,
-    deps = [":build"],
-)
-
-architect_test(
+ng_test(
     name = "test",
-    args = [
-        "angular-dev:test",
-        "--no-watch",
-    ],
-    chdir = package_name(),
-    data = ensure_local_package_deps(TEST_DEPS) + TEST_FILES + APPLICATION_ASSETS + [
-        "//adev/tools:windows-chromium-path",
-        "@npm//@angular/build-tooling/bazel/browsers/chromium",
-    ],
+    srcs = TEST_FILES + TEST_DEPS,
     env = {
-        "CHROME_BIN": "../$(CHROMIUM)",
+        # Move one level up because we are in `//adev`
+        "CHROME_BIN": "../" + "$(CHROME-HEADLESS-SHELL)",
+        "CHROMEDRIVER_BIN": "../" + "$(CHROMEDRIVER)",
     },
+    ng_config = ":ng_config",
+    node_modules = "//adev:node_modules",
+    project_name = "angular-dev",
     toolchains = [
-        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+        "@rules_browsers//src/browsers/chromium:toolchain_alias",
+        "@rules_browsers//src/browsers/firefox:toolchain_alias",
     ],
 )
