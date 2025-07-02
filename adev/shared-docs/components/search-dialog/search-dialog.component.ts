@@ -84,7 +84,7 @@ export class SearchDialog {
       this.searchQuery.set(value);
     });
 
-    // Thinkig about refactoring this to a single afterRenderEffect ?
+    // Thinking about refactoring this to a single afterRenderEffect ?
     // Answer: It won't have the same behavior
     effect(() => {
       this.items();

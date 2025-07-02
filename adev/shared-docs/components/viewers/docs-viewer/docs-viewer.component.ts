@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, DOCUMENT, isPlatformBrowser, Location} from '@angular/common';
+import {DOCUMENT, isPlatformBrowser, Location} from '@angular/common';
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -18,9 +18,7 @@ import {
   EnvironmentInjector,
   inject,
   Injector,
-  Input,
   PLATFORM_ID,
-  SimpleChanges,
   Type,
   ViewContainerRef,
   ViewEncapsulation,

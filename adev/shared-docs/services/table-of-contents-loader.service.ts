@@ -7,10 +7,9 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {inject, signal, Injectable, PLATFORM_ID, DestroyRef} from '@angular/core';
+import {inject, signal, Injectable, DestroyRef} from '@angular/core';
 
 import {TableOfContentsItem, TableOfContentsLevel} from '../interfaces/index';
-import {on} from 'events';
 
 /**
  * Name of an attribute that is set on an element that should be
