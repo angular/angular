@@ -30,8 +30,8 @@ importers:
         specifier: 20.1.0-rc.0
         version: 20.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.1.0-rc.0)(@types/node@18.19.113)(chokidar@4.0.3)(karma@6.4.4)(less@4.3.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.8.3)
       '@angular/cdk':
-        specifier: 20.1.0-next.2
-        version: 20.1.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        specifier: 20.1.0-rc.0
+        version: 20.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 20.1.0-rc.0
         version: 20.1.0-rc.0(@types/node@18.19.113)(chokidar@4.0.3)
@@ -54,8 +54,8 @@ importers:
         specifier: workspace:*
         version: link:packages/forms
       '@angular/material':
-        specifier: 20.1.0-next.2
-        version: 20.1.0-next.2(@angular/cdk@20.1.0-next.2)(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 20.1.0-rc.0
+        version: 20.1.0-rc.0(@angular/cdk@20.1.0-rc.0)(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:packages/platform-browser
@@ -283,7 +283,7 @@ importers:
         version: 0.1.1(@angular/common@packages+common)(@angular/core@packages+core)
       ngx-progressbar:
         specifier: ^14.0.0
-        version: 14.0.0(@angular/cdk@20.1.0-next.2)(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@20.1.0-rc.0)(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       open-in-idx:
         specifier: ^0.1.1
         version: 0.1.1
@@ -1656,8 +1656,8 @@ packages:
       - yaml
     dev: false
 
-  /@angular/cdk@20.1.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
-    resolution: {integrity: sha512-fH+XDVUep7UUpG6Cg83Fw/EPwjOBGFGWTipBDzgglWcVyVqiRteBKHn2XaOMDdV8Pr/igX9bMn1Rzj713Y9ZzQ==, tarball: https://registry.npmjs.org/@angular/cdk/-/cdk-20.1.0-next.2.tgz}
+  /@angular/cdk@20.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
+    resolution: {integrity: sha512-e81eOu3Nxf6QGzhZKBC40udh4R3NdA+fExcJ7XX3Pt4uRBy17NodYWZZUazoiD9S9i+FKfwA1jBbucm7WA6QMg==, tarball: https://registry.npmjs.org/@angular/cdk/-/cdk-20.1.0-rc.0.tgz}
     peerDependencies:
       '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/core': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
@@ -1728,17 +1728,17 @@ packages:
       zone.js: link:packages/zone.js
     dev: false
 
-  /@angular/material@20.1.0-next.2(@angular/cdk@20.1.0-next.2)(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2):
-    resolution: {integrity: sha512-p8b3fRINdIenk05WT3A0OMIg3sIy7FbUA99XopXVuSBJdf0yvSKPTX+fu3QBXESgVSVsZauM972gVqJdlGd6Yw==, tarball: https://registry.npmjs.org/@angular/material/-/material-20.1.0-next.2.tgz}
+  /@angular/material@20.1.0-rc.0(@angular/cdk@20.1.0-rc.0)(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2):
+    resolution: {integrity: sha512-PwwK7p6WHZsrXEQODZdWHMN2BclcCBjArOmYF487gWYySzKDYZUcm/6lXjXV5Tdw8vT564VEFBQpkFPVz5Sq1Q==, tarball: https://registry.npmjs.org/@angular/material/-/material-20.1.0-rc.0.tgz}
     peerDependencies:
-      '@angular/cdk': 20.1.0-next.2
+      '@angular/cdk': 20.1.0-rc.0
       '@angular/common': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/core': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/forms': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       '@angular/platform-browser': ^20.0.0-0 || ^20.1.0-0 || ^20.2.0-0 || ^20.3.0-0 || ^21.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
-      '@angular/cdk': 20.1.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+      '@angular/cdk': 20.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       '@angular/forms': link:packages/forms
@@ -3317,6 +3317,7 @@ packages:
 
   /@bazel/typescript@5.8.1(typescript@5.7.3):
     resolution: {integrity: sha512-NAJ8WQHZL1WE1YmRoCrq/1hhG15Mvy/viWh6TkvFnBeEhNUiQUsA5GYyhU1ztnBIYW03nATO3vwhAEfO7Q0U5g==, tarball: https://registry.npmjs.org/@bazel/typescript/-/typescript-5.8.1.tgz}
+    deprecated: No longer maintained, https://github.com/aspect-build/rules_ts is the recommended replacement
     hasBin: true
     peerDependencies:
       typescript: '>=3.0.0'
@@ -15861,7 +15862,7 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /ngx-progressbar@14.0.0(@angular/cdk@20.1.0-next.2)(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
+  /ngx-progressbar@14.0.0(@angular/cdk@20.1.0-rc.0)(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
     resolution: {integrity: sha512-tDj7h5F2aSI4/XaJjs50FnELVe6qFqyz3vVq22acacd3oDW2EyJB4c+IYaxMf5972OdTw0WL4n6UwQ3dqC+gCA==, tarball: https://registry.npmjs.org/ngx-progressbar/-/ngx-progressbar-14.0.0.tgz}
     peerDependencies:
       '@angular/cdk': '>=17.3.0'
@@ -15869,7 +15870,7 @@ packages:
       '@angular/core': '>=17.3.0'
       rxjs: '>=7.0.0'
     dependencies:
-      '@angular/cdk': 20.1.0-next.2(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+      '@angular/cdk': 20.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       rxjs: 7.8.2
