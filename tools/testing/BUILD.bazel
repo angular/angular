@@ -19,11 +19,6 @@ ts_project(
     enable_runtime_rnjs_interop = False,
     deps = [
         ":zone_base_setup_lib_rjs",
-        # Both the node_module and direct ts_project based deps for the imports are both
-        # present to accomodate both `paths` and no `paths` tsconfig configurations.
-        "//:node_modules/@angular/compiler",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/platform-browser",
         "//packages/compiler:compiler_rjs",
         "//packages/core/testing:testing_rjs",
         "//packages/platform-browser/animations:animations_rjs",
@@ -38,11 +33,6 @@ ts_project(
     enable_runtime_rnjs_interop = False,
     deps = [
         "//:node_modules/reflect-metadata",
-        # Both the node_module and direct ts_project based deps for the imports are both
-        # present to accomodate both `paths` and no `paths` tsconfig configurations.
-        "//:node_modules/@angular/compiler",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/platform-browser",
         "//packages/compiler:compiler_rjs",
         "//packages/core:core_rjs",
         "//packages/core/testing:testing_rjs",
@@ -61,13 +51,6 @@ ts_project(
     ],
     deps = [
         "//:node_modules/reflect-metadata",
-        # Both the node_module and direct ts_project based deps for the imports are both
-        # present to accomodate both `paths` and no `paths` tsconfig configurations.
-        "//:node_modules/@angular/compiler",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/platform-browser",
-        "//:node_modules/@angular/platform-server",
-        "//:node_modules/@angular/platform-browser-dynamic",
         "//packages/compiler:compiler_rjs",
         "//packages/core:core_rjs",
         "//packages/core/testing:testing_rjs",
@@ -88,13 +71,6 @@ ts_project(
         ":zone_base_setup_lib_rjs",
         "//:node_modules/reflect-metadata",
         "//:node_modules/zone.js",
-        # Both the node_module and direct ts_project based deps for the imports are both
-        # present to accomodate both `paths` and no `paths` tsconfig configurations.
-        "//:node_modules/@angular/compiler",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/platform-browser",
-        "//:node_modules/@angular/platform-server",
-        "//:node_modules/@angular/platform-browser-dynamic",
         "//packages/compiler:compiler_rjs",
         "//packages/core/testing:testing_rjs",
         "//packages/platform-server:platform-server_rjs",
