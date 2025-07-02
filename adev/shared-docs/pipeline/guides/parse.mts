@@ -18,6 +18,7 @@ import {docsWorkflowExtension} from './extensions/docs-workflow/docs-workflow.mj
 import {docsStepExtension} from './extensions/docs-workflow/docs-step.mjs';
 import {docsCardExtension} from './extensions/docs-card/docs-card.mjs';
 import {docsCardContainerExtension} from './extensions/docs-card/docs-card-container.mjs';
+import {docsNavCardExtension, docsNavLinkExtension} from './extensions/docs-card/docs-nav-card.mjs';
 import {docsDecorativeHeaderExtension} from './extensions/docs-decorative-header.mjs';
 import {docsCodeBlockExtension} from './extensions/docs-code/docs-code-block.mjs';
 import {docsCodeExtension} from './extensions/docs-code/docs-code.mjs';
@@ -43,6 +44,8 @@ export async function parseMarkdown(
       docsStepExtension,
       docsCardExtension,
       docsCardContainerExtension,
+      docsNavCardExtension,
+      docsNavLinkExtension,
       docsDecorativeHeaderExtension,
       docsCodeBlockExtension,
       docsCodeExtension,
