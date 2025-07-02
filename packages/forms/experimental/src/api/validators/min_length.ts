@@ -18,7 +18,7 @@ import {BaseValidatorConfig, ValueWithLength} from './types';
  * @param minLength The minimum length, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function minLength<TPathKind extends PathKind /*= PathKind.Root*/>(
+export function minLength<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<ValueWithLength, TPathKind>,
   minLength: number | LogicFn<ValueWithLength, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<ValueWithLength, TPathKind>,

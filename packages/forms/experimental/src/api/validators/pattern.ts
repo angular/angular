@@ -29,7 +29,7 @@ function strToRegexp(pattern: string) {
  * @param pattern Regex as a string. `^` and `$` would be added automatically if not present.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function pattern<TPathKind extends PathKind /*= PathKind.Root*/>(
+export function pattern<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<string, TPathKind>,
   pattern: string | LogicFn<string | undefined, string | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,

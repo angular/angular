@@ -19,7 +19,7 @@ export interface DefineOptions<TKey> {
   readonly asKey?: DataKey<TKey>;
 }
 
-export function define<TValue, TData, TPathKind extends PathKind /*= PathKind.Root*/>(
+export function define<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
   opts?: DefineOptions<TData>,
@@ -32,7 +32,7 @@ export function define<TValue, TData, TPathKind extends PathKind /*= PathKind.Ro
   return key as DataKey<TData>;
 }
 
-export function defineComputed<TValue, TData, TPathKind extends PathKind /*= PathKind.Root*/>(
+export function defineComputed<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   fn: LogicFn<TValue, TData, TPathKind>,
   opts?: DefineOptions<Signal<TData>>,
@@ -41,7 +41,9 @@ export function defineComputed<TValue, TData, TPathKind extends PathKind /*= Pat
   const key = opts?.asKey ?? new DataKey<Signal<TData>>();
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addDataFactory(key, (ctx) => computed(() => fn(ctx as FieldContext<TValue>)));
+  pathNode.logic.addDataFactory(key, (ctx) =>
+    computed(() => fn(ctx as FieldContext<TValue, TPathKind>)),
+  );
   return key;
 }
 
@@ -51,12 +53,7 @@ export interface DefineResourceOptions<TValue, TData, TRequest>
   factory: (req: Signal<TRequest>) => ResourceRef<TData>;
 }
 
-export function defineResource<
-  TValue,
-  TData,
-  TRequest,
-  TPathKind extends PathKind /*= PathKind.Root*/,
->(
+export function defineResource<TValue, TData, TRequest, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   opts: DefineResourceOptions<TValue, TData, TRequest>,
 ): DataKey<ResourceRef<TData | undefined>> {

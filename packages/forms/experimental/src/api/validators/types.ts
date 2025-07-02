@@ -11,6 +11,6 @@ import {LogicFn, PathKind, ValidationResult} from '../types';
 // TODO(kirjs): Consider using {length: number}
 export type ValueWithLength = Array<unknown> | string;
 
-export interface BaseValidatorConfig<T, TPathKind extends PathKind /*= PathKind.Root*/> {
+export interface BaseValidatorConfig<T, TPathKind extends PathKind = PathKind.Root> {
   errors?: LogicFn<T, ValidationResult, TPathKind>;
 }

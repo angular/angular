@@ -18,7 +18,7 @@ export interface AsyncValidatorOptions<
   TValue,
   TRequest,
   TData,
-  TPathKind extends PathKind /*= PathKind.Root*/,
+  TPathKind extends PathKind = PathKind.Root,
 > {
   readonly params: (ctx: FieldContext<TValue, TPathKind>) => TRequest;
   readonly factory: (req: Signal<TRequest | undefined>) => ResourceRef<TData | undefined>;
@@ -28,12 +28,7 @@ export interface AsyncValidatorOptions<
   ) => FormTreeError | FormTreeError[] | undefined;
 }
 
-export function validateAsync<
-  TValue,
-  TRequest,
-  TData,
-  TPathKind extends PathKind /*= PathKind.Root*/,
->(
+export function validateAsync<TValue, TRequest, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   opts: AsyncValidatorOptions<TValue, TRequest, TData, TPathKind>,
 ): void {
@@ -46,7 +41,7 @@ export function validateAsync<
       if (node.validationState.shouldSkipValidation() || !node.syncValid()) {
         return undefined;
       }
-      return opts.params(ctx);
+      return opts.params(ctx as FieldContext<TValue, TPathKind>);
     },
     factory: opts.factory,
   });
@@ -64,7 +59,7 @@ export function validateAsync<
         if (!res.hasValue()) {
           return undefined;
         }
-        return opts.errors(res.value()!, ctx);
+        return opts.errors(res.value()!, ctx as FieldContext<TValue, TPathKind>);
       case 'error':
         // Throw the resource's error:
         throw res.error();
@@ -72,11 +67,7 @@ export function validateAsync<
   });
 }
 
-export function validateHttp<
-  TValue,
-  TData = unknown,
-  TPathKind extends PathKind /*= PathKind.Root*/,
->(
+export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   opts: {
     request: (ctx: FieldContext<TValue, TPathKind>) => string | undefined;
@@ -88,11 +79,7 @@ export function validateHttp<
   },
 ): void;
 
-export function validateHttp<
-  TValue,
-  TData = unknown,
-  TPathKind extends PathKind /*= PathKind.Root*/,
->(
+export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   opts: {
     request: (ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined;

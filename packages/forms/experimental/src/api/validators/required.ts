@@ -22,7 +22,7 @@ import {BaseValidatorConfig} from './types';
  *                - condition Optional - A function that takes FieldContext and returns true if the field is required.
  * @template T The data type of the field the logic is being added to.
  */
-export function required<T, TPathKind extends PathKind /*= PathKind.Root*/>(
+export function required<T, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<T, TPathKind>,
   config?: BaseValidatorConfig<T, TPathKind> & {
     emptyPredicate?: (value: T) => boolean;
