@@ -219,7 +219,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .attr('title', (node: TreeD3Node<T>) => {
         return node.data.label;
       })
-      .html((node: TreeD3Node<T>) => {
+      .text((node: TreeD3Node<T>) => {
         const label = node.data.label;
         return label.length > MAX_NODE_LABEL_LENGTH
           ? label.slice(0, MAX_NODE_LABEL_LENGTH - '...'.length) + '...'

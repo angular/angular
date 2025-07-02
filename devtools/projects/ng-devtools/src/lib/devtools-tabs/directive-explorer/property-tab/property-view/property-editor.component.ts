@@ -29,7 +29,7 @@ enum PropertyEditorState {
 
 const parseValue = (value: EditorResult): EditorResult => {
   try {
-    return JSON.parse(value as any);
+    return JSON.parse(value as any) as EditorResult;
   } catch {
     return value.toString();
   }

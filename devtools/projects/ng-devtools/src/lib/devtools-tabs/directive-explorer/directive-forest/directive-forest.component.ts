@@ -176,7 +176,7 @@ export class DirectiveForestComponent {
   }
 
   @HostListener('document:keydown.ArrowUp', ['$event'])
-  navigateUp(event: KeyboardEvent): void {
+  navigateUp(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
     }
@@ -201,7 +201,7 @@ export class DirectiveForestComponent {
   }
 
   @HostListener('document:keydown.ArrowDown', ['$event'])
-  navigateDown(event: KeyboardEvent): void {
+  navigateDown(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
     }
@@ -229,7 +229,7 @@ export class DirectiveForestComponent {
   }
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
-  collapseCurrent(event: KeyboardEvent): void {
+  collapseCurrent(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
     }
@@ -242,7 +242,7 @@ export class DirectiveForestComponent {
   }
 
   @HostListener('document:keydown.ArrowRight', ['$event'])
-  expandCurrent(event: KeyboardEvent): void {
+  expandCurrent(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
     }
@@ -254,7 +254,7 @@ export class DirectiveForestComponent {
     event.preventDefault();
   }
 
-  isEditingDirectiveState(event: KeyboardEvent): boolean {
+  isEditingDirectiveState(event: Event): boolean {
     return (event.target as Element).tagName === 'INPUT' || !this.selectedNode;
   }
 
