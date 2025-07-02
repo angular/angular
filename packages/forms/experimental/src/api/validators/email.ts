@@ -50,7 +50,7 @@ const EMAIL_REGEXP =
  * @param maxValue The minimum value, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function email<TPathKind extends PathKind /*= PathKind.Root*/>(
+export function email<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<string, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {

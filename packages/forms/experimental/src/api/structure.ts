@@ -16,6 +16,7 @@ import type {
   Field,
   FieldPath,
   LogicFn,
+  PathKind,
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
@@ -181,11 +182,14 @@ export function form<T>(...args: any[]): Field<T> {
  * element of the array.
  * @template T The data type of an element in the array.
  */
-export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<SchemaOrSchemaFn<T>>): void {
+export function applyEach<T>(
+  path: FieldPath<T[]>,
+  schema: NoInfer<SchemaOrSchemaFn<T, PathKind.Item>>,
+): void {
   assertPathIsCurrent(path);
 
   const elementPath = FieldPathNode.unwrapFieldPath(path).element.fieldPathProxy;
-  apply(elementPath, schema);
+  apply(elementPath, schema as Schema<T>);
 }
 
 /**

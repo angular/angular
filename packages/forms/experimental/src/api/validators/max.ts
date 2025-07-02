@@ -18,7 +18,7 @@ import {BaseValidatorConfig} from './types';
  * @param maxValue The minimum value, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function max<TPathKind extends PathKind /*= PathKind.Root*/>(
+export function max<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<number, TPathKind>,
   maxValue: number | LogicFn<number | undefined, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,

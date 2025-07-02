@@ -18,7 +18,7 @@ import {BaseValidatorConfig, ValueWithLength} from './types';
  * @param maxLength The maximum length, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function maxLength<TPathKind extends PathKind /*= PathKind.Root*/>(
+export function maxLength<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<ValueWithLength, TPathKind>,
   maxLength: number | LogicFn<ValueWithLength, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<ValueWithLength, TPathKind>,

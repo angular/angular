@@ -14,19 +14,16 @@ import {MetadataKey} from './metadata';
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
 declare const ɵɵTYPE: unique symbol;
-declare const ɵɵROOT: unique symbol;
-declare const ɵɵCHILD: unique symbol;
-declare const ɵɵITEM: unique symbol;
 
-export namespace PathKind {
+export declare namespace PathKind {
   export interface Root {
-    [ɵɵROOT]: true;
+    [ɵɵTYPE]: 'root' | 'child' | 'item';
   }
   export interface Child extends PathKind.Root {
-    [ɵɵCHILD]: true;
+    [ɵɵTYPE]: 'child' | 'item';
   }
   export interface Item extends PathKind.Child {
-    [ɵɵITEM]: true;
+    [ɵɵTYPE]: 'item';
   }
 }
 export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
@@ -213,7 +210,7 @@ export interface FieldState<T, TKey extends string | number = string | number> {
  *
  * @template T The type of the data which the form is wrapped around.
  */
-export type FieldPath<T, TPathKind extends PathKind /*= PathKind.Root*/> = {
+export type FieldPath<T, TPathKind extends PathKind = PathKind.Root> = {
   [ɵɵTYPE]: [T, TPathKind];
 } & (T extends any[]
   ? {}
@@ -224,7 +221,7 @@ export type FieldPath<T, TPathKind extends PathKind /*= PathKind.Root*/> = {
 /**
  * Defines logic for a form of type T.
  */
-export type Schema<in T, in TPathKind extends PathKind /*= PathKind.Root*/> = {
+export type Schema<in T, in TPathKind extends PathKind = PathKind.Root> = {
   // Save type as `T => void` rather than `T` since `Schema` is contravariant on `T`. */
   [ɵɵTYPE]: SchemaFn<T, TPathKind>;
 };
@@ -232,14 +229,14 @@ export type Schema<in T, in TPathKind extends PathKind /*= PathKind.Root*/> = {
 /**
  * Function that defines rules for a schema.
  */
-export type SchemaFn<T, TPathKind extends PathKind /*= PathKind.Root*/> = (
+export type SchemaFn<T, TPathKind extends PathKind = PathKind.Root> = (
   p: FieldPath<T, TPathKind>,
 ) => void;
 
 /**
  * A schema or schema definition function.
  */
-export type SchemaOrSchemaFn<T, TPathKind extends PathKind /*= PathKind.Root*/> =
+export type SchemaOrSchemaFn<T, TPathKind extends PathKind = PathKind.Root> =
   | Schema<T, TPathKind>
   | SchemaFn<T, TPathKind>;
 
@@ -250,7 +247,7 @@ export type SchemaOrSchemaFn<T, TPathKind extends PathKind /*= PathKind.Root*/> 
  * @template TValue The data type for the field the logic is bound to.
  * @template TReturn The type of the result returned by the logic function.
  */
-export type LogicFn<TValue, TReturn, TPathKind extends PathKind /*= PathKind.Root*/> = (
+export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root> = (
   ctx: FieldContext<TValue, TPathKind>,
 ) => TReturn;
 
@@ -260,13 +257,13 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind /*= PathKind.Roo
  *
  *  @template T Value type
  */
-export type Validator<T, TPathKind extends PathKind /*= PathKind.Root*/> = LogicFn<
+export type Validator<T, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   T,
   ValidationResult,
   TPathKind
 >;
 
-export type TreeValidator<T, TPathKind extends PathKind /*= PathKind.Root*/> = LogicFn<
+export type TreeValidator<T, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   T,
   FormTreeError[],
   TPathKind
@@ -274,7 +271,7 @@ export type TreeValidator<T, TPathKind extends PathKind /*= PathKind.Root*/> = L
 
 export type FieldContext<
   T,
-  TPathKind extends PathKind /*= PathKind.Root*/,
+  TPathKind extends PathKind = PathKind.Root,
 > = TPathKind extends PathKind.Item
   ? ItemFieldContext<T>
   : TPathKind extends PathKind.Child
