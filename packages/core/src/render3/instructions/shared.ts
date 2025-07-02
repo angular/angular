@@ -234,8 +234,7 @@ export function enableApplyRootElementTransformImpl() {
  * object lookup) for performance reasons - the series of `if` checks seems to be the fastest way of
  * mapping property names. Do NOT change without benchmarking.
  *
- * Note: this mapping has to be kept in sync with the equally named mapping in the template
- * type-checking machinery of ngtsc.
+ * Note: this mapping has to be kept in sync with the equivalent mappings in the compiler.
  */
 function mapPropName(name: string): string {
   if (name === 'class') return 'className';
@@ -265,6 +264,11 @@ export function setPropertyAndInputs<T>(
     return; // Stop propcessing if we've matched at least one input.
   }
 
+  // If the property is going to a DOM node, we have to remap it.
+  if (tNode.type & TNodeType.AnyRNode) {
+    propName = mapPropName(propName);
+  }
+
   setDomProperty(tNode, lView, propName, value, renderer, sanitizer);
 }
 
@@ -287,7 +291,6 @@ export function setDomProperty<T>(
 ) {
   if (tNode.type & TNodeType.AnyRNode) {
     const element = getNativeByTNode(tNode, lView) as RElement | RComment;
-    propName = mapPropName(propName);
 
     if (ngDevMode) {
       validateAgainstEventProperties(propName);

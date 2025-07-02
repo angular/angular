@@ -44,15 +44,29 @@
       ]
     },
     {
-      "description": "should not remap property names whose names do not correspond to their attribute names",
+      "description": "should not remap special property names when outputting property instructions",
       "inputFiles": [
-        "special_property_remapping.ts"
+        "special_property_remapping_property.ts"
       ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
           "files": [
-            "special_property_remapping.js"
+            "special_property_remapping_property.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should remap special property names when outputting domProperty instructions",
+      "inputFiles": [
+        "special_property_remapping_dom_property.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "special_property_remapping_dom_property.js"
           ]
         }
       ]
