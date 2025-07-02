@@ -56,6 +56,7 @@ export const ANY_EXPRESSION: ts.AsExpression = ts.factory.createAsExpression(
   ts.factory.createNumericLiteral('0'),
   ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
 );
+
 const UNDEFINED = ts.factory.createIdentifier('undefined');
 
 const UNARY_OPS = new Map<string, ts.PrefixUnaryOperator>([

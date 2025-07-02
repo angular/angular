@@ -3277,7 +3277,9 @@ function tcbCallTypeCtor(
   const typeCtor = tcb.env.typeCtorFor(dir);
 
   // Construct an array of `ts.PropertyAssignment`s for each of the directive's inputs.
-  const members = inputs.map((input) => {
+  let members: ts.PropertyAssignment[] = [];
+  let boundInputs: ts.TypeNode[] = [];
+  for (const input of inputs) {
     const propertyName = ts.factory.createStringLiteral(input.field);
 
     if (input.type === 'binding') {
@@ -3293,18 +3295,25 @@ function tcbCallTypeCtor(
         wrapForDiagnostics(expr),
       );
       addParseSpanInfo(assignment, input.sourceSpan);
-      return assignment;
-    } else {
-      // A type constructor is required to be called with all input properties, so any unset
-      // inputs are simply assigned a value of type `any` to ignore them.
-      return ts.factory.createPropertyAssignment(propertyName, ANY_EXPRESSION);
+      members.push(assignment);
+      boundInputs.push(ts.factory.createLiteralTypeNode(propertyName));
     }
-  });
+  }
+
+  const boundInputTypeArgument =
+    boundInputs.length > 0
+      ? ts.factory.createUnionTypeNode(boundInputs)
+      : ts.factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword);
+  const typeCtorInferrer = ts.factory.createCallExpression(
+    typeCtor,
+    [boundInputTypeArgument],
+    undefined,
+  );
 
   // Call the `ngTypeCtor` method on the directive class, with an object literal argument created
   // from the matched inputs.
   return ts.factory.createCallExpression(
-    /* expression */ typeCtor,
+    /* expression */ typeCtorInferrer,
     /* typeArguments */ undefined,
     /* argumentsArray */ [ts.factory.createObjectLiteralExpression(members)],
   );

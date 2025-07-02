@@ -16,24 +16,51 @@ import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {checkIfGenericTypeBoundsCanBeEmitted} from './tcb_util';
 import {tsCreateTypeQueryForCoercedInput} from './ts_util';
 
+/**
+ * From
+ * ```ts
+ * const _ngTypeCtor = <T>(init: Pick<NgForOf<T>, 'ngForOf'>): NgForOf<T>;
+ * ```
+ * changed to
+ * ```ts
+ * const _ngTypeCtor = <K extends keyof i0.Dir<never>>() => <T = string>(init: Pick<i0.Dir<T>, K>) => i0.Dir<T>;
+ * ```
+ *
+ * and from
+ * ```ts
+ * static ngTypeCtor<T>(init: Pick<NgForOf<T>, 'ngForOf'>): NgForOf<T>;
+ * ```
+ * changed to
+ * ```ts
+ * static ngTypeCtor<K extends keyof i0.Dir<never>>(): <T = string>(init: Pick<i0.Dir<T>, K>) => i0.Dir<T>;
+ * ```
+ *
+ * The idea is to make the type constructor context-sensitive w.r.t. the actually bound inputs, as injecting
+ * unbound inputs using either `0 as any` or `0 as never` has unintended side-effects, as does using `Partial` as it
+ * clobbers the input types with `undefined`, harming inference results.
+ */
+
 export function generateTypeCtorDeclarationFn(
   env: ReferenceEmitEnvironment,
   meta: TypeCtorMetadata,
   nodeTypeRef: ts.EntityName,
   typeParams: ts.TypeParameterDeclaration[] | undefined,
 ): ts.Statement {
-  const rawTypeArgs = typeParams !== undefined ? generateGenericArgs(typeParams) : undefined;
-  const rawType = ts.factory.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
-
-  const initParam = constructTypeCtorParameter(env, meta, rawType);
-
-  const typeParameters = typeParametersWithDefaultTypes(typeParams);
+  const boundInputsTypeParam = createTypeCtorBoundInputsTypeParam(nodeTypeRef, typeParams);
+  const boundInputsType = ts.factory.createTypeReferenceNode(boundInputsTypeParam.name);
+  const inferenceSignature = createTypeCtorInferenceSignature(
+    env,
+    meta,
+    nodeTypeRef,
+    typeParams,
+    boundInputsType,
+  );
 
   if (meta.body) {
     const fnType = ts.factory.createFunctionTypeNode(
-      /* typeParameters */ typeParameters,
-      /* parameters */ [initParam],
-      /* type */ rawType,
+      /* typeParameters */ [boundInputsTypeParam],
+      /* parameters */ [],
+      /* type */ inferenceSignature,
     );
 
     const decl = ts.factory.createVariableDeclaration(
@@ -52,12 +79,53 @@ export function generateTypeCtorDeclarationFn(
       /* modifiers */ [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
       /* asteriskToken */ undefined,
       /* name */ meta.fnName,
-      /* typeParameters */ typeParameters,
-      /* parameters */ [initParam],
-      /* type */ rawType,
+      /* typeParameters */ [boundInputsTypeParam],
+      /* parameters */ [],
+      /* type */ inferenceSignature,
       /* body */ undefined,
     );
   }
+}
+
+function createTypeCtorInferenceSignature(
+  env: ReferenceEmitEnvironment,
+  meta: TypeCtorMetadata,
+  nodeTypeRef: ts.EntityName,
+  typeParams: ReadonlyArray<ts.TypeParameterDeclaration> | undefined,
+  boundInputsType: ts.TypeNode,
+) {
+  const rawTypeArgs = typeParams !== undefined ? generateGenericArgs(typeParams) : undefined;
+  const rawType = ts.factory.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
+
+  const initParam = constructTypeCtorParameter(env, meta, rawType, boundInputsType);
+
+  const typeParameters = typeParametersWithDefaultTypes(typeParams);
+
+  return ts.factory.createFunctionTypeNode(
+    /* typeParameters */ typeParameters,
+    /* parameters */ [initParam],
+    /* type */ rawType,
+  );
+}
+
+function createTypeCtorBoundInputsTypeParam(
+  nodeTypeRef: ts.EntityName,
+  typeParams: ReadonlyArray<ts.TypeParameterDeclaration> | undefined,
+) {
+  let neverTypeParams: ts.TypeNode[] | undefined = undefined;
+  if (typeParams !== undefined && typeParams.some((param) => param.default !== undefined)) {
+    neverTypeParams = typeParams.map(() =>
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword),
+    );
+  }
+
+  const parameterizedType = ts.factory.createTypeReferenceNode(nodeTypeRef, neverTypeParams);
+  const constraint = ts.factory.createTypeOperatorNode(
+    ts.SyntaxKind.KeyOfKeyword,
+    parameterizedType,
+  );
+
+  return ts.factory.createTypeParameterDeclaration(undefined, 'NgBoundInputs', constraint);
 }
 
 /**
@@ -72,16 +140,20 @@ export function generateTypeCtorDeclarationFn(
  *
  * An inline type constructor for NgFor looks like:
  *
+ * ```ts
  * static ngTypeCtor<T>(init: Pick<NgForOf<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>):
  *   NgForOf<T>;
+ * ```
  *
  * A typical constructor would be:
  *
+ * ```ts
  * NgForOf.ngTypeCtor(init: {
  *   ngForOf: ['foo', 'bar'],
  *   ngForTrackBy: null as any,
  *   ngForTemplate: null as any,
  * }); // Infers a type of NgForOf<string>.
+ * ```
  *
  * Any inputs declared on the type for which no property binding is present are assigned a value of
  * type `any`, to avoid producing any type errors for unset inputs.
@@ -103,11 +175,15 @@ export function generateInlineTypeCtor(
   // Build rawType, a `ts.TypeNode` of the class with its generic parameters passed through from
   // the definition without any type bounds. For example, if the class is
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
-  const rawTypeArgs =
-    node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
-  const rawType = ts.factory.createTypeReferenceNode(node.name, rawTypeArgs);
-
-  const initParam = constructTypeCtorParameter(env, meta, rawType);
+  const boundInputsTypeParam = createTypeCtorBoundInputsTypeParam(node.name, node.typeParameters);
+  const boundInputsType = ts.factory.createTypeReferenceNode(boundInputsTypeParam.name);
+  const inferenceSignature = createTypeCtorInferenceSignature(
+    env,
+    meta,
+    node.name,
+    node.typeParameters,
+    boundInputsType,
+  );
 
   // If this constructor is being generated into a .ts file, then it needs a fake body. The body
   // is set to a return of `null!`. If the type constructor is being generated into a .d.ts file,
@@ -125,9 +201,9 @@ export function generateInlineTypeCtor(
     /* asteriskToken */ undefined,
     /* name */ meta.fnName,
     /* questionToken */ undefined,
-    /* typeParameters */ typeParametersWithDefaultTypes(node.typeParameters),
-    /* parameters */ [initParam],
-    /* type */ rawType,
+    /* typeParameters */ [boundInputsTypeParam],
+    /* parameters */ [],
+    /* type */ inferenceSignature,
     /* body */ body,
   );
 }
@@ -136,6 +212,7 @@ function constructTypeCtorParameter(
   env: ReferenceEmitEnvironment,
   meta: TypeCtorMetadata,
   rawType: ts.TypeReferenceNode,
+  inferredBoundInputs: ts.TypeNode,
 ): ts.ParameterDeclaration {
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, its initType will be:
@@ -215,6 +292,8 @@ function constructTypeCtorParameter(
   if (initType === null) {
     // Special case - no inputs, outputs, or other fields which could influence the result type.
     initType = ts.factory.createTypeLiteralNode([]);
+  } else {
+    initType = ts.factory.createTypeReferenceNode('Pick', [initType, inferredBoundInputs]);
   }
 
   // Create the 'init' parameter itself.
