@@ -1,4 +1,3 @@
-/* To learn more about this file see: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
 {
   "ts-node": {
     "compilerOptions": {
@@ -28,12 +27,7 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
-    // TODO(crisbeto): temporarily disabled while adding support for TS 5.4. Should be re-enabled.
-    "skipLibCheck": true,
-    "paths": {
-      "@angular/docs": ["./shared-docs"],
-      "@angular/*": ["../packages/*"]
-    }
+    "skipLibCheck": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
