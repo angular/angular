@@ -26,7 +26,7 @@ In the code editor:
 
 1. Navigate to `src/app/home/home.component.ts`
 1. In the template property of the `@Component` decorator, update the code to match the code below:
-    <docs-code header="Add housingLocation property binding" path="adev/src/content/tutorials/first-app/steps/07-dynamic-template-values/src/app/home/home.component.ts" visibleLines="[17,19]"/>
+    <docs-code header="Add housingLocation property binding" path="adev/src/content/tutorials/first-app/steps/07-dynamic-template-values/src/app/home/home.component.ts" visibleLines="[16,18]"/>
 
     When adding a property binding to a component tag, we use the `[attribute] = "value"` syntax to notify Angular that the assigned value should be treated as a property from the component class and not a string value.
 
