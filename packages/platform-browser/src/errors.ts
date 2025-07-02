@@ -12,6 +12,7 @@
 export const enum RuntimeErrorCode {
   // Hydration Errors
   UNSUPPORTED_ZONEJS_INSTANCE = -5000,
+  HYDRATION_CONFLICTING_FEATURES = -5001,
 
   // misc errors (5100-5200 range)
   BROWSER_MODULE_ALREADY_LOADED = 5100,
