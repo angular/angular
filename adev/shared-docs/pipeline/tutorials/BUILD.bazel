@@ -1,3 +1,4 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -9,8 +10,8 @@ ts_project(
             "*.mts",
         ],
         exclude = [
-            "playground.mts",
-            "tutorial.mts",
+            "playground_index.mts",
+            "tutorial_index.mts",
         ],
     ),
     enable_runtime_rnjs_interop = True,
@@ -25,7 +26,7 @@ ts_project(
 ts_project(
     name = "playground",
     srcs = [
-        "playground.mts",
+        "playground_index.mts",
     ],
     enable_runtime_rnjs_interop = True,
     visibility = [
@@ -39,9 +40,9 @@ ts_project(
 )
 
 ts_project(
-    name = "tutorials",
+    name = "tutorial",
     srcs = [
-        "tutorial.mts",
+        "tutorial_index.mts",
     ],
     visibility = [
         "//adev/shared-docs:__subpackages__",
@@ -50,5 +51,39 @@ ts_project(
         ":editor_rjs",
         "//:node_modules/@types/node",
         "//adev/shared-docs/interfaces:interfaces_rjs",
+    ],
+)
+
+esbuild(
+    name = "playground_bundle",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    entry_point = ":playground_index.mts",
+    format = "esm",
+    output = "playground.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":playground_rjs",
+    ],
+)
+
+esbuild(
+    name = "tutorial_bundle",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    entry_point = ":tutorial_index.mts",
+    format = "esm",
+    output = "tutorial.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":tutorial_rjs",
     ],
 )

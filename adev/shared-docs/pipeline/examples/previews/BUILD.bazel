@@ -1,6 +1,11 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "previews.template",
+])
 
 ts_project(
     name = "index",
@@ -24,7 +29,23 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-exports_files([
-    "index.mts",
-    "previews.template",
-])
+esbuild(
+    name = "bundle",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    entry_point = ":index.mts",
+    external = [
+        "typescript",
+        "path",
+    ],
+    format = "esm",
+    output = "previews.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/examples/previews:index_rjs",
+    ],
+)

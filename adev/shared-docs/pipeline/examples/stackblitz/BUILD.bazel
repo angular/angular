@@ -1,3 +1,4 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -38,6 +39,21 @@ ts_project(
     ],
 )
 
-exports_files([
-    "index.mts",
-])
+esbuild(
+    name = "bundle",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    entry_point = ":index.mts",
+    # JSDOM should not be bundled because it has workers and dynamic imports.
+    external = ["jsdom"],
+    format = "esm",
+    output = "stackblitz.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index_rjs",
+    ],
+)
