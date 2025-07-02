@@ -1,18 +1,18 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
-load("@devinfra//bazel/esbuild:index.bzl", "esbuild_esm_bundle")
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
-esbuild_esm_bundle(
+esbuild(
     name = "bin",
     entry_point = ":index.mts",
-    metafile = False,
+    format = "esm",
     output = "bin.mjs",
     platform = "node",
     target = "es2022",
     deps = [
-        ":render_api_to_html_lib",
+        ":render_api_to_html_lib_rjs",
     ],
 )
 
@@ -31,14 +31,14 @@ ts_project(
     enable_runtime_rnjs_interop = True,
     deps = [
         ":entities_rjs",
-        "//:node_modules/@bazel/runfiles",
-        "//:node_modules/@types/node",
-        "//:node_modules/html-entities",
-        "//:node_modules/marked",
-        "//:node_modules/preact",
-        "//:node_modules/preact-render-to-string",
-        "//:node_modules/prettier",
-        "//:node_modules/shiki",
+        "//adev:node_modules/@bazel/runfiles",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/html-entities",
+        "//adev:node_modules/marked",
+        "//adev:node_modules/preact",
+        "//adev:node_modules/preact-render-to-string",
+        "//adev:node_modules/prettier",
+        "//adev:node_modules/shiki",
     ],
 )
 

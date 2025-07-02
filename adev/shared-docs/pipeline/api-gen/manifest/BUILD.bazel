@@ -1,22 +1,22 @@
 load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
-load("@devinfra//bazel/esbuild:index.bzl", "esbuild_esm_bundle")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
-esbuild_esm_bundle(
+esbuild(
     name = "bin",
     entry_point = ":index.mts",
     external = [
         "@angular/compiler-cli",
     ],
-    metafile = False,
+    format = "esm",
     output = "bin.mjs",
     platform = "node",
     target = "es2022",
     deps = [
-        ":generate_api_manifest_lib",
-        "@angular//packages/compiler-cli",
+        ":generate_api_manifest_lib_rjs",
+        "//adev:node_modules/@angular/compiler-cli",
     ],
 )
 
@@ -24,9 +24,9 @@ ts_project(
     name = "generate_api_manifest_lib",
     srcs = glob(["**/*.mts"]),
     deps = [
-        "//:node_modules/@angular/compiler-cli",
-        "//:node_modules/@bazel/runfiles",
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@angular/compiler-cli",
+        "//adev:node_modules/@bazel/runfiles",
+        "//adev:node_modules/@types/node",
     ],
 )
 

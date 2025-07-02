@@ -55,7 +55,7 @@ ts_project(
         "@angular//packages/compiler-cli",
     ],
     deps = [
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@types/node",
         "//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json_lib_rjs",
     ],
 )

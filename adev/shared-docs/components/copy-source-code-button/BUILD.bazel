@@ -14,9 +14,9 @@ ng_project(
         "//adev/shared-docs/components/viewers:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/cdk",
-        "//:node_modules/@angular/common",
-        "//:node_modules/@angular/core",
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
         "//adev/shared-docs/components/icon:icon_rjs",
     ],
 )
@@ -29,9 +29,9 @@ ts_project(
     ),
     deps = [
         ":copy-source-code-button_rjs",
-        "//:node_modules/@angular/cdk",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/platform-browser",
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
     ],
 )
 

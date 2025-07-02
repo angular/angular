@@ -8,9 +8,9 @@ ts_project(
         "*.spec.mts",
     ]),
     deps = [
-        "//:node_modules/@types/jsdom",
-        "//:node_modules/jsdom",
-        "//:node_modules/marked",
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/jsdom",
+        "//adev:node_modules/marked",
         "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
     ],
 )
