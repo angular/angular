@@ -22,7 +22,7 @@ consts: () => {
     }
     if (rf & 2) {
       $r3$.ɵɵadvance(3);
-      $r3$.ɵɵdomProperty("tabindex", ctx.tabIndex);
+      $r3$.ɵɵdomProperty("tabIndex", ctx.tabIndex);
       $r3$.ɵɵadvance();
       $r3$.ɵɵdomProperty("ngIf", ctx.cond);
       $r3$.ɵɵadvance(2);

@@ -12,7 +12,7 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵadvance(3);
     $r3$.ɵɵattribute("aria-label", ctx.value1)("aria-label", ctx.value2);
     $r3$.ɵɵadvance();
-    $r3$.ɵɵdomProperty("tabindex", ctx.value1)("tabindex", ctx.value2);
+    $r3$.ɵɵdomProperty("tabIndex", ctx.value1)("tabIndex", ctx.value2);
     $r3$.ɵɵadvance();
     $r3$.ɵɵclassMap(ctx.value2);
     $r3$.ɵɵadvance();

@@ -27,6 +27,19 @@ const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>([
 ]);
 
 /**
+ * DOM properties that need to be remapped on the compiler side.
+ * Note: this mapping has to be kept in sync with the equally named mapping in the runtime.
+ */
+const DOM_PROPERTY_REMAPPING = new Map([
+  ['class', 'className'],
+  ['for', 'htmlFor'],
+  ['formaction', 'formAction'],
+  ['innerHtml', 'innerHTML'],
+  ['readonly', 'readOnly'],
+  ['tabindex', 'tabIndex'],
+]);
+
+/**
  * Compiles semantic operations across all views and generates output `o.Statement`s with actual
  * runtime calls in their place.
  *
@@ -549,7 +562,12 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
         ir.OpList.replace(
           op,
           unit.job.mode === TemplateCompilationMode.DomOnly && !op.isLegacyAnimationTrigger
-            ? ng.domProperty(op.name, op.expression, op.sanitizer, op.sourceSpan)
+            ? ng.domProperty(
+                DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
+                op.expression,
+                op.sanitizer,
+                op.sourceSpan,
+              )
             : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan),
         );
         break;
@@ -598,7 +616,12 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
           } else {
             ir.OpList.replace(
               op,
-              ng.domProperty(op.name, op.expression, op.sanitizer, op.sourceSpan),
+              ng.domProperty(
+                DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
+                op.expression,
+                op.sanitizer,
+                op.sourceSpan,
+              ),
             );
           }
         }
