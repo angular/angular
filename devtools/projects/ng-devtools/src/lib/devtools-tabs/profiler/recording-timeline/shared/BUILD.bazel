@@ -23,7 +23,6 @@ ts_test_library(
 
 ng_web_test_suite(
     name = "test",
-    tsconfig = "//tools:tsconfig_build",
     deps = [
         ":test_lib_rjs",
     ],

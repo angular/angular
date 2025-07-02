@@ -2,9 +2,15 @@
 
 load("//tools:defaults2.bzl", _ng_web_test_suite = "ng_web_test_suite")
 
-def ng_web_test_suite(name, tsconfig = "//devtools:tsconfig_test", **kwargs):
+def ng_web_test_suite(deps = [], **kwargs):
+    # Provide required modules for the imports in //tools/testing/browser_tests.init.mts
+    deps = deps + [
+        "//:node_modules/@angular/compiler",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+    ]
     _ng_web_test_suite(
-        name = name,
-        tsconfig = tsconfig,
+        deps = deps,
+        tsconfig = "//devtools:tsconfig_test",
         **kwargs
     )
