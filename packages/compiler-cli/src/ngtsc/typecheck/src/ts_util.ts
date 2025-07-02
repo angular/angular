@@ -21,29 +21,33 @@ import {addExpressionIdentifier, ExpressionIdentifier} from './comments';
  * `ts.BinaryExpression`s need to be wrapped in parentheses before casting.
  */
 //
-const SAFE_TO_CAST_WITHOUT_PARENS: Set<ts.SyntaxKind> = new Set([
-  // Expressions which are already parenthesized can be cast without further wrapping.
-  ts.SyntaxKind.ParenthesizedExpression,
-
-  // Expressions which form a single lexical unit leave no room for precedence issues with the cast.
-  ts.SyntaxKind.Identifier,
-  ts.SyntaxKind.CallExpression,
-  ts.SyntaxKind.NonNullExpression,
-  ts.SyntaxKind.ElementAccessExpression,
-  ts.SyntaxKind.PropertyAccessExpression,
-  ts.SyntaxKind.ArrayLiteralExpression,
-  ts.SyntaxKind.ObjectLiteralExpression,
-
-  // The same goes for various literals.
-  ts.SyntaxKind.StringLiteral,
-  ts.SyntaxKind.NumericLiteral,
-  ts.SyntaxKind.TrueKeyword,
-  ts.SyntaxKind.FalseKeyword,
-  ts.SyntaxKind.NullKeyword,
-  ts.SyntaxKind.UndefinedKeyword,
-]);
+let SAFE_TO_CAST_WITHOUT_PARENS: Set<ts.SyntaxKind> | null = null;
 
 export function tsCastToAny(expr: ts.Expression): ts.Expression {
+  if (SAFE_TO_CAST_WITHOUT_PARENS === null) {
+    SAFE_TO_CAST_WITHOUT_PARENS = new Set([
+      // Expressions which are already parenthesized can be cast without further wrapping.
+      ts.SyntaxKind.ParenthesizedExpression,
+
+      // Expressions which form a single lexical unit leave no room for precedence issues with the cast.
+      ts.SyntaxKind.Identifier,
+      ts.SyntaxKind.CallExpression,
+      ts.SyntaxKind.NonNullExpression,
+      ts.SyntaxKind.ElementAccessExpression,
+      ts.SyntaxKind.PropertyAccessExpression,
+      ts.SyntaxKind.ArrayLiteralExpression,
+      ts.SyntaxKind.ObjectLiteralExpression,
+
+      // The same goes for various literals.
+      ts.SyntaxKind.StringLiteral,
+      ts.SyntaxKind.NumericLiteral,
+      ts.SyntaxKind.TrueKeyword,
+      ts.SyntaxKind.FalseKeyword,
+      ts.SyntaxKind.NullKeyword,
+      ts.SyntaxKind.UndefinedKeyword,
+    ]);
+  }
+
   // Wrap `expr` in parentheses if needed (see `SAFE_TO_CAST_WITHOUT_PARENS` above).
   if (!SAFE_TO_CAST_WITHOUT_PARENS.has(expr.kind)) {
     expr = ts.factory.createParenthesizedExpression(expr);

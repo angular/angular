@@ -72,7 +72,7 @@ import {
 } from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
-import {astToTypescript, ANY_EXPRESSION} from './expression';
+import {astToTypescript, getAnyExpression} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {
   tsCallMethod,
@@ -294,7 +294,13 @@ abstract class TcbOp {
    * circular references.
    */
   circularFallback(): TcbOp | ts.Expression {
-    return INFER_TYPE_FOR_CIRCULAR_OP_EXPR;
+    // Value used to break a circular reference between `TcbOp`s.
+    //
+    // This value is returned whenever `TcbOp`s have a circular dependency. The
+    // expression is a non-null assertion of the null value (in TypeScript, the
+    // expression `null!`). This construction will infer the least narrow type
+    // for whatever it's assigned to.
+    return ts.factory.createNonNullExpression(ts.factory.createNull());
   }
 }
 
@@ -821,7 +827,7 @@ class TcbInvalidReferenceOp extends TcbOp {
 
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
-    this.scope.addStatement(tsCreateVariable(id, ANY_EXPRESSION));
+    this.scope.addStatement(tsCreateVariable(id, getAnyExpression()));
     return id;
   }
 }
@@ -2055,15 +2061,6 @@ class TcbForOfOp extends TcbOp {
 }
 
 /**
- * Value used to break a circular reference between `TcbOp`s.
- *
- * This value is returned whenever `TcbOp`s have a circular dependency. The expression is a non-null
- * assertion of the null value (in TypeScript, the expression `null!`). This construction will infer
- * the least narrow type for whatever it's assigned to.
- */
-const INFER_TYPE_FOR_CIRCULAR_OP_EXPR = ts.factory.createNonNullExpression(ts.factory.createNull());
-
-/**
  * Overall generation context for the type check block.
  *
  * `Context` handles operations during code generation which are global with respect to the whole
@@ -2189,16 +2186,18 @@ class Scope {
   private statements: ts.Statement[] = [];
 
   /**
-   * Names of the for loop context variables and their types.
+   * Gets names of the for loop context variables and their types.
    */
-  private static readonly forLoopContextVariableTypes = new Map<string, ts.KeywordTypeSyntaxKind>([
-    ['$first', ts.SyntaxKind.BooleanKeyword],
-    ['$last', ts.SyntaxKind.BooleanKeyword],
-    ['$even', ts.SyntaxKind.BooleanKeyword],
-    ['$odd', ts.SyntaxKind.BooleanKeyword],
-    ['$index', ts.SyntaxKind.NumberKeyword],
-    ['$count', ts.SyntaxKind.NumberKeyword],
-  ]);
+  private static getForLoopContextVariableTypes() {
+    return new Map<string, ts.KeywordTypeSyntaxKind>([
+      ['$first', ts.SyntaxKind.BooleanKeyword],
+      ['$last', ts.SyntaxKind.BooleanKeyword],
+      ['$even', ts.SyntaxKind.BooleanKeyword],
+      ['$odd', ts.SyntaxKind.BooleanKeyword],
+      ['$index', ts.SyntaxKind.NumberKeyword],
+      ['$count', ts.SyntaxKind.NumberKeyword],
+    ]);
+  }
 
   private constructor(
     private tcb: Context,
@@ -2273,13 +2272,15 @@ class Scope {
       addParseSpanInfo(loopInitializer, scopedNode.item.sourceSpan);
       scope.varMap.set(scopedNode.item, loopInitializer);
 
+      const forLoopContextVariableTypes = Scope.getForLoopContextVariableTypes();
+
       for (const variable of scopedNode.contextVariables) {
-        if (!this.forLoopContextVariableTypes.has(variable.value)) {
+        if (!forLoopContextVariableTypes.has(variable.value)) {
           throw new Error(`Unrecognized for loop context variable ${variable.name}`);
         }
 
         const type = ts.factory.createKeywordTypeNode(
-          this.forLoopContextVariableTypes.get(variable.value)!,
+          forLoopContextVariableTypes.get(variable.value)!,
         );
         this.registerVariable(
           scope,
@@ -3166,7 +3167,7 @@ class TcbExpressionTranslator {
         this.tcb.oobRecorder.missingPipe(this.tcb.id, ast, this.tcb.hostIsStandalone);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
-        pipe = ANY_EXPRESSION;
+        pipe = getAnyExpression();
       } else if (
         pipeMeta.isExplicitlyDeferred &&
         this.tcb.boundTarget.getEagerlyUsedPipes().includes(ast.name)
@@ -3176,7 +3177,7 @@ class TcbExpressionTranslator {
         this.tcb.oobRecorder.deferredPipeUsedEagerly(this.tcb.id, ast);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
-        pipe = ANY_EXPRESSION;
+        pipe = getAnyExpression();
       } else {
         // Use a variable declared as the pipe's type.
         pipe = this.tcb.env.pipeInst(
@@ -3297,7 +3298,7 @@ function tcbCallTypeCtor(
     } else {
       // A type constructor is required to be called with all input properties, so any unset
       // inputs are simply assigned a value of type `any` to ignore them.
-      return ts.factory.createPropertyAssignment(propertyName, ANY_EXPRESSION);
+      return ts.factory.createPropertyAssignment(propertyName, getAnyExpression());
     }
   });
 
