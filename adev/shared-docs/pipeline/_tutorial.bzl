@@ -1,5 +1,3 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
-
 def _generate_tutorial(ctx):
     """Implementation of the tutorial generator rule"""
 
@@ -29,12 +27,14 @@ def _generate_tutorial(ctx):
 
     ctx.runfiles(files = ctx.files.common_srcs)
 
-    run_node(
-        ctx = ctx,
+    ctx.actions.run(
         inputs = depset(ctx.files.tutorial_srcs + ctx.files.common_srcs),
-        executable = "_generate_tutorial",
+        executable = ctx.executable._generate_tutorial,
         outputs = [tutorial_directory],
         arguments = [args],
+        env = {
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     # The return value describes what the rule is producing. In this case we need to specify
