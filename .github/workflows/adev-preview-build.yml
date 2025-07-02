@@ -35,4 +35,4 @@ jobs:
           workflow-artifact-name: 'adev-preview'
           pull-number: '${{github.event.pull_request.number}}'
           artifact-build-revision: '${{github.event.pull_request.head.sha}}'
-          deploy-directory: './dist/bin/adev/build/browser'
+          deploy-directory: './dist/bin/adev/dist/browser'
