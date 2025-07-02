@@ -1,7 +1,7 @@
 
 consts: [[__AttributeMarker.Bindings__, "for"]]
 
-// ...
+…
 
 function MyComponent_Template(rf, ctx) {
   if (rf & 1) {

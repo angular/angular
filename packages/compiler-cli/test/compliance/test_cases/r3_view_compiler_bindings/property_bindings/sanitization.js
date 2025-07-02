@@ -3,7 +3,7 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵdomElement(0, "div", 0)(1, "link", 1)(2, "div")(3, "img", 2)(4, "iframe", 3)(5, "a", 1)(6, "div");
   }
   if (rf & 2) {
-    $r3$.ɵɵdomProperty("innerHtml", ctx.evil, $r3$.ɵɵsanitizeHtml);
+    $r3$.ɵɵdomProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml);
     $r3$.ɵɵadvance();
     $r3$.ɵɵdomProperty("href", ctx.evil, $r3$.ɵɵsanitizeResourceUrl);
     $r3$.ɵɵadvance();

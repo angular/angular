@@ -76,13 +76,11 @@ describe('property bindings', () => {
   it('should bind to properties whose names do not correspond to their attribute names', () => {
     @Component({
       template: '<label [for]="forValue"></label>',
-      standalone: false,
     })
     class MyComp {
       forValue?: string;
     }
 
-    TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
     const labelNode = fixture.debugElement.query(By.css('label'));
 
@@ -104,7 +102,6 @@ describe('property bindings', () => {
       @Component({
         template: '',
         selector: 'my-comp',
-        standalone: false,
       })
       class MyComp {
         @Input() for!: string;
@@ -112,13 +109,12 @@ describe('property bindings', () => {
 
       @Component({
         template: '<my-comp [for]="forValue"></my-comp>',
-        standalone: false,
+        imports: [MyComp],
       })
       class App {
         forValue?: string;
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyComp]});
       const fixture = TestBed.createComponent(App);
       const myCompNode = fixture.debugElement.query(By.directive(MyComp));
       fixture.componentInstance.forValue = 'hello';
