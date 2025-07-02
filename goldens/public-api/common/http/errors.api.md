@@ -19,6 +19,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HTTP_ORIGIN_MAP_USED_IN_CLIENT = 2803,
     // (undocumented)
+    INTEGRITY_NOT_SUPPORTED_WITH_XHR = 2820,
+    // (undocumented)
     JSONP_HEADERS_NOT_SUPPORTED = 2812,
     // (undocumented)
     JSONP_WRONG_METHOD = 2810,
@@ -36,6 +38,8 @@ export const enum RuntimeErrorCode {
     PRIORITY_NOT_SUPPORTED_WITH_XHR = 2815,
     // (undocumented)
     REDIRECT_NOT_SUPPORTED_WITH_XHR = 2817,
+    // (undocumented)
+    REFERRER_NOT_SUPPORTED_WITH_XHR = 2821,
     // (undocumented)
     RESPONSE_IS_NOT_A_BLOB = 2807,
     // (undocumented)

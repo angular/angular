@@ -79,6 +79,22 @@ describe('HttpRequest', () => {
       const req = new HttpRequest('GET', '/test', {cache: 'only-if-cached'});
       expect(req.cache).toBe('only-if-cached');
     });
+    it('should allow setting timeout option', () => {
+      const req = new HttpRequest('GET', '/test', {timeout: 5000});
+      expect(req.timeout).toBe(5000);
+    });
+    it('should allow setting credentials option', () => {
+      const req = new HttpRequest('GET', '/test', {credentials: 'same-origin'});
+      expect(req.credentials).toBe('same-origin');
+    });
+    it('should allow setting integrity option', () => {
+      const req = new HttpRequest('GET', '/test', {integrity: 'sha256-...'});
+      expect(req.integrity).toBe('sha256-...');
+    });
+    it('should allow setting referrer option', () => {
+      const req = new HttpRequest('GET', '/test', {referrer: 'about:client'});
+      expect(req.referrer).toBe('about:client');
+    });
   });
   describe('clone() copies the request', () => {
     const headers = new HttpHeaders({
@@ -97,6 +113,8 @@ describe('HttpRequest', () => {
       priority: 'high',
       timeout: 1000,
       credentials: 'same-origin',
+      referrer: 'about:client',
+      integrity: 'sha256-...',
     });
     it('in the base case', () => {
       const clone = req.clone();
@@ -114,6 +132,8 @@ describe('HttpRequest', () => {
       expect(clone.priority).toBe('high');
       expect(clone.timeout).toBe(1000);
       expect(clone.credentials).toBe('same-origin');
+      expect(clone.referrer).toBe('about:client');
+      expect(clone.integrity).toBe('sha256-...');
     });
     it('and updates the url', () => {
       expect(req.clone({url: '/changed'}).url).toBe('/changed');
@@ -146,6 +166,13 @@ describe('HttpRequest', () => {
     it('and updates the credentials', () => {
       expect(req.clone({credentials: 'omit'}).credentials).toBe('omit');
     });
+    it('and updates the referrer', () => {
+      expect(req.clone({referrer: 'https://example.com'}).referrer).toBe('https://example.com');
+    });
+    it('and updates the integrity', () => {
+      expect(req.clone({integrity : 'sha512-...' }).integrity).toBe('sha512-...');
+    });
+
   });
   describe('content type detection', () => {
     const baseReq = new HttpRequest('POST', '/test', null);

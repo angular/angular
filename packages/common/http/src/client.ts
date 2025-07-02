@@ -45,6 +45,8 @@ function addBody<T>(
     cache?: RequestCache;
     mode?: RequestMode;
     redirect?: RequestRedirect;
+    referrer?: string;
+    integrity?: string;
     transferCache?: {includeHeaders?: string[]} | boolean;
   },
   body: T | null,
@@ -161,6 +163,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<ArrayBuffer>;
@@ -195,6 +199,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<Blob>;
@@ -229,6 +235,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<string>;
@@ -264,6 +272,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
@@ -299,6 +309,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<Blob>>;
@@ -334,6 +346,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<string>>;
@@ -369,6 +383,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<any>>;
@@ -404,6 +420,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<R>>;
@@ -438,6 +456,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
@@ -471,6 +491,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<Blob>>;
@@ -505,6 +527,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<string>>;
@@ -540,6 +564,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<Object>>;
 
@@ -573,6 +599,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<R>>;
@@ -607,6 +635,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<Object>;
@@ -641,6 +671,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<R>;
@@ -674,6 +706,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<any>;
@@ -724,6 +758,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     } = {},
   ): Observable<any> {
@@ -771,6 +807,8 @@ export class HttpClient {
         mode: options.mode,
         redirect: options.redirect,
         credentials: options.credentials,
+        referrer: options.referrer,
+        integrity: options.integrity,
       });
     }
     // Start with an Observable.of() the initial request, and run the handler (which
@@ -887,6 +925,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<ArrayBuffer>;
@@ -918,6 +958,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<Blob>;
@@ -949,6 +991,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<string>;
@@ -981,6 +1025,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
@@ -1013,6 +1059,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpEvent<Blob>>;
@@ -1045,6 +1093,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpEvent<string>>;
@@ -1077,6 +1127,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpEvent<Object>>;
@@ -1109,6 +1161,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpEvent<T>>;
@@ -1140,6 +1194,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
@@ -1171,6 +1227,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpResponse<Blob>>;
@@ -1202,6 +1260,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpResponse<string>>;
@@ -1234,6 +1294,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpResponse<Object>>;
@@ -1265,6 +1327,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<HttpResponse<T>>;
@@ -1296,6 +1360,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<Object>;
@@ -1327,6 +1393,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     },
   ): Observable<T>;
@@ -1358,6 +1426,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       body?: any | null;
     } = {},
   ): Observable<any> {
@@ -1391,6 +1461,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<ArrayBuffer>;
@@ -1422,6 +1494,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<Blob>;
@@ -1453,6 +1527,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<string>;
@@ -1485,6 +1561,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
@@ -1516,6 +1594,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<Blob>>;
@@ -1547,6 +1627,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<string>>;
@@ -1578,6 +1660,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<Object>>;
@@ -1609,6 +1693,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<T>>;
@@ -1641,6 +1727,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
@@ -1673,6 +1761,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<Blob>>;
@@ -1705,6 +1795,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<string>>;
@@ -1737,6 +1829,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<Object>>;
@@ -1769,6 +1863,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<T>>;
@@ -1801,6 +1897,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<Object>;
@@ -1832,6 +1930,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<T>;
@@ -1859,6 +1959,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     } = {},
   ): Observable<any> {
@@ -1892,6 +1994,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<ArrayBuffer>;
@@ -1924,6 +2028,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<Blob>;
@@ -1955,6 +2061,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<string>;
@@ -1987,6 +2095,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
@@ -2019,6 +2129,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<Blob>>;
@@ -2051,6 +2163,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<string>>;
@@ -2083,6 +2197,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<Object>>;
@@ -2115,6 +2231,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<T>>;
@@ -2147,6 +2265,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
@@ -2179,6 +2299,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<Blob>>;
@@ -2211,6 +2333,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<string>>;
@@ -2243,6 +2367,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
 
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
@@ -2276,6 +2402,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<T>>;
@@ -2308,6 +2436,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<Object>;
@@ -2340,6 +2470,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<T>;
@@ -2369,6 +2501,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     } = {},
   ): Observable<any> {
@@ -2452,6 +2586,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<ArrayBuffer>;
 
@@ -2482,6 +2618,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<Blob>;
 
@@ -2512,6 +2650,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<string>;
 
@@ -2543,6 +2683,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
 
@@ -2574,6 +2716,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<Blob>>;
 
@@ -2605,6 +2749,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<string>>;
 
@@ -2636,6 +2782,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<Object>>;
 
@@ -2667,6 +2815,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<T>>;
 
@@ -2698,6 +2848,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
 
@@ -2729,6 +2881,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<Blob>>;
 
@@ -2760,6 +2914,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<string>>;
 
@@ -2791,6 +2947,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<Object>>;
 
@@ -2822,6 +2980,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<T>>;
 
@@ -2853,6 +3013,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<Object>;
 
@@ -2883,6 +3045,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<T>;
 
@@ -2911,6 +3075,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     } = {},
   ): Observable<any> {
     return this.request<any>('OPTIONS', url, options as any);
@@ -2945,6 +3111,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<ArrayBuffer>;
 
@@ -2977,6 +3145,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<Blob>;
 
@@ -3009,6 +3179,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<string>;
 
@@ -3043,6 +3215,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
 
@@ -3076,6 +3250,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<Blob>>;
 
@@ -3109,6 +3285,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<string>>;
 
@@ -3142,6 +3320,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<Object>>;
 
@@ -3175,6 +3355,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<T>>;
 
@@ -3208,6 +3390,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
 
@@ -3241,6 +3425,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<Blob>>;
 
@@ -3274,6 +3460,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<string>>;
 
@@ -3307,6 +3495,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<Object>>;
 
@@ -3340,6 +3530,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<T>>;
 
@@ -3373,6 +3565,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<Object>;
 
@@ -3406,6 +3600,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<T>;
 
@@ -3433,6 +3629,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     } = {},
   ): Observable<any> {
     return this.request<any>('PATCH', url, addBody(options, body));
@@ -3467,6 +3665,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<ArrayBuffer>;
@@ -3500,6 +3700,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<Blob>;
@@ -3533,6 +3735,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<string>;
@@ -3567,6 +3771,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
@@ -3600,6 +3806,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<Blob>>;
@@ -3634,6 +3842,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<string>>;
@@ -3668,6 +3878,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<Object>>;
@@ -3702,6 +3914,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpEvent<T>>;
@@ -3736,6 +3950,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
@@ -3770,6 +3986,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<Blob>>;
@@ -3804,6 +4022,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<string>>;
@@ -3838,6 +4058,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<Object>>;
@@ -3873,6 +4095,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<T>>;
@@ -3906,6 +4130,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<Object>;
@@ -3940,6 +4166,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<T>;
@@ -3969,6 +4197,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
       transferCache?: {includeHeaders?: string[]} | boolean;
     } = {},
   ): Observable<any> {
@@ -4004,6 +4234,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<ArrayBuffer>;
 
@@ -4036,6 +4268,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<Blob>;
 
@@ -4068,6 +4302,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<string>;
 
@@ -4101,6 +4337,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
 
@@ -4134,6 +4372,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<Blob>>;
 
@@ -4167,6 +4407,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<string>>;
 
@@ -4200,6 +4442,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<Object>>;
 
@@ -4233,6 +4477,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpEvent<T>>;
 
@@ -4266,6 +4512,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
 
@@ -4299,6 +4547,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<Blob>>;
 
@@ -4332,6 +4582,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<string>>;
 
@@ -4365,6 +4617,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<Object>>;
 
@@ -4398,6 +4652,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<HttpResponse<T>>;
 
@@ -4430,6 +4686,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<Object>;
 
@@ -4462,6 +4720,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     },
   ): Observable<T>;
 
@@ -4490,6 +4750,8 @@ export class HttpClient {
       cache?: RequestCache;
       mode?: RequestMode;
       redirect?: RequestRedirect;
+      referrer?: string;
+      integrity?: string;
     } = {},
   ): Observable<any> {
     return this.request<any>('PUT', url, addBody(options, body));

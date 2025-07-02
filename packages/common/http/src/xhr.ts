@@ -89,6 +89,14 @@ function validateXhrCompatibility(req: HttpRequest<any>) {
       property: 'credentials',
       errorCode: RuntimeErrorCode.CREDENTIALS_NOT_SUPPORTED_WITH_XHR,
     },
+    {
+      property: 'integrity',
+      errorCode: RuntimeErrorCode.INTEGRITY_NOT_SUPPORTED_WITH_XHR,
+    },
+    {
+      property: 'referrer',
+      errorCode: RuntimeErrorCode.REFERRER_NOT_SUPPORTED_WITH_XHR,
+    }
   ];
 
   // Check each unsupported option and warn if present
