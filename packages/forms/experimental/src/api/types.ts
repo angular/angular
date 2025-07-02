@@ -14,6 +14,22 @@ import {MetadataKey} from './metadata';
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
 declare const ɵɵTYPE: unique symbol;
+declare const ɵɵROOT: unique symbol;
+declare const ɵɵCHILD: unique symbol;
+declare const ɵɵITEM: unique symbol;
+
+export namespace PathKind {
+  export interface Root {
+    [ɵɵROOT]: true;
+  }
+  export interface Child extends PathKind.Root {
+    [ɵɵCHILD]: true;
+  }
+  export interface Item extends PathKind.Child {
+    [ɵɵITEM]: true;
+  }
+}
+export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
 
 /**
  * Indicates whether the form is unsubmitted, submitted, or currently submitting.
@@ -197,31 +213,35 @@ export interface FieldState<T, TKey extends string | number = string | number> {
  *
  * @template T The type of the data which the form is wrapped around.
  */
-export type FieldPath<T> = {
-  [ɵɵTYPE]: T;
+export type FieldPath<T, TPathKind extends PathKind /*= PathKind.Root*/> = {
+  [ɵɵTYPE]: [T, TPathKind];
 } & (T extends any[]
   ? {}
   : T extends Record<PropertyKey, any>
-    ? {[K in keyof T]: FieldPath<T[K]>}
+    ? {[K in keyof T]: FieldPath<T[K], PathKind.Child>}
     : {});
 
 /**
  * Defines logic for a form of type T.
  */
-export type Schema<in T> = {
+export type Schema<in T, in TPathKind extends PathKind /*= PathKind.Root*/> = {
   // Save type as `T => void` rather than `T` since `Schema` is contravariant on `T`. */
-  [ɵɵTYPE]: (_: T) => void;
+  [ɵɵTYPE]: SchemaFn<T, TPathKind>;
 };
 
 /**
  * Function that defines rules for a schema.
  */
-export type SchemaFn<T> = (p: FieldPath<T>) => void;
+export type SchemaFn<T, TPathKind extends PathKind /*= PathKind.Root*/> = (
+  p: FieldPath<T, TPathKind>,
+) => void;
 
 /**
  * A schema or schema definition function.
  */
-export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
+export type SchemaOrSchemaFn<T, TPathKind extends PathKind /*= PathKind.Root*/> =
+  | Schema<T, TPathKind>
+  | SchemaFn<T, TPathKind>;
 
 /**
  * A function that recevies the `FieldContext` for the field the logic is bound to and returns
@@ -230,7 +250,9 @@ export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
  * @template TValue The data type for the field the logic is bound to.
  * @template TReturn The type of the result returned by the logic function.
  */
-export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
+export type LogicFn<TValue, TReturn, TPathKind extends PathKind /*= PathKind.Root*/> = (
+  ctx: FieldContext<TValue, TPathKind>,
+) => TReturn;
 
 /**
  * A Validator is a function that
@@ -238,23 +260,40 @@ export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
  *
  *  @template T Value type
  */
-export type Validator<T> = LogicFn<T, ValidationResult>;
+export type Validator<T, TPathKind extends PathKind /*= PathKind.Root*/> = LogicFn<
+  T,
+  ValidationResult,
+  TPathKind
+>;
 
-export type TreeValidator<T> = LogicFn<T, FormTreeError[]>;
+export type TreeValidator<T, TPathKind extends PathKind /*= PathKind.Root*/> = LogicFn<
+  T,
+  FormTreeError[],
+  TPathKind
+>;
 
-/**
- * An object containing context about the field a given logic function is bound to.
- */
-export interface FieldContext<T> {
-  /**
-   * A signal of the value of the field that the logic function is bound to.
-   */
+export type FieldContext<
+  T,
+  TPathKind extends PathKind /*= PathKind.Root*/,
+> = TPathKind extends PathKind.Item
+  ? ItemFieldContext<T>
+  : TPathKind extends PathKind.Child
+    ? ChildFieldContext<T>
+    : RootFieldContext<T>;
+
+export interface RootFieldContext<T> {
   readonly value: Signal<T>;
-  readonly key: Signal<string>;
-  readonly index: Signal<number>;
   readonly state: FieldState<T>;
   readonly field: Field<T>;
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
+}
+
+export interface ChildFieldContext<T> extends RootFieldContext<T> {
+  readonly key: Signal<string>;
+}
+
+export interface ItemFieldContext<T> extends ChildFieldContext<T> {
+  readonly index: Signal<number>;
 }
