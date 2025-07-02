@@ -22,9 +22,9 @@ ng_project(
         "//adev/shared-docs/components/search-dialog:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/cdk",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/router",
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
         "//adev/shared-docs/directives:directives_rjs",
         "//adev/shared-docs/pipes:pipes_rjs",
         "//adev/shared-docs/services:services_rjs",
@@ -37,8 +37,8 @@ ts_project(
     srcs = ["search-history.component.spec.ts"],
     deps = [
         ":search-history_rjs",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/platform-browser",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
         "//adev/shared-docs/services:services_rjs",
         "//adev/shared-docs/testing:testing_rjs",
     ],

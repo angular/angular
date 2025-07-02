@@ -22,7 +22,7 @@ ts_project(
         ],
     ),
     deps = [
-        "//:node_modules/@angular/core",
-        "//:node_modules/@webcontainer/api",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@webcontainer/api",
     ],
 )

@@ -17,9 +17,9 @@ ng_project(
         "//adev/shared-docs/components/viewers:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/common",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/router",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
         "//adev/shared-docs/components/icon:icon_rjs",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/services:services_rjs",
@@ -42,8 +42,8 @@ ts_project(
     ),
     deps = [
         ":table-of-contents_rjs",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/router",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/providers:providers_rjs",
         "//adev/shared-docs/services:services_rjs",

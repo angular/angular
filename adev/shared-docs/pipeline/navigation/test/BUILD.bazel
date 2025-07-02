@@ -8,7 +8,7 @@ ts_project(
     testonly = True,
     srcs = glob(["*.spec.mts"]),
     deps = [
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@types/node",
         "//adev/shared-docs/pipeline/navigation:lib_rjs",
     ],
 )

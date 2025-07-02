@@ -17,9 +17,9 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        "//:node_modules/@types/node",
-        "//:node_modules/tinyglobby",
-        "//:node_modules/typescript",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/tinyglobby",
+        "//adev:node_modules/typescript",
     ],
 )
 

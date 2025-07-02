@@ -16,8 +16,8 @@ ng_project(
         "//adev/shared-docs/components:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/common",
-        "//:node_modules/@angular/core",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
         "//adev/shared-docs/providers:providers_rjs",
         "//adev/shared-docs/utils:utils_rjs",
     ],
@@ -36,7 +36,7 @@ ts_project(
     ),
     deps = [
         ":cookie-popup_rjs",
-        "//:node_modules/@angular/core",
+        "//adev:node_modules/@angular/core",
         "//adev/shared-docs/providers:providers_rjs",
         "//adev/shared-docs/testing:testing_rjs",
     ],

@@ -19,9 +19,9 @@ ts_project(
         ],
     ),
     deps = [
-        "//:node_modules/@bazel/runfiles",
-        "//:node_modules/@types/jsdom",
-        "//:node_modules/jsdom",
+        "//adev:node_modules/@bazel/runfiles",
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/jsdom",
         "//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html_lib_rjs",
     ],
 )
@@ -30,7 +30,7 @@ jasmine_test(
     name = "unit_tests",
     data = [
         ":unit_test_lib_rjs",
-        "//:node_modules/jsdom",
+        "//adev:node_modules/jsdom",
     ] + glob([
         "**/*.json",
     ]),
