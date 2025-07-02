@@ -7,15 +7,20 @@
       <li class="docs-faceted-list-item">
         @if (item.path) {
           @if (item.isExternal) {
-            <a 
-              [href]="item.path" target="_blank"
+            <a
+              [href]="item.path"
+              target="_blank"
               [matTooltip]="item.label"
               [matTooltipDisabled]="item.label.length < 27"
               matTooltipPosition="after"
               [attr.aria-label]="item.label"
               [matTooltipClass]="'API-tooltip'"
             >
-              <span [class.docs-external-link]="item.isExternal" class="docs-faceted-list-item-text">{{ item.label }}</span>
+              <span
+                [class.docs-external-link]="item.isExternal"
+                class="docs-faceted-list-item-text"
+                >{{ item.label }}</span
+              >
               @if (item.children && item.level! > 1 && !item.isExpanded) {
                 <docs-icon>chevron_right</docs-icon>
               }
@@ -23,13 +28,6 @@
           } @else {
             <a
               [routerLink]="'/' + item.path"
-              
-              
-              
-              
-              
-              
-              
               routerLinkActive="docs-faceted-list-item-active"
               [routerLinkActiveOptions]="{ exact: true }"
               (click)="emitClickOnLink()"
@@ -48,7 +46,8 @@
         } @else {
           <!-- Nav Section Header -->
           @if (item.level !== collapsableLevel() && item.level !== expandableLevel()) {
-            <div class="docs-secondary-nav-header"
+            <div
+              class="docs-secondary-nav-header"
               [matTooltip]="item.label"
               [matTooltipDisabled]="item.label.length < 27"
               matTooltipPosition="after"
