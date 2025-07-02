@@ -1,3 +1,4 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -32,5 +33,22 @@ ts_project(
         ":lib_rjs",
         "//:node_modules/@types/node",
         "//adev/shared-docs/interfaces",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    entry_point = ":index.mts",
+    format = "esm",
+    output = "navigation.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":navigation_rjs",
     ],
 )

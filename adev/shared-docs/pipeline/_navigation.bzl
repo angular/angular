@@ -1,5 +1,3 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
-
 def _generate_nav_items(ctx):
     """Implementation of the navigation items data generator rule"""
 
@@ -25,12 +23,14 @@ def _generate_nav_items(ctx):
     # Add the path to the output file to the arguments.
     args.add(json_output.path)
 
-    run_node(
-        ctx = ctx,
+    ctx.actions.run(
         inputs = depset(ctx.files.srcs),
-        executable = "_generate_nav_items",
+        executable = ctx.executable._generate_nav_items,
         outputs = [json_output],
         arguments = [args],
+        env = {
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     # The return value describes what the rule is producing. In this case we need to specify

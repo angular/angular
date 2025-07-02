@@ -1,5 +1,3 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
-
 def _generate_previews_impl(ctx):
     """Implementation of the previews generator rule"""
 
@@ -20,12 +18,14 @@ def _generate_previews_impl(ctx):
 
     ctx.runfiles(files = ctx.files._template_src)
 
-    run_node(
-        ctx = ctx,
+    ctx.actions.run(
         inputs = depset(ctx.files.example_srcs + ctx.files._template_src),
-        executable = "_generate_previews",
+        executable = ctx.executable._generate_previews,
         outputs = [ts_output],
         arguments = [args],
+        env = {
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     # The return value describes what the rule is producing. In this case we need to specify

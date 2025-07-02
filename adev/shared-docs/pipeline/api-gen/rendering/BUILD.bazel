@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("@devinfra//bazel/esbuild:index.bzl", "esbuild_esm_bundle")
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 
@@ -54,7 +54,7 @@ ts_project(
 )
 
 # Action binary for the api_gen bazel rule.
-nodejs_binary(
+js_binary(
     name = "render_api_to_html",
     data = [
         ":render_api_to_html_lib",
@@ -63,8 +63,7 @@ nodejs_binary(
     # Do not use the NodeJS linker because:
     #  - it's brittle and causes race conditions on Windows.
     #  - it requires additional work to setup the runtime linker.
-    templated_args = [
-        "--bazel_patch_module_resolver",
+    fixed_args = [
         "--node_options=--preserve-symlinks-main",
     ],
     visibility = ["//visibility:public"],
