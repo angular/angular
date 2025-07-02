@@ -2,15 +2,14 @@
   &::after {
     content: '\e157'; // codepoint for "link"
     font-family: 'Material Symbols Outlined';
-
     opacity: 0;
     margin-left: 8px;
     vertical-align: middle;
-
     color: var(--quaternary-contrast);
     font-size: clamp(18px, 1.25em, 30px);
     transition: opacity 0.3s ease;
   }
+
   &:hover {
     &::after {
       opacity: 1;
