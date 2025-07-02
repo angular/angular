@@ -33,7 +33,7 @@ In the code editor:
 <docs-step title="Add the Input property">
 1.  In the same file, add a property called `housingLocation` of type `HousingLocation` to the `HousingLocationComponent` class. Add an `!` after the property name and prefix it with the `@Input()` decorator:
 
-    <docs-code header="Import HousingLocationComponent and Input in src/app/housing-location/housing-location.component.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.component.ts" visibleLines="[13,15]"/>
+    <docs-code header="Add housingLocation property to HousingLocationComponent in src/app/housing-location/housing-location.component.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.component.ts" visibleLines="[12,14]"/>
 
     You have to add the `!` because the input is expecting the value to be passed. In this case, there is no default value. In our example application case we know that the value will be passed in - this is by design. The exclamation point is called the non-null assertion operator and it tells the TypeScript compiler that the value of this property won't be null or undefined.
 
