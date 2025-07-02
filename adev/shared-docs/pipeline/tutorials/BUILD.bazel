@@ -16,9 +16,9 @@ ts_project(
     ),
     enable_runtime_rnjs_interop = True,
     deps = [
-        "//:node_modules/@types/node",
-        "//:node_modules/@webcontainer/api",
-        "//:node_modules/tinyglobby",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/@webcontainer/api",
+        "//adev:node_modules/tinyglobby",
         "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )
@@ -34,7 +34,7 @@ ts_project(
     ],
     deps = [
         ":editor_rjs",
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@types/node",
         "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )
@@ -49,7 +49,7 @@ ts_project(
     ],
     deps = [
         ":editor_rjs",
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@types/node",
         "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )

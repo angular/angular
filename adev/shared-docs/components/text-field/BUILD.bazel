@@ -17,9 +17,9 @@ ng_project(
         "//adev/shared-docs/components/search-dialog:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/common",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/forms",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/forms",
         "//adev/shared-docs/components/icon:icon_rjs",
     ],
 )
@@ -37,7 +37,7 @@ ts_project(
     ),
     deps = [
         ":text-field_rjs",
-        "//:node_modules/@angular/core",
+        "//adev:node_modules/@angular/core",
     ],
 )
 

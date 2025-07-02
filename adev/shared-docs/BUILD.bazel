@@ -22,7 +22,7 @@ rules_js_tsconfig(
     ],
     deps = [
         ":tsconfig_build",
-        "//:node_modules/@types/jasmine",
+        "//adev:node_modules/@types/jasmine",
     ],
 )
 

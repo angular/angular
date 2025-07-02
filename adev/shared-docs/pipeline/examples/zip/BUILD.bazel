@@ -15,9 +15,9 @@ ts_project(
     ),
     enable_runtime_rnjs_interop = True,
     deps = [
-        "//:node_modules/@types/node",
-        "//:node_modules/fflate",
-        "//:node_modules/tinyglobby",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/fflate",
+        "//adev:node_modules/tinyglobby",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/pipeline/examples/shared:shared_rjs",
         "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
@@ -35,7 +35,7 @@ ts_project(
     ],
     deps = [
         ":zip_rjs",
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@types/node",
     ],
 )
 

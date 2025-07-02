@@ -16,9 +16,9 @@ ng_project(
         "//adev/shared-docs/components:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/common",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/forms",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/forms",
     ],
 )
 
@@ -35,7 +35,7 @@ ts_project(
     ),
     deps = [
         ":select_rjs",
-        "//:node_modules/@angular/core",
+        "//adev:node_modules/@angular/core",
     ],
 )
 

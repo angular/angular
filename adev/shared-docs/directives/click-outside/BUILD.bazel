@@ -12,8 +12,8 @@ ng_project(
         "//adev/shared-docs/directives:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/common",
-        "//:node_modules/@angular/core",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
     ],
 )
 
@@ -25,9 +25,9 @@ ts_project(
     ),
     deps = [
         ":click-outside_rjs",
-        "//:node_modules/@angular/core",
-        "//:node_modules/@angular/platform-browser",
-        "//:node_modules/@angular/router",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
+        "//adev:node_modules/@angular/router",
     ],
 )
 

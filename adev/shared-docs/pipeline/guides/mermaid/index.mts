@@ -33,7 +33,7 @@ function getMermaidScriptTagData() {
   }
 
   return (mermaidScriptTagData = {
-    path: resolve(join(runfilesDir, 'angular/node_modules/mermaid/dist/mermaid.js')),
+    path: resolve(join(runfilesDir, 'angular/adev/node_modules/mermaid/dist/mermaid.js')),
   });
 }
 
