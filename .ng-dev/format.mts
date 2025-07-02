@@ -7,7 +7,7 @@ export const format: FormatConfig = {
   'prettier': {
     'matchers': [
       '**/*.{yaml,yml}',
-      '**/*.{js,ts,mjs,mts,cjs,cts}',
+      '**/*.{js,ts,mjs,mts,cjs,cts,tsx}',
       'devtools/**/*.{js,ts,mjs,mts,cjs,cts,html,scss}',
 
       // Do not format d.ts files as they are generated

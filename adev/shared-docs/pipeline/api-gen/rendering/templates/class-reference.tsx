@@ -26,6 +26,7 @@ import {SectionApi} from './section-api';
 import {SectionHeading} from './section-heading';
 import {codeToHtml} from '../shiki/shiki.mjs';
 import {RawHtml} from './raw-html';
+import {DeprecationWarning} from './deprecation-warning';
 
 /** Component to render a class API reference document. */
 export function ClassReference(
@@ -44,6 +45,7 @@ export function ClassReference(
       ) : (
         ''
       )}
+      <DeprecationWarning entry={entry} />
       <SectionApi entry={entry} />
       {entry.members.length > 0 ? (
         <div class={REFERENCE_MEMBERS}>
