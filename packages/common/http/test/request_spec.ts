@@ -170,9 +170,8 @@ describe('HttpRequest', () => {
       expect(req.clone({referrer: 'https://example.com'}).referrer).toBe('https://example.com');
     });
     it('and updates the integrity', () => {
-      expect(req.clone({integrity : 'sha512-...' }).integrity).toBe('sha512-...');
+      expect(req.clone({integrity: 'sha512-...'}).integrity).toBe('sha512-...');
     });
-
   });
   describe('content type detection', () => {
     const baseReq = new HttpRequest('POST', '/test', null);

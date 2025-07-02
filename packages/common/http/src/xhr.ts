@@ -96,7 +96,7 @@ function validateXhrCompatibility(req: HttpRequest<any>) {
     {
       property: 'referrer',
       errorCode: RuntimeErrorCode.REFERRER_NOT_SUPPORTED_WITH_XHR,
-    }
+    },
   ];
 
   // Check each unsupported option and warn if present
