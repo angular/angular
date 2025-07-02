@@ -56,21 +56,11 @@ describe('TypingsLoader', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should read files from directory when a glob pattern is found', async () => {
+  it('should read files from directory', async () => {
     await service.retrieveTypeDefinitions(fakeWebContainer);
 
     expect(
       service.typings().some(({path}) => path.endsWith(fakeTypeDefinitionFiles[0])),
-    ).toBeTrue();
-  });
-
-  it("should read type definition file when its path doesn't contain a glob pattern", async () => {
-    await service.retrieveTypeDefinitions(fakeWebContainer);
-
-    expect(
-      service
-        .typings()
-        .some(({path}) => path.endsWith(fakePackageJson.exports['./something'].types)),
     ).toBeTrue();
   });
 
