@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath} from '../types';
 import {validate} from '../logic';
+import {FieldPath, PathKind} from '../types';
 import {BaseValidatorConfig} from './types';
 
 /**
@@ -50,7 +50,10 @@ const EMAIL_REGEXP =
  * @param maxValue The minimum value, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function email(path: FieldPath<string>, config?: BaseValidatorConfig<string>) {
+export function email<TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<string, TPathKind>,
+  config?: BaseValidatorConfig<string, TPathKind>,
+) {
   return validate(path, (ctx) => {
     if (!EMAIL_REGEXP.test(ctx.value())) {
       if (config?.errors) {

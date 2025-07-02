@@ -8,7 +8,7 @@
 import {computed, Resource, ResourceRef, Signal} from '@angular/core';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldContext, FieldPath, LogicFn} from './types';
+import type {FieldContext, FieldPath, LogicFn, PathKind} from './types';
 
 export class DataKey<TValue> {
   /** @internal */
@@ -19,9 +19,9 @@ export interface DefineOptions<TKey> {
   readonly asKey?: DataKey<TKey>;
 }
 
-export function define<TValue, TData>(
-  path: FieldPath<TValue>,
-  factory: (ctx: FieldContext<TValue>) => TData,
+export function define<TValue, TData, TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<TValue, TPathKind>,
+  factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
   opts?: DefineOptions<TData>,
 ): DataKey<TData> {
   assertPathIsCurrent(path);
@@ -32,9 +32,9 @@ export function define<TValue, TData>(
   return key as DataKey<TData>;
 }
 
-export function defineComputed<TValue, TData>(
-  path: FieldPath<TValue>,
-  fn: LogicFn<TValue, TData>,
+export function defineComputed<TValue, TData, TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<TValue, TPathKind>,
+  fn: LogicFn<TValue, TData, TPathKind>,
   opts?: DefineOptions<Signal<TData>>,
 ): DataKey<Signal<TData>> {
   assertPathIsCurrent(path);
@@ -51,8 +51,13 @@ export interface DefineResourceOptions<TValue, TData, TRequest>
   factory: (req: Signal<TRequest>) => ResourceRef<TData>;
 }
 
-export function defineResource<TValue, TData, TRequest>(
-  path: FieldPath<TValue>,
+export function defineResource<
+  TValue,
+  TData,
+  TRequest,
+  TPathKind extends PathKind /*= PathKind.Root*/,
+>(
+  path: FieldPath<TValue, TPathKind>,
   opts: DefineResourceOptions<TValue, TData, TRequest>,
 ): DataKey<ResourceRef<TData | undefined>> {
   assertPathIsCurrent(path);

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn} from '../types';
 import {metadata, validate} from '../logic';
-import {BaseValidatorConfig} from './types';
 import {MIN} from '../metadata';
+import {FieldPath, LogicFn, PathKind} from '../types';
+import {BaseValidatorConfig} from './types';
 
 /**
  * Validator requiring a field value to be greater than or equal to a minimum value.
@@ -18,10 +18,10 @@ import {MIN} from '../metadata';
  * @param minValue The minimum value, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function min(
-  path: FieldPath<number>,
-  minValue: number | LogicFn<number | undefined, number | undefined>,
-  config?: BaseValidatorConfig<number>,
+export function min<TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<number, TPathKind>,
+  minValue: number | LogicFn<number | undefined, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<number, TPathKind>,
 ) {
   const reactiveMinValue = typeof minValue === 'number' ? () => minValue : minValue;
   metadata(path, MIN, reactiveMinValue);

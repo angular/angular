@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LogicFn, ValidationResult} from '../types';
+import {LogicFn, PathKind, ValidationResult} from '../types';
 
 // TODO(kirjs): Consider using {length: number}
 export type ValueWithLength = Array<unknown> | string;
 
-export interface BaseValidatorConfig<T> {
-  errors?: LogicFn<T, ValidationResult>;
+export interface BaseValidatorConfig<T, TPathKind extends PathKind /*= PathKind.Root*/> {
+  errors?: LogicFn<T, ValidationResult, TPathKind>;
 }

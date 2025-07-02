@@ -9,7 +9,7 @@
 import {MetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
+import type {FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -18,9 +18,9 @@ import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
  * @param logic A `LogicFn<T, boolean | string>` that returns `true` when the field is disabled.
  * @template T The data type of the field the logic is being added to.
  */
-export function disabled<T>(
-  path: FieldPath<T>,
-  logic: NoInfer<LogicFn<T, boolean | string>> = () => true,
+export function disabled<T, TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<T, TPathKind>,
+  logic: NoInfer<LogicFn<T, boolean | string, TPathKind>> = () => true,
 ): void {
   assertPathIsCurrent(path);
 
@@ -47,7 +47,10 @@ export function disabled<T>(
  * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is readonly.
  * @template T The data type of the field the logic is being added to.
  */
-export function readonly<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>> = () => true) {
+export function readonly<T, TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<T, TPathKind>,
+  logic: NoInfer<LogicFn<T, boolean, TPathKind>> = () => true,
+) {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
@@ -62,7 +65,10 @@ export function readonly<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolea
  * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is hidden.
  * @template T The data type of the field the logic is being added to.
  */
-export function hidden<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>>): void {
+export function hidden<T, TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<T, TPathKind>,
+  logic: NoInfer<LogicFn<T, boolean, TPathKind>>,
+): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
@@ -76,14 +82,20 @@ export function hidden<T>(path: FieldPath<T>, logic: NoInfer<LogicFn<T, boolean>
  * @param logic A `Validator<T>` that returns the current validation errors.
  * @template T The data type of the field the logic is being added to.
  */
-export function validate<T>(path: FieldPath<T>, logic: NoInfer<Validator<T>>): void {
+export function validate<T, TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<T, TPathKind>,
+  logic: NoInfer<Validator<T, TPathKind>>,
+): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addSyncErrorRule(logic);
 }
 
-export function validateTree<T>(path: FieldPath<T>, logic: NoInfer<TreeValidator<T>>): void {
+export function validateTree<T, TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<T, TPathKind>,
+  logic: NoInfer<TreeValidator<T, TPathKind>>,
+): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
@@ -99,10 +111,10 @@ export function validateTree<T>(path: FieldPath<T>, logic: NoInfer<TreeValidator
  * @template T The data type of the field the logic is being added to.
  * @template M The type of metadata.
  */
-export function metadata<T, M>(
-  path: FieldPath<T>,
+export function metadata<T, M, TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<T, TPathKind>,
   key: MetadataKey<M>,
-  logic: NoInfer<LogicFn<T, M>>,
+  logic: NoInfer<LogicFn<T, M, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
 
@@ -119,10 +131,10 @@ export function metadata<T, M>(
  * @param message An optional user-facing message to add to the error, or a `LogicFn<T, string>`
  *   that returns the user-facing message
  */
-export function error<T>(
-  path: FieldPath<T>,
-  logic: NoInfer<LogicFn<T, boolean>>,
-  message?: string | NoInfer<LogicFn<T, string>>,
+export function error<T, TPathKind extends PathKind /*= PathKind.Root*/>(
+  path: FieldPath<T, TPathKind>,
+  logic: NoInfer<LogicFn<T, boolean, TPathKind>>,
+  message?: string | NoInfer<LogicFn<T, string, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
 
