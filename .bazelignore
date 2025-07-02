@@ -40,6 +40,8 @@ modules/ssr-benchmarks/node_modules
 
 
 # For rules_js
+adev/node_modules
+adev/shared-docs/node_modules
 adev/shared-docs/pipeline/api-gen/node_modules
 modules/node_modules
 integration/node_modules

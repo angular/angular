@@ -1,5 +1,7 @@
 packages:
   - .
+  - adev
+  - adev/shared-docs
   - adev/shared-docs/pipeline/api-gen
   - modules
   - integration

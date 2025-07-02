@@ -20,16 +20,8 @@
           "builder": "@angular/build:application",
           "options": {
             "externalDependencies": ["path"],
-            "define": {
-              // We need this until xterm 5.6.0 is released
-              // see https://github.com/xtermjs/xterm.js/pull/4940
-              "self": "this"
-            },
-            // Ensures we don't escape sandbox to the workspace root with the full node modules that
-            // might contain e.g. `@angular/core` from npm.
-            "preserveSymlinks": true,
             "outputMode": "static",
-            "outputPath": "dist/angular-dev",
+            "outputPath": "dist",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
@@ -44,12 +36,14 @@
               "src/llms-full.txt",
               "src/context"
             ],
-            "styles": ["@angular/docs/styles/global-styles.scss", "./src/local-styles.scss"],
+            "styles": [
+              "@angular/docs/styles/global-styles.scss",
+              "./src/local-styles.scss"
+            ],
             "scripts": [],
             "webWorkerTsConfig": "tsconfig.worker.json",
             "optimization": {
               "fonts": {
-                // TODO(josephperrott): enabled inline scripts
                 "inline": false
               }
             }
@@ -111,8 +105,6 @@
   "cli": {
     "analytics": "dca119a9-da31-47f7-a6cb-b60541037021",
     "cache": {
-      // Disable build caching as the cache folder will just be dropped
-      // when run under Bazel sandboxed execution.
       "enabled": false
     }
   }
