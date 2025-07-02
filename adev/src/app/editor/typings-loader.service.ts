@@ -107,14 +107,10 @@ export class TypingsLoader {
         if (types) {
           const path = `/node_modules/${library}/${this.normalizePath(types)}`;
 
-          // If the path contains `*` we need to read the directory files
-          if (path.includes('*')) {
-            const directory = path.substring(0, path.lastIndexOf('/'));
-
-            directoriesToRead.push(directory);
-          } else {
-            filesToRead.push(path);
-          }
+          // We want to pull all the d.ts files in the directory
+          // as the file pointed `path` might also import other d.ts files
+          const directory = path.substring(0, path.lastIndexOf('/'));
+          directoriesToRead.push(directory);
         }
       }
     }
