@@ -15,6 +15,6 @@ ng_project(
         "//adev/shared-docs/components/search-dialog:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/core",
+        "//adev:node_modules/@angular/core",
     ],
 )

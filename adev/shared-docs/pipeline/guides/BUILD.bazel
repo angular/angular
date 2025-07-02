@@ -62,17 +62,17 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        "//:node_modules/@bazel/runfiles",
-        "//:node_modules/@types/jsdom",
-        "//:node_modules/@types/node",
-        "//:node_modules/diff",
-        "//:node_modules/emoji-regex",
-        "//:node_modules/html-entities",
-        "//:node_modules/jsdom",
-        "//:node_modules/marked",
-        "//:node_modules/mermaid",
-        "//:node_modules/playwright-core",
-        "//:node_modules/shiki",
+        "//adev:node_modules/@bazel/runfiles",
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/diff",
+        "//adev:node_modules/emoji-regex",
+        "//adev:node_modules/html-entities",
+        "//adev:node_modules/jsdom",
+        "//adev:node_modules/marked",
+        "//adev:node_modules/mermaid",
+        "//adev:node_modules/playwright-core",
+        "//adev:node_modules/shiki",
     ],
 )
 
@@ -86,6 +86,6 @@ ts_project(
     ],
     deps = [
         ":guides_lib_rjs",
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@types/node",
     ],
 )

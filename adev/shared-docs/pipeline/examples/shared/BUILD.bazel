@@ -11,6 +11,6 @@ ts_project(
     ),
     enable_runtime_rnjs_interop = True,
     deps = [
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@types/node",
     ],
 )

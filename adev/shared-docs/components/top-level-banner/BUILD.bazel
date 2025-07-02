@@ -16,8 +16,8 @@ ng_project(
         "//adev/shared-docs/components:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/common",
-        "//:node_modules/@angular/core",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
         "//adev/shared-docs/components/icon:icon_rjs",
         "//adev/shared-docs/directives:directives_rjs",
         "//adev/shared-docs/providers:providers_rjs",
@@ -37,7 +37,7 @@ ts_project(
     ),
     deps = [
         ":top-level-banner_rjs",
-        "//:node_modules/@angular/core",
+        "//adev:node_modules/@angular/core",
         "//adev/shared-docs/providers:providers_rjs",
     ],
 )

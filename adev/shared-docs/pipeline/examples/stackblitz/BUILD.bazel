@@ -15,10 +15,10 @@ ts_project(
     ),
     enable_runtime_rnjs_interop = True,
     deps = [
-        "//:node_modules/@types/jsdom",
-        "//:node_modules/@types/node",
-        "//:node_modules/jsdom",
-        "//:node_modules/tinyglobby",
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/jsdom",
+        "//adev:node_modules/tinyglobby",
         "//adev/shared-docs/pipeline/examples/shared:shared_rjs",
         "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
     ],
@@ -35,7 +35,7 @@ ts_project(
     ],
     deps = [
         ":stackblitz_rjs",
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@types/node",
     ],
 )
 
