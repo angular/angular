@@ -29,7 +29,7 @@ In this case, `:id` is dynamic and will change based on how the route is request
 
 1. In `src/app/housing-location/housing-location.ts`, add an anchor tag to the `section` element and include the `routerLink` directive:
 
-    <docs-code header="Add anchor with a routerLink directive to housing-location.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/housing-location/housing-location.ts" visibleLines="[19]"/>
+    <docs-code header="Add anchor with a routerLink directive to housing-location.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/housing-location/housing-location.ts" visibleLines="[18]"/>
 
     The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
 
@@ -57,11 +57,11 @@ In this step, you will get the route parameter in the `Details`. Currently, the 
 
     <docs-code language="javascript">
     export class Details {
-        route: ActivatedRoute = inject(ActivatedRoute);
-        housingLocationId = -1;
-        constructor() {
-            this.housingLocationId = Number(this.route.snapshot.params['id']);
-        }
+      route: ActivatedRoute = inject(ActivatedRoute);
+      housingLocationId = -1;
+      constructor() {
+        this.housingLocationId = Number(this.route.snapshot.params['id']);
+      }
     }
     </docs-code>
 
@@ -93,7 +93,10 @@ To access the data you will add a call to the `HousingService`.
 
     <docs-code header="Add styles for the Details" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,71]"/>
 
-1. Save your changes.
+    and save your changes
+
+1. In `Details` use the just created `details.css` file as the source for the styles: 
+    <docs-code header="Update details.ts to use the created css file" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[30]"/>
 
 1. In the browser refresh the page and confirm that when you click on the "Learn More" link for a given housing location the details page displays the correct information based on the data for that selected item.
 
@@ -101,14 +104,14 @@ To access the data you will add a call to the `HousingService`.
 
 </docs-step>
 
-<docs-step title="Add navigation to the `Home`">
+<docs-step title="Check navigation in the `Home`">
 In a previous lesson you updated the `App` template to include a `routerLink`. Adding that code updated your app to enable navigation back to the `Home` whenever the logo is clicked.
 
 1. Confirm that your code matches the following:
 
-    <docs-code header="Add routerLink to App" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[8,19]"/>
+    <docs-code header="Confirm the routerLink in app.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[8,19]"/>
 
-    Your code may already be up-to-date but confirm to be sure.
+    Your code should already be up-to-date but confirm to be sure.
 </docs-step>
 
 </docs-workflow>

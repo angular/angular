@@ -25,7 +25,7 @@ Update the code in `app.ts` by adding a property to the `App` class called `isEd
 
 <docs-code highlight="[2]">
 export class App {
-    isEditable = true;
+  isEditable = true;
 }
 </docs-code>
 </docs-step>
@@ -35,8 +35,8 @@ Next, bind the `contentEditable` attribute of the `div` to the `isEditable` prop
 
 <docs-code highlight="[3]" language="angular-ts">
 @Component({
-    ...
-    template: `<div [contentEditable]="isEditable"></div>`,
+  ...
+  template: `<div [contentEditable]="isEditable"></div>`,
 })
 </docs-code>
 </docs-step>
