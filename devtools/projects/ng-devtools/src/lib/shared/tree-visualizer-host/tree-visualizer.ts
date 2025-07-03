@@ -10,7 +10,7 @@ import * as d3 from 'd3';
 import {GraphRenderer} from './graph-renderer';
 
 let arrowDefId = 0;
-let ariaNodeIdIdx = 1;
+let instanceIdx = 0;
 
 const MAX_NODE_LABEL_LENGTH = 25;
 
@@ -65,6 +65,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     config: Partial<TreeVisualizerConfig<T>> = {},
   ) {
     super();
+    instanceIdx++;
 
     this.config = {
       ...this.defaultConfig,
@@ -165,9 +166,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .data(nodes.descendants().slice(1))
       .enter()
       .append('path')
-      .attr('aria-labelledby', (node: TreeD3Node<T>, idx) =>
-        this.getLinkAriaId(node, node.parent!, idx),
-      )
+      .attr('aria-labelledby', (_, idx) => `tree-link-${instanceIdx}-${idx}`)
       .attr('class', 'link')
       .attr('marker-end', `url(#end${arrowDefId})`)
       .attr('d', (node: TreeD3Node<T>) => {
@@ -196,9 +195,16 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     // Set accessibility title
     d3Link
       .append('title')
-      .attr('id', (node: TreeD3Node<T>, idx) => this.getLinkAriaId(node, node.parent!, idx))
-      .html((node: TreeD3Node<T>) => {
-        return `${this.getLinkAriaName(node, node.parent!)} link`;
+      .attr('id', (_, idx) => `tree-link-${instanceIdx}-${idx}`)
+      .text((node: TreeD3Node<T>) => {
+        const parentLabel = node.parent!.data.label;
+        const nodeLabel = node.data.label;
+        if (parentLabel && nodeLabel) {
+          return `${parentLabel}-${nodeLabel}`;
+        }
+        const definedLabel = nodeLabel || parentLabel || 'Disconnected';
+
+        return definedLabel + ' link';
       });
 
     // Declare the nodes
@@ -221,13 +227,13 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
         const {x, y} = this.getNodeCoor(node);
         return `translate(${x},${y})`;
       })
-      .attr('aria-labelledby', (node: TreeD3Node<T>, idx) => this.getNodeAriaId(node, idx));
+      .attr('aria-labelledby', (_, idx) => `tree-node-${instanceIdx}-${idx}`);
 
     // Set accessibility title
     d3NodeG
       .append('title')
-      .attr('id', (node: TreeD3Node<T>, idx) => this.getNodeAriaId(node, idx))
-      .html((node: TreeD3Node<T>) => `${this.getNodeAriaName(node)} node`);
+      .attr('id', (_, idx) => `tree-node-${instanceIdx}-${idx}`)
+      .text((node: TreeD3Node<T>) => `${node.data.label || 'Empty'} node`);
 
     const d3Node = d3NodeG
       .append('foreignObject')
@@ -237,7 +243,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .attr('y', -halfLabelHeight)
       .append('xhtml:div')
       .attr('class', 'node')
-      .html((node: TreeD3Node<T>) => {
+      .text((node: TreeD3Node<T>) => {
         const label = node.data.label;
         return label.length > MAX_NODE_LABEL_LENGTH
           ? label.slice(0, MAX_NODE_LABEL_LENGTH - '...'.length) + '...'
@@ -260,29 +266,5 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       };
     }
     return {x, y};
-  }
-
-  private getLinkAriaName(node: TreeD3Node<T>, parent: TreeD3Node<T>) {
-    const parentLabel = parent.data.label;
-    const nodeLabel = node.data.label;
-
-    if (parentLabel && nodeLabel) {
-      return `${parentLabel}-${nodeLabel}`;
-    }
-    const definedLabel = nodeLabel ?? parentLabel;
-
-    return definedLabel ? definedLabel : 'Disconnected';
-  }
-
-  private getNodeAriaName(node: TreeD3Node<T>) {
-    return node.data.label || 'Empty';
-  }
-
-  private getLinkAriaId(node: TreeD3Node<T>, parent: TreeD3Node<T>, idx: number) {
-    return `${this.getLinkAriaName(node, parent).toLowerCase()}-${idx}-link`;
-  }
-
-  private getNodeAriaId(node: TreeD3Node<T>, idx: number) {
-    return `${node.data.label.toLowerCase()}-${idx}-node`;
   }
 }

@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, ElementRef, input, signal, viewChild} from '@angular/core';
+import {Component, ElementRef, input, signal, viewChild} from '@angular/core';
+
+let instanceIdx = 0;
 
 @Component({
   selector: 'ng-tree-visualizer-host',
@@ -16,9 +18,9 @@ import {Component, computed, ElementRef, input, signal, viewChild} from '@angula
       [class.panning]="panning()"
       (pointerdown)="panning.set(true)"
       (pointerup)="panning.set(false)"
-      [attr.aria-labelledby]="ariaTitleId()"
+      [attr.aria-labelledby]="a11yTitleId"
     >
-      <title [id]="ariaTitleId()">{{ this.ariaTitle() }}</title>
+      <title [id]="a11yTitleId">{{ this.a11yTitle() }}</title>
       <g #group></g>
     </svg>
   `,
@@ -27,10 +29,8 @@ import {Component, computed, ElementRef, input, signal, viewChild} from '@angula
 export class TreeVisualizerHostComponent {
   readonly container = viewChild.required<ElementRef>('container');
   readonly group = viewChild.required<ElementRef>('group');
-  protected readonly ariaTitle = input.required<string>();
-  protected readonly ariaTitleId = computed(() =>
-    this.ariaTitle().toLowerCase().replace(/\s/g, '-'),
-  );
+  protected readonly a11yTitle = input.required<string>();
+  protected readonly a11yTitleId = `tree-vis-host-${++instanceIdx}`;
 
   panning = signal<boolean>(false);
 }
