@@ -13,7 +13,7 @@ It is often helpful to initialize class properties with values provided by the D
 <docs-code language="ts" highlight="[3]">
 @Component({...})
 class PetCareDashboard {
-    petRosterService = inject(PetRosterService);
+  petRosterService = inject(PetRosterService);
 }
 </docs-code>
 

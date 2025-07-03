@@ -39,7 +39,7 @@ import {provideRouter} from '@angular/router';
 import {routes} from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-providers: [provideRouter(routes)],
+  providers: [provideRouter(routes)],
 };
 </docs-code>
 
@@ -55,15 +55,16 @@ Update the template for `App` by adding `<router-outlet />`
 import {RouterOutlet} from '@angular/router';
 
 @Component({
-...
-template: `     <nav>
+  ...
+  template: `
+    <nav>
       <a href="/">Home</a>
       |
       <a href="/user">User</a>
     </nav>
     <router-outlet />
   `,
-imports: [RouterOutlet],
+  imports: [RouterOutlet],
 })
 export class App {}
 </docs-code>

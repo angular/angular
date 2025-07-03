@@ -15,7 +15,7 @@ To create the communication path from child to parent components, use the `outpu
 <docs-code header="child.ts" language="ts">
 @Component({...})
 class Child {
-    incrementCountEvent = output<number>();
+  incrementCountEvent = output<number>();
 }
 </docs-code>
 
@@ -23,13 +23,12 @@ Now the component can generate events that can be listened to by the parent comp
 
 <docs-code header="child.ts" language="ts">
 class Child {
-    ...
+  ...
 
-    onClick() {
-        this.count++;
-        this.incrementCountEvent.emit(this.count);
-    }
-
+  onClick() {
+    this.count++;
+    this.incrementCountEvent.emit(this.count);
+  }
 }
 </docs-code>
 
