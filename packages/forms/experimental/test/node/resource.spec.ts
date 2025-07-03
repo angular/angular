@@ -57,7 +57,7 @@ describe('resources', () => {
       validate(p.name, ({state}) => {
         const remote = state.data(res)!;
         if (remote.hasValue()) {
-          return {kind: 'whatever', message: remote.value()!.toString()};
+          return {kind: 'custom:whatever', message: remote.value()!.toString()};
         } else {
           return undefined;
         }
@@ -71,7 +71,7 @@ describe('resources', () => {
     await appRef.whenStable();
     expect(f.name().errors()).toEqual([
       {
-        kind: 'whatever',
+        kind: 'custom:whatever',
         message: 'got: cat',
       },
     ]);
@@ -80,7 +80,7 @@ describe('resources', () => {
     await appRef.whenStable();
     expect(f.name().errors()).toEqual([
       {
-        kind: 'whatever',
+        kind: 'custom:whatever',
         message: 'got: dog',
       },
     ]);
@@ -99,7 +99,7 @@ describe('resources', () => {
         validate(p.name, ({state}) => {
           const remote = state.data(res)!;
           if (remote.hasValue()) {
-            return {kind: 'whatever', message: remote.value()!.toString()};
+            return {kind: 'custom:whatever', message: remote.value()!.toString()};
           } else {
             return undefined;
           }
@@ -114,13 +114,13 @@ describe('resources', () => {
     await appRef.whenStable();
     expect(f[0].name().errors()).toEqual([
       {
-        kind: 'whatever',
+        kind: 'custom:whatever',
         message: 'got: cat',
       },
     ]);
     expect(f[1].name().errors()).toEqual([
       {
-        kind: 'whatever',
+        kind: 'custom:whatever',
         message: 'got: dog',
       },
     ]);
@@ -129,13 +129,13 @@ describe('resources', () => {
     await appRef.whenStable();
     expect(f[0].name().errors()).toEqual([
       {
-        kind: 'whatever',
+        kind: 'custom:whatever',
         message: 'got: bunny',
       },
     ]);
     expect(f[1].name().errors()).toEqual([
       {
-        kind: 'whatever',
+        kind: 'custom:whatever',
         message: 'got: dog',
       },
     ]);
@@ -154,7 +154,7 @@ describe('resources', () => {
           }),
         errors: (cats, {fieldOf}) => {
           return cats.map((cat, index) => ({
-            kind: 'meows_too_much',
+            kind: 'custom:meows_too_much',
             name: cat.name,
             field: fieldOf(p)[index],
           }));
@@ -167,10 +167,10 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
+      jasmine.objectContaining({kind: 'custom:meows_too_much', name: 'Fluffy'}),
     ]);
     expect(f[1]().errors()).toEqual([
-      jasmine.objectContaining({kind: 'meows_too_much', name: 'Ziggy'}),
+      jasmine.objectContaining({kind: 'custom:meows_too_much', name: 'Ziggy'}),
     ]);
   });
 
@@ -187,7 +187,7 @@ describe('resources', () => {
           }),
         errors: (cats, {fieldOf}) => {
           return {
-            kind: 'meows_too_much',
+            kind: 'custom:meows_too_much',
             name: cats[0].name,
             field: fieldOf(p)[0],
           };
@@ -200,7 +200,7 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
+      jasmine.objectContaining({kind: 'custom:meows_too_much', name: 'Fluffy'}),
     ]);
     expect(f[1]().errors()).toEqual([]);
   });
@@ -211,7 +211,7 @@ describe('resources', () => {
       (p) => {
         validateHttp(p, {
           request: ({value}) => `/api/check?username=${value()}`,
-          errors: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+          errors: (available: boolean) => (available ? undefined : {kind: 'custom:username-taken'}),
         });
       },
       {injector},

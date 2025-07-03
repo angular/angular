@@ -37,7 +37,7 @@ export function minLength<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'minLength'};
+        return {kind: 'ng:minlength', minlength: value};
       }
     }
 

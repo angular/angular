@@ -21,7 +21,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text().errors()).toEqual([{kind: 'maxLength'}]);
+    expect(f.text().errors()).toEqual([{kind: 'ng:maxlength', maxlength: 3}]);
   });
 
   it('returns maxLength error when the length is larger for arrays', () => {
@@ -34,7 +34,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.list().errors()).toEqual([{kind: 'maxLength'}]);
+    expect(f.list().errors()).toEqual([{kind: 'ng:maxlength', maxlength: 3}]);
   });
 
   it('is inclusive (no error if length equals maxLength)', () => {
@@ -71,7 +71,7 @@ describe('maxLength validator', () => {
         maxLength(p.text, 5, {
           errors: ({value}) => {
             return {
-              kind: 'special-maxLength',
+              kind: 'custom:special-maxLength',
               message: `Length is ${value().length}`,
             };
           },
@@ -82,7 +82,7 @@ describe('maxLength validator', () => {
 
     expect(f.text().errors()).toEqual([
       {
-        kind: 'special-maxLength',
+        kind: 'custom:special-maxLength',
         message: 'Length is 6',
       },
     ]);
@@ -97,7 +97,7 @@ describe('maxLength validator', () => {
           maxLength(p.text, 5, {
             errors: ({value}) => {
               return {
-                kind: 'special-maxLength',
+                kind: 'custom:special-maxLength',
                 message: `Length is ${value().length}`,
               };
             },
@@ -121,10 +121,13 @@ describe('maxLength validator', () => {
       );
 
       f.text().value.set('abcdefghijklmno');
-      expect(f.text().errors()).toEqual([{kind: 'maxLength'}, {kind: 'maxLength'}]);
+      expect(f.text().errors()).toEqual([
+        {kind: 'ng:maxlength', maxlength: 10},
+        {kind: 'ng:maxlength', maxlength: 5},
+      ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([{kind: 'maxLength'}]);
+      expect(f.text().errors()).toEqual([{kind: 'ng:maxlength', maxlength: 5}]);
 
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
@@ -145,17 +148,20 @@ describe('maxLength validator', () => {
       );
 
       f.text().value.set('abcdefghijklmno');
-      expect(f.text().errors()).toEqual([{kind: 'maxLength'}, {kind: 'maxLength'}]);
+      expect(f.text().errors()).toEqual([
+        {kind: 'ng:maxlength', maxlength: 10},
+        {kind: 'ng:maxlength', maxlength: 5},
+      ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([{kind: 'maxLength'}]);
+      expect(f.text().errors()).toEqual([{kind: 'ng:maxlength', maxlength: 5}]);
 
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
 
       maxLengthSignal.set(2);
 
-      expect(f.text().errors()).toEqual([{kind: 'maxLength'}]);
+      expect(f.text().errors()).toEqual([{kind: 'ng:maxlength', maxlength: 2}]);
       expect(f.text().metadata(MAX_LENGTH)()).toBe(2);
     });
   });
@@ -172,7 +178,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([{kind: 'maxLength'}]);
+      expect(f.text().errors()).toEqual([{kind: 'ng:maxlength', maxlength: 5}]);
       dynamicMaxLength.set(7);
       expect(f.text().errors()).toEqual([]);
     });
@@ -187,7 +193,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([{kind: 'maxLength'}]);
+      expect(f.text().errors()).toEqual([{kind: 'ng:maxlength', maxlength: 5}]);
       dynamicMaxLength.set(undefined);
       expect(f.text().errors()).toEqual([]);
     });
@@ -204,7 +210,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([{kind: 'maxLength'}]);
+      expect(f.text().errors()).toEqual([{kind: 'ng:maxlength', maxlength: 8}]);
 
       f.category().value.set('B');
       expect(f.text().errors()).toEqual([]);

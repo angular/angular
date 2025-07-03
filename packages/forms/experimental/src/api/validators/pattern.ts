@@ -49,7 +49,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'pattern', pattern};
+        return {kind: 'ng:pattern', pattern: value};
       }
     }
 

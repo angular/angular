@@ -39,7 +39,7 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'required'};
+        return {kind: 'ng:required'};
       }
     }
     return undefined;

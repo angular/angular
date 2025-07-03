@@ -7,7 +7,8 @@
  */
 
 import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
-import type {FormError, SubmittedStatus, ValidationResult} from '../api/types';
+import type {AsyncValidationResult, SubmittedStatus} from '../api/types';
+import type {ValidationError, ValidationTreeError} from '../api/validation_errors';
 import type {FieldNode} from './node';
 
 /**
@@ -15,12 +16,12 @@ import type {FieldNode} from './node';
  */
 export class FieldSubmitState {
   readonly selfSubmittedStatus = signal<SubmittedStatus>('unsubmitted');
-  readonly serverErrors: WritableSignal<readonly FormError[]>;
+  readonly serverErrors: WritableSignal<readonly ValidationError[]>;
 
   constructor(private readonly node: FieldNode) {
     this.serverErrors = linkedSignal({
       source: this.node.structure.value,
-      computation: () => [] as readonly FormError[],
+      computation: () => [] as readonly ValidationError[],
     });
   }
 
@@ -33,14 +34,16 @@ export class FieldSubmitState {
       : (this.node.structure.parent?.submitState.submittedStatus() ?? 'unsubmitted'),
   );
 
-  setServerErrors(errors: ValidationResult) {
-    if (errors === undefined) {
-      this.serverErrors.set([]);
-    } else if (!Array.isArray(errors)) {
-      this.serverErrors.set([errors as FormError]);
+  setServerErrors(result: Exclude<AsyncValidationResult, 'pending'>) {
+    let errors: ValidationError[];
+    if (result === undefined) {
+      errors = [];
+    } else if (!Array.isArray(result)) {
+      errors = [stripField(result as ValidationError)];
     } else {
-      this.serverErrors.set(errors);
+      errors = result.map(stripField);
     }
+    this.serverErrors.set(errors);
   }
 
   reset(): void {
@@ -49,4 +52,8 @@ export class FieldSubmitState {
       child.submitState.reset();
     }
   }
+}
+
+function stripField({field, ...rest}: ValidationTreeError): ValidationError {
+  return rest as ValidationError;
 }

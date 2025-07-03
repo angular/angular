@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
@@ -12,7 +12,8 @@ import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {defineResource} from './data';
-import {FieldContext, FieldPath, FormTreeError, PathKind} from './types';
+import {FieldContext, FieldPath, PathKind} from './types';
+import {ValidationTreeError} from './validation_errors';
 
 export interface AsyncValidatorOptions<
   TValue,
@@ -25,7 +26,7 @@ export interface AsyncValidatorOptions<
   readonly errors: (
     data: TData,
     ctx: FieldContext<TValue, TPathKind>,
-  ) => FormTreeError | FormTreeError[] | undefined;
+  ) => ValidationTreeError | ValidationTreeError[] | undefined;
 }
 
 export function validateAsync<TValue, TRequest, TData, TPathKind extends PathKind = PathKind.Root>(
@@ -73,8 +74,9 @@ export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind
     request: (ctx: FieldContext<TValue, TPathKind>) => string | undefined;
     errors: (
       data: TData,
+
       ctx: FieldContext<TValue, TPathKind>,
-    ) => FormTreeError | FormTreeError[] | undefined;
+    ) => ValidationTreeError | ValidationTreeError[] | undefined;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;
@@ -85,8 +87,9 @@ export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind
     request: (ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined;
     errors: (
       data: TData,
+
       ctx: FieldContext<TValue, TPathKind>,
-    ) => FormTreeError | FormTreeError[] | undefined;
+    ) => ValidationTreeError | ValidationTreeError[] | undefined;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;

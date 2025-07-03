@@ -3,13 +3,14 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {MetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import type {FieldContext, FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
+import {ValidationError} from './validation_errors';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -129,7 +130,7 @@ export function metadata<TValue, TMetadata, TPathKind extends PathKind = PathKin
 
 /**
  * Adds logic to a field to conditionally add a validation error to it.
- * The added FormError will be of `kind: 'custom'`
+ * The added ValidationError will be of `kind: 'custom:error'`
  *
  * @param path The target path to add the error logic to.
  * @param logic A `LogicFn<T, boolean>` that returns `true` when the error should be added.
@@ -149,17 +150,17 @@ export function error<TValue, TPathKind extends PathKind = PathKind.Root>(
     validate(path, (arg) => {
       return logic(arg)
         ? {
-            kind: 'custom',
+            kind: 'custom:error',
             message: message(arg),
           }
         : undefined;
     });
   } else {
-    const err =
+    const err: ValidationError =
       message === undefined
-        ? {kind: 'custom'}
+        ? {kind: 'custom:error'}
         : {
-            kind: 'custom',
+            kind: 'custom:error',
             message,
           };
     validate(path, (arg) => {

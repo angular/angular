@@ -3,12 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Signal, WritableSignal} from '@angular/core';
 import {DataKey} from './data';
 import {MetadataKey} from './metadata';
+import {ValidationError, ValidationTreeError} from './validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -39,39 +40,15 @@ export interface DisabledReason {
 }
 
 /**
- * A validation error on a form. All validation errors must have a `kind` that identifies what type
- * of error it is, and may optionally have a `message` string containing a human-readable error
- * message.
- */
-export interface FormError {
-  readonly kind: string;
-  readonly message?: string;
-  readonly field?: never;
-}
-
-export interface FormTreeError extends Omit<FormError, 'field'> {
-  readonly field?: Field<unknown>;
-}
-
-/**
- * An error that is returned from the server when submitting the form. It contains a reference to
- * the validation errors as well as a reference to the `Field` node those errors should be
- * associated with.
- */
-export interface ServerError {
-  field: Field<unknown>;
-  error: ValidationResult;
-}
-
-/**
  * The result of running a validation function. The result may be `undefined` to indicate no errors,
- * a single `FormError`, or a list of `FormError` which can be used to indicate multiple errors.
+ * a single `ValidationError`, or a list of `ValidationError` which can be used to indicate multiple
+ * errors.
  */
-export type ValidationResult = readonly FormError[] | FormError | undefined;
+export type ValidationResult = readonly ValidationError[] | ValidationError | undefined;
 
 export type AsyncValidationResult =
-  | readonly FormTreeError[]
-  | FormTreeError
+  | readonly ValidationTreeError[]
+  | ValidationTreeError
   | 'pending'
   | undefined;
 
@@ -132,11 +109,11 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   /**
    * A signal containing the current errors for the field.
    */
-  readonly errors: Signal<FormError[]>;
+  readonly errors: Signal<ValidationError[]>;
   /**
    * A signal containing the current errors for the field.
    */
-  readonly syncErrors: Signal<FormError[]>;
+  readonly syncErrors: Signal<ValidationError[]>;
   /**
    * A signal indicating whether the field's value is currently valid.
    *
@@ -271,7 +248,7 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
 
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  FormTreeError[],
+  ValidationTreeError[],
   TPathKind
 >;
 

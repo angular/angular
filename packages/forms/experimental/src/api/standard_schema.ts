@@ -11,12 +11,13 @@ import {validateAsync} from './async';
 import {define} from './data';
 import {validateTree} from './logic';
 import {StandardSchemaV1} from './standard_schema_types';
-import {Field, FieldPath, FormTreeError} from './types';
+import {Field, FieldPath} from './types';
+import {ValidationTreeError} from './validation_errors';
 
 /**
  * A validation error produced by running a standard schema validator.
  */
-interface StandardSchemaFormTreeError extends FormTreeError {
+interface StandardSchemaFormTreeError extends ValidationTreeError {
   issue: StandardSchemaV1.Issue;
 }
 
@@ -86,7 +87,7 @@ export function standardIssueToFormTreeError(
     target = target[pathKey] as Field<Record<PropertyKey, unknown>>;
   }
   return {
-    kind: '~standard',
+    kind: 'ng:standard',
     field: target,
     issue,
   };

@@ -8,22 +8,18 @@
 
 import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {
-  Field,
-  form,
-  FormError,
-  FormTreeError,
-  validate,
-  validateAsync,
-  validateTree,
-} from '../../public_api';
+import {Field, form, validate, validateAsync, validateTree} from '../../public_api';
+import {ValidationError, ValidationTreeError} from '../../src/api/validation_errors';
 
-function validateValue(value: string): FormError[] {
-  return value === 'INVALID' ? [{kind: 'error'}] : [];
+function validateValue(value: string): ValidationError[] {
+  return value === 'INVALID' ? [{kind: 'custom:error'}] : [];
 }
 
-function validateValueForChild(value: string, field: Field<unknown> | undefined): FormTreeError[] {
-  return value === 'INVALID' ? [{kind: 'error', field}] : [];
+function validateValueForChild(
+  value: string,
+  field: Field<unknown> | undefined,
+): ValidationTreeError[] {
+  return value === 'INVALID' ? [{kind: 'custom:error', field}] : [];
 }
 
 async function waitFor(fn: () => boolean, count = 100): Promise<void> {
@@ -200,7 +196,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: ({params}) =>
-                  new Promise<FormTreeError[]>((r) =>
+                  new Promise<ValidationTreeError[]>((r) =>
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
@@ -252,7 +248,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: ({params}) =>
-                  new Promise<FormTreeError[]>((r) =>
+                  new Promise<ValidationTreeError[]>((r) =>
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
@@ -308,7 +304,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: ({params}) =>
-                  new Promise<FormTreeError[]>((r) =>
+                  new Promise<ValidationTreeError[]>((r) =>
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
@@ -367,7 +363,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: ({params}) =>
-                  new Promise<FormTreeError[]>((r) =>
+                  new Promise<ValidationTreeError[]>((r) =>
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
@@ -418,7 +414,7 @@ describe('validation status', () => {
         signal('MIXED'),
         (p) => {
           validate(p, () => []);
-          validate(p, () => [{kind: 'error'}]);
+          validate(p, () => [{kind: 'custom:error'}]);
         },
         {injector},
       );
@@ -441,7 +437,7 @@ describe('validation status', () => {
             factory: (params) =>
               (res = resource({
                 params,
-                loader: () => new Promise<FormTreeError[]>((r) => setTimeout(() => r([]))),
+                loader: () => new Promise<ValidationTreeError[]>((r) => setTimeout(() => r([]))),
               })),
             errors: (errs) => errs,
           });
@@ -469,7 +465,9 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: () =>
-                  new Promise<FormTreeError[]>((r) => setTimeout(() => r([{kind: 'error'}]))),
+                  new Promise<ValidationTreeError[]>((r) =>
+                    setTimeout(() => r([{kind: 'custom:error'}])),
+                  ),
               })),
             errors: (errs) => errs,
           });
@@ -478,7 +476,8 @@ describe('validation status', () => {
             factory: (params) =>
               (res2 = resource({
                 params,
-                loader: () => new Promise<FormTreeError[]>((r) => setTimeout(() => r([]), 10)),
+                loader: () =>
+                  new Promise<ValidationTreeError[]>((r) => setTimeout(() => r([]), 10)),
               })),
             errors: (errs) => errs,
           });
@@ -507,7 +506,9 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: () =>
-                  new Promise<FormTreeError[]>((r) => setTimeout(() => r([{kind: 'error'}]))),
+                  new Promise<ValidationTreeError[]>((r) =>
+                    setTimeout(() => r([{kind: 'custom:error'}])),
+                  ),
               })),
             errors: (errs) => errs,
           });
@@ -516,7 +517,8 @@ describe('validation status', () => {
             factory: (params) =>
               (res2 = resource({
                 params,
-                loader: () => new Promise<FormTreeError[]>((r) => setTimeout(() => r([]), 10)),
+                loader: () =>
+                  new Promise<ValidationTreeError[]>((r) => setTimeout(() => r([]), 10)),
               })),
             errors: (errs) => errs,
           });

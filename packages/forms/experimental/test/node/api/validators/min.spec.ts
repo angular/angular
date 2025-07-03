@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { Injector, signal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { MIN, form, min } from '../../../../public_api';
+import {Injector, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {MIN, form, min} from '../../../../public_api';
 
 describe('min validator', () => {
   it('returns min error when the value is smaller', () => {
@@ -21,7 +21,7 @@ describe('min validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age().errors()).toEqual([{kind: 'min'}]);
+    expect(f.age().errors()).toEqual([{kind: 'ng:min', min: 5}]);
   });
 
   it('is inclusive', () => {
@@ -57,7 +57,7 @@ describe('min validator', () => {
       (p) => {
         min(p.age, 5, {
           errors: ({value}) => {
-            return {kind: 'special-min', message: value().toString()};
+            return {kind: 'custom:special-min', message: value().toString()};
           },
         });
       },
@@ -66,7 +66,7 @@ describe('min validator', () => {
 
     expect(f.age().errors()).toEqual([
       {
-        kind: 'special-min',
+        kind: 'custom:special-min',
         message: '3',
       },
     ]);
@@ -80,7 +80,7 @@ describe('min validator', () => {
         (p) => {
           min(p.age, 5, {
             errors: ({value}) => {
-              return {kind: 'special-min', message: value().toString()};
+              return {kind: 'custom:special-min', message: value().toString()};
             },
           });
         },
@@ -102,9 +102,12 @@ describe('min validator', () => {
       );
 
       f.age().value.set(3);
-      expect(f.age().errors()).toEqual([{kind: 'min'}, {kind: 'min'}]);
+      expect(f.age().errors()).toEqual([
+        {kind: 'ng:min', min: 5},
+        {kind: 'ng:min', min: 10},
+      ]);
       f.age().value.set(7);
-      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().errors()).toEqual([{kind: 'ng:min', min: 10}]);
       f.age().value.set(15);
       expect(f.age().errors()).toEqual([]);
 
@@ -124,13 +127,16 @@ describe('min validator', () => {
       );
 
       f.age().value.set(3);
-      expect(f.age().errors()).toEqual([{kind: 'min'}, {kind: 'min'}]);
+      expect(f.age().errors()).toEqual([
+        {kind: 'ng:min', min: 5},
+        {kind: 'ng:min', min: 10},
+      ]);
       f.age().value.set(7);
-      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().errors()).toEqual([{kind: 'ng:min', min: 10}]);
       f.age().value.set(15);
       expect(f.age().errors()).toEqual([]);
       minSignal.set(30);
-      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().errors()).toEqual([{kind: 'ng:min', min: 30}]);
       expect(f.age().metadata(MIN)()).toBe(30);
     });
 
@@ -147,9 +153,12 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([{kind: 'min'}, {kind: 'min'}]);
+      expect(f.age().errors()).toEqual([
+        {kind: 'ng:min', min: 15},
+        {kind: 'ng:min', min: 10},
+      ]);
       minSignal.set(undefined);
-      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().errors()).toEqual([{kind: 'ng:min', min: 10}]);
       minSignal2.set(undefined);
       expect(f.age().errors()).toEqual([]);
     });
@@ -167,11 +176,11 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().errors()).toEqual([{kind: 'ng:min', min: 5}]);
       minValue.set(undefined);
       expect(f.age().errors()).toEqual([]);
       minValue.set(5);
-      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().errors()).toEqual([{kind: 'ng:min', min: 5}]);
     });
 
     it('handles dynamic value', () => {
@@ -185,7 +194,7 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().errors()).toEqual([{kind: 'ng:min', min: 5}]);
       minValue.set(2);
       expect(f.age().errors()).toEqual([]);
     });
@@ -203,7 +212,7 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([{kind: 'min'}]);
+      expect(f.age().errors()).toEqual([{kind: 'ng:min', min: 5}]);
       f.name().value.set('other cat');
       expect(f.age().errors()).toEqual([]);
     });

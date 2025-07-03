@@ -25,7 +25,7 @@ describe('email validator', () => {
 
     expect(f.email().errors()).toEqual([]);
     f.email().value.set('not-real-email');
-    expect(f.email().errors()).toEqual([{kind: 'email'}]);
+    expect(f.email().errors()).toEqual([{kind: 'ng:email'}]);
   });
 
   it('supports custom errors', () => {
@@ -33,13 +33,13 @@ describe('email validator', () => {
     const f = form(
       cat,
       (p) => {
-        email(p.email, {errors: (ctx) => ({kind: 'special-email-' + ctx.valueOf(p.name)})});
+        email(p.email, {errors: (ctx) => ({kind: `custom:special-email-${ctx.valueOf(p.name)}`})});
       },
       {
         injector: TestBed.inject(Injector),
       },
     );
 
-    expect(f.email().errors()).toEqual([{kind: 'special-email-pirojok-the-cat'}]);
+    expect(f.email().errors()).toEqual([{kind: 'custom:special-email-pirojok-the-cat'}]);
   });
 });
