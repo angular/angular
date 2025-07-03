@@ -4480,7 +4480,7 @@ describe('di', () => {
       class App {}
 
       expect(() => TestBed.createComponent(App)).toThrowError(
-        /No provider for InjectionToken existing/,
+        /No provider for InjectionToken 'existing'/,
       );
     });
 
@@ -4522,7 +4522,7 @@ describe('di', () => {
       });
 
       expect(() => TestBed.createComponent(App)).toThrowError(
-        /No provider for InjectionToken existing/,
+        /No provider for InjectionToken 'existing'/,
       );
     });
   });
