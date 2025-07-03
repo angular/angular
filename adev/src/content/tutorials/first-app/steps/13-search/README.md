@@ -26,7 +26,7 @@ In this step, you'll update the `HomeComponent` class to store data in a new arr
 
 1. The `filteredLocationList` should contain the total set of housing locations values by default when the page loads. Update the `constructor` for the `HomeComponent` to set the value.
 
-<docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[30,33]"/>
+   <docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[30,33]"/>
 
 </docs-step>
 
@@ -35,25 +35,19 @@ The `HomeComponent` already contains an input field that you will use to capture
 
 1. Update the `HomeComponent` template to include a template variable in the `input` element called `#filter`.
 
-   <docs-code header="Add a template variable to HomeComponent's template" language="html">
-       <input type="text" placeholder="Filter by city" #filter>
-   </docs-code>
+   <docs-code header="Add a template variable to HomeComponent's template" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[13]"/>
 
    This example uses a [template reference variable](guide/templates) to get access to the `input` element as its value.
 
 1. Next, update the component template to attach an event handler to the "Search" button.
 
-   <docs-code header="Bind the click event" language="html">
-       <button class="primary" type="button" (click)="filterResults(filter.value)">Search</button>
-   </docs-code>
+   <docs-code header="Bind the click event" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[14]"/>
 
    By binding to the `click` event on the `button` element, you are able to call the `filterResults` function. The argument to the function is the `value` property of the `filter` template variable. Specifically, the `.value` property from the `input` HTML element.
 
 1. The last template update is to the `ngFor` directive. Update the `ngFor` value to iterate over values from the `filteredLocationList` array.
 
-<docs-code header="Update the ngFor directive value" language="html">
-    <app-housing-location *ngFor="let housingLocation of filteredLocationList" [housingLocation]="housingLocation"></app-housing-location>
-</docs-code>
+   <docs-code header="Update the ngFor directive value" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[18,21]"/>
 
 </docs-step>
 
