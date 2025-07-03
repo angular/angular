@@ -7,7 +7,7 @@
  */
 import {metadata, validate} from '../logic';
 import {PATTERN} from '../metadata';
-import {FieldPath, LogicFn} from '../types';
+import {FieldPath, LogicFn, PathKind} from '../types';
 import {BaseValidatorConfig} from './types';
 
 function strToRegexp(pattern: string) {
@@ -29,10 +29,10 @@ function strToRegexp(pattern: string) {
  * @param pattern Regex as a string. `^` and `$` would be added automatically if not present.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function pattern(
-  path: FieldPath<string>,
-  pattern: string | LogicFn<string | undefined, string | undefined>,
-  config?: BaseValidatorConfig<string>,
+export function pattern<TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<string, TPathKind>,
+  pattern: string | LogicFn<string | undefined, string | undefined, TPathKind>,
+  config?: BaseValidatorConfig<string, TPathKind>,
 ) {
   const reactivePatternValue = typeof pattern === 'string' ? () => pattern : pattern;
   metadata(path, PATTERN, (ctx) => [reactivePatternValue(ctx)]);

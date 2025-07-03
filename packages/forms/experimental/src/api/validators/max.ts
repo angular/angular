@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn} from '../types';
 import {metadata, validate} from '../logic';
 import {MAX} from '../metadata';
+import {FieldPath, LogicFn, PathKind} from '../types';
 import {BaseValidatorConfig} from './types';
 
 /**
@@ -18,10 +18,10 @@ import {BaseValidatorConfig} from './types';
  * @param maxValue The minimum value, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function max(
-  path: FieldPath<number>,
-  maxValue: number | LogicFn<number | undefined, number | undefined>,
-  config?: BaseValidatorConfig<number>,
+export function max<TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<number, TPathKind>,
+  maxValue: number | LogicFn<number | undefined, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<number, TPathKind>,
 ) {
   const reactiveMaxValue = typeof maxValue === 'number' ? () => maxValue : maxValue;
 
