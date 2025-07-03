@@ -24,7 +24,7 @@ describe('path', () => {
             (/* UNUSED */) => {
               expect(() => {
                 validate(path.last, ({value}) =>
-                  value().length > 0 ? undefined : {kind: 'required'},
+                  value().length > 0 ? undefined : {kind: 'ng:required'},
                 );
               }).toThrowError();
             },
@@ -43,7 +43,7 @@ describe('path', () => {
           apply(path, (/* UNUSED */) => {
             expect(() => {
               validate(path.last, ({value}) => {
-                return {kind: 'does not matter'};
+                return {kind: 'custom:does not matter'};
               });
             }).toThrowError();
           });
@@ -61,7 +61,7 @@ describe('path', () => {
           apply(path, (/* UNUSED */) => {
             expect(() => {
               validate(path, ({value}) => {
-                return {kind: 'does not matter'};
+                return {kind: 'custom:does not matter'};
               });
             }).toThrowError();
           });
@@ -82,7 +82,7 @@ describe('path', () => {
           applyEach(path.items, (/* UNUSED */) => {
             expect(() => {
               validate(path.needLastName, ({value}) => {
-                return {kind: 'does not matter'};
+                return {kind: 'custom:does not matter'};
               });
             }).toThrowError();
           });

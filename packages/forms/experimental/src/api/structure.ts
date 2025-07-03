@@ -12,15 +12,8 @@ import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema';
-import type {
-  Field,
-  FieldPath,
-  LogicFn,
-  Schema,
-  SchemaFn,
-  SchemaOrSchemaFn,
-  ServerError,
-} from './types';
+import type {Field, FieldPath, LogicFn, Schema, SchemaFn, SchemaOrSchemaFn} from './types';
+import {ValidationTreeError} from './validation_errors';
 
 export interface FormOptions {
   injector?: Injector;
@@ -266,7 +259,8 @@ export function applyWhenValue(
 /**
  * Submits a given `Field` using the given action function and applies any server errors resulting
  * from the action to the field. Server errors retured by the `action` will be integrated into the
- * field as a `FormError` on the sub-field indicated by the `field` property of the server error.
+ * field as a `ValidationError` on the sub-field indicated by the `field` property of the server
+ * error.
  *
  * @example ```
  * async function registerNewUser(registrationForm: Field<{username: string, password: string}>) {
@@ -293,13 +287,13 @@ export function applyWhenValue(
  */
 export async function submit<T>(
   form: Field<T>,
-  action: (form: Field<T>) => Promise<ServerError[] | void>,
+  action: (form: Field<T>) => Promise<ValidationTreeError[] | void>,
 ) {
   const api = form() as FieldNode;
   api.submitState.selfSubmittedStatus.set('submitting');
   const errors = (await action(form)) || [];
   for (const error of errors) {
-    (error.field() as FieldNode).submitState.setServerErrors(error.error);
+    ((error.field ?? form)() as FieldNode).submitState.setServerErrors(error);
   }
   api.submitState.selfSubmittedStatus.set('submitted');
 }

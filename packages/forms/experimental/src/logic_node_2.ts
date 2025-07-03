@@ -3,12 +3,11 @@ import {
   DataKey,
   DisabledReason,
   FieldContext,
-  FormError,
-  FormTreeError,
   LogicFn,
   MetadataKey,
   ValidationResult,
 } from '../public_api';
+import {ValidationError, ValidationTreeError} from './api/validation_errors';
 import {setBoundPathDepthForResolution} from './field/context';
 import {
   AbstractLogic,
@@ -40,7 +39,7 @@ export abstract class AbstractLogicNodeBuilder {
   /** Adds a rule for synchronous validation errors for a field. */
   abstract addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void;
   /** Adds a rule for synchronous validation errors that apply to a subtree. */
-  abstract addSyncTreeErrorRule(logic: LogicFn<any, FormTreeError[]>): void;
+  abstract addSyncTreeErrorRule(logic: LogicFn<any, ValidationTreeError[]>): void;
   /** Adds a rule for asynchronous validation errors for a field. */
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
   /** Adds a rule to compute metadata for a field. */
@@ -108,7 +107,7 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addSyncErrorRule(logic);
   }
 
-  override addSyncTreeErrorRule(logic: LogicFn<any, FormTreeError[]>): void {
+  override addSyncTreeErrorRule(logic: LogicFn<any, ValidationTreeError[]>): void {
     this.getCurrent().addSyncTreeErrorRule(logic);
   }
 
@@ -218,7 +217,7 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.syncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addSyncTreeErrorRule(logic: LogicFn<any, FormTreeError[]>): void {
+  override addSyncTreeErrorRule(logic: LogicFn<any, ValidationTreeError[]>): void {
     this.logic.syncTreeErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
@@ -258,11 +257,11 @@ export class LogicContainer {
   /** Logic that determines if the field is read-only. */
   readonly readonly: BooleanOrLogic;
   /** Logic that produces synchronous validation errors for the field. */
-  readonly syncErrors: ArrayMergeLogic<FormError>;
+  readonly syncErrors: ArrayMergeLogic<ValidationError>;
   /** Logic that produces synchronous validation errors for the field's subtree. */
-  readonly syncTreeErrors: ArrayMergeLogic<FormTreeError>;
+  readonly syncTreeErrors: ArrayMergeLogic<ValidationTreeError>;
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
-  readonly asyncErrors: ArrayMergeLogic<FormTreeError | 'pending'>;
+  readonly asyncErrors: ArrayMergeLogic<ValidationTreeError | 'pending'>;
   /** A map of metadata keys to the `AbstractLogic` instances that compute their values. */
   private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
   /** A map of data keys to the factory functions that create their values. */
@@ -280,9 +279,9 @@ export class LogicContainer {
     this.hidden = new BooleanOrLogic(predicates);
     this.disabledReasons = new ArrayMergeLogic(predicates);
     this.readonly = new BooleanOrLogic(predicates);
-    this.syncErrors = new ArrayMergeLogic<FormError>(predicates);
-    this.syncTreeErrors = new ArrayMergeLogic<FormTreeError>(predicates);
-    this.asyncErrors = new ArrayMergeLogic<FormTreeError | 'pending'>(predicates);
+    this.syncErrors = new ArrayMergeLogic<ValidationError>(predicates);
+    this.syncTreeErrors = new ArrayMergeLogic<ValidationTreeError>(predicates);
+    this.asyncErrors = new ArrayMergeLogic<ValidationTreeError | 'pending'>(predicates);
   }
 
   /**

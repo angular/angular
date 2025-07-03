@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn} from '../types';
 import {metadata, validate} from '../logic';
 import {MAX} from '../metadata';
+import {FieldPath, LogicFn} from '../types';
 import {BaseValidatorConfig} from './types';
 
 /**
@@ -37,7 +37,7 @@ export function max(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'max'};
+        return {kind: 'ng:max', max: value};
       }
     }
 

@@ -12,7 +12,8 @@ import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {defineResource} from './data';
-import {FieldContext, FieldPath, FormTreeError} from './types';
+import {FieldContext, FieldPath} from './types';
+import {ValidationTreeError} from './validation_errors';
 
 export interface AsyncValidatorOptions<TValue, TRequest, TData> {
   readonly params: (ctx: FieldContext<TValue>) => TRequest;
@@ -20,7 +21,7 @@ export interface AsyncValidatorOptions<TValue, TRequest, TData> {
   readonly errors: (
     data: TData,
     ctx: FieldContext<TValue>,
-  ) => FormTreeError | FormTreeError[] | undefined;
+  ) => ValidationTreeError | ValidationTreeError[] | undefined;
 }
 
 export function validateAsync<TValue, TRequest, TData>(
@@ -66,7 +67,10 @@ export function validateHttp<TValue, TData = unknown>(
   path: FieldPath<TValue>,
   opts: {
     request: (ctx: FieldContext<TValue>) => string | undefined;
-    errors: (data: TData, ctx: FieldContext<TValue>) => FormTreeError | FormTreeError[] | undefined;
+    errors: (
+      data: TData,
+      ctx: FieldContext<TValue>,
+    ) => ValidationTreeError | ValidationTreeError[] | undefined;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;
@@ -75,7 +79,10 @@ export function validateHttp<TValue, TData = unknown>(
   path: FieldPath<TValue>,
   opts: {
     request: (ctx: FieldContext<TValue>) => HttpResourceRequest | undefined;
-    errors: (data: TData, ctx: FieldContext<TValue>) => FormTreeError | FormTreeError[] | undefined;
+    errors: (
+      data: TData,
+      ctx: FieldContext<TValue>,
+    ) => ValidationTreeError | ValidationTreeError[] | undefined;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;

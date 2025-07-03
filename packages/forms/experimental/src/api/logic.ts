@@ -10,6 +10,7 @@ import {MetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import type {FieldPath, LogicFn, TreeValidator, Validator} from './types';
+import {ValidationError} from './validation_errors';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -112,7 +113,7 @@ export function metadata<T, M>(
 
 /**
  * Adds logic to a field to conditionally add a validation error to it.
- * The added FormError will be of `kind: 'custom'`
+ * The added ValidationError will be of `kind: 'custom:error'`
  *
  * @param path The target path to add the error logic to.
  * @param logic A `LogicFn<T, boolean>` that returns `true` when the error should be added.
@@ -130,17 +131,17 @@ export function error<T>(
     validate(path, (arg) => {
       return logic(arg)
         ? {
-            kind: 'custom',
+            kind: 'custom:error',
             message: message(arg),
           }
         : undefined;
     });
   } else {
-    const err =
+    const err: ValidationError =
       message === undefined
-        ? {kind: 'custom'}
+        ? {kind: 'custom:error'}
         : {
-            kind: 'custom',
+            kind: 'custom:error',
             message,
           };
     validate(path, (arg) => {
