@@ -51,9 +51,9 @@ For now, your app's new service uses the data that has, so far, been created loc
 
 In the **Edit** pane of your IDE:
 
-1. In `src/app/home/home.component.ts`, from `HomeComponent`, copy the `housingLocationList` variable and its array value.
+1. In `src/app/home/home.component.ts`, from `HomeComponent`, copy the `housingLocationList` property and its array value, as well as the   `baseUrl` property.
 1. In `src/app/housing.service.ts`:
-    1. Inside the `HousingService` class, paste the variable that you copied from `HomeComponent` in the previous step.
+    1. Inside the `HousingService` class, paste the properties that you copied from `HomeComponent` in the previous step.
     1. Inside the `HousingService` class, paste these functions after the data you just copied.
         These functions allow dependencies to access the service's data.
 
