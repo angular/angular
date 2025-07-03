@@ -29,7 +29,7 @@ In this case, `:id` is dynamic and will change based on how the route is request
 
 1. In `src/app/housing-location/housing-location.component.ts`, add an anchor tag to the `section` element and include the `routerLink` directive:
 
-    <docs-code header="Add anchor with a routerLink directive to housing-location.component.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/housing-location/housing-location.component.ts" visibleLines="[20]"/>
+    <docs-code header="Add anchor with a routerLink directive to housing-location.component.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/housing-location/housing-location.component.ts" visibleLines="[19]"/>
 
     The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
 
@@ -56,13 +56,13 @@ In this step, you will get the route parameter in the `DetailsComponent`. Curren
 1. Update the body of the `DetailsComponent` class with the following code:
 
     <docs-code language="javascript">
-        export class DetailsComponent {
-            route: ActivatedRoute = inject(ActivatedRoute);
-            housingLocationId = -1;
-            constructor() {
-                this.housingLocationId = Number(this.route.snapshot.params['id']);
-            }
+    export class DetailsComponent {
+        route: ActivatedRoute = inject(ActivatedRoute);
+        housingLocationId = -1;
+        constructor() {
+            this.housingLocationId = Number(this.route.snapshot.params['id']);
         }
+    }
     </docs-code>
 
     This code gives the `DetailsComponent` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the `constructor`, the code converts the `id` parameter acquired from the route from a string to a number.
@@ -79,13 +79,13 @@ To access the data you will add a call to the `HousingService`.
 
 1. Update the template code to match the following code:
 
-    <docs-code header="Update the DetailsComponent template in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[11,32]"/>
+    <docs-code header="Update the DetailsComponent template in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[10,31]"/>
 
     Notice that the `housingLocation` properties are being accessed with the optional chaining operator `?`. This ensures that if the `housingLocation` value is null or undefined the application doesn't crash.
 
 1. Update the body of the `DetailsComponent` class to match the following code:
 
-    <docs-code header="Update the DetailsComponent class in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[35,44]"/>
+    <docs-code header="Update the DetailsComponent class in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[34,43]"/>
 
     Now the component has the code to display the correct information based on the selected housing location. The `constructor` now includes a call to the `HousingService` to pass the route parameter as an argument to the `getHousingLocationById` service function.
 
@@ -93,7 +93,12 @@ To access the data you will add a call to the `HousingService`.
 
     <docs-code header="Add styles for the DetailsComponent" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.css" visibleLines="[1,71]"/>
 
-1. Save your changes.
+    and save your changes
+
+1. In `DetailsComponent` use the just created `details.component.css` file as the source for the styles: 
+    <docs-code header="Update details.component.ts to use the created css file" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.component.ts" visibleLines="[32]"/>
+
+
 
 1. In the browser refresh the page and confirm that when you click on the "Learn More" link for a given housing location the details page displays the correct information based on the data for that selected item.
 
@@ -101,14 +106,14 @@ To access the data you will add a call to the `HousingService`.
 
 </docs-step>
 
-<docs-step title="Add navigation to the `HomeComponent`">
+<docs-step title="Check navigation in the `HomeComponent`">
 In a previous lesson you updated the `AppComponent` template to include a `routerLink`. Adding that code updated your app to enable navigation back to the `HomeComponent` whenever the logo is clicked.
 
 1. Confirm that your code matches the following:
 
-    <docs-code header="Add routerLink to AppComponent" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.component.ts" visibleLines="[8,20]"/>
+    <docs-code header="Make sure the routerLink is used within AppComponent" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.component.ts" visibleLines="[8,20]"/>
 
-    Your code may already be up-to-date but confirm to be sure.
+    Your code should already be up-to-date but confirm to be sure.
 </docs-step>
 
 </docs-workflow>
