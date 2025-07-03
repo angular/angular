@@ -67,7 +67,7 @@ In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 
 1. In the `DetailsComponent` decorator metadata, update the `template` HTML to match the following code to add the form's markup.
 
-   <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[11,46]"/>
+   <docs-code header="template directive in src/app/details/details.component.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.component.ts" visibleLines="[10,45]"/>
 
    The template now includes an event handler `(submit)="submitApplication()"`. Angular uses parentheses syntax around the event name to define events in the template code. The code on the right hand side of the equals sign is the code that should be executed when this event is triggered. You can bind to browser events and custom events.
 
