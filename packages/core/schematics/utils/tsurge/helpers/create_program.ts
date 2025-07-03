@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {NgCompilerOptions, UnifiedModulesHost} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {
   absoluteFrom,
   FileSystem,
   NgtscCompilerHost,
-  NodeJSFileSystem,
   setFileSystem,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import {BaseProgramInfo, ProgramInfo} from '../program_info';
-import {google3UsePlainTsProgramIfNoKnownAngularOption} from './google3/target_detection';
+import {google3UsePlainTsProgramIfNoKnownAngularOption, isGoogle3} from './google3/detection';
 import {createNgtscProgram} from './ngtsc_program';
 import {parseTsconfigOrDie} from './ts_parse_config';
 import {createPlainTsProgram} from './ts_program';
+import {fileNameToModuleNameFactory} from './google3/unified_module_resolution';
 
 /** Creates the base program info for the given tsconfig path. */
 export function createBaseProgramInfo(
@@ -43,6 +43,16 @@ export function createBaseProgramInfo(
     tsconfig.options['_useHostForImportGeneration'] === undefined
   ) {
     return createPlainTsProgram(tsHost, tsconfig, optionOverrides);
+  }
+
+  // The Angular program may try to emit references during analysis or migration.
+  // To replicate the Google3 import emission here, ensure the unified module resolution
+  // can be enabled by the compiler.
+  if (isGoogle3() && tsconfig.options.rootDirs) {
+    (tsHost as Partial<UnifiedModulesHost>).fileNameToModuleName = fileNameToModuleNameFactory(
+      tsconfig.options.rootDirs,
+      /* workspaceName*/ 'google3',
+    );
   }
 
   return createNgtscProgram(tsHost, tsconfig, optionOverrides);
