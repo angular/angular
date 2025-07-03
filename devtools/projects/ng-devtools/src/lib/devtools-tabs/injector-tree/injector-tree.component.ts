@@ -8,6 +8,7 @@
 
 import {
   afterRenderEffect,
+  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -72,6 +73,7 @@ const HIERARCHY_HOR_SIZE = 50;
   host: {
     '[hidden]': 'hidden()',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InjectorTreeComponent {
   private readonly environmentTree = viewChild<TreeVisualizerHostComponent>('environmentTree');

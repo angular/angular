@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -27,6 +28,7 @@ import {MatCard} from '@angular/material/card';
   templateUrl: './breadcrumbs.component.html',
   styleUrls: ['./breadcrumbs.component.scss'],
   imports: [MatCard, MatIcon, MatButton],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbsComponent {
   readonly parents = input.required<FlatNode[]>();

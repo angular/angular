@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 
 export type RowType = 'text' | 'chip' | 'flag' | 'list';
@@ -16,6 +16,7 @@ export type RowType = 'text' | 'chip' | 'flag' | 'list';
   templateUrl: './route-details-row.component.html',
   styleUrls: ['./route-details-row.component.scss'],
   imports: [MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RouteDetailsRowComponent {
   readonly label = input.required<string>();

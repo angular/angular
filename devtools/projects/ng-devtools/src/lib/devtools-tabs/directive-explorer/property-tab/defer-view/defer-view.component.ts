@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {MatToolbar} from '@angular/material/toolbar';
 import {DeferInfo} from '../../../../../../../protocol';
 
@@ -15,6 +15,7 @@ import {DeferInfo} from '../../../../../../../protocol';
   selector: 'ng-defer-view',
   styleUrls: ['./defer-view.component.scss'],
   imports: [MatToolbar],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeferViewComponent {
   readonly defer = input.required<NonNullable<DeferInfo>>();

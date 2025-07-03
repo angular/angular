@@ -6,8 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
-import {afterNextRender, Component, effect, inject, input, signal, viewChild} from '@angular/core';
+import {JsonPipe} from '@angular/common';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import {TreeVisualizerHostComponent} from '../../shared/tree-visualizer-host/tree-visualizer-host.component';
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {MatIconModule} from '@angular/material/icon';
@@ -33,7 +42,7 @@ const DEFAULT_FILTER = /.^/;
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
   imports: [
-    CommonModule,
+    JsonPipe,
     TreeVisualizerHostComponent,
     SplitComponent,
     SplitAreaDirective,
@@ -42,7 +51,7 @@ const DEFAULT_FILTER = /.^/;
     MatTableModule,
     RouteDetailsRowComponent,
   ],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RouterTreeComponent {
   private routerTree = viewChild.required<TreeVisualizerHostComponent>('routerTree');
