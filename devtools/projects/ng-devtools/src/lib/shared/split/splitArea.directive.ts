@@ -115,7 +115,6 @@ export class SplitAreaDirective implements OnInit, OnDestroy {
   private readonly lockListeners: Array<Function> = [];
 
   constructor(
-    private ngZone: NgZone,
     public elRef: ElementRef,
     private renderer: Renderer2,
     private split: SplitComponent,
@@ -126,18 +125,16 @@ export class SplitAreaDirective implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.split.addArea(this);
 
-    this.ngZone.runOutsideAngular(() => {
-      this.transitionListener = this.renderer.listen(
-        this.elRef.nativeElement,
-        'transitionend',
-        (event: TransitionEvent) => {
-          // Limit only flex-basis transition to trigger the event
-          if (event.propertyName === 'flex-basis') {
-            this.split.notify('transitionEnd', -1);
-          }
-        },
-      );
-    });
+    this.transitionListener = this.renderer.listen(
+      this.elRef.nativeElement,
+      'transitionend',
+      (event: TransitionEvent) => {
+        // Limit only flex-basis transition to trigger the event
+        if (event.propertyName === 'flex-basis') {
+          this.split.notify('transitionEnd', -1);
+        }
+      },
+    );
   }
 
   public setStyleOrder(value: number): void {
@@ -165,14 +162,12 @@ export class SplitAreaDirective implements OnInit, OnDestroy {
   }
 
   public lockEvents(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.lockListeners.push(
-        this.renderer.listen(this.elRef.nativeElement, 'selectstart', (e: Event) => false),
-      );
-      this.lockListeners.push(
-        this.renderer.listen(this.elRef.nativeElement, 'dragstart', (e: Event) => false),
-      );
-    });
+    this.lockListeners.push(
+      this.renderer.listen(this.elRef.nativeElement, 'selectstart', (e: Event) => false),
+    );
+    this.lockListeners.push(
+      this.renderer.listen(this.elRef.nativeElement, 'dragstart', (e: Event) => false),
+    );
   }
 
   public unlockEvents(): void {

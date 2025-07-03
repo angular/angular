@@ -88,7 +88,6 @@ pkg_web(
     name = "devapp",
     srcs = [":dev_app_static_files"] + [
         ":bundle",
-        "//:node_modules/zone.js",
     ],
 )
 
