@@ -38,7 +38,7 @@ export function required<T>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'required'};
+        return {kind: 'ng:required'};
       }
     }
     return undefined;

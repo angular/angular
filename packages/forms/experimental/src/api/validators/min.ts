@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn} from '../types';
 import {metadata, validate} from '../logic';
-import {BaseValidatorConfig} from './types';
 import {MIN} from '../metadata';
+import {FieldPath, LogicFn} from '../types';
+import {BaseValidatorConfig} from './types';
 
 /**
  * Validator requiring a field value to be greater than or equal to a minimum value.
@@ -36,7 +36,7 @@ export function min(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'min'};
+        return {kind: 'ng:min', min: value};
       }
     }
 

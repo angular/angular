@@ -23,7 +23,7 @@ describe('pattern validator', () => {
 
     expect(f.name().errors()).toEqual([
       jasmine.objectContaining({
-        kind: 'pattern',
+        kind: 'ng:pattern',
       }),
     ]);
   });
@@ -40,7 +40,7 @@ describe('pattern validator', () => {
 
     expect(f.name().errors()).toEqual([
       jasmine.objectContaining({
-        kind: 'pattern',
+        kind: 'ng:pattern',
       }),
     ]);
   });
@@ -88,7 +88,7 @@ describe('pattern validator', () => {
 
       expect(f.name().errors()).toEqual([
         jasmine.objectContaining({
-          kind: 'pattern',
+          kind: 'ng:pattern',
         }),
       ]);
 
@@ -97,7 +97,7 @@ describe('pattern validator', () => {
       patternSignal.set('meow');
       expect(f.name().errors()).toEqual([
         jasmine.objectContaining({
-          kind: 'pattern',
+          kind: 'ng:pattern',
         }),
       ]);
 

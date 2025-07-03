@@ -7,7 +7,8 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import type {FormError, FormTreeError, ValidationResult} from '../api/types';
+import type {ValidationResult} from '../api/types';
+import type {ValidationError, ValidationTreeError} from '../api/validation_errors';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitFalse} from './util';
 
@@ -17,7 +18,7 @@ import {reduceChildren, shortCircuitFalse} from './util';
 export class FieldValidationState {
   constructor(private readonly node: FieldNode) {}
 
-  private readonly rawSyncTreeErrors: Signal<FormTreeError[]> = computed(() => {
+  private readonly rawSyncTreeErrors: Signal<ValidationTreeError[]> = computed(() => {
     if (this.shouldSkipValidation()) {
       return [];
     }
@@ -30,7 +31,7 @@ export class FieldValidationState {
     ];
   });
 
-  readonly syncErrors: Signal<FormError[]> = computed(() => {
+  readonly syncErrors: Signal<ValidationError[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
@@ -57,12 +58,14 @@ export class FieldValidationState {
     );
   });
 
-  readonly syncTreeErrors: Signal<FormError[]> = computed(
+  readonly syncTreeErrors: Signal<ValidationError[]> = computed(
     () =>
-      this.rawSyncTreeErrors().filter((err) => err.field === this.node.fieldProxy) as FormError[],
+      this.rawSyncTreeErrors().filter(
+        (err) => err.field === this.node.fieldProxy,
+      ) as ValidationError[],
   );
 
-  readonly rawAsyncErrors: Signal<(FormTreeError | 'pending')[]> = computed(() => {
+  readonly rawAsyncErrors: Signal<(ValidationTreeError | 'pending')[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
@@ -85,13 +88,13 @@ export class FieldValidationState {
   /**
    * All asynchronous validation errors & pending statuses for this field.
    */
-  readonly asyncErrors: Signal<(FormError | 'pending')[]> = computed(() => {
+  readonly asyncErrors: Signal<(ValidationError | 'pending')[]> = computed(() => {
     if (this.shouldSkipValidation()) {
       return [];
     }
     return this.rawAsyncErrors().filter(
       (err) => err === 'pending' || err.field! === this.node.fieldProxy,
-    ) as Array<FormError | 'pending'>;
+    ) as Array<ValidationError | 'pending'>;
   });
 
   /**
@@ -157,7 +160,7 @@ export class FieldValidationState {
   }
 }
 
-function normalizeErrors(error: ValidationResult): FormError[] {
+function normalizeErrors(error: ValidationResult): ValidationError[] {
   if (error === undefined) {
     return [];
   }
@@ -166,5 +169,5 @@ function normalizeErrors(error: ValidationResult): FormError[] {
     return error;
   }
 
-  return [error as FormError];
+  return [error as ValidationError];
 }

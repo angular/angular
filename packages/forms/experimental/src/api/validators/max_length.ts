@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn} from '../types';
 import {metadata, validate} from '../logic';
-import {BaseValidatorConfig, ValueWithLength} from './types';
 import {MAX_LENGTH} from '../metadata';
+import {FieldPath, LogicFn} from '../types';
+import {BaseValidatorConfig, ValueWithLength} from './types';
 
 /**
  * Validator requiring a field value's length to be smaller than or equal to a maximum length.
@@ -36,7 +36,7 @@ export function maxLength(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'maxLength'};
+        return {kind: 'ng:maxlength', maxlength: value};
       }
     }
 

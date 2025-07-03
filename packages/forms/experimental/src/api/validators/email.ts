@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath} from '../types';
 import {validate} from '../logic';
+import {FieldPath} from '../types';
 import {BaseValidatorConfig} from './types';
 
 /**
@@ -56,7 +56,7 @@ export function email(path: FieldPath<string>, config?: BaseValidatorConfig<stri
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'email'};
+        return {kind: 'ng:email'};
       }
     }
 
