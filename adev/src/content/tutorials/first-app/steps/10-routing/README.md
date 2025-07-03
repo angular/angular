@@ -49,11 +49,11 @@ In this lesson, you will enable routing in your application to navigate to the d
 
     1. Add `RouterModule` to the `@Component` metadata imports
 
-        <docs-code header="Import RouterModule in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.component.ts" visibleLines="[7]"/>
+        <docs-code header="Import RouterModule in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.component.ts" visibleLines="[6]"/>
 
     1. In the `template` property, replace the `<app-home></app-home>` tag with the `<router-outlet>` directive and add a link back to the home page. Your code should match this code:
 
-        <docs-code header="Add router-outlet in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.component.ts" visibleLines="[8,18]"/>
+        <docs-code header="Add router-outlet in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.component.ts" visibleLines="[7,18]"/>
 
 </docs-step>
 
