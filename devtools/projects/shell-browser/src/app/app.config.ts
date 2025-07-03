@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationConfig, inject, NgZone} from '@angular/core';
+import {ApplicationConfig, inject, NgZone, provideZonelessChangeDetection} from '@angular/core';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {ApplicationEnvironment, ApplicationOperations} from '../../../ng-devtools';
 
@@ -20,6 +20,7 @@ import {Platform} from '@angular/cdk/platform';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
+    provideZonelessChangeDetection(),
     {provide: FrameManager, useFactory: () => FrameManager.initialize()},
     {
       provide: ApplicationOperations,
