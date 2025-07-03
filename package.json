@@ -38,7 +38,6 @@
     "ts-circular-deps:check": "yarn -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
     "check-tooling-setup": "yarn tsc --project .ng-dev/tsconfig.json && yarn tsc --project scripts/tsconfig.json",
     "devtools:devserver": "ibazel run //devtools/src:devserver",
-    "devtools:devserver:demo-standalone": "ibazel run //devtools/projects/demo-standalone/src:devserver",
     "devtools:build:chrome": "bazelisk build --//devtools/projects/shell-browser/src:flag_browser=chrome //devtools/projects/shell-browser/src:prodapp",
     "devtools:build:firefox": "bazelisk build --config snapshot-build-firefox --//devtools/projects/shell-browser/src:flag_browser=firefox //devtools/projects/shell-browser/src:prodapp",
     "devtools:build:chrome:release": "yarn run -s devtools:build:chrome",

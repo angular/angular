@@ -46,12 +46,6 @@ To run the extension in development mode run:
 yarn devtools:devserver
 ```
 
-You can also run a standalone version of the demo app with:
-
-```shell
-yarn devtools:devserver:demo-standalone
-```
-
 This would start a development server that you can access on <http://localhost:4200>. In development, Angular DevTools
 uses a "development shell." This is different from "chrome shell" in a way, that it runs the user's app in an iframe.
 DevTools then communicate with the user's app via message passing.
