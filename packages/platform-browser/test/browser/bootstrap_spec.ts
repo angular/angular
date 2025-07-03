@@ -597,8 +597,19 @@ describe('bootstrap factory method', () => {
     class CustomModule {}
 
     await expectAsync(
-      bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [CustomModule]),
-    ).toBeRejected();
+      bootstrap(
+        RootCmp,
+        [{provide: ErrorHandler, useValue: errorHandler}],
+        [],
+        [CustomModule],
+      ).then(null, (e: Error) => {
+        const errorMsg =
+          `NG0201: No provider found for \`IDontExist\`. ` +
+          `Source: TestModule. Find more at https://angular.dev/errors/NG0201`;
+        expect(e.message).toContain(errorMsg);
+        return null;
+      }),
+    );
   });
 
   if (getDOM().supportsDOMEvents) {
