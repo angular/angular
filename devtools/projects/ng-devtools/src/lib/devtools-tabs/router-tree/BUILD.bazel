@@ -8,13 +8,14 @@ package(default_visibility = ["//:__subpackages__"])
 sass_binary(
     name = "router_tree_styles",
     src = "router-tree.component.scss",
-    deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
 )
 
 sass_binary(
     name = "router_details_row_styles",
     src = "route-details-row.component.scss",
-    deps = ["//devtools/projects/ng-devtools/src/styles:theme"],
 )
 
 ng_project(
@@ -39,6 +40,7 @@ ng_project(
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
         "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
         "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
         "//devtools/projects/protocol:protocol_rjs",

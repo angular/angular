@@ -7,7 +7,7 @@
  */
 
 import {Component, computed, input, output} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {ButtonComponent} from '../../shared/button/button.component';
 
 export type RowType = 'text' | 'chip' | 'flag' | 'list';
 
@@ -15,14 +15,14 @@ export type RowType = 'text' | 'chip' | 'flag' | 'list';
   selector: '[ng-route-details-row]',
   templateUrl: './route-details-row.component.html',
   styleUrls: ['./route-details-row.component.scss'],
-  imports: [MatButtonModule],
+  imports: [ButtonComponent],
 })
 export class RouteDetailsRowComponent {
   readonly label = input.required<string>();
   readonly data = input<string | boolean | string[]>();
   readonly type = input<RowType>('text');
 
-  readonly click = output<string>();
+  readonly btnClick = output<string>();
 
   readonly dataArray = computed(() => {
     return this.data() as string[];
