@@ -1,0 +1,347 @@
+@use '../../../styles/theme' as theme;
+
+.transfer-state-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+    }
+  }
+
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+
+    .spinning {
+      animation: spin 2s linear infinite;
+    }
+  }
+
+  .error-card,
+  .empty-card {
+    max-width: 600px;
+    margin: 0 auto;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    ul {
+      margin: 8px 0;
+      padding-left: 20px;
+
+      li {
+        margin: 4px 0;
+      }
+    }
+  }
+
+  .transfer-state-content {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+
+    .summary {
+      margin-bottom: 16px;
+      flex-shrink: 0;
+
+      mat-card {
+        box-shadow: none !important;
+
+        mat-card-content {
+          padding: 12px 16px !important;
+        }
+      }
+
+      .summary-stats {
+        display: flex;
+        gap: 32px;
+
+        .stat {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1976d2;
+          }
+
+          .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+        }
+      }
+    }
+
+    .table-container {
+      flex: 0 1 auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      max-height: 70vh;
+      overflow-y: auto;
+
+      .transfer-state-table {
+        width: 100%;
+        background: white;
+
+        th {
+          background: #f5f5f5;
+          font-weight: 600;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          padding: 12px 16px;
+          border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+          padding: 12px 16px;
+          border-bottom: 1px solid #f0f0f0;
+        }
+
+        .key-cell {
+          code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            color: #000000;
+            border: 1px solid #e1e4e8;
+          }
+        }
+
+        .value-cell {
+          min-width: 200px;
+          max-width: 500px;
+
+          .value-container {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+
+            .value-preview {
+              flex: 1;
+              margin: 0;
+              padding: 8px;
+              background: #f8f9fa;
+              border: 1px solid #e1e4e8;
+              border-radius: 3px;
+              font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+              font-size: 11px;
+              line-height: 1.4;
+              overflow-x: auto;
+              white-space: pre-wrap;
+              word-break: break-word;
+              color: #000000;
+            }
+
+            .action-buttons {
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+              flex-shrink: 0;
+              margin-top: 4px;
+
+              .expand-button,
+              .copy-button {
+                min-width: 24px;
+                width: 24px;
+                height: 24px;
+                padding: 0;
+
+                mat-icon {
+                  font-size: 14px;
+                  width: 14px;
+                  height: 14px;
+                }
+              }
+
+              .copy-button {
+                &.mat-icon-button {
+                  transition: all 0.2s ease;
+                }
+
+                &:has(mat-icon[data-copied='true']) {
+                  color: #4caf50;
+                }
+              }
+            }
+          }
+        }
+
+        .type-badge {
+          display: inline-block;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: #000000;
+
+          &.type-string {
+            background: #a6d5a9;
+          }
+
+          &.type-number {
+            background: #c79eff;
+          }
+
+          &.type-boolean {
+            background: #f9c2c5;
+          }
+
+          &.type-object {
+            background: #ffd54f;
+          }
+
+          &.type-array {
+            background: #81c784;
+          }
+
+          &.type-null {
+            background: #e0e0e0;
+          }
+        }
+
+        tr:hover {
+          background: #fafafa;
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@include theme.dark-theme {
+  .transfer-state-container {
+    color: #ffffff;
+
+    .header h2 {
+      color: #ffffff;
+    }
+
+    .loading {
+      color: #cccccc;
+    }
+
+    .error-card,
+    .empty-card {
+      background: #424242;
+    }
+
+    .summary {
+      mat-card {
+        background: #424242;
+        color: #ffffff;
+        box-shadow: none !important;
+      }
+
+      .stat {
+        .stat-value {
+          color: #64b5f6;
+        }
+
+        .stat-label {
+          color: #cccccc;
+        }
+      }
+    }
+
+    .table-container {
+      border-color: #616161;
+
+      .transfer-state-table {
+        background: #303030;
+
+        th {
+          background: #424242;
+          border-bottom-color: #616161;
+          color: #ffffff;
+        }
+
+        td {
+          border-bottom-color: #616161;
+          color: #ffffff;
+        }
+
+        .key-cell code {
+          background: #424242;
+          border-color: #616161;
+          color: #ffffff;
+        }
+
+        .value-cell {
+          .value-preview {
+            background: #424242;
+            border-color: #616161;
+            color: #ffffff;
+          }
+
+          .action-buttons .copy-button:has(mat-icon[data-copied='true']) {
+            color: #81c784;
+          }
+        }
+
+        tr:hover {
+          background: #424242;
+        }
+      }
+    }
+  }
+}
