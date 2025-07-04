@@ -101,14 +101,14 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 - Use the `inject()` function instead of constructor injection
 
 ## Routing
-- Use `provideRouter()` with standalone components instead of RouterModule.forRoot()
-- Implement lazy loading using loadComponent for feature routes and standalone components
-- Use functional route guards (`CanActivateFn`, `CanDeactivateFn`) instead of class-based guards
-- Configure preloading strategies:
-  - Use NoPreloading as default (conserves bandwidth)
-  - Implement custom strategies for critical routes only
+- Use `provideRouter()` with standalone components instead of `RouterModule.forRoot()`/`.forChild()`.
+- Implement lazy loading by default for all routes using loadComponent for standalone components.
+- Use functional route guards (`CanActivateFn`, `CanDeactivateFn`) instead of class-based guards, learn more here https://angular.dev/guide/routing/route-guards
+- Configure preloading strategies with a data-driven approach:
+  - Default to `NoPreloading` to ensure the fastest initial load and conserve user bandwidth.
+  - Only consider other strategies, like `PreloadAllModules` or a custom one, after analyzing user traffic patterns to identify common navigation paths. Avoid enabling aggressive preloading based on assumptions.
 - Structure routes hierarchically with clear parent-child relationships
 - Keep your routing configuration clean and maintainable by separating routes into their own files, especially for different features.
 - Define wildcard routes (`**`) for 404 handling when needed
-- Use route resolvers to pre-fetch critical data before component activation
+- Prefer non-blocking data fetching within components over route resolvers. Use a resolver only when data is an absolute prerequisite for the component's initial render
 - Implement redirect patterns using `RedirectCommand`

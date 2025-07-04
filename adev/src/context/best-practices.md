@@ -38,10 +38,10 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the `inject()` function instead of constructor injection
 
 ## Routing
-- Use `provideRouter()` with standalone components instead of RouterModule.forRoot()
-- Implement lazy loading using loadComponent for feature routes and standalone components
+- Use `provideRouter()` with standalone components instead of `RouterModule.forRoot()`/`.forChild()`.
+- Implement lazy loading by default for all routes using loadComponent for standalone components.
 - Use functional route guards (`CanActivateFn`, `CanDeactivateFn`) instead of class-based guards
-- Configure preloading strategies:
-  - Use NoPreloading as default (conserves bandwidth)
-  - Implement custom strategies for critical routes only
+- Configure preloading strategies with a data-driven approach:
+  - Default to `NoPreloading` to ensure the fastest initial load and conserve user bandwidth.
+  - Only consider other strategies, like `PreloadAllModules` or a custom one, after analyzing user traffic patterns to identify common navigation paths. Avoid enabling aggressive preloading based on assumptions.
 - Structure routes hierarchically with clear parent-child relationships
