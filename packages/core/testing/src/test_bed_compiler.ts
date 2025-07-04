@@ -41,6 +41,7 @@ import {
   ɵDirectiveDef as DirectiveDef,
   ɵgenerateStandaloneInDeclarationsError,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
+  ɵhasAsyncClassMetadata as hasAsyncClassMetadata,
   ɵgetInjectableDef as getInjectableDef,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
   ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
@@ -100,7 +101,7 @@ function assertNoStandaloneComponents(
   location: string,
 ) {
   types.forEach((type) => {
-    if (!getAsyncClassMetadataFn(type)) {
+    if (!hasAsyncClassMetadata(type)) {
       const component = resolver.resolve(type);
       if (component && (component.standalone == null || component.standalone)) {
         throw new Error(ɵgenerateStandaloneInDeclarationsError(type, location));
@@ -415,6 +416,13 @@ export class TestBedCompiler {
     }
   }
 
+  async prepareAsyncComponents(): Promise<void> {
+    // Wait for all async metadata for components that were
+    // overridden, we need resolved metadata to perform an override
+    // and re-compile a component.
+    await this.resolvePendingComponentsWithAsyncMetadata();
+  }
+
   finalize(): NgModuleRef<any> {
     // One last compile
     this.compileTypesSync();
@@ -490,6 +498,14 @@ export class TestBedCompiler {
     }, [] as ComponentFactory<any>[]);
   }
 
+  hasPendingOverrides(): boolean {
+    return (
+      this.pendingComponents.size !== 0 ||
+      this.pendingDirectives.size !== 0 ||
+      this.pendingPipes.size !== 0
+    );
+  }
+
   private compileTypesSync(): boolean {
     // Compile all queued components, directives, pipes.
     let needsAsyncResources = false;
@@ -497,7 +513,7 @@ export class TestBedCompiler {
       if (getAsyncClassMetadataFn(declaration)) {
         throw new Error(
           `Component '${declaration.name}' has unresolved metadata. ` +
-            `Please call \`await TestBed.compileComponents()\` before running this test.`,
+            `Please call \`await TestBed.prepareAsyncComponents()\` before running this test.`,
         );
       }
 
