@@ -132,7 +132,7 @@ describe('bootstrapApplication for standalone components', () => {
         fail('Expected to throw');
       } catch (e: unknown) {
         expect(e).toBeInstanceOf(Error);
-        expect((e as Error).message).toContain('No provider for InjectionToken ambient token!');
+        expect((e as Error).message).toContain(`No provider for InjectionToken 'ambient token'!`);
       }
     }),
   );

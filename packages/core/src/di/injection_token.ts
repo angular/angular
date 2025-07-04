@@ -102,7 +102,7 @@ export class InjectionToken<T> {
   }
 
   toString(): string {
-    return `InjectionToken ${this._desc}`;
+    return `InjectionToken '${this._desc}'`;
   }
 }
 

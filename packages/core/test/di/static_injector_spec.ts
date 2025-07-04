@@ -203,7 +203,7 @@ describe('displayName', () => {
         providers: [Engine.PROVIDER, {provide: BrokenEngine, useValue: null}],
       }).toString(),
     ).toEqual(
-      'R3Injector[Engine, BrokenEngine, InjectionToken INJECTOR, InjectionToken INJECTOR_DEF_TYPES, InjectionToken ENVIRONMENT_INITIALIZER]',
+      `R3Injector[Engine, BrokenEngine, InjectionToken 'INJECTOR', InjectionToken 'INJECTOR_DEF_TYPES', InjectionToken 'ENVIRONMENT_INITIALIZER']`,
     );
   });
 });
