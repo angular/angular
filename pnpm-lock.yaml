@@ -706,8 +706,8 @@ importers:
         specifier: 16.0.0
         version: 16.0.0
       mermaid:
-        specifier: 11.7.0
-        version: 11.7.0
+        specifier: 11.8.0
+        version: 11.8.0
       ngx-progressbar:
         specifier: 14.0.0
         version: 14.0.0(@angular/cdk@20.0.4)(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
@@ -779,7 +779,7 @@ importers:
         version: 16.0.0
       mermaid:
         specifier: ^11.0.0
-        version: 11.7.0
+        version: 11.8.0
       rxjs:
         specifier: ^7.8.1
         version: 7.8.2
@@ -6832,8 +6832,8 @@ packages:
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==, tarball: https://registry.npmjs.org/@marijn/find-cluster-break/-/find-cluster-break-1.0.2.tgz}
     dev: false
 
-  /@mermaid-js/parser@0.5.0:
-    resolution: {integrity: sha512-AiaN7+VjXC+3BYE+GwNezkpjIcCI2qIMB/K4S2/vMWe0q/XJCBbx5+K7iteuz7VyltX9iAK4FmVTvGc9kjOV4w==, tarball: https://registry.npmjs.org/@mermaid-js/parser/-/parser-0.5.0.tgz}
+  /@mermaid-js/parser@0.6.0:
+    resolution: {integrity: sha512-7DNESgpyZ5WG1SIkrYafVBhWmImtmQuoxOO1lawI3gQYWxBX3v1FW3IyuuRfKJAO06XrZR71W0Kif5VEGGd4VA==, tarball: https://registry.npmjs.org/@mermaid-js/parser/-/parser-0.6.0.tgz}
     dependencies:
       langium: 3.3.1
     dev: false
@@ -17489,12 +17489,12 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==, tarball: https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz}
     engines: {node: '>= 8'}
 
-  /mermaid@11.7.0:
-    resolution: {integrity: sha512-/1/5R0rt0Z1Ak0CuznAnCF3HtQgayRXUz6SguzOwN4L+DuCobz0UxnQ+ZdTSZ3AugKVVh78tiVmsHpHWV25TCw==, tarball: https://registry.npmjs.org/mermaid/-/mermaid-11.7.0.tgz}
+  /mermaid@11.8.0:
+    resolution: {integrity: sha512-uAZUwnBiqREZcUrFw3G5iQ5Pj3hTYUP95EZc3ec/nGBzHddJZydzYGE09tGZDBS1VoSoDn0symZ85FmypSTo5g==, tarball: https://registry.npmjs.org/mermaid/-/mermaid-11.8.0.tgz}
     dependencies:
       '@braintree/sanitize-url': 7.1.1
       '@iconify/utils': 2.3.0
-      '@mermaid-js/parser': 0.5.0
+      '@mermaid-js/parser': 0.6.0
       '@types/d3': 7.4.3
       cytoscape: 3.32.0
       cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.0)
