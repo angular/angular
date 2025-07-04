@@ -743,8 +743,7 @@ export function getNodeInjectable(
   const tData = tView.data;
   if (value instanceof NodeInjectorFactory) {
     const factory: NodeInjectorFactory = value;
-    // stripping _factory from the name to retrieve the class name
-    ngDevMode && injectionPath.push(factory.factory.name.slice(0, -8));
+    ngDevMode && injectionPath.push(factory.name);
     if (factory.resolving) {
       const token = stringifyForError(tData[index]);
       if (ngDevMode) {

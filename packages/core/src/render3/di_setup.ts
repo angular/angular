@@ -117,7 +117,17 @@ function resolveProvider(
 
     if (isTypeProvider(provider) || !provider.multi) {
       // Single provider case: the factory is created and pushed immediately
-      const factory = new NodeInjectorFactory(providerFactory, isViewProvider, ɵɵdirectiveInject);
+      const name = isTypeProvider(provider)
+        ? provider.name
+        : isClassProvider(provider)
+          ? resolveForwardRef(provider.useClass).name
+          : 'unknown';
+      const factory = new NodeInjectorFactory(
+        providerFactory,
+        isViewProvider,
+        ɵɵdirectiveInject,
+        name,
+      );
       const existingFactoryIndex = indexOf(
         token,
         tInjectables,
@@ -395,7 +405,7 @@ function multiFactory(
   isComponent: boolean,
   f: () => any,
 ): NodeInjectorFactory {
-  const factory = new NodeInjectorFactory(factoryFn, isViewProvider, ɵɵdirectiveInject);
+  const factory = new NodeInjectorFactory(factoryFn, isViewProvider, ɵɵdirectiveInject, 'unknown');
   factory.multi = [];
   factory.index = index;
   factory.componentProviders = 0;

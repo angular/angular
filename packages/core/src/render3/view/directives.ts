@@ -451,6 +451,7 @@ function configureViewWithDirective<T>(
     directiveFactory,
     isComponentDef(def),
     ɵɵdirectiveInject,
+    def.type.name,
   );
   tView.blueprint[directiveIndex] = nodeInjectorFactory;
   lView[directiveIndex] = nodeInjectorFactory;
