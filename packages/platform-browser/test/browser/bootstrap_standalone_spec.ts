@@ -132,7 +132,12 @@ describe('bootstrapApplication for standalone components', () => {
         fail('Expected to throw');
       } catch (e: unknown) {
         expect(e).toBeInstanceOf(Error);
-        expect((e as Error).message).toContain('No provider for InjectionToken ambient token!');
+        expect((e as Error).message).toContain(
+          'NG0201: No provider found for `InjectionToken ambient token`. ' +
+            'Source: Standalone[StandaloneCmp]. ' +
+            'Path: NeedsAmbientProvider -> InjectionToken ambient token. ' +
+            'Find more at https://angular.dev/errors/NG0201',
+        );
       }
     }),
   );
