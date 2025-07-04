@@ -1,3 +1,5 @@
+@use '../../../styles/typography';
+
 :host {
   display: flex;
   flex-direction: column;
@@ -23,27 +25,31 @@
   .visualization {
     flex: 1;
 
-    .selected-node-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem 1.5rem;
+    .side-pane {
+      position: relative;
+      padding: 1rem;
 
-      .router-title {
-        width: 100%;
-        display: block;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        font-size: 0.875rem;
-        font-weight: 500;
-        margin: 0;
+      .close-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
       }
-    }
 
-    .route-details-table {
-      border-collapse: collapse;
-      width: 100%;
-      font-size: 0.75rem;
+      h2 {
+        @extend %heading-400;
+        margin: 0;
+        padding-top: 0;
+      }
+
+      table {
+        margin-top: 1rem;
+      }
     }
 
     .legend {

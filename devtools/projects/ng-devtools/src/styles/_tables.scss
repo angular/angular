@@ -1,0 +1,42 @@
+/* Global table styles */
+@use '@angular/material' as mat;
+@use './typography';
+
+table[mat-table],
+table.ng-table {
+  width: 100%;
+
+  tr {
+    height: 38px;
+
+    th {
+      @extend %body-bold-01;
+      margin: 0;
+    }
+
+    td {
+      @extend %body-01;
+    }
+  }
+}
+
+table[mat-table] {
+  @include mat.table-overrides(
+    (
+      row-item-label-text-size: 0.8rem,
+    )
+  );
+}
+
+table.ng-table {
+  border-collapse: collapse;
+  text-align: left;
+
+  th,
+  td {
+    border-bottom: 1px solid var(--senary-contrast);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 0.375rem;
+  }
+}

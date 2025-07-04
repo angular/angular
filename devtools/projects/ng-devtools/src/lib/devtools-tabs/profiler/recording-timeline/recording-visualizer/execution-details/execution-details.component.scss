@@ -1,18 +1,4 @@
 :host {
   display: block;
   white-space: nowrap;
-
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    text-align: left;
-
-    th,
-    td {
-      border-bottom: 1px solid var(--senary-contrast);
-      padding: 0.375rem 0.5rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
 }

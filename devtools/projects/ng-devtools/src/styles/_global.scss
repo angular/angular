@@ -5,6 +5,7 @@
 @use './colors' as clr;
 @use './typography' as tg;
 @use './inputs';
+@use './tables';
 
 @include mat.all-component-typographies();
 @include mat.core();

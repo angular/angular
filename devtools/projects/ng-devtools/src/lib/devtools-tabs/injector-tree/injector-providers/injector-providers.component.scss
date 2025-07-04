@@ -60,24 +60,6 @@
   }
 
   table {
-    width: 100%;
-    --mat-table-row-item-label-text-size: 0.8rem;
-    --mat-table-header-container-height: 42px;
-    --mat-table-row-item-container-height: 42px;
-
-    td {
-      @extend %body-01;
-    }
-
-    .select {
-      cursor: pointer;
-    }
-
-    .column-title {
-      @extend %body-bold-01;
-      margin: 0;
-    }
-
     .token-cell {
       overflow: hidden;
       text-overflow: ellipsis;
