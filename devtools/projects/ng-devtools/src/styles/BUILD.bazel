@@ -17,6 +17,7 @@ sass_library(
         ":colors",
         ":inputs",
         ":material_sass_deps",
+        ":tables",
         ":typography",
     ],
 )
@@ -44,6 +45,15 @@ sass_library(
     srcs = ["_inputs.scss"],
     deps = [
         ":theme",
+        ":typography",
+    ],
+)
+
+sass_library(
+    name = "tables",
+    srcs = ["_tables.scss"],
+    deps = [
+        ":material_sass_deps",
         ":typography",
     ],
 )

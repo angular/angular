@@ -1,52 +1,25 @@
-@use '../../../styles/theme' as theme;
-
-td,
-th {
-  border: 1px solid var(--color-separator);
-  padding: 8px;
+.tag-active,
+.tag-inactive {
+  border-radius: 1rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid;
 }
 
 .tag-active {
-  display: inline-block;
-  border-radius: 5px;
-  padding: 2px 8px;
-  background: var(--green-03);
-  color: var(--color-text);
+  border-color: var(--green-03);
 }
 
 .tag-inactive {
-  display: inline-block;
-  border-radius: 5px;
-  padding: 2px 8px;
-  background: var(--red-06);
-  color: var(--color-text);
+  border-color: var(--red-06);
 }
 
 .chips-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 0.375rem;
   overflow-wrap: normal;
 }
 
-button {
-  border-radius: 25px;
-  font-size: 12px;
-}
-
-.row-data {
-  color: var(--color-text);
-}
-
-.row-title {
-  color: var(--color-text);
-}
-
-@include theme.dark-theme {
-  .tag-active {
-    color: var(--color-text-chip);
-  }
-  .tag-inactive {
-    color: var(--color-text-chip);
-  }
+td {
+  width: 100%;
 }

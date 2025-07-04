@@ -1,22 +1,25 @@
-<th>
-  <span class="row-title">{{label()}}:</span>
-</th>
+<th>{{label()}}</th>
 <td>
   @switch (type()) {
     @case ('chip') {
-      <button mat-stroked-button (click)="click.emit('')" [disabled]="isRouteWithoutComponent()">
+      <button
+        ng-button
+        size="compact"
+        (click)="btnClick.emit('')"
+        [disabled]="isRouteWithoutComponent()"
+      >
         {{ data() }}
       </button>
     }
     @case ('flag') {
-      <span class="{{ data() ? 'tag-active' : 'tag-inactive' }}">
+      <span [class]="data() ? 'tag-active' : 'tag-inactive'">
         {{ data() }}
       </span>
     }
     @case ('list') {
       <div class="chips-container">
         @for (provider of dataArray(); track $index) {
-          <button mat-stroked-button (click)="click.emit(provider)">
+          <button ng-button size="compact" (click)="btnClick.emit(provider)">
             {{ provider }}
           </button>
         }
