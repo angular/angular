@@ -27,7 +27,7 @@ In the `Home` there is only a single housing location. In this step, you will ad
 
 1. In `src/app/home/home.ts`, remove the `housingLocation` property from the `Home` class.
 1. Update the `Home` class to have a property called `housingLocationList`. Update your code to match the following code:
-    <docs-code header="Add housingLocationList property" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="26-131"/>
+    <docs-code header="Add housingLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="26-131"/>
 
     IMPORTANT: Do not remove the `@Component` decorator, you will update that code in an upcoming step.
 
@@ -37,7 +37,7 @@ In the `Home` there is only a single housing location. In this step, you will ad
 Now the app has a dataset that you can use to display the entries in the browser using the `@for` block.
 
 1. Update the `<app-housing-location>` tag in the template code to this:
-    <docs-code header="Add @for to Home template" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="[14,20]"/>
+    <docs-code header="Add @for to Home template in home.ts" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="[15,19]"/>
 
     Note, in the code `[housingLocation] = "housingLocation"` the `housingLocation` value now refers to the variable used in the `@for` block. Before this change, it referred to the property on the `Home` class.
 

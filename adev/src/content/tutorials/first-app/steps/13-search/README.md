@@ -20,13 +20,13 @@ In this step, you'll update the `Home` class to store data in a new array proper
 
 1. In `src/app/home/home.ts`, add new property to the class called `filteredLocationList`.
 
-   <docs-code header="Add the filtered results property" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[29]"/>
+   <docs-code header="Add the filteredLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[27]"/>
 
    The `filteredLocationList` hold the values that match the search criteria entered by the user.
 
 1. The `filteredLocationList` should contain the total set of housing locations values by default when the page loads. Update the `constructor` for the `Home` to set the value.
 
-<docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[29,32]"/>
+   <docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[29,32]"/>
 
 </docs-step>
 
@@ -35,27 +35,18 @@ The `Home` already contains an input field that you will use to capture input fr
 
 1. Update the `Home` template to include a template variable in the `input` element called `#filter`.
 
-   <docs-code header="Add a template variable to Home's template" language="html">
-       <input type="text" placeholder="Filter by city" #filter>
-   </docs-code>
-
+   <docs-code header="Add a template variable to the input HTML element in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[12]"/>
    This example uses a [template reference variable](guide/templates) to get access to the `input` element as its value.
 
 1. Next, update the component template to attach an event handler to the "Search" button.
 
-   <docs-code header="Bind the click event" language="html">
-       <button class="primary" type="button" (click)="filterResults(filter.value)">Search</button>
-   </docs-code>
+   <docs-code header="Bind the button click event to a method in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[13]"/>
 
    By binding to the `click` event on the `button` element, you are able to call the `filterResults` function. The argument to the function is the `value` property of the `filter` template variable. Specifically, the `.value` property from the `input` HTML element.
 
-1. The last template update is to the `ngFor` directive. Update the `ngFor` value to iterate over values from the `filteredLocationList` array.
+1. The last template update is to the `@for` directive. Update the `@for` to iterate over values from the `filteredLocationList` array.
 
-<docs-code header="Update the ngFor directive value" language="html">
-@for(housingLocation of housingLocationList; track $index) {
-   <app-housing-location [housingLocation]="housingLocation"></app-housing-location>
-}
-</docs-code>
+   <docs-code header="Update the @for template directive in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[17,19]" language="html"/>
 
 </docs-step>
 

@@ -11,9 +11,9 @@ This tutorial lesson demonstrates how to add interpolation to Angular templates 
 
 ## Conceptual preview of interpolation
 
-In this step you will display values (properties and `Input` values) in a template using interpolation.
+In this step you will display values read from `input` properties in a template using interpolation.
 
-Using the `{{ expression }}` in Angular templates, you can render values from properties, `Inputs` and valid JavaScript expressions.
+Using the `{{ expression }}` in Angular templates, you can render values from properties, `inputs`, and valid JavaScript expressions.
 
 For a more in depth explanation, please refer to the [Displaying values with interpolation](guide/templates/binding#render-dynamic-text-with-text-interpolation) guide.
 
@@ -27,7 +27,7 @@ In the code editor:
 1.  Navigate to `src/app/housing-location/housing-location.ts`
 1.  In the template property of the `@Component` decorator, replace the existing HTML markup with the following code:
 
-<docs-code header="Update HousingLocation template" path="adev/src/content/tutorials/first-app/steps/08-ngFor/src/app/housing-location/housing-location.ts" visibleLines="[6,17]"/>
+<docs-code header="Update HousingLocation template in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/08-ngFor/src/app/housing-location/housing-location.ts" visibleLines="[6,17]"/>
 
   In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpolation to give more context to the alt text of the image.
 

@@ -38,7 +38,7 @@ In `reverse.pipe.ts` add the `@Pipe` decorator to the `ReversePipe` class and pr
 
 ```ts
 @Pipe({
-    name: 'reverse'
+  name: 'reverse'
 })
 ```
 
@@ -50,16 +50,15 @@ Now the `ReversePipe` class is a pipe. Update the `transform` function to add th
 
 <docs-code language="ts" highlight="[3,4,5,6,7,8,9]">
 export class ReversePipe implements PipeTransform {
-    transform(value: string): string {
-        let reverse = '';
+  transform(value: string): string {
+    let reverse = '';
 
-        for (let i = value.length - 1; i >= 0; i--) {
-            reverse += value[i];
-        }
-
-        return reverse;
+    for (let i = value.length - 1; i >= 0; i--) {
+      reverse += value[i];
     }
 
+    return reverse;
+  }
 }
 </docs-code>
 
@@ -70,9 +69,9 @@ With the pipe logic implemented, the final step is to use it in the template. In
 
 <docs-code language="angular-ts" highlight="[3,4]">
 @Component({
-    ...
-    template: `Reverse Machine: {{ word | reverse }}`
-    imports: [ReversePipe]
+  ...
+  template: `Reverse Machine: {{ word | reverse }}`
+  imports: [ReversePipe]
 })
 </docs-code>
 
