@@ -1,0 +1,41 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+span {
+  font-size: 2em;
+  font-weight: bold;
+  color: #ffffff;
+  min-width: 40px;
+  text-align: center;
+}
+
+button {
+  border: none;
+  background-color: #c82333;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.8em;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 4px;
+}
+
+button:hover {
+  background-color: #dc3545;
+}

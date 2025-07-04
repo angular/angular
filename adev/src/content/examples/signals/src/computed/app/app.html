@@ -1,0 +1,19 @@
+<article class="container">
+  <h2>Demo: Derived Full Name</h2>
+  <p>Type in the fields below. The "Full Name" is a <code>computed</code> signal that reactively combines the "First Name" and "Last Name" signals.</p>
+
+  <section class="inputs-wrapper">
+    <div class="form-group">
+      <label for="firstName">First Name Signal</label>
+      <input id="firstName" type="text" [(ngModel)]="firstName">
+    </div>
+    <div class="form-group">
+      <label for="lastName">Last Name Signal</label>
+      <input id="lastName" type="text" [(ngModel)]="lastName">
+    </div>
+  </section>
+
+  <section class="result-box">
+    <span>Full Name: <strong>{{ fullName() }}</strong></span>
+  </section>
+</article>
