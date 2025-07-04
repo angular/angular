@@ -702,8 +702,17 @@ export function handleUncaughtError(lView: LView, error: any): void {
   if (!injector) {
     return;
   }
-  const errorHandler = injector.get(INTERNAL_APPLICATION_ERROR_HANDLER, null);
-  errorHandler?.(error);
+  // Question (atscott): there's no `destroyed` property on that injector...
+  // Should we wrap it in a try-catch and re-throw in a timer?
+  // Or there's any other precise solution?
+  try {
+    const errorHandler = injector.get(INTERNAL_APPLICATION_ERROR_HANDLER, null);
+    errorHandler?.(error);
+  } catch {
+    setTimeout(() => {
+      throw error;
+    });
+  }
 }
 
 /**
