@@ -38,6 +38,7 @@ import {
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
   Type,
+  ɵComponentDef as ComponentDef,
 } from '../../src/core';
 
 import {ComponentFixture} from './component_fixture';
@@ -645,10 +646,6 @@ export class TestBedImpl implements TestBed {
   }
 
   createComponent<T>(type: Type<T>, options?: TestComponentOptions): ComponentFixture<T> {
-    const testComponentRenderer = this.inject(TestComponentRenderer);
-    const rootElId = `root${_nextRootElementId++}`;
-    testComponentRenderer.insertRootElement(rootElId);
-
     if (getAsyncClassMetadataFn(type)) {
       throw new Error(
         `Component '${type.name}' has unresolved metadata. ` +
@@ -656,7 +653,17 @@ export class TestBedImpl implements TestBed {
       );
     }
 
-    const componentDef = (type as any).ɵcmp;
+    // Note: injecting the renderer before accessing the definition appears to be load-bearing.
+    const testComponentRenderer = this.inject(TestComponentRenderer);
+    const componentDef: ComponentDef<T> = (type as any).ɵcmp;
+    const rootElId = `root${_nextRootElementId++}`;
+    const defaultTag = componentDef.selectors[0][0] as string;
+    testComponentRenderer.insertRootElement(
+      rootElId,
+      // ng-component is added if the `@Component` doesn't have a `selector` field.
+      // Fall back to `div` for backwards compatibility.
+      !defaultTag || defaultTag === 'ng-component' ? 'div' : defaultTag.toLowerCase(),
+    );
 
     if (!componentDef) {
       throw new Error(`It looks like '${stringify(type)}' has not been compiled.`);
