@@ -117,12 +117,8 @@
       </label>
     }
     <label mat-menu-item disableRipple>
-      @let currentTheme = themeService.currentTheme();
-      <mat-slide-toggle
-        [checked]="currentTheme === 'dark-theme'"
-        (click)="themeService.toggleDarkMode(currentTheme === 'light-theme')"
-      >
-        Dark Mode
+      <mat-slide-toggle [checked]="darkMode()" (change)="darkMode.set($event.checked)">
+        Dark mode
       </mat-slide-toggle>
     </label>
     <label mat-menu-item disableRipple>
@@ -139,7 +135,7 @@
           [checked]="routerGraphEnabled()"
           (change)="setRouterGraph($event.checked)"
         >
-          Enable Router Graph</mat-slide-toggle
+          Enable Router Tree</mat-slide-toggle
         >
       </label>
     }

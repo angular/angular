@@ -35,6 +35,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:browser_styles_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:settings_store_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:theme_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs:devtools-tabs_rjs",
         "//devtools/projects/protocol:protocol_rjs",
