@@ -20,6 +20,7 @@ import {
   SerializedInjector,
   SerializedProviderRecord,
   SignalNodePosition,
+  TransferStateValue,
 } from '../../../protocol';
 import {debounceTime} from 'rxjs/operators';
 import {
@@ -103,6 +104,8 @@ export const subscribeToClientEvents = (
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
 
   messageBus.on('logProvider', logProvider);
+
+  messageBus.on('getTransferState', getTransferStateCallback(messageBus));
 
   messageBus.on('log', ({message, level}) => {
     console[level](`[Angular DevTools]: ${message}`);
@@ -659,6 +662,41 @@ const logProvider = (
   }
 
   console.groupEnd();
+};
+
+const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
+  try {
+    const transferStateData = extractTransferStateFromDocument();
+    messageBus.emit('transferStateData', [transferStateData]);
+  } catch (error) {
+    console.error('Error extracting transfer state:', error);
+    messageBus.emit('transferStateData', [null]);
+  }
+};
+
+const extractTransferStateFromDocument = (): Record<string, TransferStateValue> | null => {
+  try {
+    let script = document.getElementById('ng-state') as HTMLScriptElement | null;
+
+    if (script && script.textContent) {
+      try {
+        const transferStateData = JSON.parse(script.textContent) as Record<
+          string,
+          TransferStateValue
+        >;
+        return transferStateData && typeof transferStateData === 'object'
+          ? transferStateData
+          : null;
+      } catch (error) {
+        console.warn('Failed to parse transfer state from standard scripts:', error);
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.warn('Failed to extract transfer state:', error);
+    return null;
+  }
 };
 
 const getInjectorInstance = (

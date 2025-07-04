@@ -81,3 +81,16 @@ export function ngDebugSignalGraphApiIsSupported(): boolean {
   const ng = ngDebugClient();
   return ngDebugApiIsSupported(ng, 'ɵgetSignalGraph');
 }
+
+/**
+ * Checks if transfer state is available.
+ * Transfer state is only relevant when Angular app uses Server-Side Rendering.
+ */
+export function ngDebugTransferStateApiIsSupported(): boolean {
+  const ngStateScript = document.getElementById('ng-state') as HTMLScriptElement | null;
+  if (ngStateScript && ngStateScript.type === 'application/json') {
+    return true;
+  }
+
+  return false;
+}
