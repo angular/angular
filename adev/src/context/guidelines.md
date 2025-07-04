@@ -49,7 +49,7 @@ export class {{ClassName}} {
 When you update a component, be sure to put the logic in the ts file, the styles in the css file and the html template in the html file.
 
 ## Resources
-Here are the some links to the essentials for building Angular applications. Use these to get an understanding of how some of the core functionality works
+Here are some links to the essentials for building Angular applications. Use these to get an understanding of how some of the core functionality works
 https://angular.dev/essentials/components
 https://angular.dev/essentials/signals
 https://angular.dev/essentials/templates
