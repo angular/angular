@@ -111,6 +111,8 @@ describe('httpResource', () => {
         mode: 'cors',
         redirect: 'follow',
         credentials: 'include',
+        integrity: 'sha256-abc123',
+        referrer: 'https://example.com',
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -126,6 +128,8 @@ describe('httpResource', () => {
     expect(req.request.mode).toBe('cors');
     expect(req.request.redirect).toBe('follow');
     expect(req.request.credentials).toBe('include');
+    expect(req.request.integrity).toBe('sha256-abc123');
+    expect(req.request.referrer).toBe('https://example.com');
 
     req.flush([]);
 

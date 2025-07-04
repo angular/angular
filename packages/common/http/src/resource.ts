@@ -287,6 +287,8 @@ function normalizeRequest(
       context: unwrappedRequest.context,
       transferCache: unwrappedRequest.transferCache,
       credentials: unwrappedRequest.credentials as RequestCredentials,
+      referrer: unwrappedRequest.referrer,
+      integrity: unwrappedRequest.integrity,
       timeout: unwrappedRequest.timeout,
     },
   );
