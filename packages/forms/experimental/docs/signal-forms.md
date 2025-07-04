@@ -648,7 +648,7 @@ Server validation is one of the most common types of async logic that is require
 ```ts
 const userSchema = schema<User>(userPath => {
   validateHttp(userPath.username, {
-    request: ({value}) => `/api/check-username?${username}`,
+    request: ({value}) => `/api/check-username?${value()}`,
     errors: (data, ctx) => {
       if (data === 'OK') {
         return [];
@@ -681,7 +681,7 @@ While async validation via `HttpResource` is the most common type of async valid
 ```ts
 const userSchema = schema<User>(userPath => {
   validateAsync(userPath.username, {
-    params: ({value}) => `/api/check-username?${username}`,
+    params: ({value}) => `/api/check-username?${value()}`,
     factory: (params) => {
       return rxResource({
         params,
