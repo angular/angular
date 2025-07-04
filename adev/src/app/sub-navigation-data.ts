@@ -362,6 +362,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/route-guards',
           },
           {
+            label: 'Testing routing and navigation',
+            path: 'guide/routing/testing',
+            contentPath: 'guide/routing/testing',
+          },
+          {
             label: 'Other routing tasks',
             path: 'guide/routing/common-router-tasks',
             contentPath: 'guide/routing/common-router-tasks',
