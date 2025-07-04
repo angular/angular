@@ -16,8 +16,6 @@ export interface BaseEffectNode extends ReactiveNode {
     // (undocumented)
     fn: () => void;
     // (undocumented)
-    hasRun: boolean;
-    // (undocumented)
     run(): void;
 }
 

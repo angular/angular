@@ -27,7 +27,6 @@ export type EffectCleanupFn = () => void;
 export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 
 export interface BaseEffectNode extends ReactiveNode {
-  hasRun: boolean;
   fn: () => void;
   destroy(): void;
   cleanup(): void;
@@ -40,16 +39,15 @@ export const BASE_EFFECT_NODE: Omit<BaseEffectNode, 'fn' | 'destroy' | 'cleanup'
     consumerIsAlwaysLive: true,
     consumerAllowSignalWrites: true,
     dirty: true,
-    hasRun: false,
     kind: 'effect',
   }))();
 
 export function runEffect(node: BaseEffectNode) {
   node.dirty = false;
-  if (node.hasRun && !consumerPollProducersForChange(node)) {
+  if (node.version > 0 && !consumerPollProducersForChange(node)) {
     return;
   }
-  node.hasRun = true;
+  node.version++;
   const prevNode = consumerBeforeComputation(node);
   try {
     node.cleanup();
