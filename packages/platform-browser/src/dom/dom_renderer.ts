@@ -216,7 +216,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
         case ViewEncapsulation.ShadowDom:
           return new ShadowDomRenderer(
             eventManager,
-            sharedStylesHost,
             element,
             type,
             doc,
@@ -496,7 +495,6 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
   constructor(
     eventManager: EventManager,
-    private sharedStylesHost: SharedStylesHost,
     private hostEl: any,
     component: RendererType2,
     doc: Document,
@@ -507,7 +505,6 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   ) {
     super(eventManager, doc, ngZone, platformIsServer, tracingService);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
-    this.sharedStylesHost.addHost(this.shadowRoot);
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
@@ -527,23 +524,6 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       styleEl.textContent = style;
       this.shadowRoot.appendChild(styleEl);
     }
-
-    // Apply any external component styles to the shadow root for the component's element.
-    // The ShadowDOM renderer uses an alternative execution path for component styles that
-    // does not use the SharedStylesHost that other encapsulation modes leverage. Much like
-    // the manual addition of embedded styles directly above, any external stylesheets
-    // must be manually added here to ensure ShadowDOM components are correctly styled.
-    // TODO: Consider reworking the DOM Renderers to consolidate style handling.
-    const styleUrls = component.getExternalStyles?.();
-    if (styleUrls) {
-      for (const styleUrl of styleUrls) {
-        const linkEl = createLinkElement(styleUrl, doc);
-        if (nonce) {
-          linkEl.setAttribute('nonce', nonce);
-        }
-        this.shadowRoot.appendChild(linkEl);
-      }
-    }
   }
 
   private nodeOrShadowRoot(node: any): any {
@@ -561,10 +541,6 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   }
   override parentNode(node: any): any {
     return this.nodeOrShadowRoot(super.parentNode(this.nodeOrShadowRoot(node)));
-  }
-
-  override destroy() {
-    this.sharedStylesHost.removeHost(this.shadowRoot);
   }
 }
 
