@@ -18,3 +18,5 @@ function loadTask(fileName, taskName) {
 }
 
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
+
+console.log("hola mundo")
