@@ -34,7 +34,7 @@ import {
   NgElementStrategyFactory,
 } from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
-import {scheduler} from './utils';
+import {getHostDirectiveProps, scheduler} from './utils';
 
 /** Time in milliseconds to wait before destroying the component ref when disconnected. */
 const DESTROY_DELAY = 10;
@@ -98,6 +98,14 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    */
   private cdScheduler: ChangeDetectionScheduler;
 
+  /**
+   * Outputs mapped with host directives of the component
+   */
+  private hostDirectiveOutputs: {
+    propName: string;
+    templateName: string;
+  }[] = [];
+
   constructor(
     private componentFactory: ComponentFactory<any>,
     private injector: Injector,
@@ -107,6 +115,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     this.appRef = this.injector.get(ApplicationRef);
     this.cdScheduler = injector.get(ChangeDetectionScheduler);
     this.elementZone = typeof Zone === 'undefined' ? null : this.ngZone.run(() => Zone.current);
+    this.hostDirectiveOutputs = getHostDirectiveProps(this.componentFactory.componentType).outputs;
   }
 
   /**
@@ -223,15 +232,23 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Sets up listeners for the component's outputs so that the events stream emits the events. */
   protected initializeOutputs(componentRef: ComponentRef<any>): void {
-    const eventEmitters: Observable<NgElementStrategyEvent>[] = this.componentFactory.outputs.map(
-      ({propName, templateName}) => {
+    const eventEmitters: Observable<NgElementStrategyEvent>[] = [
+      ...this.componentFactory.outputs.map(({propName, templateName}) => {
         const emitter: EventEmitter<any> | OutputRef<any> = componentRef.instance[propName];
-        return new Observable((observer) => {
+        return new Observable<NgElementStrategyEvent>((observer) => {
           const sub = emitter.subscribe((value) => observer.next({name: templateName, value}));
           return () => sub.unsubscribe();
         });
-      },
-    );
+      }),
+      ...this.hostDirectiveOutputs.map(({propName, templateName}) => {
+        const emitter: EventEmitter<any> | OutputRef<any> =
+          this.getHostDirectivesOutputBindings(propName);
+        return new Observable<NgElementStrategyEvent>((observer) => {
+          const sub = emitter.subscribe((value) => observer.next({name: templateName, value}));
+          return () => sub.unsubscribe();
+        });
+      }),
+    ];
 
     this.eventEmitters.next(eventEmitters);
   }
@@ -239,5 +256,20 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Runs in the angular zone, if present. */
   private runInZone(fn: () => unknown) {
     return this.elementZone && Zone.current !== this.elementZone ? this.ngZone.run(fn) : fn();
+  }
+
+  /** Retrieves the host directive output value from given ComponentRef */
+  private getHostDirectivesOutputBindings(propName: string) {
+    if (this.componentRef) {
+      // Reading an internal field from `ComponentRef` instance.
+      const tNode = (this.componentRef as any)._tNode;
+      // Reading an internal field from `ViewRef` instance.
+      const lView = (this.componentRef.hostView as any)._lView;
+      if (tNode?.outputs) {
+        const index = tNode.outputs[propName]?.[0] as number;
+        return lView[index][propName];
+      }
+    }
+    return undefined;
   }
 }
