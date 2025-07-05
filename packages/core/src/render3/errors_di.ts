@@ -8,20 +8,26 @@
 
 import type {ProviderToken} from '../di';
 import {isEnvironmentProviders} from '../di/interface/provider';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
+import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
 import {stringifyForError} from './util/stringify_utils';
 
-/** Called when directives inject each other (creating a circular dependency) */
-export function throwCyclicDependencyError(token: string, path?: string[]): never {
-  throw new RuntimeError(
-    RuntimeErrorCode.CYCLIC_DI_DEPENDENCY,
-    ngDevMode
-      ? `Circular dependency in DI detected for ${token}${path ? `. Dependency path: ${path.join(' > ')} > ${token}` : ''}`
-      : token,
-  );
+const NG_RUNTIME_ERROR_CODE = getClosureSafeProperty({'ngErrorCode': getClosureSafeProperty});
+const NG_RUNTIME_ERROR_MESSAGE = getClosureSafeProperty({'ngErrorMessage': getClosureSafeProperty});
+const NG_TOKEN_PATH = getClosureSafeProperty({'ngTokenPath': getClosureSafeProperty});
+
+/** Creates a circular dependency runtime error. */
+export function cyclicDependencyError(token: string, path?: string[]): Error {
+  const message = ngDevMode ? `Circular dependency detected for \`${token}\`.` : '';
+  return createRuntimeError(message, RuntimeErrorCode.CYCLIC_DI_DEPENDENCY, path);
+}
+
+/** Creates a circular dependency runtime error including a dependency path in the error message. */
+export function cyclicDependencyErrorWithDetails(token: string, path: string[]): Error {
+  return augmentRuntimeError(cyclicDependencyError(token, path), null);
 }
 
 export function throwMixedMultiProviderError() {
@@ -66,4 +72,79 @@ export function throwProviderNotFoundError(
     ngDevMode &&
     `No provider for ${stringifyForError(token)} found${injectorName ? ` in ${injectorName}` : ''}`;
   throw new RuntimeError(RuntimeErrorCode.PROVIDER_NOT_FOUND, errorMessage);
+}
+
+/**
+ * Given an Error instance and the current token - update the monkey-patched
+ * dependency path info to include that token.
+ *
+ * @param error Current instance of the Error class.
+ * @param token Extra token that should be appended.
+ */
+export function prependTokenToDependencyPath(error: any, token: unknown): void {
+  error[NG_TOKEN_PATH] ??= [];
+  // Append current token to the current token path. Since the error
+  // is bubbling up, add the token in front of other tokens.
+  const currentPath = error[NG_TOKEN_PATH];
+  // Do not append the same token multiple times.
+  if (currentPath[0] !== token) {
+    error[NG_TOKEN_PATH].unshift(token);
+  }
+}
+
+/**
+ * Modifies an Error instance with an updated error message
+ * based on the accumulated dependency path.
+ *
+ * @param error Current instance of the Error class.
+ * @param source Extra info about the injector which started
+ *    the resolution process, which eventually failed.
+ */
+export function augmentRuntimeError(error: any, source: string | null): Error {
+  const tokenPath: string[] = error[NG_TOKEN_PATH];
+  const errorCode = error[NG_RUNTIME_ERROR_CODE];
+  const message = error[NG_RUNTIME_ERROR_MESSAGE] || error.message;
+  error.message = formatErrorMessage(message, errorCode, tokenPath, source);
+  return error;
+}
+
+/**
+ * Creates an initial RuntimeError instance when a problem is detected.
+ * Monkey-patches extra info in the RuntimeError instance, so that it can
+ * be reused later, before throwing the final error.
+ */
+export function createRuntimeError(message: string, code: number, path?: string[]): Error {
+  // Cast to `any`, so that extra info can be monkey-patched onto this instance.
+  const error = new RuntimeError(code, message) as any;
+
+  // Monkey-patch a runtime error code and a path onto an Error instance.
+  error[NG_RUNTIME_ERROR_CODE] = code;
+  error[NG_RUNTIME_ERROR_MESSAGE] = message;
+  if (path) {
+    error[NG_TOKEN_PATH] = path;
+  }
+  return error;
+}
+
+/**
+ * Reads monkey-patched error code from the given Error instance.
+ */
+export function getRuntimeErrorCode(error: any): number | undefined {
+  return error[NG_RUNTIME_ERROR_CODE];
+}
+
+function formatErrorMessage(
+  text: string,
+  code: number,
+  path: string[] = [],
+  source: string | null = null,
+): string {
+  let pathDetails = '';
+  // If the path is empty or contains only one element (self) -
+  // do not append additional info the error message.
+  if (path && path.length > 1) {
+    pathDetails = ` Path: ${path.map(stringifyForError).join(' -> ')}.`;
+  }
+  const sourceDetails = source ? ` Source: ${source}.` : '';
+  return formatRuntimeError(code, `${text}${sourceDetails}${pathDetails}`);
 }

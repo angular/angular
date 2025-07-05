@@ -382,22 +382,6 @@ export function getInjectFlag(token: any): number | undefined {
   return token[DI_DECORATOR_FLAG];
 }
 
-export function catchInjectorError(
-  e: any,
-  token: any,
-  injectorErrorName: string,
-  source: string | null,
-): never {
-  const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
-  if (token[SOURCE]) {
-    tokenPath.unshift(token[SOURCE]);
-  }
-  e.message = formatError('\n' + e.message, tokenPath, injectorErrorName, source);
-  e[NG_TOKEN_PATH] = tokenPath;
-  e[NG_TEMP_TOKEN_PATH] = null;
-  throw e;
-}
-
 export function formatError(
   text: string,
   obj: any,
