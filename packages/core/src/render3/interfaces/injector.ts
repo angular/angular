@@ -284,7 +284,8 @@ export class NodeInjectorFactory {
      */
     isViewProvider: boolean,
     injectImplementation: null | (<T>(token: ProviderToken<T>, flags?: InternalInjectFlags) => T),
-    public name: string,
+    // Expect `null` in devmode
+    public name: string | null,
   ) {
     ngDevMode && assertDefined(factory, 'Factory not specified');
     ngDevMode && assertEqual(typeof factory, 'function', 'Expected factory function.');

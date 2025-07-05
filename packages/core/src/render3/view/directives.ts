@@ -451,7 +451,7 @@ function configureViewWithDirective<T>(
     directiveFactory,
     isComponentDef(def),
     ɵɵdirectiveInject,
-    def.type.name,
+    ngDevMode ? def.type.name : null,
   );
   tView.blueprint[directiveIndex] = nodeInjectorFactory;
   lView[directiveIndex] = nodeInjectorFactory;

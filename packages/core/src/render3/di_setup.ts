@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {InjectionToken} from '../di';
 import {resolveForwardRef} from '../di/forward_ref';
 import {InternalInjectFlags} from '../di/interface/injector';
 import {ClassProvider, Provider} from '../di/interface/provider';
@@ -116,17 +117,11 @@ function resolveProvider(
       tNode.providerIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
 
     if (isTypeProvider(provider) || !provider.multi) {
-      // Single provider case: the factory is created and pushed immediately
-      const name = isTypeProvider(provider)
-        ? provider.name
-        : isClassProvider(provider)
-          ? resolveForwardRef(provider.useClass).name
-          : 'unknown';
       const factory = new NodeInjectorFactory(
         providerFactory,
         isViewProvider,
         ɵɵdirectiveInject,
-        name,
+        ngDevMode ? providerName(provider) : null,
       );
       const existingFactoryIndex = indexOf(
         token,
@@ -215,6 +210,7 @@ function resolveProvider(
           isViewProvider,
           isComponent,
           providerFactory,
+          provider,
         );
         if (!isViewProvider && doesViewProvidersFactoryExist) {
           lInjectablesBlueprint[existingViewProvidersFactoryIndex].providerFactory = factory;
@@ -404,11 +400,38 @@ function multiFactory(
   isViewProvider: boolean,
   isComponent: boolean,
   f: () => any,
+  provider: Provider,
 ): NodeInjectorFactory {
-  const factory = new NodeInjectorFactory(factoryFn, isViewProvider, ɵɵdirectiveInject, 'unknown');
+  const factory = new NodeInjectorFactory(
+    factoryFn,
+    isViewProvider,
+    ɵɵdirectiveInject,
+    ngDevMode ? providerName(provider) : null,
+  );
   factory.multi = [];
   factory.index = index;
   factory.componentProviders = 0;
   multiFactoryAdd(factory, f, isComponent && !isViewProvider);
   return factory;
+}
+
+function providerName(provider: Provider): string | null {
+  if (Array.isArray(provider)) {
+    return null;
+  }
+  if (isTypeProvider(provider)) {
+    return provider.name;
+  } else if (isClassProvider(provider)) {
+    if (provider.provide instanceof InjectionToken) {
+      return `('${provider.provide.toString()}':${provider.useClass.name})`;
+    }
+
+    return provider.useClass.name;
+  } else if (provider.provide instanceof InjectionToken) {
+    return provider.provide.toString();
+  } else if (typeof provider.provide === 'string') {
+    return provider.provide;
+  } else {
+    return null;
+  }
 }

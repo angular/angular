@@ -6739,5 +6739,42 @@ describe('di', () => {
           'Find more at https://angular.dev/errors/NG0200',
       );
     });
+
+    it('should detect and log cyclic dependencies where multi: true', () => {
+      const A = new InjectionToken('A');
+      const B = new InjectionToken('B');
+
+      @Injectable()
+      class AService {
+        b = inject(B);
+      }
+
+      // BService depends on AService
+      @Injectable()
+      class BService {
+        a = inject(A);
+      }
+
+      @Component({
+        selector: 'app-root',
+        imports: [],
+        providers: [
+          {provide: A, useClass: AService},
+          {provide: B, useClass: BService, multi: true},
+          {provide: B, useClass: BService, multi: true},
+          {provide: B, useClass: BService, multi: true},
+        ],
+        template: ``,
+      })
+      class App {
+        a = inject(A);
+      }
+
+      expect(() => TestBed.createComponent(App)).toThrowError(
+        'NG0200: Circular dependency detected for `InjectionToken A`. ' +
+          "Path: App -> ('InjectionToken A':AService) -> ('InjectionToken B':BService) -> ('InjectionToken A':AService). " +
+          'Find more at https://angular.dev/errors/NG0200',
+      );
+    });
   });
 });
