@@ -2933,5 +2933,47 @@ describe('inject migration', () => {
         `}`,
       ]);
     });
+
+    it('should migrate and handle overridden services correctly.', async () => {
+      writeFile(
+        '/dir.ts',
+        [
+          `import { Component, Inject, Injectable } from '@angular/core';`,
+
+          `@Injectable()`,
+          `export class FileService {`,
+          `  getUrl() {`,
+          `    return 'file';`,
+          `  }`,
+          `}`,
+
+          `@Injectable()`,
+          `export class ExtendedFileService extends FileService {`,
+          `prefix: string = '';`,
+
+          `  override getUrl() {`,
+          `    return this.prefix + '/file';`,
+          `  }`,
+          `}`,
+
+          `@Component({`,
+          `  selector: 'app-root',`,
+          `  providers: [{ provide: FileService, useClass: ExtendedFileService }],`,
+          `  template: Hello world! {{fs.getUrl()}}`,
+          `})`,
+          `export class Playground {`,
+          `  constructor(@Inject(FileService) protected fs: ExtendedFileService) {`,
+          `    this.fs.prefix = 'a';`,
+          `  }`,
+          `}`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+
+      expect(tree.readContent('/dir.ts')).toContain(
+        'protected fs = inject(FileService) as ExtendedFileService;'
+      );
+    });
   });
 });

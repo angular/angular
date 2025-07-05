@@ -427,6 +427,8 @@ function createInjectReplacementCall(
     }
   }
 
+  const originalParameterType = type ? type.getText() : '';
+
   for (const decorator of decorators) {
     if (decorator.moduleName !== moduleName) {
       continue;
@@ -514,7 +516,33 @@ function createInjectReplacementCall(
     );
   }
 
-  return replaceNodePlaceholder(param.getSourceFile(), expression, injectedType, printer);
+  let result = replaceNodePlaceholder(sourceFile, expression, injectedType, printer);
+
+  if (originalParameterType && injectedType && needsExplicitCast(originalParameterType, injectedType, param, localTypeChecker)) {
+    let expressionWithoutTypes: ts.CallExpression | ts.NonNullExpression | ts.BinaryExpression = ts.factory.createCallExpression(injectRef, undefined, args);
+
+    if (hasOptionalDecorator && options.nonNullableOptional) {
+      const hasNullableType = param.questionToken != null || (param.type != null && isNullableType(param.type));
+
+      if (!hasNullableType) {
+        expressionWithoutTypes = ts.factory.createNonNullExpression(expressionWithoutTypes);
+      }
+    }
+
+    if (param.initializer) {
+      expressionWithoutTypes = ts.factory.createBinaryExpression(
+        expressionWithoutTypes,
+        ts.SyntaxKind.QuestionQuestionToken,
+        param.initializer,
+      );
+    }
+
+    result = replaceNodePlaceholder(sourceFile, expressionWithoutTypes, injectedType, printer);
+    return `${result} as ${originalParameterType}`;
+
+  } else {
+    return result;
+  }
 }
 
 /**
@@ -864,13 +892,14 @@ function replaceParameterReferencesInInitializer(
       localTypeChecker
         .getSymbolAtLocation(node)
         ?.declarations?.some((decl) =>
-          constructor.parameters.includes(decl as ts.ParameterDeclaration),
-        )
+        constructor.parameters.includes(decl as ts.ParameterDeclaration),
+      )
     ) {
       insertLocations.push(node.getStart() - initializer.getStart());
     }
     ts.forEachChild(node, walk);
   }
+
   walk(initializer);
 
   const initializerText = initializer.getText();
@@ -891,4 +920,81 @@ function isStringType(node: ts.Expression, checker: ts.TypeChecker): boolean {
 
   // stringLiteral here is to cover const strings inferred as literal type.
   return !!(type.flags & ts.TypeFlags.String || type.flags & ts.TypeFlags.StringLiteral);
+}
+
+/**
+ * Check if necessary an explicit cast for parameter
+ * @param originalType Parameter original type
+ * @param injectedType Service type to inject
+ * @param param The parameter to analyze
+ * @param localTypeChecker Type checker for types analysis
+ */
+function needsExplicitCast(
+  originalType: string,
+  injectedType: string,
+  param: ts.ParameterDeclaration,
+  localTypeChecker: ts.TypeChecker,
+): boolean {
+
+  if (originalType === injectedType) {
+    return false;
+  }
+
+  if (!param.type) {
+    return false;
+  }
+
+  try {
+    const parameterType = localTypeChecker.getTypeFromTypeNode(param.type);
+    const parameterSymbol = parameterType.getSymbol();
+
+    if (!parameterSymbol) {
+      return false;
+    }
+
+    const parameterDeclaration = parameterSymbol.valueDeclaration;
+    if (!parameterDeclaration || !ts.isClassDeclaration(parameterDeclaration)) {
+      return false;
+    }
+
+    const hasInheritance = parameterDeclaration.heritageClauses?.some(clause =>
+      clause.token === ts.SyntaxKind.ExtendsKeyword,
+    );
+
+    if (hasInheritance) {
+      return true;
+    }
+
+    return checkInheritanceRelationship(originalType, injectedType);
+
+  } catch (error) {
+    return false;
+  }
+}
+
+function checkInheritanceRelationship(
+  derivedTypeName: string,
+  baseTypeName: string,
+): boolean {
+
+  if (derivedTypeName.includes(baseTypeName)) {
+    return true;
+  }
+
+  const commonPatterns = [
+    /Extended(.+)/,
+    /Custom(.+)/,
+    /Enhanced(.+)/,
+    /(.+)Impl/,
+    /(.+)Extended/,
+  ];
+
+  for (const pattern of commonPatterns) {
+    const derivedMatch = derivedTypeName.match(pattern);
+    if (derivedMatch && baseTypeName.includes(derivedMatch[1])) {
+      return true;
+    }
+  }
+
+  return false;
 }
