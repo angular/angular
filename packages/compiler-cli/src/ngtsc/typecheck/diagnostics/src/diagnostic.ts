@@ -117,6 +117,18 @@ export function makeTemplateDiagnostic(
       };
     }
 
+    let typeForMessage: string;
+
+    if (category === ts.DiagnosticCategory.Warning) {
+      typeForMessage = 'Warning';
+    } else if (category === ts.DiagnosticCategory.Suggestion) {
+      typeForMessage = 'Suggestion';
+    } else if (category === ts.DiagnosticCategory.Message) {
+      typeForMessage = 'Message';
+    } else {
+      typeForMessage = 'Error';
+    }
+
     relatedInformation.push({
       category: ts.DiagnosticCategory.Message,
       code: 0,
@@ -125,7 +137,7 @@ export function makeTemplateDiagnostic(
       // and getEnd() are used because they don't include surrounding whitespace.
       start: mapping.node.getStart(),
       length: mapping.node.getEnd() - mapping.node.getStart(),
-      messageText: `Error occurs in the template of component ${componentName}.`,
+      messageText: `${typeForMessage} occurs in the template of component ${componentName}.`,
     });
 
     return {
