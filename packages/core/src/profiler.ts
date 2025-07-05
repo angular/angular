@@ -27,7 +27,7 @@ export function startMeasuring<T>(label: string): void {
 
 /**
  * Function that will stop measuring against the performance API
- * Should be used in pair with stopMeasuring
+ * Should be used in pair with startMeasuring
  */
 export function stopMeasuring(label: string): void {
   if (!enablePerfLogging) {
