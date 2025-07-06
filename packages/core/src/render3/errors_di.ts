@@ -10,6 +10,7 @@ import type {ProviderToken} from '../di';
 import {isEnvironmentProviders} from '../di/interface/provider';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
+import {assertDefined} from '../util/assert';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
@@ -81,14 +82,25 @@ export function throwProviderNotFoundError(
  * @param error Current instance of the Error class.
  * @param token Extra token that should be appended.
  */
-export function prependTokenToDependencyPath(error: any, token: unknown): void {
+export function prependTokenToDependencyPath(
+  error: any,
+  token: ProviderToken<unknown> | {multi: true; provide: ProviderToken<unknown>},
+): void {
   error[NG_TOKEN_PATH] ??= [];
   // Append current token to the current token path. Since the error
   // is bubbling up, add the token in front of other tokens.
   const currentPath = error[NG_TOKEN_PATH];
   // Do not append the same token multiple times.
-  if (currentPath[0] !== token) {
-    error[NG_TOKEN_PATH].unshift(token);
+  let pathStr: string;
+  if (typeof token === 'object' && 'multi' in token && token?.multi === true) {
+    assertDefined(token.provide, 'Token with multi: true should have a provide property');
+    pathStr = stringifyForError(token.provide);
+  } else {
+    pathStr = stringifyForError(token);
+  }
+
+  if (currentPath[0] !== pathStr) {
+    (error[NG_TOKEN_PATH] as string[]).unshift(pathStr);
   }
 }
 
@@ -143,7 +155,7 @@ function formatErrorMessage(
   // If the path is empty or contains only one element (self) -
   // do not append additional info the error message.
   if (path && path.length > 1) {
-    pathDetails = ` Path: ${path.map(stringifyForError).join(' -> ')}.`;
+    pathDetails = ` Path: ${path.join(' -> ')}.`;
   }
   const sourceDetails = source ? ` Source: ${source}.` : '';
   return formatRuntimeError(code, `${text}${sourceDetails}${pathDetails}`);

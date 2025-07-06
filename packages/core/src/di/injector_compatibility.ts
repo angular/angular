@@ -105,6 +105,8 @@ export function injectInjectorOnly<T>(
     return injectRootLimpMode(token, undefined, flags);
   } else {
     const options = convertToInjectOptions(flags);
+    // TODO: improve the typings here.
+    // `token` can be a multi: true provider definition, which is considered as a Token but not represented in the typings
     const value = currentInjector.retrieve(token as PrimitivesInjectionToken<T>, options) as T;
     ngDevMode && emitInjectEvent(token as Type<unknown>, value, flags);
     if (isNotFound(value)) {

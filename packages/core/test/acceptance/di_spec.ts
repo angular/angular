@@ -6740,6 +6740,50 @@ describe('di', () => {
       );
     });
 
+    it('should detect cyclic dependency in Module/Environment injector when `Injector.get` is used', () => {
+      const A = new InjectionToken('A');
+      const B = new InjectionToken('B');
+      @Injectable()
+      class ServiceB {
+        a = inject(A);
+      }
+
+      @Injectable()
+      class ServiceA {
+        b = inject(B);
+      }
+
+      @Component({
+        selector: 'my-comp',
+        template: '...',
+      })
+      class MyComp {
+        constructor(private injector: Injector) {}
+
+        readTokenA() {
+          this.injector.get(A);
+        }
+      }
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: A, useClass: ServiceA},
+          {provide: B, useClass: ServiceB, multi: true},
+          {provide: B, useClass: ServiceB, multi: true},
+        ],
+      });
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(() => fixture.componentInstance.readTokenA()).toThrowError(
+        'NG0200: Circular dependency detected for `InjectionToken A`. ' +
+          'Source: DynamicTestModule. ' +
+          'Path: InjectionToken A -> InjectionToken B -> InjectionToken A. ' +
+          'Find more at https://angular.dev/errors/NG0200',
+      );
+    });
+
     it('should detect and log cyclic dependencies where multi: true', () => {
       const A = new InjectionToken('A');
       const B = new InjectionToken('B');
