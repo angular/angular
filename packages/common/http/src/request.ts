@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
 import {HttpContext} from './context';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
+import {RuntimeErrorCode} from './errors';
 
 /**
  * Construction interface for `HttpRequest`s.
@@ -494,8 +495,10 @@ export class HttpRequest<T> {
         // XHR will ignore any value below 1. AbortSignals only accept unsigned integers.
 
         if (options.timeout < 1 || !Number.isInteger(options.timeout)) {
-          // TODO: create a runtime error
-          throw new Error(ngDevMode ? '`timeout` must be a positive integer value' : '');
+          throw new RuntimeError(
+            RuntimeErrorCode.INVALID_TIMEOUT_VALUE,
+            ngDevMode ? '`timeout` must be a positive integer value' : '',
+          );
         }
 
         this.timeout = options.timeout;
