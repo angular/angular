@@ -10,6 +10,8 @@ def ng_web_test_suite(deps = [], **kwargs):
         "//:node_modules/@angular/platform-browser",
     ]
     _ng_web_test_suite(
+        # TODO: Reenable firefox tests once spaces in file paths are not a problem
+        firefox = False,
         deps = deps,
         tsconfig = "//devtools:tsconfig_test",
         **kwargs
