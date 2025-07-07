@@ -7,7 +7,7 @@
  */
 
 import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {NEVER, Observable, Subject} from 'rxjs';
+import {EMPTY, NEVER, Observable, Subject} from 'rxjs';
 import {map, switchMap, take} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
@@ -169,7 +169,7 @@ export class SwPush {
     return this.sw.isEnabled;
   }
 
-  private pushManager: Observable<PushManager> | null = null;
+  private pushManager: Observable<PushManager | undefined> | null = null;
   private subscriptionChanges = new Subject<PushSubscription | null>();
 
   constructor(private sw: NgswCommChannel) {
@@ -196,10 +196,10 @@ export class SwPush {
       .eventsOfType('PUSH_SUBSCRIPTION_CHANGE')
       .pipe(map((message: any) => message.data));
 
-    this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));
+    this.pushManager = this.sw.registration.pipe(map((registration) => registration?.pushManager));
 
     const workerDrivenSubscriptions = this.pushManager.pipe(
-      switchMap((pm) => pm.getSubscription()),
+      switchMap((pm) => pm?.getSubscription() ?? NEVER),
     );
     this.subscription = new Observable((subscriber) => {
       const workerDrivenSubscription = workerDrivenSubscriptions.subscribe(subscriber);
@@ -232,7 +232,7 @@ export class SwPush {
 
     return new Promise((resolve, reject) => {
       this.pushManager!.pipe(
-        switchMap((pm) => pm.subscribe(pushOptions)),
+        switchMap((pm) => pm?.subscribe(pushOptions) ?? EMPTY),
         take(1),
       ).subscribe({
         next: (sub) => {
@@ -240,6 +240,8 @@ export class SwPush {
           resolve(sub);
         },
         error: reject,
+        // Rejecting to request a subscription if the push manager is unavailable.
+        complete: reject,
       });
     });
   }
