@@ -225,8 +225,8 @@ importers:
         specifier: https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b
         version: github.com/angular/domino/93e720f143d0296dd2726ffbcf4fc12283363a7b
       esbuild:
-        specifier: 0.25.6
-        version: 0.25.6
+        specifier: 0.25.5
+        version: 0.25.5
       hammerjs:
         specifier: ~2.0.8
         version: 2.0.8
@@ -378,6 +378,9 @@ importers:
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.0)
+      '@babel/plugin-transform-async-generator-functions':
+        specifier: ^7.27.1
+        version: 7.28.0(@babel/core@7.28.0)
       '@bazel/bazelisk':
         specifier: ^1.7.5
         version: 1.26.0
@@ -3427,6 +3430,20 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: false
+
+  /@babel/plugin-transform-async-generator-functions@7.28.0(@babel/core@7.28.0):
+    resolution: {integrity: sha512-BEOdvX4+M765icNPZeidyADIvQ1m1gmunXufXxvRESy/jNNyfovIqUyE7MVgGBjWktCoJlzvFA1To2O4ymIO3Q==, tarball: https://registry.npmjs.org/@babel/plugin-transform-async-generator-functions/-/plugin-transform-async-generator-functions-7.28.0.tgz}
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': 7.28.0
+      '@babel/helper-plugin-utils': 7.27.1
+      '@babel/helper-remap-async-to-generator': 7.27.1(@babel/core@7.28.0)
+      '@babel/traverse': 7.28.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
 
   /@babel/plugin-transform-async-to-generator@7.27.1(@babel/core@7.27.1):
     resolution: {integrity: sha512-NREkZsZVJS4xmTr8qzE5y8AfIPqsdQfRuUiLRTEzb7Qii8iFWCyDKaUV2c0rCuh4ljDZ98ALHP/PetiBV2nddA==, tarball: https://registry.npmjs.org/@babel/plugin-transform-async-to-generator/-/plugin-transform-async-to-generator-7.27.1.tgz}
@@ -12375,26 +12392,26 @@ packages:
   /custom-event@1.0.1:
     resolution: {integrity: sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==, tarball: https://registry.npmjs.org/custom-event/-/custom-event-1.0.1.tgz}
 
-  /cytoscape-cose-bilkent@4.1.0(cytoscape@3.32.0):
+  /cytoscape-cose-bilkent@4.1.0(cytoscape@3.32.1):
     resolution: {integrity: sha512-wgQlVIUJF13Quxiv5e1gstZ08rnZj2XaLHGoFMYXz7SkNfCDOOteKBE6SYRfA9WxxI/iBc3ajfDoc6hb/MRAHQ==, tarball: https://registry.npmjs.org/cytoscape-cose-bilkent/-/cytoscape-cose-bilkent-4.1.0.tgz}
     peerDependencies:
       cytoscape: ^3.2.0
     dependencies:
       cose-base: 1.0.3
-      cytoscape: 3.32.0
+      cytoscape: 3.32.1
     dev: false
 
-  /cytoscape-fcose@2.2.0(cytoscape@3.32.0):
+  /cytoscape-fcose@2.2.0(cytoscape@3.32.1):
     resolution: {integrity: sha512-ki1/VuRIHFCzxWNrsshHYPs6L7TvLu3DL+TyIGEsRcvVERmxokbf5Gdk7mFxZnTdiGtnA4cfSmjZJMviqSuZrQ==, tarball: https://registry.npmjs.org/cytoscape-fcose/-/cytoscape-fcose-2.2.0.tgz}
     peerDependencies:
       cytoscape: ^3.2.0
     dependencies:
       cose-base: 2.2.0
-      cytoscape: 3.32.0
+      cytoscape: 3.32.1
     dev: false
 
-  /cytoscape@3.32.0:
-    resolution: {integrity: sha512-5JHBC9n75kz5851jeklCPmZWcg3hUe6sjqJvyk3+hVqFaKcHwHgxsjeN1yLmggoUc6STbtm9/NQyabQehfjvWQ==, tarball: https://registry.npmjs.org/cytoscape/-/cytoscape-3.32.0.tgz}
+  /cytoscape@3.32.1:
+    resolution: {integrity: sha512-dbeqFTLYEwlFg7UGtcZhCCG/2WayX72zK3Sq323CEX29CY81tYfVhw1MIdduCtpstB0cTOhJswWlM/OEB3Xp+Q==, tarball: https://registry.npmjs.org/cytoscape/-/cytoscape-3.32.1.tgz}
     engines: {node: '>=0.10'}
     dev: false
 
@@ -17916,9 +17933,9 @@ packages:
       '@iconify/utils': 2.3.0
       '@mermaid-js/parser': 0.6.1
       '@types/d3': 7.4.3
-      cytoscape: 3.32.0
-      cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.0)
-      cytoscape-fcose: 2.2.0(cytoscape@3.32.0)
+      cytoscape: 3.32.1
+      cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.1)
+      cytoscape-fcose: 2.2.0(cytoscape@3.32.1)
       d3: 7.9.0
       d3-sankey: 0.12.3
       dagre-d3-es: 7.0.11

@@ -56,10 +56,10 @@ esbuild(
     name = "bundle",
     srcs = [
         "//:node_modules/@angular/build-tooling",
-        "//devtools/tools/esbuild:esbuild_base",
-        "//devtools/tools/esbuild:esbuild_config_esm",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_esm_rjs",
     ],
-    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
     entry_points = [":main.ts"],
     platform = "browser",
     splitting = True,
