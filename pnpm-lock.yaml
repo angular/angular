@@ -94,7 +94,7 @@ importers:
         version: 5.8.1(protractor@7.0.0)
       '@bazel/rollup':
         specifier: 5.8.1
-        version: 5.8.1(rollup@4.44.1)
+        version: 5.8.1(rollup@4.44.2)
       '@bazel/runfiles':
         specifier: 6.3.1
         version: 6.3.1
@@ -112,13 +112,13 @@ importers:
         version: 7.52.8(@types/node@18.19.115)
       '@rollup/plugin-babel':
         specifier: ^6.0.0
-        version: 6.0.4(@babel/core@7.28.0)(@types/babel__core@7.20.5)(rollup@4.44.1)
+        version: 6.0.4(@babel/core@7.28.0)(@types/babel__core@7.20.5)(rollup@4.44.2)
       '@rollup/plugin-commonjs':
         specifier: ^28.0.0
-        version: 28.0.6(rollup@4.44.1)
+        version: 28.0.6(rollup@4.44.2)
       '@rollup/plugin-node-resolve':
         specifier: ^16.0.0
-        version: 16.0.1(rollup@4.44.1)
+        version: 16.0.1(rollup@4.44.2)
       '@schematics/angular':
         specifier: 20.1.0-rc.0
         version: 20.1.0-rc.0(chokidar@4.0.3)
@@ -225,8 +225,8 @@ importers:
         specifier: https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b
         version: github.com/angular/domino/93e720f143d0296dd2726ffbcf4fc12283363a7b
       esbuild:
-        specifier: 0.25.5
-        version: 0.25.5
+        specifier: 0.25.6
+        version: 0.25.6
       hammerjs:
         specifier: ~2.0.8
         version: 2.0.8
@@ -285,17 +285,17 @@ importers:
         specifier: ^2.3.6
         version: 2.3.7
       rollup:
-        specifier: 4.44.1
-        version: 4.44.1
+        specifier: 4.44.2
+        version: 4.44.2
       rollup-plugin-dts:
         specifier: ^6.1.1
-        version: 6.2.1(rollup@4.44.1)(typescript@5.8.3)
+        version: 6.2.1(rollup@4.44.2)(typescript@5.8.3)
       rollup-plugin-preserve-shebang:
         specifier: ^1.0.1
         version: 1.0.1
       rollup-plugin-sourcemaps:
         specifier: ^0.6.3
-        version: 0.6.3(@types/node@18.19.115)(rollup@4.44.1)
+        version: 0.6.3(@types/node@18.19.115)(rollup@4.44.2)
       rxjs:
         specifier: ^7.0.0
         version: 7.8.2
@@ -485,7 +485,7 @@ importers:
         version: 3.6.2
       rollup-plugin-sourcemaps2:
         specifier: ^0.5.1
-        version: 0.5.2(@types/node@18.19.115)(rollup@4.44.1)
+        version: 0.5.2(@types/node@18.19.115)(rollup@4.44.2)
       semver:
         specifier: ^7.3.5
         version: 7.7.2
@@ -517,14 +517,14 @@ importers:
   adev:
     dependencies:
       '@algolia/client-common':
-        specifier: 5.30.0
-        version: 5.30.0
+        specifier: 5.31.0
+        version: 5.31.0
       '@algolia/requester-browser-xhr':
-        specifier: 5.30.0
-        version: 5.30.0
+        specifier: 5.31.0
+        version: 5.31.0
       '@algolia/requester-node-http':
-        specifier: 5.30.0
-        version: 5.30.0
+        specifier: 5.31.0
+        version: 5.31.0
       '@angular-devkit/build-angular':
         specifier: 20.0.5
         version: 20.0.5(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.0.5)(@types/node@24.0.10)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.8.3)
@@ -616,8 +616,8 @@ importers:
         specifier: 1.2.3
         version: 1.2.3
       '@lezer/css':
-        specifier: 1.2.1
-        version: 1.2.1
+        specifier: 1.3.0
+        version: 1.3.0
       '@lezer/highlight':
         specifier: 1.2.1
         version: 1.2.1
@@ -664,8 +664,8 @@ importers:
         specifier: 5.5.0
         version: 5.5.0
       algoliasearch:
-        specifier: 5.30.0
-        version: 5.30.0
+        specifier: 5.31.0
+        version: 5.31.0
       angular-split:
         specifier: 19.0.0
         version: 19.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
@@ -706,8 +706,8 @@ importers:
         specifier: 16.0.0
         version: 16.0.0
       mermaid:
-        specifier: 11.7.0
-        version: 11.7.0
+        specifier: 11.8.1
+        version: 11.8.1
       ngx-progressbar:
         specifier: 14.0.0
         version: 14.0.0(@angular/cdk@20.0.4)(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
@@ -1200,120 +1200,120 @@ packages:
     resolution: {integrity: sha512-wi9JjgKLYS7U/z8PPbco+PvTb/nRWjeoFlJ1Qer83k/3C5PHQi28hiVdeE2kHXmIL99mQFawx8qt/JPjZilJ8Q==, tarball: https://registry.npmjs.org/@actions/io/-/io-1.1.3.tgz}
     dev: true
 
-  /@algolia/client-abtesting@5.30.0:
-    resolution: {integrity: sha512-Q3OQXYlTNqVUN/V1qXX8VIzQbLjP3yrRBO9m6NRe1CBALmoGHh9JrYosEGvfior28+DjqqU3Q+nzCSuf/bX0Gw==, tarball: https://registry.npmjs.org/@algolia/client-abtesting/-/client-abtesting-5.30.0.tgz}
+  /@algolia/client-abtesting@5.31.0:
+    resolution: {integrity: sha512-J+wZq5uotbisEsbKmXv79dsENI/AW6IZWIvfTqebE6QcH/S2yGDeNh6b4qa4koJ1eQx7+wKkLMfZ+nOZpBWclA==, tarball: https://registry.npmjs.org/@algolia/client-abtesting/-/client-abtesting-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
-  /@algolia/client-analytics@5.30.0:
-    resolution: {integrity: sha512-/b+SAfHjYjx/ZVeVReCKTTnFAiZWOyvYLrkYpeNMraMT6akYRR8eC1AvFcvR60GLG/jytxcJAp42G8nN5SdcLg==, tarball: https://registry.npmjs.org/@algolia/client-analytics/-/client-analytics-5.30.0.tgz}
+  /@algolia/client-analytics@5.31.0:
+    resolution: {integrity: sha512-zxz9ooi6HsMG7gS7xCG9NkUlWkpwMT/oYr8+cojchB98pEmn3OqHA7KaY1w8GKqKXNM4MiQD15N2/aZhDa9b9g==, tarball: https://registry.npmjs.org/@algolia/client-analytics/-/client-analytics-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
-  /@algolia/client-common@5.30.0:
-    resolution: {integrity: sha512-tbUgvkp2d20mHPbM0+NPbLg6SzkUh0lADUUjzNCF+HiPkjFRaIW3NGMlESKw5ia4Oz6ZvFzyREquUX6rdkdJcQ==, tarball: https://registry.npmjs.org/@algolia/client-common/-/client-common-5.30.0.tgz}
+  /@algolia/client-common@5.31.0:
+    resolution: {integrity: sha512-lO6oZLEPiCgtUcUHIFyfrRvcS8iB3Je1LqW3c04anjrCO7dqhkccXHC/5XuH0fIW4l7V5AtbPS2tpJGtRp1NJw==, tarball: https://registry.npmjs.org/@algolia/client-common/-/client-common-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dev: false
 
-  /@algolia/client-insights@5.30.0:
-    resolution: {integrity: sha512-caXuZqJK761m32KoEAEkjkE2WF/zYg1McuGesWXiLSgfxwZZIAf+DljpiSToBUXhoPesvjcLtINyYUzbkwE0iw==, tarball: https://registry.npmjs.org/@algolia/client-insights/-/client-insights-5.30.0.tgz}
-    engines: {node: '>= 14.0.0'}
-    dependencies:
-      '@algolia/client-common': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
-    dev: false
-
-  /@algolia/client-personalization@5.30.0:
-    resolution: {integrity: sha512-7K6P7TRBHLX1zTmwKDrIeBSgUidmbj6u3UW/AfroLRDGf9oZFytPKU49wg28lz/yulPuHY0nZqiwbyAxq9V17w==, tarball: https://registry.npmjs.org/@algolia/client-personalization/-/client-personalization-5.30.0.tgz}
+  /@algolia/client-insights@5.31.0:
+    resolution: {integrity: sha512-gwWTW4CMM6pov3aJv2a+Ex4v7fWG9wtey43qWBq5rABk3p3uYYFkzfylrht18rcq1zA99Wxo8UEireExHuzs2w==, tarball: https://registry.npmjs.org/@algolia/client-insights/-/client-insights-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
-  /@algolia/client-query-suggestions@5.30.0:
-    resolution: {integrity: sha512-WMjWuBjYxJheRt7Ec5BFr33k3cV0mq2WzmH9aBf5W4TT8kUp34x91VRsYVaWOBRlxIXI8o/WbhleqSngiuqjLA==, tarball: https://registry.npmjs.org/@algolia/client-query-suggestions/-/client-query-suggestions-5.30.0.tgz}
+  /@algolia/client-personalization@5.31.0:
+    resolution: {integrity: sha512-3G8ZpoLCgrcuILTQGVU9WXxUmK4R8uUmAiU31Qqd/pkta/9J8DHQjNh+Fs/i27ls2YxQq36GqXvVM2eoQFmFJw==, tarball: https://registry.npmjs.org/@algolia/client-personalization/-/client-personalization-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
-  /@algolia/client-search@5.30.0:
-    resolution: {integrity: sha512-puc1/LREfSqzgmrOFMY5L/aWmhYOlJ0TTpa245C0ZNMKEkdOkcimFbXTXQ8lZhzh+rlyFgR7cQGNtXJ5H0XgZg==, tarball: https://registry.npmjs.org/@algolia/client-search/-/client-search-5.30.0.tgz}
+  /@algolia/client-query-suggestions@5.31.0:
+    resolution: {integrity: sha512-+YIHy+n+x2/DqRdnrPv2Eck2pbZ4Q5Lu1mWpwOUZ2u2XG6JVQx0goePomtYl8evsDGspDRZJPpGD+CFJboe0gQ==, tarball: https://registry.npmjs.org/@algolia/client-query-suggestions/-/client-query-suggestions-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
-  /@algolia/ingestion@1.30.0:
-    resolution: {integrity: sha512-NfqiIKVgGKTLr6T9F81oqB39pPiEtILTy0z8ujxPKg2rCvI/qQeDqDWFBmQPElCfUTU6kk67QAgMkQ7T6fE+gg==, tarball: https://registry.npmjs.org/@algolia/ingestion/-/ingestion-1.30.0.tgz}
+  /@algolia/client-search@5.31.0:
+    resolution: {integrity: sha512-2I79ICkuTqbXeK5RGSmzCN1Uj86NghWxaWt41lIcFk1OXuUWhyXTxC2fN5M8ASRBf/qWSeXr6AzL8jb3opya3g==, tarball: https://registry.npmjs.org/@algolia/client-search/-/client-search-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
-  /@algolia/monitoring@1.30.0:
-    resolution: {integrity: sha512-/eeM3aqLKro5KBZw0W30iIA6afkGa+bcpvEM0NDa92m5t3vil4LOmJI9FkgzfmSkF4368z/SZMOTPShYcaVXjA==, tarball: https://registry.npmjs.org/@algolia/monitoring/-/monitoring-1.30.0.tgz}
+  /@algolia/ingestion@1.31.0:
+    resolution: {integrity: sha512-HiBWdO7ztzgFoR+SnbHq0iBQtDUusRZPSVMkPIR/MNbNJrH/OhrCsxk6Y7dUvQAIjypKmFl38raf1XEKz9fdUA==, tarball: https://registry.npmjs.org/@algolia/ingestion/-/ingestion-1.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
-  /@algolia/recommend@5.30.0:
-    resolution: {integrity: sha512-iWeAUWqw+xT+2IyUyTqnHCK+cyCKYV5+B6PXKdagc9GJJn6IaPs8vovwoC0Za5vKCje/aXQ24a2Z1pKpc/tdHg==, tarball: https://registry.npmjs.org/@algolia/recommend/-/recommend-5.30.0.tgz}
+  /@algolia/monitoring@1.31.0:
+    resolution: {integrity: sha512-ifrQ3BMg7Z4EGBPouUINd7xVU2ySTrJ2FtuAoiRHaZ7rT1Kp56JW40kuHiCvmDI4ZBaIzrQuGxWYKUZ29QWR6g==, tarball: https://registry.npmjs.org/@algolia/monitoring/-/monitoring-1.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
-  /@algolia/requester-browser-xhr@5.30.0:
-    resolution: {integrity: sha512-alo3ly0tdNLjfMSPz9dmNwYUFHx7guaz5dTGlIzVGnOiwLgIoM6NgA+MJLMcH6e1S7OpmE2AxOy78svlhst2tQ==, tarball: https://registry.npmjs.org/@algolia/requester-browser-xhr/-/requester-browser-xhr-5.30.0.tgz}
+  /@algolia/recommend@5.31.0:
+    resolution: {integrity: sha512-dA94TKQ9FiZ8E1BlpfAMVKC3XimhDBjNFLPR3w5eRgSXymJbbK93xr/LrhyCWHbJPxtUcJvaO+Xg0pFKP+HZvw==, tarball: https://registry.npmjs.org/@algolia/recommend/-/recommend-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
-  /@algolia/requester-fetch@5.30.0:
-    resolution: {integrity: sha512-WOnTYUIY2InllHBy6HHMpGIOo7Or4xhYUx/jkoSK/kPIa1BRoFEHqa8v4pbKHtoG7oLvM2UAsylSnjVpIhGZXg==, tarball: https://registry.npmjs.org/@algolia/requester-fetch/-/requester-fetch-5.30.0.tgz}
+  /@algolia/requester-browser-xhr@5.31.0:
+    resolution: {integrity: sha512-akbqE63Scw3dttQatKhjiHdFXpqihCCpcAciIHpdebw3/zWfb+e/Tkf6tDv/05AGcG5BHC365dp8LIl9+NchSA==, tarball: https://registry.npmjs.org/@algolia/requester-browser-xhr/-/requester-browser-xhr-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
+      '@algolia/client-common': 5.31.0
     dev: false
 
-  /@algolia/requester-node-http@5.30.0:
-    resolution: {integrity: sha512-uSTUh9fxeHde1c7KhvZKUrivk90sdiDftC+rSKNFKKEU9TiIKAGA7B2oKC+AoMCqMymot1vW9SGbeESQPTZd0w==, tarball: https://registry.npmjs.org/@algolia/requester-node-http/-/requester-node-http-5.30.0.tgz}
+  /@algolia/requester-fetch@5.31.0:
+    resolution: {integrity: sha512-qYOEOCIqXvbVKNTabgKmPFltpNxB1U38hhrMEbypyOc/X9zjdxnVi/dqZ+jKsYY4X7MSQTtowLK4AR++OdMD/g==, tarball: https://registry.npmjs.org/@algolia/requester-fetch/-/requester-fetch-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-common': 5.30.0
+      '@algolia/client-common': 5.31.0
+    dev: false
+
+  /@algolia/requester-node-http@5.31.0:
+    resolution: {integrity: sha512-eq8uTVUc/E7YIOqTVfXgGQ3ZSsAWqZZHy5ntuwm6WxnvdcAyhyzRo0sncX1zWFkFpNGvJ8xyONDWq/Ef2e31Tg==, tarball: https://registry.npmjs.org/@algolia/requester-node-http/-/requester-node-http-5.31.0.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.31.0
     dev: false
 
   /@ampproject/remapping@2.3.0:
@@ -4877,14 +4877,14 @@ packages:
     dependencies:
       protractor: 7.0.0
 
-  /@bazel/rollup@5.8.1(rollup@4.44.1):
+  /@bazel/rollup@5.8.1(rollup@4.44.2):
     resolution: {integrity: sha512-Ys+UWbRp1TY2j+z15N+SZgID/nuqAtJTgJDsz0NZVjm8F8KzmgXxLDnBb/cUKFVk83pNOAi84G/bq1tINjMSNA==, tarball: https://registry.npmjs.org/@bazel/rollup/-/rollup-5.8.1.tgz}
     hasBin: true
     peerDependencies:
       rollup: '>=2.3.0 <3.0.0'
     dependencies:
       '@bazel/worker': 5.8.1
-      rollup: 4.44.1
+      rollup: 4.44.2
     dev: false
 
   /@bazel/runfiles@5.8.1:
@@ -4991,7 +4991,7 @@ packages:
       '@codemirror/language': 6.11.2
       '@codemirror/state': 6.5.2
       '@lezer/common': 1.2.3
-      '@lezer/css': 1.2.1
+      '@lezer/css': 1.3.0
     dev: false
 
   /@codemirror/lang-html@6.4.9:
@@ -5004,7 +5004,7 @@ packages:
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.0
       '@lezer/common': 1.2.3
-      '@lezer/css': 1.2.1
+      '@lezer/css': 1.3.0
       '@lezer/html': 1.3.10
     dev: false
 
@@ -5231,6 +5231,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [ppc64]
     os: [aix]
+    dev: false
+    optional: true
+
+  /@esbuild/aix-ppc64@0.25.6:
+    resolution: {integrity: sha512-ShbM/3XxwuxjFiuVBHA+d3j5dyac0aEVVq1oluIDf71hUw0aRF59dV/efUsIwFnR6m8JNM2FjZOzmaZ8yG61kw==, tarball: https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [ppc64]
+    os: [aix]
     optional: true
 
   /@esbuild/android-arm64@0.24.2:
@@ -5243,6 +5251,14 @@ packages:
 
   /@esbuild/android-arm64@0.25.5:
     resolution: {integrity: sha512-VGzGhj4lJO+TVGV1v8ntCZWJktV7SGCs3Pn1GRWI1SBFtRALoomm8k5E9Pmwg3HOAal2VDc2F9+PM/rEY6oIDg==, tarball: https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [android]
+    dev: false
+    optional: true
+
+  /@esbuild/android-arm64@0.25.6:
+    resolution: {integrity: sha512-hd5zdUarsK6strW+3Wxi5qWws+rJhCCbMiC9QZyzoxfk5uHRIE8T287giQxzVpEvCwuJ9Qjg6bEjcRJcgfLqoA==, tarball: https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [android]
@@ -5261,6 +5277,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [arm]
     os: [android]
+    dev: false
+    optional: true
+
+  /@esbuild/android-arm@0.25.6:
+    resolution: {integrity: sha512-S8ToEOVfg++AU/bHwdksHNnyLyVM+eMVAOf6yRKFitnwnbwwPNqKr3srzFRe7nzV69RQKb5DgchIX5pt3L53xg==, tarball: https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm]
+    os: [android]
     optional: true
 
   /@esbuild/android-x64@0.24.2:
@@ -5273,6 +5297,14 @@ packages:
 
   /@esbuild/android-x64@0.25.5:
     resolution: {integrity: sha512-D2GyJT1kjvO//drbRT3Hib9XPwQeWd9vZoBJn+bu/lVsOZ13cqNdDeqIF/xQ5/VmWvMduP6AmXvylO/PIc2isw==, tarball: https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [android]
+    dev: false
+    optional: true
+
+  /@esbuild/android-x64@0.25.6:
+    resolution: {integrity: sha512-0Z7KpHSr3VBIO9A/1wcT3NTy7EB4oNC4upJ5ye3R7taCc2GUdeynSLArnon5G8scPwaU866d3H4BCrE5xLW25A==, tarball: https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [android]
@@ -5291,6 +5323,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [darwin]
+    dev: false
+    optional: true
+
+  /@esbuild/darwin-arm64@0.25.6:
+    resolution: {integrity: sha512-FFCssz3XBavjxcFxKsGy2DYK5VSvJqa6y5HXljKzhRZ87LvEi13brPrf/wdyl/BbpbMKJNOr1Sd0jtW4Ge1pAA==, tarball: https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [darwin]
     optional: true
 
   /@esbuild/darwin-x64@0.24.2:
@@ -5303,6 +5343,14 @@ packages:
 
   /@esbuild/darwin-x64@0.25.5:
     resolution: {integrity: sha512-1iT4FVL0dJ76/q1wd7XDsXrSW+oLoquptvh4CLR4kITDtqi2e/xwXwdCVH8hVHU43wgJdsq7Gxuzcs6Iq/7bxQ==, tarball: https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [darwin]
+    dev: false
+    optional: true
+
+  /@esbuild/darwin-x64@0.25.6:
+    resolution: {integrity: sha512-GfXs5kry/TkGM2vKqK2oyiLFygJRqKVhawu3+DOCk7OxLy/6jYkWXhlHwOoTb0WqGnWGAS7sooxbZowy+pK9Yg==, tarball: https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [darwin]
@@ -5321,6 +5369,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [freebsd]
+    dev: false
+    optional: true
+
+  /@esbuild/freebsd-arm64@0.25.6:
+    resolution: {integrity: sha512-aoLF2c3OvDn2XDTRvn8hN6DRzVVpDlj2B/F66clWd/FHLiHaG3aVZjxQX2DYphA5y/evbdGvC6Us13tvyt4pWg==, tarball: https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [freebsd]
     optional: true
 
   /@esbuild/freebsd-x64@0.24.2:
@@ -5333,6 +5389,14 @@ packages:
 
   /@esbuild/freebsd-x64@0.25.5:
     resolution: {integrity: sha512-PrikaNjiXdR2laW6OIjlbeuCPrPaAl0IwPIaRv+SMV8CiM8i2LqVUHFC1+8eORgWyY7yhQY+2U2fA55mBzReaw==, tarball: https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [freebsd]
+    dev: false
+    optional: true
+
+  /@esbuild/freebsd-x64@0.25.6:
+    resolution: {integrity: sha512-2SkqTjTSo2dYi/jzFbU9Plt1vk0+nNg8YC8rOXXea+iA3hfNJWebKYPs3xnOUf9+ZWhKAaxnQNUf2X9LOpeiMQ==, tarball: https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [freebsd]
@@ -5351,6 +5415,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [linux]
+    dev: false
+    optional: true
+
+  /@esbuild/linux-arm64@0.25.6:
+    resolution: {integrity: sha512-b967hU0gqKd9Drsh/UuAm21Khpoh6mPBSgz8mKRq4P5mVK8bpA+hQzmm/ZwGVULSNBzKdZPQBRT3+WuVavcWsQ==, tarball: https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [linux]
     optional: true
 
   /@esbuild/linux-arm@0.24.2:
@@ -5363,6 +5435,14 @@ packages:
 
   /@esbuild/linux-arm@0.25.5:
     resolution: {integrity: sha512-cPzojwW2okgh7ZlRpcBEtsX7WBuqbLrNXqLU89GxWbNt6uIg78ET82qifUy3W6OVww6ZWobWub5oqZOVtwolfw==, tarball: https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm]
+    os: [linux]
+    dev: false
+    optional: true
+
+  /@esbuild/linux-arm@0.25.6:
+    resolution: {integrity: sha512-SZHQlzvqv4Du5PrKE2faN0qlbsaW/3QQfUUc6yO2EjFcA83xnwm91UbEEVx4ApZ9Z5oG8Bxz4qPE+HFwtVcfyw==, tarball: https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [arm]
     os: [linux]
@@ -5381,6 +5461,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [ia32]
     os: [linux]
+    dev: false
+    optional: true
+
+  /@esbuild/linux-ia32@0.25.6:
+    resolution: {integrity: sha512-aHWdQ2AAltRkLPOsKdi3xv0mZ8fUGPdlKEjIEhxCPm5yKEThcUjHpWB1idN74lfXGnZ5SULQSgtr5Qos5B0bPw==, tarball: https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [ia32]
+    os: [linux]
     optional: true
 
   /@esbuild/linux-loong64@0.24.2:
@@ -5393,6 +5481,14 @@ packages:
 
   /@esbuild/linux-loong64@0.25.5:
     resolution: {integrity: sha512-0ur7ae16hDUC4OL5iEnDb0tZHDxYmuQyhKhsPBV8f99f6Z9KQM02g33f93rNH5A30agMS46u2HP6qTdEt6Q1kg==, tarball: https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [loong64]
+    os: [linux]
+    dev: false
+    optional: true
+
+  /@esbuild/linux-loong64@0.25.6:
+    resolution: {integrity: sha512-VgKCsHdXRSQ7E1+QXGdRPlQ/e08bN6WMQb27/TMfV+vPjjTImuT9PmLXupRlC90S1JeNNW5lzkAEO/McKeJ2yg==, tarball: https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [loong64]
     os: [linux]
@@ -5411,6 +5507,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [mips64el]
     os: [linux]
+    dev: false
+    optional: true
+
+  /@esbuild/linux-mips64el@0.25.6:
+    resolution: {integrity: sha512-WViNlpivRKT9/py3kCmkHnn44GkGXVdXfdc4drNmRl15zVQ2+D2uFwdlGh6IuK5AAnGTo2qPB1Djppj+t78rzw==, tarball: https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [mips64el]
+    os: [linux]
     optional: true
 
   /@esbuild/linux-ppc64@0.24.2:
@@ -5423,6 +5527,14 @@ packages:
 
   /@esbuild/linux-ppc64@0.25.5:
     resolution: {integrity: sha512-UZCmJ7r9X2fe2D6jBmkLBMQetXPXIsZjQJCjgwpVDz+YMcS6oFR27alkgGv3Oqkv07bxdvw7fyB71/olceJhkQ==, tarball: https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [ppc64]
+    os: [linux]
+    dev: false
+    optional: true
+
+  /@esbuild/linux-ppc64@0.25.6:
+    resolution: {integrity: sha512-wyYKZ9NTdmAMb5730I38lBqVu6cKl4ZfYXIs31Baf8aoOtB4xSGi3THmDYt4BTFHk7/EcVixkOV2uZfwU3Q2Jw==, tarball: https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [ppc64]
     os: [linux]
@@ -5441,6 +5553,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [riscv64]
     os: [linux]
+    dev: false
+    optional: true
+
+  /@esbuild/linux-riscv64@0.25.6:
+    resolution: {integrity: sha512-KZh7bAGGcrinEj4qzilJ4hqTY3Dg2U82c8bv+e1xqNqZCrCyc+TL9AUEn5WGKDzm3CfC5RODE/qc96OcbIe33w==, tarball: https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [riscv64]
+    os: [linux]
     optional: true
 
   /@esbuild/linux-s390x@0.24.2:
@@ -5453,6 +5573,14 @@ packages:
 
   /@esbuild/linux-s390x@0.25.5:
     resolution: {integrity: sha512-K2dSKTKfmdh78uJ3NcWFiqyRrimfdinS5ErLSn3vluHNeHVnBAFWC8a4X5N+7FgVE1EjXS1QDZbpqZBjfrqMTQ==, tarball: https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [s390x]
+    os: [linux]
+    dev: false
+    optional: true
+
+  /@esbuild/linux-s390x@0.25.6:
+    resolution: {integrity: sha512-9N1LsTwAuE9oj6lHMyyAM+ucxGiVnEqUdp4v7IaMmrwb06ZTEVCIs3oPPplVsnjPfyjmxwHxHMF8b6vzUVAUGw==, tarball: https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [s390x]
     os: [linux]
@@ -5471,6 +5599,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
+    dev: false
+    optional: true
+
+  /@esbuild/linux-x64@0.25.6:
+    resolution: {integrity: sha512-A6bJB41b4lKFWRKNrWoP2LHsjVzNiaurf7wyj/XtFNTsnPuxwEBWHLty+ZE0dWBKuSK1fvKgrKaNjBS7qbFKig==, tarball: https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [linux]
     optional: true
 
   /@esbuild/netbsd-arm64@0.24.2:
@@ -5483,6 +5619,14 @@ packages:
 
   /@esbuild/netbsd-arm64@0.25.5:
     resolution: {integrity: sha512-pwHtMP9viAy1oHPvgxtOv+OkduK5ugofNTVDilIzBLpoWAM16r7b/mxBvfpuQDpRQFMfuVr5aLcn4yveGvBZvw==, tarball: https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [netbsd]
+    dev: false
+    optional: true
+
+  /@esbuild/netbsd-arm64@0.25.6:
+    resolution: {integrity: sha512-IjA+DcwoVpjEvyxZddDqBY+uJ2Snc6duLpjmkXm/v4xuS3H+3FkLZlDm9ZsAbF9rsfP3zeA0/ArNDORZgrxR/Q==, tarball: https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [netbsd]
@@ -5501,6 +5645,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [netbsd]
+    dev: false
+    optional: true
+
+  /@esbuild/netbsd-x64@0.25.6:
+    resolution: {integrity: sha512-dUXuZr5WenIDlMHdMkvDc1FAu4xdWixTCRgP7RQLBOkkGgwuuzaGSYcOpW4jFxzpzL1ejb8yF620UxAqnBrR9g==, tarball: https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [netbsd]
     optional: true
 
   /@esbuild/openbsd-arm64@0.24.2:
@@ -5513,6 +5665,14 @@ packages:
 
   /@esbuild/openbsd-arm64@0.25.5:
     resolution: {integrity: sha512-7A208+uQKgTxHd0G0uqZO8UjK2R0DDb4fDmERtARjSHWxqMTye4Erz4zZafx7Di9Cv+lNHYuncAkiGFySoD+Mw==, tarball: https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [openbsd]
+    dev: false
+    optional: true
+
+  /@esbuild/openbsd-arm64@0.25.6:
+    resolution: {integrity: sha512-l8ZCvXP0tbTJ3iaqdNf3pjaOSd5ex/e6/omLIQCVBLmHTlfXW3zAxQ4fnDmPLOB1x9xrcSi/xtCWFwCZRIaEwg==, tarball: https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [openbsd]
@@ -5531,6 +5691,21 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [openbsd]
+    dev: false
+    optional: true
+
+  /@esbuild/openbsd-x64@0.25.6:
+    resolution: {integrity: sha512-hKrmDa0aOFOr71KQ/19JC7az1P0GWtCN1t2ahYAf4O007DHZt/dW8ym5+CUdJhQ/qkZmI1HAF8KkJbEFtCL7gw==, tarball: https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [openbsd]
+    optional: true
+
+  /@esbuild/openharmony-arm64@0.25.6:
+    resolution: {integrity: sha512-+SqBcAWoB1fYKmpWoQP4pGtx+pUUC//RNYhFdbcSA16617cchuryuhOCRpPsjCblKukAckWsV+aQ3UKT/RMPcA==, tarball: https://registry.npmjs.org/@esbuild/openharmony-arm64/-/openharmony-arm64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [openharmony]
     optional: true
 
   /@esbuild/sunos-x64@0.24.2:
@@ -5543,6 +5718,14 @@ packages:
 
   /@esbuild/sunos-x64@0.25.5:
     resolution: {integrity: sha512-l+azKShMy7FxzY0Rj4RCt5VD/q8mG/e+mDivgspo+yL8zW7qEwctQ6YqKX34DTEleFAvCIUviCFX1SDZRSyMQA==, tarball: https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [sunos]
+    dev: false
+    optional: true
+
+  /@esbuild/sunos-x64@0.25.6:
+    resolution: {integrity: sha512-dyCGxv1/Br7MiSC42qinGL8KkG4kX0pEsdb0+TKhmJZgCUDBGmyo1/ArCjNGiOLiIAgdbWgmWgib4HoCi5t7kA==, tarball: https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [sunos]
@@ -5561,6 +5744,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [win32]
+    dev: false
+    optional: true
+
+  /@esbuild/win32-arm64@0.25.6:
+    resolution: {integrity: sha512-42QOgcZeZOvXfsCBJF5Afw73t4veOId//XD3i+/9gSkhSV6Gk3VPlWncctI+JcOyERv85FUo7RxuxGy+z8A43Q==, tarball: https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [win32]
     optional: true
 
   /@esbuild/win32-ia32@0.24.2:
@@ -5576,6 +5767,14 @@ packages:
     engines: {node: '>=18'}
     cpu: [ia32]
     os: [win32]
+    dev: false
+    optional: true
+
+  /@esbuild/win32-ia32@0.25.6:
+    resolution: {integrity: sha512-4AWhgXmDuYN7rJI6ORB+uU9DHLq/erBbuMoAuB4VWJTu5KtCgcKYPynF0YI1VkBNuEfjNlLrFr9KZPJzrtLkrQ==, tarball: https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.25.6.tgz}
+    engines: {node: '>=18'}
+    cpu: [ia32]
+    os: [win32]
     optional: true
 
   /@esbuild/win32-x64@0.24.2:
@@ -5588,6 +5787,14 @@ packages:
 
   /@esbuild/win32-x64@0.25.5:
     resolution: {integrity: sha512-TXv6YnJ8ZMVdX+SXWVBo/0p8LTcrUYngpWjvm91TMjjBQii7Oz11Lw5lbDV5Y0TzuhSJHwiH4hEtC1I42mMS0g==, tarball: https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.5.tgz}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [win32]
+    dev: false
+    optional: true
+
+  /@esbuild/win32-x64@0.25.6:
+    resolution: {integrity: sha512-NgJPHHbEpLQgDH2MjQu90pzW/5vvXIZ7KOnPyNBm92A6WgZ/7b6fJyUBjoumLqeOQQGqY2QjQxRo97ah4Sj0cA==, tarball: https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.6.tgz}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
@@ -6642,8 +6849,8 @@ packages:
     resolution: {integrity: sha512-w7ojc8ejBqr2REPsWxJjrMFsA/ysDCFICn8zEOR9mrqzOu2amhITYuLD8ag6XZf0CFXDrhKqw7+tW8cX66NaDA==, tarball: https://registry.npmjs.org/@lezer/common/-/common-1.2.3.tgz}
     dev: false
 
-  /@lezer/css@1.2.1:
-    resolution: {integrity: sha512-2F5tOqzKEKbCUNraIXc0f6HKeyKlmMWJnBB0i4XW6dJgssrZO/YlZ2pY5xgyqDleqqhiNJ3dQhbrV2aClZQMvg==, tarball: https://registry.npmjs.org/@lezer/css/-/css-1.2.1.tgz}
+  /@lezer/css@1.3.0:
+    resolution: {integrity: sha512-pBL7hup88KbI7hXnZV3PQsn43DHy6TWyzuyk2AO9UyoXcDltvIdqWKE1dLL/45JVZ+YZkHe1WVHqO6wugZZWcw==, tarball: https://registry.npmjs.org/@lezer/css/-/css-1.3.0.tgz}
     dependencies:
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
@@ -6848,12 +7055,6 @@ packages:
 
   /@marijn/find-cluster-break@1.0.2:
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==, tarball: https://registry.npmjs.org/@marijn/find-cluster-break/-/find-cluster-break-1.0.2.tgz}
-    dev: false
-
-  /@mermaid-js/parser@0.5.0:
-    resolution: {integrity: sha512-AiaN7+VjXC+3BYE+GwNezkpjIcCI2qIMB/K4S2/vMWe0q/XJCBbx5+K7iteuz7VyltX9iAK4FmVTvGc9kjOV4w==, tarball: https://registry.npmjs.org/@mermaid-js/parser/-/parser-0.5.0.tgz}
-    dependencies:
-      langium: 3.3.1
     dev: false
 
   /@mermaid-js/parser@0.6.1:
@@ -7729,7 +7930,7 @@ packages:
       - supports-color
     dev: true
 
-  /@rollup/plugin-babel@6.0.4(@babel/core@7.28.0)(@types/babel__core@7.20.5)(rollup@4.44.1):
+  /@rollup/plugin-babel@6.0.4(@babel/core@7.28.0)(@types/babel__core@7.20.5)(rollup@4.44.2):
     resolution: {integrity: sha512-YF7Y52kFdFT/xVSuVdjkV5ZdX/3YtmX0QulG+x0taQOtJdHYzVU61aSSkAgVJ7NOv6qPkIYiJSgSWWN/DM5sGw==, tarball: https://registry.npmjs.org/@rollup/plugin-babel/-/plugin-babel-6.0.4.tgz}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -7744,14 +7945,14 @@ packages:
     dependencies:
       '@babel/core': 7.28.0
       '@babel/helper-module-imports': 7.27.1
-      '@rollup/pluginutils': 5.2.0(rollup@4.44.1)
+      '@rollup/pluginutils': 5.2.0(rollup@4.44.2)
       '@types/babel__core': 7.20.5
-      rollup: 4.44.1
+      rollup: 4.44.2
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@rollup/plugin-commonjs@28.0.6(rollup@4.44.1):
+  /@rollup/plugin-commonjs@28.0.6(rollup@4.44.2):
     resolution: {integrity: sha512-XSQB1K7FUU5QP+3lOQmVCE3I0FcbbNvmNT4VJSj93iUjayaARrTQeoRdiYQoftAJBLrR9t2agwAd3ekaTgHNlw==, tarball: https://registry.npmjs.org/@rollup/plugin-commonjs/-/plugin-commonjs-28.0.6.tgz}
     engines: {node: '>=16.0.0 || 14 >= 14.17'}
     peerDependencies:
@@ -7760,17 +7961,17 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.2.0(rollup@4.44.1)
+      '@rollup/pluginutils': 5.2.0(rollup@4.44.2)
       commondir: 1.0.1
       estree-walker: 2.0.2
       fdir: 6.4.6(picomatch@4.0.2)
       is-reference: 1.2.1
       magic-string: 0.30.17
       picomatch: 4.0.2
-      rollup: 4.44.1
+      rollup: 4.44.2
     dev: false
 
-  /@rollup/plugin-node-resolve@16.0.1(rollup@4.44.1):
+  /@rollup/plugin-node-resolve@16.0.1(rollup@4.44.2):
     resolution: {integrity: sha512-tk5YCxJWIG81umIvNkSod2qK5KyQW19qcBF/B78n1bjtOON6gzKoVeSzAE8yHCZEDmqkHKkxplExA8KzdJLJpA==, tarball: https://registry.npmjs.org/@rollup/plugin-node-resolve/-/plugin-node-resolve-16.0.1.tgz}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -7779,15 +7980,15 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.2.0(rollup@4.44.1)
+      '@rollup/pluginutils': 5.2.0(rollup@4.44.2)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-module: 1.0.0
       resolve: 1.22.10
-      rollup: 4.44.1
+      rollup: 4.44.2
     dev: false
 
-  /@rollup/pluginutils@3.1.0(rollup@4.44.1):
+  /@rollup/pluginutils@3.1.0(rollup@4.44.2):
     resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==, tarball: https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-3.1.0.tgz}
     engines: {node: '>= 8.0.0'}
     peerDependencies:
@@ -7796,10 +7997,10 @@ packages:
       '@types/estree': 0.0.39
       estree-walker: 1.0.1
       picomatch: 2.3.1
-      rollup: 4.44.1
+      rollup: 4.44.2
     dev: false
 
-  /@rollup/pluginutils@5.1.4(rollup@4.44.1):
+  /@rollup/pluginutils@5.1.4(rollup@4.44.2):
     resolution: {integrity: sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ==, tarball: https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-5.1.4.tgz}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -7811,10 +8012,10 @@ packages:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
       picomatch: 4.0.2
-      rollup: 4.44.1
+      rollup: 4.44.2
     dev: true
 
-  /@rollup/pluginutils@5.2.0(rollup@4.44.1):
+  /@rollup/pluginutils@5.2.0(rollup@4.44.2):
     resolution: {integrity: sha512-qWJ2ZTbmumwiLFomfzTyt5Kng4hwPi9rwCYN4SHb6eaRU1KNO4ccxINHr/VhH4GgPlt1XfSTLX2LBTme8ne4Zw==, tarball: https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-5.2.0.tgz}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -7826,7 +8027,7 @@ packages:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
       picomatch: 4.0.2
-      rollup: 4.44.1
+      rollup: 4.44.2
     dev: false
 
   /@rollup/rollup-android-arm-eabi@4.30.1:
@@ -7847,6 +8048,7 @@ packages:
     resolution: {integrity: sha512-JAcBr1+fgqx20m7Fwe1DxPUl/hPkee6jA6Pl7n1v2EFiktAHenTaXl5aIFjUIEsfn9w3HE4gK1lEgNGMzBDs1w==, tarball: https://registry.npmjs.org/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.44.1.tgz}
     cpu: [arm]
     os: [android]
+    dev: false
     optional: true
 
   /@rollup/rollup-android-arm-eabi@4.44.2:
@@ -7873,6 +8075,7 @@ packages:
     resolution: {integrity: sha512-RurZetXqTu4p+G0ChbnkwBuAtwAbIwJkycw1n6GvlGlBuS4u5qlr5opix8cBAYFJgaY05TWtM+LaoFggUmbZEQ==, tarball: https://registry.npmjs.org/@rollup/rollup-android-arm64/-/rollup-android-arm64-4.44.1.tgz}
     cpu: [arm64]
     os: [android]
+    dev: false
     optional: true
 
   /@rollup/rollup-android-arm64@4.44.2:
@@ -7899,6 +8102,7 @@ packages:
     resolution: {integrity: sha512-fM/xPesi7g2M7chk37LOnmnSTHLG/v2ggWqKj3CCA1rMA4mm5KVBT1fNoswbo1JhPuNNZrVwpTvlCVggv8A2zg==, tarball: https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.44.1.tgz}
     cpu: [arm64]
     os: [darwin]
+    dev: false
     optional: true
 
   /@rollup/rollup-darwin-arm64@4.44.2:
@@ -7925,6 +8129,7 @@ packages:
     resolution: {integrity: sha512-gDnWk57urJrkrHQ2WVx9TSVTH7lSlU7E3AFqiko+bgjlh78aJ88/3nycMax52VIVjIm3ObXnDL2H00e/xzoipw==, tarball: https://registry.npmjs.org/@rollup/rollup-darwin-x64/-/rollup-darwin-x64-4.44.1.tgz}
     cpu: [x64]
     os: [darwin]
+    dev: false
     optional: true
 
   /@rollup/rollup-darwin-x64@4.44.2:
@@ -7951,6 +8156,7 @@ packages:
     resolution: {integrity: sha512-wnFQmJ/zPThM5zEGcnDcCJeYJgtSLjh1d//WuHzhf6zT3Md1BvvhJnWoy+HECKu2bMxaIcfWiu3bJgx6z4g2XA==, tarball: https://registry.npmjs.org/@rollup/rollup-freebsd-arm64/-/rollup-freebsd-arm64-4.44.1.tgz}
     cpu: [arm64]
     os: [freebsd]
+    dev: false
     optional: true
 
   /@rollup/rollup-freebsd-arm64@4.44.2:
@@ -7977,6 +8183,7 @@ packages:
     resolution: {integrity: sha512-uBmIxoJ4493YATvU2c0upGz87f99e3wop7TJgOA/bXMFd2SvKCI7xkxY/5k50bv7J6dw1SXT4MQBQSLn8Bb/Uw==, tarball: https://registry.npmjs.org/@rollup/rollup-freebsd-x64/-/rollup-freebsd-x64-4.44.1.tgz}
     cpu: [x64]
     os: [freebsd]
+    dev: false
     optional: true
 
   /@rollup/rollup-freebsd-x64@4.44.2:
@@ -8003,6 +8210,7 @@ packages:
     resolution: {integrity: sha512-n0edDmSHlXFhrlmTK7XBuwKlG5MbS7yleS1cQ9nn4kIeW+dJH+ExqNgQ0RrFRew8Y+0V/x6C5IjsHrJmiHtkxQ==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm-gnueabihf/-/rollup-linux-arm-gnueabihf-4.44.1.tgz}
     cpu: [arm]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-arm-gnueabihf@4.44.2:
@@ -8029,6 +8237,7 @@ packages:
     resolution: {integrity: sha512-8WVUPy3FtAsKSpyk21kV52HCxB+me6YkbkFHATzC2Yd3yuqHwy2lbFL4alJOLXKljoRw08Zk8/xEj89cLQ/4Nw==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm-musleabihf/-/rollup-linux-arm-musleabihf-4.44.1.tgz}
     cpu: [arm]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-arm-musleabihf@4.44.2:
@@ -8055,6 +8264,7 @@ packages:
     resolution: {integrity: sha512-yuktAOaeOgorWDeFJggjuCkMGeITfqvPgkIXhDqsfKX8J3jGyxdDZgBV/2kj/2DyPaLiX6bPdjJDTu9RB8lUPQ==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm64-gnu/-/rollup-linux-arm64-gnu-4.44.1.tgz}
     cpu: [arm64]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-arm64-gnu@4.44.2:
@@ -8081,6 +8291,7 @@ packages:
     resolution: {integrity: sha512-W+GBM4ifET1Plw8pdVaecwUgxmiH23CfAUj32u8knq0JPFyK4weRy6H7ooxYFD19YxBulL0Ktsflg5XS7+7u9g==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-arm64-musl/-/rollup-linux-arm64-musl-4.44.1.tgz}
     cpu: [arm64]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-arm64-musl@4.44.2:
@@ -8107,6 +8318,7 @@ packages:
     resolution: {integrity: sha512-1zqnUEMWp9WrGVuVak6jWTl4fEtrVKfZY7CvcBmUUpxAJ7WcSowPSAWIKa/0o5mBL/Ij50SIf9tuirGx63Ovew==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-loongarch64-gnu/-/rollup-linux-loongarch64-gnu-4.44.1.tgz}
     cpu: [loong64]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-loongarch64-gnu@4.44.2:
@@ -8133,6 +8345,7 @@ packages:
     resolution: {integrity: sha512-Rl3JKaRu0LHIx7ExBAAnf0JcOQetQffaw34T8vLlg9b1IhzcBgaIdnvEbbsZq9uZp3uAH+JkHd20Nwn0h9zPjA==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-powerpc64le-gnu/-/rollup-linux-powerpc64le-gnu-4.44.1.tgz}
     cpu: [ppc64]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-powerpc64le-gnu@4.44.2:
@@ -8159,6 +8372,7 @@ packages:
     resolution: {integrity: sha512-j5akelU3snyL6K3N/iX7otLBIl347fGwmd95U5gS/7z6T4ftK288jKq3A5lcFKcx7wwzb5rgNvAg3ZbV4BqUSw==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-riscv64-gnu/-/rollup-linux-riscv64-gnu-4.44.1.tgz}
     cpu: [riscv64]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-riscv64-gnu@4.44.2:
@@ -8178,6 +8392,7 @@ packages:
     resolution: {integrity: sha512-ppn5llVGgrZw7yxbIm8TTvtj1EoPgYUAbfw0uDjIOzzoqlZlZrLJ/KuiE7uf5EpTpCTrNt1EdtzF0naMm0wGYg==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-riscv64-musl/-/rollup-linux-riscv64-musl-4.44.1.tgz}
     cpu: [riscv64]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-riscv64-musl@4.44.2:
@@ -8204,6 +8419,7 @@ packages:
     resolution: {integrity: sha512-Hu6hEdix0oxtUma99jSP7xbvjkUM/ycke/AQQ4EC5g7jNRLLIwjcNwaUy95ZKBJJwg1ZowsclNnjYqzN4zwkAw==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-s390x-gnu/-/rollup-linux-s390x-gnu-4.44.1.tgz}
     cpu: [s390x]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-s390x-gnu@4.44.2:
@@ -8230,6 +8446,7 @@ packages:
     resolution: {integrity: sha512-EtnsrmZGomz9WxK1bR5079zee3+7a+AdFlghyd6VbAjgRJDbTANJ9dcPIPAi76uG05micpEL+gPGmAKYTschQw==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.44.1.tgz}
     cpu: [x64]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-x64-gnu@4.44.2:
@@ -8256,6 +8473,7 @@ packages:
     resolution: {integrity: sha512-iAS4p+J1az6Usn0f8xhgL4PaU878KEtutP4hqw52I4IO6AGoyOkHCxcc4bqufv1tQLdDWFx8lR9YlwxKuv3/3g==, tarball: https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.44.1.tgz}
     cpu: [x64]
     os: [linux]
+    dev: false
     optional: true
 
   /@rollup/rollup-linux-x64-musl@4.44.2:
@@ -8282,6 +8500,7 @@ packages:
     resolution: {integrity: sha512-NtSJVKcXwcqozOl+FwI41OH3OApDyLk3kqTJgx8+gp6On9ZEt5mYhIsKNPGuaZr3p9T6NWPKGU/03Vw4CNU9qg==, tarball: https://registry.npmjs.org/@rollup/rollup-win32-arm64-msvc/-/rollup-win32-arm64-msvc-4.44.1.tgz}
     cpu: [arm64]
     os: [win32]
+    dev: false
     optional: true
 
   /@rollup/rollup-win32-arm64-msvc@4.44.2:
@@ -8308,6 +8527,7 @@ packages:
     resolution: {integrity: sha512-JYA3qvCOLXSsnTR3oiyGws1Dm0YTuxAAeaYGVlGpUsHqloPcFjPg+X0Fj2qODGLNwQOAcCiQmHub/V007kiH5A==, tarball: https://registry.npmjs.org/@rollup/rollup-win32-ia32-msvc/-/rollup-win32-ia32-msvc-4.44.1.tgz}
     cpu: [ia32]
     os: [win32]
+    dev: false
     optional: true
 
   /@rollup/rollup-win32-ia32-msvc@4.44.2:
@@ -8334,6 +8554,7 @@ packages:
     resolution: {integrity: sha512-J8o22LuF0kTe7m+8PvW9wk3/bRq5+mRo5Dqo6+vXb7otCm3TPhYOJqOaQtGU9YMWQSL3krMnoOxMr0+9E6F3Ug==, tarball: https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.44.1.tgz}
     cpu: [x64]
     os: [win32]
+    dev: false
     optional: true
 
   /@rollup/rollup-win32-x64-msvc@4.44.2:
@@ -9875,23 +10096,23 @@ packages:
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
 
-  /algoliasearch@5.30.0:
-    resolution: {integrity: sha512-ILSdPX4je0n5WUKD34TMe57/eqiXUzCIjAsdtLQYhomqOjTtFUg1s6dE7kUegc4Mc43Xr7IXYlMutU9HPiYfdw==, tarball: https://registry.npmjs.org/algoliasearch/-/algoliasearch-5.30.0.tgz}
+  /algoliasearch@5.31.0:
+    resolution: {integrity: sha512-LBpwGyNPOcprdu1OnRtgaWeKLjnDR3T+vp64WRiQEgHYACIXgU+djAvj88m3OQc+6MfWbw7rKUjXtdRMLfU7Aw==, tarball: https://registry.npmjs.org/algoliasearch/-/algoliasearch-5.31.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
-      '@algolia/client-abtesting': 5.30.0
-      '@algolia/client-analytics': 5.30.0
-      '@algolia/client-common': 5.30.0
-      '@algolia/client-insights': 5.30.0
-      '@algolia/client-personalization': 5.30.0
-      '@algolia/client-query-suggestions': 5.30.0
-      '@algolia/client-search': 5.30.0
-      '@algolia/ingestion': 1.30.0
-      '@algolia/monitoring': 1.30.0
-      '@algolia/recommend': 5.30.0
-      '@algolia/requester-browser-xhr': 5.30.0
-      '@algolia/requester-fetch': 5.30.0
-      '@algolia/requester-node-http': 5.30.0
+      '@algolia/client-abtesting': 5.31.0
+      '@algolia/client-analytics': 5.31.0
+      '@algolia/client-common': 5.31.0
+      '@algolia/client-insights': 5.31.0
+      '@algolia/client-personalization': 5.31.0
+      '@algolia/client-query-suggestions': 5.31.0
+      '@algolia/client-search': 5.31.0
+      '@algolia/ingestion': 1.31.0
+      '@algolia/monitoring': 1.31.0
+      '@algolia/recommend': 5.31.0
+      '@algolia/requester-browser-xhr': 5.31.0
+      '@algolia/requester-fetch': 5.31.0
+      '@algolia/requester-node-http': 5.31.0
     dev: false
 
   /angular-mocks@1.5.11:
@@ -13291,6 +13512,39 @@ packages:
       '@esbuild/win32-arm64': 0.25.5
       '@esbuild/win32-ia32': 0.25.5
       '@esbuild/win32-x64': 0.25.5
+    dev: false
+
+  /esbuild@0.25.6:
+    resolution: {integrity: sha512-GVuzuUwtdsghE3ocJ9Bs8PNoF13HNQ5TXbEi2AhvVb8xU1Iwt9Fos9FEamfoee+u/TOsn7GUWc04lz46n2bbTg==, tarball: https://registry.npmjs.org/esbuild/-/esbuild-0.25.6.tgz}
+    engines: {node: '>=18'}
+    hasBin: true
+    optionalDependencies:
+      '@esbuild/aix-ppc64': 0.25.6
+      '@esbuild/android-arm': 0.25.6
+      '@esbuild/android-arm64': 0.25.6
+      '@esbuild/android-x64': 0.25.6
+      '@esbuild/darwin-arm64': 0.25.6
+      '@esbuild/darwin-x64': 0.25.6
+      '@esbuild/freebsd-arm64': 0.25.6
+      '@esbuild/freebsd-x64': 0.25.6
+      '@esbuild/linux-arm': 0.25.6
+      '@esbuild/linux-arm64': 0.25.6
+      '@esbuild/linux-ia32': 0.25.6
+      '@esbuild/linux-loong64': 0.25.6
+      '@esbuild/linux-mips64el': 0.25.6
+      '@esbuild/linux-ppc64': 0.25.6
+      '@esbuild/linux-riscv64': 0.25.6
+      '@esbuild/linux-s390x': 0.25.6
+      '@esbuild/linux-x64': 0.25.6
+      '@esbuild/netbsd-arm64': 0.25.6
+      '@esbuild/netbsd-x64': 0.25.6
+      '@esbuild/openbsd-arm64': 0.25.6
+      '@esbuild/openbsd-x64': 0.25.6
+      '@esbuild/openharmony-arm64': 0.25.6
+      '@esbuild/sunos-x64': 0.25.6
+      '@esbuild/win32-arm64': 0.25.6
+      '@esbuild/win32-ia32': 0.25.6
+      '@esbuild/win32-x64': 0.25.6
 
   /escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==, tarball: https://registry.npmjs.org/escalade/-/escalade-3.2.0.tgz}
@@ -17655,33 +17909,6 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==, tarball: https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz}
     engines: {node: '>= 8'}
 
-  /mermaid@11.7.0:
-    resolution: {integrity: sha512-/1/5R0rt0Z1Ak0CuznAnCF3HtQgayRXUz6SguzOwN4L+DuCobz0UxnQ+ZdTSZ3AugKVVh78tiVmsHpHWV25TCw==, tarball: https://registry.npmjs.org/mermaid/-/mermaid-11.7.0.tgz}
-    dependencies:
-      '@braintree/sanitize-url': 7.1.1
-      '@iconify/utils': 2.3.0
-      '@mermaid-js/parser': 0.5.0
-      '@types/d3': 7.4.3
-      cytoscape: 3.32.0
-      cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.0)
-      cytoscape-fcose: 2.2.0(cytoscape@3.32.0)
-      d3: 7.9.0
-      d3-sankey: 0.12.3
-      dagre-d3-es: 7.0.11
-      dayjs: 1.11.13
-      dompurify: 3.2.6
-      katex: 0.16.22
-      khroma: 2.1.0
-      lodash-es: 4.17.21
-      marked: 15.0.12
-      roughjs: 4.6.6
-      stylis: 4.3.6
-      ts-dedent: 2.2.0
-      uuid: 11.1.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /mermaid@11.8.1:
     resolution: {integrity: sha512-VSXJLqP1Sqw5sGr273mhvpPRhXwE6NlmMSqBZQw+yZJoAJkOIPPn/uT3teeCBx60Fkt5zEI3FrH2eVT0jXRDzw==, tarball: https://registry.npmjs.org/mermaid/-/mermaid-11.8.1.tgz}
     dependencies:
@@ -20199,7 +20426,7 @@ packages:
     resolution: {integrity: sha512-IXgzBWvWQwE6PrDI05OvmXUIruQTcoMDzRsOd5CDvHCVLcLHMTSYvOK5Cm46kWqlV3yAbuSpBZdJ5oP5OUoStg==, tarball: https://registry.npmjs.org/robust-predicates/-/robust-predicates-3.0.2.tgz}
     dev: false
 
-  /rollup-plugin-dts@6.2.1(rollup@4.44.1)(typescript@5.8.3):
+  /rollup-plugin-dts@6.2.1(rollup@4.44.2)(typescript@5.8.3):
     resolution: {integrity: sha512-sR3CxYUl7i2CHa0O7bA45mCrgADyAQ0tVtGSqi3yvH28M+eg1+g5d7kQ9hLvEz5dorK3XVsH5L2jwHLQf72DzA==, tarball: https://registry.npmjs.org/rollup-plugin-dts/-/rollup-plugin-dts-6.2.1.tgz}
     engines: {node: '>=16'}
     peerDependencies:
@@ -20207,7 +20434,7 @@ packages:
       typescript: ^4.5 || ^5.0
     dependencies:
       magic-string: 0.30.17
-      rollup: 4.44.1
+      rollup: 4.44.2
       typescript: 5.8.3
     optionalDependencies:
       '@babel/code-frame': 7.27.1
@@ -20229,7 +20456,7 @@ packages:
       magic-string: 0.25.9
     dev: false
 
-  /rollup-plugin-sourcemaps2@0.5.2(@types/node@18.19.115)(rollup@4.44.1):
+  /rollup-plugin-sourcemaps2@0.5.2(@types/node@18.19.115)(rollup@4.44.2):
     resolution: {integrity: sha512-NTz5Y5ySYH9cZZF+qteTHN2x3dnFggTKzCtiN3NhtMvIEXdkOsZVBh6r6xrwsyDnZAhmKRsttwTfXfJVoanM6w==, tarball: https://registry.npmjs.org/rollup-plugin-sourcemaps2/-/rollup-plugin-sourcemaps2-0.5.2.tgz}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -20239,12 +20466,12 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.1.4(rollup@4.44.1)
+      '@rollup/pluginutils': 5.1.4(rollup@4.44.2)
       '@types/node': 18.19.115
-      rollup: 4.44.1
+      rollup: 4.44.2
     dev: true
 
-  /rollup-plugin-sourcemaps@0.6.3(@types/node@18.19.115)(rollup@4.44.1):
+  /rollup-plugin-sourcemaps@0.6.3(@types/node@18.19.115)(rollup@4.44.2):
     resolution: {integrity: sha512-paFu+nT1xvuO1tPFYXGe+XnQvg4Hjqv/eIhG8i5EspfYYPBKL57X7iVbfv55aNVASg3dzWvES9dmWsL2KhfByw==, tarball: https://registry.npmjs.org/rollup-plugin-sourcemaps/-/rollup-plugin-sourcemaps-0.6.3.tgz}
     engines: {node: '>=10.0.0'}
     peerDependencies:
@@ -20254,9 +20481,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@rollup/pluginutils': 3.1.0(rollup@4.44.1)
+      '@rollup/pluginutils': 3.1.0(rollup@4.44.2)
       '@types/node': 18.19.115
-      rollup: 4.44.1
+      rollup: 4.44.2
       source-map-resolve: 0.6.0
     dev: false
 
@@ -20369,6 +20596,7 @@ packages:
       '@rollup/rollup-win32-ia32-msvc': 4.44.1
       '@rollup/rollup-win32-x64-msvc': 4.44.1
       fsevents: 2.3.3
+    dev: false
 
   /rollup@4.44.2:
     resolution: {integrity: sha512-PVoapzTwSEcelaWGth3uR66u7ZRo6qhPHc0f2uRO9fX6XDVNrIiGYS0Pj9+R8yIIYSD/mCx2b16Ws9itljKSPg==, tarball: https://registry.npmjs.org/rollup/-/rollup-4.44.2.tgz}
@@ -22357,7 +22585,7 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
     dependencies:
-      esbuild: 0.25.5
+      esbuild: 0.25.6
       get-tsconfig: 4.10.1
     optionalDependencies:
       fsevents: 2.3.3
@@ -23133,7 +23361,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 24.0.10
-      esbuild: 0.25.5
+      esbuild: 0.25.6
       fdir: 6.4.6(picomatch@4.0.2)
       less: 4.3.0
       picomatch: 4.0.2
@@ -23188,7 +23416,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 24.0.10
-      esbuild: 0.25.5
+      esbuild: 0.25.6
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
       postcss: 8.5.6
@@ -23242,7 +23470,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 10.17.60
-      esbuild: 0.25.5
+      esbuild: 0.25.6
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
       postcss: 8.5.6
@@ -23295,7 +23523,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 18.19.115
-      esbuild: 0.25.5
+      esbuild: 0.25.6
       fdir: 6.4.6(picomatch@4.0.2)
       less: 4.3.0
       picomatch: 4.0.2
@@ -23350,7 +23578,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 24.0.10
-      esbuild: 0.25.5
+      esbuild: 0.25.6
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
       postcss: 8.5.6
