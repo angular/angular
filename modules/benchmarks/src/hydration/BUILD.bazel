@@ -25,7 +25,7 @@ ts_project(
     srcs = ["hydration.perf-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        "//:node_modules/protractor",
+        "//modules:node_modules/protractor",
         "//modules/utilities:utilities_rjs",
     ],
 )
@@ -36,7 +36,7 @@ ts_project(
     srcs = ["hydration.e2e-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        "//:node_modules/protractor",
+        "//modules:node_modules/protractor",
         "//modules/utilities:utilities_rjs",
     ],
 )

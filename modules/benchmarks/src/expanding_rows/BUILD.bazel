@@ -13,13 +13,13 @@ optimize_angular_app(
     ) + ["index.html"],
     include_zonejs = True,
     deps = [
-        "//:node_modules/rxjs",
-        "//:node_modules/tslib",
         "//modules:node_modules/@angular/build",
         "//modules:node_modules/@angular/common",
         "//modules:node_modules/@angular/core",
         "//modules:node_modules/@angular/localize",
         "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/rxjs",
+        "//modules:node_modules/tslib",
         "//modules:node_modules/zone.js",
     ],
 )
@@ -38,7 +38,7 @@ ts_project(
     srcs = ["expanding_rows.perf-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        "//:node_modules/protractor",
+        "//modules:node_modules/protractor",
         "//modules/utilities:utilities_rjs",
     ],
 )

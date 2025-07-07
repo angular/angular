@@ -16,12 +16,12 @@ optimize_angular_app(
     ],
     include_zonejs = True,
     deps = [
-        "//:node_modules/rxjs",
-        "//:node_modules/tslib",
         "//modules:node_modules/@angular/build",
         "//modules:node_modules/@angular/common",
         "//modules:node_modules/@angular/core",
         "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/rxjs",
+        "//modules:node_modules/tslib",
         "//modules:node_modules/zone.js",
     ],
 )

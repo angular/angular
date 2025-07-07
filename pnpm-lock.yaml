@@ -846,21 +846,45 @@ importers:
       '@angular/upgrade':
         specifier: workspace:*
         version: link:../packages/upgrade
+      '@bazel/runfiles':
+        specifier: 6.3.1
+        version: 6.3.1
+      '@types/jasmine':
+        specifier: 5.1.8
+        version: 5.1.8
+      '@types/jasminewd2':
+        specifier: 2.0.13
+        version: 2.0.13
       '@types/node':
         specifier: 24.0.10
         version: 24.0.10
       '@types/selenium-webdriver':
         specifier: 3.0.7
         version: 3.0.7
+      angular-1.8:
+        specifier: npm:angular@1.8
+        version: /angular@1.8.3
       protractor:
         specifier: 7.0.0
         version: 7.0.0
+      reflect-metadata:
+        specifier: 0.2.2
+        version: 0.2.2
+      rxjs:
+        specifier: 7.8.2
+        version: 7.8.2
       selenium-webdriver:
         specifier: 3.6.0
         version: 3.6.0
+      source-map:
+        specifier: 0.7.4
+        version: 0.7.4
       tslib:
         specifier: 2.8.1
         version: 2.8.1
+      yargs:
+        specifier: 18.0.0
+        version: 18.0.0
       zone.js:
         specifier: workspace:*
         version: link:../packages/zone.js
@@ -10908,26 +10932,26 @@ packages:
   /custom-event@1.0.1:
     resolution: {integrity: sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==, tarball: https://registry.npmjs.org/custom-event/-/custom-event-1.0.1.tgz}
 
-  /cytoscape-cose-bilkent@4.1.0(cytoscape@3.32.0):
+  /cytoscape-cose-bilkent@4.1.0(cytoscape@3.32.1):
     resolution: {integrity: sha512-wgQlVIUJF13Quxiv5e1gstZ08rnZj2XaLHGoFMYXz7SkNfCDOOteKBE6SYRfA9WxxI/iBc3ajfDoc6hb/MRAHQ==, tarball: https://registry.npmjs.org/cytoscape-cose-bilkent/-/cytoscape-cose-bilkent-4.1.0.tgz}
     peerDependencies:
       cytoscape: ^3.2.0
     dependencies:
       cose-base: 1.0.3
-      cytoscape: 3.32.0
+      cytoscape: 3.32.1
     dev: false
 
-  /cytoscape-fcose@2.2.0(cytoscape@3.32.0):
+  /cytoscape-fcose@2.2.0(cytoscape@3.32.1):
     resolution: {integrity: sha512-ki1/VuRIHFCzxWNrsshHYPs6L7TvLu3DL+TyIGEsRcvVERmxokbf5Gdk7mFxZnTdiGtnA4cfSmjZJMviqSuZrQ==, tarball: https://registry.npmjs.org/cytoscape-fcose/-/cytoscape-fcose-2.2.0.tgz}
     peerDependencies:
       cytoscape: ^3.2.0
     dependencies:
       cose-base: 2.2.0
-      cytoscape: 3.32.0
+      cytoscape: 3.32.1
     dev: false
 
-  /cytoscape@3.32.0:
-    resolution: {integrity: sha512-5JHBC9n75kz5851jeklCPmZWcg3hUe6sjqJvyk3+hVqFaKcHwHgxsjeN1yLmggoUc6STbtm9/NQyabQehfjvWQ==, tarball: https://registry.npmjs.org/cytoscape/-/cytoscape-3.32.0.tgz}
+  /cytoscape@3.32.1:
+    resolution: {integrity: sha512-dbeqFTLYEwlFg7UGtcZhCCG/2WayX72zK3Sq323CEX29CY81tYfVhw1MIdduCtpstB0cTOhJswWlM/OEB3Xp+Q==, tarball: https://registry.npmjs.org/cytoscape/-/cytoscape-3.32.1.tgz}
     engines: {node: '>=0.10'}
     dev: false
 
@@ -16400,9 +16424,9 @@ packages:
       '@iconify/utils': 2.3.0
       '@mermaid-js/parser': 0.6.1
       '@types/d3': 7.4.3
-      cytoscape: 3.32.0
-      cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.0)
-      cytoscape-fcose: 2.2.0(cytoscape@3.32.0)
+      cytoscape: 3.32.1
+      cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.1)
+      cytoscape-fcose: 2.2.0(cytoscape@3.32.1)
       d3: 7.9.0
       d3-sankey: 0.12.3
       dagre-d3-es: 7.0.11

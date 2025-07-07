@@ -36,7 +36,7 @@ def benchmark_test(name, deps = [], server = None, tags = []):
         ],
         data = [
             "//modules:node_modules/@angular/benchpress",
-            "//:node_modules/tslib",
+            "//modules:node_modules/tslib",
             "//modules:node_modules/protractor",
             "//modules:node_modules/selenium-webdriver",
         ],

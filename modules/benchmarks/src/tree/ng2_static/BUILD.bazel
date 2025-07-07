@@ -19,13 +19,13 @@ optimize_angular_app(
     # This benchmark relies on JIT.
     jq_config_filter = ".projects.boilerplate.architect.build.options.aot = false",
     deps = [
-        "//:node_modules/rxjs",
-        "//:node_modules/tslib",
         "//modules:node_modules/@angular/build",
         "//modules:node_modules/@angular/common",
         "//modules:node_modules/@angular/compiler",
         "//modules:node_modules/@angular/core",
         "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/rxjs",
+        "//modules:node_modules/tslib",
         "//modules:node_modules/zone.js",
     ],
 )
@@ -42,10 +42,10 @@ http_server(
     name = "devserver",
     srcs = [
         "index.html",
-        "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     deps = [
         ":app_bundle",
+        "//modules:node_modules/reflect-metadata",
         "//modules:node_modules/zone.js",
     ],
 )

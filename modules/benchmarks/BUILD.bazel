@@ -11,7 +11,7 @@ ts_config(
     name = "tsconfig_e2e",
     src = "tsconfig-e2e.json",
     deps = [
-        "//:node_modules/@types/jasmine",
-        "//:node_modules/@types/node",
+        "//modules:node_modules/@types/jasmine",
+        "//modules:node_modules/@types/node",
     ],
 )

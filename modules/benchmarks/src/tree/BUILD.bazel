@@ -15,7 +15,7 @@ ts_project(
     srcs = ["test_utils.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        "//:node_modules/protractor",
+        "//modules:node_modules/protractor",
         "//modules/utilities:utilities_rjs",
     ],
 )
@@ -27,7 +27,7 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         ":test_utils_lib_rjs",
-        "//:node_modules/protractor",
+        "//modules:node_modules/protractor",
     ],
 )
 
@@ -38,7 +38,7 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         ":test_utils_lib_rjs",
-        "//:node_modules/protractor",
+        "//modules:node_modules/protractor",
     ],
 )
 
@@ -49,7 +49,7 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         ":test_utils_lib_rjs",
-        "//:node_modules/protractor",
+        "//modules:node_modules/protractor",
     ],
 )
 
@@ -60,6 +60,6 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         ":test_utils_lib_rjs",
-        "//:node_modules/protractor",
+        "//modules:node_modules/protractor",
     ],
 )
