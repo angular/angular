@@ -2250,12 +2250,12 @@ class Scope {
           const firstDecl = varMap.get(v.name)!;
           tcb.oobRecorder.duplicateTemplateVar(tcb.id, v, firstDecl);
         }
-        this.registerVariable(scope, v, new TcbTemplateVariableOp(tcb, scope, scopedNode, v));
+        Scope.registerVariable(scope, v, new TcbTemplateVariableOp(tcb, scope, scopedNode, v));
       }
     } else if (scopedNode instanceof TmplAstIfBlockBranch) {
       const {expression, expressionAlias} = scopedNode;
       if (expression !== null && expressionAlias !== null) {
-        this.registerVariable(
+        Scope.registerVariable(
           scope,
           expressionAlias,
           new TcbBlockVariableOp(
@@ -2281,7 +2281,7 @@ class Scope {
         const type = ts.factory.createKeywordTypeNode(
           this.forLoopContextVariableTypes.get(variable.value)!,
         );
-        this.registerVariable(
+        Scope.registerVariable(
           scope,
           variable,
           new TcbBlockImplicitVariableOp(tcb, scope, type, variable),
