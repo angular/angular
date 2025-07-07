@@ -6,18 +6,28 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createEsbuildAngularOptimizePlugin} from '@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs';
+// @ts-ignore
+import {createEsbuildAngularOptimizePlugin} from '../angular-optimization/esbuild-plugin.mjs';
 import {GLOBAL_DEFS_FOR_TERSER_WITH_AOT} from '@angular/compiler-cli/private/tooling';
 
 /** Converts an object to a string dictionary. */
-function convertObjectToStringDictionary(value) {
-  return Object.entries(value).reduce((result, [propName, value]) => {
-    result[propName] = String(value);
-    return result;
-  }, {});
+function convertObjectToStringDictionary(value: {[key: string]: any}) {
+  return Object.entries(value).reduce(
+    (result, [propName, value]) => {
+      result[propName] = String(value);
+      return result;
+    },
+    {} as {[key: string]: string},
+  );
 }
 
-export default async function createConfig({enableLinker, optimize}) {
+export default async function createConfig({
+  enableLinker,
+  optimize,
+}: {
+  enableLinker: boolean;
+  optimize: boolean;
+}) {
   return {
     resolveExtensions: ['.mjs', '.js'],
     // This ensures that we prioritize ES2020. RxJS would otherwise use the ESM5 output.
@@ -32,7 +42,7 @@ export default async function createConfig({enableLinker, optimize}) {
     plugins: [
       await createEsbuildAngularOptimizePlugin({
         optimize: {
-          isSideEffectFree: null,
+          isSideEffectFree: undefined,
         },
         downlevelAsyncGeneratorsIfPresent: true,
         enableLinker: enableLinker
