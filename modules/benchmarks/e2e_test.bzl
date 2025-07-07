@@ -28,7 +28,7 @@ def e2e_test(name, deps = [], server = None):
         deps = [":%s_bundle" % name],
         server = server,
         data = [
-            "//:node_modules/protractor",
-            "//:node_modules/selenium-webdriver",
+            "//modules:node_modules/protractor",
+            "//modules:node_modules/selenium-webdriver",
         ],
     )

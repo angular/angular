@@ -6,8 +6,8 @@ ts_config(
     name = "tsconfig_e2e",
     src = "tsconfig-e2e.json",
     deps = [
-        "//:node_modules/@types/jasmine",
-        "//:node_modules/@types/node",
+        "//modules:node_modules/@types/jasmine",
+        "//modules:node_modules/@types/node",
     ],
 )
 
@@ -16,6 +16,6 @@ ts_config(
     src = "tsconfig-e2e-legacy-wd2.json",
     deps = [
         ":tsconfig_e2e",
-        "//:node_modules/@types/jasminewd2",
+        "//modules:node_modules/@types/jasminewd2",
     ],
 )

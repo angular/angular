@@ -8,7 +8,7 @@ ts_project(
     srcs = ["ng_template_outlet_context.perf-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        "//:node_modules/protractor",
+        "//modules:node_modules/protractor",
         "//modules/utilities:utilities_rjs",
     ],
 )

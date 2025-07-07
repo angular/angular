@@ -23,8 +23,8 @@ def example_test(
         srcs = srcs,
         tsconfig = tsconfig,
         deps = deps + [
-            "//:node_modules/protractor",
-            "//:node_modules/@types/selenium-webdriver",
+            "//modules:node_modules/protractor",
+            "//modules:node_modules/@types/selenium-webdriver",
             "//modules/utilities:utilities_rjs",
         ],
     )
@@ -52,6 +52,6 @@ def example_test(
         server = server,
         data = data + [
             "//modules:node_modules/selenium-webdriver",
-            "//:node_modules/yargs",
+            "//modules:node_modules/yargs",
         ],
     )
