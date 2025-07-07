@@ -66,11 +66,10 @@ ng_project(
 esbuild(
     name = "bundle",
     srcs = [
-        "//:node_modules/@angular/build-tooling",
-        "//devtools/tools/esbuild:esbuild_base",
-        "//devtools/tools/esbuild:esbuild_config_esm_prod",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_esm_prod_rjs",
     ],
-    config = "//devtools/tools/esbuild:esbuild_config_esm_prod",
+    config = "//devtools/tools/esbuild:esbuild-esm-prod.config.mjs",
     entry_points = [":main.ts"],
     minify = True,
     platform = "browser",
@@ -90,12 +89,11 @@ esbuild(
 esbuild(
     name = "devtools_bundle",
     srcs = [
-        "//:node_modules/@angular/build-tooling",
         "//:node_modules/tslib",
-        "//devtools/tools/esbuild:esbuild_base",
-        "//devtools/tools/esbuild:esbuild_config_esm",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_esm_rjs",
     ],
-    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
     entry_point = "devtools.ts",
     format = "iife",
     minify = True,
