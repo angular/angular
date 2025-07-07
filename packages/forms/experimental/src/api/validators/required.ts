@@ -20,13 +20,14 @@ import {BaseValidatorConfig} from './types';
  *                - errors Optional - A function that takes FieldContext and returns one or more custom errors.
  *                - emptyPredicate Optional - A function that takes the value, and returns true if it's empty, false otherwise
  *                - condition Optional - A function that takes FieldContext and returns true if the field is required.
- * @template T The data type of the field the logic is being added to.
+ * @template TValue The type of value stored in the field the logic is bound to.
+ * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
-export function required<T, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<T, TPathKind>,
-  config?: BaseValidatorConfig<T, TPathKind> & {
-    emptyPredicate?: (value: T) => boolean;
-    when?: NoInfer<LogicFn<T, boolean, TPathKind>>;
+export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<TValue, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind> & {
+    emptyPredicate?: (value: TValue) => boolean;
+    when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
 ): void {
   const emptyPredicate = config?.emptyPredicate || ((value) => value == null || value === '');
