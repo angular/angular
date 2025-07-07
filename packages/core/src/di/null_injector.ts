@@ -22,7 +22,7 @@ export class NullInjector implements Injector {
       // Note: this name is unused in the code, but it's retained
       // for backwards-compatibility reasons in case an app code
       // relies on the error name.
-      error.name = 'NullInjectorError';
+      error.name = 'ɵNotFound';
 
       throw error;
     }
