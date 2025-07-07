@@ -221,9 +221,9 @@ export type FieldPath<T, TPathKind extends PathKind = PathKind.Root> = {
 /**
  * Defines logic for a form of type T.
  */
-export type Schema<in T, in TPathKind extends PathKind = PathKind.Root> = {
+export type Schema<in T> = {
   // Save type as `T => void` rather than `T` since `Schema` is contravariant on `T`. */
-  [ɵɵTYPE]: SchemaFn<T, TPathKind>;
+  [ɵɵTYPE]: SchemaFn<T, PathKind.Root>;
 };
 
 /**
@@ -237,7 +237,7 @@ export type SchemaFn<T, TPathKind extends PathKind = PathKind.Root> = (
  * A schema or schema definition function.
  */
 export type SchemaOrSchemaFn<T, TPathKind extends PathKind = PathKind.Root> =
-  | Schema<T, TPathKind>
+  | Schema<T>
   | SchemaFn<T, TPathKind>;
 
 /**
