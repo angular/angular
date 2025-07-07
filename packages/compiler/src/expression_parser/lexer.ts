@@ -133,11 +133,13 @@ export class Token {
   }
 
   isTemplateLiteralPart(): this is StringToken {
-    return this.isString() && this.kind === StringTokenKind.TemplateLiteralPart;
+    // Note: Explicit type is needed for Closure.
+    return this.isString() && (this as StringToken).kind === StringTokenKind.TemplateLiteralPart;
   }
 
   isTemplateLiteralEnd(): this is StringToken {
-    return this.isString() && this.kind === StringTokenKind.TemplateLiteralEnd;
+    // Note: Explicit type is needed for Closure.
+    return this.isString() && (this as StringToken).kind === StringTokenKind.TemplateLiteralEnd;
   }
 
   isTemplateLiteralInterpolationStart(): boolean {

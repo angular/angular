@@ -1725,9 +1725,15 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
   }
 }
 
-export class CursorError {
+export class CursorError extends Error {
   constructor(
     public msg: string,
     public cursor: CharacterCursor,
-  ) {}
+  ) {
+    super(msg);
+
+    // Extending `Error` does not always work when code is transpiled. See:
+    // https://stackoverflow.com/questions/41102060/typescript-extending-error-class
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
 }
