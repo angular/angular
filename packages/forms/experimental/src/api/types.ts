@@ -269,34 +269,34 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
   TPathKind
 >;
 
-export type TreeValidator<T, TPathKind extends PathKind = PathKind.Root> = LogicFn<
-  T,
+export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
+  TValue,
   FormTreeError[],
   TPathKind
 >;
 
 export type FieldContext<
-  T,
+  TValue,
   TPathKind extends PathKind = PathKind.Root,
 > = TPathKind extends PathKind.Item
-  ? ItemFieldContext<T>
+  ? ItemFieldContext<TValue>
   : TPathKind extends PathKind.Child
-    ? ChildFieldContext<T>
-    : RootFieldContext<T>;
+    ? ChildFieldContext<TValue>
+    : RootFieldContext<TValue>;
 
-export interface RootFieldContext<T> {
-  readonly value: Signal<T>;
-  readonly state: FieldState<T>;
-  readonly field: Field<T>;
+export interface RootFieldContext<TValue> {
+  readonly value: Signal<TValue>;
+  readonly state: FieldState<TValue>;
+  readonly field: Field<TValue>;
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
 }
 
-export interface ChildFieldContext<T> extends RootFieldContext<T> {
+export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
   readonly key: Signal<string>;
 }
 
-export interface ItemFieldContext<T> extends ChildFieldContext<T> {
+export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
   readonly index: Signal<number>;
 }

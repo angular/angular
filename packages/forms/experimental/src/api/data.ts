@@ -6,21 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.dev/license
- */
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 import {computed, Resource, ResourceRef, Signal} from '@angular/core';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
