@@ -404,7 +404,8 @@ function appendMissingHeadersDetection(
 function mapRequestOriginUrl(url: string, originMap: Record<string, string>): string {
   const origin = new URL(url, 'resolve://').origin;
   const mappedOrigin = originMap[origin];
-  if (!mappedOrigin) {
+  // we want '' (empty string) to pass here, so we check for undefined only
+  if (mappedOrigin === undefined) {
     return url;
   }
 
