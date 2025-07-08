@@ -11,7 +11,14 @@ import {BehaviorSubject, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {Data, ResolveData, Route} from './models';
-import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET, RouteTitleKey} from './shared';
+import {
+  convertToParamMap,
+  ParamMap,
+  Params,
+  PRIMARY_OUTLET,
+  RouteTitleKey,
+  RouteNonIndexKey,
+} from './shared';
 import {equalSegments, UrlSegment} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
@@ -137,6 +144,9 @@ export class ActivatedRoute {
   /** An Observable of the resolved route title */
   readonly title: Observable<string | undefined>;
 
+  /** An Observable of the resolved route non-index setting */
+  readonly nonIndex: Observable<boolean | undefined>;
+
   /** An observable of the URL segments matched by this route. */
   public url: Observable<UrlSegment[]>;
   /** An observable of the matrix parameters scoped to this route. */
@@ -168,6 +178,7 @@ export class ActivatedRoute {
   ) {
     this._futureSnapshot = futureSnapshot;
     this.title = this.dataSubject?.pipe(map((d: Data) => d[RouteTitleKey])) ?? of(undefined);
+    this.nonIndex = this.dataSubject?.pipe(map((d: Data) => d[RouteNonIndexKey])) ?? of(undefined);
     // TODO(atscott): Verify that these can be changed to `.asObservable()` with TGP.
     this.url = urlSubject;
     this.params = paramsSubject;
@@ -292,6 +303,11 @@ export function getInherited(
   if (routeConfig && hasStaticTitle(routeConfig)) {
     inherited.resolve[RouteTitleKey] = routeConfig.title;
   }
+
+  if (routeConfig && hasStaticNonIndex(routeConfig)) {
+    inherited.resolve[RouteNonIndexKey] = routeConfig.nonIndex;
+  }
+
   return inherited;
 }
 
@@ -337,6 +353,13 @@ export class ActivatedRouteSnapshot {
     // Note: This _must_ be a getter because the data is mutated in the resolvers. Title will not be
     // available at the time of class instantiation.
     return this.data?.[RouteTitleKey];
+  }
+
+  /** The resolved route non-index setting */
+  get nonIndex(): boolean | undefined {
+    // Note: This _must_ be a getter because the data is mutated in the resolvers. NonIndex will not be
+    // available at the time of class instantiation.
+    return this.data?.[RouteNonIndexKey];
   }
 
   /** @internal */
@@ -524,4 +547,8 @@ export function equalParamsAndUrlSegments(
 
 export function hasStaticTitle(config: Route) {
   return typeof config.title === 'string' || config.title === null;
+}
+
+export function hasStaticNonIndex(config: Route) {
+  return typeof config.nonIndex === 'boolean' || config.nonIndex === null;
 }

@@ -15,10 +15,11 @@ import type {NavigationTransition} from '../navigation_transition';
 import {
   ActivatedRouteSnapshot,
   getInherited,
+  hasStaticNonIndex,
   hasStaticTitle,
   RouterStateSnapshot,
 } from '../router_state';
-import {RouteTitleKey} from '../shared';
+import {RouteNonIndexKey, RouteTitleKey} from '../shared';
 import {getDataKeys, wrapIntoObservable} from '../utils/collection';
 import {getClosestRouteInjector} from '../utils/config';
 import {getTokenOrFunctionIdentity} from '../utils/preactivation';
@@ -89,6 +90,11 @@ function runResolve(
   if (config?.title !== undefined && !hasStaticTitle(config)) {
     resolve[RouteTitleKey] = config.title;
   }
+
+  if (config?.nonIndex !== undefined && !hasStaticNonIndex(config)) {
+    resolve[RouteNonIndexKey] = config.nonIndex;
+  }
+
   return defer(() => {
     futureARS.data = getInherited(futureARS, futureARS.parent, paramsInheritanceStrategy).resolve;
     return resolveNode(resolve, futureARS, futureRSS, injector).pipe(

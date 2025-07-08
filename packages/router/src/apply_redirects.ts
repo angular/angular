@@ -206,10 +206,21 @@ function getRedirectResult(
     return of(redirectTo);
   }
   const redirectToFn = redirectTo;
-  const {queryParams, fragment, routeConfig, url, outlet, params, data, title} = currentSnapshot;
+  const {queryParams, fragment, routeConfig, url, outlet, params, data, title, nonIndex} =
+    currentSnapshot;
   return wrapIntoObservable(
     runInInjectionContext(injector, () =>
-      redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
+      redirectToFn({
+        params,
+        data,
+        queryParams,
+        fragment,
+        routeConfig,
+        url,
+        outlet,
+        title,
+        nonIndex,
+      }),
     ),
   );
 }

@@ -88,6 +88,7 @@ import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
 import {getClosestRouteInjector} from './utils/config';
+import {NonIndexStrategy} from './non_index_strategy';
 
 /**
  * @description
@@ -365,6 +366,7 @@ export class NavigationTransitions {
   private readonly location = inject(Location);
   private readonly inputBindingEnabled = inject(INPUT_BINDER, {optional: true}) !== null;
   private readonly titleStrategy?: TitleStrategy = inject(TitleStrategy);
+  private readonly nonIndexStrategy?: NonIndexStrategy = inject(NonIndexStrategy);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly paramsInheritanceStrategy =
     this.options.paramsInheritanceStrategy || 'emptyOnly';
@@ -791,6 +793,7 @@ export class NavigationTransitions {
                 ),
               );
               this.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
+              this.nonIndexStrategy?.updateNonIndex(t.targetRouterState!.snapshot);
               t.resolve(true);
             },
             complete: () => {

@@ -185,6 +185,39 @@ describe('resolveData operator', () => {
     expect(rootSnapshot.firstChild!.title).toBe('b title');
   });
 
+  it('should have static nonIndex when there is a resolver', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class Empty {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'a',
+            nonIndex: true,
+            component: Empty,
+            resolve: {other: () => 'other'},
+            children: [
+              {
+                path: 'b',
+                nonIndex: true,
+                component: Empty,
+                resolve: {otherb: () => 'other b'},
+              },
+            ],
+          },
+        ]),
+      ],
+    });
+    await RouterTestingHarness.create('/a/b');
+    const rootSnapshot = TestBed.inject(Router).routerState.root.firstChild!.snapshot;
+    expect(rootSnapshot.nonIndex).toBe(true);
+    expect(rootSnapshot.firstChild!.nonIndex).toBe(true);
+  });
+
   it('can used parent data in child resolver', async () => {
     @Component({
       template: '',

@@ -70,6 +70,7 @@ export {ViewTransitionInfo, ViewTransitionsFeatureOptions} from './utils/view_tr
 export * from './models_deprecated';
 export {Navigation, NavigationExtras, UrlCreationOptions} from './navigation_transition';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
+export {DefaultNonIndexStrategy, NonIndexStrategy} from './non_index_strategy';
 export {
   ComponentInputBindingFeature,
   DebugTracingFeature,

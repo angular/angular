@@ -24,6 +24,13 @@ export const PRIMARY_OUTLET = 'primary';
 export const RouteTitleKey: unique symbol = /* @__PURE__ */ Symbol('RouteTitle');
 
 /**
+ * A private symbol used to store the value of `Route.nonIndex` inside the `Route.data` if it is a
+ * static boolean or `Route.resolve` if anything else. This allows us to reuse the existing
+ * route data/resolvers to support the non-index feature without new instrumentation in the `Router` pipeline.
+ */
+export const RouteNonIndexKey: unique symbol = /* @__PURE__ */ Symbol('RouteNonIndex');
+
+/**
  * A collection of matrix and query URL parameters.
  * @see {@link convertToParamMap}
  * @see {@link ParamMap}

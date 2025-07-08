@@ -314,7 +314,15 @@ export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 export type RedirectFunction = (
   redirectData: Pick<
     ActivatedRouteSnapshot,
-    'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'
+    | 'routeConfig'
+    | 'url'
+    | 'params'
+    | 'queryParams'
+    | 'fragment'
+    | 'data'
+    | 'outlet'
+    | 'title'
+    | 'nonIndex'
   >,
 ) => MaybeAsync<string | UrlTree>;
 
@@ -757,6 +765,28 @@ export interface Route {
    * @internal
    */
   _loadedInjector?: EnvironmentInjector;
+
+  /**
+   * Defines a strategy for setting the non-index behavior of the route.
+   *
+   * When specified, the route will be marked as non-indexable for search engines.
+   * This can be used to control which pages should be indexed by search engines.
+   *
+   * @see {@link NonIndexStrategy}
+   *
+   * @usageNotes
+   *
+   * ### Simple Example
+   *
+   * ```
+   * const route: Route = {
+   *   path: 'admin',
+   *   component: AdminComponent,
+   *   nonIndex: true  // This page will not be indexed
+   * };
+   * ```
+   */
+  nonIndex?: boolean | Type<Resolve<boolean>> | ResolveFn<boolean>;
 }
 
 export interface LoadedRouterConfig {

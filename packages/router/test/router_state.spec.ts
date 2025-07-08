@@ -16,7 +16,7 @@ import {
   RouterState,
   RouterStateSnapshot,
 } from '../src/router_state';
-import {Params, RouteTitleKey} from '../src/shared';
+import {Params, RouteTitleKey , RouteNonIndexKey} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
@@ -277,6 +277,33 @@ describe('RouterState & Snapshot', () => {
 
       expect(resolvedTitle).toEqual('resolved title');
       expect(snapshot.title).toEqual('resolved title');
+    });
+    it('should get resolved route nonIndex', () => {
+      const data = {[RouteNonIndexKey]: true};
+      const route = createActivatedRoute('a');
+      const snapshot = new (ActivatedRouteSnapshot as any)(
+        [],
+        null,
+        null,
+        null,
+        data,
+        null,
+        'test',
+        null,
+        null,
+        -1,
+        null!,
+      );
+      let resolvedNonIndex: boolean | undefined;
+
+      route.data.next(data);
+
+      route.nonIndex.forEach((nonIndex: boolean | undefined) => {
+        resolvedNonIndex = nonIndex;
+      });
+
+      expect(resolvedNonIndex).toEqual(true);
+      expect(snapshot.nonIndex).toEqual(true);
     });
   });
 });

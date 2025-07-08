@@ -15,6 +15,7 @@ import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { LocationStrategy } from '@angular/common';
+import { Meta } from '@angular/platform-browser';
 import { ModuleWithProviders } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -38,6 +39,7 @@ export class ActivatedRoute {
     data: Observable<Data>;
     get firstChild(): ActivatedRoute | null;
     fragment: Observable<string | null>;
+    readonly nonIndex: Observable<boolean | undefined>;
     outlet: string;
     get paramMap(): Observable<ParamMap>;
     params: Observable<Params>;
@@ -61,6 +63,7 @@ export class ActivatedRouteSnapshot {
     data: Data;
     get firstChild(): ActivatedRouteSnapshot | null;
     fragment: string | null;
+    get nonIndex(): boolean | undefined;
     outlet: string;
     // (undocumented)
     get paramMap(): ParamMap;
@@ -218,6 +221,16 @@ export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFe
 // @public
 export interface DefaultExport<T> {
     default: T;
+}
+
+// @public
+export class DefaultNonIndexStrategy extends NonIndexStrategy {
+    constructor(meta: Meta);
+    updateNonIndex(snapshot: RouterStateSnapshot): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<DefaultNonIndexStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<DefaultNonIndexStrategy>;
 }
 
 // @public
@@ -523,6 +536,18 @@ export class NavigationStart extends RouterEvent {
 }
 
 // @public
+export abstract class NonIndexStrategy {
+    // (undocumented)
+    buildNonIndex(snapshot: RouterStateSnapshot): boolean | undefined;
+    getResolvedNonIndexForRoute(snapshot: ActivatedRouteSnapshot): boolean | undefined;
+    abstract updateNonIndex(snapshot: RouterStateSnapshot): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NonIndexStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NonIndexStrategy>;
+}
+
+// @public
 export class NoPreloading implements PreloadingStrategy {
     // (undocumented)
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
@@ -604,7 +629,7 @@ export class RedirectCommand {
 }
 
 // @public
-export type RedirectFunction = (redirectData: Pick<ActivatedRouteSnapshot, 'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'>) => MaybeAsync<string | UrlTree>;
+export type RedirectFunction = (redirectData: Pick<ActivatedRouteSnapshot, 'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title' | 'nonIndex'>) => MaybeAsync<string | UrlTree>;
 
 // @public
 export interface Resolve<T> {
@@ -668,6 +693,7 @@ export interface Route {
     loadChildren?: LoadChildren;
     loadComponent?: () => Type<unknown> | Observable<Type<unknown> | DefaultExport<Type<unknown>>> | Promise<Type<unknown> | DefaultExport<Type<unknown>>>;
     matcher?: UrlMatcher;
+    nonIndex?: boolean | Type<Resolve<boolean>> | ResolveFn<boolean>;
     outlet?: string;
     path?: string;
     pathMatch?: 'prefix' | 'full';
