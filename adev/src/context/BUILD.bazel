@@ -50,5 +50,4 @@ copy_to_directory(
     name = "llms_full",
     srcs = [":run_generate_llms_full"],
     out = "llm-files",
-    replace_prefixes = {"**/": ""},
 )

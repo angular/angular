@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//adev/shared-docs:index.bzl", "generate_guides")
 
 generate_guides(
@@ -12,7 +12,7 @@ generate_guides(
     visibility = ["//adev:__subpackages__"],
 )
 
-js_library(
+copy_to_bin(
     name = "guide_files",
     srcs = glob(["**/*.md"]),
     visibility = ["//adev:__subpackages__"],

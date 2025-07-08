@@ -96,9 +96,9 @@ async function main() {
   let mainFileContent: string;
   try {
     mainFileContent = await readFile(inputFilePath, 'utf-8');
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`Error: Failed to read input file "${inputFilePath}".`);
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1); // Exit with error code
   }
 
@@ -132,9 +132,9 @@ async function main() {
   try {
     await writeFile(outputFilePath, processedContent, 'utf-8');
     console.log(`Successfully generated combined file: ${outputFilePath}`);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`Error: Failed to write output file "${outputFilePath}".`);
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1); // Exit with error code
   }
 }
