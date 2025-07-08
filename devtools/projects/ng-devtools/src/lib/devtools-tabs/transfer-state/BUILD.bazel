@@ -1,0 +1,34 @@
+load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//tools:defaults2.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "transfer_state_component_styles",
+    src = "transfer-state.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:theme",
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "transfer-state",
+    srcs = [
+        "transfer-state.component.ts",
+    ],
+    angular_assets = [
+        ":transfer-state.component.html",
+        ":transfer_state_component_styles",
+    ],
+    interop_deps = [
+        "//packages/common",
+        "//packages/core",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)

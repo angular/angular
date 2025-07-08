@@ -103,6 +103,11 @@
           [providers]="providers()"
         />
       }
+
+      @let transferStateVisible = activeTab() === 'Transfer State';
+      @defer (when transferStateVisible; prefetch on idle) {
+        <ng-transfer-state [hidden]="!transferStateVisible" />
+      }
     </div>
   }
 </mat-tab-nav-panel>
@@ -153,6 +158,14 @@
         >
       </label>
     }
+    <label mat-menu-item disableRipple>
+      <mat-slide-toggle
+        [checked]="transferStateTabEnabled()"
+        (change)="setTransferStateTab($event.checked)"
+      >
+        Show Transfer State Tab</mat-slide-toggle
+      >
+    </label>
   </div>
 </mat-menu>
 
