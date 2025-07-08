@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector} from '@angular/core';
+import {Injector, PLATFORM_ID} from '@angular/core';
 import {ENVIRONMENT, WINDOW, LOCAL_STORAGE, MockLocalStorage} from '@angular/docs';
 import {AnalyticsService} from './analytics.service';
 
@@ -41,6 +41,7 @@ describe('AnalyticsService', () => {
         {provide: AnalyticsService, deps: [WINDOW]},
         {provide: WINDOW, useFactory: () => mockWindow, deps: []},
         {provide: LOCAL_STORAGE, useValue: mockLocalStorage},
+        {provide: PLATFORM_ID, useValue: 'browser'}, // Simulate browser platform
       ],
     });
 
