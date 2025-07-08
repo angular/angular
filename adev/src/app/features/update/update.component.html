@@ -84,7 +84,7 @@
 
       <h3>Application complexity</h3>
       <mat-button-toggle-group
-        (change)="level = $event.value;"
+        (change)="level = $event.value; showUpdatePath()"
         [value]="level"
         style="margin-bottom:16px;"
       >
