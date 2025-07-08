@@ -293,6 +293,17 @@
   )
 );
 
+:root {
+  @include mat.button-toggle-overrides(
+    (
+      text-color: var(--primary-contrast),
+      background-color: var(--octonary-contrast),
+      selected-state-text-color: var(--secondary-contrast),
+      selected-state-background-color: var(--senary-contrast),
+    )
+  );
+}
+
 // LIGHT MODE (Explicit)
 .docs-light-mode {
   background-color: #ffffff;
