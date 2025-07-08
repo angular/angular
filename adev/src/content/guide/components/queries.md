@@ -239,7 +239,7 @@ By default, `contentChildren` queries find only _direct_ children of the compone
 })
 export class CustomExpando {
   toggle = contentChildren(CustomToggle); // none found
-  // toggle = contentChild(CustomToggle); // found
+  // toggle = contentChild(CustomToggle, { descendants: true }); // found
 }
 
 @Component({
