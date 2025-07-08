@@ -16,12 +16,18 @@ import {
   OnInit,
   Pipe,
   PipeTransform,
+  provideZoneChangeDetection,
   TemplateRef,
   ViewContainerRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('control flow - for', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should create, remove and move views corresponding to items in a collection', () => {
     @Component({
       template: '@for ((item of items); track item; let idx = $index) {{{item}}({{idx}})|}',

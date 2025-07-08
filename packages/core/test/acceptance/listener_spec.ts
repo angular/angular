@@ -16,6 +16,7 @@ import {
   Input,
   OnInit,
   Output,
+  provideZoneChangeDetection,
   QueryList,
   TemplateRef,
   ViewChild,
@@ -26,6 +27,11 @@ import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('event listeners', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   describe('even handling statements', () => {
     it('should call function on event emit', () => {
       @Component({

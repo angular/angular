@@ -30,6 +30,7 @@ import {
   Pipe,
   PipeTransform,
   Provider,
+  provideZoneChangeDetection,
   RendererFactory2,
   RendererType2,
   SimpleChange,
@@ -137,7 +138,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           PipeWithOnDestroy,
           IdentityPipe,
         ],
-        providers: [RenderLog, DirectiveLog],
+        providers: [RenderLog, DirectiveLog, provideZoneChangeDetection()],
       });
     });
 

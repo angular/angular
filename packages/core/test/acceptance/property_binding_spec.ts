@@ -7,12 +7,25 @@
  */
 import {state, style, trigger} from '@angular/animations';
 import {CommonModule} from '@angular/common';
-import {Component, Directive, EventEmitter, Input, Output, ViewContainerRef} from '../../src/core';
+import {
+  Component,
+  Directive,
+  EventEmitter,
+  Input,
+  Output,
+  provideZoneChangeDetection,
+  ViewContainerRef,
+} from '../../src/core';
 import {TestBed} from '../../testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('property bindings', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should support bindings to properties', () => {
     @Component({
       template: `<span [id]="id"></span>`,

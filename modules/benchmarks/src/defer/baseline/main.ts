@@ -11,9 +11,10 @@ import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/pl
 import {init, syncUrlParamsToForm} from '../init';
 
 import {AppComponent} from './app.component';
+import {provideZoneChangeDetection} from '@angular/core';
 
 syncUrlParamsToForm();
 
 bootstrapApplication(AppComponent, {
-  providers: [provideProtractorTestingSupport()],
+  providers: [provideZoneChangeDetection(), provideProtractorTestingSupport()],
 }).then(init);

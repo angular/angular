@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {enableProdMode} from '@angular/core';
+import {enableProdMode, provideZoneChangeDetection} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 import {init} from './init';
 import {TableComponent} from './table';
 
 enableProdMode();
-bootstrapApplication(TableComponent).then(init);
+bootstrapApplication(TableComponent, {
+  providers: [provideZoneChangeDetection()],
+}).then(init);

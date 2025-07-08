@@ -11,6 +11,7 @@ import {
   Component,
   Directive,
   inject,
+  provideZoneChangeDetection,
   TemplateRef,
   Type,
   ViewChild,
@@ -60,6 +61,11 @@ describe('comment node text escaping', () => {
 });
 
 describe('iframe processing', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   function getErrorMessageRegexp() {
     const errorMessagePart = 'NG0' + Math.abs(RuntimeErrorCode.UNSAFE_IFRAME_ATTRS).toString();
     return new RegExp(errorMessagePart);

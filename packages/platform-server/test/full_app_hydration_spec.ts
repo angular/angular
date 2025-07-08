@@ -52,6 +52,7 @@ import {
   ViewEncapsulation,
   ɵNoopNgZone as NoopNgZone,
   ContentChild,
+  provideZoneChangeDetection,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -3014,7 +3015,8 @@ describe('platform-server full application hydration integration', () => {
           }
         }
 
-        const html = await ssr(SimpleComponent);
+        const envProviders = [provideZoneChangeDetection() as any];
+        const html = await ssr(SimpleComponent, {envProviders});
 
         const ssrContents = getAppContents(html);
         expect(ssrContents).toContain('<app ngh');
@@ -3026,7 +3028,9 @@ describe('platform-server full application hydration integration', () => {
 
         resetTViewsFor(SimpleComponent);
 
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders,
+        });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 
@@ -4852,8 +4856,8 @@ describe('platform-server full application hydration integration', () => {
             });
           }
         }
-
-        const html = await ssr(SimpleComponent);
+        const envProviders = [provideZoneChangeDetection() as any];
+        const html = await ssr(SimpleComponent, {envProviders});
         let ssrContents = getAppContents(html);
 
         expect(ssrContents).toContain('<app ngh');
@@ -4863,7 +4867,9 @@ describe('platform-server full application hydration integration', () => {
         // Before hydration
         expect(observedChildCountLog).toEqual([]);
 
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders,
+        });
         await appRef.whenStable();
 
         // afterRender should be triggered by:
@@ -4901,7 +4907,8 @@ describe('platform-server full application hydration integration', () => {
           }
         }
 
-        const html = await ssr(SimpleComponent);
+        const envProviders = [provideZoneChangeDetection() as any];
+        const html = await ssr(SimpleComponent, {envProviders});
         let ssrContents = getAppContents(html);
 
         expect(ssrContents).toContain('<app ngh');
@@ -4911,7 +4918,9 @@ describe('platform-server full application hydration integration', () => {
         // Before hydration
         expect(observedChildCountLog).toEqual([]);
 
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders,
+        });
 
         // afterRender should be triggered by:
         //   1.) Bootstrap
@@ -6389,7 +6398,11 @@ describe('platform-server full application hydration integration', () => {
         resetTViewsFor(SimpleComponent);
 
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: [{provide: NgZone, useValue: new NoopNgZone()}, withDebugConsole()],
+          envProviders: [
+            provideZoneChangeDetection() as any,
+            {provide: NgZone, useValue: new NoopNgZone()},
+            withDebugConsole(),
+          ],
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
@@ -6414,7 +6427,8 @@ describe('platform-server full application hydration integration', () => {
         })
         class SimpleComponent {}
 
-        const html = await ssr(SimpleComponent);
+        const envProviders = [provideZoneChangeDetection() as any];
+        const html = await ssr(SimpleComponent, {envProviders});
         const ssrContents = getAppContents(html);
 
         expect(ssrContents).toContain('<app ngh');
@@ -6424,7 +6438,11 @@ describe('platform-server full application hydration integration', () => {
         class CustomNgZone extends NgZone {}
 
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: [{provide: NgZone, useValue: new CustomNgZone({})}, withDebugConsole()],
+          envProviders: [
+            provideZoneChangeDetection() as any,
+            {provide: NgZone, useValue: new CustomNgZone({})},
+            withDebugConsole(),
+          ],
         });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
@@ -7148,8 +7166,10 @@ describe('platform-server full application hydration integration', () => {
           // and the server: we use it to test the logic to cleanup
           // dehydrated views.
           isServer = isPlatformServer(inject(PLATFORM_ID));
+          pendingTasks = inject(PendingTasks);
           ngOnInit() {
-            setTimeout(() => {}, 100);
+            const remove = this.pendingTasks.add();
+            setTimeout(() => void remove(), 100);
           }
         }
 
@@ -7315,7 +7335,8 @@ describe('platform-server full application hydration integration', () => {
           }
         }
 
-        const html = await ssr(SimpleComponent);
+        const envProviders = [provideZoneChangeDetection() as any];
+        const html = await ssr(SimpleComponent, {envProviders});
         let ssrContents = getAppContents(html);
 
         expect(ssrContents).toContain('<app ngh');
@@ -7329,7 +7350,9 @@ describe('platform-server full application hydration integration', () => {
         expect(ssrContents).toContain('<b>This is NgSwitch SERVER-ONLY content</b>');
 
         resetTViewsFor(SimpleComponent);
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders,
+        });
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 

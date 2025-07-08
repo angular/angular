@@ -49,6 +49,7 @@ describe('signal inputs', () => {
     expect(fixture.nativeElement.textContent).toBe('input:1');
 
     fixture.componentInstance.value = 2;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
@@ -78,6 +79,7 @@ describe('signal inputs', () => {
     expect(fixture.nativeElement.textContent).toBe('changed:computed-1');
 
     fixture.componentInstance.value = 2;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('changed:computed-2');
@@ -116,6 +118,7 @@ describe('signal inputs', () => {
     expect(effectLog).toEqual([1]);
 
     fixture.componentInstance.value = 2;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(effectLog).toEqual([1, 2]);
@@ -225,6 +228,7 @@ describe('signal inputs', () => {
     expect(fixture.nativeElement.textContent).toBe('input:1');
 
     fixture.componentInstance.value = 2;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
@@ -256,12 +260,14 @@ describe('signal inputs', () => {
 
     // Changing the value from within the directive.
     host.dir.valueChange.emit(2);
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(host.value).toBe(2);
     expect(host.dir.value()).toBe(2);
 
     // Changing the value from the outside.
     host.value = 3;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(host.value).toBe(3);
     expect(host.dir.value()).toBe(3);

@@ -34,6 +34,7 @@ import {
   Pipe,
   provideNgReflectAttributes,
   reflectComponentType,
+  signal,
   SkipSelf,
   ViewChild,
   ViewRef,
@@ -62,10 +63,10 @@ describe('integration tests', function () {
   describe('react to record changes', function () {
     it('should consume text node changes', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<div>{{ctxProp}}</div>';
+      const template = '<div>{{ctxProp()}}</div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
-      fixture.componentInstance.ctxProp = 'Hello World!';
+      fixture.componentInstance.ctxProp.set('Hello World!');
 
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('Hello World!');
@@ -73,10 +74,10 @@ describe('integration tests', function () {
 
     it('should update text node with a blank string when interpolation evaluates to null', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<div>{{null}}{{ctxProp}}</div>';
+      const template = '<div>{{null}}{{ctxProp()}}</div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
-      fixture.componentInstance.ctxProp = null!;
+      fixture.componentInstance.ctxProp.set(null!);
 
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('');
@@ -111,11 +112,11 @@ describe('integration tests', function () {
 
     it('should consume element binding changes', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<div [id]="ctxProp"></div>';
+      const template = '<div [id]="ctxProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'Hello World!';
+      fixture.componentInstance.ctxProp.set('Hello World!');
       fixture.detectChanges();
 
       expect(fixture.debugElement.children[0].nativeElement.id).toEqual('Hello World!');
@@ -123,17 +124,17 @@ describe('integration tests', function () {
 
     it('should consume binding to aria-* attributes', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<div [attr.aria-label]="ctxProp"></div>';
+      const template = '<div [attr.aria-label]="ctxProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'Initial aria label';
+      fixture.componentInstance.ctxProp.set('Initial aria label');
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.getAttribute('aria-label')).toEqual(
         'Initial aria label',
       );
 
-      fixture.componentInstance.ctxProp = 'Changed aria label';
+      fixture.componentInstance.ctxProp.set('Changed aria label');
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.getAttribute('aria-label')).toEqual(
         'Changed aria label',
@@ -142,75 +143,75 @@ describe('integration tests', function () {
 
     it('should remove an attribute when attribute expression evaluates to null', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<div [attr.foo]="ctxProp"></div>';
+      const template = '<div [attr.foo]="ctxProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'bar';
+      fixture.componentInstance.ctxProp.set('bar');
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.getAttribute('foo')).toEqual('bar');
 
-      fixture.componentInstance.ctxProp = null!;
+      fixture.componentInstance.ctxProp.set(null!);
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.hasAttribute('foo')).toBeFalsy();
     });
 
     it('should remove style when when style expression evaluates to null', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<div [style.height.px]="ctxProp"></div>';
+      const template = '<div [style.height.px]="ctxProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = '10';
+      fixture.componentInstance.ctxProp.set('10');
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.style['height']).toEqual('10px');
 
-      fixture.componentInstance.ctxProp = null!;
+      fixture.componentInstance.ctxProp.set(null!);
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.style['height']).toEqual('');
     });
 
     it('should consume binding to property names where attr name and property name do not match', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<div [tabindex]="ctxNumProp"></div>';
+      const template = '<div [tabindex]="ctxNumProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.tabIndex).toEqual(0);
 
-      fixture.componentInstance.ctxNumProp = 5;
+      fixture.componentInstance.ctxNumProp.set(5);
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.tabIndex).toEqual(5);
     });
 
     it('should consume binding to camel-cased properties', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<input [readOnly]="ctxBoolProp">';
+      const template = '<input [readOnly]="ctxBoolProp()">';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.readOnly).toBeFalsy();
 
-      fixture.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp.set(true);
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.readOnly).toBeTruthy();
     });
 
     it('should consume binding to innerHtml', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<div innerHtml="{{ctxProp}}"></div>';
+      const template = '<div innerHtml="{{ctxProp()}}"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'Some <span>HTML</span>';
+      fixture.componentInstance.ctxProp.set('Some <span>HTML</span>');
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.innerHTML).toEqual(
         'Some <span>HTML</span>',
       );
 
-      fixture.componentInstance.ctxProp = 'Some other <div>HTML</div>';
+      fixture.componentInstance.ctxProp.set('Some other <div>HTML</div>');
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.innerHTML).toEqual(
         'Some other <div>HTML</div>',
@@ -218,13 +219,13 @@ describe('integration tests', function () {
     });
 
     it('should consume binding to htmlFor using for alias', () => {
-      const template = '<label [for]="ctxProp"></label>';
+      const template = '<label [for]="ctxProp()"></label>';
       const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
         .overrideComponent(MyComp, {set: {template}})
         .createComponent(MyComp);
 
       const nativeEl = fixture.debugElement.children[0].nativeElement;
-      fixture.debugElement.componentInstance.ctxProp = 'foo';
+      fixture.debugElement.componentInstance.ctxProp.set('foo');
       fixture.detectChanges();
 
       expect(nativeEl.htmlFor).toBe('foo');
@@ -234,15 +235,15 @@ describe('integration tests', function () {
       TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
       const template =
         '<span>' +
-        '<div my-dir [elprop]="ctxProp"></div>' +
+        '<div my-dir [elprop]="ctxProp()"></div>' +
         '<div my-dir elprop="Hi there!"></div>' +
         '<div my-dir elprop="Hi {{\'there!\'}}"></div>' +
-        '<div my-dir elprop="One more {{ctxProp}}"></div>' +
+        '<div my-dir elprop="One more {{ctxProp()}}"></div>' +
         '</span>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'Hello World!';
+      fixture.componentInstance.ctxProp.set('Hello World!');
       fixture.detectChanges();
 
       const containerSpan = fixture.debugElement.children[0];
@@ -258,11 +259,11 @@ describe('integration tests', function () {
     describe('pipes', () => {
       it('should support pipes in bindings', () => {
         TestBed.configureTestingModule({declarations: [MyComp, MyDir, DoublePipe]});
-        const template = '<div my-dir #dir="mydir" [elprop]="ctxProp | double"></div>';
+        const template = '<div my-dir #dir="mydir" [elprop]="ctxProp() | double"></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        fixture.componentInstance.ctxProp = 'a';
+        fixture.componentInstance.ctxProp.set('a');
         fixture.detectChanges();
 
         const dir = fixture.debugElement.children[0].references!['dir'];
@@ -284,17 +285,17 @@ describe('integration tests', function () {
     // GH issue 328 - https://github.com/angular/angular/issues/328
     it('should support different directive types on a single node', () => {
       TestBed.configureTestingModule({declarations: [MyComp, ChildComp, MyDir]});
-      const template = '<child-cmp my-dir [elprop]="ctxProp"></child-cmp>';
+      const template = '<child-cmp my-dir [elprop]="ctxProp()"></child-cmp>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'Hello World!';
+      fixture.componentInstance.ctxProp.set('Hello World!');
       fixture.detectChanges();
 
       const tc = fixture.debugElement.children[0];
 
       expect(tc.injector.get(MyDir).dirProp).toEqual('Hello World!');
-      expect(tc.injector.get(ChildComp).dirProp).toEqual(null);
+      expect(tc.injector.get(ChildComp).dirProp()).toEqual(null);
     });
 
     it('should support directives where a binding attribute is not given', () => {
@@ -316,18 +317,18 @@ describe('integration tests', function () {
 
     it('should support directives where a selector matches property binding', () => {
       TestBed.configureTestingModule({declarations: [MyComp, IdDir]});
-      const template = '<p [id]="ctxProp"></p>';
+      const template = '<p [id]="ctxProp()"></p>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
       const tc = fixture.debugElement.children[0];
       const idDir = tc.injector.get(IdDir);
 
-      fixture.componentInstance.ctxProp = 'some_id';
+      fixture.componentInstance.ctxProp.set('some_id');
       fixture.detectChanges();
       expect(idDir.id).toEqual('some_id');
 
-      fixture.componentInstance.ctxProp = 'other_id';
+      fixture.componentInstance.ctxProp.set('other_id');
       fixture.detectChanges();
       expect(idDir.id).toEqual('other_id');
     });
@@ -383,11 +384,11 @@ describe('integration tests', function () {
     it('should not detach views in ViewContainers when the parent view is destroyed.', () => {
       TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
       const template =
-        '<div *ngIf="ctxBoolProp"><ng-template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></ng-template></div>';
+        '<div *ngIf="ctxBoolProp()"><ng-template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></ng-template></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp.set(true);
       fixture.detectChanges();
 
       const ngIfEl = fixture.debugElement.children[0];
@@ -397,7 +398,7 @@ describe('integration tests', function () {
       expect(someViewport.container.length).toBe(2);
       expect(ngIfEl.children.length).toBe(2);
 
-      fixture.componentInstance.ctxBoolProp = false;
+      fixture.componentInstance.ctxBoolProp.set(false);
       fixture.detectChanges();
 
       expect(someViewport.container.length).toBe(2);
@@ -428,11 +429,11 @@ describe('integration tests', function () {
         schemas: [NO_ERRORS_SCHEMA],
       });
       const template =
-        '<some-directive><toolbar><ng-template toolbarpart let-toolbarProp="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></ng-template></toolbar></some-directive>';
+        '<some-directive><toolbar><ng-template toolbarpart let-toolbarProp="toolbarProp">{{ctxProp()}},{{toolbarProp}},<cmp-with-host></cmp-with-host></ng-template></toolbar></some-directive>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'From myComp';
+      fixture.componentInstance.ctxProp.set('From myComp');
       fixture.detectChanges();
 
       expect(fixture.nativeElement).toHaveText(
@@ -483,7 +484,7 @@ describe('integration tests', function () {
       it('should make the assigned component accessible in property bindings, even if they were declared before the component', () => {
         TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
         const template =
-          '<ng-template [ngIf]="true">{{alice.ctxProp}}</ng-template>|{{alice.ctxProp}}|<child-cmp ref-alice></child-cmp>';
+          '<ng-template [ngIf]="true">{{alice.ctxProp()}}</ng-template>|{{alice.ctxProp()}}|<child-cmp ref-alice></child-cmp>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
@@ -574,17 +575,17 @@ describe('integration tests', function () {
           declarations: [MyComp, PushCmp, EventCmp],
           imports: [CommonModule],
         });
-        const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
+        const template = '<push-cmp [prop]="ctxProp()" #cmp></push-cmp>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
         const cmp = fixture.debugElement.children[0].references!['cmp'];
 
-        fixture.componentInstance.ctxProp = 'one';
+        fixture.componentInstance.ctxProp.set('one');
         fixture.detectChanges();
         expect(cmp.numberOfChecks).toEqual(1);
 
-        fixture.componentInstance.ctxProp = 'two';
+        fixture.componentInstance.ctxProp.set('two');
         fixture.detectChanges();
         expect(cmp.numberOfChecks).toEqual(2);
       });
@@ -612,7 +613,7 @@ describe('integration tests', function () {
           declarations: [MyComp, PushCmp, EventCmp],
           imports: [CommonModule],
         });
-        const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
+        const template = '<push-cmp [prop]="ctxProp()" #cmp></push-cmp>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
@@ -649,17 +650,17 @@ describe('integration tests', function () {
 
       it('should not affect updating properties on the component', () => {
         TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
-        const template = '<push-cmp-with-ref [prop]="ctxProp" #cmp></push-cmp-with-ref>';
+        const template = '<push-cmp-with-ref [prop]="ctxProp()" #cmp></push-cmp-with-ref>';
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
         const cmp = fixture.debugElement.children[0].references!['cmp'];
 
-        fixture.componentInstance.ctxProp = 'one';
+        fixture.componentInstance.ctxProp.set('one');
         fixture.detectChanges();
         expect(cmp.prop).toEqual('one');
 
-        fixture.componentInstance.ctxProp = 'two';
+        fixture.componentInstance.ctxProp.set('two');
         fixture.detectChanges();
         expect(cmp.prop).toEqual('two');
       });
@@ -769,7 +770,7 @@ describe('integration tests', function () {
       })
         .overrideComponent(MyComp, {
           set: {
-            template: '<ng-template emitter listener (event)="ctxProp=$event"></ng-template>',
+            template: '<ng-template emitter listener (event)="ctxProp.set($event)"></ng-template>',
           },
         })
         .createComponent(MyComp);
@@ -781,13 +782,13 @@ describe('integration tests', function () {
       const myComp = fixture.debugElement.injector.get(MyComp);
       const listener = tc.injector.get(DirectiveListeningEvent);
 
-      myComp.ctxProp = '';
+      myComp.ctxProp.set('');
       expect(listener.msg).toEqual('');
 
       emitter.event.subscribe({
         next: () => {
           expect(listener.msg).toEqual('fired !');
-          expect(myComp.ctxProp).toEqual('fired !');
+          expect(myComp.ctxProp()).toEqual('fired !');
         },
       });
 
@@ -802,14 +803,14 @@ describe('integration tests', function () {
       const tc = fixture.debugElement.children[0];
       const dir = tc.injector.get(DirectiveWithTwoWayBinding);
 
-      fixture.componentInstance.ctxProp = 'one';
+      fixture.componentInstance.ctxProp.set('one');
       fixture.detectChanges();
 
       expect(dir.control).toEqual('one');
 
       dir.controlChange.subscribe({
         next: () => {
-          expect(fixture.componentInstance.ctxProp).toEqual('two');
+          expect(fixture.componentInstance.ctxProp()).toEqual('two');
         },
       });
 
@@ -1020,13 +1021,13 @@ describe('integration tests', function () {
       TestBed.configureTestingModule({
         declarations: [MyComp, DirectiveListeningDomEvent, DirectiveListeningDomEventOther],
       });
-      const template = '<div *ngIf="ctxBoolProp" listener listenerother></div>';
+      const template = '<div *ngIf="ctxBoolProp()" listener listenerother></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
       const doc = TestBed.inject(DOCUMENT);
 
       globalCounter = 0;
-      fixture.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp.set(true);
       fixture.detectChanges();
 
       const tc = fixture.debugElement.children[0];
@@ -1038,12 +1039,12 @@ describe('integration tests', function () {
       expect(listenerother.eventType).toEqual('other_domEvent');
       expect(globalCounter).toEqual(1);
 
-      fixture.componentInstance.ctxBoolProp = false;
+      fixture.componentInstance.ctxBoolProp.set(false);
       fixture.detectChanges();
       dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
       expect(globalCounter).toEqual(1);
 
-      fixture.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp.set(true);
       fixture.detectChanges();
       dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
       expect(globalCounter).toEqual(2);
@@ -1283,13 +1284,13 @@ describe('integration tests', function () {
           ComponentWithDefaultInterpolation,
         ],
       });
-      const template = `<div>{{ctxProp}}</div>
+      const template = `<div>{{ctxProp()}}</div>
 <cmp-with-custom-interpolation-a></cmp-with-custom-interpolation-a>
 <cmp-with-custom-interpolation-b></cmp-with-custom-interpolation-b>`;
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'Default Interpolation';
+      fixture.componentInstance.ctxProp.set('Default Interpolation');
 
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText(
@@ -1405,7 +1406,7 @@ describe('integration tests', function () {
       });
       const template = `
               <component-providing-logging-injectable #providing>
-                <directive-consuming-injectable *ngIf="ctxBoolProp">
+                <directive-consuming-injectable *ngIf="ctxBoolProp()">
                 </directive-consuming-injectable>
               </component-providing-logging-injectable>
           `;
@@ -1415,7 +1416,7 @@ describe('integration tests', function () {
       const providing = fixture.debugElement.children[0].references['providing'];
       expect(providing.created).toBe(false);
 
-      fixture.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp.set(true);
       fixture.detectChanges();
 
       expect(providing.created).toBe(true);
@@ -1571,7 +1572,7 @@ describe('integration tests', function () {
       declarations: [MyComp, SomeImperativeViewport],
       providers: [{provide: ANCHOR_ELEMENT, useValue: el('<div></div>')}],
     });
-    const template = '<div><div *someImpvp="ctxBoolProp">hello</div></div>';
+    const template = '<div><div *someImpvp="ctxBoolProp()">hello</div></div>';
     TestBed.overrideComponent(MyComp, {set: {template}});
     const anchorElement = getTestBed().inject(ANCHOR_ELEMENT);
     const fixture = TestBed.createComponent(MyComp);
@@ -1579,12 +1580,12 @@ describe('integration tests', function () {
     fixture.detectChanges();
     expect(anchorElement).toHaveText('');
 
-    fixture.componentInstance.ctxBoolProp = true;
+    fixture.componentInstance.ctxBoolProp.set(true);
     fixture.detectChanges();
 
     expect(anchorElement).toHaveText('hello');
 
-    fixture.componentInstance.ctxBoolProp = false;
+    fixture.componentInstance.ctxBoolProp.set(false);
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('');
   });
@@ -1753,7 +1754,7 @@ describe('integration tests', function () {
   describe('Property bindings', () => {
     it('should throw on bindings to unknown properties', () => {
       TestBed.configureTestingModule({declarations: [MyComp]});
-      const template = '<div unknown="{{ctxProp}}"></div>';
+      const template = '<div unknown="{{ctxProp()}}"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
 
       const spy = spyOn(console, 'error');
@@ -1778,18 +1779,18 @@ describe('integration tests', function () {
 
     it('should not throw for property binding to a non-existing property when there is a matching directive property', () => {
       TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
-      const template = '<div my-dir [elprop]="ctxProp"></div>';
+      const template = '<div my-dir [elprop]="ctxProp()"></div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       expect(() => TestBed.createComponent(MyComp)).not.toThrow();
     });
 
     it('should not be created when there is a directive with the same property', () => {
       TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithTitle]});
-      const template = '<span [title]="ctxProp"></span>';
+      const template = '<span [title]="ctxProp()"></span>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'TITLE';
+      fixture.componentInstance.ctxProp.set('TITLE');
       fixture.detectChanges();
 
       const el = fixture.nativeElement.querySelector('span');
@@ -1798,11 +1799,11 @@ describe('integration tests', function () {
 
     it('should work when a directive uses hostProperty to update the DOM element', () => {
       TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithTitleAndHostProperty]});
-      const template = '<span [title]="ctxProp"></span>';
+      const template = '<span [title]="ctxProp()"></span>';
       TestBed.overrideComponent(MyComp, {set: {template}});
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'TITLE';
+      fixture.componentInstance.ctxProp.set('TITLE');
       fixture.detectChanges();
 
       const el = fixture.nativeElement.querySelector('span');
@@ -1817,11 +1818,11 @@ describe('integration tests', function () {
           declarations: [MyComp, MyDir],
         });
         TestBed.overrideComponent(MyComp, {
-          set: {template: `<div my-dir [elprop]="ctxProp"></div>`},
+          set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
         });
         const fixture = TestBed.createComponent(MyComp);
 
-        fixture.componentInstance.ctxProp = 'hello';
+        fixture.componentInstance.ctxProp.set('hello');
         fixture.detectChanges();
 
         const html = fixture.nativeElement.innerHTML;
@@ -1833,11 +1834,11 @@ describe('integration tests', function () {
           declarations: [MyComp],
         })
           .overrideComponent(MyComp, {
-            set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`},
+            set: {template: `<ng-template [ngIf]="ctxBoolProp()"></ng-template>`},
           })
           .createComponent(MyComp);
 
-        fixture.componentInstance.ctxBoolProp = true;
+        fixture.componentInstance.ctxBoolProp.set(true);
         fixture.detectChanges();
 
         const html = fixture.nativeElement.innerHTML;
@@ -1850,10 +1851,12 @@ describe('integration tests', function () {
         declarations: [MyComp, MyDir],
         providers: [provideNgReflectAttributes()],
       });
-      TestBed.overrideComponent(MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
+      TestBed.overrideComponent(MyComp, {
+        set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
+      });
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'hello';
+      fixture.componentInstance.ctxProp.set('hello');
       fixture.detectChanges();
 
       const html = fixture.nativeElement.innerHTML;
@@ -1894,11 +1897,11 @@ describe('integration tests', function () {
         providers: [provideNgReflectAttributes()],
       })
         .overrideComponent(MyComp, {
-          set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`},
+          set: {template: `<ng-template [ngIf]="ctxBoolProp()"></ng-template>`},
         })
         .createComponent(MyComp);
 
-      fixture.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp.set(true);
       fixture.detectChanges();
 
       const html = fixture.nativeElement.innerHTML;
@@ -1911,11 +1914,11 @@ describe('integration tests', function () {
         providers: [provideNgReflectAttributes()],
       })
         .overrideComponent(MyComp, {
-          set: {template: `<ng-container *ngIf="ctxBoolProp">content</ng-container>`},
+          set: {template: `<ng-container *ngIf="ctxBoolProp()">content</ng-container>`},
         })
         .createComponent(MyComp);
 
-      fixture.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp.set(true);
       fixture.detectChanges();
 
       const html = fixture.nativeElement.innerHTML;
@@ -1928,11 +1931,11 @@ describe('integration tests', function () {
         providers: [provideNgReflectAttributes()],
       });
       TestBed.overrideComponent(MyComp, {
-        set: {template: `<div my-dir my-dir2 [elprop]="ctxProp"></div>`},
+        set: {template: `<div my-dir my-dir2 [elprop]="ctxProp()"></div>`},
       });
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'hello';
+      fixture.componentInstance.ctxProp.set('hello');
       fixture.detectChanges();
 
       const html = fixture.nativeElement.innerHTML;
@@ -1958,15 +1961,17 @@ describe('integration tests', function () {
         declarations: [MyComp, MyDir, MyDir2],
         providers: [provideNgReflectAttributes()],
       });
-      TestBed.overrideComponent(MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
+      TestBed.overrideComponent(MyComp, {
+        set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
+      });
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'hello';
+      fixture.componentInstance.ctxProp.set('hello');
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toContain('ng-reflect-dir-prop="hello"');
 
-      fixture.componentInstance.ctxProp = undefined!;
+      fixture.componentInstance.ctxProp.set(undefined!);
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).not.toContain('ng-reflect-');
@@ -1977,15 +1982,17 @@ describe('integration tests', function () {
         declarations: [MyComp, MyDir, MyDir2],
         providers: [provideNgReflectAttributes()],
       });
-      TestBed.overrideComponent(MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
+      TestBed.overrideComponent(MyComp, {
+        set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
+      });
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = 'hello';
+      fixture.componentInstance.ctxProp.set('hello');
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toContain('ng-reflect-dir-prop="hello"');
 
-      fixture.componentInstance.ctxProp = null!;
+      fixture.componentInstance.ctxProp.set(null!);
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).not.toContain('ng-reflect-');
@@ -1996,10 +2003,12 @@ describe('integration tests', function () {
         declarations: [MyComp, MyDir, MyDir2],
         providers: [provideNgReflectAttributes()],
       });
-      TestBed.overrideComponent(MyComp, {set: {template: `<div my-dir [elprop]="ctxProp"></div>`}});
+      TestBed.overrideComponent(MyComp, {
+        set: {template: `<div my-dir [elprop]="ctxProp()"></div>`},
+      });
       const fixture = TestBed.createComponent(MyComp);
 
-      fixture.componentInstance.ctxProp = '';
+      fixture.componentInstance.ctxProp.set('');
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toContain('ng-reflect-dir-prop=""');
@@ -2011,18 +2020,18 @@ describe('integration tests', function () {
         providers: [provideNgReflectAttributes()],
       })
         .overrideComponent(MyComp, {
-          set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`},
+          set: {template: `<ng-template [ngIf]="ctxBoolProp()"></ng-template>`},
         })
         .createComponent(MyComp);
 
-      fixture.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp.set(true);
       fixture.detectChanges();
 
       let html = fixture.nativeElement.innerHTML;
       expect(html).toContain('bindings={');
       expect(html).toContain('"ng-reflect-ng-if": "true"');
 
-      fixture.componentInstance.ctxBoolProp = undefined!;
+      fixture.componentInstance.ctxBoolProp.set(undefined!);
       fixture.detectChanges();
 
       html = fixture.nativeElement.innerHTML;
@@ -2036,18 +2045,18 @@ describe('integration tests', function () {
         providers: [provideNgReflectAttributes()],
       })
         .overrideComponent(MyComp, {
-          set: {template: `<ng-template [ngIf]="ctxBoolProp"></ng-template>`},
+          set: {template: `<ng-template [ngIf]="ctxBoolProp()"></ng-template>`},
         })
         .createComponent(MyComp);
 
-      fixture.componentInstance.ctxBoolProp = true;
+      fixture.componentInstance.ctxBoolProp.set(true);
       fixture.detectChanges();
 
       let html = fixture.nativeElement.innerHTML;
       expect(html).toContain('bindings={');
       expect(html).toContain('"ng-reflect-ng-if": "true"');
 
-      fixture.componentInstance.ctxBoolProp = null!;
+      fixture.componentInstance.ctxBoolProp.set(null!);
       fixture.detectChanges();
 
       html = fixture.nativeElement.innerHTML;
@@ -2084,6 +2093,7 @@ describe('integration tests', function () {
       const dir = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
       dir.myAttr = 'aaa';
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.debugElement.children[0].nativeElement.outerHTML).toContain('my-attr="aaa"');
     });
@@ -2094,7 +2104,7 @@ describe('integration tests', function () {
           declarations: [MyComp, DirectiveWithPropDecorators],
           schemas: [NO_ERRORS_SCHEMA],
         });
-        const template = `<with-prop-decorators (elEvent)="ctxProp='called'">`;
+        const template = `<with-prop-decorators (elEvent)="ctxProp.set('called')">`;
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
@@ -2105,7 +2115,7 @@ describe('integration tests', function () {
 
         tick();
 
-        expect(fixture.componentInstance.ctxProp).toEqual('called');
+        expect(fixture.componentInstance.ctxProp()).toEqual('called');
       }));
 
       it('should support host listener decorators', () => {
@@ -2282,11 +2292,13 @@ describe('integration tests', function () {
         const useEl = fixture.nativeElement.firstChild;
 
         cmp.value = '#id';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(useEl.getAttributeNS('http://www.w3.org/1999/xlink', 'href')).toEqual('#id');
 
         cmp.value = null;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         expect(useEl.hasAttributeNS('http://www.w3.org/1999/xlink', 'href')).toEqual(false);
@@ -2524,21 +2536,21 @@ class PushCmpWithAsyncPipe {
   standalone: false,
 })
 class MyComp {
-  ctxProp: string;
-  ctxNumProp: number;
-  ctxBoolProp: boolean;
-  ctxArrProp: number[];
-  toStringThrow = {
+  readonly ctxProp = signal<string | undefined>(undefined);
+  readonly ctxNumProp = signal<number | undefined>(undefined);
+  readonly ctxBoolProp = signal<boolean | undefined>(undefined);
+  readonly ctxArrProp = signal<number[] | undefined>(undefined);
+  readonly toStringThrow = {
     toString: function () {
       throw 'boom';
     },
   };
 
   constructor() {
-    this.ctxProp = 'initial value';
-    this.ctxNumProp = 0;
-    this.ctxBoolProp = false;
-    this.ctxArrProp = [0, 1, 2];
+    this.ctxProp.set('initial value');
+    this.ctxNumProp.set(0);
+    this.ctxBoolProp.set(false);
+    this.ctxArrProp.set([0, 1, 2]);
   }
 
   throwError() {
@@ -2550,15 +2562,15 @@ class MyComp {
   selector: 'child-cmp',
   inputs: ['dirProp'],
   viewProviders: [MyService],
-  template: '{{ctxProp}}',
+  template: '{{ctxProp()}}',
   standalone: false,
 })
 class ChildComp {
-  ctxProp: string;
-  dirProp: string | null;
+  ctxProp = signal<string | undefined>(undefined);
+  dirProp = signal<string | null>(null);
   constructor(service: MyService) {
-    this.ctxProp = service.greeting;
-    this.dirProp = null;
+    this.ctxProp.set(service.greeting);
+    this.dirProp.set(null);
   }
 }
 
@@ -2573,13 +2585,13 @@ class ChildCompNoTemplate {
 
 @Component({
   selector: 'child-cmp-svc',
-  template: '{{ctxProp}}',
+  template: '{{ctxProp()}}',
   standalone: false,
 })
 class ChildCompUsingService {
-  ctxProp: string;
+  ctxProp = signal<string | undefined>(undefined);
   constructor(service: MyService) {
-    this.ctxProp = service.greeting;
+    this.ctxProp.set(service.greeting);
   }
 }
 

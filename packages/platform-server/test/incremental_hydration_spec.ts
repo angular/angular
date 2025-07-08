@@ -25,6 +25,7 @@ import {
   ɵJSACTION_EVENT_CONTRACT as JSACTION_EVENT_CONTRACT,
   ɵgetDocument as getDocument,
   ɵTimerScheduler as TimerScheduler,
+  provideZoneChangeDetection,
 } from '@angular/core';
 
 import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
@@ -1299,7 +1300,10 @@ describe('platform-server partial hydration integration', () => {
           }
 
           const appId = 'custom-app-id';
-          const providers = [{provide: APP_ID, useValue: appId}];
+          const providers = [
+            {provide: APP_ID, useValue: appId},
+            provideZoneChangeDetection() as any,
+          ];
           const hydrationFeatures = () => [withIncrementalHydration()];
 
           const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
@@ -1894,7 +1898,7 @@ describe('platform-server partial hydration integration', () => {
       }
 
       const appId = 'custom-app-id';
-      const providers = [{provide: APP_ID, useValue: appId}];
+      const providers = [{provide: APP_ID, useValue: appId}, provideZoneChangeDetection() as any];
       const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});

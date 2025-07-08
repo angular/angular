@@ -110,7 +110,7 @@ describe('reactive safety', () => {
       fix.detectChanges();
       expectNotToThrowInReactiveContext(() => {
         fix.componentInstance.cond = true;
-        fix.detectChanges();
+        fix.changeDetectorRef.detectChanges();
       });
     });
   });

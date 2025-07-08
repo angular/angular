@@ -1426,6 +1426,7 @@ describe('Animation', () => {
         );
       });
       cmp.addremove();
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tickAnimationFrames(1);
 
@@ -1498,6 +1499,7 @@ describe('Animation', () => {
         );
       });
       cmp.addremove();
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tickAnimationFrames(1);
 

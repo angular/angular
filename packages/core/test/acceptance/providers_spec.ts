@@ -554,6 +554,7 @@ describe('providers', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.condition = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(logs).toEqual(['OnDestroy Token']);

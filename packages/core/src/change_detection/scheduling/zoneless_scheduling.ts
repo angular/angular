@@ -66,7 +66,7 @@ export abstract class ChangeDetectionScheduler {
 /** Token used to indicate if zoneless was enabled via provideZonelessChangeDetection(). */
 export const ZONELESS_ENABLED = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless enabled' : '',
-  {providedIn: 'root', factory: () => false},
+  {providedIn: 'root', factory: () => true},
 );
 
 /** Token used to indicate `provideZonelessChangeDetection` was used. */

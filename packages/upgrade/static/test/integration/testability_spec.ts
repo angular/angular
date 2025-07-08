@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {destroyPlatform, NgModule, Testability, NgZone} from '@angular/core';
+import {
+  destroyPlatform,
+  NgModule,
+  Testability,
+  NgZone,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import {fakeAsync, flush, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -22,7 +28,7 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    @NgModule({imports: [BrowserModule, UpgradeModule]})
+    @NgModule({imports: [BrowserModule, UpgradeModule], providers: [provideZoneChangeDetection()]})
     class Ng2Module {
       ngDoBootstrap() {}
     }

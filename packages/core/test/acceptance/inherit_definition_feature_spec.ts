@@ -17,6 +17,7 @@ import {
   Input,
   OnChanges,
   Output,
+  provideZoneChangeDetection,
   QueryList,
   ViewChildren,
 } from '../../src/core';
@@ -26,6 +27,11 @@ import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('inheritance', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should throw when trying to inherit a component from a directive', () => {
     @Component({
       selector: 'my-comp',

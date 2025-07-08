@@ -15,8 +15,8 @@ import {
   Input,
   NgZone,
   createComponent,
-  provideZonelessChangeDetection,
   provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   signal,
 } from '../src/core';
 import {
@@ -166,6 +166,7 @@ describe('ComponentFixture', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
       declarations: [
         AutoDetectComp,
         AsyncComp,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Input, NgModule} from '@angular/core';
+import {Component, Input, NgModule, provideZoneChangeDetection} from '@angular/core';
 import {BrowserModule, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 
 import {emptyTree, getMaxDepth, TreeNode} from '../util';
@@ -57,6 +57,7 @@ export function createAppModule(): any {
     imports: [BrowserModule],
     bootstrap: [RootTreeComponent],
     declarations: [components],
+    providers: [provideZoneChangeDetection()],
     jit: true,
   })
   class AppModule {

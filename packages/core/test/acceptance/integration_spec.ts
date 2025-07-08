@@ -22,6 +22,7 @@ import {
   OnInit,
   Output,
   Pipe,
+  provideZoneChangeDetection,
   QueryList,
   TemplateRef,
   ViewChild,
@@ -40,6 +41,12 @@ import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('acceptance integration tests', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
+
   function stripHtmlComments(str: string) {
     return str.replace(/<!--[\s\S]*?-->/g, '');
   }

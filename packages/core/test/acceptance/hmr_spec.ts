@@ -20,6 +20,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  provideZoneChangeDetection,
   QueryList,
   SimpleChanges,
   Type,
@@ -41,6 +42,11 @@ import {ComponentType} from '../../src/render3';
 import {isNode} from '@angular/private/testing';
 
 describe('hot module replacement', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should recreate a single usage of a basic component', () => {
     let instance!: ChildCmp;
     const initialMetadata: Component = {

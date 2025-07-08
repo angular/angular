@@ -18,6 +18,7 @@ import {
   forwardRef,
   InjectionToken,
   Input,
+  provideZoneChangeDetection,
   QueryList,
   TemplateRef,
   Type,
@@ -30,6 +31,11 @@ import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('query logic', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [

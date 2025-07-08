@@ -13,6 +13,7 @@ import {
   ElementRef,
   HostBinding,
   Input,
+  provideZoneChangeDetection,
   Renderer2,
   ViewChild,
   ViewContainerRef,
@@ -29,6 +30,11 @@ import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {isBrowser} from '@angular/private/testing';
 
 describe('styling', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   describe('apply in prioritization order', () => {
     it('should perform static bindings', () => {
       @Component({
