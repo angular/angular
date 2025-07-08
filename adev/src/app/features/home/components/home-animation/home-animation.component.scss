@@ -70,7 +70,7 @@ $transition: 200ms linear;
       .adev-banner-container {
         display: flex;
         flex-direction: column;
-        gap: .5rem;
+        gap: 0.5rem;
         position: absolute;
         transition:
           background 0.3s ease,
@@ -78,6 +78,19 @@ $transition: 200ms linear;
           transform $transition;
         top: var(--layout-padding);
         left: calc(var(--layout-padding) + var(--primary-nav-width));
+
+        @include mq.for-tablet-landscape-down {
+          top: 6rem;
+          left: var(--layout-padding);
+          /* Assuming the container width is identical to the viewport width (mobile device). */
+          max-width: calc(100% - var(--layout-padding) * 2);
+        }
+
+        @include mq.for-phone-only {
+          & {
+            top: 5rem;
+          }
+        }
       }
 
       .adev-banner {
@@ -92,21 +105,6 @@ $transition: 200ms linear;
         max-width: 100%;
         width: fit-content;
         box-sizing: border-box;
-
-        @include mq.for-tablet-landscape-down {
-          & {
-            top: 6rem;
-            left: var(--layout-padding);
-            /* Assuming the container width is identical to the viewport width (mobile device). */
-            max-width: calc(100% - var(--layout-padding) * 2);
-          }
-        }
-
-        @include mq.for-phone-only {
-          & {
-            top: 5rem;
-          }
-        }
 
         h1,
         p {
