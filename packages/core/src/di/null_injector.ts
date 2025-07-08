@@ -19,9 +19,7 @@ export class NullInjector implements Injector {
       const message = ngDevMode ? `No provider found for \`${stringify(token)}\`.` : '';
       const error = createRuntimeError(message, RuntimeErrorCode.PROVIDER_NOT_FOUND);
 
-      // Note: this name is unused in the code, but it's retained
-      // for backwards-compatibility reasons in case an app code
-      // relies on the error name.
+      // Note: This is the name used by the primitives to identify a not found error.
       error.name = 'ɵNotFound';
 
       throw error;
