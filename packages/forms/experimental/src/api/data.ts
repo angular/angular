@@ -3,6 +3,22 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {computed, Resource, ResourceRef, Signal} from '@angular/core';
@@ -47,21 +63,25 @@ export function defineComputed<TValue, TData, TPathKind extends PathKind = PathK
   return key;
 }
 
-export interface DefineResourceOptions<TValue, TData, TRequest>
-  extends DefineOptions<ResourceRef<TData>> {
-  params: (ctx: FieldContext<TValue>) => TRequest;
+export interface DefineResourceOptions<
+  TValue,
+  TData,
+  TRequest,
+  TPathKind extends PathKind = PathKind.Root,
+> extends DefineOptions<ResourceRef<TData>> {
+  params: (ctx: FieldContext<TValue, TPathKind>) => TRequest;
   factory: (req: Signal<TRequest>) => ResourceRef<TData>;
 }
 
 export function defineResource<TValue, TData, TRequest, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  opts: DefineResourceOptions<TValue, TData, TRequest>,
+  opts: DefineResourceOptions<TValue, TData, TRequest, TPathKind>,
 ): DataKey<ResourceRef<TData | undefined>> {
   assertPathIsCurrent(path);
   const key = opts.asKey ?? new DataKey<ResourceRef<TData>>();
 
   const factory = (ctx: FieldContext<unknown>) => {
-    const params = computed(() => opts.params(ctx as FieldContext<TValue>));
+    const params = computed(() => opts.params(ctx as FieldContext<TValue, TPathKind>));
     // we can wrap/process the resource here
     return opts.factory(params);
   };

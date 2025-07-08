@@ -121,11 +121,10 @@ export class FieldNodeContext implements FieldContext<unknown> {
   }
 
   readonly index = computed(() => {
-    const key = this.key();
     if (!Array.isArray(untracked(this.node.structure.parent!.value))) {
       throw new Error(`RuntimeError: cannot access index, parent field is not an array`);
     }
-    return Number(key);
+    return Number(this.key());
   });
 
   readonly fieldOf = <P>(p: FieldPath<P>) => this.resolve(p);
