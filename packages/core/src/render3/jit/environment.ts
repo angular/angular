@@ -88,6 +88,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵpipeBindV': r3.ɵɵpipeBindV,
   'ɵɵprojectionDef': r3.ɵɵprojectionDef,
   'ɵɵdomProperty': r3.ɵɵdomProperty,
+  'ɵɵariaProperty': r3.ɵɵariaProperty,
   'ɵɵproperty': r3.ɵɵproperty,
   'ɵɵpipe': r3.ɵɵpipe,
   'ɵɵqueryRefresh': r3.ɵɵqueryRefresh,

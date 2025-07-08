@@ -20,7 +20,7 @@ import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TypeCheckSourceResolver} from './tcb_util';
 
-const REGISTRY = new DomElementSchemaRegistry();
+export const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
 
 /**

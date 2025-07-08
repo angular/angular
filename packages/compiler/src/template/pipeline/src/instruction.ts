@@ -582,6 +582,14 @@ export function i18nAttributes(slot: number, i18nAttributesConfig: number): ir.C
   return call(Identifiers.i18nAttributes, args, null);
 }
 
+export function ariaProperty(
+  name: string,
+  expression: o.Expression | ir.Interpolation,
+  sourceSpan: ParseSourceSpan,
+): ir.UpdateOp {
+  return propertyBase(Identifiers.ariaProperty, name, expression, null, sourceSpan);
+}
+
 export function property(
   name: string,
   expression: o.Expression | ir.Interpolation,
