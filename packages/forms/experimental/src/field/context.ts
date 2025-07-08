@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {computed, Signal, untracked, WritableSignal} from '@angular/core';
@@ -121,10 +121,14 @@ export class FieldNodeContext implements FieldContext<unknown> {
   }
 
   readonly index = computed(() => {
+    // Attempt to read the key first, this will throw an error if we're on a root field.
+    const key = this.key();
+    // Assert that the parent is actually an array.
     if (!Array.isArray(untracked(this.node.structure.parent!.value))) {
       throw new Error(`RuntimeError: cannot access index, parent field is not an array`);
     }
-    return Number(this.key());
+    // Return the key as a number if we are indeed inside an array field.
+    return Number(key);
   });
 
   readonly fieldOf = <P>(p: FieldPath<P>) => this.resolve(p);
