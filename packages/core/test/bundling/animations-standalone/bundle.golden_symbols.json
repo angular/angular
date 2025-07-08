@@ -342,6 +342,7 @@
       "applyView",
       "arrRemove",
       "assertConsumerNode",
+      "assertDefined",
       "assertNotDestroyed",
       "assertProducerNode",
       "attachPatchData",

@@ -378,6 +378,7 @@
       "assertAllValuesPresent",
       "assertConsumerNode",
       "assertControlPresent",
+      "assertDefined",
       "assertNotDestroyed",
       "assertPlatform",
       "assertProducerNode",

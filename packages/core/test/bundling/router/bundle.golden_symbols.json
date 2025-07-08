@@ -419,6 +419,7 @@
       "arrRemove",
       "arrayEquals",
       "assertConsumerNode",
+      "assertDefined",
       "assertNotDestroyed",
       "assertProducerNode",
       "attachPatchData",
