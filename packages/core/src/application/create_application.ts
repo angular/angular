@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {internalProvideZoneChangeDetection} from '../change_detection/scheduling/ng_zone_scheduling';
 import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {Type} from '../interface/type';
@@ -15,8 +14,7 @@ import {assertStandaloneComponentType} from '../render3/errors';
 import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
 
 import {ApplicationRef} from './application_ref';
-import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
-import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
+import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {bootstrap} from '../platform/bootstrap';
 import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';
@@ -65,8 +63,7 @@ export function internalCreateApplication(config: {
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.
     const allAppProviders = [
-      internalProvideZoneChangeDetection({}),
-      {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+      provideZonelessChangeDetectionInternal(),
       errorHandlerEnvironmentInitializer,
       ...(appProviders || []),
     ];
