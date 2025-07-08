@@ -130,7 +130,7 @@ export function metadata<TValue, TMetadata, TPathKind extends PathKind = PathKin
 
 /**
  * Adds logic to a field to conditionally add a validation error to it.
- * The added ValidationError will be of `kind: 'custom:error'`
+ * The added ValidationError will be of `kind: 'error'`
  *
  * @param path The target path to add the error logic to.
  * @param logic A `LogicFn<T, boolean>` that returns `true` when the error should be added.
@@ -150,7 +150,7 @@ export function error<TValue, TPathKind extends PathKind = PathKind.Root>(
     validate(path, (arg) => {
       return logic(arg)
         ? {
-            kind: 'custom:error',
+            kind: 'error',
             message: message(arg),
           }
         : undefined;
@@ -158,9 +158,9 @@ export function error<TValue, TPathKind extends PathKind = PathKind.Root>(
   } else {
     const err: ValidationError =
       message === undefined
-        ? {kind: 'custom:error'}
+        ? {kind: 'error'}
         : {
-            kind: 'custom:error',
+            kind: 'error',
             message,
           };
     validate(path, (arg) => {

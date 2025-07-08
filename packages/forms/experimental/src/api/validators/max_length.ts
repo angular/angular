@@ -36,7 +36,7 @@ export function maxLength<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'ng:maxlength', maxlength: value};
+        return {kind: 'maxlength', maxlength: value};
       }
     }
 

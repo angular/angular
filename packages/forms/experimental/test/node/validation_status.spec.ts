@@ -3,23 +3,27 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Field, form, validate, validateAsync, validateTree} from '../../public_api';
-import {ValidationError, ValidationTreeError} from '../../src/api/validation_errors';
+import {
+  NgValidationError,
+  ValidationError,
+  ValidationTreeError,
+} from '../../src/api/validation_errors';
 
 function validateValue(value: string): ValidationError[] {
-  return value === 'INVALID' ? [{kind: 'custom:error'}] : [];
+  return value === 'INVALID' ? [{kind: 'error'}] : [];
 }
 
 function validateValueForChild(
   value: string,
   field: Field<unknown> | undefined,
 ): ValidationTreeError[] {
-  return value === 'INVALID' ? [{kind: 'custom:error', field}] : [];
+  return value === 'INVALID' ? [{kind: 'error', field}] : [];
 }
 
 async function waitFor(fn: () => boolean, count = 100): Promise<void> {
@@ -414,7 +418,7 @@ describe('validation status', () => {
         signal('MIXED'),
         (p) => {
           validate(p, () => []);
-          validate(p, () => [{kind: 'custom:error'}]);
+          validate(p, () => [{kind: 'error'}]);
         },
         {injector},
       );
@@ -465,9 +469,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: () =>
-                  new Promise<ValidationTreeError[]>((r) =>
-                    setTimeout(() => r([{kind: 'custom:error'}])),
-                  ),
+                  new Promise<ValidationTreeError[]>((r) => setTimeout(() => r([{kind: 'error'}]))),
               })),
             errors: (errs) => errs,
           });
@@ -506,9 +508,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: () =>
-                  new Promise<ValidationTreeError[]>((r) =>
-                    setTimeout(() => r([{kind: 'custom:error'}])),
-                  ),
+                  new Promise<ValidationTreeError[]>((r) => setTimeout(() => r([{kind: 'error'}]))),
               })),
             errors: (errs) => errs,
           });
@@ -531,6 +531,32 @@ describe('validation status', () => {
       expect(f().syncValid()).toBe(true);
       expect(f().valid()).toBe(false);
       expect(f().invalid()).toBe(true);
+    });
+  });
+
+  describe('NgValidationError', () => {
+    it('instaceof should check if structure matches a standard error type', () => {
+      const e1 = {kind: 'required'};
+      expect(e1 instanceof NgValidationError).toBe(true);
+      const e2 = {kind: 'min', min: 'two'};
+      expect(e2 instanceof NgValidationError).toBe(false);
+      const e3 = {kind: 'pattern', pattern: '.*@.*\\.com'};
+      expect(e3 instanceof NgValidationError).toBe(true);
+    });
+
+    it('instanceof should narrow the type to a discriminated union', () => {
+      const e: unknown = undefined;
+      if (e instanceof NgValidationError) {
+        e.message;
+        switch (e.kind) {
+          case 'min':
+            e.min;
+            break;
+          case 'standardschema':
+            e.issue;
+            break;
+        }
+      }
     });
   });
 });

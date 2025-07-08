@@ -36,7 +36,7 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'ng:min', min: value};
+        return {kind: 'min', min: value};
       }
     }
 

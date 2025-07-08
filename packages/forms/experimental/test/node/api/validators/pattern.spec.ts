@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector, signal} from '@angular/core';
@@ -23,7 +23,7 @@ describe('pattern validator', () => {
 
     expect(f.name().errors()).toEqual([
       jasmine.objectContaining({
-        kind: 'ng:pattern',
+        kind: 'pattern',
       }),
     ]);
   });
@@ -40,7 +40,7 @@ describe('pattern validator', () => {
 
     expect(f.name().errors()).toEqual([
       jasmine.objectContaining({
-        kind: 'ng:pattern',
+        kind: 'pattern',
       }),
     ]);
   });
@@ -88,7 +88,7 @@ describe('pattern validator', () => {
 
       expect(f.name().errors()).toEqual([
         jasmine.objectContaining({
-          kind: 'ng:pattern',
+          kind: 'pattern',
         }),
       ]);
 
@@ -97,7 +97,7 @@ describe('pattern validator', () => {
       patternSignal.set('meow');
       expect(f.name().errors()).toEqual([
         jasmine.objectContaining({
-          kind: 'ng:pattern',
+          kind: 'pattern',
         }),
       ]);
 

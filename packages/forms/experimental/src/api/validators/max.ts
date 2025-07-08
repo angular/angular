@@ -37,7 +37,7 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'ng:max', max: value};
+        return {kind: 'max', max: value};
       }
     }
 

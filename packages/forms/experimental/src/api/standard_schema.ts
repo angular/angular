@@ -87,7 +87,7 @@ export function standardIssueToFormTreeError(
     target = target[pathKey] as Field<Record<PropertyKey, unknown>>;
   }
   return {
-    kind: 'ng:standard',
+    kind: 'standardschema',
     field: target,
     issue,
   };

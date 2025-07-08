@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector, signal} from '@angular/core';
@@ -23,7 +23,7 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([{kind: 'ng:required'}]);
+    expect(f.name().errors()).toEqual([{kind: 'required'}]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -34,7 +34,7 @@ describe('required validator', () => {
       cat,
       (p) => {
         required(p.name, {
-          errors: (ctx) => ({kind: `custom:required-${ctx.valueOf(p.age)}`}),
+          errors: (ctx) => ({kind: `required-${ctx.valueOf(p.age)}`}),
         });
       },
       {
@@ -42,7 +42,7 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([{kind: 'custom:required-5'}]);
+    expect(f.name().errors()).toEqual([{kind: 'required-5'}]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -65,7 +65,7 @@ describe('required validator', () => {
 
     expect(f.name().errors()).toEqual([]);
     f.name().value.set('empty');
-    expect(f.name().errors()).toEqual([{kind: 'ng:required'}]);
+    expect(f.name().errors()).toEqual([{kind: 'required'}]);
   });
 
   it('supports custom condition', () => {
@@ -86,6 +86,6 @@ describe('required validator', () => {
 
     expect(f.name().errors()).toEqual([]);
     f.age().value.set(15);
-    expect(f.name().errors()).toEqual([{kind: 'ng:required'}]);
+    expect(f.name().errors()).toEqual([{kind: 'required'}]);
   });
 });
