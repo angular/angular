@@ -172,7 +172,10 @@ describe('bootstrap', () => {
 
   describe('ApplicationRef', () => {
     beforeEach(async () => {
-      TestBed.configureTestingModule({imports: [await createModule()]});
+      TestBed.configureTestingModule({
+        imports: [await createModule()],
+        providers: [provideZoneChangeDetection()],
+      });
     });
 
     it('should throw when reentering tick', () => {
@@ -743,7 +746,10 @@ describe('bootstrap', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [MyComp, ContainerComp, EmbeddedViewComp],
-        providers: [{provide: ComponentFixtureNoNgZone, useValue: true}],
+        providers: [
+          {provide: ComponentFixtureNoNgZone, useValue: true},
+          provideZoneChangeDetection(),
+        ],
       });
     });
 

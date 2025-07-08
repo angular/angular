@@ -13,7 +13,10 @@ import {
   internalProvideZoneChangeDetection,
 } from '../change_detection/scheduling/ng_zone_scheduling';
 import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
-import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
+import {
+  ChangeDetectionSchedulerImpl,
+  provideZonelessChangeDetectionInternal,
+} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {Injectable, Injector} from '../di';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -64,10 +67,11 @@ export class PlatformRef {
       });
     const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
     const allAppProviders = [
-      internalProvideZoneChangeDetection({
-        ngZoneFactory,
-        ignoreChangesOutsideZone,
-      }),
+      provideZonelessChangeDetectionInternal(),
+      // internalProvideZoneChangeDetection({
+      //   ngZoneFactory,
+      //   ignoreChangesOutsideZone,
+      // }),
       {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
       errorHandlerEnvironmentInitializer,
     ];

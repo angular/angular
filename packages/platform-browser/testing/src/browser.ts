@@ -12,9 +12,7 @@ import {
   createPlatformFactory,
   NgModule,
   StaticProvider,
-  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
-  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
-  ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
+  ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
   PlatformRef,
 } from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
@@ -38,8 +36,7 @@ export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => Plat
   exports: [BrowserModule],
   providers: [
     {provide: APP_ID, useValue: 'a'},
-    internalProvideZoneChangeDetection({}),
-    {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+    provideZonelessChangeDetectionInternal(),
     {provide: PlatformLocation, useClass: MockPlatformLocation},
     {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
   ],
