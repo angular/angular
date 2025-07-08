@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "esbuild")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -27,7 +27,11 @@ esbuild(
     output = "ng_add_bundle.cjs",
     platform = "node",
     target = "node20",
-    deps = [":ng-add"],
+    tsconfig = "//packages:tsconfig_build",
+    deps = [
+        ":ng-add_rjs",
+        "//packages:tsconfig_build",
+    ],
 )
 
 filegroup(
