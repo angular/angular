@@ -1,5 +1,6 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "protractor_web_test_suite")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "http_server")
+load("//tools:defaults2.bzl", "ng_project", "protractor_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -18,26 +19,25 @@ ng_project(
         "index.ts",
         "playground.ts",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/platform-browser",
-        "//packages/router",
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
-# Note: Cannot use `app_bundle` as the e2e tests rely on `ngDevMode`
-# output which would otherwise be omitted.
 esbuild(
     name = "bundle",
+    config = {
+        "resolveExtensions": [".js"],
+    },
     entry_point = ":index.ts",
+    tsconfig = "//packages/core:tsconfig_build",
     deps = [
-        ":image-directive",
-        "//packages/common",
-        "//packages/core",
-        "//packages/platform-browser",
-        "//packages/router",
-        "@npm//rxjs",
+        ":image-directive_rjs",
+        "//packages/core:tsconfig_build",
     ],
 )
 
@@ -54,7 +54,7 @@ http_server(
     ],
     deps = [
         ":bundle",
-        "@npm//zone.js",
+        "//:node_modules/zone.js",
     ],
 )
 
@@ -64,24 +64,20 @@ ts_project(
     srcs = ["e2e/browser-logs-util.ts"] + glob([
         "e2e/**/*.e2e-spec.ts",
     ]),
-    interop_deps = [
-        "//packages/private/testing",
-    ],
     tsconfig = ":e2e/tsconfig-e2e.json",
     deps = [
         "//:node_modules/@types/jasminewd2",
         "//:node_modules/@types/node",
         "//:node_modules/@types/selenium-webdriver",
         "//:node_modules/protractor",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
 protractor_web_test_suite(
     name = "protractor_tests",
-    on_prepare = ":e2e/start-server.js",
     server = ":devserver",
     deps = [
-        ":img_dir_e2e_tests_lib",
-        "@npm//selenium-webdriver",
+        ":img_dir_e2e_tests_lib_rjs",
     ],
 )
