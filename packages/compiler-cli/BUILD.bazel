@@ -1,4 +1,4 @@
-load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@npm2//:defs.bzl", "npm_link_all_packages")
 load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm")
 load("//tools:defaults2.bzl", "npm_package", "ts_config", "ts_project")
@@ -10,6 +10,13 @@ PUBLIC_TARGETS = [
     "//packages/compiler-cli/private",
     "//packages/compiler-cli/linker",
     "//packages/compiler-cli/linker/babel",
+]
+
+PUBLIC_TARGETS_RJS = [
+    ":compiler-cli_rjs",
+    "//packages/compiler-cli/private:private_rjs",
+    "//packages/compiler-cli/linker:linker_rjs",
+    "//packages/compiler-cli/linker/babel:babel_rjs",
 ]
 
 npm_link_all_packages()
@@ -33,23 +40,16 @@ ts_config(
     ],
 )
 
-esbuild_config(
-    name = "esbuild_config",
-    config_file = "esbuild.config.js",
-)
-
 esbuild(
     name = "bundles",
-    config = ":esbuild_config",
+    config = "esbuild.config.js",
     entry_points = [
         ":index.ts",
         "//packages/compiler-cli:src/bin/ngc.ts",
         "//packages/compiler-cli:src/bin/ng_xi18n.ts",
-        "//packages/compiler-cli/linker:index.ts",
-        "//packages/compiler-cli/linker/babel:index.ts",
-        "//packages/compiler-cli/private:localize.ts",
-        "//packages/compiler-cli/private:migrations.ts",
-        "//packages/compiler-cli/private:tooling.ts",
+        "//packages/compiler-cli/linker:files",
+        "//packages/compiler-cli/linker/babel:files",
+        "//packages/compiler-cli/private:files",
     ],
     external = [
         "@angular/compiler",
@@ -68,7 +68,7 @@ esbuild(
     platform = "node",
     splitting = True,
     target = "node20",
-    deps = PUBLIC_TARGETS,
+    deps = PUBLIC_TARGETS_RJS,
 )
 
 ts_project(

@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "esbuild", "extract_types", "pkg_npm")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "extract_types", "pkg_npm")
 load("//tools:defaults2.bzl", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -34,16 +35,16 @@ ts_project(
 esbuild(
     name = "factory_bundle",
     entry_point = ":plugin-factory.ts",
-    external = ["./bundles/language-service.js"],
+    external = ["@angular/language-service/bundles/language-service.js"],
     format = "cjs",
-    deps = [":factory_lib"],
+    deps = [":factory_lib_rjs"],
 )
 
 esbuild(
     name = "api_bundle",
     entry_point = ":api.ts",
     format = "cjs",
-    deps = [":api"],
+    deps = [":api_rjs"],
 )
 
 extract_types(

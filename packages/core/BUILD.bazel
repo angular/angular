@@ -179,7 +179,7 @@ generate_api_docs(
 
 genrule(
     name = "event_dispatch_contract_binary",
-    srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min"],
+    srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min.js"],
     outs = ["event-dispatch-contract.min.js"],
     cmd = "cp $< $@",
 )
