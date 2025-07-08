@@ -70,7 +70,7 @@ import {
   wrapForDiagnostics,
   wrapForTypeChecker,
 } from './diagnostics';
-import {DomSchemaChecker} from './dom';
+import {DomSchemaChecker, REGISTRY} from './dom';
 import {Environment} from './environment';
 import {astToTypescript, getAnyExpression} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
@@ -1206,7 +1206,7 @@ class TcbDomSchemaCheckerOp extends TcbOp {
 
       if (isPropertyBinding && binding.name !== 'style' && binding.name !== 'class') {
         // A direct binding to a property.
-        const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
+        const propertyName = REGISTRY.getMappedPropName(binding.name);
 
         if (isTemplateElement) {
           this.tcb.domSchemaChecker.checkTemplateElementProperty(
@@ -1419,21 +1419,6 @@ class TcbComponentNodeOp extends TcbOp {
 }
 
 /**
- * Mapping between attributes names that don't correspond to their element property names.
- * Note: this mapping has to be kept in sync with the equally named mapping in the runtime.
- */
-const ATTR_TO_PROP = new Map(
-  Object.entries({
-    'class': 'className',
-    'for': 'htmlFor',
-    'formaction': 'formAction',
-    'innerHtml': 'innerHTML',
-    'readonly': 'readOnly',
-    'tabindex': 'tabIndex',
-  }),
-);
-
-/**
  * A `TcbOp` which generates code to check "unclaimed inputs" - bindings on an element which were
  * not attributed to any directive or component, and are instead processed against the HTML element
  * itself.
@@ -1481,7 +1466,7 @@ class TcbUnclaimedInputsOp extends TcbOp {
             elId = this.scope.resolve(this.target);
           }
           // A direct binding to a property.
-          const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
+          const propertyName = REGISTRY.getMappedPropName(binding.name);
           const prop = ts.factory.createElementAccessExpression(
             elId,
             ts.factory.createStringLiteral(propertyName),

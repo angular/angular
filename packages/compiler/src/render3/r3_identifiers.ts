@@ -252,6 +252,7 @@ export class Identifiers {
 
   static domProperty: o.ExternalReference = {name: 'ɵɵdomProperty', moduleName: CORE};
 
+  static ariaProperty: o.ExternalReference = {name: 'ɵɵariaProperty', moduleName: CORE};
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
 
   static animationEnterListener: o.ExternalReference = {
