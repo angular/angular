@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {computed, resource, ɵisPromise} from '@angular/core';
 import {validateAsync} from './async';
 import {define} from './data';
@@ -19,11 +27,11 @@ interface StandardSchemaFormTreeError extends FormTreeError {
  *
  * @param path The `FieldPath` to the field to validate.
  * @param schema The standard schema compatible validator to use for validation.
- * @template T The type of the field being validated.
+ * @template TValue The type of value stored in the field being validated.
  */
-export function validateStandardSchema<T>(
-  path: FieldPath<T>,
-  schema: NoInfer<StandardSchemaV1<T>>,
+export function validateStandardSchema<TValue>(
+  path: FieldPath<TValue>,
+  schema: NoInfer<StandardSchemaV1<TValue>>,
 ) {
   // We create both a sync and async validator because the standard schema validator can return
   // either a sync result or a Promise, and we need to handle both cases. The sync validator

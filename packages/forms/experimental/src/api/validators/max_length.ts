@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, LogicFn} from '../types';
 import {metadata, validate} from '../logic';
-import {BaseValidatorConfig, ValueWithLength} from './types';
 import {MAX_LENGTH} from '../metadata';
+import {FieldPath, LogicFn, PathKind} from '../types';
+import {BaseValidatorConfig, ValueWithLength} from './types';
 
 /**
  * Validator requiring a field value's length to be smaller than or equal to a maximum length.
@@ -18,10 +18,10 @@ import {MAX_LENGTH} from '../metadata';
  * @param maxLength The maximum length, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function maxLength(
-  path: FieldPath<ValueWithLength>,
-  maxLength: number | LogicFn<ValueWithLength, number | undefined>,
-  config?: BaseValidatorConfig<ValueWithLength>,
+export function maxLength<TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<ValueWithLength, TPathKind>,
+  maxLength: number | LogicFn<ValueWithLength, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<ValueWithLength, TPathKind>,
 ) {
   const reactiveMaxLengthValue = typeof maxLength === 'number' ? () => maxLength : maxLength;
   metadata(path, MAX_LENGTH, reactiveMaxLengthValue);

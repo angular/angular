@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, Signal, WritableSignal} from '@angular/core';
+import {computed, Signal, untracked, WritableSignal} from '@angular/core';
 import {Field, FieldContext, FieldPath, FieldState} from '../api/types';
 import {FieldPathNode} from '../path_node';
 import {FieldNode} from './node';
@@ -115,6 +115,17 @@ export class FieldNodeContext implements FieldContext<unknown> {
   get value(): WritableSignal<unknown> {
     return this.node.structure.value;
   }
+
+  get key(): Signal<string> {
+    return this.node.structure.keyInParent;
+  }
+
+  readonly index = computed(() => {
+    if (!Array.isArray(untracked(this.node.structure.parent!.value))) {
+      throw new Error(`RuntimeError: cannot access index, parent field is not an array`);
+    }
+    return Number(this.key());
+  });
 
   readonly fieldOf = <P>(p: FieldPath<P>) => this.resolve(p);
   readonly stateOf = <P>(p: FieldPath<P>) => this.resolve(p)();

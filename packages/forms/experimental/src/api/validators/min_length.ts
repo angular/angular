@@ -8,7 +8,7 @@
 
 import {metadata, validate} from '../logic';
 import {MIN_LENGTH} from '../metadata';
-import {FieldPath, LogicFn} from '../types';
+import {FieldPath, LogicFn, PathKind} from '../types';
 import {BaseValidatorConfig, ValueWithLength} from './types';
 
 /**
@@ -18,10 +18,10 @@ import {BaseValidatorConfig, ValueWithLength} from './types';
  * @param minLength The minimum length, or a LogicFn returning it.
  * @param config Optional, currently allows providing custom errors function.
  */
-export function minLength(
-  path: FieldPath<ValueWithLength>,
-  minLength: number | LogicFn<ValueWithLength, number | undefined>,
-  config?: BaseValidatorConfig<ValueWithLength>,
+export function minLength<TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<ValueWithLength, TPathKind>,
+  minLength: number | LogicFn<ValueWithLength, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<ValueWithLength, TPathKind>,
 ) {
   const reactiveMinLengthValue = typeof minLength === 'number' ? () => minLength : minLength;
   metadata(path, MIN_LENGTH, reactiveMinLengthValue);

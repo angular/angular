@@ -15,6 +15,19 @@ import {MetadataKey} from './metadata';
  */
 declare const ɵɵTYPE: unique symbol;
 
+export declare namespace PathKind {
+  export interface Root {
+    [ɵɵTYPE]: 'root' | 'child' | 'item';
+  }
+  export interface Child extends PathKind.Root {
+    [ɵɵTYPE]: 'child' | 'item';
+  }
+  export interface Item extends PathKind.Child {
+    [ɵɵTYPE]: 'item';
+  }
+}
+export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
+
 /**
  * Indicates whether the form is unsubmitted, submitted, or currently submitting.
  */
@@ -69,13 +82,17 @@ export type AsyncValidationResult =
  * underlaying data. For example a `Field<{x: number}>` has a property `x` which contains a
  * `Field<number>`. To access the state associated with a field, call it as a function.
  *
- * @template T The type of the data which the field is wrapped around.
+ * @template TValue The type of the data which the field is wrapped around.
+ * @template TKey The type of the property key which this field resides under in its parent.
  */
-export type Field<T, TKey extends string | number = string | number> = (() => FieldState<T, TKey>) &
-  (T extends Array<infer U>
+export type Field<TValue, TKey extends string | number = string | number> = (() => FieldState<
+  TValue,
+  TKey
+>) &
+  (TValue extends Array<infer U>
     ? Array<MaybeField<U, number>>
-    : T extends Record<string, any>
-      ? {[K in keyof T]: MaybeField<T[K], string>}
+    : TValue extends Record<string, any>
+      ? {[K in keyof TValue]: MaybeField<TValue[K], string>}
       : unknown);
 
 export type MaybeField<T, TKey extends string | number = string | number> =
@@ -86,12 +103,12 @@ export type MaybeField<T, TKey extends string | number = string | number> =
  * Contains all of the state (e.g. value, statuses, metadata) associated with a `Field`, exposed as
  * signals.
  */
-export interface FieldState<T, TKey extends string | number = string | number> {
+export interface FieldState<TValue, TKey extends string | number = string | number> {
   /**
    * A writable signal containing the value for this field. Updating this signal will update the
    * data model that the field is bound to.
    */
-  readonly value: WritableSignal<T>;
+  readonly value: WritableSignal<TValue>;
   /**
    * A signal indicating whether the field has been touched by the user.
    */
@@ -195,33 +212,37 @@ export interface FieldState<T, TKey extends string | number = string | number> {
  * particular part of the structure prior to the creation of the form. Because the `FieldPath`
  * exists prior to the form's creation, it cannot be used to access any of the field state.
  *
- * @template T The type of the data which the form is wrapped around.
+ * @template TValue The type of the data which the form is wrapped around.
+ * @template TPathKind The kind of path (root field, child field, or item of an array)
  */
-export type FieldPath<T> = {
-  [ɵɵTYPE]: T;
-} & (T extends any[]
+export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
+  [ɵɵTYPE]: [TValue, TPathKind];
+} & (TValue extends any[]
   ? {}
-  : T extends Record<PropertyKey, any>
-    ? {[K in keyof T]: FieldPath<T[K]>}
+  : TValue extends Record<PropertyKey, any>
+    ? {[K in keyof TValue]: FieldPath<TValue[K], PathKind.Child>}
     : {});
 
 /**
  * Defines logic for a form of type T.
  */
-export type Schema<in T> = {
-  // Save type as `T => void` rather than `T` since `Schema` is contravariant on `T`. */
-  [ɵɵTYPE]: (_: T) => void;
+export type Schema<in TValue> = {
+  [ɵɵTYPE]: SchemaFn<TValue, PathKind.Root>;
 };
 
 /**
  * Function that defines rules for a schema.
  */
-export type SchemaFn<T> = (p: FieldPath<T>) => void;
+export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (
+  p: FieldPath<TValue, TPathKind>,
+) => void;
 
 /**
  * A schema or schema definition function.
  */
-export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
+export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> =
+  | Schema<TValue>
+  | SchemaFn<TValue, TPathKind>;
 
 /**
  * A function that recevies the `FieldContext` for the field the logic is bound to and returns
@@ -229,30 +250,53 @@ export type SchemaOrSchemaFn<T> = Schema<T> | SchemaFn<T>;
  *
  * @template TValue The data type for the field the logic is bound to.
  * @template TReturn The type of the result returned by the logic function.
+ * @template TPathKind The kind of path the logic is applied to (root field, child field, or item of an array)
  */
-export type LogicFn<TValue, TReturn> = (ctx: FieldContext<TValue>) => TReturn;
+export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root> = (
+  ctx: FieldContext<TValue, TPathKind>,
+) => TReturn;
 
 /**
  * A Validator is a function that
  *  takes a `logic argument` and returns a validation result.
  *
- *  @template T Value type
+ *  @template TValue Value type
+ *  @template TPathKind The kind of path being validated (root field, child field, or item of an array)
  */
-export type Validator<T> = LogicFn<T, ValidationResult>;
+export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
+  TValue,
+  ValidationResult,
+  TPathKind
+>;
 
-export type TreeValidator<T> = LogicFn<T, FormTreeError[]>;
+export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
+  TValue,
+  FormTreeError[],
+  TPathKind
+>;
 
-/**
- * An object containing context about the field a given logic function is bound to.
- */
-export interface FieldContext<T> {
-  /**
-   * A signal of the value of the field that the logic function is bound to.
-   */
-  readonly value: Signal<T>;
-  readonly state: FieldState<T>;
-  readonly field: Field<T>;
+export type FieldContext<
+  TValue,
+  TPathKind extends PathKind = PathKind.Root,
+> = TPathKind extends PathKind.Item
+  ? ItemFieldContext<TValue>
+  : TPathKind extends PathKind.Child
+    ? ChildFieldContext<TValue>
+    : RootFieldContext<TValue>;
+
+export interface RootFieldContext<TValue> {
+  readonly value: Signal<TValue>;
+  readonly state: FieldState<TValue>;
+  readonly field: Field<TValue>;
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
+}
+
+export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
+  readonly key: Signal<string>;
+}
+
+export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
+  readonly index: Signal<number>;
 }
