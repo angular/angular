@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {load} from '@angular/core/src/render3/util/view_utils';
 import {Route} from '../../../protocol';
 import type {Route as AngularRoute} from '@angular/router';
 
