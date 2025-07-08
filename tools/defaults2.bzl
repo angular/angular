@@ -5,6 +5,7 @@ load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass
 load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test", _zoneless_jasmine_test = "zoneless_jasmine_test")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ng_package.bzl", _ng_package = "ng_package")
+load("//tools/bazel:protractor_test.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
 load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _zoneless_web_test_suite = "zoneless_web_test_suite")
 
@@ -19,6 +20,7 @@ zoneless_web_test_suite = _zoneless_web_test_suite
 sass_binary = _sass_binary
 sass_library = _sass_library
 npm_sass_library = _npm_sass_library
+protractor_web_test_suite = _protractor_web_test_suite
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):

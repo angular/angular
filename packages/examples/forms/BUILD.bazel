@@ -1,5 +1,6 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "protractor_web_test_suite")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "http_server")
+load("//tools:defaults2.bzl", "ng_project", "protractor_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -38,8 +39,15 @@ ts_project(
 
 esbuild(
     name = "app_bundle",
+    config = {
+        "resolveExtensions": [".js"],
+    },
     entry_point = ":main.ts",
-    deps = [":forms_examples"],
+    tsconfig = "//packages/examples:tsconfig_build",
+    deps = [
+        ":forms_examples_rjs",
+        "//packages/examples:tsconfig_build",
+    ],
 )
 
 http_server(
@@ -51,11 +59,9 @@ http_server(
 
 protractor_web_test_suite(
     name = "protractor_tests",
-    on_prepare = ":start-server.js",
     server = ":devserver",
     deps = [
-        ":forms_e2e_tests_lib",
-        "@npm//selenium-webdriver",
+        ":forms_e2e_tests_lib_rjs",
     ],
 )
 
