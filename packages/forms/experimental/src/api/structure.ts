@@ -16,6 +16,7 @@ import type {
   Field,
   FieldPath,
   LogicFn,
+  PathKind,
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
@@ -26,11 +27,11 @@ export interface FormOptions {
   injector?: Injector;
 }
 
-function normalizeFormArgs<T>(
+function normalizeFormArgs<TValue>(
   args: any[],
-): [WritableSignal<T>, SchemaOrSchemaFn<T> | undefined, FormOptions | undefined] {
-  let model: WritableSignal<T>;
-  let schema: SchemaOrSchemaFn<T> | undefined;
+): [WritableSignal<TValue>, SchemaOrSchemaFn<TValue> | undefined, FormOptions | undefined] {
+  let model: WritableSignal<TValue>;
+  let schema: SchemaOrSchemaFn<TValue> | undefined;
   let options: FormOptions | undefined;
 
   if (args.length === 3) {
@@ -83,9 +84,9 @@ function normalizeFormArgs<T>(
  * the model.
  * @param options The form options
  * @return A `Field` representing a form around the data model.
- * @template The type of the data model.
+ * @template TValue The type of the data model.
  */
-export function form<T>(model: WritableSignal<T>, options?: FormOptions): Field<T>;
+export function form<TValue>(model: WritableSignal<TValue>, options?: FormOptions): Field<TValue>;
 
 /**
  * Creates a form wrapped around the given model data. A form is represented as simply a `Field` of
@@ -124,28 +125,28 @@ export function form<T>(model: WritableSignal<T>, options?: FormOptions): Field<
  * included to specify logic for the form (e.g. validation, disabled fields, etc.)
  * @param options The form options
  * @return A `Field` representing a form around the data model.
- * @template The type of the data model.
+ * @template TValue The type of the data model.
  */
-export function form<T>(
-  model: WritableSignal<T>,
+export function form<TValue>(
+  model: WritableSignal<TValue>,
   // TODO: Decide if we want `NoInfer` or not.
   // Note: `NoInfer<...>` works here when the schema is defined inline, but not when it is defined
   // ahead of time, e.g.
   // const s = (p: FieldPath<string>) => { ... };
   // const f = form(signal(''), s);
-  schema?: SchemaOrSchemaFn<T>,
+  schema?: SchemaOrSchemaFn<TValue>,
   options?: FormOptions,
-): Field<T>;
+): Field<TValue>;
 
-export function form<T>(...args: any[]): Field<T> {
-  const [model, schema, options] = normalizeFormArgs<T>(args);
+export function form<TValue>(...args: any[]): Field<TValue> {
+  const [model, schema, options] = normalizeFormArgs<TValue>(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
   const fieldManager = new FormFieldManager(injector);
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
 
-  return fieldRoot.fieldProxy as Field<T>;
+  return fieldRoot.fieldProxy as Field<TValue>;
 }
 
 /**
@@ -179,13 +180,16 @@ export function form<T>(...args: any[]): Field<T> {
  * @param path The target path for an array field whose items the schema will be applied to.
  * @param schema A schema for an element of the array, or function that binds logic to an
  * element of the array.
- * @template T The data type of an element in the array.
+ * @template TValue The data type of the item field to apply the schema to.
  */
-export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<SchemaOrSchemaFn<T>>): void {
+export function applyEach<TValue>(
+  path: FieldPath<TValue[]>,
+  schema: NoInfer<SchemaOrSchemaFn<TValue, PathKind.Item>>,
+): void {
   assertPathIsCurrent(path);
 
   const elementPath = FieldPathNode.unwrapFieldPath(path).element.fieldPathProxy;
-  apply(elementPath, schema);
+  apply(elementPath, schema as Schema<TValue>);
 }
 
 /**
@@ -203,8 +207,12 @@ export function applyEach<T>(path: FieldPath<T[]>, schema: NoInfer<SchemaOrSchem
  *
  * @param path The target path to apply the schema to.
  * @param schema The schema to apply to the property
+ * @template TValue The data type of the field to apply the schema to.
  */
-export function apply<T>(path: FieldPath<T>, schema: NoInfer<SchemaOrSchemaFn<T>>): void {
+export function apply<TValue>(
+  path: FieldPath<TValue>,
+  schema: NoInfer<SchemaOrSchemaFn<TValue>>,
+): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
@@ -217,11 +225,12 @@ export function apply<T>(path: FieldPath<T>, schema: NoInfer<SchemaOrSchemaFn<T>
  * @param path The target path to apply the schema to.
  * @param logic A `LogicFn<T, boolean>` that returns `true` when the schema should be applied.
  * @param schema The schema to apply to the field when the `logic` function returns `true`.
+ * @template TValue The data type of the field to apply the schema to.
  */
-export function applyWhen<T>(
-  path: FieldPath<T>,
-  logic: LogicFn<T, boolean>,
-  schema: NoInfer<SchemaOrSchemaFn<T>>,
+export function applyWhen<TValue>(
+  path: FieldPath<TValue>,
+  logic: LogicFn<TValue, boolean>,
+  schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void {
   assertPathIsCurrent(path);
 
@@ -236,10 +245,12 @@ export function applyWhen<T>(
  * @param predicate A type guard that accepts a value `T` and returns `true` if `T` is of type
  *   `TNarrowed`.
  * @param schema The schema to apply to the field when `predicate` returns `true`.
+ * @template TValue The data type of the field to apply the schema to.
+ * @template TNarrowed The data type of the schema (a narrowed type of TValue).
  */
-export function applyWhenValue<T, TNarrowed extends T>(
-  path: FieldPath<T>,
-  predicate: (value: T) => value is TNarrowed,
+export function applyWhenValue<TValue, TNarrowed extends TValue>(
+  path: FieldPath<TValue>,
+  predicate: (value: TValue) => value is TNarrowed,
   schema: NoInfer<SchemaOrSchemaFn<TNarrowed>>,
 ): void;
 /**
@@ -249,11 +260,12 @@ export function applyWhenValue<T, TNarrowed extends T>(
  * @param predicate A function that accepts a value `T` and returns `true` when the schema
  *   should be applied.
  * @param schema The schema to apply to the field when `predicate` returns `true`.
+ * @template TValue The data type of the field to apply the schema to.
  */
-export function applyWhenValue<T>(
-  path: FieldPath<T>,
-  predicate: (value: T) => boolean,
-  schema: NoInfer<SchemaOrSchemaFn<T>>,
+export function applyWhenValue<TValue>(
+  path: FieldPath<TValue>,
+  predicate: (value: TValue) => boolean,
+  schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void;
 export function applyWhenValue(
   path: FieldPath<unknown>,
@@ -290,10 +302,11 @@ export function applyWhenValue(
  * @param f The field to submit.
  * @param action An asynchronous action used to submit the field. The action may return server
  * errors.
+ * @template TValue The data type of the field being submitted.
  */
-export async function submit<T>(
-  form: Field<T>,
-  action: (form: Field<T>) => Promise<ServerError[] | void>,
+export async function submit<TValue>(
+  form: Field<TValue>,
+  action: (form: Field<TValue>) => Promise<ServerError[] | void>,
 ) {
   const api = form() as FieldNode;
   api.submitState.selfSubmittedStatus.set('submitting');

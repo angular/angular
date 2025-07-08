@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -44,7 +44,7 @@ export abstract class FieldNodeStructure {
    */
   abstract readonly childrenMap: Signal<Map<TrackingKey, FieldNode> | undefined>;
   abstract readonly value: WritableSignal<unknown>;
-  abstract readonly keyInParent: Signal<string | number>;
+  abstract readonly keyInParent: Signal<string>;
   abstract readonly fieldManager: FormFieldManager;
   abstract readonly root: FieldNode;
   abstract readonly pathKeys: Signal<readonly PropertyKey[]>;
@@ -124,7 +124,7 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
     return ROOT_PATH_KEYS;
   }
 
-  override get keyInParent(): Signal<string | number> {
+  override get keyInParent(): Signal<string> {
     return ROOT_KEY_IN_PARENT;
   }
 
@@ -153,7 +153,7 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
 export class ChildFieldNodeStructure extends FieldNodeStructure {
   override readonly root: FieldNode;
   override readonly pathKeys: Signal<readonly PropertyKey[]>;
-  override readonly keyInParent: Signal<string | number>;
+  override readonly keyInParent: Signal<string>;
   override readonly value: WritableSignal<unknown>;
 
   override readonly childrenMap: Signal<Map<TrackingKey, FieldNode> | undefined>;
@@ -168,7 +168,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
     logic: LogicNode,
     readonly parent: FieldNode,
     identityInParent: TrackingKey | undefined,
-    initialKeyInParent: string | number,
+    initialKeyInParent: string,
     createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
   ) {
     super(logicPath, logic);
@@ -186,7 +186,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
         return key;
       });
     } else {
-      let lastKnownKey = initialKeyInParent as number;
+      let lastKnownKey = initialKeyInParent;
       this.keyInParent = computed(() => {
         // TODO(alxhub): future perf optimization: here we depend on the parent's value, but most
         // changes to the value aren't structural - they aren't moving around objects and thus
@@ -199,7 +199,9 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
         }
 
         // Check the parent value at the last known key to avoid a scan.
-        const data = parentValue[lastKnownKey as number];
+        // Note: lastKnownKey is a string, but we pretend to typescript like its a number,
+        // since accessing someArray['1'] is the same as accessing someArray[1]
+        const data = parentValue[lastKnownKey as unknown as number];
         if (
           isObject(data) &&
           data.hasOwnProperty(parent.structure.identitySymbol) &&
@@ -216,7 +218,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
             data.hasOwnProperty(parent.structure.identitySymbol) &&
             data[parent.structure.identitySymbol] === identityInParent
           ) {
-            return (lastKnownKey = i);
+            return (lastKnownKey = i.toString());
           }
         }
 
@@ -257,7 +259,7 @@ export interface ChildFieldNodeOptions {
   readonly parent: FieldNode;
   readonly logicPath: FieldPathNode;
   readonly logic: LogicNode;
-  readonly initialKeyInParent: string | number;
+  readonly initialKeyInParent: string;
   readonly identityInParent: TrackingKey | undefined;
 }
 
