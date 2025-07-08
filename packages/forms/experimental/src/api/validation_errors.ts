@@ -119,7 +119,6 @@ function matchesNgErrorStructure(obj: any, allowField: boolean) {
     case 'email':
       return true;
     case 'min':
-      console.log(error.min);
       return typeof error.min === 'number';
     case 'max':
       return typeof error.max === 'number';
