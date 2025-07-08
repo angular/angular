@@ -7,7 +7,6 @@
  */
 
 import {ApplicationConfig, provideZonelessChangeDetection} from '@angular/core';
-import {provideAnimations} from '@angular/platform-browser/animations';
 import {ApplicationEnvironment, ApplicationOperations} from '../../../ng-devtools';
 
 import {ChromeApplicationEnvironment} from './chrome-application-environment';
@@ -19,7 +18,6 @@ import {ChromeMessageBus} from './chrome-message-bus';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideAnimations(),
     provideZonelessChangeDetection(),
     {provide: FrameManager, useFactory: () => FrameManager.initialize()},
     {

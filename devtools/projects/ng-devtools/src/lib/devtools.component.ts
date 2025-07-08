@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {animate, style, transition, trigger} from '@angular/animations';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -54,12 +53,6 @@ const LAST_SUPPORTED_VERSION = 9;
   selector: 'ng-devtools',
   templateUrl: './devtools.component.html',
   styleUrls: ['./devtools.component.scss'],
-  animations: [
-    trigger('enterAnimation', [
-      transition(':enter', [style({opacity: 0}), animate('200ms', style({opacity: 1}))]),
-      transition(':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))]),
-    ]),
-  ],
   imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
   providers: [WINDOW_PROVIDER, ThemeService],
   changeDetection: ChangeDetectionStrategy.OnPush,
