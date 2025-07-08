@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -199,6 +199,8 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
         }
 
         // Check the parent value at the last known key to avoid a scan.
+        // Note: lastKnownKey is a string, but we pretend to typescript like its a number,
+        // since accessing someArray['1'] is the same as accessing someArray[1]
         const data = parentValue[lastKnownKey as unknown as number];
         if (
           isObject(data) &&
