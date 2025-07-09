@@ -101,7 +101,7 @@ function validateXhrCompatibility(req: HttpRequest<any>) {
 
   // Check each unsupported option and warn if present
   for (const {property, errorCode} of unsupportedOptions) {
-    if (property in req) {
+    if (req[property]) {
       console.warn(
         formatRuntimeError(
           errorCode,
