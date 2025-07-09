@@ -1,10 +1,11 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
-load("@npm//typescript:index.bzl", "tsc")
+load("@npm2//:typescript/package_json.bzl", tsc = "bin")
 
 package(default_visibility = ["//packages/localize/tools/test/extract/integration:__pkg__"])
 
-tsc(
+tsc.tsc(
     name = "compile_es5",
+    srcs = glob(["src/*.ts"]),
     outs = [
         "dist_es5/index.js",
         "dist_es5/index.js.map",
@@ -15,17 +16,17 @@ tsc(
         "--module",
         "amd",
         "--outFile",
-        "$(execpath dist_es5/index.js)",
+        "$(rootpath dist_es5/index.js)",
         "--skipLibCheck",
         "--sourceMap",
         "--inlineSources",
-        "$(execpath src/index.ts)",
+        "$(rootpath src/index.ts)",
     ],
-    data = glob(["src/*.ts"]),
 )
 
-tsc(
+tsc.tsc(
     name = "compile_es2015",
+    srcs = glob(["src/*.ts"]),
     outs = [
         "dist_es2015/index.js",
         "dist_es2015/index.js.map",
@@ -36,13 +37,12 @@ tsc(
         "--module",
         "amd",
         "--outFile",
-        "$(execpath dist_es2015/index.js)",
+        "$(rootpath dist_es2015/index.js)",
         "--skipLibCheck",
         "--sourceMap",
         "--inlineSources",
-        "$(execpath src/index.ts)",
+        "$(rootpath src/index.ts)",
     ],
-    data = glob(["src/*.ts"]),
 )
 
 # Use copy_to_bin since filegroup doesn't seem to work on Windows.
