@@ -195,7 +195,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#d6f2b1159c52268160c02e701b80646e8f311257":
   version "0.0.0-16978de33ad399cd865cf3c06aae8ff622129f18"
-  uid d6f2b1159c52268160c02e701b80646e8f311257
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#d6f2b1159c52268160c02e701b80646e8f311257"
   dependencies:
     "@angular/build" "19.1.0-rc.0"
@@ -337,7 +336,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#800f6e7be48e84780621f8f7e9eec79a865346fd":
   version "0.0.0-6f54d143077baef582d70873722166fdc040066c"
-  uid "800f6e7be48e84780621f8f7e9eec79a865346fd"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#800f6e7be48e84780621f8f7e9eec79a865346fd"
   dependencies:
     "@google-cloud/spanner" "8.0.0"
@@ -7536,8 +7534,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b":
-  version "2.1.6+git"
-  uid "93e720f143d0296dd2726ffbcf4fc12283363a7b"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b"
 
 domutils@^3.0.1, domutils@^3.1.0, domutils@^3.2.1:
@@ -16229,7 +16226,12 @@ typescript@5.8.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.2.tgz#8170b3702f74b79db2e5a96207c15e65807999e4"
   integrity sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==
 
-typescript@5.8.3, typescript@^5.8.3:
+typescript@5.9.0-beta:
+  version "5.9.0-beta"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.9.0-beta.tgz#c99c8eaa4466875425f90f71d0ceb97a75245e7e"
+  integrity sha512-p91qoTdwWKj9YEBYavmGiBn0DF4OBElzw4pW4oPbK4HeCfr/SDz9+yviVWshZXGvGvFCJ3AVQ+J7F1UZXc23QQ==
+
+typescript@^5.8.3:
   version "5.8.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.3.tgz#92f8a3e5e3cf497356f4178c34cd65a7f5e8440e"
   integrity sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==

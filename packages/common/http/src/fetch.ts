@@ -300,7 +300,7 @@ export class FetchBackend implements HttpBackend {
 
   private parseBody(
     request: HttpRequest<any>,
-    binContent: Uint8Array,
+    binContent: Uint8Array<ArrayBuffer>,
     contentType: string,
   ): string | ArrayBuffer | Blob | object | null {
     switch (request.responseType) {
@@ -366,7 +366,7 @@ export class FetchBackend implements HttpBackend {
     };
   }
 
-  private concatChunks(chunks: Uint8Array[], totalLength: number): Uint8Array {
+  private concatChunks(chunks: Uint8Array[], totalLength: number): Uint8Array<ArrayBuffer> {
     const chunksAll = new Uint8Array(totalLength);
     let position = 0;
     for (const chunk of chunks) {

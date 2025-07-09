@@ -72,7 +72,7 @@ function* allTargetOptions(
 function createHost(tree: Tree): workspaces.WorkspaceHost {
   return {
     async readFile(path: string): Promise<string> {
-      const data = tree.read(path);
+      const data = tree.read(path) as unknown as virtualFs.FileBuffer;
       if (!data) {
         throw new Error('File not found.');
       }
