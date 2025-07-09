@@ -615,7 +615,11 @@ class UrlParser {
   }
 
   parseRootSegment(): UrlSegmentGroup {
-    this.consumeOptional('/');
+    // Consume all leading slashes. Multiple consecutive leading slashes (e.g. `///path`)
+    // are not meaningful and would otherwise produce a `//path`-style serialized URL,
+    // which browsers interpret as protocol-relative (resolving to a different origin)
+    // and reject with a SecurityError when passed to `history.pushState`/`replaceState`.
+    while (this.consumeOptional('/')) {}
 
     if (this.remaining === '' || this.peekStartsWith('?') || this.peekStartsWith('#')) {
       return new UrlSegmentGroup([], {});
