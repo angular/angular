@@ -18,9 +18,8 @@ import {ExecutionDetailsComponent} from './execution-details/execution-details.c
 import {BargraphVisualizerComponent} from './bargraph-visualizer/bargraph-visualizer.component';
 import {TreeMapVisualizerComponent} from './tree-map-visualizer/tree-map-visualizer.component';
 import {FlamegraphVisualizerComponent} from './flamegraph-visualizer/flamegraph-visualizer.component';
-
-import {SplitAreaDirective} from '../../../../vendor/angular-split/lib/component/splitArea.directive';
-import {SplitComponent} from '../../../../vendor/angular-split/lib/component/split.component';
+import {SplitComponent} from '../../../../shared/split/split.component';
+import {SplitAreaDirective} from '../../../../shared/split/splitArea.directive';
 
 @Component({
   selector: 'ng-recording-visualizer',

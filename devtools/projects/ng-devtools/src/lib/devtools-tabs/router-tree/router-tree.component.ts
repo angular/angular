@@ -9,7 +9,6 @@
 import {CommonModule} from '@angular/common';
 import {afterNextRender, Component, effect, inject, input, signal, viewChild} from '@angular/core';
 import {TreeVisualizerHostComponent} from '../../shared/tree-visualizer-host/tree-visualizer-host.component';
-import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {MatIconModule} from '@angular/material/icon';
 import {ApplicationOperations} from '../../application-operations/index';
 import {RouteDetailsRowComponent} from './route-details-row.component';
@@ -24,6 +23,8 @@ import {
   getRouteLabel,
 } from './router-tree-fns';
 import {ButtonComponent} from '../../shared/button/button.component';
+import {SplitComponent} from '../../shared/split/split.component';
+import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
 
 const DEFAULT_FILTER = /.^/;
 

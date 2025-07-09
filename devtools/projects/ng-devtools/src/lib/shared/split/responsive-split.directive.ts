@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Directive, ElementRef, inject, input, NgZone, OnDestroy, output} from '@angular/core';
-import {SplitComponent} from '../../vendor/angular-split/public_api';
+import {Directive, ElementRef, inject, input, NgZone, DestroyRef, output} from '@angular/core';
 import {WINDOW} from '../../application-providers/window_provider';
 import {Debouncer} from '../utils/debouncer';
+import {SplitComponent} from './split.component';
+import {Direction} from './interface';
 
 export const RESIZE_DEBOUNCE = 50; // in milliseconds
-
-export type Direction = 'vertical' | 'horizontal';
 
 export type ResponsiveSplitConfig = {
   /** Default direction of the as-split (when < `aspectRatioBreakpoint`) */
@@ -28,13 +27,11 @@ export type ResponsiveSplitConfig = {
 @Directive({
   selector: 'as-split[ngResponsiveSplit]',
 })
-export class ResponsiveSplitDirective implements OnDestroy {
+export class ResponsiveSplitDirective {
   private readonly host = inject(SplitComponent);
   private readonly elementRef = inject(ElementRef);
   private readonly zone = inject(NgZone);
   private readonly window = inject<typeof globalThis>(WINDOW);
-  private resizeObserver: ResizeObserver;
-  private debouncer: Debouncer;
 
   protected readonly config = input.required<ResponsiveSplitConfig>({
     alias: 'ngResponsiveSplit',
@@ -43,9 +40,10 @@ export class ResponsiveSplitDirective implements OnDestroy {
   protected readonly directionChange = output<Direction>();
 
   constructor() {
-    this.debouncer = new Debouncer();
-    this.resizeObserver = new this.window.ResizeObserver(
-      this.debouncer.debounce(([entry]) => {
+    const debouncer = new Debouncer();
+    // We use the ResizeObserver from the injected window object to allow mocking in tests.
+    const resizeObserver = new this.window.ResizeObserver(
+      debouncer.debounce(([entry]) => {
         // Since used in a ResizeObserver which is not
         // patched by zone.js, run inside a zone.
         this.zone.run(() => {
@@ -57,12 +55,11 @@ export class ResponsiveSplitDirective implements OnDestroy {
       }, RESIZE_DEBOUNCE),
     );
 
-    this.resizeObserver.observe(this.elementRef.nativeElement);
-  }
-
-  ngOnDestroy() {
-    this.debouncer.cancel();
-    this.resizeObserver.unobserve(this.elementRef.nativeElement);
+    resizeObserver.observe(this.elementRef.nativeElement);
+    inject(DestroyRef).onDestroy(() => {
+      debouncer.cancel();
+      resizeObserver.unobserve(this.elementRef.nativeElement);
+    });
   }
 
   private applyDirection(width: number, height: number) {
@@ -74,8 +71,8 @@ export class ResponsiveSplitDirective implements OnDestroy {
       newDir = breakpointDirection;
     }
 
-    if (this.host.direction !== newDir) {
-      this.host.direction = newDir;
+    if (this.host.direction() !== newDir) {
+      this.host.direction.set(newDir);
       this.directionChange.emit(newDir);
     }
   }

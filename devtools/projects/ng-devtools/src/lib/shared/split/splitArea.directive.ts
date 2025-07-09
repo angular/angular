@@ -1,7 +1,13 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {Directive, ElementRef, Input, NgZone, OnDestroy, OnInit, Renderer2} from '@angular/core';
-
-import {SplitComponent} from '../component/split.component';
-
+import {SplitComponent} from './split.component';
 import {getInputBoolean, getInputPositiveNumber} from './utils';
 
 @Directive({

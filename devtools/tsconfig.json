@@ -16,7 +16,9 @@
     "target": "es2020",
     "lib": ["es2020", "dom", "dom.iterable"],
     "types": ["chrome"],
-    "paths": {},
+    "paths": {
+      "@angular/*": ["../packages/*/index"]
+    }
   },
   "angularCompilerOptions": {
     "strictTemplates": true,

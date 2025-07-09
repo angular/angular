@@ -1,4 +1,15 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {SplitAreaDirective} from './splitArea.directive';
+
+export type Direction = 'vertical' | 'horizontal';
+export type Unit = 'percent' | 'pixel';
 
 export interface IPoint {
   x: number;
