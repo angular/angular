@@ -65,10 +65,10 @@
     "shiki": "3.8.0",
     "tinyglobby": "0.2.14",
     "tslib": "2.8.1",
-    "typescript": "5.8.3",
+    "typescript": "5.9.0-beta",
     "xhr2": "0.2.1",
     "zone.js": "0.15.1",
-    
+
 
     "@algolia/client-common": "5.32.0",
     "@algolia/requester-browser-xhr": "5.32.0",
