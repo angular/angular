@@ -1,9 +1,3 @@
-@let frame = this.frame();
-
-@if (!hasFrames() && !visualizing()) {
-  <ng-recording-modal />
-}
-
 @if (!hasFrames() && visualizing()) {
   <p class="info">There's no information to show.</p>
 }
@@ -15,6 +9,8 @@
   />
   <ng-frame-selector [frames]="frames()" (selectFrames)="selectFrames.set($event.indexes)" />
 }
+
+@let frame = this.frame();
 
 @if (hasFrames() && !frame) {
   <p class="info">Select a bar to preview a particular change detection cycle.</p>
