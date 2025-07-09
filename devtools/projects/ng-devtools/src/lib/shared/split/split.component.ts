@@ -1,28 +1,41 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {
-  AfterViewInit,
+  afterNextRender,
+  booleanAttribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  effect,
   ElementRef,
-  EventEmitter,
-  Input,
-  NgZone,
+  input,
+  linkedSignal,
   OnDestroy,
-  Output,
+  output,
   QueryList,
   Renderer2,
+  untracked,
   ViewChildren,
 } from '@angular/core';
+import {outputFromObservable} from '@angular/core/rxjs-interop';
 import {Observable, Subject, Subscriber} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
 import {
+  Direction,
   IArea,
   IAreaSnapshot,
   IOutputAreaSizes,
   IOutputData,
   IPoint,
   ISplitSnapshot,
+  Unit,
 } from './interface';
 import {SplitAreaDirective} from './splitArea.directive';
 import {
@@ -30,7 +43,6 @@ import {
   getAreaMinSize,
   getElementPixelSize,
   getGutterSideAbsorptionCapacity,
-  getInputBoolean,
   getInputPositiveNumber,
   getPointFromEvent,
   isUserSizesValid,
@@ -76,183 +88,62 @@ import {
   exportAs: 'asSplit',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: [`./split.component.scss`],
-  template: ` <ng-content></ng-content>
-    @for (_ of displayedAreas; track $index) { @if ($last === false) {
-    <div
-      #gutterEls
-      class="as-split-gutter"
-      [style.flex-basis.px]="gutterSize"
-      [style.order]="$index * 2 + 1"
-      (mousedown)="startDragging($event, $index * 2 + 1, $index + 1)"
-      (touchstart)="startDragging($event, $index * 2 + 1, $index + 1)"
-      (mouseup)="clickGutter($event, $index + 1)"
-      (touchend)="clickGutter($event, $index + 1)"
-    >
-      <div class="as-split-gutter-icon"></div>
-    </div>
-    } }`,
+  template: `<ng-content></ng-content>
+    @for (_ of displayedAreas; track $index) { 
+      @if ($last === false) {
+        <div
+          #gutterEls
+          class="as-split-gutter"
+          [style.flex-basis.px]="gutterSize()"
+          [style.order]="$index * 2 + 1"
+          (mousedown)="startDragging($event, $index * 2 + 1, $index + 1)"
+          (touchstart)="startDragging($event, $index * 2 + 1, $index + 1)"
+          (mouseup)="clickGutter($event, $index + 1)"
+          (touchend)="clickGutter($event, $index + 1)"
+        >
+          <div class="as-split-gutter-icon"></div>
+        </div>
+      } 
+    }`,
+  host: {
+    '[class.as-disabled]': 'disabled()',
+    '[class.as-transition]': 'useTransition()',
+    '[class.as-horizontal]': 'this.direction() === "horizontal"',
+    '[class.as-vertical]': 'this.direction() === "vertical"',
+    '[attr.dir]': 'dir()',
+  },
 })
-export class SplitComponent implements AfterViewInit, OnDestroy {
-  private _direction: 'horizontal' | 'vertical' = 'horizontal';
+export class SplitComponent implements OnDestroy {
+  directionInput = input<Direction>('horizontal', {alias: 'direction'});
+  // This allows the direction to be writable from the outside
+  direction = linkedSignal(this.directionInput);
 
-  @Input()
-  set direction(v: 'horizontal' | 'vertical') {
-    this._direction = v === 'vertical' ? 'vertical' : 'horizontal';
+  unit = input<Unit>('percent');
 
-    this.renderer.addClass(this.elRef.nativeElement, `as-${this._direction}`);
-    this.renderer.removeClass(
-      this.elRef.nativeElement,
-      `as-${this._direction === 'vertical' ? 'horizontal' : 'vertical'}`,
-    );
+  gutterSize = input(11, {transform: (v: unknown) => getInputPositiveNumber(v, 11)});
+  gutterStep = input(1, {transform: (v: unknown) => getInputPositiveNumber(v, 1)});
+  restrictMove = input(false, {transform: booleanAttribute});
+  useTransition = input(false, {transform: booleanAttribute});
+  disabled = input(false, {transform: booleanAttribute});
+  dir = input<'ltr' | 'rtl'>('ltr');
 
-    this.build(false, false);
-  }
-
-  get direction(): 'horizontal' | 'vertical' {
-    return this._direction;
-  }
+  gutterDblClickDuration = input(0, {transform: (v: unknown) => getInputPositiveNumber(v, 0)});
 
   ////
 
-  private _unit: 'percent' | 'pixel' = 'percent';
-
-  @Input()
-  set unit(v: 'percent' | 'pixel') {
-    this._unit = v === 'pixel' ? 'pixel' : 'percent';
-
-    this.renderer.addClass(this.elRef.nativeElement, `as-${this._unit}`);
-    this.renderer.removeClass(
-      this.elRef.nativeElement,
-      `as-${this._unit === 'pixel' ? 'percent' : 'pixel'}`,
-    );
-
-    this.build(false, true);
-  }
-
-  get unit(): 'percent' | 'pixel' {
-    return this._unit;
-  }
-
-  ////
-
-  private _gutterSize: number = 11;
-
-  @Input()
-  set gutterSize(v: number | null) {
-    this._gutterSize = getInputPositiveNumber(v, 11);
-
-    this.build(false, false);
-  }
-
-  get gutterSize(): number | null {
-    return this._gutterSize;
-  }
-
-  ////
-
-  private _gutterStep: number = 1;
-
-  @Input()
-  set gutterStep(v: number) {
-    this._gutterStep = getInputPositiveNumber(v, 1);
-  }
-
-  get gutterStep(): number {
-    return this._gutterStep;
-  }
-
-  ////
-
-  private _restrictMove: boolean = false;
-
-  @Input()
-  set restrictMove(v: boolean) {
-    this._restrictMove = getInputBoolean(v);
-  }
-
-  get restrictMove(): boolean {
-    return this._restrictMove;
-  }
-
-  ////
-
-  private _useTransition: boolean = false;
-
-  @Input()
-  set useTransition(v: boolean) {
-    this._useTransition = getInputBoolean(v);
-
-    if (this._useTransition) this.renderer.addClass(this.elRef.nativeElement, 'as-transition');
-    else this.renderer.removeClass(this.elRef.nativeElement, 'as-transition');
-  }
-
-  get useTransition(): boolean {
-    return this._useTransition;
-  }
-
-  ////
-
-  private _disabled: boolean = false;
-
-  @Input()
-  set disabled(v: boolean) {
-    this._disabled = getInputBoolean(v);
-
-    if (this._disabled) this.renderer.addClass(this.elRef.nativeElement, 'as-disabled');
-    else this.renderer.removeClass(this.elRef.nativeElement, 'as-disabled');
-  }
-
-  get disabled(): boolean {
-    return this._disabled;
-  }
-
-  ////
-
-  private _dir: 'ltr' | 'rtl' = 'ltr';
-
-  @Input()
-  set dir(v: 'ltr' | 'rtl') {
-    this._dir = v === 'rtl' ? 'rtl' : 'ltr';
-
-    this.renderer.setAttribute(this.elRef.nativeElement, 'dir', this._dir);
-  }
-
-  get dir(): 'ltr' | 'rtl' {
-    return this._dir;
-  }
-
-  ////
-
-  private _gutterDblClickDuration: number = 0;
-
-  @Input()
-  set gutterDblClickDuration(v: number) {
-    this._gutterDblClickDuration = getInputPositiveNumber(v, 0);
-  }
-
-  get gutterDblClickDuration(): number {
-    return this._gutterDblClickDuration;
-  }
-
-  ////
-
-  @Output() dragStart = new EventEmitter<IOutputData>(false);
-  @Output() dragEnd = new EventEmitter<IOutputData>(false);
-  @Output() gutterClick = new EventEmitter<IOutputData>(false);
-  @Output() gutterDblClick = new EventEmitter<IOutputData>(false);
+  dragStart = output<IOutputData>();
+  dragEnd = output<IOutputData>();
+  gutterClick = output<IOutputData>();
+  gutterDblClick = output<IOutputData>();
 
   private transitionEndSubscriber: Subscriber<IOutputAreaSizes> | null = null;
-  @Output()
-  get transitionEnd(): Observable<IOutputAreaSizes> {
-    return new Observable((subscriber) => (this.transitionEndSubscriber = subscriber)).pipe(
+  transitionEnd = outputFromObservable<IOutputAreaSizes>(
+    new Observable((subscriber) => (this.transitionEndSubscriber = subscriber)).pipe(
       debounceTime<any>(20),
-    );
-  }
-
+    ),
+  );
   private dragProgressSubject: Subject<IOutputData> = new Subject();
   dragProgress$: Observable<IOutputData> = this.dragProgressSubject.asObservable();
-
-  ////
 
   private isDragging: boolean = false;
   private dragListeners: Array<Function> = [];
@@ -266,19 +157,25 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('gutterEls') private gutterEls!: QueryList<ElementRef>;
 
   constructor(
-    private ngZone: NgZone,
     private elRef: ElementRef,
     private cdRef: ChangeDetectorRef,
     private renderer: Renderer2,
   ) {
-    // To force adding default class, could be override by user @Input() or not
-    this.direction = this._direction;
-  }
+    // To avoid transition at first rendering
+    afterNextRender({
+      write: () => this.renderer.addClass(this.elRef.nativeElement, 'as-init'),
+    });
 
-  public ngAfterViewInit() {
-    this.ngZone.runOutsideAngular(() => {
-      // To avoid transition at first rendering
-      setTimeout(() => this.renderer.addClass(this.elRef.nativeElement, 'as-init'));
+    effect(() => {
+      this.unit();
+      // If unit changes, rebuild areas sizes
+      this.build(false, true);
+    });
+
+    effect(() => {
+      this.direction();
+      // If direction changes, rebuild areas sizes
+      this.build(false, false);
     });
   }
 
@@ -295,7 +192,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       maxSize: null,
     };
 
-    if (component.visible === true) {
+    if (component.visible) {
       this.displayedAreas.push(newArea);
 
       this.build(true, true);
@@ -321,7 +218,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     resetOrders: boolean,
     resetSizes: boolean,
   ): void {
-    if (component.visible === true) {
+    if (component.visible) {
       this.build(resetOrders, resetSizes);
     }
   }
@@ -364,7 +261,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     }
 
     const formattedSizes = sizes.map((s) => getInputPositiveNumber(s, null));
-    const isValid = isUserSizesValid(this.unit, formattedSizes);
+    const isValid = isUserSizesValid(untracked(this.unit), formattedSizes);
 
     if (isValid === false) {
       return false;
@@ -382,7 +279,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
     // ¤ AREAS ORDER
 
-    if (resetOrders === true) {
+    if (resetOrders) {
       // If user provided 'order' for each area, use it to sort them.
       if (this.displayedAreas.every((a) => a.component.order !== null)) {
         this.displayedAreas.sort((a, b) => <number>a.component.order - <number>b.component.order);
@@ -397,13 +294,14 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
     // ¤ AREAS SIZE
 
-    if (resetSizes === true) {
+    const unit = untracked(this.unit);
+    if (resetSizes) {
       const useUserSizes = isUserSizesValid(
-        this.unit,
+        unit,
         this.displayedAreas.map((a) => a.component.size),
       );
 
-      switch (this.unit) {
+      switch (unit) {
         case 'percent': {
           const defaultSize = 100 / this.displayedAreas.length;
 
@@ -460,14 +358,14 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       }
     }
 
-    this.refreshStyleSizes();
+    this.refreshStyleSizes(unit);
     this.cdRef.markForCheck();
   }
 
-  private refreshStyleSizes(): void {
+  private refreshStyleSizes(unit: 'percent' | 'pixel'): void {
     ///////////////////////////////////////////
     // PERCENT MODE
-    if (this.unit === 'percent') {
+    if (unit === 'percent') {
       // Only one area > flex-basis 100%
       if (this.displayedAreas.length === 1) {
         this.displayedAreas[0].component.setStyleFlex(0, 0, `100%`, false, false);
@@ -492,7 +390,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     }
     ///////////////////////////////////////////
     // PIXEL MODE
-    else if (this.unit === 'pixel') {
+    else if (unit === 'pixel') {
       this.displayedAreas.forEach((area) => {
         // Area with wildcard size
         if (area.size === null) {
@@ -523,7 +421,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  _clickTimeout: number | null = null;
+  private clickTimeout: number | null = null;
 
   public clickGutter(event: MouseEvent | TouchEvent, gutterNum: number): void {
     const tempPoint = getPointFromEvent(event);
@@ -536,19 +434,19 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       this.startPoint.y === tempPoint!.y
     ) {
       // If timeout in progress and new click > clearTimeout & dblClickEvent
-      if (this._clickTimeout !== null) {
-        window.clearTimeout(this._clickTimeout);
-        this._clickTimeout = null;
+      if (this.clickTimeout !== null) {
+        window.clearTimeout(this.clickTimeout);
+        this.clickTimeout = null;
         this.notify('dblclick', gutterNum);
         this.stopDragging();
       }
       // Else start timeout to call clickEvent at end
       else {
-        this._clickTimeout = window.setTimeout(() => {
-          this._clickTimeout = null;
+        this.clickTimeout = window.setTimeout(() => {
+          this.clickTimeout = null;
           this.notify('click', gutterNum);
           this.stopDragging();
-        }, this.gutterDblClickDuration);
+        }, untracked(this.gutterDblClickDuration));
       }
     }
   }
@@ -561,8 +459,10 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
 
+    const direction = untracked(this.direction);
+
     this.startPoint = getPointFromEvent(event);
-    if (this.startPoint === null || this.disabled === true) {
+    if (this.startPoint === null || untracked(this.disabled)) {
       return;
     }
 
@@ -570,7 +470,8 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       gutterNum,
       lastSteppedOffset: 0,
       allAreasSizePixel:
-        getElementPixelSize(this.elRef, this.direction) - this.getNbGutters() * this.gutterSize!,
+        getElementPixelSize(this.elRef, direction) -
+        this.getNbGutters() * untracked(this.gutterSize),
       allInvolvedAreasSizePercent: 100,
       areasBeforeGutter: [],
       areasAfterGutter: [],
@@ -579,18 +480,18 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     this.displayedAreas.forEach((area) => {
       const areaSnapshot: IAreaSnapshot = {
         area,
-        sizePixelAtStart: getElementPixelSize(area.component.elRef, this.direction),
-        sizePercentAtStart: (this.unit === 'percent' ? area.size : -1) as number, // If pixel mode, anyway, will not be used.
+        sizePixelAtStart: getElementPixelSize(area.component.elRef, direction),
+        sizePercentAtStart: (untracked(this.unit) === 'percent' ? area.size : -1) as number, // If pixel mode, anyway, will not be used.
       };
 
       if (area.order < gutterOrder) {
-        if (this.restrictMove === true) {
+        if (untracked(this.restrictMove)) {
           this.snapshot!.areasBeforeGutter = [areaSnapshot];
         } else {
           this.snapshot!.areasBeforeGutter.unshift(areaSnapshot);
         }
       } else if (area.order > gutterOrder) {
-        if (this.restrictMove === true) {
+        if (untracked(this.restrictMove)) {
           if (this.snapshot!.areasAfterGutter.length === 0)
             this.snapshot!.areasAfterGutter = [areaSnapshot];
         } else {
@@ -621,14 +522,12 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       this.renderer.listen('document', 'touchcancel', this.stopDragging.bind(this)),
     );
 
-    this.ngZone.runOutsideAngular(() => {
-      this.dragListeners.push(
-        this.renderer.listen('document', 'mousemove', this.dragEvent.bind(this)),
-      );
-      this.dragListeners.push(
-        this.renderer.listen('document', 'touchmove', this.dragEvent.bind(this)),
-      );
-    });
+    this.dragListeners.push(
+      this.renderer.listen('document', 'mousemove', this.dragEvent.bind(this)),
+    );
+    this.dragListeners.push(
+      this.renderer.listen('document', 'touchmove', this.dragEvent.bind(this)),
+    );
 
     this.displayedAreas.forEach((area) => area.component.lockEvents());
 
@@ -646,9 +545,9 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
 
-    if (this._clickTimeout !== null) {
-      window.clearTimeout(this._clickTimeout);
-      this._clickTimeout = null;
+    if (this.clickTimeout !== null) {
+      window.clearTimeout(this.clickTimeout);
+      this.clickTimeout = null;
     }
 
     if (this.isDragging === false) {
@@ -663,13 +562,15 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     // Calculate steppedOffset
 
     let offset =
-      this.direction === 'horizontal'
+      untracked(this.direction) === 'horizontal'
         ? this.startPoint!.x - this.endPoint.x
         : this.startPoint!.y - this.endPoint.y;
-    if (this.dir === 'rtl') {
+    if (untracked(this.dir) === 'rtl') {
       offset = -offset;
     }
-    const steppedOffset = Math.round(offset / this.gutterStep) * this.gutterStep;
+
+    const gutterStep = untracked(this.gutterStep);
+    const steppedOffset = Math.round(offset / gutterStep) * gutterStep;
 
     if (steppedOffset === this.snapshot!.lastSteppedOffset) {
       return;
@@ -679,14 +580,15 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
 
     // Need to know if each gutter side areas could reacts to steppedOffset
 
+    const unit = untracked(this.unit);
     let areasBefore = getGutterSideAbsorptionCapacity(
-      this.unit,
+      unit,
       this.snapshot!.areasBeforeGutter,
       -steppedOffset,
       this.snapshot!.allAreasSizePixel,
     );
     let areasAfter = getGutterSideAbsorptionCapacity(
-      this.unit,
+      unit,
       this.snapshot!.areasAfterGutter,
       steppedOffset,
       this.snapshot!.allAreasSizePixel,
@@ -697,14 +599,14 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       if (Math.abs(areasBefore.remain) === Math.abs(areasAfter.remain)) {
       } else if (Math.abs(areasBefore.remain) > Math.abs(areasAfter.remain)) {
         areasAfter = getGutterSideAbsorptionCapacity(
-          this.unit,
+          unit,
           this.snapshot!.areasAfterGutter,
           steppedOffset + areasBefore.remain,
           this.snapshot!.allAreasSizePixel,
         );
       } else {
         areasBefore = getGutterSideAbsorptionCapacity(
-          this.unit,
+          unit,
           this.snapshot!.areasBeforeGutter,
           -(steppedOffset - areasAfter.remain),
           this.snapshot!.allAreasSizePixel,
@@ -715,7 +617,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     // gutter.
     else if (areasBefore.remain !== 0) {
       areasAfter = getGutterSideAbsorptionCapacity(
-        this.unit,
+        unit,
         this.snapshot!.areasAfterGutter,
         steppedOffset + areasBefore.remain,
         this.snapshot!.allAreasSizePixel,
@@ -725,14 +627,14 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     // gutter.
     else if (areasAfter.remain !== 0) {
       areasBefore = getGutterSideAbsorptionCapacity(
-        this.unit,
+        unit,
         this.snapshot!.areasBeforeGutter,
         -(steppedOffset - areasAfter.remain),
         this.snapshot!.allAreasSizePixel,
       );
     }
 
-    if (this.unit === 'percent') {
+    if (unit === 'percent') {
       // Hack because of browser messing up with sizes using calc(X% - Ypx) ->
       // el.getBoundingClientRect() If not there, playing with gutters makes total going down
       // to 99.99875% then 99.99286%, 99.98986%,..
@@ -754,11 +656,10 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     }
 
     // Now we know areas could absorb steppedOffset, time to really update sizes
+    areasBefore.list.forEach((item) => updateAreaSize(unit, item));
+    areasAfter.list.forEach((item) => updateAreaSize(unit, item));
 
-    areasBefore.list.forEach((item) => updateAreaSize(this.unit, item));
-    areasAfter.list.forEach((item) => updateAreaSize(this.unit, item));
-
-    this.refreshStyleSizes();
+    this.refreshStyleSizes(unit);
     this.notify('progress', this.snapshot!.gutterNum);
   }
 
@@ -799,11 +700,9 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
     this.snapshot = null;
 
     // Needed to let (click)="clickGutter(...)" event run and verify if mouse moved or not
-    this.ngZone.runOutsideAngular(() => {
-      setTimeout(() => {
-        this.startPoint = null;
-        this.endPoint = null;
-      });
+    setTimeout(() => {
+      this.startPoint = null;
+      this.endPoint = null;
     });
   }
 
@@ -823,7 +722,7 @@ export class SplitComponent implements AfterViewInit, OnDestroy {
       this.gutterDblClick.emit({gutterNum, sizes});
     } else if (type === 'transitionEnd') {
       if (this.transitionEndSubscriber) {
-        this.ngZone.run(() => this.transitionEndSubscriber?.next(sizes));
+        this.transitionEndSubscriber?.next(sizes);
       }
     } else if (type === 'progress') {
       // Stay outside zone to allow users do what they want about change detection mechanism.

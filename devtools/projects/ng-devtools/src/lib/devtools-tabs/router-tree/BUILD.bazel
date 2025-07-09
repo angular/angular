@@ -41,8 +41,8 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
         "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
         "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

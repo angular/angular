@@ -39,7 +39,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/flamegraph-visualizer:flamegraph-visualizer_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/tree-map-visualizer:tree-map-visualizer_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode_rjs",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

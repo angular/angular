@@ -29,7 +29,6 @@ import {
   PropertyQueryTypes,
 } from '../../../../../protocol';
 
-import {SplitComponent} from '../../../lib/vendor/angular-split/public_api';
 import {ApplicationOperations} from '../../application-operations/index';
 import {FrameManager} from '../../application-services/frame_manager';
 
@@ -43,17 +42,18 @@ import {
   FlatNode as PropertyFlatNode,
 } from './property-resolver/element-property-resolver';
 import {PropertyTabComponent} from './property-tab/property-tab.component';
-import {SplitAreaDirective} from '../../vendor/angular-split/lib/component/splitArea.directive';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
 import {Platform} from '@angular/cdk/platform';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
 import {SignalsTabComponent} from './signals-view/signals-tab.component';
 import {
-  Direction,
   ResponsiveSplitConfig,
   ResponsiveSplitDirective,
-} from '../../shared/responsive-split/responsive-split.directive';
+} from '../../shared/split/responsive-split.directive';
+import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
+import {SplitComponent} from '../../shared/split/split.component';
+import {Direction} from '../../shared/split/interface';
 
 const FOREST_VER_SPLIT_SIZE = 30;
 const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;

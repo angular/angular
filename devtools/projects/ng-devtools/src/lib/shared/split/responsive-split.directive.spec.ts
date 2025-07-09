@@ -10,13 +10,14 @@ import {Component, DebugElement, ElementRef, viewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
-import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {
   RESIZE_DEBOUNCE,
   ResponsiveSplitConfig,
   ResponsiveSplitDirective,
 } from './responsive-split.directive';
 import {WINDOW} from '../../application-providers/window_provider';
+import {SplitComponent} from './split.component';
+import {SplitAreaDirective} from './splitArea.directive';
 
 //
 // `ResizeObserver` mock.
@@ -80,7 +81,6 @@ function initTestComponent(
   height: number,
 ): {host: DebugElement; split: SplitComponent} {
   TestBed.configureTestingModule({
-    imports: [TestComponent, SplitComponent, SplitAreaDirective, ResponsiveSplitDirective],
     providers: [{provide: WINDOW, useValue: {...window, ResizeObserver: ResizeObserverMockImpl}}],
   });
   const fixture = TestBed.createComponent(TestComponent);
@@ -113,24 +113,24 @@ describe('responsive-split', () => {
   it('should use horizontal direction (ratio == 1)', () => {
     const {split} = initTestComponent(200, 200);
 
-    expect(split.direction).toEqual('horizontal');
+    expect(split.direction()).toEqual('horizontal');
   });
 
   it('should use horizontal direction (ratio == 1.49)', () => {
     const {split} = initTestComponent(299, 200);
 
-    expect(split.direction).toEqual('horizontal');
+    expect(split.direction()).toEqual('horizontal');
   });
 
   it('should use vertical direction (ratio == 1.5)', () => {
     const {split} = initTestComponent(350, 200);
 
-    expect(split.direction).toEqual('vertical');
+    expect(split.direction()).toEqual('vertical');
   });
 
   it('should use vertical direction (ratio == 2)', () => {
     const {split} = initTestComponent(400, 200);
 
-    expect(split.direction).toEqual('vertical');
+    expect(split.direction()).toEqual('vertical');
   });
 });

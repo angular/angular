@@ -33,8 +33,8 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver:property-resolver_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab:property-tab_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view:signals-tab_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/responsive-split:responsive-split_rjs",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

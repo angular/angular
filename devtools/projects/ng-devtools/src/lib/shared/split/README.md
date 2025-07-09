@@ -1,3 +1,15 @@
+
+# Fork
+
+This directory is a fork of the Angular-split library 
+https://github.com/angular-split/angular-split/
+Under Apache 2.0 license (see below). 
+
+It has now diverged enough to not be considered an external dependency and code files 
+have been integrated directly into the devtool project.
+
+# License
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
