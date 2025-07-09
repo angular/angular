@@ -1,5 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults.bzl", "esbuild", "tsec_test")
+load("@devinfra//bazel/esbuild:index.bzl", "esbuild")
+load("//tools:defaults.bzl", "tsec_test")
 load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
