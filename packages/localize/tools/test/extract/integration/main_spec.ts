@@ -414,14 +414,14 @@ runInNativeFileSystem(() => {
             `        <context-group purpose="location">`,
             // These source file paths are due to how Bazel TypeScript compilation source-maps
             // work
-            `          <context context-type="sourcefile">../packages/localize/tools/test/extract/integration/test_files/src/a.ts</context>`,
+            `          <context context-type="sourcefile">test_files/src/a.ts</context>`,
             `          <context context-type="linenumber">3</context>`,
             `        </context-group>`,
             `      </trans-unit>`,
             `      <trans-unit id="7829869508202074508" datatype="html">`,
             `        <source>Message in <x id="b-file" equiv-text="file"/>!</source>`,
             `        <context-group purpose="location">`,
-            `          <context context-type="sourcefile">../packages/localize/tools/test/extract/integration/test_files/src/b.ts</context>`,
+            `          <context context-type="sourcefile">test_files/src/b.ts</context>`,
             `          <context context-type="linenumber">3</context>`,
             `        </context-group>`,
             `      </trans-unit>`,
