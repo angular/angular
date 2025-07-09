@@ -66,6 +66,9 @@ export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, sch
 // @public
 export function defaultEquals<T>(a: T, b: T): boolean;
 
+// @public
+export function finalizeConsumerAfterComputation(node: ReactiveNode): void;
+
 // @public (undocumented)
 export function getActiveConsumer(): ReactiveNode | null;
 
@@ -150,6 +153,9 @@ export interface ReactiveNode {
     recomputing: boolean;
     version: Version;
 }
+
+// @public
+export function resetConsumerBeforeComputation(node: ReactiveNode): void;
 
 // @public (undocumented)
 export function runEffect(node: BaseEffectNode): void;
