@@ -8,6 +8,7 @@
 
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const commonJs = require('@rollup/plugin-commonjs');
+const {pathPlugin} = require('../../../tools/bazel/rollup/path-plugin.cjs');
 
 // This is a custom AMD file header that patches the AMD `define` call generated
 // by rollup so that the bundle exposes a CJS-exported function which takes an
@@ -47,7 +48,13 @@ const external = ['os', 'fs', 'path', 'typescript'];
 
 const config = {
   external,
-  plugins: [nodeResolve({preferBuiltins: true}), commonJs()],
+  plugins: [
+    pathPlugin({
+      tsconfigPath: 'packages/language-service/tsconfig.json',
+    }),
+    nodeResolve({preferBuiltins: true}),
+    commonJs(),
+  ],
   output: {
     banner: amdFileHeader,
   },
