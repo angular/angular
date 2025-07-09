@@ -124,7 +124,6 @@
     "karma-requirejs": "^1.1.0",
     "karma-sourcemap-loader": "^0.4.0",
     "magic-string": "^0.30.8",
-    "memo-decorator": "^2.0.1",
     "ngx-flamegraph": "0.1.1",
     "ngx-progressbar": "^14.0.0",
     "open-in-idx": "^0.1.1",
