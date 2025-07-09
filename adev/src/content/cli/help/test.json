@@ -137,7 +137,8 @@
     {
       "name": "watch",
       "type": "boolean",
-      "description": "Run build when files change."
+      "default": true,
+      "description": "Re-run tests when source files change."
     },
     {
       "name": "web-worker-ts-config",
