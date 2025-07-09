@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, AnimationCallbackEvent} from '@angular/core';
 
 @Component({
     selector: 'my-component',
@@ -9,7 +9,7 @@ import {Component} from '@angular/core';
   `,
 })
 export class MyComponent {
-  fadeFn(event: any) {
+  fadeFn(event: AnimationCallbackEvent) {
     event.target.classList.add('fade-out');
   }
 }

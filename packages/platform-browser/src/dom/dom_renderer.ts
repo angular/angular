@@ -26,6 +26,7 @@ import {
   ɵTracingService as TracingService,
   ɵTracingSnapshot as TracingSnapshot,
   Optional,
+  ElementRegistry,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -149,6 +150,8 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Inject(TracingService)
     @Optional()
     private readonly tracingService: TracingService<TracingSnapshot> | null = null,
+    @Inject(ElementRegistry)
+    private readonly registry: ElementRegistry | null,
   ) {
     this.platformIsServer = typeof ngServerMode !== 'undefined' && ngServerMode;
     this.defaultRenderer = new DefaultDomRenderer2(
@@ -157,6 +160,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       ngZone,
       this.platformIsServer,
       this.tracingService,
+      this.registry,
     );
   }
 
@@ -198,6 +202,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       const removeStylesOnCompDestroy = this.removeStylesOnCompDestroy;
       const platformIsServer = this.platformIsServer;
       const tracingService = this.tracingService;
+      const elementRegistry = this.registry;
 
       switch (type.encapsulation) {
         case ViewEncapsulation.Emulated:
@@ -211,6 +216,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             platformIsServer,
             tracingService,
+            elementRegistry,
           );
           break;
         case ViewEncapsulation.ShadowDom:
@@ -224,6 +230,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             this.nonce,
             platformIsServer,
             tracingService,
+            elementRegistry,
           );
         default:
           renderer = new NoneEncapsulationDomRenderer(
@@ -235,6 +242,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             platformIsServer,
             tracingService,
+            elementRegistry,
           );
           break;
       }
@@ -273,6 +281,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     private readonly ngZone: NgZone,
     private readonly platformIsServer: boolean,
     private readonly tracingService: TracingService<TracingSnapshot> | null,
+    private readonly registry: ElementRegistry | null,
   ) {}
 
   destroy(): void {}
@@ -317,6 +326,11 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   removeChild(_parent: any, oldChild: any): void {
+    if (this.registry && this.registry.has(oldChild as Element)) {
+      this.registry.animate(oldChild, () => oldChild.remove());
+      return;
+    }
+    // child was removed
     oldChild.remove();
   }
 
@@ -504,8 +518,9 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     nonce: string | null,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
+    elementRegistry: ElementRegistry | null,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer, tracingService);
+    super(eventManager, doc, ngZone, platformIsServer, tracingService, elementRegistry);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
     this.sharedStylesHost.addHost(this.shadowRoot);
     let styles = component.styles;
@@ -581,9 +596,10 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     ngZone: NgZone,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
+    elementRegistry: ElementRegistry | null,
     compId?: string,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer, tracingService);
+    super(eventManager, doc, ngZone, platformIsServer, tracingService, elementRegistry);
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
@@ -622,6 +638,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     ngZone: NgZone,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
+    elementRegistry: ElementRegistry | null,
   ) {
     const compId = appId + '-' + component.id;
     super(
@@ -633,6 +650,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       ngZone,
       platformIsServer,
       tracingService,
+      elementRegistry,
       compId,
     );
     this.contentAttr = shimContentAttribute(compId);

@@ -91,8 +91,8 @@ export const enum RuntimeErrorCode {
   REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
   ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT = -602,
 
-  // Styling Errors
-
+  // Animation Errors
+  ANIMATE_INVALID_VALUE = 650,
   // Declarations Errors
 
   // i18n Errors

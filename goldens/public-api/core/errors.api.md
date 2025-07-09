@@ -20,6 +20,8 @@ export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    ANIMATE_INVALID_VALUE = 650,
+    // (undocumented)
     APPLICATION_REF_ALREADY_DESTROYED = 406,
     // (undocumented)
     ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT = -602,
