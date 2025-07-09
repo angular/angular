@@ -1,69 +1,76 @@
-<a name="20.1.0-rc.0"></a>
-# 20.1.0-rc.0 (2025-07-01)
+<a name="20.1.0"></a>
+# 20.1.0 (2025-07-09)
 ### common
 | Commit | Type | Description |
 | -- | -- | -- |
 | [58aedc37d1](https://github.com/angular/angular/commit/58aedc37d10208ca40c1b1d4468261dd9aba5356) | feat | add support for a custom EnvironmentInjector to NgComponentOutlet directive ([#54764](https://github.com/angular/angular/pull/54764)) |
+| [ef10aa4005](https://github.com/angular/angular/commit/ef10aa400585fb66e1afde08be0f9fd9a70ce7f2) | feat | support decoding in NgOptimizedImage ([#61905](https://github.com/angular/angular/pull/61905)) |
 ### compiler
 | Commit | Type | Description |
 | -- | -- | -- |
+| [0dcf230d52](https://github.com/angular/angular/commit/0dcf230d52694e6d3d6e55d6e675d55f9cf236bc) | feat | add support for new binary assignment operators ([#62064](https://github.com/angular/angular/pull/62064)) |
+| [5a76826d26](https://github.com/angular/angular/commit/5a76826d266b4ed0ef863221571e4b6b1b16182f) | fix | only report parser errors on invalid expression ([#61793](https://github.com/angular/angular/pull/61793)) |
 | [089ad0ee15](https://github.com/angular/angular/commit/089ad0ee15d6be9b2493bb67519cb59e0454a1ef) | fix | produce more accurate errors for interpolations ([#62258](https://github.com/angular/angular/pull/62258)) |
+| [e9fcbb8af1](https://github.com/angular/angular/commit/e9fcbb8af12e7b4370d2e03e6004f3f2fe02c981) | fix | remove TypeScript from linker ([#61618](https://github.com/angular/angular/pull/61618)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e62fb359d6](https://github.com/angular/angular/commit/e62fb359d6da8e0458b18f24e6bff60602f93fc6) | feat | add experimental support for fast type declaration emission ([#61334](https://github.com/angular/angular/pull/61334)) |
+| [0cf1001715](https://github.com/angular/angular/commit/0cf1001715d2f528c61735108d12e29047907d98) | feat | support host directives with direct external references in fast type declaration emission ([#61469](https://github.com/angular/angular/pull/61469)) |
+| [b7ab5fa256](https://github.com/angular/angular/commit/b7ab5fa2562524a0e8dfa4f3dff740ec2d31b4c7) | fix | add signal checks to handle negated calls ([#59970](https://github.com/angular/angular/pull/59970)) |
+| [77fa204ad1](https://github.com/angular/angular/commit/77fa204ad16fef561c009fcef0ab1fb92a37f986) | fix | rename flag for enabling fast type declaration emission ([#61353](https://github.com/angular/angular/pull/61353)) |
+| [c439d6938d](https://github.com/angular/angular/commit/c439d6938de60cb132f7ae4d305efa5b3d853e36) | fix | symbol builder duplicating host directives ([#61240](https://github.com/angular/angular/pull/61240)) |
+| [3e1baa5a95](https://github.com/angular/angular/commit/3e1baa5a9565f4930507cdf338e6f9ea7e8702a3) | fix | typo in NG2026 message ([#61325](https://github.com/angular/angular/pull/61325)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8163a8995e](https://github.com/angular/angular/commit/8163a8995e36bbce74e3d852613c19e56027cc24) | feat | Add `destroyed` property on `DestroyRef` ([#61849](https://github.com/angular/angular/pull/61849)) |
+| [737b35b684](https://github.com/angular/angular/commit/737b35b684663bb641939f05ae12fa11b3395159) | feat | Add `destroyed` property to `EnvironmentInjector` ([#61951](https://github.com/angular/angular/pull/61951)) |
+| [2e0c98bd3f](https://github.com/angular/angular/commit/2e0c98bd3f2efd1181429b486dd1cebe14385c18) | feat | support bindings in TestBed ([#62040](https://github.com/angular/angular/pull/62040)) |
+| [4356e85456](https://github.com/angular/angular/commit/4356e8545666f13033bb2c4b7fa018d0b97e6f01) | fix | fakeAsync should not depend on module import order ([#61375](https://github.com/angular/angular/pull/61375)) |
+| [8424b3bcd5](https://github.com/angular/angular/commit/8424b3bcd5b9c78f37dc8ba636c87775937bcc03) | fix | Fixes template outlet hydration ([#61989](https://github.com/angular/angular/pull/61989)) |
+| [583b9a7be5](https://github.com/angular/angular/commit/583b9a7be56310f247dcf83dd1ce297b9c6be682) | fix | missing useExisting providers throwing for optional calls ([#61137](https://github.com/angular/angular/pull/61137)) |
+| [8f65223bd8](https://github.com/angular/angular/commit/8f65223bd83ee5cdbff6a3c8e99f85d1c69f5375) | fix | update min Node.js support to 20.19, 22.12, and 24.0 ([#61499](https://github.com/angular/angular/pull/61499)) |
+| [b785256b9e](https://github.com/angular/angular/commit/b785256b9e7f83c9f05fb1afd561f0af49a42e9d) | perf | avoid intermediate arrays in definition ([#61445](https://github.com/angular/angular/pull/61445)) |
+| [56769de4d8](https://github.com/angular/angular/commit/56769de4d83a08b8044cd2463341cbd60d40191f) | perf | move property remapping for dom properties to compiler ([#62421](https://github.com/angular/angular/pull/62421)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [610bebfce9](https://github.com/angular/angular/commit/610bebfce98d879677244b2ef08b24886891ca76) | fix | Allow ControlState as reset arguments for `FormGroup`/`FormRecord` ([#55860](https://github.com/angular/angular/pull/55860)) |
+| [4f0221e193](https://github.com/angular/angular/commit/4f0221e1933675b24bdbf95be3825fdacee13c00) | fix | improve select performance ([#61949](https://github.com/angular/angular/pull/61949)) |
 ### http
 | Commit | Type | Description |
 | -- | -- | -- |
 | [55fa38a1e5](https://github.com/angular/angular/commit/55fa38a1e53926d114b2290c084f3540f50b7266) | feat | add cache & priority support for fetch requests in httpResource ([#62301](https://github.com/angular/angular/pull/62301)) |
 | [b6ef42843c](https://github.com/angular/angular/commit/b6ef42843c49e50239b678bb4d8f01ab30589dd3) | feat | add credentials support for fetch requests in httpResource ([#62390](https://github.com/angular/angular/pull/62390)) |
+| [73269cf5ce](https://github.com/angular/angular/commit/73269cf5ceb4c32473a81a101a79decd06cfe274) | feat | add keepalive support for fetch requests in httpResource ([#61833](https://github.com/angular/angular/pull/61833)) |
 | [27b7ec0a62](https://github.com/angular/angular/commit/27b7ec0a6219645a5af07c2d409c34311a458374) | feat | add mode & redirect for fetch request in httpResource ([#62337](https://github.com/angular/angular/pull/62337)) |
 | [f0965c7acd](https://github.com/angular/angular/commit/f0965c7acd2fc2a4a4c18e5a47f3447c4fc7c668) | feat | Add support for fetch credentials options in HttpClient ([#62354](https://github.com/angular/angular/pull/62354)) |
 | [87322449a3](https://github.com/angular/angular/commit/87322449a33fc727ad8c80b6cc6d0a87a900a6fa) | feat | add support for fetch mode and redirect options in HttpClient ([#62315](https://github.com/angular/angular/pull/62315)) |
+| [9791ab1b6f](https://github.com/angular/angular/commit/9791ab1b6f8694ada6a0e359003243d89d6c7c97) | feat | Add support for fetch request cache and priority options ([#61766](https://github.com/angular/angular/pull/61766)) |
 | [aa861c42ff](https://github.com/angular/angular/commit/aa861c42fface06563669c188327700085774e89) | feat | add timeout option on httpResource. ([#62326](https://github.com/angular/angular/pull/62326)) |
 | [c4cffe2063](https://github.com/angular/angular/commit/c4cffe2063e790d2f8e4dc8b9c9817f2c4fcc4e7) | feat | Add timeout option to HTTP requests ([#57194](https://github.com/angular/angular/pull/57194)) |
 | [cfbbb08437](https://github.com/angular/angular/commit/cfbbb0843727dd7959d73c496307153234ee20b9) | feat | add warning when withCredentials overrides explicit credentials ([#62383](https://github.com/angular/angular/pull/62383)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.0.6"></a>
-# 20.0.6 (2025-07-01)
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.1.0-next.3"></a>
-# 20.1.0-next.3 (2025-06-25)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0dcf230d52](https://github.com/angular/angular/commit/0dcf230d52694e6d3d6e55d6e675d55f9cf236bc) | feat | add support for new binary assignment operators ([#62064](https://github.com/angular/angular/pull/62064)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ed5062a91c](https://github.com/angular/angular/commit/ed5062a91cbd96c078736cc354925de15496aa57) | fix | add suggestion when pipe is missing ([#62146](https://github.com/angular/angular/pull/62146)) |
-| [d25a6a0120](https://github.com/angular/angular/commit/d25a6a0120b111f3ddbd701d5a67a8baefd2ca0e) | fix | handle initializer APIs wrapped in type casts ([#62203](https://github.com/angular/angular/pull/62203)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [737b35b684](https://github.com/angular/angular/commit/737b35b684663bb641939f05ae12fa11b3395159) | feat | Add `destroyed` property to `EnvironmentInjector` ([#61951](https://github.com/angular/angular/pull/61951)) |
-| [36a193139a](https://github.com/angular/angular/commit/36a193139ac02ee619a26445669b7c253f33ebb8) | fix | allow to set a resource in an error state ([#62253](https://github.com/angular/angular/pull/62253)) |
-| [c4dd258658](https://github.com/angular/angular/commit/c4dd258658fc5e93a83c0eae13fbd8768e7b6619) | fix | avoid injecting `ErrorHandler` from a destroyed injector ([#61886](https://github.com/angular/angular/pull/61886)) |
-| [3eee19d892](https://github.com/angular/angular/commit/3eee19d8926d306c7dab238e7d32c8c39bfa7a57) | fix | unable to retrieve defer blocks in tests when component injects ViewContainerRef ([#62156](https://github.com/angular/angular/pull/62156)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [73269cf5ce](https://github.com/angular/angular/commit/73269cf5ceb4c32473a81a101a79decd06cfe274) | feat | add keepalive support for fetch requests in httpResource ([#61833](https://github.com/angular/angular/pull/61833)) |
-| [9791ab1b6f](https://github.com/angular/angular/commit/9791ab1b6f8694ada6a0e359003243d89d6c7c97) | feat | Add support for fetch request cache and priority options ([#61766](https://github.com/angular/angular/pull/61766)) |
 ### language-service
 | Commit | Type | Description |
 | -- | -- | -- |
 | [20c1f991e6](https://github.com/angular/angular/commit/20c1f991e63b8fc3023a302964d0438bfbfba8f0) | feat | add semantic tokens for templates ([#60260](https://github.com/angular/angular/pull/60260)) |
+| [cf55d1bdd4](https://github.com/angular/angular/commit/cf55d1bdd4201ed99dd876138c50a497b611acb7) | feat | Support importing the external module's export about the angular metadata. ([#61122](https://github.com/angular/angular/pull/61122)) |
 | [5d2e85920e](https://github.com/angular/angular/commit/5d2e85920e714560e8d06bfb9c41d9312eeaae3b) | feat | support to fix missing required inputs diagnostic ([#50911](https://github.com/angular/angular/pull/50911)) |
 ### router
 | Commit | Type | Description |
 | -- | -- | -- |
 | [9833d9ea47](https://github.com/angular/angular/commit/9833d9ea47b717293c9df0d8a5c285a3c4ad35d0) | feat | Run `loadComponent` and `loadChildren` functions in the route's injection context ([#62133](https://github.com/angular/angular/pull/62133)) |
-| [7600bec71d](https://github.com/angular/angular/commit/7600bec71d65366f5eaed94a54d6b848e0a670b5) | fix | handle scrollRestoration error in restricted environments ([#62186](https://github.com/angular/angular/pull/62186)) |
-### upgrade
+### service-worker
 | Commit | Type | Description |
 | -- | -- | -- |
-| [900cd37f68](https://github.com/angular/angular/commit/900cd37f68c0beca0f19ccba2e3ccd4c34bdab91) | fix | Make zoneless work with hybrid apps ([#61660](https://github.com/angular/angular/pull/61660)) |
+| [c67dbda8ff](https://github.com/angular/angular/commit/c67dbda8ff76410e0bb7e4b1719125f3197227dd) | feat | support notification closes ([#61442](https://github.com/angular/angular/pull/61442)) |
+| [6e1df54799](https://github.com/angular/angular/commit/6e1df5479967c2c8b0fadf75e9a9f8c33a342245) | feat | support push subscription changes ([#61856](https://github.com/angular/angular/pull/61856)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="20.0.6"></a>
+# 20.0.6 (2025-07-01)
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -91,22 +98,6 @@
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="20.1.0-next.2"></a>
-# 20.1.0-next.2 (2025-06-18)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2e0c98bd3f](https://github.com/angular/angular/commit/2e0c98bd3f2efd1181429b486dd1cebe14385c18) | feat | support bindings in TestBed ([#62040](https://github.com/angular/angular/pull/62040)) |
-| [8424b3bcd5](https://github.com/angular/angular/commit/8424b3bcd5b9c78f37dc8ba636c87775937bcc03) | fix | Fixes template outlet hydration ([#61989](https://github.com/angular/angular/pull/61989)) |
-| [31da435854](https://github.com/angular/angular/commit/31da435854379e2a97b9b746751617e9979f01b0) | fix | inject `APP_ID` before injector is destroyed ([#61885](https://github.com/angular/angular/pull/61885)) |
-| [572c32a038](https://github.com/angular/angular/commit/572c32a03876a5dbb6d0400ab0a217541407a0f9) | fix | Wrap ErrorEvent with no error property ([#62081](https://github.com/angular/angular/pull/62081)) |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [34adfdea82](https://github.com/angular/angular/commit/34adfdea82997c43325e541c016c5c5d6f6f4a31) | fix | more robust trailing comma removal in unused imports migration ([#62118](https://github.com/angular/angular/pull/62118)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="20.0.4"></a>
 # 20.0.4 (2025-06-18)
 ### core
@@ -122,28 +113,6 @@
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="20.1.0-next.1"></a>
-# 20.1.0-next.1 (2025-06-11)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ef10aa4005](https://github.com/angular/angular/commit/ef10aa400585fb66e1afde08be0f9fd9a70ce7f2) | feat | support decoding in NgOptimizedImage ([#61905](https://github.com/angular/angular/pull/61905)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b7ab5fa256](https://github.com/angular/angular/commit/b7ab5fa2562524a0e8dfa4f3dff740ec2d31b4c7) | fix | add signal checks to handle negated calls ([#59970](https://github.com/angular/angular/pull/59970)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3aa933acb7](https://github.com/angular/angular/commit/3aa933acb796c6c85181c798b5353caaae17e809) | fix | components marked for traversal resets reactive context ([#61663](https://github.com/angular/angular/pull/61663)) |
-| [e81ea0c3dd](https://github.com/angular/angular/commit/e81ea0c3dd67fc86c7203de65896c3119813fe4c) | fix | unregister `onDestroy` in `outputToObservable` ([#61882](https://github.com/angular/angular/pull/61882)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4f0221e193](https://github.com/angular/angular/commit/4f0221e1933675b24bdbf95be3825fdacee13c00) | fix | improve select performance ([#61949](https://github.com/angular/angular/pull/61949)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="20.0.3"></a>
 # 20.0.3 (2025-06-11)
 
@@ -156,45 +125,6 @@
 | -- | -- | -- |
 | [1e8158baee](https://github.com/angular/angular/commit/1e8158baee1be48747180eead8d61de328041b2c) | fix | components marked for traversal resets reactive context ([#61663](https://github.com/angular/angular/pull/61663)) |
 | [1cd23be57e](https://github.com/angular/angular/commit/1cd23be57e68c50d6c1f3f19d53d83651fa73fd1) | fix | unregister `onDestroy` in `outputToObservable` ([#61882](https://github.com/angular/angular/pull/61882)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.1.0-next.0"></a>
-# 20.1.0-next.0 (2025-06-04)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5a76826d26](https://github.com/angular/angular/commit/5a76826d266b4ed0ef863221571e4b6b1b16182f) | fix | only report parser errors on invalid expression ([#61793](https://github.com/angular/angular/pull/61793)) |
-| [e9fcbb8af1](https://github.com/angular/angular/commit/e9fcbb8af12e7b4370d2e03e6004f3f2fe02c981) | fix | remove TypeScript from linker ([#61618](https://github.com/angular/angular/pull/61618)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [e62fb359d6](https://github.com/angular/angular/commit/e62fb359d6da8e0458b18f24e6bff60602f93fc6) | feat | add experimental support for fast type declaration emission ([#61334](https://github.com/angular/angular/pull/61334)) |
-| [0cf1001715](https://github.com/angular/angular/commit/0cf1001715d2f528c61735108d12e29047907d98) | feat | support host directives with direct external references in fast type declaration emission ([#61469](https://github.com/angular/angular/pull/61469)) |
-| [77fa204ad1](https://github.com/angular/angular/commit/77fa204ad16fef561c009fcef0ab1fb92a37f986) | fix | rename flag for enabling fast type declaration emission ([#61353](https://github.com/angular/angular/pull/61353)) |
-| [c439d6938d](https://github.com/angular/angular/commit/c439d6938de60cb132f7ae4d305efa5b3d853e36) | fix | symbol builder duplicating host directives ([#61240](https://github.com/angular/angular/pull/61240)) |
-| [3e1baa5a95](https://github.com/angular/angular/commit/3e1baa5a9565f4930507cdf338e6f9ea7e8702a3) | fix | typo in NG2026 message ([#61325](https://github.com/angular/angular/pull/61325)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8163a8995e](https://github.com/angular/angular/commit/8163a8995e36bbce74e3d852613c19e56027cc24) | feat | Add `destroyed` property on `DestroyRef` ([#61849](https://github.com/angular/angular/pull/61849)) |
-| [4356e85456](https://github.com/angular/angular/commit/4356e8545666f13033bb2c4b7fa018d0b97e6f01) | fix | fakeAsync should not depend on module import order ([#61375](https://github.com/angular/angular/pull/61375)) |
-| [583b9a7be5](https://github.com/angular/angular/commit/583b9a7be56310f247dcf83dd1ce297b9c6be682) | fix | missing useExisting providers throwing for optional calls ([#61137](https://github.com/angular/angular/pull/61137)) |
-| [8f65223bd8](https://github.com/angular/angular/commit/8f65223bd83ee5cdbff6a3c8e99f85d1c69f5375) | fix | update min Node.js support to 20.19, 22.12, and 24.0 ([#61499](https://github.com/angular/angular/pull/61499)) |
-| [b785256b9e](https://github.com/angular/angular/commit/b785256b9e7f83c9f05fb1afd561f0af49a42e9d) | perf | avoid intermediate arrays in definition ([#61445](https://github.com/angular/angular/pull/61445)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [610bebfce9](https://github.com/angular/angular/commit/610bebfce98d879677244b2ef08b24886891ca76) | fix | Allow ControlState as reset arguments for `FormGroup`/`FormRecord` ([#55860](https://github.com/angular/angular/pull/55860)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [cf55d1bdd4](https://github.com/angular/angular/commit/cf55d1bdd4201ed99dd876138c50a497b611acb7) | feat | Support importing the external module's export about the angular metadata. ([#61122](https://github.com/angular/angular/pull/61122)) |
-### service-worker
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c67dbda8ff](https://github.com/angular/angular/commit/c67dbda8ff76410e0bb7e4b1719125f3197227dd) | feat | support notification closes ([#61442](https://github.com/angular/angular/pull/61442)) |
-| [6e1df54799](https://github.com/angular/angular/commit/6e1df5479967c2c8b0fadf75e9a9f8c33a342245) | feat | support push subscription changes ([#61856](https://github.com/angular/angular/pull/61856)) |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
