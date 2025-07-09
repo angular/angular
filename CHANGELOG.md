@@ -1,3 +1,12 @@
+<a name="20.0.7"></a>
+# 20.0.7 (2025-07-09)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2c18043240](https://github.com/angular/angular/commit/2c18043240e8115ed47993ecddaf2232824544c7) | fix | use proper name for diagnostic type ([#62479](https://github.com/angular/angular/pull/62479)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.0.6"></a>
 # 20.0.6 (2025-07-01)
 
