@@ -92,7 +92,7 @@ export const enum RuntimeErrorCode {
   ASSERTION_NOT_INSIDE_REACTIVE_CONTEXT = -602,
 
   // Styling Errors
-
+  ANIMATE_INVALID_VALUE = 650,
   // Declarations Errors
 
   // i18n Errors
