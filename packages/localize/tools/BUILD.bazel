@@ -1,4 +1,4 @@
-load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//tools:defaults.bzl", "extract_types", "pkg_npm")
 load("//tools:defaults2.bzl", "ts_config", "ts_project")
 
@@ -31,14 +31,9 @@ ts_project(
     ],
 )
 
-esbuild_config(
-    name = "esbuild_config",
-    config_file = "esbuild.config.js",
-)
-
 esbuild(
     name = "bundles",
-    config = ":esbuild_config",
+    config = "esbuild.config.js",
     entry_points = [
         ":index.ts",
         ":src/extract/cli.ts",
@@ -59,7 +54,7 @@ esbuild(
     splitting = True,
     target = "node20",
     deps = [
-        ":tools",
+        ":tools_rjs",
     ],
 )
 

@@ -1,9 +1,8 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
-load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
 load("@devinfra//bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
-load("@devinfra//bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config", _esbuild_esm_bundle = "esbuild_esm_bundle")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@devinfra//bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
@@ -22,8 +21,6 @@ load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_b
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 
-esbuild_config = _esbuild_config
-esbuild_esm_bundle = _esbuild_esm_bundle
 http_server = _http_server
 extract_types = _extract_types
 
@@ -417,47 +414,6 @@ def tsec_test(**kwargs):
     _tsec_test(
         use_runfiles_on_windows = True,  # We explicitly enable runfiles in .bazelrc
         **kwargs
-    )
-
-def esbuild(args = None, **kwargs):
-    _esbuild(
-        args = args if args else {
-            "resolveExtensions": [".mjs", ".js", ".json"],
-        },
-        **kwargs
-    )
-
-def esbuild_checked_in(name, **kwargs):
-    esbuild_esm_bundle(
-        name = "%s_generated" % name,
-        # Unfortunately we need to omit source maps from the checked-in files as these
-        # will vary based on the platform. See more details below in the sanitization
-        # genrule transformation. It is acceptable not having source-maps for the checked-in
-        # files as those are not minified and its to debug, the checked-in file can be visited.
-        sourcemap = "external",
-        # We always disable minification for checked-in files as otherwise it will
-        # become difficult determining potential differences. e.g. on Windows ESBuild
-        # accidentally included `source-map-support` due to the missing sandbox.
-        minify = False,
-        **kwargs
-    )
-
-    # ESBuild adds comments and function identifiers with the name of their module
-    # location. e.g. `"bazel-out/x64_windows-fastbuild/bin/node_modules/a"function(exports)`.
-    # We strip all of these paths as that would break approval of the he checked-in files within
-    # different platforms (e.g. RBE running with K8). Additionally these paths depend
-    # on the non-deterministic hoisting of the package manager across all platforms.
-    native.genrule(
-        name = "%s_sanitized" % name,
-        srcs = ["%s_generated.js" % name],
-        outs = ["%s_sanitized.js" % name],
-        cmd = """cat $< | sed -E "s#(bazel-out|node_modules)/[^\\"']+##g" > $@""",
-    )
-
-    generated_file_test(
-        name = name,
-        src = "%s.js" % name,
-        generated = "%s_sanitized.js" % name,
     )
 
 def generate_api_docs(**kwargs):

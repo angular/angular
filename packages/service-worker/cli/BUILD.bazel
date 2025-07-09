@@ -1,4 +1,4 @@
-load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -13,14 +13,9 @@ ts_project(
     ],
 )
 
-esbuild_config(
-    name = "esbuild_config",
-    config_file = "esbuild.config.js",
-)
-
 esbuild(
     name = "ngsw_config",
-    config = ":esbuild_config",
+    config = "esbuild.config.js",
     entry_point = ":main.ts",
     external = [
         "@angular/service-worker",
@@ -30,6 +25,6 @@ esbuild(
     platform = "node",
     target = "node20",
     deps = [
-        ":cli",
+        ":cli_rjs",
     ],
 )
