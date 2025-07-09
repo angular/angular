@@ -6,7 +6,7 @@
 adev/shared-docs/pipeline/api-gen/package.json=939673974
 integration/package.json=-239561259
 modules/package.json=1699938261
-package.json=1810561405
+package.json=-1114917570
 packages/animations/package.json=-678724831
 packages/benchpress/package.json=2057929145
 packages/common/package.json=1729763064
@@ -22,7 +22,7 @@ packages/platform-browser/package.json=-1163479450
 packages/router/package.json=860819913
 packages/upgrade/package.json=16347051
 packages/zone.js/package.json=-1005735564
-pnpm-lock.yaml=1182266550
+pnpm-lock.yaml=-730771911
 pnpm-workspace.yaml=-375658197
 tools/bazel/rules_angular_store/package.json=-239561259
 yarn.lock=119224882
