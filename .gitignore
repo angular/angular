@@ -56,3 +56,6 @@ baseline.json
 
 # Ignore cache created with the Angular CLI.
 .angular/
+
+# Ignore gemini folder
+.gemini/
