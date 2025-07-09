@@ -12153,11 +12153,6 @@ memfs@^4.6.0:
     tree-dump "^1.0.1"
     tslib "^2.0.0"
 
-memo-decorator@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/memo-decorator/-/memo-decorator-2.0.1.tgz#599db686337a53af3e2f59991f5f61b96e96c62b"
-  integrity sha512-Cydoauo7y1Uad1UuznJqhuEQCt6adIl1w5ik3WmNl4FJeBmWAaMs64qyGRahaXWK/Dlmt/+QNesRTeFUcpJPkQ==
-
 memoizeasync@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/memoizeasync/-/memoizeasync-1.1.0.tgz#9d7028a6f266deb733510bb7dbba5f51878c561e"
