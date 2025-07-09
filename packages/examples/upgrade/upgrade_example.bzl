@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "protractor_web_test_suite")
+load("@devinfra//bazel/esbuild:index.bzl", "esbuild")
+load("//tools:defaults.bzl", "http_server", "protractor_web_test_suite")
 load("//tools:defaults2.bzl", "ng_project", "ts_project")
 
 """

@@ -1,6 +1,5 @@
 load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
-load("//tools:defaults.bzl", "esbuild_checked_in")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "esbuild_checked_in", "ts_project")
 
 package(default_visibility = ["//.github/actions/deploy-docs-site:__subpackages__"])
 
@@ -10,6 +9,7 @@ exports_files([
 
 esbuild_checked_in(
     name = "main",
+    config = "esbuild.conf.js",
     entry_point = ":lib/main.mts",
     external = [
         "undici",
@@ -18,7 +18,7 @@ esbuild_checked_in(
     platform = "node",
     target = "node20",
     deps = [
-        ":lib",
+        ":lib_rjs",
     ],
 )
 

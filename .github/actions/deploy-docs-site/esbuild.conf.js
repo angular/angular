@@ -11,9 +11,7 @@ module.exports = {
   format: 'esm',
   banner: {
     // Workaround for: https://github.com/evanw/esbuild/issues/946
-    js: `
-      import {createRequire as __cjsCompatRequire} from 'module';
-      const require = __cjsCompatRequire(import.meta.url);
-    `,
+    js: `import {createRequire as __cjsCompatRequire} from 'module';
+const require = __cjsCompatRequire(import.meta.url);`,
   },
 };
