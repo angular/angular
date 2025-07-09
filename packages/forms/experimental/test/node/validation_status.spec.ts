@@ -555,8 +555,14 @@ describe('validation status', () => {
           case 'standardschema':
             e.issue;
             break;
+          // @ts-expect-error
+          case 'fakekind':
+            break;
         }
       }
+      // Just so we have an expectation in the test,
+      // the real goal is to test the type narrowing above.
+      expect(true).toBe(true);
     });
   });
 });
