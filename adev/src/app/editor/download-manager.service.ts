@@ -27,7 +27,7 @@ export class DownloadManager {
     const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     const files = await nodeRuntimeSandbox.getSolutionFiles();
-    const content = await generateZip(files);
+    const content = (await generateZip(files)) as Uint8Array<ArrayBuffer>;
 
     this.saveFile([content], name);
   }

@@ -151,7 +151,7 @@
     "tslib": "^2.3.0",
     "tslint": "6.1.3",
     "tsx": "^4.7.2",
-    "typescript": "5.8.3",
+    "typescript": "5.9.0-beta",
     "webtreemap": "^2.0.1",
     "ws": "^8.15.0",
     "xhr2": "0.2.1",

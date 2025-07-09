@@ -350,10 +350,10 @@ describe('quick info', () => {
           expectedSpanText: 'chart',
           expectedDisplayString: '(reference) chart: HTMLDivElement',
         });
-        expect(toText(documentation)).toEqual(
-          'Provides special properties (beyond the regular HTMLElement ' +
-            'interface it also has available to it by inheritance) for manipulating <div> elements.\n\n' +
-            '[MDN Reference](https://developer.mozilla.org/docs/Web/API/HTMLDivElement)',
+        expect(toText(documentation)).toContain(
+          'The **`HTMLDivElement`** interface provides special properties ' +
+            '(beyond the regular HTMLElement interface it also has available to it by inheritance) ' +
+            'for manipulating div elements.',
         );
       });
 

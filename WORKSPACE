@@ -155,8 +155,8 @@ http_archive(
 load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
 
 rules_ts_dependencies(
-    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.8.2 | jq -r '.dist.integrity'
-    ts_integrity = "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.9.0-beta | jq -r '.dist.integrity'
+    ts_integrity = "sha512-p91qoTdwWKj9YEBYavmGiBn0DF4OBElzw4pW4oPbK4HeCfr/SDz9+yviVWshZXGvGvFCJ3AVQ+J7F1UZXc23QQ==",
     ts_version_from = "//:package.json",
 )
 
@@ -294,7 +294,7 @@ setup_dependencies_2()
 
 git_repository(
     name = "rules_angular",
-    commit = "88ddcf8cccbfef57f8cc3dda4881f18ec739428e",
+    commit = "8bf9ae3fa3017ec12877908533001daed9c6ce83",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
