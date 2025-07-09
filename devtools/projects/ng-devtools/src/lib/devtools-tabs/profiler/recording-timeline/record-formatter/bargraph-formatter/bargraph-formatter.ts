@@ -12,7 +12,6 @@ import {
   type ProfilerFrame,
 } from '../../../../../../../../protocol';
 
-import {memo} from '../../../../../vendor/memo-decorator';
 import {RecordFormatter} from '../record-formatter';
 
 export interface BargraphNode {
@@ -25,8 +24,13 @@ export interface BargraphNode {
 }
 
 export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
-  @memo({cache: new WeakMap()})
+  cache = new WeakMap();
+
   override formatFrame(frame: ProfilerFrame): BargraphNode[] {
+    if (this.cache.has(frame)) {
+      return this.cache.get(frame);
+    }
+
     const result: BargraphNode[] = [];
     this.addFrame(result, frame.directives);
     // Remove nodes with 0 value.
@@ -55,7 +59,9 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
     });
 
     // Sort nodes by value.
-    return Object.values(uniqueBarGraphNodes).sort((a, b) => b.value - a.value);
+    const out = Object.values(uniqueBarGraphNodes).sort((a, b) => b.value - a.value);
+    this.cache.set(frame, out);
+    return out;
   }
 
   override addFrame(

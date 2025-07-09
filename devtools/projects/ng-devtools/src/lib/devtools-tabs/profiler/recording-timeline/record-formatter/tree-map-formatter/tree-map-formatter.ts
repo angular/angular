@@ -8,7 +8,6 @@
 
 import {ElementProfile, type ProfilerFrame} from '../../../../../../../../protocol';
 
-import {memo} from '../../../../../vendor/memo-decorator';
 import {RecordFormatter} from '../record-formatter';
 
 export interface TreeMapNode {
@@ -20,20 +19,28 @@ export interface TreeMapNode {
 }
 
 export class TreeMapFormatter extends RecordFormatter<TreeMapNode> {
-  @memo({cache: new WeakMap()})
+  cache = new WeakMap();
+
   override formatFrame(record: ProfilerFrame): TreeMapNode {
+    if (this.cache.has(record)) {
+      return this.cache.get(record);
+    }
+
     const children: TreeMapNode[] = [];
     this.addFrame(children, record.directives);
     const size = children.reduce((accum, curr) => {
       return accum + curr.size;
     }, 0);
-    return {
+
+    const out = {
       id: 'Application',
       size,
       value: size,
       children,
       original: null,
     };
+    this.cache.set(record, out);
+    return out;
   }
 
   override addFrame(

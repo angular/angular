@@ -263,9 +263,6 @@ importers:
       magic-string:
         specifier: ^0.30.8
         version: 0.30.17
-      memo-decorator:
-        specifier: ^2.0.1
-        version: 2.0.1
       ngx-flamegraph:
         specifier: 0.1.1
         version: 0.1.1(@angular/common@packages+common)(@angular/core@packages+core)
@@ -16368,10 +16365,6 @@ packages:
       '@jsonjoy.com/util': 1.6.0(tslib@2.8.1)
       tree-dump: 1.0.3(tslib@2.8.1)
       tslib: 2.8.1
-    dev: false
-
-  /memo-decorator@2.0.1:
-    resolution: {integrity: sha512-Cydoauo7y1Uad1UuznJqhuEQCt6adIl1w5ik3WmNl4FJeBmWAaMs64qyGRahaXWK/Dlmt/+QNesRTeFUcpJPkQ==, tarball: https://registry.npmjs.org/memo-decorator/-/memo-decorator-2.0.1.tgz}
     dev: false
 
   /memoizeasync@1.1.0:
