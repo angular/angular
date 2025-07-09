@@ -82,6 +82,18 @@ export interface AfterViewInit {
 export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
 
 // @public
+export type AnimationCallbackEvent = {
+    target: Element;
+    animationComplete: Function;
+};
+
+// @public
+export type AnimationFunction = (event: AnimationCallbackEvent) => void;
+
+// @public
+export const ANIMATIONS_DISABLED: InjectionToken<boolean>;
+
+// @public
 export const APP_BOOTSTRAP_LISTENER: InjectionToken<readonly ((compRef: ComponentRef<any>) => void)[]>;
 
 // @public
@@ -665,6 +677,23 @@ export interface EffectRef {
 export class ElementRef<T = any> {
     constructor(nativeElement: T);
     nativeElement: T;
+}
+
+// @public
+export class ElementRegistry {
+    add(el: Element, value: string | string[] | Function, animateWrapperFn: AnimationClassFunction): void;
+    addCallback(el: Element, value: AnimationFunction, animateWrapperFn: AnimationEventFunction): void;
+    animate(el: Element, removeFn: Function): void;
+    // (undocumented)
+    has(el: Element): boolean;
+    // (undocumented)
+    remove(el: Element): void;
+    trackClasses(details: AnimationDetails, classes: string | string[]): void;
+    trackResolver(details: AnimationDetails, resolver: Function): void;
+    // (undocumented)
+    static ɵfac: ɵɵFactoryDeclaration<ElementRegistry, never>;
+    // (undocumented)
+    static ɵprov: ɵɵInjectableDeclaration<ElementRegistry>;
 }
 
 // @public

@@ -172,3 +172,4 @@ export {getComponentDef as ɵgetComponentDef} from './render3/def_getters';
 export {DEHYDRATED_BLOCK_REGISTRY as ɵDEHYDRATED_BLOCK_REGISTRY} from './defer/registry';
 export {TimerScheduler as ɵTimerScheduler} from './defer/timer_scheduler';
 export {ɵassertType} from './type_checking';
+export {ElementRegistry} from './animation';

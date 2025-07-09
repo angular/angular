@@ -21,8 +21,8 @@ describe('type check blocks', () => {
     expect(tcb('{{hello}} {{world}}')).toContain('"" + (((this).hello)) + (((this).world));');
   });
 
-  it('should generate an animation in function call', () => {
-    const TEMPLATE = '<p (animate.enter)="animateFn($event)"></p>';
+  it('should generate an animation leave function call', () => {
+    const TEMPLATE = '<p (animate.leave)="animateFn($event)"></p>';
     const results = tcb(TEMPLATE);
     expect(results).toContain(
       '($event: i1.AnimationCallbackEvent): any => { (this).animateFn($event); };',

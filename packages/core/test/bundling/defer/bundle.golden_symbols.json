@@ -58,6 +58,7 @@
       "shimStylesContent"
     ],
     "lazy": [
+      "DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "APP_BOOTSTRAP_LISTENER",
       "APP_ID",
@@ -124,6 +125,7 @@
       "ENVIRONMENT_INITIALIZER",
       "EffectScheduler",
       "ElementRef",
+      "ElementRegistry",
       "EnvironmentInjector",
       "EnvironmentNgModuleRefAdapter",
       "ErrorHandler",
@@ -151,6 +153,7 @@
       "MATH_ML_NAMESPACE",
       "MAXIMUM_REFRESH_RERUNS",
       "MAXIMUM_REFRESH_RERUNS",
+      "MAX_ANIMATION_TIMEOUT",
       "MINIMUM_SLOT",
       "MONKEY_PATCH_KEY_NAME",
       "MOVED_VIEWS",
@@ -311,6 +314,7 @@
       "applyToElementOrContainer",
       "applyValueToInputField",
       "applyView",
+      "areAnimationSupported",
       "arrRemove",
       "assertConsumerNode",
       "assertDefined",
@@ -749,8 +753,7 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput",
-      "DeferComponent"
+      "writeToDirectiveInput"
     ]
   }
 }
