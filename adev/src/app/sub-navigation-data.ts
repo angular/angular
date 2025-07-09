@@ -372,6 +372,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/routing-with-urlmatcher',
           },
           {
+            label: 'Animating route transitions',
+            path: 'guide/routing/animating-route-transitions',
+            contentPath: 'guide/routing/animating-route-transitions',
+          },
+          {
             label: 'Router reference',
             path: 'guide/routing/router-reference',
             contentPath: 'guide/routing/router-reference',
