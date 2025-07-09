@@ -1,3 +1,12 @@
+<a name="20.2.0-next.0"></a>
+# 20.2.0-next.0 (2025-07-09)
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1cf9d9064c](https://github.com/angular/angular/commit/1cf9d9064c15c00071ece3b78c8019035a6db6ce) | feat | Add support for fetch referrer & integrity options in HttpClient ([#62417](https://github.com/angular/angular/pull/62417)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.0"></a>
 # 20.1.0 (2025-07-09)
 ### common
