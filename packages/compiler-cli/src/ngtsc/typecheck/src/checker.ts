@@ -59,6 +59,7 @@ import {
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
 import {
+  DirectiveModuleExportDetails,
   ElementSymbol,
   FullSourceMapping,
   GetPotentialAngularMetaOptions,
@@ -98,6 +99,7 @@ import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
+import {isSymbolAliasOf} from './ts_util';
 
 const REGISTRY = new DomElementSchemaRegistry();
 /**
@@ -968,11 +970,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         const cachedCompletionEntryInfos =
           resultingDirectives.get(directiveDecl.ref.node)?.tsCompletionEntryInfos ?? [];
 
-        cachedCompletionEntryInfos.push({
-          tsCompletionEntryData: data,
-          tsCompletionEntrySymbolFileName: symbolFileName,
-          tsCompletionEntrySymbolName: symbolName,
-        });
+        appendOrReplaceTsEntryInfo(
+          cachedCompletionEntryInfos,
+          {
+            tsCompletionEntryData: data,
+            tsCompletionEntrySymbolFileName: symbolFileName,
+            tsCompletionEntrySymbolName: symbolName,
+          },
+          this.programDriver.getProgram(),
+        );
 
         if (resultingDirectives.has(directiveDecl.ref.node)) {
           const directiveInfo = resultingDirectives.get(directiveDecl.ref.node)!;
@@ -1198,37 +1204,37 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
      */
     let highestImportPriority = -1;
 
-    const collectImports = (emit: PotentialImport | null, moduleSpecifier: string | undefined) => {
+    const collectImports = (
+      emit: PotentialImport | null,
+      moduleSpecifierDetail: DirectiveModuleExportDetails | null,
+    ) => {
       if (emit === null) {
         return;
       }
       imports.push({
         ...emit,
-        moduleSpecifier: moduleSpecifier ?? emit.moduleSpecifier,
+        moduleSpecifier: moduleSpecifierDetail?.moduleSpecifier ?? emit.moduleSpecifier,
+        symbolName: moduleSpecifierDetail?.exportName ?? emit.symbolName,
       });
-      if (moduleSpecifier !== undefined && highestImportPriority === -1) {
+      if (moduleSpecifierDetail !== null && highestImportPriority === -1) {
         highestImportPriority = imports.length - 1;
       }
     };
 
     if (meta.isStandalone || importMode === PotentialImportMode.ForceDirect) {
       const emitted = this.emit(PotentialImportKind.Standalone, toImport, inContext);
-      const moduleSpecifier = potentialDirectiveModuleSpecifierResolver?.resolve(
-        toImport,
-        inContext,
-      );
-      collectImports(emitted, moduleSpecifier);
+      const moduleSpecifierDetail =
+        potentialDirectiveModuleSpecifierResolver?.resolve(toImport, inContext) ?? null;
+      collectImports(emitted, moduleSpecifierDetail);
     }
 
     const exportingNgModules = this.ngModuleIndex.getNgModulesExporting(meta.ref.node);
     if (exportingNgModules !== null) {
       for (const exporter of exportingNgModules) {
         const emittedRef = this.emit(PotentialImportKind.NgModule, exporter, inContext);
-        const moduleSpecifier = potentialDirectiveModuleSpecifierResolver?.resolve(
-          exporter,
-          inContext,
-        );
-        collectImports(emittedRef, moduleSpecifier);
+        const moduleSpecifierDetail =
+          potentialDirectiveModuleSpecifierResolver?.resolve(exporter, inContext) ?? null;
+        collectImports(emittedRef, moduleSpecifierDetail);
       }
     }
 
@@ -1533,4 +1539,112 @@ function getClassDeclFromSymbol(
     return decl;
   }
   return null;
+}
+
+/**
+ * Append the ts completion entry into the array only when the new entry's directive
+ * doesn't exist in the array.
+ *
+ * If the new entry's directive already exists, and the entry's symbol is the alias of
+ * the existing entry, the new entry will replace the existing entry.
+ *
+ */
+function appendOrReplaceTsEntryInfo(
+  tsEntryInfos: TsCompletionEntryInfo[],
+  newTsEntryInfo: TsCompletionEntryInfo,
+  program: ts.Program,
+) {
+  const typeChecker = program.getTypeChecker();
+  const newTsEntryInfoSymbol = getSymbolFromTsEntryInfo(newTsEntryInfo, program);
+  if (newTsEntryInfoSymbol === null) {
+    return;
+  }
+
+  // Find the index of the first entry that has a matching type.
+  const matchedEntryIndex = tsEntryInfos.findIndex((currentTsEntryInfo) => {
+    const currentTsEntrySymbol = getSymbolFromTsEntryInfo(currentTsEntryInfo, program);
+    if (currentTsEntrySymbol === null) {
+      return false;
+    }
+    return isSymbolTypeMatch(currentTsEntrySymbol, newTsEntryInfoSymbol, typeChecker);
+  });
+
+  if (matchedEntryIndex === -1) {
+    // No entry with a matching type was found, so append the new entry.
+    tsEntryInfos.push(newTsEntryInfo);
+    return;
+  }
+
+  // An entry with a matching type was found at existedMatchIndex.
+  const matchedEntry = tsEntryInfos[matchedEntryIndex];
+  const matchedEntrySymbol = getSymbolFromTsEntryInfo(matchedEntry, program);
+  if (matchedEntrySymbol === null) {
+    // Should not happen based on the findIndex condition, but check defensively.
+    return;
+  }
+
+  // Check if the new entry is an alias of the found entry.
+  if (isSymbolAliasOf(matchedEntrySymbol, newTsEntryInfoSymbol, typeChecker)) {
+    // The first type-matching entry is an alias, so replace it.
+    tsEntryInfos[matchedEntryIndex] = newTsEntryInfo;
+    return;
+  }
+
+  // The first type-matching entry is NOT an alias. Maybe the new entry is an
+  // alias of the existed entry.
+  // the function should return immediately without appending or replacing.
+  return;
+}
+
+function getSymbolFromTsEntryInfo(
+  tsInfo: TsCompletionEntryInfo,
+  program: ts.Program,
+): ts.Symbol | null {
+  const typeChecker = program.getTypeChecker();
+  const sf = program.getSourceFile(tsInfo.tsCompletionEntrySymbolFileName);
+  if (sf === undefined) {
+    return null;
+  }
+  const sfSymbol = typeChecker.getSymbolAtLocation(sf);
+  if (sfSymbol === undefined) {
+    return null;
+  }
+
+  return (
+    typeChecker.tryGetMemberInModuleExports(tsInfo.tsCompletionEntrySymbolName, sfSymbol) ?? null
+  );
+}
+
+function getFirstTypeDeclarationOfSymbol(
+  symbol: ts.Symbol,
+  typeChecker: ts.TypeChecker,
+): ts.Declaration | undefined {
+  const type = typeChecker.getTypeOfSymbol(symbol);
+  const typeSymbol = type.symbol;
+  return typeSymbol?.declarations?.[0];
+}
+
+/**
+ * Check if the two symbols come from the same type node. For example:
+ *
+ * The `NewBarComponent`'s type node is the `BarComponent`.
+ *
+ * ```
+ * // a.ts
+ * export class BarComponent
+ *
+ * // b.ts
+ * import {BarComponent} from "./a"
+ * const NewBarComponent = BarComponent;
+ * export {NewBarComponent}
+ * ```
+ */
+function isSymbolTypeMatch(
+  first: ts.Symbol,
+  last: ts.Symbol,
+  typeChecker: ts.TypeChecker,
+): boolean {
+  const firstTypeNode = getFirstTypeDeclarationOfSymbol(first, typeChecker);
+  const lastTypeNode = getFirstTypeDeclarationOfSymbol(last, typeChecker);
+  return firstTypeNode === lastTypeNode && firstTypeNode !== undefined;
 }
