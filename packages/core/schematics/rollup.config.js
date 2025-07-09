@@ -7,6 +7,7 @@
  */
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
+const {pathPlugin} = require('../../../tools/bazel/rollup/path-plugin.cjs');
 
 /** Removed license banners from input files. */
 const stripBannerPlugin = {
@@ -43,6 +44,7 @@ const banner = `'use strict';
  */`;
 
 const plugins = [
+  pathPlugin({tsconfigPath: 'packages/core/schematics/tsconfig.json'}),
   nodeResolve({
     jail: process.cwd(),
   }),
