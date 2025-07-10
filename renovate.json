@@ -55,7 +55,7 @@
         "!main"
       ],
       "addLabels": [
-        "target: rc"
+        "target: patch"
       ]
     },
     {
