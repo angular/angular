@@ -37,7 +37,7 @@
     [tabPanel]="tabPanel"
   >
     @for (tab of tabs(); track $index) {
-      <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
+      <a class="tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
         {{ tab }}
       </a>
     }
