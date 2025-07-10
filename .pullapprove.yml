@@ -367,7 +367,8 @@ groups:
       users:
         - ~alan-agius4
       teams:
-        - framework-team
+        - angular-caretaker
+        - ~framework-team
 
   # =========================================================
   #  Public API
