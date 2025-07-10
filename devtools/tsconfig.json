@@ -16,6 +16,7 @@
     "target": "es2020",
     "lib": ["es2020", "dom", "dom.iterable"],
     "types": ["chrome"],
+    // TODO: Have an IDE specific tsconfig file
     "paths": {
       "@angular/*": ["../packages/*/index"]
     }
