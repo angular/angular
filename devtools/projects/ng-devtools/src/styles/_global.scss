@@ -4,6 +4,7 @@
 @use '@angular/material' as mat;
 @use './colors' as clr;
 @use './typography' as tg;
+@use './overrides' as ovr;
 @use './inputs';
 @use './tables';
 
@@ -15,7 +16,7 @@
 $body-tg-level: mat.m2-define-typography-level(
   $font-family: tg.$font-family,
   $font-weight: 400,
-  $font-size: 0.75rem,
+  $font-size: tg.$font-size,
   $line-height: 1rem,
   $letter-spacing: normal,
 );
@@ -69,29 +70,7 @@ $dark-theme: map.deep-merge(
 }
 
 :root {
-  @include mat.expansion-overrides(
-    (
-      container-background-color: transparent,
-    )
-  );
-
-  @include mat.toolbar-overrides(
-    (
-      container-background-color: transparent,
-    )
-  );
-
-  @include mat.tree-overrides(
-    (
-      container-background-color: transparent,
-    )
-  );
-
-  @include mat.table-overrides(
-    (
-      background-color: transparent,
-    )
-  );
+  @include ovr.mat-cmp-overrides();
 }
 
 body {
@@ -100,6 +79,16 @@ body {
   background: var(--color-background);
   color: var(--color-text);
   @extend %body-01;
+}
+
+a {
+  /*
+    There are some anchor instance inside mat elements
+    that inherit the mat parent font styles; hence, we
+    need to have an explicit override.
+  */
+  @extend %body-01;
+  color: var(--dynamic-blue-02);
 }
 
 .multiline-tooltip {
