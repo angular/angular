@@ -60,20 +60,12 @@ $dark-theme: map.deep-merge(
 /* Keep class name in sync with ThemeService */
 .light-theme {
   @include mat.all-component-themes($light-theme);
-
-  .mat-mdc-chip.mat-mdc-standard-chip {
-    --mdc-chip-container-height: 24px;
-  }
 }
 
 /* Keep class name in sync with ThemeService */
 .dark-theme {
   color-scheme: dark;
   @include mat.all-component-themes($dark-theme);
-
-  .mat-mdc-chip.mat-mdc-standard-chip {
-    --mdc-chip-container-height: 24px;
-  }
 }
 
 :root {
@@ -95,12 +87,6 @@ $dark-theme: map.deep-merge(
     )
   );
 
-  @include mat.card-overrides(
-    (
-      elevated-container-color: transparent,
-    )
-  );
-
   @include mat.table-overrides(
     (
       background-color: transparent,
@@ -114,34 +100,6 @@ body {
   background: var(--color-background);
   color: var(--color-text);
   @extend %body-01;
-}
-
-ng-devtools {
-  .mdc-card {
-    padding: 4px;
-  }
-}
-
-.mat-mdc-menu-content {
-  padding: 0 !important;
-}
-
-mat-form-field {
-  @include mat.form-field-density(-5);
-  @include mat.form-field-overrides(
-    (
-      container-text-size: 0.8rem,
-      outlined-label-text-size: 0.8rem,
-    )
-  );
-
-  mat-select {
-    @include mat.select-overrides(
-      (
-        trigger-text-size: 0.8rem,
-      )
-    );
-  }
 }
 
 .multiline-tooltip {
