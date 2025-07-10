@@ -1,20 +1,27 @@
 @use '../../../../../styles/typography';
 
-.mdc-card.breadcrumb-card {
-  padding: 0;
+:host {
   width: 100%;
   height: 24px;
   display: flex;
   flex-direction: row;
+  box-sizing: border-box;
 
   .scroll-button {
     height: 100%;
     background-color: var(--septenary-contrast);
     border: none;
     cursor: pointer;
+    color: var(--tertiary-contrast);
 
     &.hidden {
       visibility: hidden;
+    }
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
     }
   }
 
@@ -23,7 +30,6 @@
     overflow-y: hidden;
     white-space: nowrap;
     display: inline-block;
-    // width: calc(100% - 50px);
     height: 100%;
     scroll-behavior: smooth;
     scrollbar-width: none;
@@ -33,25 +39,22 @@
       display: none;
     }
 
-    button {
+    .breadcrumb {
       @extend %monospaced;
-      height: 24px;
+      background-color: transparent;
+      color: var(--color-tree-node-element-name);
+      padding-inline: 0.5rem;
+      border: none;
+      height: 100%;
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--color-tree-node-hovered);
+      }
 
       &.selected {
         background-color: var(--color-tree-node-highlighted);
       }
-    }
-  }
-
-  .mdc-button {
-    height: 20px;
-    line-height: 20px;
-    margin-right: 5px;
-    width: fit-content;
-    color: var(--color-tree-node-element-name);
-
-    &:hover {
-      background-color: var(--color-tree-node-hovered);
     }
   }
 }

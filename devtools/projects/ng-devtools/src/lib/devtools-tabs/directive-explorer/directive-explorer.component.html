@@ -19,16 +19,14 @@
           [currentSelectedElement]="currentSelectedElement()!"
           [showCommentNodes]="showCommentNodes()"
         />
-        <div class="breadcrumbs">
-          @if (parents()) {
-            <ng-breadcrumbs
-              (mouseLeaveNode)="unhighlight()"
-              (mouseOverNode)="highlight($event)"
-              (handleSelect)="handleSelect($event)"
-              [parents]="parents()!"
-            />
-          }
-        </div>
+        @if (parents()) {
+          <ng-breadcrumbs
+            (mouseLeaveNode)="unhighlight()"
+            (mouseOverNode)="highlight($event)"
+            (handleSelect)="handleSelect($event)"
+            [parents]="parents()!"
+          />
+        }
       </as-split-area>
       @if (signalsOpen() && currentSelectedElement(); as currentSelectedElement) {
         <as-split-area [size]="signalGraphSplitSize()">
