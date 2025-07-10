@@ -81,7 +81,7 @@ targets supporting approximately 95% of web users.
 | ------- | ------------- | --------------------------- |
 | v20     | 2025-04-30    | [Browser Set][browsers-v20] |
 
-[browsers-v20]: https://browsersl.ist/#q=Chrome+%3E%3D+105%0AChromeAndroid+%3E%3D+105%0AEdge+%3E%3D+105%0AFirefox+%3E%3D+104%0AFirefoxAndroid+%3E%3D+104%0ASafari+%3E%3D+16%0AiOS+%3E%3D+16
+[browsers-v20]: https://tonypconway.github.io/web-features/supported-browsers/?widelyAvailableOnDate=2025-04-30&includeDownstream=false
 
 Angular versions prior to v20 support the following specific browser versions:
 
