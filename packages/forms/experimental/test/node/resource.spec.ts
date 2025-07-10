@@ -20,6 +20,7 @@ import {
   validateAsync,
   validateHttp,
 } from '../../public_api';
+import {ValidationError} from '../../src/api/validation_errors';
 
 interface Cat {
   name: string;
@@ -57,7 +58,7 @@ describe('resources', () => {
       validate(p.name, ({state}) => {
         const remote = state.data(res)!;
         if (remote.hasValue()) {
-          return {kind: 'whatever', message: remote.value()!.toString()};
+          return ValidationError.custom({message: remote.value()!.toString()});
         } else {
           return undefined;
         }
@@ -70,19 +71,17 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f.name().errors()).toEqual([
-      {
-        kind: 'whatever',
+      ValidationError.custom({
         message: 'got: cat',
-      },
+      }),
     ]);
 
     f.name().value.set('dog');
     await appRef.whenStable();
     expect(f.name().errors()).toEqual([
-      {
-        kind: 'whatever',
+      ValidationError.custom({
         message: 'got: dog',
-      },
+      }),
     ]);
   });
 
@@ -99,7 +98,7 @@ describe('resources', () => {
         validate(p.name, ({state}) => {
           const remote = state.data(res)!;
           if (remote.hasValue()) {
-            return {kind: 'whatever', message: remote.value()!.toString()};
+            return ValidationError.custom({message: remote.value()!.toString()});
           } else {
             return undefined;
           }
@@ -113,31 +112,27 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0].name().errors()).toEqual([
-      {
-        kind: 'whatever',
+      ValidationError.custom({
         message: 'got: cat',
-      },
+      }),
     ]);
     expect(f[1].name().errors()).toEqual([
-      {
-        kind: 'whatever',
+      ValidationError.custom({
         message: 'got: dog',
-      },
+      }),
     ]);
 
     f[0].name().value.set('bunny');
     await appRef.whenStable();
     expect(f[0].name().errors()).toEqual([
-      {
-        kind: 'whatever',
+      ValidationError.custom({
         message: 'got: bunny',
-      },
+      }),
     ]);
     expect(f[1].name().errors()).toEqual([
-      {
-        kind: 'whatever',
+      ValidationError.custom({
         message: 'got: dog',
-      },
+      }),
     ]);
   });
 
@@ -153,11 +148,13 @@ describe('resources', () => {
             },
           }),
         errors: (cats, {fieldOf}) => {
-          return cats.map((cat, index) => ({
-            kind: 'meows_too_much',
-            name: cat.name,
-            field: fieldOf(p)[index],
-          }));
+          return cats.map((cat, index) =>
+            ValidationError.custom({
+              kind: 'meows_too_much',
+              name: cat.name,
+              field: fieldOf(p)[index],
+            }),
+          );
         },
       });
     };
@@ -167,10 +164,10 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
+      ValidationError.custom({kind: 'meows_too_much', name: 'Fluffy'}),
     ]);
     expect(f[1]().errors()).toEqual([
-      jasmine.objectContaining({kind: 'meows_too_much', name: 'Ziggy'}),
+      ValidationError.custom({kind: 'meows_too_much', name: 'Ziggy'}),
     ]);
   });
 
@@ -186,11 +183,11 @@ describe('resources', () => {
             },
           }),
         errors: (cats, {fieldOf}) => {
-          return {
+          return ValidationError.custom({
             kind: 'meows_too_much',
             name: cats[0].name,
             field: fieldOf(p)[0],
-          };
+          });
         },
       });
     };
@@ -200,7 +197,7 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      jasmine.objectContaining({kind: 'meows_too_much', name: 'Fluffy'}),
+      ValidationError.custom({kind: 'meows_too_much', name: 'Fluffy'}),
     ]);
     expect(f[1]().errors()).toEqual([]);
   });
@@ -211,7 +208,8 @@ describe('resources', () => {
       (p) => {
         validateHttp(p, {
           request: ({value}) => `/api/check?username=${value()}`,
-          errors: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+          errors: (available: boolean) =>
+            available ? undefined : ValidationError.custom({kind: 'username-taken'}),
         });
       },
       {injector},

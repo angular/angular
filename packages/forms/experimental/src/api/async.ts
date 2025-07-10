@@ -13,7 +13,7 @@ import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {defineResource} from './data';
 import {FieldContext, FieldPath, PathKind} from './types';
-import {ValidationTreeError} from './validation_errors';
+import {ValidationError, WithField} from './validation_errors';
 
 export interface AsyncValidatorOptions<
   TValue,
@@ -26,7 +26,11 @@ export interface AsyncValidatorOptions<
   readonly errors: (
     data: TData,
     ctx: FieldContext<TValue, TPathKind>,
-  ) => ValidationTreeError | ValidationTreeError[] | undefined;
+  ) =>
+    | ValidationError
+    | WithField<ValidationError>
+    | (ValidationError | WithField<ValidationError>)[]
+    | undefined;
 }
 
 export function validateAsync<TValue, TRequest, TData, TPathKind extends PathKind = PathKind.Root>(
@@ -60,7 +64,15 @@ export function validateAsync<TValue, TRequest, TData, TPathKind extends PathKin
         if (!res.hasValue()) {
           return undefined;
         }
-        return opts.errors(res.value()!, ctx as FieldContext<TValue, TPathKind>);
+        const errors = opts.errors(res.value()!, ctx as FieldContext<TValue, TPathKind>);
+        if (Array.isArray(errors)) {
+          for (const error of errors) {
+            (error as any).field ??= ctx.field;
+          }
+        } else if (errors) {
+          (errors as any).field ??= ctx.field;
+        }
+        return errors as WithField<ValidationError> | WithField<ValidationError>[];
       case 'error':
         // Throw the resource's error:
         throw res.error();
@@ -76,7 +88,11 @@ export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind
       data: TData,
 
       ctx: FieldContext<TValue, TPathKind>,
-    ) => ValidationTreeError | ValidationTreeError[] | undefined;
+    ) =>
+      | ValidationError
+      | WithField<ValidationError>
+      | (ValidationError | WithField<ValidationError>)[]
+      | undefined;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;
@@ -89,7 +105,11 @@ export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind
       data: TData,
 
       ctx: FieldContext<TValue, TPathKind>,
-    ) => ValidationTreeError | ValidationTreeError[] | undefined;
+    ) =>
+      | ValidationError
+      | WithField<ValidationError>
+      | (ValidationError | WithField<ValidationError>)[]
+      | undefined;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;

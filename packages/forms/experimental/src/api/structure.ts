@@ -21,7 +21,7 @@ import type {
   SchemaFn,
   SchemaOrSchemaFn,
 } from './types';
-import {ValidationTreeError} from './validation_errors';
+import {ValidationError, WithField} from './validation_errors';
 
 export interface FormOptions {
   injector?: Injector;
@@ -307,7 +307,7 @@ export function applyWhenValue(
  */
 export async function submit<TValue>(
   form: Field<TValue>,
-  action: (form: Field<TValue>) => Promise<ValidationTreeError[] | void>,
+  action: (form: Field<TValue>) => Promise<(ValidationError | WithField<ValidationError>)[] | void>,
 ) {
   const api = form() as FieldNode;
   api.submitState.selfSubmittedStatus.set('submitting');

@@ -9,6 +9,7 @@
 import {metadata, validate} from '../logic';
 import {MAX_LENGTH} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
+import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig, ValueWithLength} from './types';
 
 /**
@@ -36,7 +37,7 @@ export function maxLength<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'maxlength', maxlength: value};
+        return ValidationError.maxlength(value);
       }
     }
 

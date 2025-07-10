@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import * as z from 'zod';
@@ -8,7 +16,7 @@ import {validateStandardSchema} from '../../src/api/standard_schema';
 // `instanceof Promise` working correctly.
 
 describe('standard schema integration', () => {
-  it('should perform sync validation using a standard schema', async () => {
+  fit('should perform sync validation using a standard schema', async () => {
     const injector = TestBed.inject(Injector);
 
     const zodName = z.object({

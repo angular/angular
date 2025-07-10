@@ -9,6 +9,7 @@
 import {metadata, validate} from '../logic';
 import {MAX} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
+import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './types';
 
 /**
@@ -37,7 +38,7 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'max', max: value};
+        return ValidationError.max(value);
       }
     }
 

@@ -9,7 +9,7 @@
 import {Signal, WritableSignal} from '@angular/core';
 import {DataKey} from './data';
 import {MetadataKey} from './metadata';
-import {ValidationError, ValidationTreeError} from './validation_errors';
+import {ValidationError, WithField} from './validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -47,8 +47,8 @@ export interface DisabledReason {
 export type ValidationResult = readonly ValidationError[] | ValidationError | undefined;
 
 export type AsyncValidationResult =
-  | readonly ValidationTreeError[]
-  | ValidationTreeError
+  | readonly WithField<ValidationError>[]
+  | WithField<ValidationError>
   | 'pending'
   | undefined;
 
@@ -248,7 +248,7 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
 
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  ValidationTreeError[],
+  (ValidationError | WithField<ValidationError>)[],
   TPathKind
 >;
 

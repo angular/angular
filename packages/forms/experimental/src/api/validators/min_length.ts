@@ -9,6 +9,7 @@
 import {metadata, validate} from '../logic';
 import {MIN_LENGTH} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
+import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig, ValueWithLength} from './types';
 
 /**
@@ -37,7 +38,7 @@ export function minLength<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'minlength', minlength: value};
+        return ValidationError.minlength(value);
       }
     }
 

@@ -8,6 +8,7 @@
 import {metadata, validate} from '../logic';
 import {PATTERN} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
+import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './types';
 
 function strToRegexp(pattern: string) {
@@ -49,7 +50,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'pattern', pattern: value};
+        return ValidationError.pattern(value);
       }
     }
 

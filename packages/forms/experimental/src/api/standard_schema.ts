@@ -12,14 +12,7 @@ import {define} from './data';
 import {validateTree} from './logic';
 import {StandardSchemaV1} from './standard_schema_types';
 import {Field, FieldPath} from './types';
-import {ValidationTreeError} from './validation_errors';
-
-/**
- * A validation error produced by running a standard schema validator.
- */
-interface StandardSchemaFormTreeError extends ValidationTreeError {
-  issue: StandardSchemaV1.Issue;
-}
+import {StandardSchemaValidationError, ValidationError, WithField} from './validation_errors';
 
 /**
  * Validates a field using a `StandardSchemaV1` compatible validator (e.g. a zod validator).
@@ -75,20 +68,16 @@ export function validateStandardSchema<TValue>(
  *
  * @param field The root field to which the issue's path is relative.
  * @param issue The `StandardSchemaV1.Issue` to convert.
- * @returns A `StandardSchemaFormTreeError` representing the issue.
+ * @returns A `ValidationError` representing the issue.
  */
 export function standardIssueToFormTreeError(
   field: Field<unknown>,
   issue: StandardSchemaV1.Issue,
-): StandardSchemaFormTreeError {
+): WithField<StandardSchemaValidationError> {
   let target = field as Field<Record<PropertyKey, unknown>>;
   for (const pathPart of issue.path ?? []) {
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
     target = target[pathKey] as Field<Record<PropertyKey, unknown>>;
   }
-  return {
-    kind: 'standardschema',
-    field: target,
-    issue,
-  };
+  return ValidationError.standardSchema(issue, '', target);
 }

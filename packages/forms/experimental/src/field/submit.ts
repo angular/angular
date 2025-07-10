@@ -3,12 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
-import type {AsyncValidationResult, SubmittedStatus} from '../api/types';
-import type {ValidationError, ValidationTreeError} from '../api/validation_errors';
+import type {SubmittedStatus} from '../api/types';
+import {stripField, WithField, type ValidationError} from '../api/validation_errors';
 import type {FieldNode} from './node';
 
 /**
@@ -34,12 +34,17 @@ export class FieldSubmitState {
       : (this.node.structure.parent?.submitState.submittedStatus() ?? 'unsubmitted'),
   );
 
-  setServerErrors(result: Exclude<AsyncValidationResult, 'pending'>) {
+  setServerErrors(
+    result:
+      | ValidationError
+      | WithField<ValidationError>
+      | (ValidationError | WithField<ValidationError>)[],
+  ) {
     let errors: ValidationError[];
     if (result === undefined) {
       errors = [];
     } else if (!Array.isArray(result)) {
-      errors = [stripField(result as ValidationError)];
+      errors = [stripField(result)];
     } else {
       errors = result.map(stripField);
     }
@@ -52,8 +57,4 @@ export class FieldSubmitState {
       child.submitState.reset();
     }
   }
-}
-
-function stripField({field, ...rest}: ValidationTreeError): ValidationError {
-  return rest as ValidationError;
 }

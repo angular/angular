@@ -8,6 +8,7 @@
 
 import {validate} from '../logic';
 import {FieldPath, PathKind} from '../types';
+import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './types';
 
 /**
@@ -58,7 +59,7 @@ export function email<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'email'};
+        return ValidationError.email();
       }
     }
 

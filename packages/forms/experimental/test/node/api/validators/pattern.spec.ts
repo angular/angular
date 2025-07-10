@@ -8,6 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {ValidationError} from '@angular/forms/experimental/src/api/validation_errors';
 import {PATTERN, form, pattern} from '../../../../public_api';
 
 describe('pattern validator', () => {
@@ -21,11 +22,7 @@ describe('pattern validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([
-      jasmine.objectContaining({
-        kind: 'pattern',
-      }),
-    ]);
+    expect(f.name().errors()).toEqual([ValidationError.pattern('pir.*jok')]);
   });
 
   it('supports custom error', () => {
@@ -38,11 +35,7 @@ describe('pattern validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([
-      jasmine.objectContaining({
-        kind: 'pattern',
-      }),
-    ]);
+    expect(f.name().errors()).toEqual([ValidationError.pattern('pir.*jok')]);
   });
 
   describe('metadata', () => {
@@ -86,20 +79,12 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().errors()).toEqual([
-        jasmine.objectContaining({
-          kind: 'pattern',
-        }),
-      ]);
+      expect(f.name().errors()).toEqual([ValidationError.pattern('pir.*jok')]);
 
       patternSignal.set('p.*');
       expect(f.name().errors()).toEqual([]);
       patternSignal.set('meow');
-      expect(f.name().errors()).toEqual([
-        jasmine.objectContaining({
-          kind: 'pattern',
-        }),
-      ]);
+      expect(f.name().errors()).toEqual([ValidationError.pattern('meow')]);
 
       patternSignal.set(undefined);
 
