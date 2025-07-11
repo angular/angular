@@ -41,6 +41,7 @@ copy_to_directory(
         "//adev/src/content/reference/migrations",
         "//adev/src/content/tools",
         "//adev/src/content/tools/cli",
+        "//adev/src/content/tools/devtools",
         "//adev/src/content/tools/libraries",
         "//adev/src/content/tutorials",
         "//adev/src/content/tutorials/deferrable-views:deferrable-views-guides",

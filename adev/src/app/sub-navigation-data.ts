@@ -767,8 +767,35 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'DevTools',
-        path: 'tools/devtools',
-        contentPath: 'tools/devtools',
+        children: [
+          {
+            label: 'Overview',
+            path: 'tools/devtools',
+            contentPath: 'tools/devtools/overview',
+          },
+          {
+            label: 'Components',
+            path: 'tools/devtools/component',
+            contentPath: 'tools/devtools/component',
+          },
+          {
+            label: 'Profiler',
+            path: 'tools/devtools/profiler',
+            contentPath: 'tools/devtools/profiler',
+          },
+          // TODO: create those guides
+          // The signal debugging docs should also be added to the signal section
+          // {
+          //   label: 'Signals',
+          //   path: 'tools/devtools/signals',
+          //   contentPath: 'tools/devtools/signals',
+          // },
+          // {
+          //   label: 'Router',
+          //   path: 'tools/devtools/router',
+          //   contentPath: 'tools/devtools/router',
+          // }
+        ],
       },
       {
         label: 'Language Service',
