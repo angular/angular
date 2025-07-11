@@ -257,7 +257,7 @@ Throughout the tutorial, we're going to just output the error kind, but for this
 <mat-form-field>
     <mat-label>Name</mat-label>
     <input [control]="form.name" matInput>
-    @if (!form.name().valid()) {
+    @if (form.name().invalid()) {
       <mat-error>
         @if (form.name().errors()[0]?.kind === 'required') {
           <ng-container i18n="Error message">
@@ -331,7 +331,7 @@ export class FeedbackComponent {
 <mat-form-field appearance="outline">
   <mat-label>Email</mat-label>
   <input [control]="form.email" matInput>
-  @if (!form.email().valid()) {
+  @if (form.email().invalid()) {
     <!--  You can display it in any way you want -->
     <mat-error>{{ form.email().errors()[0].kind }}</mat-error>
   }
@@ -573,7 +573,7 @@ export const friendSchema: Schema<Friend> = (friend) => {
 };
 ```
 
-But, uh oh, the email validation code is duplicated from our main form. Let's extract it.
+But, uh oh, the email validation code is now duplicated. Let's extract it to a reusable validator.
 
 ### Reusing email validator
 

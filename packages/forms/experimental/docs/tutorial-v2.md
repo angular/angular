@@ -9,95 +9,6 @@ We're still in early stages but wanted to get feedback as early as possible.
 
 ## Changes to existing APIs
 
-### `.$state` is now `()`
-
-```typescript
-const cat = signal({
-  name: 'pirojok the cat',
-  age: 5
-})
-
-const f = form(cat)
-
-// Before
-console.log(f.name.$state.errors())
-console.log(f.$state.valid())
-// Now
-console.log(f.name().errors())
-console.log(f().valid())
-console.log(f.a.b.c.d.e().errors())
-```
-
-### `resolve()` is now `fieldOf`/`stateOf`/`valueOf`
-
-We got rid of `resolve` and introduced new ways of accessing a field and its
-state.
-
-```typescript
-const cat = signal({
-  name: 'pirojok the cat',
-  age: 5
-});
-
-// Before
-validate(p.name, ({value, resolve}) => {
-  value();                                // string, 'pirojok the cat'
-  resolve(p.name).$state.disabled();      // boolean
-  resolve(p.age);                         // Field<number>
-  resolve(p.age).$state;                  // FieldState<number>
-  resolve(p.age).$state.value();          // number, 5
-});
-
-// Now
-validate(p.name, ({value, state, field, valueOf, stateOf, fieldOf}) => {
-  value();                                // string, 'pirojok the cat'
-  state().disabled();                     // boolean
-  fieldOf(p.age);                         // Field<number>
-  stateOf(p.age);                         // FieldState<number>
-  valueOf(p.age);                         // number, 5
-});
-```
-
-### `Schema<T>` type is now `schema<T>()` function
-
-This would allow us to have more control:
-
-```typescript
-// Before
-export const newCatSchema: Schema<Cat> = (cat) => {
-  required(cat.name);
-}
-
-// Now
-export const catSchema = schema<Cat>((cat) => {
-  required(cat.name);
-});
-```
-
-### [field] directive is now [control]
-
-```typescript
-// Before
-import {FieldDirective} from '@angular/forms/experimental';
-
-@Component({
-  imports: [FieldDirective],
-  template: `<input [field]="cat.name" matInput>`
-})
-class CatComponent {
-}
-
-// After
-import {Control} from '@angular/forms/experimental';
-
-@Component({
-  imports: [Control],
-  template: `<input [control]="cat.name" matInput>`
-})
-class CatComponent {
-}
-```
-
 ### New validation statuses
 
 ```typescript
@@ -147,10 +58,10 @@ export class FeedbackComponent {
     required(path.password);
     minLength(path.password, 8);
     maxLength(path.password, 16);
-    min();
-    max();
-    pattern();
-    email();
+    min(path.age, 21);
+    max(path.age, 1000);
+    pattern(path.username, '\w+');
+    email(path.email);
   });
 }
 ```
@@ -355,7 +266,6 @@ export class FeedbackComponent {
 Now we can use the resulting resource in the template.
 
 ```angular2html
-
 <mat-select [control]="form.product.version">
   @if (versions?.isLoading()) {
   <mat-option disabled>Loading...</mat-option>
@@ -471,4 +381,5 @@ moved around.
 We can't use item instance, because updating a property (using a spread
 operator) would create a new instance change it.
 
-We added basic array tracking by attaching a speaci to objects  
+We added basic array tracking by attaching a spacial unique symbol to each object in an array.
+This seems to work, but it shows up in tests, and we're looking for alternative options.
