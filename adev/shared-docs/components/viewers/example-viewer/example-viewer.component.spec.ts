@@ -216,7 +216,7 @@ describe('ExampleViewer', () => {
     fixture.detectChanges();
 
     const stackblitzButton = fixture.debugElement.query(
-      By.css('a[aria-label="Edit this example in StackBlitz"]'),
+      By.css('a[aria-label="Edit example in StackBlitz"]'),
     );
     expect(stackblitzButton).toBeTruthy();
     expect(stackblitzButton.nativeElement.href).toBe(component.stackblitzUrl());
