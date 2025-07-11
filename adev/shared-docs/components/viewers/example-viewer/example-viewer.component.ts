@@ -30,6 +30,8 @@ import {ExampleMetadata, Snippet} from '../../../interfaces/index';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers/index';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {DocViewer} from '../docs-viewer/docs-viewer.component';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 export enum CodeExampleViewMode {
   SNIPPET = 'snippet',
@@ -43,7 +45,13 @@ export const HIDDEN_CLASS_NAME = 'hidden';
 
 @Component({
   selector: 'docs-example-viewer',
-  imports: [CommonModule, forwardRef(() => DocViewer), CopySourceCodeButton, MatTabsModule],
+  imports: [
+    CommonModule,
+    forwardRef(() => DocViewer),
+    CopySourceCodeButton,
+    MatTabsModule,
+    MatTooltipModule,
+  ],
   templateUrl: './example-viewer.component.html',
   styleUrls: ['./example-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,6 +62,7 @@ export class ExampleViewer {
   readonly stackblitzUrl = input<string | null>(null);
   readonly matTabGroup = viewChild<MatTabGroup>('codeTabs');
 
+  private readonly snackBar = inject(MatSnackBar);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly clipboard = inject(Clipboard);
   private readonly destroyRef = inject(DestroyRef);
@@ -137,6 +146,10 @@ export class ExampleViewer {
       '#example-' +
       this.exampleMetadata()?.id;
     this.clipboard.copy(fullUrl);
+    this.snackBar.open(`Copied to clipboard.`, 'Dismiss', {
+      duration: 3000,
+      panelClass: 'docs-snackbar',
+    });
   }
 
   private listenToMatTabIndexChange(): void {
