@@ -27,7 +27,11 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@angular/docs": ["./shared-docs"],
+      "@angular/*": ["../packages/*/index"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

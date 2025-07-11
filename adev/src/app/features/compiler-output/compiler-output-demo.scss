@@ -1,0 +1,156 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+@import '@angular/cdk/overlay-prebuilt.css';
+
+.docs-viewer {
+  padding-inline: var(--layout-padding);
+}
+
+header {
+  text-align: center;
+  font-size: 16pt;
+  font-weight: bold;
+  padding: 8px;
+  margin-bottom: 8px;
+  color: white;
+  background: var(--red-to-pink-to-purple-horizontal-gradient);
+}
+
+main {
+  padding: 18px 18px 32px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+section {
+  display: flex;
+  gap: 12px;
+}
+
+hr {
+  border-radius: 8px;
+  height: 8px;
+  background: var(--red-to-pink-to-purple-horizontal-gradient);
+  border: none;
+}
+
+.error {
+  color: var(--hot-red);
+}
+
+textarea {
+  flex: 1;
+}
+
+pre {
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--septenary-contrast);
+}
+
+// This style only matters when the code is highlighted with shiki
+.shiki {
+code {
+  counter-reset: step;
+  counter-increment: step 0;
+}
+
+code .line::before {
+  content: counter(step);
+  counter-increment: step;
+  width: 1rem;
+  margin-right: 1.5rem;
+  display: inline-block;
+  text-align: right;
+  color: rgba(115, 138, 148, 0.4);
+}
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: space-between;
+  gap: 8px;
+
+  option {
+    padding: 8px;
+  }
+}
+
+.adev-template-select {
+  margin-block-end: 0.5rem;
+
+  label {
+    color: var(--quaternary-contrast);
+    font-size: 0.875rem;
+    margin-block-end: 0.3rem;
+    margin-inline-start: 0.45rem;
+    display: block;
+  }
+
+  // cdk select button
+  button {
+    font-size: 0.875rem;
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    width: 200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 0.5rem;
+    font-weight: 400;
+    transition: border 0.3s ease;
+    span {
+      color: var(--primary-contrast);
+      transition: color 0.3s ease;
+      margin-inline-start: 0.1rem;
+    }
+
+    docs-icon {
+      font-size: 1.3rem;
+      color: var(--quaternary-contrast);
+      transition: color 0.3s ease;
+    }
+  }
+}
+
+// select dropdown
+.adev-template-dropdown {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 0;
+  transform: translateY(-0.7rem);
+
+  li {
+    list-style: none;
+    width: 198px;
+    box-sizing: border-box;
+
+    button {
+      background: var(--page-background);
+      font-size: 0.875rem;
+      width: 100%;
+      text-align: left;
+      padding-block: 0.5rem;
+      color: var(--quaternary-contrast);
+      transition:
+        color 0.3s ease,
+        background 0.3s ease;
+      font-weight: 400;
+
+      &:hover {
+        background: var(--senary-contrast);
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}
