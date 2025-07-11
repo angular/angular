@@ -373,8 +373,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#d6f2b1159c52268160c02e701b80646e8f311257
         version: github.com/angular/dev-infra-private-build-tooling-builds/d6f2b1159c52268160c02e701b80646e8f311257(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.1.0-rc.0)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(terser@5.43.1)(tsx@4.20.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#800f6e7be48e84780621f8f7e9eec79a865346fd
-        version: github.com/angular/dev-infra-private-ng-dev-builds/800f6e7be48e84780621f8f7e9eec79a865346fd
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#7cdb4cce7349f791492eee3ac1f84e2a0e243287
+        version: github.com/angular/dev-infra-private-ng-dev-builds/7cdb4cce7349f791492eee3ac1f84e2a0e243287
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.0)
@@ -907,8 +907,8 @@ importers:
   packages/benchpress:
     dependencies:
       '@angular/core':
-        specifier: ^20.1.0-next
-        version: 20.1.0(@angular/compiler@packages+compiler)(zone.js@packages+zone.js)
+        specifier: ^20.2.0-next
+        version: 20.2.0-next.0(@angular/compiler@packages+compiler)(zone.js@packages+zone.js)
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -2181,11 +2181,11 @@ packages:
       - supports-color
     dev: false
 
-  /@angular/core@20.1.0(@angular/compiler@packages+compiler)(zone.js@packages+zone.js):
-    resolution: {integrity: sha512-/dJooZi+OAACkjWgGMPrOOGikdtlTJXwdeXPJTgZSUD5L8oQMbhZFG0XW/1Hldvsti87wPjZPz67ivB7zR86VA==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.1.0.tgz}
+  /@angular/core@20.2.0-next.0(@angular/compiler@packages+compiler)(zone.js@packages+zone.js):
+    resolution: {integrity: sha512-cvtCuoENQYxliuXsIiYKXau8/AhVwMalTe0yh/YQ0fBU8ofVQBsyMQFicxLAtv9PFShphXKrPTE/mBmkRZkpCw==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.2.0-next.0.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/compiler': 20.1.0
+      '@angular/compiler': 20.2.0-next.0
       zone.js: ~0.15.0
     peerDependenciesMeta:
       '@angular/compiler':
@@ -23116,10 +23116,10 @@ packages:
       - yaml
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/800f6e7be48e84780621f8f7e9eec79a865346fd:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/800f6e7be48e84780621f8f7e9eec79a865346fd}
+  github.com/angular/dev-infra-private-ng-dev-builds/7cdb4cce7349f791492eee3ac1f84e2a0e243287:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7cdb4cce7349f791492eee3ac1f84e2a0e243287}
     name: '@angular/ng-dev'
-    version: 0.0.0-6f54d143077baef582d70873722166fdc040066c
+    version: 0.0.0-b1fcd6bdad5f24e3c26ef4e93f4d89820e93d994
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 8.0.0(supports-color@10.0.0)
