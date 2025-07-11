@@ -350,18 +350,30 @@ export function producerMarkClean(node: ReactiveNode): void {
 }
 
 /**
- * Prepare this consumer to run a computation in its reactive context.
+ * Prepare this consumer to run a computation in its reactive context and set
+ * it as the active consumer.
  *
  * Must be called by subclasses which represent reactive computations, before those computations
  * begin.
  */
 export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNode | null {
-  node && (node.nextProducerIndex = 0);
+  if (node) resetConsumerBeforeComputation(node);
+
   return setActiveConsumer(node);
 }
 
 /**
- * Finalize this consumer's state after a reactive computation has run.
+ * Prepare this consumer to run a computation in its reactive context.
+ *
+ * Most code should call consumerBeforeComputation instead of this function.
+ */
+export function resetConsumerBeforeComputation(node: ReactiveNode): void {
+  node.nextProducerIndex = 0;
+}
+
+/**
+ * Finalize this consumer's state and set previous consumer as the active consumer after a
+ * reactive computation has run.
  *
  * Must be called by subclasses which represent reactive computations, after those computations
  * have finished.
@@ -372,6 +384,15 @@ export function consumerAfterComputation(
 ): void {
   setActiveConsumer(prevConsumer);
 
+  if (node) finalizeConsumerAfterComputation(node);
+}
+
+/**
+ * Finalize this consumer's state after a reactive computation has run.
+ *
+ * Most code should call `consumerAfterComputation` instead of this function.
+ */
+export function finalizeConsumerAfterComputation(node: ReactiveNode): void {
   if (
     !node ||
     node.producerNode === undefined ||
