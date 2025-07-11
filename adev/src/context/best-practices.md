@@ -14,8 +14,12 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 ## Components
 - Keep components small and focused on a single responsibility
+- Keep lifecycle methods simple ans use it's interfaces
 - Use `input()` and `output()` functions instead of decorators
 - Use `computed()` for derived state
+- Use protected on class members that are only used by a component's template
+- Use readonly on properties that are initialized by Angular
+- Use `inject` function to inject service instead of constructor injection
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
 - Prefer inline templates for small components
 - Prefer Reactive forms instead of Template-driven ones
@@ -23,13 +27,14 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - DO NOT use `ngStyle`, use `style` bindings instead
 
 ## State Management
-- Use signals for local component state
+- Use `signal()` for local component state
 - Use `computed()` for derived state
 - Keep state transformations pure and predictable
 
 ## Templates
 - Keep templates simple and avoid complex logic
 - Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
+- Use `@let` to declare local variable in template
 - Use the async pipe to handle observables
 
 ## Services
