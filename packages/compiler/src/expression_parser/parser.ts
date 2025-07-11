@@ -106,7 +106,7 @@ export class Parser {
   ): ASTWithSource {
     const errors: ParseError[] = [];
     this._checkNoInterpolation(errors, input, parseSourceSpan, interpolationConfig);
-    const sourceToLex = this._stripComments(input);
+    const {stripped: sourceToLex} = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     const ast = new _ParseAST(
       input,
@@ -183,7 +183,7 @@ export class Parser {
     errors: ParseError[],
   ): AST {
     this._checkNoInterpolation(errors, input, parseSourceSpan, interpolationConfig);
-    const sourceToLex = this._stripComments(input);
+    const {stripped: sourceToLex} = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
     return new _ParseAST(
       input,
@@ -273,8 +273,22 @@ export class Parser {
       // indexes inside the tokens.
       const expressionSpan = interpolatedTokens?.[i * 2 + 1]?.sourceSpan;
       const expressionText = expressions[i].text;
-      const sourceToLex = this._stripComments(expressionText);
+      const {stripped: sourceToLex, hasComments} = this._stripComments(expressionText);
       const tokens = this._lexer.tokenize(sourceToLex);
+
+      if (hasComments && sourceToLex.trim().length === 0 && tokens.length === 0) {
+        // Empty expressions error are handled futher down, here we only take care of the comment case
+        errors.push(
+          getParseError(
+            'Interpolation expression cannot only contain a comment',
+            input,
+            `at column ${expressions[i].start} in`,
+            parseSourceSpan,
+          ),
+        );
+        continue;
+      }
+
       const ast = new _ParseAST(
         expressionSpan ? expressionText : input,
         expressionSpan || parseSourceSpan,
@@ -308,7 +322,7 @@ export class Parser {
     parseSourceSpan: ParseSourceSpan,
     absoluteOffset: number,
   ): ASTWithSource {
-    const sourceToLex = this._stripComments(expression);
+    const {stripped: sourceToLex} = this._stripComments(expression);
     const tokens = this._lexer.tokenize(sourceToLex);
     const errors: ParseError[] = [];
     const ast = new _ParseAST(
@@ -450,9 +464,11 @@ export class Parser {
     );
   }
 
-  private _stripComments(input: string): string {
+  private _stripComments(input: string): {stripped: string; hasComments: boolean} {
     const i = this._commentStart(input);
-    return i != null ? input.substring(0, i) : input;
+    return i != null
+      ? {stripped: input.substring(0, i), hasComments: true}
+      : {stripped: input, hasComments: false};
   }
 
   private _commentStart(input: string): number | null {
