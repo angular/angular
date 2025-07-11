@@ -1599,7 +1599,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drop-list.ts",
         "startLine": 36,
-        "endLine": 438
+        "endLine": 439
       }
     },
     {
@@ -4552,7 +4552,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag.ts",
         "startLine": 61,
-        "endLine": 623
+        "endLine": 622
       }
     },
     {
