@@ -49,17 +49,11 @@ export interface TreeVisualizerConfig<T extends TreeNode> {
 
 // For easier compatability with d3 v5
 // Inspired by https://www.mulberryhousesoftware.com/articles/supporting-two-major-versions-of-d3
-const wrapEvent =
-  <E, V>(fn: (e: E, node: V) => void) =>
-  (e: E, node: V) => {
-    fn(e, node);
-  };
-
-const wrapEvent2 =
-  <E, V>(fn: (e: E) => void) =>
-  (e: E) => {
-    fn(e);
-  };
+function wrapEvent<E, V>(fn: (e: E) => void): (e: E) => void;
+function wrapEvent<E, V>(fn: (e: E, node: V) => void): (e: E, node: V) => void;
+function wrapEvent<E, V>(fn: (e: E, node: V) => void): (e: E, node: V) => void {
+  return (e: E, node: V) => fn(e, node);
+}
 
 export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer<T, TreeD3Node<T>> {
   private zoomController: d3.ZoomBehavior<HTMLElement, unknown> | null = null;
@@ -141,7 +135,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     this.zoomController = d3.zoom<HTMLElement, unknown>().scaleExtent([0.1, 2]);
     this.zoomController.on(
       'start zoom end',
-      wrapEvent2((e: {transform: number}) => {
+      wrapEvent((e: {transform: number}) => {
         g.attr('transform', e.transform);
       }),
     );
