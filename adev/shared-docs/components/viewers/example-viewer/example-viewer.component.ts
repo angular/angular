@@ -28,6 +28,7 @@ import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-co
 import {ExampleMetadata, Snippet} from '../../../interfaces/index';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers/index';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 export enum CodeExampleViewMode {
   SNIPPET = 'snippet',
@@ -41,7 +42,7 @@ export const HIDDEN_CLASS_NAME = 'hidden';
 
 @Component({
   selector: 'docs-example-viewer',
-  imports: [CommonModule, CopySourceCodeButton, MatTabsModule],
+  imports: [CommonModule, CopySourceCodeButton, MatTabsModule, MatTooltipModule],
   templateUrl: './example-viewer.component.html',
   styleUrls: ['./example-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
