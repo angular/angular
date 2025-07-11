@@ -94,6 +94,11 @@ export function createViewTransition(
     // complete (below), which includes the update phase of the routed components.
     return createRenderPromise(injector);
   });
+  transition.ready.catch((error) => {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.error(error);
+    }
+  });
   const {onViewTransitionCreated} = transitionOptions;
   if (onViewTransitionCreated) {
     runInInjectionContext(injector, () => onViewTransitionCreated({transition, from, to}));
