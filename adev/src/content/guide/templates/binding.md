@@ -25,9 +25,26 @@ In this example, when the snippet is rendered to the page, Angular will replace 
 <p>Your color preference is dark.</p>
 ```
 
-In addition to evaluating the expression at first render, Angular also updates the rendered content when the expression's value changes.
+Bindings that change over time should read values from [signals](/guide/signals). Angular tracks the signals read in the template, and updates the rendered page when those signal values change.
 
-Continuing the theme example, if a user clicks on a button that changes the value of `theme` to `'light'` after the page loads, the page updates accordingly to:
+```angular-ts
+@Component({
+  template: `
+    <!-- Does not necessarily update when `welcomeMessage` changes. --> 
+    <p>{{ welcomeMessage }}</p> 
+
+    <p>Your color preference is {{ theme() }}.</p> <!-- Always updates when the value of the `name` signal changes. -->
+  `
+  ...
+})
+export class AppComponent {
+  welcomeMessage = "Welcome, enjoy this app that we built for you"; 
+  theme = signal('dark');
+}
+```
+For more details, see the [Signals guide](/guide/signals).
+
+Continuing the theme example, if a user clicks on a button that updates the `theme` signal to `'light'` after the page loads, the page updates accordingly to:
 
 ```angular-html
 <!-- Rendered Output -->
@@ -50,7 +67,7 @@ Every HTML element has a corresponding DOM representation. For example, each `<b
 
 ```angular-html
 <!-- Bind the `disabled` property on the button element's DOM object -->
-<button [disabled]="isFormValid">Save</button>
+<button [disabled]="isFormValid()">Save</button>
 ```
 
 In this example, every time `isFormValid` changes, Angular automatically sets the `disabled` property of the `HTMLButtonElement` instance.
@@ -61,7 +78,7 @@ When an element is an Angular component, you can use property bindings to set co
 
 ```angular-html
 <!-- Bind the `value` property on the `MyListbox` component instance. -->
-<my-listbox [value]="mySelection" />
+<my-listbox [value]="mySelection()" />
 ```
 
 In this example, every time `mySelection` changes, Angular automatically sets the `value` property of the `MyListbox` instance.
@@ -70,7 +87,7 @@ You can bind to directive properties as well.
 
 ```angular-html
 <!-- Bind to the `ngSrc` property of the `NgOptimizedImage` directive  -->
-<img [ngSrc]="profilePhotoUrl" alt="The current user's profile photo">
+<img [ngSrc]="profilePhotoUrl()" alt="The current user's profile photo">
 ```
 
 ### Attributes
@@ -79,7 +96,7 @@ When you need to set HTML attributes that do not have corresponding DOM properti
 
 ```angular-html
 <!-- Bind the `role` attribute on the `<ul>` element to the component's `listRole` property. -->
-<ul [attr.role]="listRole">
+<ul [attr.role]="listRole()">
 ```
 
 In this example, every time `listRole` changes, Angular automatically sets the `role` attribute of the `<ul>` element by calling `setAttribute`.
@@ -92,13 +109,13 @@ You can also use text interpolation syntax in properties and attributes by using
 
 ```angular-html
 <!-- Binds a value to the `alt` property of the image element's DOM object. -->
-<img src="profile-photo.jpg" alt="Profile photo of {{ firstName }}" >
+<img src="profile-photo.jpg" alt="Profile photo of {{ firstName() }}" >
 ```
 
 To bind to an attribute with the text interpolation syntax, prefix the attribute name with `attr.`
 
 ```angular-html
-<button attr.aria-label="Save changes to {{ objectType }}">
+<button attr.aria-label="Save changes to {{ objectType() }}">
 ```
 
 ## CSS class and style property bindings
@@ -111,7 +128,7 @@ You can create a CSS class binding to conditionally add or remove a CSS class on
 
 ```angular-html
 <!-- When `isExpanded` is truthy, add the `expanded` CSS class. -->
-<ul [class.expanded]="isExpanded">
+<ul [class.expanded]="isExpanded()">
 ```
 
 You can also bind directly to the `class` property. Angular accepts three types of value:
@@ -126,18 +143,18 @@ You can also bind directly to the `class` property. Angular accepts three types 
 @Component({
   template: `
     <ul [class]="listClasses"> ... </ul>
-    <section [class]="sectionClasses"> ... </section>
-    <button [class]="buttonClasses"> ... </button>
+    <section [class]="sectionClasses()"> ... </section>
+    <button [class]="buttonClasses()"> ... </button>
   `,
   ...
 })
 export class UserProfile {
   listClasses = 'full-width outlined';
-  sectionClasses = ['expandable', 'elevated'];
-  buttonClasses = {
+  sectionClasses = signal(['expandable', 'elevated']);
+  buttonClasses = ({
     highlighted: true,
     embiggened: false,
-  };
+  });
 }
 ```
 
@@ -155,12 +172,12 @@ When using static CSS classes, directly binding `class`, and binding specific cl
 
 ```angular-ts
 @Component({
-  template: `<ul class="list" [class]="listType" [class.expanded]="isExpanded"> ...`,
+  template: `<ul class="list" [class]="listType()" [class.expanded]="isExpanded()"> ...`,
   ...
 })
 export class Listbox {
-  listType = 'box';
-  isExpanded = true;
+  listType = signal('box');
+  isExpanded = signal(true);
 }
 ```
 
@@ -182,14 +199,14 @@ You can also bind to CSS style properties directly on an element.
 
 ```angular-html
 <!-- Set the CSS `display` property based on the `isExpanded` property. -->
-<section [style.display]="isExpanded ? 'block' : 'none'">
+<section [style.display]="isExpanded() ? 'block' : 'none'">
 ```
 
 You can further specify units for CSS properties that accept units.
 
 ```angular-html
 <!-- Set the CSS `height` property to a pixel value based on the `sectionHeightInPixels` property. -->
-<section [style.height.px]="sectionHeightInPixels">
+<section [style.height.px]="sectionHeightInPixels()">
 ```
 
 You can also set multiple style values in one binding. Angular accepts the following types of value:
@@ -202,17 +219,17 @@ You can also set multiple style values in one binding. Angular accepts the follo
 ```angular-ts
 @Component({
   template: `
-    <ul [style]="listStyles"> ... </ul>
-    <section [style]="sectionStyles"> ... </section>
+    <ul [style]="listStyles()"> ... </ul>
+    <section [style]="sectionStyles()"> ... </section>
   `,
   ...
 })
 export class UserProfile {
-  listStyles = 'display: flex; padding: 8px';
-  sectionStyles = {
+  listStyles = signal('display: flex; padding: 8px');
+  sectionStyles = signal({
     border: '1px solid black',
     'font-weight': 'bold',
-  };
+  });
 }
 ```
 
