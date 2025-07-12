@@ -1,8 +1,8 @@
 load(
     "//tools:defaults2.bzl",
     _ng_project = "ng_project",
-    _ng_web_test_suite = "ng_web_test_suite",
     _ts_project = "ts_project",
+    _zoneless_web_test_suite = "zoneless_web_test_suite",
 )
 
 def ts_project(name, tsconfig = None, testonly = False, enable_runtime_rnjs_interop = False, **kwargs):
@@ -31,14 +31,14 @@ def ng_project(name, tsconfig = None, testonly = False, enable_runtime_rnjs_inte
         **kwargs
     )
 
-def ng_web_test_suite(deps = [], **kwargs):
+def zoneless_web_test_suite(deps = [], **kwargs):
     # Provide required modules for the imports in //tools/testing/browser_tests.init.mts
     deps = deps + [
         "//:node_modules/@angular/compiler",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/platform-browser",
     ]
-    _ng_web_test_suite(
+    _zoneless_web_test_suite(
         deps = deps,
         tsconfig = "//adev/shared-docs:tsconfig_test",
         **kwargs
