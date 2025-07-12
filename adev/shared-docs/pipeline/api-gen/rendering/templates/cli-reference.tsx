@@ -22,25 +22,27 @@ export function CliCommandReference(entry: CliCommandRenderable) {
         <HeaderCli command={entry} />
         {[entry.name, ...entry.aliases].map((command) => (
           <div class="docs-code docs-reference-cli-toc">
-            <code>
-              <div className={'shiki line cli'}>
-                ng {commandName(entry, command)}
-                {entry.argumentsLabel ? (
-                  <button member-id={'Arguments'} className="shiki-ln-line-argument">
-                    {entry.argumentsLabel}
-                  </button>
-                ) : (
-                  <></>
-                )}
-                {entry.hasOptions ? (
-                  <button member-id={'Options'} className="shiki-ln-line-option">
-                    [options]
-                  </button>
-                ) : (
-                  <></>
-                )}
-              </div>
-            </code>
+            <pre class="docs-mini-scroll-track">
+              <code>
+                <div className={'shiki line cli'}>
+                  ng {commandName(entry, command)}
+                  {entry.argumentsLabel ? (
+                    <button member-id={'Arguments'} className="shiki-ln-line-argument">
+                      {entry.argumentsLabel}
+                    </button>
+                  ) : (
+                    <></>
+                  )}
+                  {entry.hasOptions ? (
+                    <button member-id={'Options'} className="shiki-ln-line-option">
+                      [options]
+                    </button>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </code>
+            </pre>
           </div>
         ))}
         <RawHtml value={entry.htmlDescription} />
