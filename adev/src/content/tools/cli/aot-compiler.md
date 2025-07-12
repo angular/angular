@@ -239,7 +239,7 @@ The collector reduces this expression to its equivalent *folded* string:
 
 <docs-code language="typescript">
 
-'<div>{{hero.name}}</div><div>{{hero.title}}</div>'
+'<div>{{hero().name}}</div><div>{{hero().title}}</div>'
 
 </docs-code>
 
