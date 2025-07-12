@@ -19,8 +19,11 @@
               <span
                 [class.docs-external-link]="item.isExternal"
                 class="docs-faceted-list-item-text"
-                >{{ item.label }}</span
               >
+                {{ item.label }}
+                <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
+              </span>
+
               @if (item.children && item.level! > 1 && !item.isExpanded) {
                 <docs-icon>chevron_right</docs-icon>
               }
@@ -37,7 +40,11 @@
               [attr.aria-label]="item.label"
               [matTooltipClass]="'API-tooltip'"
             >
-              <span class="docs-faceted-list-item-text">{{item.label}}</span>
+              <span class="docs-faceted-list-item-text">
+                {{item.label}}
+                <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
+              </span>
+
               @if (item.children && !item.isExpanded) {
                 <docs-icon>chevron_right</docs-icon>
               }
@@ -54,7 +61,10 @@
               [attr.aria-label]="item.label"
               [matTooltipClass]="'API-tooltip'"
             >
-              <span class="docs-faceted-list-item-text">{{item.label}}</span>
+              <span class="docs-faceted-list-item-text">
+                {{item.label}}
+                <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
+              </span>
             </div>
           }
 
@@ -82,7 +92,10 @@
               @if (item.children && item.level === collapsableLevel()) {
                 <docs-icon>arrow_back</docs-icon>
               }
-              <span class="docs-faceted-list-item-text">{{ item.label }}</span>
+              <span class="docs-faceted-list-item-text">
+                {{ item.label }}
+                <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
+              </span>
             </button>
           }
         }
@@ -95,3 +108,11 @@
 </ng-template>
 
 <ng-container *ngTemplateOutlet="navigationList; context: {$implicit: navigationItems()}" />
+
+<ng-template let-item #itemStatus>
+  @if (item.status === 'new') {
+    <span class="tag docs-new-item">New</span>
+  } @else if (item.status === 'updated') {
+    <span class="tag docs-updated-item">Updated</span>
+  }
+</ng-template>
