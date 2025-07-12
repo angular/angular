@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ElementRef, input, signal, viewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 
 let instanceIdx = 0;
 
@@ -25,6 +32,7 @@ let instanceIdx = 0;
     </svg>
   `,
   styleUrl: 'tree-visualizer-host.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreeVisualizerHostComponent {
   readonly container = viewChild.required<ElementRef>('container');

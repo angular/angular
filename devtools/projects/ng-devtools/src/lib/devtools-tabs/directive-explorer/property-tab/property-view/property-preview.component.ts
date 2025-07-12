@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 import {PropType} from '../../../../../../../protocol';
 
 import {FlatNode} from '../../property-resolver/element-property-resolver';
@@ -15,6 +15,7 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
   selector: 'ng-property-preview',
   templateUrl: './property-preview.component.html',
   styleUrls: ['./property-preview.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyPreviewComponent {
   readonly node = input.required<FlatNode>();

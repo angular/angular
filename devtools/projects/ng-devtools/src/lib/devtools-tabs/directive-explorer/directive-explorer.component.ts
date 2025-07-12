@@ -16,6 +16,7 @@ import {
   output,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {
   ComponentExplorerView,
@@ -98,6 +99,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     SignalsTabComponent,
     ResponsiveSplitDirective,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DirectiveExplorerComponent {
   readonly showCommentNodes = input(false);
