@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -28,6 +28,7 @@ const PROFILER_VERSION = 1;
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.scss'],
   imports: [MatTooltip, MatIcon, RecordingTimelineComponent, ButtonComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilerComponent {
   readonly state = signal<State>('idle');
