@@ -3,11 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector, Signal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {ValidationError} from '@angular/forms/experimental/src/api/validation_errors';
 import {
   SchemaOrSchemaFn,
   applyEach,
@@ -34,7 +35,7 @@ describe('when', () => {
       (path) => {
         applyWhen(path, needsLastNamePredicate, (namePath) => {
           validate(namePath.last, ({value}) =>
-            value().length > 0 ? undefined : {kind: 'required'},
+            value().length > 0 ? undefined : ValidationError.required(),
           );
         });
       },
@@ -44,7 +45,7 @@ describe('when', () => {
     f().value.set({first: 'meow', needLastName: false, last: ''});
     expect(f.last().errors()).toEqual([]);
     f().value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last().errors()).toEqual([{kind: 'required'}]);
+    expect(f.last().errors()).toEqual([ValidationError.required()]);
   });
 
   it('Disallows using non-local paths', () => {
@@ -55,7 +56,9 @@ describe('when', () => {
       (path) => {
         applyWhen(path, needsLastNamePredicate, (/* UNUSED */) => {
           expect(() => {
-            validate(path.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
+            validate(path.last, ({value}) =>
+              value().length > 0 ? undefined : ValidationError.required(),
+            );
           }).toThrowError();
         });
       },
@@ -68,13 +71,13 @@ describe('when', () => {
 
     const s: SchemaOrSchemaFn<User> = (namePath) => {
       validate(namePath.last, ({value}) => {
-        return value().length > 0 ? undefined : {kind: 'required1'};
+        return value().length > 0 ? undefined : ValidationError.custom({kind: 'required1'});
       });
     };
 
     const s2: SchemaOrSchemaFn<User> = (namePath) => {
       validate(namePath.last, ({value}) => {
-        return value.length > 0 ? undefined : {kind: 'required2'};
+        return value.length > 0 ? undefined : ValidationError.custom({kind: 'required2'});
       });
     };
 
@@ -89,16 +92,21 @@ describe('when', () => {
       {injector: TestBed.inject(Injector)},
     );
     f.needLastName().value.set(true);
-    expect(f.items[0].last().errors()).toEqual([{kind: 'required1'}, {kind: 'required2'}]);
+    expect(f.items[0].last().errors()).toEqual([
+      ValidationError.custom({kind: 'required1'}),
+      ValidationError.custom({kind: 'required2'}),
+    ]);
     f.needLastName().value.set(false);
-    expect(f.items[0].last().errors()).toEqual([{kind: 'required1'}]);
+    expect(f.items[0].last().errors()).toEqual([ValidationError.custom({kind: 'required1'})]);
   });
 
   it('accepts a schema', () => {
     const data = signal({first: '', needLastName: false, last: ''});
 
     const s: SchemaOrSchemaFn<User> = (namePath) => {
-      validate(namePath.last, ({value}) => (value().length > 0 ? undefined : {kind: 'required'}));
+      validate(namePath.last, ({value}) =>
+        value().length > 0 ? undefined : ValidationError.required(),
+      );
     };
     const f = form(
       data,
@@ -111,7 +119,7 @@ describe('when', () => {
     f().value.set({first: 'meow', needLastName: false, last: ''});
     expect(f.last().errors()).toEqual([]);
     f().value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last().errors()).toEqual([{kind: 'required'}]);
+    expect(f.last().errors()).toEqual([ValidationError.required()]);
   });
 
   it('supports mix of conditional and non conditional validators', () => {
@@ -119,11 +127,13 @@ describe('when', () => {
     const f = form(
       data,
       (path) => {
-        validate(path.last, ({value}) => (value().length > 4 ? undefined : {kind: 'short'}));
+        validate(path.last, ({value}) =>
+          value().length > 4 ? undefined : ValidationError.custom({kind: 'short'}),
+        );
 
         applyWhen(path, needsLastNamePredicate, (namePath /* Path */) => {
           validate(namePath.last, ({value}) =>
-            value().length > 0 ? undefined : {kind: 'required'},
+            value().length > 0 ? undefined : ValidationError.required(),
           );
         });
       },
@@ -131,16 +141,19 @@ describe('when', () => {
     );
 
     f().value.set({first: 'meow', needLastName: false, last: ''});
-    expect(f.last().errors()).toEqual([{kind: 'short'}]);
+    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'short'})]);
     f().value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last().errors()).toEqual([{kind: 'short'}, {kind: 'required'}]);
+    expect(f.last().errors()).toEqual([
+      ValidationError.custom({kind: 'short'}),
+      ValidationError.required(),
+    ]);
   });
 
   it('supports array schema', () => {
     const data = signal({needLastName: true, items: [{first: '', last: ''}]});
     const s: SchemaOrSchemaFn<User> = (i) => {
       validate(i.last, ({value}) => {
-        return value().length > 0 ? undefined : {kind: 'required'};
+        return value().length > 0 ? undefined : ValidationError.required();
       });
     };
 
@@ -154,7 +167,7 @@ describe('when', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.items[0].last().errors()).toEqual([{kind: 'required'}]);
+    expect(f.items[0].last().errors()).toEqual([ValidationError.required()]);
     f.needLastName().value.set(false);
     expect(f.items[0].last().errors()).toEqual([]);
   });
@@ -170,18 +183,20 @@ describe('applyWhenValue', () => {
           path.numOrNull,
           (value) => value === null || value > 0,
           (num) => {
-            validate(num, ({value}) => ((value() ?? 0) < 10 ? {kind: 'too-small'} : undefined));
+            validate(num, ({value}) =>
+              (value() ?? 0) < 10 ? ValidationError.custom({kind: 'too-small'}) : undefined,
+            );
           },
         );
       },
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.numOrNull().errors()).toEqual([{kind: 'too-small'}]);
+    expect(f.numOrNull().errors()).toEqual([ValidationError.custom({kind: 'too-small'})]);
     f.numOrNull().value.set(5);
-    expect(f.numOrNull().errors()).toEqual([{kind: 'too-small'}]);
+    expect(f.numOrNull().errors()).toEqual([ValidationError.custom({kind: 'too-small'})]);
     f.numOrNull().value.set(null);
-    expect(f.numOrNull().errors()).toEqual([{kind: 'too-small'}]);
+    expect(f.numOrNull().errors()).toEqual([ValidationError.custom({kind: 'too-small'})]);
     f.numOrNull().value.set(15);
     expect(f.numOrNull().errors()).toEqual([]);
   });
@@ -195,7 +210,9 @@ describe('applyWhenValue', () => {
           path.numOrNull,
           (value) => value !== null,
           (num) => {
-            validate(num, ({value}) => (value() < 10 ? {kind: 'too-small'} : undefined));
+            validate(num, ({value}) =>
+              value() < 10 ? ValidationError.custom({kind: 'too-small'}) : undefined,
+            );
           },
         );
       },
@@ -204,7 +221,7 @@ describe('applyWhenValue', () => {
 
     expect(f.numOrNull().errors()).toEqual([]);
     f.numOrNull().value.set(5);
-    expect(f.numOrNull().errors()).toEqual([{kind: 'too-small'}]);
+    expect(f.numOrNull().errors()).toEqual([ValidationError.custom({kind: 'too-small'})]);
     f.numOrNull().value.set(null);
     expect(f.numOrNull().errors()).toEqual([]);
     f.numOrNull().value.set(15);

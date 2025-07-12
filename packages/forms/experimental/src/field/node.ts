@@ -9,14 +9,8 @@
 import type {Signal, WritableSignal} from '@angular/core';
 import type {DataKey} from '../api/data';
 import type {MetadataKey} from '../api/metadata';
-import type {
-  DisabledReason,
-  Field,
-  FieldContext,
-  FieldState,
-  FormError,
-  SubmittedStatus,
-} from '../api/types';
+import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
+import type {ValidationError} from '../api/validation_errors';
 
 import {
   ChildFieldNodeOptions,
@@ -106,7 +100,7 @@ export class FieldNode implements FieldState<unknown> {
     return this.structure.keyInParent;
   }
 
-  get syncErrors(): Signal<FormError[]> {
+  get syncErrors(): Signal<ValidationError[]> {
     return this.validationState.syncErrors;
   }
 
@@ -114,7 +108,7 @@ export class FieldNode implements FieldState<unknown> {
     return this.validationState.syncValid;
   }
 
-  get errors(): Signal<FormError[]> {
+  get errors(): Signal<ValidationError[]> {
     return this.validationState.errors;
   }
 

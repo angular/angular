@@ -21,6 +21,7 @@ ts_library(
 
 karma_web_test_suite(
     name = "test",
+    browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
     deps = [
         ":test_lib",
     ],

@@ -7,11 +7,11 @@
  */
 
 import {InputSignal, ModelSignal, OutputRef} from '@angular/core';
-import {FormError} from './types';
+import {ValidationError} from './validation_errors';
 
 export interface FormUiControl<TValue> {
   readonly value: ModelSignal<TValue>;
-  readonly errors?: InputSignal<readonly FormError[] | undefined>;
+  readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
   readonly disabled?: InputSignal<boolean | string | undefined>;
   readonly readonly?: InputSignal<boolean | undefined>;
   readonly valid?: InputSignal<boolean | undefined>;

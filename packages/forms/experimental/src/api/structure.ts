@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/core';
@@ -20,8 +20,8 @@ import type {
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
-  ServerError,
 } from './types';
+import {ValidationError, WithField} from './validation_errors';
 
 export interface FormOptions {
   injector?: Injector;
@@ -278,7 +278,8 @@ export function applyWhenValue(
 /**
  * Submits a given `Field` using the given action function and applies any server errors resulting
  * from the action to the field. Server errors retured by the `action` will be integrated into the
- * field as a `FormError` on the sub-field indicated by the `field` property of the server error.
+ * field as a `ValidationError` on the sub-field indicated by the `field` property of the server
+ * error.
  *
  * @example ```
  * async function registerNewUser(registrationForm: Field<{username: string, password: string}>) {
@@ -306,13 +307,13 @@ export function applyWhenValue(
  */
 export async function submit<TValue>(
   form: Field<TValue>,
-  action: (form: Field<TValue>) => Promise<ServerError[] | void>,
+  action: (form: Field<TValue>) => Promise<(ValidationError | WithField<ValidationError>)[] | void>,
 ) {
   const api = form() as FieldNode;
   api.submitState.selfSubmittedStatus.set('submitting');
   const errors = (await action(form)) || [];
   for (const error of errors) {
-    (error.field() as FieldNode).submitState.setServerErrors(error.error);
+    ((error.field ?? form)() as FieldNode).submitState.setServerErrors(error);
   }
   api.submitState.selfSubmittedStatus.set('submitted');
 }

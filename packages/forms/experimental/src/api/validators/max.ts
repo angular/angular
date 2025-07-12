@@ -3,12 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {metadata, validate} from '../logic';
 import {MAX} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
+import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './types';
 
 /**
@@ -37,7 +38,7 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return {kind: 'max'};
+        return ValidationError.max(value);
       }
     }
 
