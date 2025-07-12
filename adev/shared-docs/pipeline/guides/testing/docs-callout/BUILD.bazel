@@ -1,5 +1,5 @@
 load("//adev/shared-docs:defaults.bzl", "ts_project")
-load("//tools:defaults2.bzl", "jasmine_test")
+load("//tools:defaults2.bzl", "zoneless_jasmine_test")
 
 ts_project(
     name = "docs-callout",
@@ -15,7 +15,7 @@ ts_project(
     ],
 )
 
-jasmine_test(
+zoneless_jasmine_test(
     name = "test",
     data = [
         "docs-callout.md",

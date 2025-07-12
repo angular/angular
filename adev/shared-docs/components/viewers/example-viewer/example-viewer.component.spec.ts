@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ExampleViewer} from './example-viewer.component';
 import {ExampleMetadata, ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
@@ -48,7 +48,7 @@ describe('ExampleViewer', () => {
     fixture.detectChanges();
   });
 
-  it('should set file extensions as tab names when all files have different extension', waitForAsync(async () => {
+  it('should set file extensions as tab names when all files have different extension', async () => {
     componentRef.setInput(
       'metadata',
       getMetadata({
@@ -66,9 +66,9 @@ describe('ExampleViewer', () => {
     expect(component.tabs()![0].name).toBe('TS');
     expect(component.tabs()![1].name).toBe('HTML');
     expect(component.tabs()![2].name).toBe('CSS');
-  }));
+  });
 
-  it('should generate correct code content for multi file mode when it is expanded', waitForAsync(async () => {
+  it('should generate correct code content for multi file mode when it is expanded', async () => {
     componentRef.setInput(
       'metadata',
       getMetadata({
@@ -86,7 +86,7 @@ describe('ExampleViewer', () => {
     expect(component.tabs()![0].code).toBe('typescript file');
     expect(component.tabs()![1].code).toBe('html file');
     expect(component.tabs()![2].code).toBe('css file');
-  }));
+  });
 
   it('should set file names as tab names when there is at least one duplication', async () => {
     componentRef.setInput(
@@ -107,14 +107,14 @@ describe('ExampleViewer', () => {
     expect(component.tabs()![2].name).toBe('another-example.ts');
   });
 
-  it('should expand button not appear when there is no hidden line', waitForAsync(async () => {
+  it('should expand button not appear when there is no hidden line', async () => {
     componentRef.setInput('metadata', getMetadata());
     await component.renderExample();
     const button = fixture.debugElement.query(By.css('button[aria-label="Expand code example"]'));
     expect(button).toBeNull();
-  }));
+  });
 
-  it('should have line with hidden line class when expand button is present', waitForAsync(async () => {
+  it('should have line with hidden line class when expand button is present', async () => {
     const expectedCodeSnippetContent =
       'typescript code<br/>' + '<div class="line">hidden line</div>';
 
@@ -136,9 +136,9 @@ describe('ExampleViewer', () => {
 
     const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
     expect(hiddenLine).toBeTruthy();
-  }));
+  });
 
-  it('should have no more line with hidden line class when expand button is clicked', waitForAsync(async () => {
+  it('should have no more line with hidden line class when expand button is clicked', async () => {
     const expectedCodeSnippetContent =
       'typescript code<br/>' + '<div class="line">hidden line</div>';
 
@@ -166,9 +166,9 @@ describe('ExampleViewer', () => {
 
     const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
     expect(hiddenLine).toBeNull();
-  }));
+  });
 
-  it('should set exampleComponent when metadata contains path and preview is true', waitForAsync(async () => {
+  it('should set exampleComponent when metadata contains path and preview is true', async () => {
     exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
     componentRef.setInput(
       'metadata',
@@ -179,9 +179,9 @@ describe('ExampleViewer', () => {
     );
     await component.renderExample();
     expect(component.exampleComponent).toBe(ExampleComponent);
-  }));
+  });
 
-  it('should display GitHub button when githubUrl is provided and there is preview', waitForAsync(async () => {
+  it('should display GitHub button when githubUrl is provided and there is preview', async () => {
     exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
     componentRef.setInput(
       'metadata',
@@ -199,9 +199,9 @@ describe('ExampleViewer', () => {
     );
     expect(githubButton).toBeTruthy();
     expect(githubButton.nativeElement.href).toBe(component.githubUrl);
-  }));
+  });
 
-  it('should display StackBlitz button when stackblitzUrl is provided and there is preview', waitForAsync(async () => {
+  it('should display StackBlitz button when stackblitzUrl is provided and there is preview', async () => {
     exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
     componentRef.setInput(
       'metadata',
@@ -219,9 +219,9 @@ describe('ExampleViewer', () => {
     );
     expect(stackblitzButton).toBeTruthy();
     expect(stackblitzButton.nativeElement.href).toBe(component.stackblitzUrl);
-  }));
+  });
 
-  it('should set expanded flag in metadata after toggleExampleVisibility', waitForAsync(async () => {
+  it('should set expanded flag in metadata after toggleExampleVisibility', async () => {
     componentRef.setInput('metadata', getMetadata());
     await component.renderExample();
     component.toggleExampleVisibility();
@@ -231,10 +231,10 @@ describe('ExampleViewer', () => {
     expect(await tab.getLabel()).toBe('TS');
     component.toggleExampleVisibility();
     expect(component.expanded()).toBeFalse();
-  }));
+  });
 
   // TODO(josephperrott): enable once the docs-viewer/example-viewer circle is sorted out.
-  xit('should call clipboard service when clicked on copy source code', waitForAsync(async () => {
+  xit('should call clipboard service when clicked on copy source code', async () => {
     const expectedCodeSnippetContent = 'typescript code';
     componentRef.setInput(
       'metadata',
@@ -256,9 +256,9 @@ describe('ExampleViewer', () => {
     button.click();
 
     expect(spy.calls.argsFor(0)[0]?.trim()).toBe(expectedCodeSnippetContent);
-  }));
+  });
 
-  it('should call clipboard service when clicked on copy example link', waitForAsync(async () => {
+  it('should call clipboard service when clicked on copy example link', async () => {
     componentRef.setInput('metadata', getMetadata());
     component.expanded.set(true);
     fixture.detectChanges();
@@ -271,7 +271,7 @@ describe('ExampleViewer', () => {
     ).nativeElement;
     button.click();
     expect(spy.calls.argsFor(0)[0].trim()).toBe(`${window.location.href}#example-1`);
-  }));
+  });
 });
 
 const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {

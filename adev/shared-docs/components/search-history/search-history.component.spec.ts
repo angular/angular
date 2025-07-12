@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {provideZonelessChangeDetection} from '@angular/core';
-import {ComponentFixture, fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {provideZonelessChangeDetection, ApplicationRef} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
 
@@ -50,58 +50,53 @@ const ITEMS: HistoryItem[] = [
   },
 ];
 
-function loadItems(history: SearchHistory) {
+async function loadItems(history: SearchHistory) {
   for (const item of ITEMS) {
     // Since adding an item sets a timestamp which is later
-    // used for sorting the items array, we artificially
-    // tick forward the clock and then flush the microtask queue
-    // to ensure proper/expected order. This is needed since we
-    // are updating the internal signal multiple times consecutively.
-    jasmine.clock().tick(100);
+    // used for sorting the items array, we
+    // update the clock by awaiting a timeout.
     history.addItem(item);
-    flushMicrotasks();
+    await new Promise((resolve) => setTimeout(resolve, 5));
   }
 
   const favorite = ITEMS.filter((i) => i.isFavorite);
   for (const item of favorite) {
-    jasmine.clock().tick(100);
     history.makeFavorite(item);
-    flushMicrotasks();
+    await new Promise((resolve) => setTimeout(resolve, 5));
   }
+
+  TestBed.tick();
+  await TestBed.inject(ApplicationRef).whenStable();
 }
 
 describe('SearchHistoryComponent', () => {
   let fixture: ComponentFixture<SearchHistoryComponent>;
   let history: SearchHistory;
 
-  beforeEach(fakeAsync(async () => {
-    jasmine.clock().uninstall();
-    jasmine.clock().install();
-
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SearchHistoryComponent],
       providers: [
         provideZonelessChangeDetection(),
         {provide: LOCAL_STORAGE, useClass: MockLocalStorage},
         provideRouter([]),
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(SearchHistoryComponent);
     history = TestBed.inject(SearchHistory);
 
-    loadItems(history);
+    await loadItems(history);
 
-    fixture.detectChanges();
-  }));
-
-  afterEach(() => {
-    jasmine.clock().uninstall();
+    TestBed.tick();
+    await TestBed.inject(ApplicationRef).whenStable();
   });
 
-  it('should render all items', () => {
+  it('should render all items', async () => {
     const recent = fixture.debugElement.queryAll(By.css(RECENT_ITEMS));
     const favorite = fixture.debugElement.queryAll(By.css(FAV_ITEMS));
+
+    expect(history.items().recent[0].id).toBe('a');
+    expect(history.items().recent[1].id).toBe('b');
 
     expect(recent.map((el) => el.nativeElement.innerText)).toEqual(['Item A', 'Item B']);
     expect(favorite.map((el) => el.nativeElement.innerText)).toEqual(['Item C']);
@@ -113,7 +108,7 @@ describe('SearchHistoryComponent', () => {
     );
     firstRecent.nativeElement.click();
 
-    fixture.detectChanges();
+    TestBed.tick();
 
     const recent = fixture.debugElement.queryAll(By.css(RECENT_ITEMS));
     expect(recent.map((el) => el.nativeElement.innerText)).toEqual(['Item B']);
@@ -125,12 +120,12 @@ describe('SearchHistoryComponent', () => {
     );
     firstRecent.nativeElement.click();
 
-    fixture.detectChanges();
+    TestBed.tick();
 
     const recent = fixture.debugElement.queryAll(By.css(RECENT_ITEMS));
     expect(recent.map((el) => el.nativeElement.innerText)).toEqual(['Item B']);
 
     const favorite = fixture.debugElement.queryAll(By.css(FAV_ITEMS));
-    expect(favorite.map((el) => el.nativeElement.innerText)).toEqual(['Item C', 'Item A']);
+    expect(favorite.map((el) => el.nativeElement.innerText)).toEqual(['Item A', 'Item C']);
   });
 });
