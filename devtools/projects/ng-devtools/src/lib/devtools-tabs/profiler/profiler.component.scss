@@ -6,6 +6,7 @@
   height: 100%;
 
   .recorder-controls {
+    position: relative;
     display: flex;
     align-items: flex-start;
     gap: 0.25rem;
@@ -37,6 +38,14 @@
         margin-top: 0.5rem;
         cursor: pointer;
       }
+    }
+
+    mat-progress-bar {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: 0;
+      left: 0;
     }
   }
 
