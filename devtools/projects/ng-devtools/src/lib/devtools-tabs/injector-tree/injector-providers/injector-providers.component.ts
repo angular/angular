@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatTableModule} from '@angular/material/table';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -23,6 +23,7 @@ import {ButtonComponent} from '../../../shared/button/button.component';
   templateUrl: './injector-providers.component.html',
   styleUrl: './injector-providers.component.scss',
   imports: [MatTableModule, MatIcon, MatTooltip, ButtonComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InjectorProvidersComponent {
   readonly injector = input.required<SerializedInjector>();

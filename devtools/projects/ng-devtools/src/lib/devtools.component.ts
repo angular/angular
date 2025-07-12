@@ -7,7 +7,15 @@
  */
 
 import {animate, style, transition, trigger} from '@angular/animations';
-import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {Events, MessageBus, SupportedApis} from '../../../protocol';
 import {interval} from 'rxjs';
 
@@ -55,6 +63,7 @@ const LAST_SUPPORTED_VERSION = 9;
   ],
   imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
   providers: [WINDOW_PROVIDER, ThemeService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsComponent implements OnDestroy {
   readonly AngularStatus = AngularStatus;

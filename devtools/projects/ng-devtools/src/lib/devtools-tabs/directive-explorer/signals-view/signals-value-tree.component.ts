@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular/material/tree';
 import {MatIcon} from '@angular/material/icon';
@@ -30,6 +30,7 @@ export interface Property {
   templateUrl: './signals-value-tree.component.html',
   imports: [MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatIcon],
   styleUrl: './signals-value-tree.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignalsValueTreeComponent {
   readonly treeControl = input.required<FlatTreeControl<FlatNode>>();

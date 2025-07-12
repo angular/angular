@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 
 export type FilterMatch = {
@@ -44,6 +44,7 @@ const genericSearchGenerator: FilterFnGenerator = (filter: string) => {
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss'],
   imports: [MatIcon],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterComponent {
   readonly filter = output<FilterFn>();
