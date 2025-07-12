@@ -1,7 +1,7 @@
 load("//adev/shared-docs:defaults.bzl", "ts_project")
 load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
 load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
-load("//tools:defaults2.bzl", "jasmine_test")
+load("//tools:defaults2.bzl", "zoneless_jasmine_test")
 
 generate_api_manifest(
     name = "test",
@@ -33,7 +33,7 @@ ts_project(
     ],
 )
 
-jasmine_test(
+zoneless_jasmine_test(
     name = "unit_tests",
     data = [
         ":unit_test_lib_rjs",
