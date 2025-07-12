@@ -365,7 +365,7 @@ You can add child routes to any route definition with the `children` property:
 const routes: Routes = [
   {
     path: 'product/:id',
-    component: 'ProductComponent',
+    component: ProductComponent,
     children: [
       {
         path: 'info',
