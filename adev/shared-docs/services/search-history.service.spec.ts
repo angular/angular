@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {
   HistoryItem,
   MAX_RECENT_HISTORY_SIZE,
@@ -31,27 +31,21 @@ const ITEMS: HistoryItem[] = [
   },
 ].map((i) => ({...i, url: '', createdAt: 0, isFavorite: false}));
 
-describe('SearchHistory', () => {
+describe('SearchHistory', async () => {
   let service: SearchHistory;
   let storage: Storage;
 
-  function loadItems() {
+  async function loadItems() {
     for (const item of ITEMS) {
       // Since adding an item sets a timestamp which is later
-      // used for sorting the items array, we artificially
-      // tick forward the clock and then flush the microtask queue
-      // to ensure proper/expected order. This is needed since we
-      // are updating the internal signal multiple times consecutively.
-      jasmine.clock().tick(100);
+      // used for sorting the items array, we
+      // update the clock by awaiting a timeout.
+      await new Promise((resolve) => setTimeout(resolve, 5));
       service.addItem(item);
-      flushMicrotasks();
     }
   }
 
   beforeEach(() => {
-    jasmine.clock().uninstall();
-    jasmine.clock().install();
-
     TestBed.configureTestingModule({
       providers: [
         SearchHistory,
@@ -63,10 +57,6 @@ describe('SearchHistory', () => {
     });
     service = TestBed.inject(SearchHistory);
     storage = TestBed.inject(LOCAL_STORAGE)!;
-  });
-
-  afterEach(() => {
-    jasmine.clock().uninstall();
   });
 
   it('should be created', () => {
@@ -101,24 +91,24 @@ describe('SearchHistory', () => {
     expect(data.pop()).toEqual(jasmine.objectContaining(itemCopy));
   });
 
-  it('should load history items', fakeAsync(() => {
-    loadItems();
+  it('should load history items', async () => {
+    await loadItems();
 
     expect(service.items().recent.map((i) => i.id)).toEqual(['a', 'b', 'c']);
-  }));
+  });
 
-  it('should delete a history item', fakeAsync(() => {
-    loadItems();
+  it('should delete a history item', async () => {
+    await loadItems();
 
     const bItem = ITEMS.find((i) => i.id === 'b')!;
 
     service.removeItem(bItem);
 
     expect(service.items().recent.map((i) => i.id)).toEqual(['a', 'c']);
-  }));
+  });
 
-  it('should make item favorite', fakeAsync(() => {
-    loadItems();
+  it('should make item favorite', async () => {
+    await loadItems();
 
     const aItem = ITEMS.find((i) => i.id === 'a')!;
 
@@ -126,9 +116,9 @@ describe('SearchHistory', () => {
 
     expect(service.items().recent.map((i) => i.id)).toEqual(['b', 'c']);
     expect(service.items().favorite.map((i) => i.id)).toEqual(['a']);
-  }));
+  });
 
-  it('should set a limit to history size', fakeAsync(() => {
+  it('should set a limit to history size', async () => {
     const extra = 10;
     const ids = [];
 
@@ -136,7 +126,7 @@ describe('SearchHistory', () => {
       const id = i.toString();
       ids.push(id);
 
-      jasmine.clock().tick(100);
+      await new Promise((resolve) => setTimeout(resolve, 5));
       service.addItem({
         id,
         labelHtml: id,
@@ -144,11 +134,10 @@ describe('SearchHistory', () => {
         url: '',
         createdAt: 0,
       });
-      flushMicrotasks();
     }
 
     ids.splice(0, extra);
 
     expect(service.items().recent.map((i) => i.id)).toEqual(ids.reverse());
-  }));
+  });
 });
