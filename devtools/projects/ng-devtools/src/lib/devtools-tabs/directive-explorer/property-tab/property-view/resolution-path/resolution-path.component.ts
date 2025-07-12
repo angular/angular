@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {SerializedInjector} from '../../../../../../../../protocol';
 
 export const NODE_TYPE_CLASS_MAP: {[key in SerializedInjector['type']]: string} = {
@@ -21,6 +21,7 @@ export const NODE_TYPE_CLASS_MAP: {[key in SerializedInjector['type']]: string} 
   selector: 'ng-resolution-path',
   templateUrl: './resolution-path.component.html',
   styleUrl: './resolution-path.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResolutionPathComponent {
   readonly path = input<SerializedInjector[]>([]);

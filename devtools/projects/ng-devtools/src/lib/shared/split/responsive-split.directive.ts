@@ -30,7 +30,6 @@ export type ResponsiveSplitConfig = {
 export class ResponsiveSplitDirective {
   private readonly host = inject(SplitComponent);
   private readonly elementRef = inject(ElementRef);
-  private readonly zone = inject(NgZone);
   private readonly window = inject<typeof globalThis>(WINDOW);
 
   protected readonly config = input.required<ResponsiveSplitConfig>({

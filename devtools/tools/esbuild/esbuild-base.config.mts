@@ -34,10 +34,6 @@ export default async function createConfig({
     mainFields: ['es2020', 'es2015', 'module', 'main'],
     // `tslib` sets the `module` condition to resolve to ESM.
     conditions: ['es2020', 'es2015', 'module'],
-    supported: {
-      // Downlevel native `async/await` so that ZoneJS can intercept it.
-      'async-await': false,
-    },
     define: optimize ? convertObjectToStringDictionary(GLOBAL_DEFS_FOR_TERSER_WITH_AOT) : undefined,
     plugins: [
       await createEsbuildAngularOptimizePlugin({

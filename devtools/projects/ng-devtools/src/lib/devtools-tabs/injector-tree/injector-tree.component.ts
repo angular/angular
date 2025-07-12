@@ -8,12 +8,12 @@
 
 import {
   afterRenderEffect,
+  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
   inject,
   input,
-  NgZone,
   signal,
   untracked,
   viewChild,
@@ -73,13 +73,13 @@ const HIERARCHY_HOR_SIZE = 50;
   host: {
     '[hidden]': 'hidden()',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InjectorTreeComponent {
   private readonly environmentTree = viewChild<TreeVisualizerHostComponent>('environmentTree');
   private readonly elementTree = viewChild<TreeVisualizerHostComponent>('elementTree');
 
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly zone = inject(NgZone);
 
   protected readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
 
@@ -176,51 +176,49 @@ export class InjectorTreeComponent {
    *
    */
   updateInjectorTreeVisualization(forestWithInjectorPaths: DevToolsNode[]): void {
-    this.zone.runOutsideAngular(() => {
-      // At this point we have a forest of directive trees where each node has a resolution path.
-      // We want to convert this nested forest into an array of resolution paths.
-      // Our ultimate goal is to convert this array of resolution paths into a tree structure.
-      // Directive forest -> Array of resolution paths -> Tree of resolution paths
+    // At this point we have a forest of directive trees where each node has a resolution path.
+    // We want to convert this nested forest into an array of resolution paths.
+    // Our ultimate goal is to convert this array of resolution paths into a tree structure.
+    // Directive forest -> Array of resolution paths -> Tree of resolution paths
 
-      // First, pick out the resolution paths.
-      let injectorPaths = grabInjectorPathsFromDirectiveForest(forestWithInjectorPaths);
+    // First, pick out the resolution paths.
+    let injectorPaths = grabInjectorPathsFromDirectiveForest(forestWithInjectorPaths);
 
-      if (this.hideFrameworkInjectors) {
-        injectorPaths = filterOutAngularInjectors(injectorPaths);
-      }
+    if (this.hideFrameworkInjectors) {
+      injectorPaths = filterOutAngularInjectors(injectorPaths);
+    }
 
-      if (this.hideInjectorsWithNoProviders) {
-        injectorPaths = filterOutInjectorsWithNoProviders(injectorPaths);
-      }
+    if (this.hideInjectorsWithNoProviders) {
+      injectorPaths = filterOutInjectorsWithNoProviders(injectorPaths);
+    }
 
-      // In Angular we have two types of injectors, element injectors and environment injectors.
-      // We want to split the resolution paths into two groups, one for each type of injector.
-      const {elementPaths, environmentPaths, startingElementToEnvironmentPath} =
-        splitInjectorPathsIntoElementAndEnvironmentPaths(injectorPaths);
-      this.elementToEnvironmentPath = startingElementToEnvironmentPath;
+    // In Angular we have two types of injectors, element injectors and environment injectors.
+    // We want to split the resolution paths into two groups, one for each type of injector.
+    const {elementPaths, environmentPaths, startingElementToEnvironmentPath} =
+      splitInjectorPathsIntoElementAndEnvironmentPaths(injectorPaths);
+    this.elementToEnvironmentPath = startingElementToEnvironmentPath;
 
-      // Here for our 2 groups of resolution paths, we want to convert them into a tree structure.
-      const elementInjectorTree = transformInjectorResolutionPathsIntoTree(elementPaths);
-      const environmentInjectorTree = transformInjectorResolutionPathsIntoTree(environmentPaths);
+    // Here for our 2 groups of resolution paths, we want to convert them into a tree structure.
+    const elementInjectorTree = transformInjectorResolutionPathsIntoTree(elementPaths);
+    const environmentInjectorTree = transformInjectorResolutionPathsIntoTree(environmentPaths);
 
-      this.elementInjectorTreeGraph.render(elementInjectorTree);
-      this.elementInjectorTreeGraph.onNodeClick((_, node) => {
-        this.selectInjectorByNode(node);
-      });
-
-      this.injectorTreeGraph.render(environmentInjectorTree);
-      this.injectorTreeGraph.onNodeClick((_, node) => {
-        this.selectInjectorByNode(node);
-      });
-
-      if (this.firstRender) {
-        this.snapToRoot(this.injectorTreeGraph);
-        this.snapToRoot(this.elementInjectorTreeGraph);
-      }
-
-      this.highlightPathFromSelectedInjector();
-      this.firstRender = false;
+    this.elementInjectorTreeGraph.render(elementInjectorTree);
+    this.elementInjectorTreeGraph.onNodeClick((_, node) => {
+      this.selectInjectorByNode(node);
     });
+
+    this.injectorTreeGraph.render(environmentInjectorTree);
+    this.injectorTreeGraph.onNodeClick((_, node) => {
+      this.selectInjectorByNode(node);
+    });
+
+    if (this.firstRender) {
+      this.snapToRoot(this.injectorTreeGraph);
+      this.snapToRoot(this.elementInjectorTreeGraph);
+    }
+
+    this.highlightPathFromSelectedInjector();
+    this.firstRender = false;
   }
 
   snapToRoot(graph: InjectorTreeVisualizer) {
