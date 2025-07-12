@@ -8,6 +8,7 @@
 
 import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag} from '@angular/cdk/drag-drop';
 import {
+  ChangeDetectionStrategy,
   Component,
   ɵFramework as Framework,
   computed,
@@ -42,6 +43,7 @@ import {DependencyViewerComponent} from './dependency-viewer.component';
     CdkDrag,
     PropertyViewTreeComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewBodyComponent {
   readonly controller = input.required<DirectivePropertyResolver>();
@@ -134,6 +136,7 @@ export class PropertyViewBodyComponent {
     `,
   ],
   imports: [DependencyViewerComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InjectedServicesComponent {
   readonly controller = input.required<DirectivePropertyResolver>();
