@@ -213,7 +213,7 @@ describe('component', () => {
       expect(html).toMatch(
         `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${
           match[1]
-        }=""><span ${match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`,
+        }=""><span ${match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></encapsulated>`,
       );
     });
 
