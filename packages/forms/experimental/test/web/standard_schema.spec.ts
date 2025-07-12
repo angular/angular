@@ -16,7 +16,7 @@ import {validateStandardSchema} from '../../src/api/standard_schema';
 // `instanceof Promise` working correctly.
 
 describe('standard schema integration', () => {
-  fit('should perform sync validation using a standard schema', async () => {
+  it('should perform sync validation using a standard schema', async () => {
     const injector = TestBed.inject(Injector);
 
     const zodName = z.object({

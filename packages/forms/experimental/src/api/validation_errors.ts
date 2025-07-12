@@ -31,7 +31,7 @@ export function createError<TError extends ValidationError, TArgs extends any[]>
  * the field.
  * @param errorCtor The subclass constructor
  * @param params The constructor params, plus the field the error applies to.
- * @return An instance of `WithField<TErorr>` created with the given constructor and params.
+ * @return An instance of `WithField<TError>` created with the given constructor and params.
  * @template TError The type of error to create
  * @template TArgs The type of arguments to the constructor
  */
@@ -135,13 +135,13 @@ export abstract class ValidationError {
 
   /**
    * Create a max value error
-   * @param min The max value constraint
+   * @param max The max value constraint
    * @param message The optional human readable error message
    */
   static max(max: number, message?: string): MaxValidationError;
   /**
    * Create a max value error targeted at a specific field
-   * @param min The max value constraint
+   * @param max The max value constraint
    * @param message The optional human readable error message
    * @param field The target field
    */
@@ -160,13 +160,13 @@ export abstract class ValidationError {
 
   /**
    * Create a minlength error
-   * @param min The minlength constraint
+   * @param minlength The minlength constraint
    * @param message The optional human readable error message
    */
   static minlength(minlength: number, message?: string): MinlengthValidationError;
   /**
    * Create a minlength error targeted at a specific field
-   * @param min The minlength constraint
+   * @param minlength The minlength constraint
    * @param message The optional human readable error message
    * @param field The target field
    */
@@ -185,13 +185,13 @@ export abstract class ValidationError {
 
   /**
    * Create a maxlength error
-   * @param min The maxlength constraint
+   * @param maxlength The maxlength constraint
    * @param message The optional human readable error message
    */
   static maxlength(maxlength: number, message?: string): MaxlengthValidationError;
   /**
    * Create a maxlength error targeted at a specific field
-   * @param min The maxlength constraint
+   * @param maxlength The maxlength constraint
    * @param message The optional human readable error message
    * @param field The target field
    */
@@ -210,13 +210,13 @@ export abstract class ValidationError {
 
   /**
    * Create a pattern matching error
-   * @param min The violated pattern
+   * @param pattern The violated pattern
    * @param message The optional human readable error message
    */
   static pattern(pattern: string, message?: string): PatternValidationError;
   /**
    * Create a pattern matching error targeted at a specific field
-   * @param min The violated pattern
+   * @param pattern The violated pattern
    * @param message The optional human readable error message
    * @param field The target field
    */
@@ -371,7 +371,7 @@ export class MaxlengthValidationError extends _NgValidationError {
   override readonly kind = 'maxlength';
 
   constructor(
-    readonly maxlegnth: number,
+    readonly maxlength: number,
     message?: string,
   ) {
     super(message);
@@ -420,7 +420,7 @@ export class StandardSchemaValidationError extends _NgValidationError {
  * @example ```
  * const f = form(...);
  * for (const e of form().errors()) {
- *   if (e instanceof NgValiationError) {
+ *   if (e instanceof NgValidationError) {
  *     switch(e.kind) {
  *       case 'required':
  *         console.log('This is required!');
