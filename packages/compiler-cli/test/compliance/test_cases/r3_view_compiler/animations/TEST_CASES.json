@@ -2,36 +2,138 @@
   "$schema": "../../test_case_schema.json",
   "cases": [
     {
-      "description": "should not register any @attr attributes as static attributes",
+      "description": "should generate animate enter instructions on element with a simple string",
       "inputFiles": [
-        "static_animation_attribute.ts"
+        "animate_enter_with_string.ts"
       ],
       "expectations": [
         {
           "files": [
             {
-              "expected": "static_animation_attribute_template.js",
-              "generated": "static_animation_attribute.js"
+              "expected": "animate_enter_with_string_template.js",
+              "generated": "animate_enter_with_string.js"
             }
           ],
-          "failureMessage": "Incorrect initialization attributes"
+          "failureMessage": "Incorrect ɵɵanimateEnter() call"
         }
       ]
     },
     {
-      "description": "should dedup multiple [@event] listeners",
+      "description": "should generate animate enter instructions with host binding and simple string",
       "inputFiles": [
-        "duplicate_animation_listeners.ts"
+        "animate_enter_with_string_host_bindings.ts"
       ],
       "expectations": [
         {
           "files": [
             {
-              "expected": "duplicate_animation_listeners_template.js",
-              "generated": "duplicate_animation_listeners.js"
+              "expected": "animate_enter_with_string_host_bindings_template.js",
+              "generated": "animate_enter_with_string_host_bindings.js"
             }
           ],
-          "failureMessage": "Incorrect initialization attributes"
+          "failureMessage": "Incorrect ɵɵanimateEnter() call"
+        }
+      ]
+    },
+    {
+      "description": "should generate animate enter instructions on element with a binding",
+      "inputFiles": [
+        "animate_enter_with_binding.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_enter_with_binding_template.js",
+              "generated": "animate_enter_with_binding.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateEnter() call"
+        }
+      ]
+    },
+    {
+      "description": "should generate animate enter instructions on element with an event binding",
+      "inputFiles": [
+        "animate_enter_with_event_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_enter_with_event_listener_template.js",
+              "generated": "animate_enter_with_event_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateEnter() call"
+        }
+      ]
+    },
+    {
+      "description": "should generate animate leave instructions on element with a simple string",
+      "inputFiles": [
+        "animate_leave_with_string.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_leave_with_string_template.js",
+              "generated": "animate_leave_with_string.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateLeave() call"
+        }
+      ]
+    },
+    {
+      "description": "should generate animate leave instructions on element with a binding",
+      "inputFiles": [
+        "animate_leave_with_binding.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_leave_with_binding_template.js",
+              "generated": "animate_leave_with_binding.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateLeave() call"
+        }
+      ]
+    },
+    {
+      "description": "should generate animate leave instructions on element with an event binding",
+      "inputFiles": [
+        "animate_leave_with_event_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_leave_with_event_listener_template.js",
+              "generated": "animate_leave_with_event_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateLeave() call"
+        }
+      ]
+    },
+    {
+      "description": "should generate animate leave instructions with host binding and simple string",
+      "inputFiles": [
+        "animate_leave_with_string_host_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_leave_with_string_host_bindings_template.js",
+              "generated": "animate_leave_with_string_host_bindings.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateLeave() call"
         }
       ]
     }

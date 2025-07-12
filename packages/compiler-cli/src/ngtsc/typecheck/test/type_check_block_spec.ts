@@ -21,6 +21,14 @@ describe('type check blocks', () => {
     expect(tcb('{{hello}} {{world}}')).toContain('"" + (((this).hello)) + (((this).world));');
   });
 
+  it('should generate an animation in function call', () => {
+    const TEMPLATE = '<p (animate.enter)="animateFn($event)"></p>';
+    const results = tcb(TEMPLATE);
+    expect(results).toContain(
+      '($event: i1.AnimationCallbackEvent): any => { (this).animateFn($event); };',
+    );
+  });
+
   it('should generate literal map expressions', () => {
     const TEMPLATE = '{{ method({foo: a, bar: b}) }}';
     expect(tcb(TEMPLATE)).toContain('(this).method({ "foo": ((this).a), "bar": ((this).b) })');

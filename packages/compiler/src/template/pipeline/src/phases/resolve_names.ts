@@ -74,6 +74,7 @@ function processLexicalScope(
             break;
         }
         break;
+      case ir.OpKind.AnimationListener:
       case ir.OpKind.Listener:
       case ir.OpKind.TwoWayListener:
         // Listener functions have separate variable declarations, so process them as a separate

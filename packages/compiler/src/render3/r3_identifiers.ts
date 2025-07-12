@@ -254,6 +254,17 @@ export class Identifiers {
 
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
 
+  static animationEnterListener: o.ExternalReference = {
+    name: 'ɵɵanimateEnterListener',
+    moduleName: CORE,
+  };
+  static animationLeaveListener: o.ExternalReference = {
+    name: 'ɵɵanimateLeaveListener',
+    moduleName: CORE,
+  };
+  static animationEnter: o.ExternalReference = {name: 'ɵɵanimateEnter', moduleName: CORE};
+  static animationLeave: o.ExternalReference = {name: 'ɵɵanimateLeave', moduleName: CORE};
+
   static i18n: o.ExternalReference = {name: 'ɵɵi18n', moduleName: CORE};
   static i18nAttributes: o.ExternalReference = {name: 'ɵɵi18nAttributes', moduleName: CORE};
   static i18nExp: o.ExternalReference = {name: 'ɵɵi18nExp', moduleName: CORE};

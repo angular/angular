@@ -1091,6 +1091,7 @@ export function transformExpressionsInOp(
     case OpKind.StyleMap:
     case OpKind.ClassProp:
     case OpKind.ClassMap:
+    case OpKind.Animation:
     case OpKind.Binding:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
@@ -1141,6 +1142,7 @@ export function transformExpressionsInOp(
         op.contextValue = transformExpressionsInExpression(op.contextValue, transform, flags);
       }
       break;
+    case OpKind.AnimationListener:
     case OpKind.Listener:
     case OpKind.TwoWayListener:
       for (const innerOp of op.handlerOps) {

@@ -776,6 +776,7 @@ class HtmlAstToIvyAst implements html.Visitor {
           matchableAttributes,
           boundEvents,
           keySpan,
+          absoluteOffset,
         );
       } else if (bindParts[KW_AT_IDX]) {
         const keySpan = createKeySpan(srcSpan, '', name);
@@ -835,6 +836,7 @@ class HtmlAstToIvyAst implements html.Visitor {
           matchableAttributes,
           boundEvents,
           keySpan,
+          absoluteOffset,
         );
       } else if (delims.start === BINDING_DELIMS.PROPERTY.start) {
         this.bindingParser.parsePropertyBinding(
@@ -1079,6 +1081,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     targetMatchableAttrs: string[][],
     boundEvents: t.BoundEvent[],
     keySpan: ParseSourceSpan,
+    absoluteOffset: number,
   ) {
     const events: ParsedEvent[] = [];
     this.bindingParser.parseEvent(
