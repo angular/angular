@@ -22,6 +22,8 @@ interface TypeWithMetadata extends Type<any> {
  */
 const ASYNC_COMPONENT_METADATA_FN = '__ngAsyncComponentMetadataFn__';
 
+const ASYNC_METADATA_LOADED = '__ngAsyncMetadataLoaded__';
+
 /**
  * If a given component has unresolved async metadata - returns a reference
  * to a function that applies component metadata after resolving defer-loadable
@@ -31,7 +33,20 @@ export function getAsyncClassMetadataFn(
   type: Type<unknown>,
 ): (() => Promise<Array<Type<unknown>>>) | null {
   const componentClass = type as any; // cast to `any`, so that we can read a monkey-patched field
+  if (componentClass[ASYNC_COMPONENT_METADATA_FN] === ASYNC_METADATA_LOADED) {
+    return null;
+  }
+
   return componentClass[ASYNC_COMPONENT_METADATA_FN] ?? null;
+}
+
+/**
+ * Checks if a given component has async metadata.
+ * Independent of whether the metadata is already loaded or not.
+ */
+export function hasAsyncClassMetadata(type: Type<unknown>): boolean {
+  const componentClass = type as any; // cast to `any`, so that we can monkey-patch it
+  return !!componentClass[ASYNC_COMPONENT_METADATA_FN];
 }
 
 /**
@@ -53,7 +68,7 @@ export function setClassMetadataAsync(
       metadataSetterFn(...dependencies);
       // Metadata is now set, reset field value to indicate that this component
       // can by used/compiled synchronously.
-      componentClass[ASYNC_COMPONENT_METADATA_FN] = null;
+      componentClass[ASYNC_COMPONENT_METADATA_FN] = ASYNC_METADATA_LOADED;
 
       return dependencies;
     });
