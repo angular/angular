@@ -20,6 +20,7 @@ import {
   SerializedInjector,
   SerializedProviderRecord,
   SignalNodePosition,
+  TransferStateValue,
 } from '../../../protocol';
 import {debounceTime} from 'rxjs/operators';
 import {
@@ -103,6 +104,8 @@ export const subscribeToClientEvents = (
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
 
   messageBus.on('logProvider', logProvider);
+
+  messageBus.on('getTransferState', getTransferStateCallback(messageBus));
 
   messageBus.on('log', ({message, level}) => {
     console[level](`[Angular DevTools]: ${message}`);
@@ -659,6 +662,40 @@ const logProvider = (
   }
 
   console.groupEnd();
+};
+
+const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
+  const ng = ngDebugClient();
+
+  const forest = initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest();
+  if (forest.length === 0) {
+    messageBus.emit('transferStateData', [null]);
+    return;
+  }
+
+  const rootNode = forest[0];
+  if (!rootNode || !rootNode.nativeElement) {
+    messageBus.emit('transferStateData', [null]);
+    return;
+  }
+
+  const injector = getInjectorFromElementNode(rootNode.nativeElement);
+  if (!injector) {
+    messageBus.emit('transferStateData', [null]);
+    return;
+  }
+
+  const transferStateData = ng.ɵgetTransferState?.(injector) as Record<string, TransferStateValue>;
+
+  if (
+    transferStateData &&
+    typeof transferStateData === 'object' &&
+    Object.keys(transferStateData).length > 0
+  ) {
+    messageBus.emit('transferStateData', [transferStateData]);
+  } else {
+    messageBus.emit('transferStateData', [null]);
+  }
 };
 
 const getInjectorInstance = (
