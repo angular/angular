@@ -181,7 +181,8 @@ export class Navigation {
     } else if (
       urlAfterRedirects.startsWith(PagePrefix.REFERENCE) ||
       urlAfterRedirects.startsWith(PagePrefix.API) ||
-      urlAfterRedirects.startsWith(PagePrefix.UPDATE)
+      urlAfterRedirects.startsWith(PagePrefix.UPDATE) ||
+      urlAfterRedirects.startsWith(PagePrefix.COMPILER_OUTPUT)
     ) {
       this.activeRouteItem.set(PagePrefix.REFERENCE);
     } else if (urlAfterRedirects === PagePrefix.PLAYGROUND) {
