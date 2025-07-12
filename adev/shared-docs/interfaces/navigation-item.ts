@@ -15,4 +15,5 @@ export interface NavigationItem {
   level?: number;
   parent?: NavigationItem;
   contentPath?: string;
+  status?: 'new' | 'updated';
 }
