@@ -15,6 +15,15 @@ import {defineResource} from './data';
 import {FieldContext, FieldPath, PathKind} from './types';
 import {ValidationError, WithField} from './validation_errors';
 
+export type MapToErrorsFn<TValue, TData, TPathKind extends PathKind = PathKind.Root> = (
+  data: TData,
+  ctx: FieldContext<TValue, TPathKind>,
+) =>
+  | ValidationError
+  | WithField<ValidationError>
+  | (ValidationError | WithField<ValidationError>)[]
+  | undefined;
+
 export interface AsyncValidatorOptions<
   TValue,
   TRequest,
@@ -23,14 +32,7 @@ export interface AsyncValidatorOptions<
 > {
   readonly params: (ctx: FieldContext<TValue, TPathKind>) => TRequest;
   readonly factory: (req: Signal<TRequest | undefined>) => ResourceRef<TData | undefined>;
-  readonly errors: (
-    data: TData,
-    ctx: FieldContext<TValue, TPathKind>,
-  ) =>
-    | ValidationError
-    | WithField<ValidationError>
-    | (ValidationError | WithField<ValidationError>)[]
-    | undefined;
+  readonly errors: MapToErrorsFn<TValue, TData, TPathKind>;
 }
 
 export function validateAsync<TValue, TRequest, TData, TPathKind extends PathKind = PathKind.Root>(
@@ -84,15 +86,7 @@ export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind
   path: FieldPath<TValue, TPathKind>,
   opts: {
     request: (ctx: FieldContext<TValue, TPathKind>) => string | undefined;
-    errors: (
-      data: TData,
-
-      ctx: FieldContext<TValue, TPathKind>,
-    ) =>
-      | ValidationError
-      | WithField<ValidationError>
-      | (ValidationError | WithField<ValidationError>)[]
-      | undefined;
+    errors: MapToErrorsFn<TValue, TData, TPathKind>;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;
@@ -101,15 +95,7 @@ export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind
   path: FieldPath<TValue, TPathKind>,
   opts: {
     request: (ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined;
-    errors: (
-      data: TData,
-
-      ctx: FieldContext<TValue, TPathKind>,
-    ) =>
-      | ValidationError
-      | WithField<ValidationError>
-      | (ValidationError | WithField<ValidationError>)[]
-      | undefined;
+    errors: MapToErrorsFn<TValue, TData, TPathKind>;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;

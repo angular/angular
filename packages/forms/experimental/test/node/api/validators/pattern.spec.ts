@@ -30,12 +30,12 @@ describe('pattern validator', () => {
     const f = form(
       cat,
       (p) => {
-        pattern(p.name, 'pir.*jok');
+        pattern(p.name, 'pir.*jok', {errors: () => ValidationError.custom()});
       },
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([ValidationError.pattern('pir.*jok')]);
+    expect(f.name().errors()).toEqual([ValidationError.custom()]);
   });
 
   describe('metadata', () => {

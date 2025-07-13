@@ -109,7 +109,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
     for (const error of errors) {
       (error as any).field ??= ctx.field;
     }
-    return errors as WithField<ValidationError>[];
+    return errors;
   };
   pathNode.logic.addSyncTreeErrorRule(
     wrappedLogic as LogicFn<TValue, WithField<ValidationError>[]>,
