@@ -216,11 +216,11 @@ export const routes: Routes = [
   // their corresponding routes become active.
   {
     path: 'login',
-    loadComponent: () => import('./components/auth/login-page')
+    loadComponent: () => import('./components/auth/login-page').then(m => m.LoginPage)
   },
   {
     path: '',
-    loadComponent: () => import('./components/home/home-page')
+    loadComponent: () => import('./components/home/home-page').then(m => m.HomePage)
   }
 ]
 ```
