@@ -1,5 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
-load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 

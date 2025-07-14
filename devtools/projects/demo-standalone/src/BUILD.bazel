@@ -1,9 +1,12 @@
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
-load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//tools:defaults.bzl", "http_server")
-load("//tools:defaults2.bzl", "sass_binary")
+load(
+    "//devtools/tools:defaults.bzl",
+    "copy_to_directory",
+    "esbuild",
+    "http_server",
+    "ng_project",
+    "pkg_web",
+    "sass_binary",
+)
 
 package(default_visibility = ["//visibility:public"])
 
