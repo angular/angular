@@ -1,5 +1,4 @@
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//tools:defaults2.bzl", "npm_sass_library", "sass_binary")
+load("//devtools/tools:defaults.bzl", "ng_project", "npm_sass_library", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 

@@ -1,5 +1,6 @@
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
+load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("//tools/bazel:esbuild.bzl", _esbuild_checked_in = "esbuild_checked_in")
@@ -23,6 +24,7 @@ sass_library = _sass_library
 npm_sass_library = _npm_sass_library
 protractor_web_test_suite = _protractor_web_test_suite
 esbuild_checked_in = _esbuild_checked_in
+http_server = _http_server
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):

@@ -1,7 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
-load("//tools:defaults2.bzl", "sass_binary")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//:__subpackages__"])
 

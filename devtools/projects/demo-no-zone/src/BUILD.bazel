@@ -1,7 +1,4 @@
-load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//tools:defaults.bzl", "http_server")
+load("//devtools/tools:defaults.bzl", "esbuild", "http_server", "ng_project", "pkg_web")
 
 package(default_visibility = ["//:__subpackages__"])
 
