@@ -1,5 +1,4 @@
-load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "esbuild", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -41,9 +40,6 @@ ts_project(
 
 esbuild(
     name = "bundle",
-    srcs = [
-        "//adev/shared-docs:tsconfig_build",
-    ],
     config = "//adev/shared-docs/pipeline:esbuild-config",
     entry_point = ":index.mts",
     # JSDOM should not be bundled because it has workers and dynamic imports.
@@ -52,6 +48,7 @@ esbuild(
     output = "stackblitz.mjs",
     platform = "node",
     target = "es2022",
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//visibility:public"],
     deps = [
         ":index_rjs",

@@ -1,6 +1,4 @@
-load("@angular//tools/esm-interop:index.bzl", "nodejs_binary")
-load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "esbuild", "js_binary", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
@@ -30,19 +28,13 @@ ts_project(
     ],
 )
 
-# Action binary for the api_gen bazel rule.
-nodejs_binary(
+js_binary(
     name = "generate_api_manifest",
     data = [
         ":bin",
         "@angular//packages/compiler-cli",
     ],
     entry_point = "bin.mjs",
-    # Note: Using the linker here as we need it for ESM. The linker is not
-    # super reliably when running concurrently on Windows- but we have existing
-    # actions using the linker. An alternative would be to:
-    #   - bundle the Angular compiler into a CommonJS bundle
-    #   - use the patched resolution- but also patch the ESM imports (similar to how FW does it).
     visibility = ["//visibility:public"],
 )
 

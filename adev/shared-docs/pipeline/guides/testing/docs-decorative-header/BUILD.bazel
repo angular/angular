@@ -1,5 +1,4 @@
-load("//adev/shared-docs:defaults.bzl", "ts_project")
-load("//tools:defaults2.bzl", "zoneless_jasmine_test")
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
 
 ts_project(
     name = "docs-decorative-header",

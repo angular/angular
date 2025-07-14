@@ -1,4 +1,4 @@
-load("@devinfra//bazel/private:path_relative_to_label.bzl", "path_relative_to_label")
+load("//adev/shared-docs:defaults.bzl", "path_relative_to_label")
 
 def _generate_guides(ctx):
     """Implementation of the markdown rule"""

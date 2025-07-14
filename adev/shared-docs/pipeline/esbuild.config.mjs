@@ -13,6 +13,5 @@ export default {
 import {createRequire as __cjsCompatRequire} from 'module';
 const require = __cjsCompatRequire(import.meta.url);`,
   },
-  tsconfig: import.meta.dirname + '/../tsconfig.json',
   resolveExtensions: ['.js', '.mjs'],
 };
