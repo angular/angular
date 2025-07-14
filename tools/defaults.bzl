@@ -9,7 +9,6 @@ load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@npm//@bazel/concatjs:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//typescript:index.bzl", "tsc")
@@ -155,27 +154,6 @@ def pkg_npm(name, deps = [], validate = True, **kwargs):
         # should not be built unless it is a dependency of another rule
         tags = ["manual"],
         visibility = visibility,
-    )
-
-def protractor_web_test_suite(
-        name,
-        deps = [],
-        external = [],
-        browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
-        **kwargs):
-    """Default values for protractor_web_test_suite"""
-    spec_bundle(
-        name = "%s_bundle" % name,
-        deps = deps,
-        platform = "cjs-legacy",
-        external = external + ["protractor"],
-    )
-
-    _protractor_web_test_suite(
-        name = name,
-        deps = [":%s_bundle" % name],
-        browsers = browsers,
-        **kwargs
     )
 
 def nodejs_binary(
