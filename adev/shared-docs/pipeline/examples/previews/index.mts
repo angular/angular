@@ -69,6 +69,9 @@ async function main() {
     }))
     .filter((result) => result.componentNames.length > 0);
 
+  if (filesWithComponent.length === 0) {
+    throw Error('No previews found for the previews component map.');
+  }
   const previewsComponentMap = generatePreviewsComponentMap(filesWithComponent);
 
   await writeFile(outputFilePath, previewsComponentMap);
