@@ -38,6 +38,13 @@
       color: var(--blue-02) !important;
     }
   }
+
+  .tab-link {
+    @extend %body-medium-01;
+    min-width: unset;
+    padding: 0 0.625rem;
+    height: 30px;
+  }
 }
 
 #app-angular-version {
@@ -70,14 +77,6 @@ mat-icon {
   align-items: center;
 }
 
-.mat-mdc-tab-link {
-  @extend %body-medium-01;
-  min-width: unset;
-  height: 30px;
-  padding: 0px 10px;
-  opacity: 1;
-}
-
 @media only screen and (max-width: 700px) {
   #app-angular-version {
     max-width: 135px;
@@ -87,18 +86,6 @@ mat-icon {
 @media only screen and (max-width: 420px) {
   #app-angular-version {
     display: none;
-  }
-}
-
-.mat-mdc-tab-header {
-  --mdc-secondary-navigation-tab-container-height: 30px;
-}
-
-.mat-mdc-menu-item.mdc-list-item {
-  ::ng-deep {
-    label {
-      cursor: pointer;
-    }
   }
 }
 

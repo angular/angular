@@ -1,19 +1,17 @@
-<table>
+<table class="ng-table">
   <thead>
-    <th class="name">Directive</th>
-    <th class="method">Method</th>
-    <th class="value">Time</th>
+    <tr>
+      <th>Directive</th>
+      <th>Method</th>
+      <th>Time</th>
+    </tr>
   </thead>
   <tbody>
     @for (entry of data(); track $index) {
       <tr>
-        <td class="name">
-          {{ entry.directive }}
-        </td>
-        <td class="method">
-          {{ entry.method }}
-        </td>
-        <td class="value">{{ entry.value }} ms</td>
+        <td>{{ entry.directive }}</td>
+        <td>{{ entry.method }}</td>
+        <td>{{ entry.value }} ms</td>
       </tr>
     }
   </tbody>

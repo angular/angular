@@ -36,10 +36,10 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('data', 'Route Data');
     fixture.detectChanges();
 
-    const labelElement = fixture.debugElement.query(By.css('.row-title'));
-    expect(labelElement.nativeElement.innerText).toEqual('Route Title:');
+    const labelElement = fixture.debugElement.query(By.css('th'));
+    expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
-    const dataElements = fixture.debugElement.queryAll(By.css('.row-data'));
+    const dataElements = fixture.debugElement.queryAll(By.css('td'));
     expect(dataElements.length).toEqual(1);
     expect(dataElements[0].nativeElement.innerText).toEqual('Route Data');
   });
@@ -50,8 +50,8 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('data', 'true');
     fixture.detectChanges();
 
-    const labelElement = fixture.debugElement.query(By.css('.row-title'));
-    expect(labelElement.nativeElement.innerText).toEqual('Route Title:');
+    const labelElement = fixture.debugElement.query(By.css('th'));
+    expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
     const dataElements = fixture.debugElement.queryAll(By.css('.tag-active'));
     expect(dataElements.length).toEqual(1);
@@ -64,8 +64,8 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('data', false);
     fixture.detectChanges();
 
-    const labelElement = fixture.debugElement.query(By.css('.row-title'));
-    expect(labelElement.nativeElement.innerText).toEqual('Route Title:');
+    const labelElement = fixture.debugElement.query(By.css('th'));
+    expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
     const dataElements = fixture.debugElement.queryAll(By.css('.tag-inactive'));
     expect(dataElements.length).toEqual(1);
@@ -78,10 +78,10 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('data', 'Component Name');
     fixture.detectChanges();
 
-    const labelElement = fixture.debugElement.query(By.css('.row-title'));
-    expect(labelElement.nativeElement.innerText).toEqual('Route Title:');
+    const labelElement = fixture.debugElement.query(By.css('th'));
+    expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
-    const dataElements = fixture.debugElement.queryAll(By.css('.mdc-button'));
+    const dataElements = fixture.debugElement.queryAll(By.css('button'));
     expect(dataElements.length).toEqual(1);
     expect(dataElements[0].nativeElement.innerText).toEqual('Component Name');
   });
@@ -92,10 +92,10 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('data', 'Lazy Component Name');
     fixture.detectChanges();
 
-    const labelElement = fixture.debugElement.query(By.css('.row-title'));
-    expect(labelElement.nativeElement.innerText).toEqual('Route Title:');
+    const labelElement = fixture.debugElement.query(By.css('th'));
+    expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
-    const dataElements = fixture.debugElement.queryAll(By.css('.mdc-button'));
+    const dataElements = fixture.debugElement.queryAll(By.css('button'));
     expect(dataElements.length).toEqual(1);
     expect(dataElements[0].nativeElement.innerText).toEqual('Lazy Component Name');
     expect(dataElements[0].nativeElement.disabled).toEqual(true);
@@ -107,10 +107,10 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('data', ['Guard 1', 'Guard 2']);
     fixture.detectChanges();
 
-    const labelElement = fixture.debugElement.query(By.css('.row-title'));
-    expect(labelElement.nativeElement.innerText).toEqual('Route Title:');
+    const labelElement = fixture.debugElement.query(By.css('th'));
+    expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
-    const dataElements = fixture.debugElement.queryAll(By.css('.mdc-button'));
+    const dataElements = fixture.debugElement.queryAll(By.css('button'));
     expect(dataElements.length).toEqual(2);
     expect(dataElements[0].nativeElement.innerText).toEqual('Guard 1');
     expect(dataElements[1].nativeElement.innerText).toEqual('Guard 2');

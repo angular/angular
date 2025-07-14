@@ -37,7 +37,7 @@
     [tabPanel]="tabPanel"
   >
     @for (tab of tabs(); track $index) {
-      <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
+      <a class="tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
         {{ tab }}
       </a>
     }
@@ -111,9 +111,8 @@
   <div (click)="$event.stopPropagation()">
     @if (!profilingNotificationsSupported) {
       <label mat-menu-item disableRipple>
-        <mat-slide-toggle [checked]="timingAPIEnabled()" (change)="toggleTimingAPI()">
-          Enable timing API
-        </mat-slide-toggle>
+        <mat-slide-toggle [checked]="timingAPIEnabled()" (change)="toggleTimingAPI()" />
+        <span class="ng-mat-menu-label-text"> Enable timing API </span>
       </label>
     }
     <label mat-menu-item disableRipple>
@@ -121,26 +120,23 @@
       <mat-slide-toggle
         [checked]="currentTheme === 'dark-theme'"
         (click)="themeService.toggleDarkMode(currentTheme === 'light-theme')"
-      >
-        Dark Mode
-      </mat-slide-toggle>
+      />
+      <span class="ng-mat-menu-label-text">Dark Mode</span>
     </label>
     <label mat-menu-item disableRipple>
       <mat-slide-toggle
         [checked]="showCommentNodes()"
         (change)="showCommentNodes.set($event.checked)"
-      >
-        Show comment nodes
-      </mat-slide-toggle>
+      />
+      <span class="ng-mat-menu-label-text">Show comment nodes</span>
     </label>
     @if (supportedApis().routes) {
       <label mat-menu-item disableRipple>
         <mat-slide-toggle
           [checked]="routerGraphEnabled()"
           (change)="setRouterGraph($event.checked)"
-        >
-          Enable Router Graph</mat-slide-toggle
-        >
+        />
+        <span class="ng-mat-menu-label-text">Enable Router Graph</span>
       </label>
     }
     @if (supportedApis().signals) {
@@ -148,9 +144,8 @@
         <mat-slide-toggle
           [checked]="signalGraphEnabled()"
           (change)="setSignalGraph($event.checked)"
-        >
-          Enable Signal Graph (experimental)</mat-slide-toggle
-        >
+        />
+        <span class="ng-mat-menu-label-text">Enable Signal Graph (experimental)</span>
       </label>
     }
   </div>

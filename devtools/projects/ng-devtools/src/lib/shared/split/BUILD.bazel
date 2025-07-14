@@ -1,0 +1,59 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite")
+load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//tools:defaults2.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "split_styles",
+    src = "split.component.scss",
+)
+
+ng_project(
+    name = "split",
+    srcs = [
+        "interface.ts",
+        "split.component.ts",
+        "splitArea.directive.ts",
+        "utils.ts",
+    ],
+    angular_assets = [
+        ":split_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/rxjs",
+    ],
+)
+
+ng_project(
+    name = "responsive-split",
+    srcs = ["responsive-split.directive.ts"],
+    deps = [
+        ":split_rjs",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils:utils_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "responsive-split_test",
+    srcs = ["responsive-split.directive.spec.ts"],
+    deps = [
+        ":responsive-split_rjs",
+        ":split_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":responsive-split_test_rjs",
+    ],
+)

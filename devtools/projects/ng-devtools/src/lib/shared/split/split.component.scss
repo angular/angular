@@ -1,0 +1,119 @@
+:host {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+
+  & > .as-split-gutter {
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // Transparent gutter to mimic chrome devtools invisible gutter technique.
+    background-color: transparent;
+
+    & > .as-split-gutter-icon {
+      width: 100%;
+      height: 100%;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+  }
+
+  ::ng-deep > .as-split-area {
+    flex-grow: 0;
+    flex-shrink: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    /* When <as-split-area [visible]="false"> force size to 0. */
+
+    &.as-hidden {
+      flex: 0 1 0 !important;
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+  }
+
+  &.as-horizontal {
+    flex-direction: row;
+
+    & > .as-split-gutter {
+      flex-direction: row;
+      cursor: ew-resize;
+      height: 100%; // <- Fix safari bug about gutter height when direction is horizontal.
+      position: relative;
+      left: 5px; // position so that the visible border aligns with the middle pixels of the invisible gutter
+
+      & > .as-split-gutter-icon {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+      }
+    }
+
+    ::ng-deep > .as-split-area {
+      height: 100%;
+
+      &:not(:last-of-type) {
+        margin-right: -9px; // size of invisible gutter, pushes split area right so that content can be displayed all the way to the visible border
+      }
+
+      &:not(:first-of-type) {
+        border-left: 1px solid var(--color-separator);
+      }
+    }
+  }
+
+  &.as-vertical {
+    flex-direction: column;
+
+    & > .as-split-gutter {
+      flex-direction: column;
+      cursor: ns-resize;
+      width: 100%;
+      position: relative;
+      top: 5px; // position so that the visible border aligns with the middle pixels of the invisible gutter
+
+      .as-split-gutter-icon {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFCAMAAABl/6zIAAAABlBMVEUAAADMzMzIT8AyAAAAAXRSTlMAQObYZgAAABRJREFUeAFjYGRkwIMJSeMHlBkOABP7AEGzSuPKAAAAAElFTkSuQmCC');
+      }
+    }
+
+    ::ng-deep > .as-split-area {
+      width: 100%;
+
+      &:not(:last-of-type) {
+        margin-bottom: -9px; // size of invisible gutter, pushes split area down so that content can be displayed all the way to the visible border
+      }
+
+      &:not(:first-of-type) {
+        border-top: 1px solid var(--color-separator);
+      }
+
+      &.as-hidden {
+        max-width: 0;
+      }
+    }
+  }
+
+  /* When disabled remove gutters background image and specific cursor. */
+
+  &.as-disabled {
+    & > .as-split-gutter {
+      cursor: default;
+    }
+  }
+
+  /* Add transition only when transition enabled + split initialized + not currently dragging. */
+
+  &.as-transition.as-init:not(.as-dragging) {
+    & > .as-split-gutter,
+    ::ng-deep > .as-split-area {
+      transition: flex-basis 0.3s;
+    }
+  }
+}

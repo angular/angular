@@ -16,12 +16,7 @@
   <as-split-area size="70">
     <as-split unit="percent" direction="vertical" [gutterSize]="9">
       <as-split-area size="100">
-        <ng-tree-visualizer-host #routerTree />
-        <section #routerTree class="router-tree router-graph">
-          <svg #routerTreeSvgContainer>
-            <g #routerTreeMainGroup></g>
-          </svg>
-        </section>
+        <ng-tree-visualizer-host #routerTree a11yTitle="Router tree visualization" />
       </as-split-area>
     </as-split>
   </as-split-area>
@@ -30,30 +25,27 @@
 
   @if (route && route.data) {
     <as-split-area size="30" minSize="20">
-      <div>
-        <div class="selected-node-title">
-          <h2 class="router-title">Routes Details</h2>
-          <mat-icon
-            class="close-icon"
-            fontIcon="close"
-            (click)="selectedRoute.set(null)"
-          ></mat-icon>
-        </div>
+      <div class="side-pane">
+        <h2 class="router-title">Routes Details</h2>
+        <button ng-button btnType="icon" class="close-btn" (click)="selectedRoute.set(null)">
+          <mat-icon>close</mat-icon>
+        </button>
 
-        <table class="route-details-table">
+        <!-- TODO: Convert to a description list (<dl>) -->
+        <table class="ng-table">
           <tr
             ng-route-details-row
             label="Path"
             type="chip"
             [data]="route.data.path"
-            (click)="navigateRoute(route)"
+            (btnClick)="navigateRoute(route)"
           ></tr>
           <tr
             ng-route-details-row
             label="Component"
             type="chip"
             [data]="route.data.component"
-            (click)="viewComponentSource(route.data.component)"
+            (btnClick)="viewComponentSource(route.data.component)"
           ></tr>
           @if (route.data.pathMatch) {
             <tr ng-route-details-row label="Path Match" [data]="route.data.pathMatch"></tr>
@@ -67,7 +59,7 @@
               label="Can Activate Guards"
               type="list"
               [data]="route.data.canActivateGuards"
-              (click)="viewSourceFromRouter($event, 'canActivate')"
+              (btnClick)="viewSourceFromRouter($event, 'canActivate')"
             ></tr>
           }
           @if (route.data.canActivateChildGuards && route.data.canActivateChildGuards.length > 0) {
@@ -76,7 +68,7 @@
               label="Can Activate Child Guards"
               type="list"
               [data]="route.data.canActivateChildGuards"
-              (click)="viewSourceFromRouter($event, 'canActivateChild')"
+              (btnClick)="viewSourceFromRouter($event, 'canActivateChild')"
             ></tr>
           }
           @if (route.data.canDeactivateGuards && route.data.canDeactivateGuards.length > 0) {
@@ -85,7 +77,7 @@
               label="Can DeActivate Guards"
               type="list"
               [data]="route.data.canDeactivateGuards"
-              (click)="viewSourceFromRouter($event, 'canDeactivate')"
+              (btnClick)="viewSourceFromRouter($event, 'canDeactivate')"
             ></tr>
           }
           @if (route.data.canMatchGuards && route.data.canMatchGuards.length > 0) {
@@ -94,7 +86,7 @@
               label="Can Match Guards"
               type="list"
               [data]="route.data.canMatchGuards"
-              (click)="viewSourceFromRouter($event, 'canMatch')"
+              (btnClick)="viewSourceFromRouter($event, 'canMatch')"
             ></tr>
           }
 
@@ -104,7 +96,7 @@
               label="Providers"
               type="list"
               [data]="route.data.providers"
-              (click)="viewSourceFromRouter($event, 'providers')"
+              (btnClick)="viewSourceFromRouter($event, 'providers')"
             ></tr>
           }
           @if (route.data.title) {

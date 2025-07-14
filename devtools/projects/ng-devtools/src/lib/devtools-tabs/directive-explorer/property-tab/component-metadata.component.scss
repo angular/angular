@@ -1,13 +1,12 @@
-.meta-data-container {
-  display: flex;
-  flex-direction: column;
+:host {
   padding: 0.25rem 0.75rem;
-}
-
-.meta-data-container a {
   display: block;
 
-  &:not(:last-child) {
-    margin-bottom: 0.25rem;
+  a {
+    display: block;
+
+    &:not(:last-child) {
+      margin-bottom: 0.25rem;
+    }
   }
 }
