@@ -29,7 +29,6 @@ import {
   SerializedProviderRecord,
 } from '../../../../../protocol';
 
-import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {TreeVisualizer} from '../../shared/tree-visualizer-host/tree-visualizer';
 import {TreeVisualizerHostComponent} from '../../shared/tree-visualizer-host/tree-visualizer-host.component';
 import {InjectorProvidersComponent} from './injector-providers/injector-providers.component';
@@ -47,10 +46,12 @@ import {
   transformInjectorResolutionPathsIntoTree,
 } from './injector-tree-fns';
 import {
-  Direction,
   ResponsiveSplitConfig,
   ResponsiveSplitDirective,
-} from '../../shared/responsive-split/responsive-split.directive';
+} from '../../shared/split/responsive-split.directive';
+import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
+import {SplitComponent} from '../../shared/split/split.component';
+import {Direction} from '../../shared/split/interface';
 
 const ENV_HIERARCHY_VER_SIZE = 35;
 const EL_HIERARCHY_VER_SIZE = 65;

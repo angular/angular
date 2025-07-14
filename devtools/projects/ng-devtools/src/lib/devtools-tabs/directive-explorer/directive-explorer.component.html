@@ -1,7 +1,13 @@
 <as-split unit="percent" [direction]="splitDirection()" [gutterSize]="9">
   <as-split-area #directiveForestSplitArea size="60">
-    <as-split direction="vertical" [gutterSize]="9" unit="percent">
-      <as-split-area class="forest-breadcrumbs" size="30">
+    <as-split
+      [ngResponsiveSplit]="responsiveSplitConfig"
+      (directionChange)="onResponsiveSplitDirChange($event)"
+      direction="vertical"
+      [gutterSize]="9"
+      unit="percent"
+    >
+      <as-split-area class="forest-breadcrumbs" [size]="forestSplitSize()">
         <ng-directive-forest
           (selectNode)="handleNodeSelection($event)"
           (selectDomElement)="handleSelectDomElement($event)"
@@ -13,19 +19,17 @@
           [currentSelectedElement]="currentSelectedElement()!"
           [showCommentNodes]="showCommentNodes()"
         />
-        <div class="breadcrumbs">
-          @if (parents()) {
-            <ng-breadcrumbs
-              (mouseLeaveNode)="unhighlight()"
-              (mouseOverNode)="highlight($event)"
-              (handleSelect)="handleSelect($event)"
-              [parents]="parents()!"
-            />
-          }
-        </div>
+        @if (parents()) {
+          <ng-breadcrumbs
+            (mouseLeaveNode)="unhighlight()"
+            (mouseOverNode)="highlight($event)"
+            (handleSelect)="handleSelect($event)"
+            [parents]="parents()!"
+          />
+        }
       </as-split-area>
       @if (signalsOpen() && currentSelectedElement(); as currentSelectedElement) {
-        <as-split-area size="70">
+        <as-split-area [size]="signalGraphSplitSize()">
           <ng-signals-tab
             [currentElement]="currentSelectedElement.position"
             (close)="signalsOpen.set(false)"

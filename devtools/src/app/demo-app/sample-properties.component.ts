@@ -25,7 +25,7 @@ export class SamplePropertiesComponent {
   exampleString = 'John';
   exampleSymbol = Symbol.iterator;
   exampleNumber = 40;
-  exampleBigint = 40n;
+  exampleBigint = BigInt(40);
   exampleUndefined = undefined;
   exampleNull = null;
 

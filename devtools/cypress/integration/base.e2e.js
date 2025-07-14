@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-require('cypress-iframe');
-
 describe('Testing the Todo app Demo', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
   it('should contain the todos application', () => {
-    cy.enter('#sample-app').then((getBody) => {
+    cy.enterIframe('#sample-app').then((getBody) => {
       getBody().contains('Todos');
       getBody().contains('About');
       getBody().contains('Clear completed');
@@ -31,7 +29,7 @@ describe('Testing the Todo app Demo', () => {
   });
 
   it('should contain "app-root" and "app-todo-demo" in the component tree', () => {
-    cy.contains('.tree-node', 'app-root');
-    cy.contains('.tree-node', 'app-todo-demo');
+    cy.contains('ng-tree-node', 'app-root');
+    cy.contains('ng-tree-node', 'app-todo-demo');
   });
 });

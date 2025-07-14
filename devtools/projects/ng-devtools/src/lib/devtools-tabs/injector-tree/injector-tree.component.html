@@ -39,7 +39,10 @@
                 </a>
               </h2>
               <section class="injector-graph">
-                <ng-tree-visualizer-host #environmentTree />
+                <ng-tree-visualizer-host
+                  #environmentTree
+                  a11yTitle="Environment hierarchy visualization"
+                />
               </section>
             </div>
           </as-split-area>
@@ -56,7 +59,7 @@
                 </a>
               </h2>
               <section class="injector-graph">
-                <ng-tree-visualizer-host #elementTree />
+                <ng-tree-visualizer-host #elementTree a11yTitle="Element hierarchy visualization" />
               </section>
             </div>
           </as-split-area>

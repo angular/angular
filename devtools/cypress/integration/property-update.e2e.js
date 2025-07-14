@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-require('cypress-iframe');
-
 describe('change of the state should reflect in property update', () => {
   beforeEach(() => {
     cy.visit('/');
@@ -15,13 +13,13 @@ describe('change of the state should reflect in property update', () => {
 
   it('should update the property value', () => {
     // Complete the todo
-    cy.enter('#sample-app').then((getBody) => {
+    cy.enterIframe('#sample-app').then((getBody) => {
       getBody().find('input[type="checkbox"].toggle').first().click();
     });
 
     // Select the todo item
     cy.get('.tree-wrapper')
-      .find('.tree-node:contains("app-todo[TooltipDirective]")')
+      .find('ng-tree-node:contains("app-todo[TooltipDirective]")')
       .first()
       .click({force: true});
 

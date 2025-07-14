@@ -18,15 +18,13 @@ import {
 } from '@angular/core';
 
 import {FlatNode} from '../component-data-source';
-import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
-import {MatCard} from '@angular/material/card';
 
 @Component({
   selector: 'ng-breadcrumbs',
   templateUrl: './breadcrumbs.component.html',
   styleUrls: ['./breadcrumbs.component.scss'],
-  imports: [MatCard, MatIcon, MatButton],
+  imports: [MatIcon],
 })
 export class BreadcrumbsComponent {
   readonly parents = input.required<FlatNode[]>();

@@ -17,6 +17,8 @@ sass_library(
         ":colors",
         ":inputs",
         ":material_sass_deps",
+        ":overrides",
+        ":tables",
         ":typography",
     ],
 )
@@ -49,10 +51,28 @@ sass_library(
 )
 
 sass_library(
+    name = "tables",
+    srcs = ["_tables.scss"],
+    deps = [
+        ":material_sass_deps",
+        ":typography",
+    ],
+)
+
+sass_library(
     name = "typography",
     srcs = [
         "_typography.scss",
         ":material_sass_deps",
+    ],
+)
+
+sass_library(
+    name = "overrides",
+    srcs = [
+        "_overrides.scss",
+        ":material_sass_deps",
+        ":typography",
     ],
 )
 

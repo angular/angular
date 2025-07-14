@@ -31,9 +31,9 @@ ng_project(
         "//:node_modules/d3",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree/injector-providers:injector-providers_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/responsive-split:responsive-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
         "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
