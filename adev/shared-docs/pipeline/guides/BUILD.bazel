@@ -1,5 +1,4 @@
-load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "esbuild", "ts_project")
 
 esbuild(
     name = "guides",

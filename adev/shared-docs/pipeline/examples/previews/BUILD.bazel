@@ -1,5 +1,4 @@
-load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "esbuild", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -31,9 +30,6 @@ filegroup(
 
 esbuild(
     name = "bundle",
-    srcs = [
-        "//adev/shared-docs:tsconfig_build",
-    ],
     config = "//adev/shared-docs/pipeline:esbuild-config",
     entry_point = ":index.mts",
     external = [
@@ -44,6 +40,7 @@ esbuild(
     output = "previews.mjs",
     platform = "node",
     target = "es2022",
+    tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//visibility:public"],
     deps = [
         "//adev/shared-docs/pipeline/examples/previews:index_rjs",

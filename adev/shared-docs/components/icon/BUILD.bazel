@@ -1,5 +1,4 @@
-load("//adev/shared-docs:defaults.bzl", "ng_project")
-load("//tools:defaults2.bzl", "sass_binary")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "sass_binary")
 
 package(default_visibility = ["//visibility:private"])
 
