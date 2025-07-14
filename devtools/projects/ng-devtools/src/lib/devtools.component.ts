@@ -13,7 +13,6 @@ import {
   computed,
   inject,
   OnDestroy,
-  OnInit,
   signal,
 } from '@angular/core';
 import {Events, MessageBus, SupportedApis} from '../../../protocol';

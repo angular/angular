@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Directive, ElementRef, inject, input, NgZone, DestroyRef, output} from '@angular/core';
+import {Directive, ElementRef, inject, input, DestroyRef, output} from '@angular/core';
 import {WINDOW} from '../../application-providers/window_provider';
 import {Debouncer} from '../utils/debouncer';
 import {SplitComponent} from './split.component';
@@ -30,7 +30,6 @@ export type ResponsiveSplitConfig = {
 export class ResponsiveSplitDirective {
   private readonly host = inject(SplitComponent);
   private readonly elementRef = inject(ElementRef);
-  private readonly zone = inject(NgZone);
   private readonly window = inject<typeof globalThis>(WINDOW);
 
   protected readonly config = input.required<ResponsiveSplitConfig>({
@@ -44,14 +43,10 @@ export class ResponsiveSplitDirective {
     // We use the ResizeObserver from the injected window object to allow mocking in tests.
     const resizeObserver = new this.window.ResizeObserver(
       debouncer.debounce(([entry]) => {
-        // Since used in a ResizeObserver which is not
-        // patched by zone.js, run inside a zone.
-        this.zone.run(() => {
-          if (entry.contentBoxSize) {
-            const [{inlineSize, blockSize}] = entry.contentBoxSize;
-            this.applyDirection(inlineSize, blockSize);
-          }
-        });
+        if (entry.contentBoxSize) {
+          const [{inlineSize, blockSize}] = entry.contentBoxSize;
+          this.applyDirection(inlineSize, blockSize);
+        }
       }, RESIZE_DEBOUNCE),
     );
 

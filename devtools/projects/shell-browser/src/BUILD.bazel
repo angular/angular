@@ -111,7 +111,6 @@ filegroup(
         ":browser_specific_styles",
         ":index.html",
         ":shell_common_styles",
-        "//:node_modules/zone.js",
     ],
 )
 
