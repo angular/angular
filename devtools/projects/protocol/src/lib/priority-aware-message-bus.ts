@@ -53,7 +53,9 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
 
   constructor(
     private _bus: MessageBus<Events>,
-    private _setTimeout: typeof setTimeout = setTimeout,
+    // Binding is necessary to ensure that `setTimeout` is called in the global context.
+    // an doesn't throw "Illegal invocation" error.
+    private _setTimeout: typeof setTimeout = setTimeout.bind(globalThis),
   ) {
     super();
   }
