@@ -7,8 +7,10 @@ def _generate_previews_impl(ctx):
     # Set the arguments for the actions inputs and out put location.
     args = ctx.actions.args()
 
-    # Path to the examples for which previews are being generated.
-    args.add(ctx.attr.example_srcs.label.package)
+    # Path to the examples for which previews are being generated. Because examples are
+    # generated files, we need to look in the bin_dir subpath for them instead of the
+    # execPath
+    args.add("{}/{}".format(ctx.bin_dir.path, ctx.attr.example_srcs.label.package))
 
     # Path to the preview map template.
     args.add(ctx.file._template_src)
