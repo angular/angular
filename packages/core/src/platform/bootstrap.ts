@@ -26,6 +26,7 @@ import {InjectionToken, Injector} from '../di';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';
 import {isPromise} from '../util/lang';
+import {PendingTasksInternal} from '../pending_tasks';
 
 /**
  * InjectionToken to control root component bootstrap behavior.
@@ -132,38 +133,47 @@ export function bootstrap<M>(
     }
 
     return _callAndReportToErrorHandler(exceptionHandler, ngZone, () => {
+      const pendingTasks = envInjector.get(PendingTasksInternal);
+      const taskId = pendingTasks.add();
       const initStatus = envInjector.get(ApplicationInitStatus);
       initStatus.runInitializers();
 
       return initStatus.donePromise.then(() => {
-        // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
-        const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-        setLocaleId(localeId || DEFAULT_LOCALE_ID);
+        try {
+          // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
+          const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+          setLocaleId(localeId || DEFAULT_LOCALE_ID);
 
-        const enableRootComponentBoostrap = envInjector.get(ENABLE_ROOT_COMPONENT_BOOTSTRAP, true);
-        if (!enableRootComponentBoostrap) {
+          const enableRootComponentBoostrap = envInjector.get(
+            ENABLE_ROOT_COMPONENT_BOOTSTRAP,
+            true,
+          );
+          if (!enableRootComponentBoostrap) {
+            if (isApplicationBootstrapConfig(config)) {
+              return envInjector.get(ApplicationRef);
+            }
+
+            config.allPlatformModules.push(config.moduleRef);
+            return config.moduleRef;
+          }
+
+          if (typeof ngDevMode === 'undefined' || ngDevMode) {
+            const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
+            imagePerformanceService.start();
+          }
+
           if (isApplicationBootstrapConfig(config)) {
-            return envInjector.get(ApplicationRef);
+            const appRef = envInjector.get(ApplicationRef);
+            if (config.rootComponent !== undefined) {
+              appRef.bootstrap(config.rootComponent);
+            }
+            return appRef;
+          } else {
+            moduleBootstrapImpl?.(config.moduleRef, config.allPlatformModules);
+            return config.moduleRef;
           }
-
-          config.allPlatformModules.push(config.moduleRef);
-          return config.moduleRef;
-        }
-
-        if (typeof ngDevMode === 'undefined' || ngDevMode) {
-          const imagePerformanceService = envInjector.get(ImagePerformanceWarning);
-          imagePerformanceService.start();
-        }
-
-        if (isApplicationBootstrapConfig(config)) {
-          const appRef = envInjector.get(ApplicationRef);
-          if (config.rootComponent !== undefined) {
-            appRef.bootstrap(config.rootComponent);
-          }
-          return appRef;
-        } else {
-          moduleBootstrapImpl?.(config.moduleRef, config.allPlatformModules);
-          return config.moduleRef;
+        } finally {
+          pendingTasks.remove(taskId);
         }
       });
     });
