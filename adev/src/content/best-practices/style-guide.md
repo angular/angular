@@ -95,7 +95,7 @@ Avoid creating subdirectories based on the type of code that lives in those dire
 example, avoid creating directories like `components`, `directives`, and `services`.
 
 Avoid putting so many files into one directory that it becomes hard to read or navigate. As the
-number files in a directory grows, consider splitting further into additional sub-directories.
+number of files in a directory grows, consider splitting further into additional sub-directories.
 
 ### One concept per file
 
