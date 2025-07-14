@@ -1,5 +1,4 @@
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "js_binary", "ts_project")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
