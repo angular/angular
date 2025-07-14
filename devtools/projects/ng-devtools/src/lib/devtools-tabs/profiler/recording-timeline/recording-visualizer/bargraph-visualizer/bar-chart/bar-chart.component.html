@@ -1,6 +1,11 @@
-<div class="wrapper" @stagger>
+<div class="wrapper">
   @for (bar of internalData(); track $index) {
-    <div @appear (click)="barClick.emit(data()[$index])" class="bar" [style.width.%]="bar.width">
+    <div
+      (click)="barClick.emit(data()[$index])"
+      class="bar"
+      [style.width.%]="bar.width"
+      [style.animation-delay]="$index * 0.1 + 's'"
+    >
       <span>{{ bar.text }}</span>
     </div>
   }

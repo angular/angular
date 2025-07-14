@@ -13,6 +13,8 @@
       align-items: center;
       padding-block: 0.2rem;
       background-color: var(--dynamic-blue-02);
+      animation: appear 0.3s ease forwards;
+
       cursor: pointer;
       transition:
         background-color 0.3s ease-out,

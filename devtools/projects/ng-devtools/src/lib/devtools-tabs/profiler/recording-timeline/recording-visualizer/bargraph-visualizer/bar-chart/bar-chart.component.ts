@@ -6,15 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  animate,
-  animateChild,
-  query,
-  stagger,
-  style,
-  transition,
-  trigger,
-} from '@angular/animations';
 import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 
 import {BargraphNode} from '../../../record-formatter/bargraph-formatter/bargraph-formatter';
@@ -31,12 +22,6 @@ interface BarData {
   selector: 'ng-bar-chart',
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.scss'],
-  animations: [
-    trigger('appear', [
-      transition(':enter', [style({width: 0}), animate('.3s ease', style({width: '*'}))]),
-    ]),
-    trigger('stagger', [transition(':enter', [query(':enter', stagger('.1s', [animateChild()]))])]),
-  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BarChartComponent {
