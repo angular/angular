@@ -144,7 +144,7 @@ describe('di', () => {
     it('should handle initial undefined state', () => {
       const contentView = createLView(
         null,
-        createTView(TViewType.Component, null, null, 1, 0, null, null, null, null, null, null),
+        createTView(TViewType.Component, null, null, 1, 0, null, null, null, null, null, null, null),
         {},
         LViewFlags.CheckAlways,
         null,

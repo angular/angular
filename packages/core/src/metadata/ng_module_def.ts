@@ -27,6 +27,7 @@ export interface NgModuleTransitiveScopes {
   compilation: {directives: Set<any>; pipes: Set<any>};
   exported: {directives: Set<any>; pipes: Set<any>};
   schemas: SchemaMetadata[] | null;
+  isCustomElement: ((tagName: string) => boolean) | null;
 }
 
 /**
@@ -71,6 +72,9 @@ export interface NgModuleDef<T> {
 
   /** The set of schemas that declare elements to be allowed in the NgModule. */
   schemas: SchemaMetadata[] | null;
+
+  /** Function to determine if a tag name represents a custom element. */
+  isCustomElement: ((tagName: string) => boolean) | null;
 
   /** Unique ID for the module with which it should be registered.  */
   id: string | null;

@@ -76,6 +76,7 @@ function templateCreate(
       declarationTView.pipeRegistry,
       null,
       declarationTView.schemas,
+      declarationTView.isCustomElement,
       declarationTView.consts,
       null /* ssrId */,
     ));

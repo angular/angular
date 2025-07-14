@@ -102,6 +102,7 @@ export class ViewFixture {
       null,
       null,
       null,
+      null, // isCustomElement
       null,
       null,
     );
@@ -147,6 +148,7 @@ export class ViewFixture {
       null,
       null,
       null,
+      null, // isCustomElement
       consts || null,
       null,
     );

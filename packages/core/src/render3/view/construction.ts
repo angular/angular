@@ -74,6 +74,7 @@ export function createTView(
   pipes: PipeDefListOrFactory | null,
   viewQuery: ViewQueriesFunction<any> | null,
   schemas: SchemaMetadata[] | null,
+  isCustomElement: ((tagName: string) => boolean) | null,
   constsOrFactory: TConstantsOrFactory | null,
   ssrId: string | null,
 ): TView {
@@ -113,6 +114,7 @@ export function createTView(
     pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
     firstChild: null,
     schemas: schemas,
+    isCustomElement: isCustomElement,
     consts: consts,
     incompleteFirstPass: false,
     ssrId,
@@ -162,6 +164,7 @@ export function getOrCreateComponentTView(def: ComponentDef<any>): TView {
       def.pipeDefs,
       def.viewQuery,
       def.schemas,
+      def.isCustomElement,
       def.consts,
       def.id,
     ));

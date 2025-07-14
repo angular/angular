@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
-import {Type} from '../../interface/type';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
-import {throwError} from '../../util/assert';
-import {getComponentDef} from '../def_getters';
-import {ComponentDef} from '../interfaces/definition';
-import {TElementNode, TNode, TNodeType} from '../interfaces/node';
-import {RComment, RElement} from '../interfaces/renderer_dom';
-import {isDirectiveHost} from '../interfaces/type_checks';
-import {CONTEXT, DECLARATION_COMPONENT_VIEW, LView, TVIEW} from '../interfaces/view';
-import {isAnimationProp} from '../util/attrs_utils';
-import {getNativeByTNode} from '../util/view_utils';
+import { formatRuntimeError, RuntimeError, RuntimeErrorCode } from '../../errors';
+import { Type } from '../../interface/type';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata } from '../../metadata/schema';
+import { throwError } from '../../util/assert';
+import { getComponentDef } from '../def_getters';
+import { ComponentDef } from '../interfaces/definition';
+import { TElementNode, TNode, TNodeType } from '../interfaces/node';
+import { RComment, RElement } from '../interfaces/renderer_dom';
+import { isDirectiveHost } from '../interfaces/type_checks';
+import { CONTEXT, DECLARATION_COMPONENT_VIEW, LView, TVIEW } from '../interfaces/view';
+import { isAnimationProp } from '../util/attrs_utils';
+import { getNativeByTNode } from '../util/view_utils';
 
 let shouldThrowErrorOnUnknownElement = false;
 
@@ -96,17 +96,16 @@ export function validateElementIsKnown(lView: LView, tNode: TElementNode): void 
         tagName.indexOf('-') > -1 &&
         !customElements.get(tagName));
 
-    if (isUnknown && !matchingSchemas(tView.schemas, tagName)) {
+    if (isUnknown && !matchingSchemas(tView.schemas, tagName) && !isCustomElementByFunction(tView.isCustomElement, tagName)) {
       const isHostStandalone = isHostComponentStandalone(lView);
       const templateLocation = getTemplateLocationDetails(lView);
       const schemas = `'${isHostStandalone ? '@Component' : '@NgModule'}.schemas'`;
 
       let message = `'${tagName}' is not a known element${templateLocation}:\n`;
-      message += `1. If '${tagName}' is an Angular component, then verify that it is ${
-        isHostStandalone
-          ? "included in the '@Component.imports' of this component"
-          : 'a part of an @NgModule where this component is declared'
-      }.\n`;
+      message += `1. If '${tagName}' is an Angular component, then verify that it is ${isHostStandalone
+        ? "included in the '@Component.imports' of this component"
+        : 'a part of an @NgModule where this component is declared'
+        }.\n`;
       if (tagName && tagName.indexOf('-') > -1) {
         message += `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemas} of this component to suppress this message.`;
       } else {
@@ -130,18 +129,21 @@ export function validateElementIsKnown(lView: LView, tNode: TElementNode): void 
  * The property is considered known if either:
  * - it's a known property of the element
  * - the element is allowed by one of the schemas
+ * - the element is considered a custom element by the isCustomElement function
  * - the property is used for animations
  *
  * @param element Element to validate
  * @param propName Name of the property to check
  * @param tagName Name of the tag hosting the property
  * @param schemas Array of schemas
+ * @param isCustomElementFn Function to determine if a tag is a custom element
  */
 export function isPropertyValid(
   element: RElement | RComment,
   propName: string,
   tagName: string | null,
   schemas: SchemaMetadata[] | null,
+  isCustomElementFn?: ((tagName: string) => boolean) | null,
 ): boolean {
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
@@ -152,6 +154,11 @@ export function isPropertyValid(
   // The property is considered valid if the element matches the schema, it exists on the element,
   // or it is synthetic.
   if (matchingSchemas(schemas, tagName) || propName in element || isAnimationProp(propName)) {
+    return true;
+  }
+
+  // Check if the element is considered a custom element by the isCustomElement function
+  if (isCustomElementByFunction(isCustomElementFn || null, tagName)) {
     return true;
   }
 
@@ -317,4 +324,16 @@ export function matchingSchemas(schemas: SchemaMetadata[] | null, tagName: strin
   }
 
   return false;
+}
+
+/**
+ * Returns true if the tag name is considered a custom element by the provided function.
+ * @param isCustomElementFn Function to determine if a tag is a custom element
+ * @param tagName Name of the tag
+ */
+export function isCustomElementByFunction(
+  isCustomElementFn: ((tagName: string) => boolean) | null,
+  tagName: string | null,
+): boolean {
+  return isCustomElementFn && tagName ? isCustomElementFn(tagName) : false;
 }

@@ -214,6 +214,20 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
         } else if (meta.isStandalone) {
           ngComponentDef.schemas = [];
         }
+
+        if (metadata.isCustomElement) {
+          if (meta.isStandalone) {
+            ngComponentDef.isCustomElement = metadata.isCustomElement;
+          } else {
+            throw new Error(
+              `The 'isCustomElement' was specified for the ${stringifyForError(
+                type,
+              )} but is only valid on a component that is standalone.`,
+            );
+          }
+        } else if (meta.isStandalone) {
+          ngComponentDef.isCustomElement = null;
+        }
       }
       return ngComponentDef;
     },

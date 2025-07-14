@@ -156,6 +156,7 @@ export function compileNgModuleDefs(
             .map(resolveForwardRef)
             .map(expandModuleWithProviders),
           schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
+          isCustomElement: ngModule.isCustomElement || null,
           id: ngModule.id || null,
         });
         // Set `schemas` on ngModuleDef to an empty array in JIT mode to indicate that runtime
@@ -165,6 +166,8 @@ export function compileNgModuleDefs(
         if (!ngModuleDef.schemas) {
           ngModuleDef.schemas = [];
         }
+        // Set `isCustomElement` on ngModuleDef to the function from the NgModule metadata
+        ngModuleDef.isCustomElement = ngModule.isCustomElement || null;
       }
       return ngModuleDef;
     },
@@ -556,6 +559,7 @@ export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes 
     const def = getNgModuleDefOrThrow(type);
     return {
       schemas: def.schemas || null,
+      isCustomElement: def.isCustomElement || null,
       ...scope,
     };
   } else if (isStandalone(type)) {
@@ -563,6 +567,7 @@ export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes 
     if (directiveDef !== null) {
       return {
         schemas: null,
+        isCustomElement: null,
         compilation: {
           directives: new Set<any>(),
           pipes: new Set<any>(),
@@ -578,6 +583,7 @@ export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes 
     if (pipeDef !== null) {
       return {
         schemas: null,
+        isCustomElement: null,
         compilation: {
           directives: new Set<any>(),
           pipes: new Set<any>(),
@@ -612,6 +618,7 @@ export function transitiveScopesForNgModule<T>(moduleType: Type<T>): NgModuleTra
 
   const scopes: NgModuleTransitiveScopes = {
     schemas: def.schemas || null,
+    isCustomElement: def.isCustomElement || null,
     compilation: {
       directives: new Set<any>(),
       pipes: new Set<any>(),

@@ -170,6 +170,7 @@ export interface R3NgModuleMetadataFacade {
   imports: Function[];
   exports: Function[];
   schemas: {name: string}[] | null;
+  isCustomElement: ((tagName: string) => boolean) | null;
   id: string | null;
 }
 

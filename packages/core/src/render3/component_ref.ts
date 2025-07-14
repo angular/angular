@@ -439,6 +439,7 @@ function createRootTView(
     null,
     null,
     null,
+    null, // isCustomElement
     [tAttributes],
     null,
   );

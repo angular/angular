@@ -294,7 +294,7 @@ export function setDomProperty<T>(
 
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
-      if (!isPropertyValid(element, propName, tNode.value, lView[TVIEW].schemas)) {
+      if (!isPropertyValid(element, propName, tNode.value, lView[TVIEW].schemas, lView[TVIEW].isCustomElement)) {
         handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
       }
     }

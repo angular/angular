@@ -319,6 +319,11 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
    * The set of schemas that declare elements to be allowed in the component's template.
    */
   schemas?: SchemaMetadata[] | null;
+
+  /**
+   * Function to determine if a tag name represents a custom element.
+   */
+  isCustomElement?: ((tagName: string) => boolean) | null;
 }
 
 /**
@@ -369,6 +374,7 @@ export function ɵɵdefineComponent<T>(
       styles: componentDefinition.styles || EMPTY_ARRAY,
       _: null,
       schemas: componentDefinition.schemas || null,
+      isCustomElement: componentDefinition.isCustomElement || null,
       tView: null,
       id: '',
     };
@@ -417,6 +423,9 @@ export function ɵɵdefineNgModule<T>(def: {
   /** The set of schemas that declare elements to be allowed in the NgModule. */
   schemas?: SchemaMetadata[] | null;
 
+  /** Function to determine if a tag name represents a custom element. */
+  isCustomElement?: ((tagName: string) => boolean) | null;
+
   /** Unique ID for the module that is used with `getModuleFactory`. */
   id?: string | null;
 }): unknown {
@@ -429,6 +438,7 @@ export function ɵɵdefineNgModule<T>(def: {
       exports: def.exports || EMPTY_ARRAY,
       transitiveCompileScopes: null,
       schemas: def.schemas || null,
+      isCustomElement: def.isCustomElement || null,
       id: def.id || null,
     };
     return res;

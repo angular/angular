@@ -52,6 +52,7 @@ export function enterViewWithOneDiv() {
     null,
     null,
     null,
+    null, // isCustomElement
     null,
     null,
   );

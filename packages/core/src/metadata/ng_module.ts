@@ -187,6 +187,20 @@ export interface NgModule {
   schemas?: Array<SchemaMetadata | any[]>;
 
   /**
+   * Function to determine if a tag name represents a custom element.
+   * If provided, this will be used instead of relying solely on CUSTOM_ELEMENTS_SCHEMA
+   * to determine if an element is a custom element.
+   * 
+   * @example
+   * ```ts
+   * @NgModule({
+   *   isCustomElement: (tag) => tag.includes('-')
+   * })
+   * ```
+   */
+  isCustomElement?: (tagName: string) => boolean;
+
+  /**
    * A name or path that uniquely identifies this NgModule in `getNgModuleById`.
    * If left `undefined`, the NgModule is not registered with `getNgModuleById`.
    */

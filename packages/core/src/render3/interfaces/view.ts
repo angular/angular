@@ -838,6 +838,12 @@ export interface TView {
   schemas: SchemaMetadata[] | null;
 
   /**
+   * Function to determine if a tag name represents a custom element.
+   * If provided, this will be used instead of relying solely on CUSTOM_ELEMENTS_SCHEMA.
+   */
+  isCustomElement: ((tagName: string) => boolean) | null;
+
+  /**
    * Array of constants for the view. Includes attribute arrays, local definition arrays etc.
    * Used for directive matching, attribute bindings, local definitions and more.
    */

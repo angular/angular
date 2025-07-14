@@ -379,6 +379,12 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   schemas: SchemaMetadata[] | null;
 
   /**
+   * Function to determine if a tag name represents a custom element.
+   * If provided, this will be used instead of relying solely on CUSTOM_ELEMENTS_SCHEMA.
+   */
+  isCustomElement: ((tagName: string) => boolean) | null;
+
+  /**
    * Ivy runtime uses this place to store the computed tView for the component. This gets filled on
    * the first run of component.
    */

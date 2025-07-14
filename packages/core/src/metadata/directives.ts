@@ -684,6 +684,24 @@ export interface Component extends Directive {
    * guide](guide/components/importing).
    */
   schemas?: SchemaMetadata[];
+
+  /**
+   * Function to determine if a tag name represents a custom element.
+   * If provided, this will be used instead of relying solely on CUSTOM_ELEMENTS_SCHEMA
+   * to determine if an element is a custom element.
+   * 
+   * This property is only available for standalone components - specifying it for components
+   * declared in an NgModule generates a compilation error.
+   * 
+   * @example
+   * ```ts
+   * @Component({
+   *   standalone: true,
+   *   isCustomElement: (tag) => tag.includes('-')
+   * })
+   * ```
+   */
+  isCustomElement?: (tagName: string) => boolean;
 }
 
 /**

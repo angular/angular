@@ -49,7 +49,7 @@ describe('render3 matchers', () => {
   });
 
   describe('matchTView', () => {
-    const tView = createTView(TViewType.Root, null, null, 2, 3, null, null, null, null, null, null);
+    const tView = createTView(TViewType.Root, null, null, 2, 3, null, null, null, null, null, null, null);
     it('should match', () => {
       expect(tView).toEqual(matchTView());
       expect(tView).toEqual(matchTView({type: TViewType.Root}));
@@ -57,7 +57,7 @@ describe('render3 matchers', () => {
     });
   });
   describe('matchTNode', () => {
-    const tView = createTView(TViewType.Root, null, null, 2, 3, null, null, null, null, null, null);
+    const tView = createTView(TViewType.Root, null, null, 2, 3, null, null, null, null, null, null, null);
     const tNode = createTNode(tView, null, TNodeType.Element, 0, 'tagName', []);
 
     it('should match', () => {
