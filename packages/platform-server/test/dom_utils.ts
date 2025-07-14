@@ -110,10 +110,10 @@ export function hydrate(
   global.document = doc;
 
   const providers = [
-    ...envProviders,
     {provide: PLATFORM_ID, useValue: 'browser'},
     {provide: DOCUMENT, useFactory: () => doc},
     provideClientHydration(...hydrationFeatures()),
+    ...envProviders,
   ];
 
   return bootstrapApplication(component, {providers});

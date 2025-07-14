@@ -157,23 +157,28 @@ function printHydrationStats(injector: Injector) {
  * Returns a Promise that is resolved when an application becomes stable.
  */
 function whenStableWithTimeout(appRef: ApplicationRef): Promise<void> {
-  const whenStablePromise = appRef.whenStable();
-  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
-    const console = appRef.injector.get(Console);
-    const ngZone = appRef.injector.get(NgZone);
+  // Wrapping in a promise to delay the execution of `whenStable` function
+  // to the next microtask. This is needed to ensure that all framework
+  // features are registered and prevents race conditions in zoneless apps.
+  return Promise.resolve().then(() => {
+    const whenStablePromise = appRef.whenStable();
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
+      const console = appRef.injector.get(Console);
+      const ngZone = appRef.injector.get(NgZone);
 
-    // The following call should not and does not prevent the app to become stable
-    // We cannot use RxJS timer here because the app would remain unstable.
-    // This also avoids an extra change detection cycle.
-    const timeoutId = ngZone.runOutsideAngular(() => {
-      return setTimeout(() => logWarningOnStableTimedout(timeoutTime, console), timeoutTime);
-    });
+      // The following call should not and does not prevent the app to become stable
+      // We cannot use RxJS timer here because the app would remain unstable.
+      // This also avoids an extra change detection cycle.
+      const timeoutId = ngZone.runOutsideAngular(() => {
+        return setTimeout(() => logWarningOnStableTimedout(timeoutTime, console), timeoutTime);
+      });
 
-    whenStablePromise.finally(() => clearTimeout(timeoutId));
-  }
+      whenStablePromise.finally(() => clearTimeout(timeoutId));
+    }
 
-  return whenStablePromise;
+    return whenStablePromise;
+  });
 }
 
 /**
