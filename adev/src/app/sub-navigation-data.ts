@@ -363,6 +363,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/route-guards',
           },
           {
+            label: 'Route data resolvers',
+            path: 'guide/routing/data-resolvers',
+            contentPath: 'guide/routing/data-resolvers',
+          },
+          {
             label: 'Lifecycle and events',
             path: 'guide/routing/lifecycle-and-events',
             contentPath: 'guide/routing/lifecycle-and-events',
