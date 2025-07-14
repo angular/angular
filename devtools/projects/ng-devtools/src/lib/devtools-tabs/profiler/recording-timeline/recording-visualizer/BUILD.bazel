@@ -1,6 +1,4 @@
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_project")
-load("//tools:defaults2.bzl", "sass_binary")
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_project")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
