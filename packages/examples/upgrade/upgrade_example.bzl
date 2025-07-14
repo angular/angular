@@ -1,6 +1,6 @@
 load("@devinfra//bazel/esbuild:index.bzl", "esbuild")
-load("//tools:defaults.bzl", "http_server", "protractor_web_test_suite")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
+load("//tools:defaults.bzl", "http_server")
+load("//tools:defaults2.bzl", "ng_project", "protractor_web_test_suite", "ts_project")
 
 """
   Macro that can be used to create the Bazel targets for an "upgrade" example. Since the
@@ -54,19 +54,18 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = [
         additional_root_paths = ["angular/packages/examples/upgrade"],
         srcs = [
             "//packages/examples/upgrade:index.html",
-            "@npm//:node_modules/zone.js/bundles/zone.umd.js",
-            "@npm//:node_modules/angular-1.8/angular.js",
-            "@npm//:node_modules/reflect-metadata/Reflect.js",
+            "//:node_modules/zone.js",
+            "//:node_modules/angular-1.8",
+            "//:node_modules/reflect-metadata",
         ] + assets,
         deps = [":app_bundle"],
     )
 
     protractor_web_test_suite(
         name = "%s_protractor" % name,
-        on_prepare = "//packages/examples/upgrade:start-server.js",
         server = ":devserver",
         deps = [
-            ":%s_e2e_lib" % name,
-            "@npm//selenium-webdriver",
+            ":%s_e2e_lib_rjs" % name,
+            "//:node_modules/selenium-webdriver",
         ],
     )
