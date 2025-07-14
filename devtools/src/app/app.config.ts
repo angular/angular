@@ -7,7 +7,6 @@
  */
 
 import {ApplicationConfig, provideZonelessChangeDetection} from '@angular/core';
-import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideRouter} from '@angular/router';
 import {ApplicationEnvironment, ApplicationOperations} from '../../projects/ng-devtools';
 
@@ -16,7 +15,6 @@ import {DemoApplicationOperations} from '../demo-application-operations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideAnimations(),
     provideZonelessChangeDetection(),
     provideRouter([
       {
