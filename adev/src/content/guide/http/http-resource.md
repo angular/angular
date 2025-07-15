@@ -54,7 +54,7 @@ The signals of the `httpResource` can be used in the template to control which e
 
 ```angular-html
 @if(user.hasValue()) {
-  <user-details user="[user.value()]">
+  <user-details user="user.value()">
 } @else if (user.error()) {
   <div>Could not load user information</div>
 } @else if (user.isLoading()) {
