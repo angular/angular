@@ -7,7 +7,7 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import type {ReactiveMetadataKey, StaticMetadataKey} from '../api/metadata';
+import {MetadataKey, ReactiveMetadataKey, StaticMetadataKey} from '../api/metadata';
 import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 
@@ -151,12 +151,15 @@ export class FieldNode implements FieldState<unknown> {
     return this.submitState.submittedStatus;
   }
 
-  data<D>(key: StaticMetadataKey<D>): D | undefined {
-    return this.dataState.get(key);
-  }
-
-  metadata<M>(key: ReactiveMetadataKey<M>): Signal<M> {
-    return this.metadataState.get(key);
+  metadata<M>(key: ReactiveMetadataKey<M>): Signal<M>;
+  metadata<M>(key: StaticMetadataKey<M>): M | undefined;
+  metadata<M>(key: MetadataKey<M>): Signal<M> | M | undefined {
+    if (key instanceof StaticMetadataKey) {
+      return this.dataState.get(key);
+    } else if (key instanceof ReactiveMetadataKey) {
+      return this.metadataState.get(key);
+    }
+    throw Error('Unrecognized MetadataKey type');
   }
 
   /**

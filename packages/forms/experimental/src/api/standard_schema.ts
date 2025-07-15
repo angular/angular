@@ -38,7 +38,7 @@ export function validateStandardSchema<TValue>(
 
   validateTree(path, ({state, fieldOf}) => {
     // Skip sync validation if the result is a Promise.
-    const result = state.data(schemaResult)!();
+    const result = state.metadata(schemaResult)!();
     if (ɵisPromise(result)) {
       return [];
     }
@@ -48,7 +48,7 @@ export function validateStandardSchema<TValue>(
   validateAsync(path, {
     params: ({state}) => {
       // Skip async validation if the result is *not* a Promise.
-      const result = state.data(schemaResult)!();
+      const result = state.metadata(schemaResult)!();
       return ɵisPromise(result) ? result : undefined;
     },
     factory: (params) => {

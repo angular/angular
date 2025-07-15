@@ -119,7 +119,7 @@ export class StaticMetadataKey<TValue> extends KeyCtor<TValue> {
 /**
  * Re-cast the StaticMetadataKey constructor to allow ourselves to new it.
  */
-const StaticKeyCtor = MetadataKey as unknown as new <TValue>() => MetadataKey<TValue>;
+const StaticKeyCtor = StaticMetadataKey as unknown as new <TValue>() => StaticMetadataKey<TValue>;
 
 /**
  * Represents reactive metadata that can change depending on state of the form.

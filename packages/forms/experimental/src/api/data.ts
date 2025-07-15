@@ -9,7 +9,7 @@
 import {computed, Resource, ResourceRef, Signal} from '@angular/core';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import {StaticMetadataKey} from './metadata';
+import {MetadataKey, StaticMetadataKey} from './metadata';
 import type {FieldContext, FieldPath, LogicFn, PathKind} from './types';
 
 export interface DefineOptions<TKey> {
@@ -22,7 +22,7 @@ export function define<TValue, TData, TPathKind extends PathKind = PathKind.Root
   opts?: DefineOptions<TData>,
 ): StaticMetadataKey<TData> {
   assertPathIsCurrent(path);
-  const key = opts?.asKey ?? new StaticMetadataKey<Resource<TData>>();
+  const key = opts?.asKey ?? MetadataKey.static<Resource<TData>>();
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
   pathNode.logic.addDataFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
@@ -35,7 +35,7 @@ export function defineComputed<TValue, TData, TPathKind extends PathKind = PathK
   opts?: DefineOptions<Signal<TData>>,
 ): StaticMetadataKey<Signal<TData>> {
   assertPathIsCurrent(path);
-  const key = opts?.asKey ?? new StaticMetadataKey<Signal<TData>>();
+  const key = opts?.asKey ?? MetadataKey.static<Signal<TData>>();
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addDataFactory(key, (ctx) =>
@@ -59,7 +59,7 @@ export function defineResource<TValue, TData, TRequest, TPathKind extends PathKi
   opts: DefineResourceOptions<TValue, TData, TRequest, TPathKind>,
 ): StaticMetadataKey<ResourceRef<TData | undefined>> {
   assertPathIsCurrent(path);
-  const key = opts.asKey ?? new StaticMetadataKey<ResourceRef<TData>>();
+  const key = opts.asKey ?? MetadataKey.static<ResourceRef<TData>>();
 
   const factory = (ctx: FieldContext<unknown>) => {
     const params = computed(() => opts.params(ctx as FieldContext<TValue, TPathKind>));
