@@ -9,6 +9,8 @@
 import {inject} from '@angular/core';
 import {SettingsStore} from './settings_store';
 
+// Note: Any changes to the settings items should be accompanied by a migration.
+// Check settings_provider.ts
 export class Settings {
   private readonly settingsStore = inject(SettingsStore);
 
