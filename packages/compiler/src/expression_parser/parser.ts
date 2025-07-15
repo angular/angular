@@ -1257,9 +1257,9 @@ class _ParseAST {
     } else {
       if (this.isAssignmentOperator(this.next)) {
         const operation = this.next.strValue;
-        this.advance();
 
         if (!(this.parseFlags & ParseFlags.Action)) {
+          this.advance();
           this.error('Bindings cannot contain assignments');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
         }
@@ -1270,6 +1270,7 @@ class _ParseAST {
           readReceiver,
           id,
         );
+        this.advance();
         const value = this.parseConditional();
         return new Binary(this.span(start), this.sourceSpan(start), operation, receiver, value);
       } else {
@@ -1398,9 +1399,9 @@ class _ParseAST {
       this.expectCharacter(chars.$RBRACKET);
       if (this.isAssignmentOperator(this.next)) {
         const operation = this.next.strValue;
-        this.advance();
 
         if (isSafe) {
+          this.advance();
           this.error("The '?.' operator cannot be used in the assignment");
         } else {
           const binaryReceiver = new KeyedRead(
@@ -1409,6 +1410,7 @@ class _ParseAST {
             receiver,
             key,
           );
+          this.advance();
           const value = this.parseConditional();
           return new Binary(
             this.span(start),
