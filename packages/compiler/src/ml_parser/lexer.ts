@@ -144,6 +144,20 @@ enum CharacterReferenceType {
   DEC = 'decimal',
 }
 
+const SUPPORTED_BLOCKS = [
+  '@if',
+  '@else', // Covers `@else if` as well
+  '@for',
+  '@switch',
+  '@case',
+  '@default',
+  '@empty',
+  '@defer',
+  '@placeholder',
+  '@loading',
+  '@error',
+];
+
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
   private _cursor: CharacterCursor;
@@ -234,10 +248,10 @@ class _Tokenizer {
           // don't want to advance in case it's not `@let`.
           this._cursor.peek() === chars.$AT &&
           !this._inInterpolation &&
-          this._attemptStr('@let')
+          this._isLetStart()
         ) {
           this._consumeLetDeclaration(start);
-        } else if (this._tokenizeBlocks && this._attemptCharCode(chars.$AT)) {
+        } else if (this._tokenizeBlocks && this._isBlockStart()) {
           this._consumeBlockStart(start);
         } else if (
           this._tokenizeBlocks &&
@@ -284,6 +298,7 @@ class _Tokenizer {
   }
 
   private _consumeBlockStart(start: CharacterCursor) {
+    this._requireCharCode(chars.$AT);
     this._beginToken(TokenType.BLOCK_OPEN_START, start);
     const startToken = this._endToken([this._getBlockName()]);
 
@@ -363,6 +378,7 @@ class _Tokenizer {
   }
 
   private _consumeLetDeclaration(start: CharacterCursor) {
+    this._requireStr('@let');
     this._beginToken(TokenType.LET_START, start);
 
     // Require at least one white space after the `@let`.
@@ -626,6 +642,32 @@ class _Tokenizer {
     const char = String.fromCodePoint(this._cursor.peek());
     this._cursor.advance();
     return char;
+  }
+
+  private _peekStr(chars: string): boolean {
+    const len = chars.length;
+    if (this._cursor.charsLeft() < len) {
+      return false;
+    }
+    const cursor = this._cursor.clone();
+    for (let i = 0; i < len; i++) {
+      if (cursor.peek() !== chars.charCodeAt(i)) {
+        return false;
+      }
+      cursor.advance();
+    }
+    return true;
+  }
+
+  private _isBlockStart(): boolean {
+    return (
+      this._cursor.peek() === chars.$AT &&
+      SUPPORTED_BLOCKS.some((blockName) => this._peekStr(blockName))
+    );
+  }
+
+  private _isLetStart(): boolean {
+    return this._cursor.peek() === chars.$AT && this._peekStr('@let');
   }
 
   private _consumeEntity(textTokenType: TokenType): void {
@@ -1261,7 +1303,7 @@ class _Tokenizer {
       this._tokenizeBlocks &&
       !this._inInterpolation &&
       !this._isInExpansion() &&
-      (this._cursor.peek() === chars.$AT || this._cursor.peek() === chars.$RBRACE)
+      (this._isBlockStart() || this._isLetStart() || this._cursor.peek() === chars.$RBRACE)
     ) {
       return true;
     }

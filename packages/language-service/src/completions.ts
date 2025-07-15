@@ -29,9 +29,9 @@ import {
   TmplAstText,
   TmplAstTextAttribute,
   TmplAstTextAttribute as TextAttribute,
-  TmplAstUnknownBlock as UnknownBlock,
   TmplAstVariable,
   TmplAstLetDeclaration,
+  TmplAstSwitchBlock,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
@@ -82,8 +82,6 @@ type LiteralCompletionBuilder = CompletionBuilder<LiteralPrimitive | TextAttribu
 type ElementAnimationCompletionBuilder = CompletionBuilder<
   TmplAstBoundAttribute | TmplAstBoundEvent
 >;
-
-type BlockCompletionBuilder = CompletionBuilder<UnknownBlock>;
 
 type LetCompletionBuilder = CompletionBuilder<TmplAstLetDeclaration>;
 
@@ -212,12 +210,16 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     return this.node instanceof TmplAstLetDeclaration;
   }
 
-  private isBlockCompletion(): this is BlockCompletionBuilder {
-    return this.node instanceof UnknownBlock;
+  private isBlockCompletion(): this is CompletionBuilder<TmplAstText> {
+    if (this.node instanceof TmplAstText) {
+      return /@[a-z\s]*$/.test(this.node.value);
+    }
+
+    return this.node instanceof TmplAstSwitchBlock;
   }
 
   private getBlockCompletions(
-    this: BlockCompletionBuilder,
+    this: CompletionBuilder<TmplAstText>,
     options: ts.GetCompletionsAtPositionOptions | undefined,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     const blocksWithParens = ['if', 'else if', 'for', 'switch', 'case', 'defer'];
@@ -226,24 +228,8 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     // Determine whether to provide a snippet, which includes parens and curly braces.
     // If the block has any expressions or a body, don't provide a snippet as the completion.
     // TODO: We can be smarter about this, e.g. include `default` in `switch` if it is missing.
-    const incompleteBlockHasExpressionsOrBody =
-      this.node.sourceSpan
-        .toString()
-        .substring(1 + this.node.name.length)
-        .trim().length > 0;
-    const useSnippet =
-      (options?.includeCompletionsWithSnippetText ?? false) && !incompleteBlockHasExpressionsOrBody;
+    const useSnippet = options?.includeCompletionsWithSnippetText ?? false;
 
-    // Generate the list of completions, one for each block.
-    // TODO: Exclude connected blocks (e.g. `else` when the preceding block isn't `if` or `else
-    // if`).
-    const partialCompletionEntryWholeBlock = {
-      kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
-      replacementSpan: {
-        start: this.node.sourceSpan.start.offset + 1,
-        length: this.node.name.length,
-      },
-    };
     let completionKeywords: string[] = [...blocksWithParens, ...blocksWithoutParens];
     if (this.nodeParent instanceof SwitchBlock) {
       completionKeywords = ['case', 'default'];
@@ -253,7 +239,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       sortText: `${AsciiSortPriority.First}${name}`,
       insertText: buildBlockSnippet(useSnippet, name, blocksWithParens.includes(name)),
       isSnippet: useSnippet || undefined,
-      ...partialCompletionEntryWholeBlock,
+      kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.BLOCK),
     }));
 
     // Return the completions.
