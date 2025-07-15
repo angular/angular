@@ -13,7 +13,6 @@ import {
   applyEach,
   applyWhen,
   disabled,
-  error,
   FieldPath,
   form,
   MIN,
@@ -572,44 +571,6 @@ describe('FieldNode', () => {
       expect(f.a().errors()).toEqual([
         ValidationError.custom({kind: 'too-damn-high'}),
         ValidationError.custom({kind: 'bad'}),
-      ]);
-      expect(f.a().valid()).toBe(false);
-    });
-
-    it('should validate with shorthand syntax', () => {
-      const f = form(
-        signal({a: 1, b: 2}),
-        (p) => {
-          error(p.a, ({value}) => value() > 1);
-          error(p.a, ({value}) => value() > 10, 'too-damn-high');
-          error(
-            p.a,
-            ({value}) => value() > 100,
-            ({value}) => `${value()} is much too high`,
-          );
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      expect(f.a().errors()).toEqual([]);
-      expect(f.a().valid()).toBe(true);
-
-      f.a().value.set(2);
-      expect(f.a().errors()).toEqual([ValidationError.custom()]);
-      expect(f.a().valid()).toBe(false);
-
-      f.a().value.set(11);
-      expect(f.a().errors()).toEqual([
-        ValidationError.custom(),
-        ValidationError.custom({message: 'too-damn-high'}),
-      ]);
-      expect(f.a().valid()).toBe(false);
-
-      f.a().value.set(101);
-      expect(f.a().errors()).toEqual([
-        ValidationError.custom(),
-        ValidationError.custom({message: 'too-damn-high'}),
-        ValidationError.custom({message: '101 is much too high'}),
       ]);
       expect(f.a().valid()).toBe(false);
     });
