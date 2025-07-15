@@ -10,8 +10,6 @@ import {ResourceLoader} from '@angular/compiler';
 import {
   ApplicationInitStatus,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
-  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
-  ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
   Compiler,
   COMPILER_OPTIONS,
   Component,
@@ -43,7 +41,7 @@ import {
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetInjectableDef as getInjectableDef,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
-  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
+  ɵprovideChangeDetectionScheduling as provideChangeDetectionScheduling,
   ɵisComponentDefPendingResolution,
   ɵisEnvironmentProviders as isEnvironmentProviders,
   ɵNG_COMP_DEF as NG_COMP_DEF,
@@ -929,9 +927,8 @@ export class TestBedCompiler {
     compileNgModuleDefs(RootScopeModule as NgModuleType<any>, {
       providers: [
         ...this.rootProviderOverrides,
-        internalProvideZoneChangeDetection({}),
+        provideChangeDetectionScheduling(),
         TestBedApplicationErrorHandler,
-        {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
         {
           provide: ENVIRONMENT_INITIALIZER,
           multi: true,

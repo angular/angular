@@ -8,12 +8,7 @@
 
 import {compileNgModuleFactory} from '../application/application_ngmodule_factory_compiler';
 import {BootstrapOptions, optionsReducer} from '../application/application_ref';
-import {
-  getNgZoneOptions,
-  internalProvideZoneChangeDetection,
-} from '../change_detection/scheduling/ng_zone_scheduling';
-import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
-import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
+import {provideChangeDetectionScheduling} from '../change_detection/scheduling/default_scheduling_provider';
 import {Injectable, Injector} from '../di';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -21,7 +16,6 @@ import {Type} from '../interface/type';
 import {CompilerOptions} from '../linker';
 import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {createNgModuleRefWithProviders} from '../render3/ng_module_ref';
-import {getNgZone} from '../zone/ng_zone';
 import {bootstrap, setModuleBootstrapImpl} from './bootstrap';
 import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
 
@@ -53,22 +47,8 @@ export class PlatformRef {
     moduleFactory: NgModuleFactory<M>,
     options?: BootstrapOptions,
   ): Promise<NgModuleRef<M>> {
-    const scheduleInRootZone = (options as any)?.scheduleInRootZone;
-    const ngZoneFactory = () =>
-      getNgZone(options?.ngZone, {
-        ...getNgZoneOptions({
-          eventCoalescing: options?.ngZoneEventCoalescing,
-          runCoalescing: options?.ngZoneRunCoalescing,
-        }),
-        scheduleInRootZone,
-      });
-    const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
     const allAppProviders = [
-      internalProvideZoneChangeDetection({
-        ngZoneFactory,
-        ignoreChangesOutsideZone,
-      }),
-      {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+      provideChangeDetectionScheduling(options),
       errorHandlerEnvironmentInitializer,
     ];
     const moduleRef = createNgModuleRefWithProviders(

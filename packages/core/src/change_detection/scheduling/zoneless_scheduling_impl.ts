@@ -11,7 +11,7 @@ import {Subscription} from 'rxjs';
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
 import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
-import {EnvironmentProviders} from '../../di/interface/provider';
+import {EnvironmentProviders, Provider} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode, formatRuntimeError} from '../../errors';
 import {PendingTasksInternal} from '../../pending_tasks';
@@ -386,12 +386,17 @@ export function provideZonelessChangeDetection(): EnvironmentProviders {
   }
 
   return makeEnvironmentProviders([
-    {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
-    {provide: NgZone, useClass: NoopNgZone},
-    {provide: ZONELESS_ENABLED, useValue: true},
-    {provide: SCHEDULE_IN_ROOT_ZONE, useValue: false},
+    internalProvideZonelessChangeDetection(),
     typeof ngDevMode === 'undefined' || ngDevMode
       ? [{provide: PROVIDED_ZONELESS, useValue: true}]
       : [],
   ]);
+}
+
+export function internalProvideZonelessChangeDetection(): Provider[] {
+  return [
+    {provide: NgZone, useClass: NoopNgZone},
+    {provide: ZONELESS_ENABLED, useValue: true},
+    {provide: SCHEDULE_IN_ROOT_ZONE, useValue: false},
+  ];
 }
