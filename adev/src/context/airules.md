@@ -68,10 +68,11 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 
 ### Angular Best Practices
 - Always use standalone components over `NgModules`
-- Don't use explicit `standalone: true` (it is implied by default)
+- Do NOT set `standalone: true` inside the `@Component`, `@Directive` and `@Pipe` decorators
 - Use signals for state management
 - Implement lazy loading for feature routes
 - Use `NgOptimizedImage` for all static images.
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
 
 ### Components
 - Keep components small and focused on a single responsibility
@@ -88,6 +89,7 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 - Use signals for local component state
 - Use `computed()` for derived state
 - Keep state transformations pure and predictable
+- Do NOT use `mutate` on signals, use `update` or `set` instead
 
 ### Templates
 - Keep templates simple and avoid complex logic
