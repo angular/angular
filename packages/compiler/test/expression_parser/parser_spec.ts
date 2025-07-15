@@ -18,6 +18,7 @@ import {
   TemplateBinding,
   VariableBinding,
   BindingPipeType,
+  Binary,
 } from '../../src/expression_parser/ast';
 import {ParseError} from '../../src/parse_util';
 import {Lexer} from '../../src/expression_parser/lexer';
@@ -628,6 +629,33 @@ describe('parser', () => {
         ['three', '[nameSpan] three'],
         ['', ''], // Implicit receiver
         [' after', ' after`'],
+      ]);
+    });
+
+    it('should record spans for binary assignment operations', () => {
+      expect(unparseWithSpan(parseAction('a.b ??= c'))).toEqual([
+        ['a.b ??= c', 'a.b ??= c'],
+        ['a.b', 'a.b'],
+        ['a.b', '[nameSpan] b'],
+        ['a', 'a'],
+        ['a', '[nameSpan] a'],
+        ['', ''],
+        ['c', 'c'],
+        ['c', '[nameSpan] c'],
+        ['', ' '],
+      ]);
+      expect(unparseWithSpan(parseAction('a[b] ||= c'))).toEqual([
+        ['a[b] ||= c', 'a[b] ||= c'],
+        ['a[b]', 'a[b]'],
+        ['a', 'a'],
+        ['a', '[nameSpan] a'],
+        ['', ''],
+        ['b', 'b'],
+        ['b', '[nameSpan] b'],
+        ['', ''],
+        ['c', 'c'],
+        ['c', '[nameSpan] c'],
+        ['', ' '],
       ]);
     });
 
