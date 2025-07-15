@@ -144,33 +144,3 @@ export function metadata<TValue, TMetadata, TPathKind extends PathKind = PathKin
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addMetadataRule(key, logic);
 }
-
-/**
- * Adds logic to a field to conditionally add a validation error to it.
- * The added ValidationError will have `kind: ''`
- *
- * @param path The target path to add the error logic to.
- * @param logic A `LogicFn<T, boolean>` that returns `true` when the error should be added.
- * @param message An optional user-facing message to add to the error, or a `LogicFn<T, string>`
- *   that returns the user-facing message
- * @template TValue The type of value stored in the field the logic is bound to.
- * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
- */
-export function error<TValue, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
-  logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>,
-  message?: string | NoInfer<LogicFn<TValue, string, TPathKind>>,
-): void {
-  assertPathIsCurrent(path);
-
-  if (typeof message === 'function') {
-    validate(path, (arg) => {
-      return logic(arg) ? ValidationError.custom({message: message(arg)}) : undefined;
-    });
-  } else {
-    const err = ValidationError.custom({message});
-    validate(path, (arg) => {
-      return logic(arg) ? err : undefined;
-    });
-  }
-}
