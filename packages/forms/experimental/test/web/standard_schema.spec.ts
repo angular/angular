@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import * as z from 'zod';
@@ -26,13 +34,13 @@ describe('standard schema integration', () => {
 
     expect(nameForm.first().errors()).toEqual([
       jasmine.objectContaining({
-        kind: '~standard',
+        kind: 'standardschema',
         issue: jasmine.objectContaining({message: 'String must contain at least 2 character(s)'}),
       }),
     ]);
     expect(nameForm.last().errors()).toEqual([
       jasmine.objectContaining({
-        kind: '~standard',
+        kind: 'standardschema',
         issue: jasmine.objectContaining({message: 'String must contain at least 3 character(s)'}),
       }),
     ]);
@@ -63,13 +71,13 @@ describe('standard schema integration', () => {
 
     expect(nameForm.first().errors()).toEqual([
       jasmine.objectContaining({
-        kind: '~standard',
+        kind: 'standardschema',
         issue: jasmine.objectContaining({message: 'String must contain at least 2 character(s)'}),
       }),
     ]);
     expect(nameForm.last().errors()).toEqual([
       jasmine.objectContaining({
-        kind: '~standard',
+        kind: 'standardschema',
         issue: jasmine.objectContaining({message: 'String must contain at least 3 character(s)'}),
       }),
     ]);

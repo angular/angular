@@ -3,12 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {apply, applyEach, applyWhen, form, validate} from '../../public_api';
+import {ValidationError} from '../../src/api/validation_errors';
 
 describe('path', () => {
   describe('Active path', () => {
@@ -24,7 +25,7 @@ describe('path', () => {
             (/* UNUSED */) => {
               expect(() => {
                 validate(path.last, ({value}) =>
-                  value().length > 0 ? undefined : {kind: 'required'},
+                  value().length > 0 ? undefined : ValidationError.required(),
                 );
               }).toThrowError();
             },
@@ -40,10 +41,10 @@ describe('path', () => {
       form(
         data,
         (path) => {
-          apply(path, (/* UNUSED */) => {
+          apply(path, () => {
             expect(() => {
-              validate(path.last, ({value}) => {
-                return {kind: 'does not matter'};
+              validate(path.last, () => {
+                return ValidationError.custom();
               });
             }).toThrowError();
           });
@@ -58,10 +59,10 @@ describe('path', () => {
       form(
         data,
         (path) => {
-          apply(path, (/* UNUSED */) => {
+          apply(path, () => {
             expect(() => {
-              validate(path, ({value}) => {
-                return {kind: 'does not matter'};
+              validate(path, () => {
+                return ValidationError.custom();
               });
             }).toThrowError();
           });
@@ -79,10 +80,10 @@ describe('path', () => {
       form(
         data,
         (path) => {
-          applyEach(path.items, (/* UNUSED */) => {
+          applyEach(path.items, () => {
             expect(() => {
-              validate(path.needLastName, ({value}) => {
-                return {kind: 'does not matter'};
+              validate(path.needLastName, () => {
+                return ValidationError.custom();
               });
             }).toThrowError();
           });

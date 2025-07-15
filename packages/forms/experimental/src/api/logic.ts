@@ -3,13 +3,22 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {MetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldContext, FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
+import type {
+  FieldContext,
+  FieldPath,
+  LogicFn,
+  Mutable,
+  PathKind,
+  TreeValidator,
+  Validator,
+} from './types';
+import {ValidationError, WithField} from './validation_errors';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -103,7 +112,16 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addSyncTreeErrorRule(logic as TreeValidator<TValue>);
+  const wrappedLogic = (ctx: FieldContext<TValue, TPathKind>) => {
+    const errors = logic(ctx);
+    for (const error of errors) {
+      (error as Mutable<ValidationError | WithField<ValidationError>>).field ??= ctx.field;
+    }
+    return errors;
+  };
+  pathNode.logic.addSyncTreeErrorRule(
+    wrappedLogic as LogicFn<TValue, WithField<ValidationError>[]>,
+  );
 }
 
 /**
@@ -129,7 +147,7 @@ export function metadata<TValue, TMetadata, TPathKind extends PathKind = PathKin
 
 /**
  * Adds logic to a field to conditionally add a validation error to it.
- * The added FormError will be of `kind: 'custom'`
+ * The added ValidationError will have `kind: ''`
  *
  * @param path The target path to add the error logic to.
  * @param logic A `LogicFn<T, boolean>` that returns `true` when the error should be added.
@@ -147,21 +165,10 @@ export function error<TValue, TPathKind extends PathKind = PathKind.Root>(
 
   if (typeof message === 'function') {
     validate(path, (arg) => {
-      return logic(arg)
-        ? {
-            kind: 'custom',
-            message: message(arg),
-          }
-        : undefined;
+      return logic(arg) ? ValidationError.custom({message: message(arg)}) : undefined;
     });
   } else {
-    const err =
-      message === undefined
-        ? {kind: 'custom'}
-        : {
-            kind: 'custom',
-            message,
-          };
+    const err = ValidationError.custom({message});
     validate(path, (arg) => {
       return logic(arg) ? err : undefined;
     });

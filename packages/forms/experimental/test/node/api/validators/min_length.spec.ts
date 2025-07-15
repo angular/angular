@@ -3,11 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {ValidationError} from '@angular/forms/experimental/src/api/validation_errors';
 import {MIN_LENGTH, form, minLength} from '../../../../public_api';
 
 describe('minLength validator', () => {
@@ -21,7 +22,7 @@ describe('minLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
+    expect(f.text().errors()).toEqual([ValidationError.minlength(5)]);
   });
 
   it('returns minLength error when the length is smaller for arrays', () => {
@@ -34,7 +35,7 @@ describe('minLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.list().errors()).toEqual([{kind: 'minLength'}]);
+    expect(f.list().errors()).toEqual([ValidationError.minlength(5)]);
   });
 
   it('is inclusive (no error if length equals minLength)', () => {
@@ -70,10 +71,10 @@ describe('minLength validator', () => {
       (p) => {
         minLength(p.text, 5, {
           errors: ({value}) => {
-            return {
+            return ValidationError.custom({
               kind: 'special-minLength',
               message: `Length is ${value().length}`,
-            };
+            });
           },
         });
       },
@@ -81,10 +82,10 @@ describe('minLength validator', () => {
     );
 
     expect(f.text().errors()).toEqual([
-      {
+      ValidationError.custom({
         kind: 'special-minLength',
         message: 'Length is 2',
-      },
+      }),
     ]);
   });
 
@@ -96,10 +97,10 @@ describe('minLength validator', () => {
         (p) => {
           minLength(p.text, 5, {
             errors: ({value}) => {
-              return {
+              return ValidationError.custom({
                 kind: 'special-minLength',
                 message: `Length is ${value().length}`,
-              };
+              });
             },
           });
         },
@@ -121,10 +122,13 @@ describe('minLength validator', () => {
       );
 
       f.text().value.set('ab');
-      expect(f.text().errors()).toEqual([{kind: 'minLength'}, {kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([
+        ValidationError.minlength(5),
+        ValidationError.minlength(10),
+      ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([ValidationError.minlength(10)]);
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([]);
@@ -145,17 +149,20 @@ describe('minLength validator', () => {
       );
 
       f.text().value.set('ab');
-      expect(f.text().errors()).toEqual([{kind: 'minLength'}, {kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([
+        ValidationError.minlength(5),
+        ValidationError.minlength(10),
+      ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([ValidationError.minlength(10)]);
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([]);
 
       minLengthSignal.set(20);
 
-      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([ValidationError.minlength(20)]);
       expect(f.text().metadata(MIN_LENGTH)()).toBe(20);
     });
   });
@@ -172,7 +179,7 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([ValidationError.minlength(5)]);
       dynamicMinLength.set(3);
       expect(f.text().errors()).toEqual([]);
     });
@@ -188,7 +195,7 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([ValidationError.minlength(5)]);
       dynamicMinLength.set(undefined);
       expect(f.text().errors()).toEqual([]);
     });
@@ -205,7 +212,7 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([{kind: 'minLength'}]);
+      expect(f.text().errors()).toEqual([ValidationError.minlength(8)]);
 
       f.category().value.set('B');
       expect(f.text().errors()).toEqual([]);
