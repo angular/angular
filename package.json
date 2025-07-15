@@ -88,6 +88,7 @@
     "@types/chrome": "^0.1.0",
     "@types/convert-source-map": "^2.0.0",
     "@types/dom-navigation": "^1.0.5",
+    "@types/firefox-webext-browser": "^120.0.4",
     "@types/hammerjs": "2.0.46",
     "@types/jasmine": "^5.0.0",
     "@types/jasminewd2": "^2.0.8",
