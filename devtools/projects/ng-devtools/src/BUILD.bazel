@@ -9,5 +9,6 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib:lib_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:settings_rjs",
     ],
 )

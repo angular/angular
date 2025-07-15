@@ -70,7 +70,6 @@ ts_test_library(
         "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services/test-utils:app_operations_mock_rjs",
-        "//devtools/projects/ng-devtools/src/lib/application-services/test-utils:settings_store_mock_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

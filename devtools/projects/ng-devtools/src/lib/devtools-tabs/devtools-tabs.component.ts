@@ -39,6 +39,7 @@ import {InjectorTreeComponent} from './injector-tree/injector-tree.component';
 import {ProfilerComponent} from './profiler/profiler.component';
 import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TabUpdate} from './tab-update/index';
+import {Settings} from '../application-services/settings';
 
 type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
 
@@ -65,22 +66,28 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsTabsComponent {
+  readonly applicationEnvironment = inject(ApplicationEnvironment);
+  readonly frameManager = inject(FrameManager);
+  readonly themeService = inject(ThemeService);
+  private readonly tabUpdate = inject(TabUpdate);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly settings = inject(Settings);
+
   readonly isHydrationEnabled = input(false);
   readonly supportedApis = input.required<SupportedApis>();
   readonly frameSelected = output<Frame>();
 
-  readonly applicationEnvironment = inject(ApplicationEnvironment);
   readonly activeTab = signal<Tab>('Components');
   readonly inspectorRunning = signal(false);
-  readonly showCommentNodes = signal(false);
-  readonly routerGraphEnabled = signal(false);
-  readonly timingAPIEnabled = signal(false);
-  readonly signalGraphEnabled = signal(false);
+
+  protected readonly showCommentNodes = this.settings.showCommentNodes;
+  protected readonly routerGraphEnabled = this.settings.routerGraphEnabled;
+  protected readonly timingAPIEnabled = this.settings.timingAPIEnabled;
+  protected readonly signalGraphEnabled = this.settings.signalGraphEnabled;
 
   readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
   readonly providers = signal<SerializedProviderRecord[]>([]);
   readonly routes = signal<Route[]>([]);
-  readonly frameManager = inject(FrameManager);
 
   readonly snapToRoot = signal(false);
 
@@ -117,27 +124,23 @@ export class DevToolsTabsComponent {
 
   readonly extensionVersion = signal('dev-build');
 
-  public tabUpdate = inject(TabUpdate);
-  public themeService = inject(ThemeService);
-  private _messageBus = inject<MessageBus<Events>>(MessageBus);
-
   constructor() {
-    this._messageBus.on('updateRouterTree', (routes: any[]) => {
+    this.messageBus.on('updateRouterTree', (routes: any[]) => {
       this.routes.set(routes || []);
     });
 
     // Change the tab to Components, if an element is selected via the inspector.
-    this._messageBus.on('selectComponent', () => {
+    this.messageBus.on('selectComponent', () => {
       if (this.activeTab() !== 'Components') {
         this.changeTab('Components');
       }
     });
 
-    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
+    this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.componentExplorerView.set(view);
     });
 
-    this._messageBus.on(
+    this.messageBus.on(
       'latestInjectorProviders',
       (_: SerializedInjector, providers: SerializedProviderRecord[]) => {
         this.providers.set(providers);
@@ -159,7 +162,7 @@ export class DevToolsTabsComponent {
     this.activeTab.set(tab);
     this.tabUpdate.notify(tab);
     if (tab === 'Router Tree') {
-      this._messageBus.emit('getRoutes');
+      this.messageBus.emit('getRoutes');
       this.snapToRoot.set(true);
     }
   }
@@ -171,10 +174,10 @@ export class DevToolsTabsComponent {
 
   emitInspectorEvent(): void {
     if (this.inspectorRunning()) {
-      this._messageBus.emit('inspectorStart');
+      this.messageBus.emit('inspectorStart');
     } else {
-      this._messageBus.emit('inspectorEnd');
-      this._messageBus.emit('removeHighlightOverlay');
+      this.messageBus.emit('inspectorEnd');
+      this.messageBus.emit('removeHighlightOverlay');
     }
   }
 
@@ -185,8 +188,8 @@ export class DevToolsTabsComponent {
   toggleTimingAPI(): void {
     this.timingAPIEnabled.update((state) => !state);
     this.timingAPIEnabled()
-      ? this._messageBus.emit('enableTimingAPI')
-      : this._messageBus.emit('disableTimingAPI');
+      ? this.messageBus.emit('enableTimingAPI')
+      : this.messageBus.emit('disableTimingAPI');
   }
 
   protected setRouterGraph(enabled: boolean): void {

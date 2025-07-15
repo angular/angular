@@ -12,9 +12,27 @@ import {SettingsStore} from './settings_store';
 export class Settings {
   private readonly settingsStore = inject(SettingsStore);
 
-  readonly dummy = this.settingsStore.create({
-    key: 'dummy',
+  readonly showCommentNodes = this.settingsStore.create({
+    key: 'show_comment_nodes',
     category: 'general',
-    initialValue: true,
+    initialValue: false,
+  });
+
+  readonly routerGraphEnabled = this.settingsStore.create({
+    key: 'router_graph_enabled',
+    category: 'general',
+    initialValue: false,
+  });
+
+  readonly timingAPIEnabled = this.settingsStore.create({
+    key: 'timing_api_enabled',
+    category: 'general',
+    initialValue: false,
+  });
+
+  readonly signalGraphEnabled = this.settingsStore.create({
+    key: 'signal_graph_enabled',
+    category: 'general',
+    initialValue: false,
   });
 }
