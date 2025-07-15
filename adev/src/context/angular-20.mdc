@@ -24,7 +24,7 @@ This project adheres to modern Angular best practices, emphasizing maintainabili
 ## Angular Best Practices
 
 * **Standalone Components:** Always use standalone components, directives, and pipes. Avoid using `NgModules` for new features or refactoring existing ones.
-* **Implicit Standalone:** When creating standalone components, you do not need to explicitly set `standalone: true` as it is implied by default when generating a standalone component.
+* **Implicit Standalone:** When creating standalone components, you do not need to explicitly set `standalone: true` inside the `@Component`, `@Directive` and `@Pipe` decorators, as it is implied by default.
     * **Bad:**
         ```typescript
         @Component({
@@ -44,6 +44,7 @@ This project adheres to modern Angular best practices, emphasizing maintainabili
 * **Signals for State Management:** Utilize Angular Signals for reactive state management within components and services.
 * **Lazy Loading:** Implement lazy loading for feature routes to improve initial load times of your application.
 * **NgOptimizedImage:** Use `NgOptimizedImage` for all static images to automatically optimize image loading and performance.
+* **Host bindings:** Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead.
 
 ## Components
 
@@ -93,6 +94,7 @@ This project adheres to modern Angular best practices, emphasizing maintainabili
 * **Signals for Local State:** Use signals for managing local component state.
 * **`computed()` for Derived State:** Leverage `computed()` for any state that can be derived from other signals.
 * **Pure and Predictable Transformations:** Ensure state transformations are pure functions (no side effects) and predictable.
+* **Signal value updates:** Do NOT use `mutate` on signals, use `update` or `set` instead.
 
 ## Templates
 
