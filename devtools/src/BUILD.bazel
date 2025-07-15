@@ -78,8 +78,12 @@ ng_project(
 
 ng_project(
     name = "demo_application_operations",
-    srcs = ["demo-application-operations.ts"],
+    srcs = [
+        "demo-application-operations.ts",
+        "local-storage.ts",
+    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools",
         "//devtools/projects/protocol",
     ],
