@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
@@ -12,7 +12,17 @@ import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {defineResource} from './data';
-import {FieldContext, FieldPath, FormTreeError, PathKind} from './types';
+import {FieldContext, FieldPath, PathKind} from './types';
+import {ValidationError, WithField} from './validation_errors';
+
+export type MapToErrorsFn<TValue, TData, TPathKind extends PathKind = PathKind.Root> = (
+  data: TData,
+  ctx: FieldContext<TValue, TPathKind>,
+) =>
+  | ValidationError
+  | WithField<ValidationError>
+  | (ValidationError | WithField<ValidationError>)[]
+  | undefined;
 
 export interface AsyncValidatorOptions<
   TValue,
@@ -22,10 +32,7 @@ export interface AsyncValidatorOptions<
 > {
   readonly params: (ctx: FieldContext<TValue, TPathKind>) => TRequest;
   readonly factory: (req: Signal<TRequest | undefined>) => ResourceRef<TData | undefined>;
-  readonly errors: (
-    data: TData,
-    ctx: FieldContext<TValue, TPathKind>,
-  ) => FormTreeError | FormTreeError[] | undefined;
+  readonly errors: MapToErrorsFn<TValue, TData, TPathKind>;
 }
 
 export function validateAsync<TValue, TRequest, TData, TPathKind extends PathKind = PathKind.Root>(
@@ -59,7 +66,15 @@ export function validateAsync<TValue, TRequest, TData, TPathKind extends PathKin
         if (!res.hasValue()) {
           return undefined;
         }
-        return opts.errors(res.value()!, ctx as FieldContext<TValue, TPathKind>);
+        const errors = opts.errors(res.value()!, ctx as FieldContext<TValue, TPathKind>);
+        if (Array.isArray(errors)) {
+          for (const error of errors) {
+            (error as any).field ??= ctx.field;
+          }
+        } else if (errors) {
+          (errors as any).field ??= ctx.field;
+        }
+        return errors as WithField<ValidationError> | WithField<ValidationError>[];
       case 'error':
         // Throw the resource's error:
         throw res.error();
@@ -71,10 +86,7 @@ export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind
   path: FieldPath<TValue, TPathKind>,
   opts: {
     request: (ctx: FieldContext<TValue, TPathKind>) => string | undefined;
-    errors: (
-      data: TData,
-      ctx: FieldContext<TValue, TPathKind>,
-    ) => FormTreeError | FormTreeError[] | undefined;
+    errors: MapToErrorsFn<TValue, TData, TPathKind>;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;
@@ -83,10 +95,7 @@ export function validateHttp<TValue, TData = unknown, TPathKind extends PathKind
   path: FieldPath<TValue, TPathKind>,
   opts: {
     request: (ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined;
-    errors: (
-      data: TData,
-      ctx: FieldContext<TValue, TPathKind>,
-    ) => FormTreeError | FormTreeError[] | undefined;
+    errors: MapToErrorsFn<TValue, TData, TPathKind>;
     options?: HttpResourceOptions<TData, unknown>;
   },
 ): void;

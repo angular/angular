@@ -3,11 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
-import type {FormError, SubmittedStatus, ValidationResult} from '../api/types';
+import type {SubmittedStatus} from '../api/types';
+import {stripField, WithField, type ValidationError} from '../api/validation_errors';
 import type {FieldNode} from './node';
 
 /**
@@ -15,12 +16,12 @@ import type {FieldNode} from './node';
  */
 export class FieldSubmitState {
   readonly selfSubmittedStatus = signal<SubmittedStatus>('unsubmitted');
-  readonly serverErrors: WritableSignal<readonly FormError[]>;
+  readonly serverErrors: WritableSignal<readonly ValidationError[]>;
 
   constructor(private readonly node: FieldNode) {
     this.serverErrors = linkedSignal({
       source: this.node.structure.value,
-      computation: () => [] as readonly FormError[],
+      computation: () => [] as readonly ValidationError[],
     });
   }
 
@@ -33,14 +34,13 @@ export class FieldSubmitState {
       : (this.node.structure.parent?.submitState.submittedStatus() ?? 'unsubmitted'),
   );
 
-  setServerErrors(errors: ValidationResult) {
-    if (errors === undefined) {
-      this.serverErrors.set([]);
-    } else if (!Array.isArray(errors)) {
-      this.serverErrors.set([errors as FormError]);
-    } else {
-      this.serverErrors.set(errors);
-    }
+  setServerErrors(
+    result:
+      | ValidationError
+      | WithField<ValidationError>
+      | (ValidationError | WithField<ValidationError>)[],
+  ) {
+    this.serverErrors.set(Array.isArray(result) ? result.map(stripField) : [stripField(result)]);
   }
 
   reset(): void {
