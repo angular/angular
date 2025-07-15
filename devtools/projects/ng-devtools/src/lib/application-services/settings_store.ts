@@ -9,7 +9,7 @@
 import {effect, inject, Injector, signal, WritableSignal} from '@angular/core';
 import {ApplicationOperations} from '../application-operations';
 
-export const SETTINGS_STORE_KEY = 'ng-dt-settings-v1';
+export const SETTINGS_STORE_KEY = 'ng-dt-settings';
 
 /** Provides an API for storing and preserving settings values. */
 export class SettingsStore {
