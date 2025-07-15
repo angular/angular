@@ -798,8 +798,8 @@ describe('HtmlParser', () => {
 
     describe('blocks', () => {
       it('should parse a block', () => {
-        expect(humanizeDom(parser.parse('@foo (a b; c d){hello}', 'TestComp'))).toEqual([
-          [html.Block, 'foo', 0],
+        expect(humanizeDom(parser.parse('@defer (a b; c d){hello}', 'TestComp'))).toEqual([
+          [html.Block, 'defer', 0],
           [html.BlockParameter, 'a b'],
           [html.BlockParameter, 'c d'],
           [html.Text, 'hello', 1, ['hello']],
@@ -852,49 +852,54 @@ describe('HtmlParser', () => {
       it('should parse nested blocks', () => {
         const markup =
           `<root-sibling-one/>` +
-          `@root {` +
+          `@if (root) {` +
           `<outer-child-one/>` +
           `<outer-child-two>` +
-          `@child (childParam === 1) {` +
-          `@innerChild (innerChild1 === foo) {` +
+          `@if (childParam === 1) {` +
+          `@if (innerChild1 === foo) {` +
           `<inner-child-one/>` +
-          `@grandChild {` +
-          `@innerGrandChild {` +
+          `@switch (grandChild) {` +
+          `@case (innerGrandChild) {` +
           `<inner-grand-child-one/>` +
           `}` +
-          `@innerGrandChild {` +
+          `@case (innerGrandChild) {` +
           `<inner-grand-child-two/>` +
           `}` +
           `}` +
           `}` +
-          `@innerChild {` +
+          `@if (innerChild) {` +
           `<inner-child-two/>` +
           `}` +
           `}` +
           `</outer-child-two>` +
-          `@outerChild (outerChild1; outerChild2) {` +
+          `@for (outerChild1; outerChild2) {` +
           `<outer-child-three/>` +
           `}` +
           `} <root-sibling-two/>`;
 
         expect(humanizeDom(parser.parse(markup, 'TestComp'))).toEqual([
           [html.Element, 'root-sibling-one', 0, '#selfClosing'],
-          [html.Block, 'root', 0],
+          [html.Block, 'if', 0],
+          [html.BlockParameter, 'root'],
           [html.Element, 'outer-child-one', 1, '#selfClosing'],
           [html.Element, 'outer-child-two', 1],
-          [html.Block, 'child', 2],
+          [html.Block, 'if', 2],
           [html.BlockParameter, 'childParam === 1'],
-          [html.Block, 'innerChild', 3],
+          [html.Block, 'if', 3],
           [html.BlockParameter, 'innerChild1 === foo'],
           [html.Element, 'inner-child-one', 4, '#selfClosing'],
-          [html.Block, 'grandChild', 4],
-          [html.Block, 'innerGrandChild', 5],
+          [html.Block, 'switch', 4],
+          [html.BlockParameter, 'grandChild'],
+          [html.Block, 'case', 5],
+          [html.BlockParameter, 'innerGrandChild'],
           [html.Element, 'inner-grand-child-one', 6, '#selfClosing'],
-          [html.Block, 'innerGrandChild', 5],
+          [html.Block, 'case', 5],
+          [html.BlockParameter, 'innerGrandChild'],
           [html.Element, 'inner-grand-child-two', 6, '#selfClosing'],
-          [html.Block, 'innerChild', 3],
+          [html.Block, 'if', 3],
+          [html.BlockParameter, 'innerChild'],
           [html.Element, 'inner-child-two', 4, '#selfClosing'],
-          [html.Block, 'outerChild', 1],
+          [html.Block, 'for', 1],
           [html.BlockParameter, 'outerChild1'],
           [html.BlockParameter, 'outerChild2'],
           [html.Element, 'outer-child-three', 2, '#selfClosing'],
@@ -913,28 +918,30 @@ describe('HtmlParser', () => {
       });
 
       it('should parse an empty block', () => {
-        expect(humanizeDom(parser.parse('@foo{}', 'TestComp'))).toEqual([[html.Block, 'foo', 0]]);
+        expect(humanizeDom(parser.parse('@defer{}', 'TestComp'))).toEqual([
+          [html.Block, 'defer', 0],
+        ]);
       });
 
       it('should parse a block with void elements', () => {
-        expect(humanizeDom(parser.parse('@foo {<br>}', 'TestComp'))).toEqual([
-          [html.Block, 'foo', 0],
+        expect(humanizeDom(parser.parse('@defer {<br>}', 'TestComp'))).toEqual([
+          [html.Block, 'defer', 0],
           [html.Element, 'br', 1],
         ]);
       });
 
       it('should close void elements used right before a block', () => {
-        expect(humanizeDom(parser.parse('<img>@foo {hello}', 'TestComp'))).toEqual([
+        expect(humanizeDom(parser.parse('<img>@defer {hello}', 'TestComp'))).toEqual([
           [html.Element, 'img', 0],
-          [html.Block, 'foo', 0],
+          [html.Block, 'defer', 0],
           [html.Text, 'hello', 1, ['hello']],
         ]);
       });
 
       it('should report an unclosed block', () => {
-        const errors = parser.parse('@foo {hello', 'TestComp').errors;
+        const errors = parser.parse('@defer {hello', 'TestComp').errors;
         expect(errors.length).toEqual(1);
-        expect(humanizeErrors(errors)).toEqual([['foo', 'Unclosed block "foo"', '0:0']]);
+        expect(humanizeErrors(errors)).toEqual([['defer', 'Unclosed block "defer"', '0:0']]);
       });
 
       it('should report an unexpected block close', () => {
@@ -950,13 +957,13 @@ describe('HtmlParser', () => {
       });
 
       it('should report unclosed tags inside of a block', () => {
-        const errors = parser.parse('@foo {<strong>hello}', 'TestComp').errors;
+        const errors = parser.parse('@defer {<strong>hello}', 'TestComp').errors;
         expect(errors.length).toEqual(1);
         expect(humanizeErrors(errors)).toEqual([
           [
             null,
             'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
-            '0:19',
+            '0:21',
           ],
         ]);
       });
@@ -1020,38 +1027,41 @@ describe('HtmlParser', () => {
       });
 
       it('should parse an incomplete block with no parameters', () => {
-        const result = parser.parse('Use the @Input() decorator', 'TestComp');
+        const result = parser.parse('This is the @if() block', 'TestComp');
 
         expect(humanizeNodes(result.rootNodes, true)).toEqual([
-          [html.Text, 'Use the ', 0, ['Use the '], 'Use the '],
-          [html.Block, 'Input', 0, '@Input() ', '@Input() ', null],
-          [html.Text, 'decorator', 0, ['decorator'], 'decorator'],
+          [html.Text, 'This is the ', 0, ['This is the '], 'This is the '],
+          [html.Block, 'if', 0, '@if() ', '@if() ', null],
+          [html.Text, 'block', 0, ['block'], 'block'],
         ]);
 
         expect(humanizeErrors(result.errors)).toEqual([
           [
-            'Input',
-            'Incomplete block "Input". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
-            '0:8',
+            'if',
+            'Incomplete block "if". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
+            '0:12',
           ],
         ]);
       });
 
       it('should parse an incomplete block with no parameters', () => {
-        const result = parser.parse('Use @Input({alias: "foo"}) to alias your input', 'TestComp');
+        const result = parser.parse(
+          'This is the @if({alias: "foo"}) block with params',
+          'TestComp',
+        );
 
         expect(humanizeNodes(result.rootNodes, true)).toEqual([
-          [html.Text, 'Use ', 0, ['Use '], 'Use '],
-          [html.Block, 'Input', 0, '@Input({alias: "foo"}) ', '@Input({alias: "foo"}) ', null],
+          [html.Text, 'This is the ', 0, ['This is the '], 'This is the '],
+          [html.Block, 'if', 0, '@if({alias: "foo"}) ', '@if({alias: "foo"}) ', null],
           [html.BlockParameter, '{alias: "foo"}', '{alias: "foo"}'],
-          [html.Text, 'to alias your input', 0, ['to alias your input'], 'to alias your input'],
+          [html.Text, 'block with params', 0, ['block with params'], 'block with params'],
         ]);
 
         expect(humanizeErrors(result.errors)).toEqual([
           [
-            'Input',
-            'Incomplete block "Input". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
-            '0:4',
+            'if',
+            'Incomplete block "if". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
+            '0:12',
           ],
         ]);
       });
@@ -1066,10 +1076,11 @@ describe('HtmlParser', () => {
 
       it('should parse a let declaration that is nested in a parent', () => {
         expect(
-          humanizeDom(parser.parse('@grandparent {@parent {@let foo = 123;}}', 'TestCmp')),
+          humanizeDom(parser.parse('@defer {@if (true) {@let foo = 123;}}', 'TestCmp')),
         ).toEqual([
-          [html.Block, 'grandparent', 0],
-          [html.Block, 'parent', 1],
+          [html.Block, 'defer', 0],
+          [html.Block, 'if', 1],
+          [html.BlockParameter, 'true'],
           [html.LetDeclaration, 'foo', '123'],
         ]);
       });
