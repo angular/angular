@@ -7,45 +7,44 @@
  */
 
 import {StandardSchemaV1} from './standard_schema_types';
-import {Field} from './types';
+import {Field, Mutable} from './types';
 
 /** Internal symbol used for class branding. */
 const BRAND = Symbol();
 
 /**
- * Creates a `ValidationError` subclass instance using the given error constructor and constructor
- * params.
- * @param errorCtor The subclass constructor
- * @param params The params to pass to the constructor.
- * @return An instance of `TError` created with the given constructor and params.
- * @template TError The type of error to create
- * @template TArgs The type of arguments to the constructor
- */
-export function createError<TError extends ValidationError, TArgs extends any[]>(
-  errorCtor: new (...args: TArgs) => TError,
-  ...params: [...TArgs]
-): TError;
-/**
  * Create a `ValidationError` subclass instance with target field using the given error constructor
  * and constructor params. Using this method rather than the constructor directly allows assigning
  * the field.
  * @param errorCtor The subclass constructor
- * @param params The constructor params, plus the field the error applies to.
+ * @param target The target field for the error
+ * @param params The constructor params
  * @return An instance of `WithField<TError>` created with the given constructor and params.
  * @template TError The type of error to create
  * @template TArgs The type of arguments to the constructor
  */
 export function createError<TError extends ValidationError, TArgs extends any[]>(
   errorCtor: new (...args: TArgs) => TError,
-  ...params: [...TArgs, Field<unknown> | undefined]
+  target: undefined,
+  ...params: TArgs
+): TError;
+export function createError<TError extends ValidationError, TArgs extends any[]>(
+  errorCtor: new (...args: TArgs) => TError,
+  target: Field<unknown>,
+  ...params: TArgs
 ): WithField<TError>;
 export function createError<TError extends ValidationError, TArgs extends any[]>(
   errorCtor: new (...args: TArgs) => TError,
-  ...params: [...TArgs, Field<unknown> | undefined]
+  target: Field<unknown> | undefined,
+  ...params: TArgs
+): TError | WithField<TError>;
+export function createError<TError extends ValidationError, TArgs extends any[]>(
+  errorCtor: new (...args: TArgs) => TError,
+  target: Field<unknown> | undefined,
+  ...params: TArgs
 ): TError | WithField<TError> {
-  const field = params.pop();
   const instance = new errorCtor(...(params as unknown as TArgs));
-  (instance as any).field = field;
+  (instance as Mutable<ValidationError | WithField<ValidationError>>).field = target;
   return instance;
 }
 
@@ -105,7 +104,7 @@ export abstract class ValidationError {
     message?: string,
     field?: Field<unknown>,
   ): RequiredValidationError | WithField<RequiredValidationError> {
-    return createError(RequiredValidationError, message, field);
+    return createError(RequiredValidationError, field, message);
   }
 
   /**
@@ -130,7 +129,7 @@ export abstract class ValidationError {
     message?: string,
     field?: Field<unknown>,
   ): MinValidationError | WithField<MinValidationError> {
-    return createError(MinValidationError, min, message, field);
+    return createError(MinValidationError, field, min, message);
   }
 
   /**
@@ -155,7 +154,7 @@ export abstract class ValidationError {
     message?: string,
     field?: Field<unknown>,
   ): MaxValidationError | WithField<MaxValidationError> {
-    return createError(MaxValidationError, max, message, field);
+    return createError(MaxValidationError, field, max, message);
   }
 
   /**
@@ -180,7 +179,7 @@ export abstract class ValidationError {
     message?: string,
     field?: Field<unknown>,
   ): MinlengthValidationError | WithField<MinlengthValidationError> {
-    return createError(MinlengthValidationError, minlength, message, field);
+    return createError(MinlengthValidationError, field, minlength, message);
   }
 
   /**
@@ -205,7 +204,7 @@ export abstract class ValidationError {
     message?: string,
     field?: Field<unknown>,
   ): MaxlengthValidationError | WithField<MaxlengthValidationError> {
-    return createError(MaxlengthValidationError, maxlength, message, field);
+    return createError(MaxlengthValidationError, field, maxlength, message);
   }
 
   /**
@@ -230,7 +229,7 @@ export abstract class ValidationError {
     message?: string,
     field?: Field<unknown>,
   ): PatternValidationError | WithField<PatternValidationError> {
-    return createError(PatternValidationError, pattern, message, field);
+    return createError(PatternValidationError, field, pattern, message);
   }
 
   /**
@@ -248,7 +247,7 @@ export abstract class ValidationError {
     message?: string,
     field?: Field<unknown>,
   ): EmailValidationError | WithField<EmailValidationError> {
-    return createError(EmailValidationError, message, field);
+    return createError(EmailValidationError, field, message);
   }
 
   /**
@@ -276,7 +275,7 @@ export abstract class ValidationError {
     message?: string,
     field?: Field<unknown>,
   ): StandardSchemaValidationError | WithField<StandardSchemaValidationError> {
-    return createError(StandardSchemaValidationError, issue, message, field);
+    return createError(StandardSchemaValidationError, field, issue, message);
   }
 
   /**
@@ -300,7 +299,7 @@ export abstract class ValidationError {
       return new CustomValidationError();
     }
     const {message, field, ...props} = obj;
-    const e = createError(CustomValidationError, message, field);
+    const e = createError(CustomValidationError, field, message);
     Object.assign(e, props);
     return e;
   }

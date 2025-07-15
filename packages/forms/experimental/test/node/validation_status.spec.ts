@@ -536,7 +536,7 @@ describe('validation status', () => {
   });
 
   describe('NgValidationError', () => {
-    it('instaceof should check if structure matches a standard error type', () => {
+    it('instanceof should check if structure matches a standard error type', () => {
       const e1 = ValidationError.required();
       expect(e1 instanceof NgValidationError).toBe(true);
       const e2 = ValidationError.custom({kind: 'min', min: 'two'});

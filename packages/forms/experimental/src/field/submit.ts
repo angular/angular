@@ -40,15 +40,7 @@ export class FieldSubmitState {
       | WithField<ValidationError>
       | (ValidationError | WithField<ValidationError>)[],
   ) {
-    let errors: ValidationError[];
-    if (result === undefined) {
-      errors = [];
-    } else if (!Array.isArray(result)) {
-      errors = [stripField(result)];
-    } else {
-      errors = result.map(stripField);
-    }
-    this.serverErrors.set(errors);
+    this.serverErrors.set(Array.isArray(result) ? result.map(stripField) : [stripField(result)]);
   }
 
   reset(): void {

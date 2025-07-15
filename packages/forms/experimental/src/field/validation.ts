@@ -56,11 +56,8 @@ export class FieldValidationState {
     );
   });
 
-  readonly syncTreeErrors: Signal<WithField<ValidationError>[]> = computed(
-    () =>
-      this.rawSyncTreeErrors().filter(
-        (err) => err.field === this.node.fieldProxy,
-      ) as WithField<ValidationError>[],
+  readonly syncTreeErrors: Signal<WithField<ValidationError>[]> = computed(() =>
+    this.rawSyncTreeErrors().filter((err) => err.field === this.node.fieldProxy),
   );
 
   readonly rawAsyncErrors: Signal<(WithField<ValidationError> | 'pending')[]> = computed(() => {

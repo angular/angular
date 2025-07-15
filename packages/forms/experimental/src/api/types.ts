@@ -16,6 +16,10 @@ import {ValidationError, WithField} from './validation_errors';
  */
 declare const ɵɵTYPE: unique symbol;
 
+export type Mutable<T> = {
+  -readonly [P in keyof T]: T[P];
+};
+
 export declare namespace PathKind {
   export interface Root {
     [ɵɵTYPE]: 'root' | 'child' | 'item';

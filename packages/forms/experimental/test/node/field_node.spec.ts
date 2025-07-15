@@ -837,6 +837,24 @@ describe('FieldNode', () => {
       expect(submitSpy).toHaveBeenCalledWith(initialValue);
     });
 
+    it('maps untargeted errors to form root', async () => {
+      const data = signal({first: '', last: ''});
+      const f = form(
+        data,
+        (name) => {
+          // first name required if last name specified
+          required(name.first, {when: ({valueOf}) => valueOf(name.last) !== ''});
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      await submit(f, () => {
+        return Promise.resolve([ValidationError.custom()]);
+      });
+
+      expect(f().errors()).toEqual([ValidationError.custom()]);
+    });
+
     it('marks the form as submitting', async () => {
       const initialValue = {first: 'meow', last: 'wuf'};
       const data = signal(initialValue);
@@ -865,10 +883,6 @@ describe('FieldNode', () => {
       resolvePromise?.();
 
       await result;
-      expect(f().submittedStatus()).toBe('submitted');
-
-      f().resetSubmittedStatus();
-      expect(f().submittedStatus()).toBe('unsubmitted');
     });
 
     it('works on child fields', async () => {

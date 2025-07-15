@@ -9,7 +9,15 @@
 import {MetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {FieldContext, FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
+import type {
+  FieldContext,
+  FieldPath,
+  LogicFn,
+  Mutable,
+  PathKind,
+  TreeValidator,
+  Validator,
+} from './types';
 import {ValidationError, WithField} from './validation_errors';
 
 /**
@@ -107,7 +115,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
   const wrappedLogic = (ctx: FieldContext<TValue, TPathKind>) => {
     const errors = logic(ctx);
     for (const error of errors) {
-      (error as any).field ??= ctx.field;
+      (error as Mutable<ValidationError | WithField<ValidationError>>).field ??= ctx.field;
     }
     return errors;
   };
