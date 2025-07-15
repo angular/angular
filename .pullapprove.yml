@@ -415,7 +415,7 @@ groups:
       - *no-groups-above-this-rejected
       - >
         contains_any_globs(files, [
-          'goldens/size-tracking/**/{*,.*}'
+          'integration/**/size.json'
           ])
     reviewers:
       users:

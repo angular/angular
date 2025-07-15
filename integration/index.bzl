@@ -14,8 +14,6 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     pinned_npm_packages = kwargs.pop("pinned_npm_packages", [])
     toolchains = kwargs.pop("toolchains", [])
     environment = kwargs.pop("environment", {})
-    track_payload_size = kwargs.pop("track_payload_size", None)
-    track_payload_paths = kwargs.pop("track_payload_paths", [""])
     data = kwargs.pop("data", [])
 
     if setup_chromium:
@@ -32,23 +30,6 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
         "yarn install --cache-folder ./.yarn_local_cache",
         "yarn test",
     ])
-
-    if track_payload_size:
-        commands += [
-            "yarn build",
-        ]
-        for path in track_payload_paths:
-            commands += [
-                # TODO: Replace the track payload-size script with a RBE and Windows-compatible script.
-                "$(rootpath //:scripts/ci/bazel-payload-size.sh) {bundle}{path} 'dist{path}/*.js' true ${runfiles}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)".format(bundle = track_payload_size, path = path, runfiles = "${RUNFILES}"),
-            ]
-
-        data += [
-            "//goldens:size-tracking/integration-payloads.json",
-            "//:scripts/ci/bazel-payload-size.sh",
-            "//:scripts/ci/payload-size.sh",
-            "//:scripts/ci/payload-size.js",
-        ]
 
     # Complete list of npm packages to override in the test's package.json file mapped to
     # tgz archive to use for the replacement. This is the full list for all integration

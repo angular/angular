@@ -11,9 +11,6 @@ exports_files([
     "karma-js.conf.js",
     "browser-providers.conf.js",
     YARN_PATH,
-    "scripts/ci/bazel-payload-size.sh",
-    "scripts/ci/payload-size.sh",
-    "scripts/ci/payload-size.js",
     "package.json",
     "angular.json",
 ])
