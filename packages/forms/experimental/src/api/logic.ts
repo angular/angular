@@ -114,8 +114,12 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   const wrappedLogic = (ctx: FieldContext<TValue, TPathKind>) => {
     const errors = logic(ctx);
-    for (const error of errors) {
-      (error as Mutable<ValidationError | WithField<ValidationError>>).field ??= ctx.field;
+    if (Array.isArray(errors)) {
+      for (const error of errors) {
+        (error as Mutable<ValidationError | WithField<ValidationError>>).field ??= ctx.field;
+      }
+    } else if (errors) {
+      (errors as Mutable<ValidationError | WithField<ValidationError>>).field ??= ctx.field;
     }
     return errors;
   };

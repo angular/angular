@@ -681,6 +681,41 @@ describe('FieldNode', () => {
       expect(f.name().errors()).toEqual([]);
     });
 
+    it('should allow validate logic to return null or false to indicate no error', () => {
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          validate(p.a, ({value}) => (value() > 1 ? ValidationError.custom() : null));
+          validate(
+            p.a,
+            ({value}) => value() > 10 && ValidationError.custom({message: 'too-damn-high'}),
+          );
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a().errors()).toEqual([]);
+      expect(f.a().valid()).toBe(true);
+
+      f.a().value.set(2);
+      expect(f.a().errors()).toEqual([ValidationError.custom()]);
+      expect(f.a().valid()).toBe(false);
+
+      f.a().value.set(11);
+      expect(f.a().errors()).toEqual([
+        ValidationError.custom(),
+        ValidationError.custom({message: 'too-damn-high'}),
+      ]);
+      expect(f.a().valid()).toBe(false);
+
+      f.a().value.set(101);
+      expect(f.a().errors()).toEqual([
+        ValidationError.custom(),
+        ValidationError.custom({message: 'too-damn-high'}),
+      ]);
+      expect(f.a().valid()).toBe(false);
+    });
+
     describe('tree validation', () => {
       it('should push errors to children', () => {
         const cat = signal({name: 'Fluffy', age: 5});
