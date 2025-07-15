@@ -92,12 +92,34 @@ export class MetadataKey<TValue> {
       () => true,
     );
   }
+
+  /**
+   * Creates a static metadata key.
+   */
+  static static<TValue>() {
+    return new StaticKeyCtor<TValue>();
+  }
 }
 
 /**
  * Re-cast the MetadataKey constructor to allow ourselves to extend it.
  */
 const KeyCtor = MetadataKey as unknown as new <TValue>() => MetadataKey<TValue>;
+
+/**
+ * Represents static metadata that is set once when the field is created and cannot change.
+ * If the metadata is not defined for a given field, its valud is undefined.
+ */
+export class StaticMetadataKey<TValue> extends KeyCtor<TValue> {
+  protected constructor() {
+    super();
+  }
+}
+
+/**
+ * Re-cast the StaticMetadataKey constructor to allow ourselves to new it.
+ */
+const StaticKeyCtor = MetadataKey as unknown as new <TValue>() => MetadataKey<TValue>;
 
 /**
  * Represents reactive metadata that can change depending on state of the form.

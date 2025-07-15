@@ -7,14 +7,14 @@
  */
 
 import {computed, runInInjectionContext, untracked} from '@angular/core';
-import {DataKey} from '../api/data';
+import {StaticMetadataKey} from '../api/metadata';
 import {FieldNode} from './node';
 
 /**
  * Tracks `data` associated with a `FieldNode`.
  */
 export class FieldDataState {
-  private readonly dataMap = new Map<DataKey<unknown>, unknown>();
+  private readonly dataMap = new Map<StaticMetadataKey<unknown>, unknown>();
 
   constructor(private readonly node: FieldNode) {
     // Instantiate data dependencies.
@@ -38,7 +38,7 @@ export class FieldDataState {
     return maps;
   });
 
-  get<D>(key: DataKey<D>): D | undefined {
+  get<D>(key: StaticMetadataKey<D>): D | undefined {
     return this.dataMap.get(key) as D | undefined;
   }
 }

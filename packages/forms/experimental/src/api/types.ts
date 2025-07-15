@@ -7,8 +7,7 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
-import {DataKey} from './data';
-import {ReactiveMetadataKey} from './metadata';
+import {ReactiveMetadataKey, StaticMetadataKey} from './metadata';
 import {ValidationError, WithField} from './validation_errors';
 
 /**
@@ -165,7 +164,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly keyInParent: Signal<TKey>;
 
-  data<D>(key: DataKey<D>): D | undefined;
+  data<D>(key: StaticMetadataKey<D>): D | undefined;
 
   /**
    * Reactviely reads a metadata value from the field.
