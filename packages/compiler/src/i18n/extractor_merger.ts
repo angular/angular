@@ -139,6 +139,7 @@ class _Visitor implements html.Visitor {
       undefined!,
       undefined!,
       undefined,
+      false,
     );
 
     const translatedNode = wrapper.visit(this, null);
@@ -380,6 +381,7 @@ class _Visitor implements html.Visitor {
           node.sourceSpan,
           node.startSourceSpan,
           node.endSourceSpan,
+          node.isVoid,
         ) as T;
       } else {
         return new html.Component(
