@@ -3,12 +3,13 @@ load("//devtools/tools:defaults.bzl", "ts_project")
 package(default_visibility = ["//devtools:__subpackages__"])
 
 ts_project(
-    name = "settings_store_mock",
+    name = "settings_mock",
     srcs = [
-        "settings_store_mock.ts",
+        "settings_mock.ts",
     ],
     deps = [
         "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/application-services:settings",
         "//devtools/projects/ng-devtools/src/lib/application-services:settings_store",
     ],
 )
