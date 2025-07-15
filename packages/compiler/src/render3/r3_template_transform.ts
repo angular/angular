@@ -246,6 +246,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         element.sourceSpan,
         element.startSourceSpan,
         element.endSourceSpan,
+        element.isVoid,
         element.i18n,
       );
     }
@@ -1151,6 +1152,7 @@ class NonBindableVisitor implements html.Visitor {
       ast.sourceSpan,
       ast.startSourceSpan,
       ast.endSourceSpan,
+      ast.isVoid,
     );
   }
 
@@ -1218,6 +1220,7 @@ class NonBindableVisitor implements html.Visitor {
       ast.sourceSpan,
       ast.startSourceSpan,
       ast.endSourceSpan,
+      false,
     );
   }
 

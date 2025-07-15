@@ -395,13 +395,13 @@ class _TreeBuilder {
     this._consumeAttributesAndDirectives(attrs, directives);
 
     const fullName = this._getElementFullName(startTagToken, this._getClosestElementLikeParent());
+    const tagDef = this._getTagDefinition(fullName);
     let selfClosing = false;
     // Note: There could have been a tokenizer error
     // so that we don't get a token for the end tag...
     if (this._peek.type === TokenType.TAG_OPEN_END_VOID) {
       this._advance();
       selfClosing = true;
-      const tagDef = this._getTagDefinition(fullName);
       if (!(tagDef?.canSelfClose || getNsPrefix(fullName) !== null || tagDef?.isVoid)) {
         this.errors.push(
           TreeError.create(
@@ -436,6 +436,7 @@ class _TreeBuilder {
       span,
       startSpan,
       undefined,
+      tagDef?.isVoid ?? false,
     );
     const parent = this._getContainer();
     const isClosedByChild =
