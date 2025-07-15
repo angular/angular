@@ -493,7 +493,7 @@ describe('HtmlLexer', () => {
         expect(tokenizeAndHumanizeParts('<div>@MyDir()</div>', options)).toEqual([
           [TokenType.TAG_OPEN_START, '', 'div'],
           [TokenType.TAG_OPEN_END],
-          [TokenType.INCOMPLETE_BLOCK_OPEN, 'MyDir'],
+          [TokenType.TEXT, '@MyDir()'],
           [TokenType.TAG_CLOSE, '', 'div'],
           [TokenType.EOF],
         ]);
@@ -1493,8 +1493,8 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse a @let declaration inside of a block', () => {
-      expect(tokenizeAndHumanizeParts('@block {@let foo = 123 + 456;}')).toEqual([
-        [TokenType.BLOCK_OPEN_START, 'block'],
+      expect(tokenizeAndHumanizeParts('@defer {@let foo = 123 + 456;}')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'defer'],
         [TokenType.BLOCK_OPEN_END],
         [TokenType.LET_START, 'foo'],
         [TokenType.LET_VALUE, '123 + 456'],
@@ -3266,16 +3266,16 @@ describe('HtmlLexer', () => {
   describe('blocks', () => {
     it('should parse a block without parameters', () => {
       const expected = [
-        [TokenType.BLOCK_OPEN_START, 'foo'],
+        [TokenType.BLOCK_OPEN_START, 'if'],
         [TokenType.BLOCK_OPEN_END],
         [TokenType.TEXT, 'hello'],
         [TokenType.BLOCK_CLOSE],
         [TokenType.EOF],
       ];
 
-      expect(tokenizeAndHumanizeParts('@foo {hello}')).toEqual(expected);
-      expect(tokenizeAndHumanizeParts('@foo () {hello}')).toEqual(expected);
-      expect(tokenizeAndHumanizeParts('@foo(){hello}')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@if {hello}')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@if () {hello}')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@if(){hello}')).toEqual(expected);
     });
 
     it('should parse a block with parameters', () => {
@@ -3322,7 +3322,7 @@ describe('HtmlLexer', () => {
 
     it('should parse a block with an arbitrary amount of spaces around the parentheses', () => {
       const expected = [
-        [TokenType.BLOCK_OPEN_START, 'foo'],
+        [TokenType.BLOCK_OPEN_START, 'for'],
         [TokenType.BLOCK_PARAMETER, 'a'],
         [TokenType.BLOCK_PARAMETER, 'b'],
         [TokenType.BLOCK_PARAMETER, 'c'],
@@ -3332,10 +3332,10 @@ describe('HtmlLexer', () => {
         [TokenType.EOF],
       ];
 
-      expect(tokenizeAndHumanizeParts('@foo(a; b; c){hello}')).toEqual(expected);
-      expect(tokenizeAndHumanizeParts('@foo      (a; b; c)      {hello}')).toEqual(expected);
-      expect(tokenizeAndHumanizeParts('@foo(a; b; c)      {hello}')).toEqual(expected);
-      expect(tokenizeAndHumanizeParts('@foo      (a; b; c){hello}')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@for(a; b; c){hello}')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@for      (a; b; c)      {hello}')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@for(a; b; c)      {hello}')).toEqual(expected);
+      expect(tokenizeAndHumanizeParts('@for      (a; b; c){hello}')).toEqual(expected);
     });
 
     it('should parse a block with multiple trailing semicolons', () => {
@@ -3350,8 +3350,8 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse a block with trailing whitespace', () => {
-      expect(tokenizeAndHumanizeParts('@foo                        {hello}')).toEqual([
-        [TokenType.BLOCK_OPEN_START, 'foo'],
+      expect(tokenizeAndHumanizeParts('@defer                        {hello}')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'defer'],
         [TokenType.BLOCK_OPEN_END],
         [TokenType.TEXT, 'hello'],
         [TokenType.BLOCK_CLOSE],
@@ -3371,9 +3371,9 @@ describe('HtmlLexer', () => {
     });
 
     it('should handle semicolons, braces and parentheses used in a block parameter', () => {
-      const input = `@foo (a === ";"; b === ')'; c === "("; d === '}'; e === "{") {hello}`;
+      const input = `@for (a === ";"; b === ')'; c === "("; d === '}'; e === "{") {hello}`;
       expect(tokenizeAndHumanizeParts(input)).toEqual([
-        [TokenType.BLOCK_OPEN_START, 'foo'],
+        [TokenType.BLOCK_OPEN_START, 'for'],
         [TokenType.BLOCK_PARAMETER, `a === ";"`],
         [TokenType.BLOCK_PARAMETER, `b === ')'`],
         [TokenType.BLOCK_PARAMETER, `c === "("`],
@@ -3389,10 +3389,10 @@ describe('HtmlLexer', () => {
     it('should handle object literals and function calls in block parameters', () => {
       expect(
         tokenizeAndHumanizeParts(
-          `@foo (on a({a: 1, b: 2}, false, {c: 3}); when b({d: 4})) {hello}`,
+          `@defer (on a({a: 1, b: 2}, false, {c: 3}); when b({d: 4})) {hello}`,
         ),
       ).toEqual([
-        [TokenType.BLOCK_OPEN_START, 'foo'],
+        [TokenType.BLOCK_OPEN_START, 'defer'],
         [TokenType.BLOCK_PARAMETER, 'on a({a: 1, b: 2}, false, {c: 3})'],
         [TokenType.BLOCK_PARAMETER, 'when b({d: 4})'],
         [TokenType.BLOCK_OPEN_END],
@@ -3403,16 +3403,16 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse block with unclosed parameters', () => {
-      expect(tokenizeAndHumanizeParts(`@foo (a === b {hello}`)).toEqual([
-        [TokenType.INCOMPLETE_BLOCK_OPEN, 'foo'],
+      expect(tokenizeAndHumanizeParts(`@if (a === b {hello}`)).toEqual([
+        [TokenType.INCOMPLETE_BLOCK_OPEN, 'if'],
         [TokenType.BLOCK_PARAMETER, 'a === b {hello}'],
         [TokenType.EOF],
       ]);
     });
 
     it('should parse block with stray parentheses in the parameter position', () => {
-      expect(tokenizeAndHumanizeParts(`@foo a === b) {hello}`)).toEqual([
-        [TokenType.INCOMPLETE_BLOCK_OPEN, 'foo a'],
+      expect(tokenizeAndHumanizeParts(`@if a === b) {hello}`)).toEqual([
+        [TokenType.INCOMPLETE_BLOCK_OPEN, 'if a'],
         [TokenType.TEXT, '=== b) {hello'],
         [TokenType.BLOCK_CLOSE],
         [TokenType.EOF],
@@ -3420,18 +3420,18 @@ describe('HtmlLexer', () => {
     });
 
     it('should report invalid quotes in a parameter', () => {
-      expect(tokenizeAndHumanizeErrors(`@foo (a === ") {hello}`)).toEqual([
-        ['Unexpected character "EOF"', '0:22'],
+      expect(tokenizeAndHumanizeErrors(`@if (a === ") {hello}`)).toEqual([
+        ['Unexpected character "EOF"', '0:21'],
       ]);
 
-      expect(tokenizeAndHumanizeErrors(`@foo (a === "hi') {hello}`)).toEqual([
-        ['Unexpected character "EOF"', '0:25'],
+      expect(tokenizeAndHumanizeErrors(`@if (a === "hi') {hello}`)).toEqual([
+        ['Unexpected character "EOF"', '0:24'],
       ]);
     });
 
     it('should report unclosed object literal inside a parameter', () => {
-      expect(tokenizeAndHumanizeParts(`@foo ({invalid: true) hello}`)).toEqual([
-        [TokenType.INCOMPLETE_BLOCK_OPEN, 'foo'],
+      expect(tokenizeAndHumanizeParts(`@if ({invalid: true) hello}`)).toEqual([
+        [TokenType.INCOMPLETE_BLOCK_OPEN, 'if'],
         [TokenType.BLOCK_PARAMETER, '{invalid: true'],
         [TokenType.TEXT, 'hello'],
         [TokenType.BLOCK_CLOSE],
@@ -3553,12 +3553,12 @@ describe('HtmlLexer', () => {
 
     it('should parse a block containing an expansion', () => {
       const result = tokenizeAndHumanizeParts(
-        '@foo {{one.two, three, =4 {four} =5 {five} foo {bar} }}',
+        '@defer {{one.two, three, =4 {four} =5 {five} foo {bar} }}',
         {tokenizeExpansionForms: true},
       );
 
       expect(result).toEqual([
-        [TokenType.BLOCK_OPEN_START, 'foo'],
+        [TokenType.BLOCK_OPEN_START, 'defer'],
         [TokenType.BLOCK_OPEN_END],
         [TokenType.EXPANSION_FORM_START],
         [TokenType.RAW_TEXT, 'one.two'],
@@ -3582,8 +3582,8 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse a block containing an interpolation', () => {
-      expect(tokenizeAndHumanizeParts('@foo {{{message}}}')).toEqual([
-        [TokenType.BLOCK_OPEN_START, 'foo'],
+      expect(tokenizeAndHumanizeParts('@defer {{{message}}}')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'defer'],
         [TokenType.BLOCK_OPEN_END],
         [TokenType.TEXT, ''],
         [TokenType.INTERPOLATION, '{{', 'message', '}}'],
@@ -3594,87 +3594,69 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse an incomplete block start without parameters with surrounding text', () => {
-      expect(tokenizeAndHumanizeParts('My email frodo@baggins.com')).toEqual([
+      expect(tokenizeAndHumanizeParts('My email frodo@for.com')).toEqual([
         [TokenType.TEXT, 'My email frodo'],
-        [TokenType.INCOMPLETE_BLOCK_OPEN, 'baggins'],
+        [TokenType.INCOMPLETE_BLOCK_OPEN, 'for'],
         [TokenType.TEXT, '.com'],
         [TokenType.EOF],
       ]);
     });
 
     it('should parse an incomplete block start at the end of the input', () => {
-      expect(tokenizeAndHumanizeParts('My username is @frodo')).toEqual([
-        [TokenType.TEXT, 'My username is '],
-        [TokenType.INCOMPLETE_BLOCK_OPEN, 'frodo'],
+      expect(tokenizeAndHumanizeParts('My favorite console is @switch')).toEqual([
+        [TokenType.TEXT, 'My favorite console is '],
+        [TokenType.INCOMPLETE_BLOCK_OPEN, 'switch'],
         [TokenType.EOF],
       ]);
     });
 
     it('should parse an incomplete block start with parentheses but without params', () => {
-      expect(tokenizeAndHumanizeParts('Use the @Input() decorator')).toEqual([
+      expect(tokenizeAndHumanizeParts('Use the @for() block')).toEqual([
         [TokenType.TEXT, 'Use the '],
-        [TokenType.INCOMPLETE_BLOCK_OPEN, 'Input'],
-        [TokenType.TEXT, 'decorator'],
+        [TokenType.INCOMPLETE_BLOCK_OPEN, 'for'],
+        [TokenType.TEXT, 'block'],
         [TokenType.EOF],
       ]);
     });
 
     it('should parse an incomplete block start with parentheses and params', () => {
-      expect(tokenizeAndHumanizeParts('Use @Input({alias: "foo"}) to alias the input')).toEqual([
-        [TokenType.TEXT, 'Use '],
-        [TokenType.INCOMPLETE_BLOCK_OPEN, 'Input'],
+      expect(tokenizeAndHumanizeParts('This is the @if({alias: "foo"}) expression')).toEqual([
+        [TokenType.TEXT, 'This is the '],
+        [TokenType.INCOMPLETE_BLOCK_OPEN, 'if'],
         [TokenType.BLOCK_PARAMETER, '{alias: "foo"}'],
-        [TokenType.TEXT, 'to alias the input'],
+        [TokenType.TEXT, 'expression'],
         [TokenType.EOF],
       ]);
     });
 
-    it('should parse @ as an incomplete block', () => {
-      expect(tokenizeAndHumanizeParts(`@`)).toEqual([
-        [TokenType.INCOMPLETE_BLOCK_OPEN, ''],
-        [TokenType.EOF],
-      ]);
+    it('should parse @ as text', () => {
+      expect(tokenizeAndHumanizeParts(`@`)).toEqual([[TokenType.TEXT, '@'], [TokenType.EOF]]);
     });
 
-    it('should parse space followed by @ as an incomplete block', () => {
-      expect(tokenizeAndHumanizeParts(` @`)).toEqual([
-        [TokenType.TEXT, ' '],
-        [TokenType.INCOMPLETE_BLOCK_OPEN, ''],
-        [TokenType.EOF],
-      ]);
+    it('should parse space followed by @ as text', () => {
+      expect(tokenizeAndHumanizeParts(` @`)).toEqual([[TokenType.TEXT, ' @'], [TokenType.EOF]]);
     });
 
-    it('should parse @ followed by space as an incomplete block', () => {
-      expect(tokenizeAndHumanizeParts(`@ `)).toEqual([
-        [TokenType.INCOMPLETE_BLOCK_OPEN, ''],
-        [TokenType.TEXT, ' '],
-        [TokenType.EOF],
-      ]);
+    it('should parse @ followed by space as text', () => {
+      expect(tokenizeAndHumanizeParts(`@ `)).toEqual([[TokenType.TEXT, '@ '], [TokenType.EOF]]);
     });
 
-    it('should parse @ followed by newline and text as an incomplete block', () => {
+    it('should parse @ followed by newline and text as text', () => {
       expect(tokenizeAndHumanizeParts(`@\nfoo`)).toEqual([
-        [TokenType.INCOMPLETE_BLOCK_OPEN, ''],
-        [TokenType.TEXT, '\nfoo'],
+        [TokenType.TEXT, '@\nfoo'],
         [TokenType.EOF],
       ]);
     });
 
-    it('should parse incomplete block with no name', () => {
+    it('should parse @ in the middle of text as text', () => {
       expect(tokenizeAndHumanizeParts(`foo bar @ baz clink`)).toEqual([
-        [TokenType.TEXT, 'foo bar '],
-        [TokenType.INCOMPLETE_BLOCK_OPEN, ''],
-        [TokenType.TEXT, ' baz clink'],
+        [TokenType.TEXT, 'foo bar @ baz clink'],
         [TokenType.EOF],
       ]);
     });
 
-    it('should parse incomplete block with space, then name', () => {
-      expect(tokenizeAndHumanizeParts(`@ if`)).toEqual([
-        [TokenType.INCOMPLETE_BLOCK_OPEN, ''],
-        [TokenType.TEXT, ' if'],
-        [TokenType.EOF],
-      ]);
+    it('should parse incomplete block with space, then name as text', () => {
+      expect(tokenizeAndHumanizeParts(`@ if`)).toEqual([[TokenType.TEXT, '@ if'], [TokenType.EOF]]);
     });
   });
 });

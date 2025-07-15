@@ -1711,7 +1711,7 @@ describe('R3 template transform', () => {
           `
               @switch (cond) {
                 @case (x()) {X case}
-                @foo {Foo}
+                @if (true) {Foo}
               }
             `,
           {ignoreError: true},
@@ -1721,7 +1721,7 @@ describe('R3 template transform', () => {
         expect(result.errors.map((e) => e.msg)).toEqual([
           '@switch block can only contain @case and @default blocks',
         ]);
-        expect(switchNode.unknownBlocks.map((b) => b.name)).toEqual(['foo']);
+        expect(switchNode.unknownBlocks.map((b) => b.name)).toEqual(['if']);
       });
 
       it('should report if @case or @default is used outside of a switch block', () => {
@@ -2426,12 +2426,6 @@ describe('R3 template transform', () => {
         `),
         ).toThrowError(/"as" expression must be a valid JavaScript identifier/);
       });
-    });
-  });
-
-  describe('unknown blocks', () => {
-    it('should parse unknown blocks', () => {
-      expectFromHtml('@unknown {}', true /* ignoreError */).toEqual([['UnknownBlock', 'unknown']]);
     });
   });
 
