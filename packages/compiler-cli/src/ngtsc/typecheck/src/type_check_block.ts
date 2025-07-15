@@ -3477,8 +3477,7 @@ function tcbCreateEventHandler(
   scope: Scope,
   eventType: EventParamType | ts.TypeNode,
 ): ts.Expression {
-  const handler = tcbEventHandlerExpression(event.handler, tcb, scope);
-  const statements: ts.Statement[] = [];
+  let handler = tcbEventHandlerExpression(event.handler, tcb, scope);
 
   // TODO(crisbeto): remove the `checkTwoWayBoundEvents` check in v20.
   if (event.type === ParsedEventType.TwoWay && tcb.env.config.checkTwoWayBoundEvents) {
@@ -3486,22 +3485,14 @@ function tcbCreateEventHandler(
     // signal value of the expression and then we assign `$event` to it. Note that in most cases
     // this will already be covered by the corresponding input binding, however it allows us to
     // handle the case where the input has a wider type than the output (see #58971).
-    const target = tcb.allocateId();
-    const assignment = ts.factory.createBinaryExpression(
-      target,
-      ts.SyntaxKind.EqualsToken,
+    const assignRef = tcb.env.referenceExternalSymbol(
+      R3Identifiers.assignTwoWayBinding.moduleName,
+      R3Identifiers.assignTwoWayBinding.name,
+    );
+    handler = ts.factory.createCallExpression(assignRef, undefined, [
+      handler,
       ts.factory.createIdentifier(EVENT_PARAMETER),
-    );
-
-    statements.push(
-      tsCreateVariable(
-        target,
-        tcb.env.config.allowSignalsInTwoWayBindings ? unwrapWritableSignal(handler, tcb) : handler,
-      ),
-      ts.factory.createExpressionStatement(assignment),
-    );
-  } else {
-    statements.push(ts.factory.createExpressionStatement(handler));
+    ]);
   }
 
   let eventParamType: ts.TypeNode | undefined;
@@ -3517,7 +3508,7 @@ function tcbCreateEventHandler(
   // repeated within the handler function for their narrowing to be in effect within the handler.
   const guards = scope.guards();
 
-  let body = ts.factory.createBlock(statements);
+  let body = ts.factory.createBlock([ts.factory.createExpressionStatement(handler)]);
   if (guards !== null) {
     // Wrap the body in an `if` statement containing all guards that have to be applied.
     body = ts.factory.createBlock([ts.factory.createIfStatement(guards, body)]);

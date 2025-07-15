@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
         component: `bla = true;`,
         expected: [
           `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
-          `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
+          `TestComponent.html(1, 10): Argument of type 'string' is not assignable to parameter of type 'boolean'.`,
         ],
       },
       {
