@@ -375,7 +375,12 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
 export function provideZonelessChangeDetection(): EnvironmentProviders {
   performanceMarkFeature('NgZoneless');
 
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) && typeof Zone !== 'undefined' && Zone) {
+  if (
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    typeof Zone !== 'undefined' &&
+    Zone &&
+    !zonelessWarningShown
+  ) {
     const message = formatRuntimeError(
       RuntimeErrorCode.UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE,
       `The application is using zoneless change detection, but is still loading Zone.js. ` +
@@ -383,6 +388,7 @@ export function provideZonelessChangeDetection(): EnvironmentProviders {
         `In applications using the Angular CLI, Zone.js is typically included in the "polyfills" section of the angular.json file.`,
     );
     console.warn(message);
+    zonelessWarningShown = true;
   }
 
   return makeEnvironmentProviders([
@@ -395,3 +401,5 @@ export function provideZonelessChangeDetection(): EnvironmentProviders {
       : [],
   ]);
 }
+
+let zonelessWarningShown = false;
