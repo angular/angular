@@ -48,7 +48,7 @@ export function validateAsync<TValue, TRequest, TData, TPathKind extends PathKin
       if (node.validationState.shouldSkipValidation() || !node.syncValid()) {
         return undefined;
       }
-      return opts.params(ctx as FieldContext<TValue, TPathKind>);
+      return opts.params(ctx);
     },
     factory: opts.factory,
   });
