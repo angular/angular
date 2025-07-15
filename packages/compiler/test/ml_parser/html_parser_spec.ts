@@ -10,7 +10,6 @@ import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {ParseTreeResult, TreeError} from '../../src/ml_parser/parser';
 import {TokenizeOptions} from '../../src/ml_parser/lexer';
-import {TokenType} from '../../src/ml_parser/tokens';
 import {ParseError} from '../../src/parse_util';
 
 import {
@@ -93,6 +92,14 @@ describe('HtmlParser', () => {
           [html.Attribute, 'rel', 'author license', ['author license']],
           [html.Attribute, 'href', '/about', ['/about']],
         ]);
+      });
+
+      it('should indicate whether an element is void', () => {
+        const nodes = parser.parse('<input><div></div>', 'TestComp').rootNodes as html.Element[];
+        expect(nodes[0].name).toBe('input');
+        expect(nodes[0].isVoid).toBe(true);
+        expect(nodes[1].name).toBe('div');
+        expect(nodes[1].isVoid).toBe(false);
       });
 
       it('should not error on void elements from HTML5 spec', () => {

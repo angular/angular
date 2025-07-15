@@ -285,6 +285,14 @@ describe('R3 template transform', () => {
         ['TextAttribute', 'select', 'a'],
       ]);
     });
+
+    it('should indicate whether an element is void', () => {
+      const nodes = parse('<input><div></div>').nodes as t.Element[];
+      expect(nodes[0].name).toBe('input');
+      expect(nodes[0].isVoid).toBe(true);
+      expect(nodes[1].name).toBe('div');
+      expect(nodes[1].isVoid).toBe(false);
+    });
   });
 
   describe('Bound text nodes', () => {
