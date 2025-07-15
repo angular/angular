@@ -36,9 +36,16 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
   const reactivePatternValue = typeof pattern === 'string' ? () => pattern : pattern;
-  metadata(path, PATTERN, (ctx) => [reactivePatternValue(ctx)]);
 
-  return validate(path, (ctx) => {
+  metadata(path, PATTERN, (ctx) => {
+    const result = reactivePatternValue(ctx);
+    if (result === undefined) {
+      return [];
+    }
+    return [result];
+  });
+
+  validate(path, (ctx) => {
     const value = reactivePatternValue(ctx);
 
     if (value === undefined) {

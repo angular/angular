@@ -7,76 +7,77 @@
  */
 
 export class MetadataKey<TValue> {
-  constructor(
-    readonly defaultValue: () => TValue,
-    readonly merge: (prev: TValue, next: TValue) => TValue,
-  ) {}
+  /** @internal */
+  protected __type!: TValue;
+
+  static reduce<TValue>(merge: (prev: TValue, next: TValue) => TValue, defaultValue: () => TValue) {
+    return new ReactiveMetadataKey(merge, defaultValue);
+  }
+
+  static aggregate<TValue>() {
+    return new ReactiveMetadataKey<TValue[]>(
+      (prev, next) => [...prev, ...next],
+      () => [],
+    );
+  }
+
+  static min() {
+    return new ReactiveMetadataKey<number | undefined>(
+      (prev, next) => {
+        if (prev === undefined) {
+          return next;
+        }
+        if (next === undefined) {
+          return prev;
+        }
+        return Math.min(prev, next);
+      },
+      () => undefined,
+    );
+  }
+
+  static max() {
+    return new ReactiveMetadataKey<number | undefined>(
+      (prev, next) => {
+        if (prev === undefined) {
+          return next;
+        }
+        if (next === undefined) {
+          return prev;
+        }
+        return Math.max(prev, next);
+      },
+      () => undefined,
+    );
+  }
+
+  static or() {
+    return new ReactiveMetadataKey<boolean>(
+      (prev, next) => prev || next,
+      () => false,
+    );
+  }
+
+  static and() {
+    return new ReactiveMetadataKey<boolean>(
+      (prev, next) => prev && next,
+      () => true,
+    );
+  }
 }
 
-export const REQUIRED = new MetadataKey(
-  () => false,
-  (prev, next) => prev || next,
-);
+export class ReactiveMetadataKey<TValue> extends MetadataKey<TValue> {
+  constructor(
+    readonly merge: (prev: TValue, next: TValue) => TValue,
+    readonly defaultValue: () => TValue,
+  ) {
+    super();
+  }
+}
 
-export const MIN = new MetadataKey<number | undefined>(
-  () => undefined,
-  (prev, next) => {
-    if (prev === undefined) {
-      return next;
-    }
-
-    if (next === undefined) {
-      return prev;
-    }
-    return Math.max(prev, next);
-  },
-);
-
-export const MAX = new MetadataKey<number | undefined>(
-  () => undefined,
-  (prev, next) => {
-    if (prev === undefined) {
-      return next;
-    }
-
-    if (next === undefined) {
-      return prev;
-    }
-    return Math.min(prev, next);
-  },
-);
-
-export const MIN_LENGTH = new MetadataKey<number | undefined>(
-  () => -Infinity,
-  (prev, next) => {
-    if (prev === undefined) {
-      return next;
-    }
-
-    if (next === undefined) {
-      return prev;
-    }
-
-    return Math.max(prev, next);
-  },
-);
-
-export const MAX_LENGTH = new MetadataKey<number | undefined>(
-  () => undefined,
-  (prev, next) => {
-    if (prev === undefined) {
-      return next;
-    }
-
-    if (next === undefined) {
-      return prev;
-    }
-
-    return Math.min(prev, next);
-  },
-);
-
-export const PATTERN = new MetadataKey<(string | undefined)[]>(
-  () => [],
-  (prev, next) => [...prev, ...next],
-);
+export const REQUIRED = MetadataKey.or();
+export const MIN = MetadataKey.max();
+export const MAX = MetadataKey.min();
+export const MIN_LENGTH = MetadataKey.max();
+export const MAX_LENGTH = MetadataKey.min();
+export const PATTERN = MetadataKey.aggregate<string>();

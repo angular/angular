@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MetadataKey} from '../api/metadata';
+import {ReactiveMetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import type {
@@ -136,7 +136,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  */
 export function metadata<TValue, TMetadata, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  key: MetadataKey<TMetadata>,
+  key: ReactiveMetadataKey<TMetadata>,
   logic: NoInfer<LogicFn<TValue, TMetadata, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
