@@ -13,11 +13,17 @@ import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './types';
 
 /**
- * Validator requiring a field value to be smaller than or equal to a maximum value.
+ * Binds a validator to the given path that requires the the value to be less than or equal to the
+ * given `maxValue`.
+ * This function can only be called on number paths.
+ * In addition to binding a validator, this function adds `MAX` metadata to the field.
  *
- * @param path Path to the target field
- * @param maxValue The minimum value, or a LogicFn returning it.
- * @param config Optional, currently allows providing custom errors function.
+ * @param path Path of the field to validate
+ * @param maxValue The minimum value, or a LogicFn that returns the minimum value.
+ * @param config Optional, allows providing any of the following options:
+ *  - `errors`: A function that recevies the `FieldContext` and returns custom validation error(s)
+ *    to be used instead of the default `ValidationError.max(maxValue)`
+ * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
 export function max<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<number, TPathKind>,
@@ -28,6 +34,7 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
 
   metadata(path, MAX, reactiveMaxValue);
   validate(path, (ctx) => {
+    // TODO: resolve TODO below
     // TODO(kirjs): Do we need to handle Null, parseFloat, NaN?
     const value = reactiveMaxValue(ctx);
 
