@@ -657,7 +657,7 @@ function convertDeclareComponentFacadeToMetadata(
     decl.pipes && declarations.push(...convertPipeMapToMetadata(decl.pipes));
   }
 
-  const hasDirectiveDependencies = declarations.every(
+  const hasDirectiveDependencies = declarations.some(
     ({kind}) =>
       kind === R3TemplateDependencyKind.Directive || kind === R3TemplateDependencyKind.NgModule,
   );
