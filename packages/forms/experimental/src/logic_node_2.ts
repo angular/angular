@@ -27,10 +27,6 @@ import {
   Predicate,
 } from './logic_node';
 
-function isFalseOrNull(e: unknown): e is false | null {
-  return e === false || e === null;
-}
-
 /**
  * Abstract base class for building a `LogicNode`.
  * This class defines the interface for adding various logic rules (e.g., hidden, disabled)
