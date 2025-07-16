@@ -19,6 +19,7 @@ import {ValidationError, WithField} from './api/validation_errors';
 import {setBoundPathDepthForResolution} from './field/context';
 import {
   AbstractLogic,
+  ArrayMergeIgnoreLogic,
   ArrayMergeLogic,
   BooleanOrLogic,
   BoundPredicate,
@@ -265,11 +266,11 @@ export class LogicContainer {
   /** Logic that determines if the field is read-only. */
   readonly readonly: BooleanOrLogic;
   /** Logic that produces synchronous validation errors for the field. */
-  readonly syncErrors: ArrayMergeLogic<ValidationError>;
+  readonly syncErrors: ArrayMergeIgnoreLogic<ValidationError, false | null>;
   /** Logic that produces synchronous validation errors for the field's subtree. */
-  readonly syncTreeErrors: ArrayMergeLogic<WithField<ValidationError>>;
+  readonly syncTreeErrors: ArrayMergeIgnoreLogic<WithField<ValidationError>, false | null>;
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
-  readonly asyncErrors: ArrayMergeLogic<WithField<ValidationError> | 'pending'>;
+  readonly asyncErrors: ArrayMergeIgnoreLogic<WithField<ValidationError> | 'pending', false | null>;
   /** A map of metadata keys to the `AbstractLogic` instances that compute their values. */
   private readonly metadata = new Map<ReactiveMetadataKey<unknown>, AbstractLogic<unknown>>();
   /** A map of data keys to the factory functions that create their values. */
@@ -287,9 +288,12 @@ export class LogicContainer {
     this.hidden = new BooleanOrLogic(predicates);
     this.disabledReasons = new ArrayMergeLogic(predicates);
     this.readonly = new BooleanOrLogic(predicates);
-    this.syncErrors = new ArrayMergeLogic<ValidationError>(predicates);
-    this.syncTreeErrors = new ArrayMergeLogic<WithField<ValidationError>>(predicates);
-    this.asyncErrors = new ArrayMergeLogic<WithField<ValidationError> | 'pending'>(predicates);
+    this.syncErrors = ArrayMergeIgnoreLogic.ignoreFalseAndNull<ValidationError>(predicates);
+    this.syncTreeErrors =
+      ArrayMergeIgnoreLogic.ignoreFalseAndNull<WithField<ValidationError>>(predicates);
+    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreFalseAndNull<
+      WithField<ValidationError> | 'pending'
+    >(predicates);
   }
 
   /**
