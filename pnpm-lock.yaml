@@ -779,7 +779,7 @@ importers:
         version: 16.0.0
       mermaid:
         specifier: ^11.0.0
-        version: 11.8.1
+        version: 11.9.0
       rxjs:
         specifier: ^7.8.1
         version: 7.8.2
@@ -5561,7 +5561,7 @@ packages:
     resolution: {integrity: sha512-+g/1TKjFuGrf1Hh0QPCv0gISwBxJ+MQSNXmG9zjHy7BmFhtoJ9fdNhWJp3qUKRi93AOZHXtdxZgJ1vAtz6z65w==, tarball: https://registry.npmjs.org/@jest/schemas/-/schemas-30.0.1.tgz}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
     dependencies:
-      '@sinclair/typebox': 0.34.37
+      '@sinclair/typebox': 0.34.38
     dev: true
 
   /@jest/snapshot-utils@30.0.4:
@@ -5867,8 +5867,8 @@ packages:
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==, tarball: https://registry.npmjs.org/@marijn/find-cluster-break/-/find-cluster-break-1.0.2.tgz}
     dev: false
 
-  /@mermaid-js/parser@0.6.1:
-    resolution: {integrity: sha512-lCQNpV8R4lgsGcjX5667UiuDLk2micCtjtxR1YKbBXvN5w2v+FeLYoHrTSSrjwXdMcDYvE4ZBPvKT31dfeSmmA==, tarball: https://registry.npmjs.org/@mermaid-js/parser/-/parser-0.6.1.tgz}
+  /@mermaid-js/parser@0.6.2:
+    resolution: {integrity: sha512-+PO02uGF6L6Cs0Bw8RpGhikVvMWEysfAyl27qTlroUB8jSWr1lL0Sf6zi78ZxlSnmgSY2AMMKVgghnN9jTtwkQ==, tarball: https://registry.npmjs.org/@mermaid-js/parser/-/parser-0.6.2.tgz}
     dependencies:
       langium: 3.3.1
     dev: false
@@ -7435,8 +7435,8 @@ packages:
       '@types/node': 22.16.0
     dev: true
 
-  /@sinclair/typebox@0.34.37:
-    resolution: {integrity: sha512-2TRuQVgQYfy+EzHRTIvkhv2ADEouJ2xNS/Vq+W5EuuewBdOrvATvljZTxHWZSTYr2sTjTHpGvucaGAt67S2akw==, tarball: https://registry.npmjs.org/@sinclair/typebox/-/typebox-0.34.37.tgz}
+  /@sinclair/typebox@0.34.38:
+    resolution: {integrity: sha512-HpkxMmc2XmZKhvaKIZZThlHmx1L0I/V1hWK1NubtlFnr6ZqdiOpV72TKudZUNQjZNsyDBay72qFEhEvb+bcwcA==, tarball: https://registry.npmjs.org/@sinclair/typebox/-/typebox-0.34.38.tgz}
     dev: true
 
   /@sindresorhus/is@4.6.0:
@@ -16398,7 +16398,7 @@ packages:
     dependencies:
       '@braintree/sanitize-url': 7.1.1
       '@iconify/utils': 2.3.0
-      '@mermaid-js/parser': 0.6.1
+      '@mermaid-js/parser': 0.6.2
       '@types/d3': 7.4.3
       cytoscape: 3.32.1
       cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.1)
@@ -16412,6 +16412,33 @@ packages:
       khroma: 2.1.0
       lodash-es: 4.17.21
       marked: 15.0.12
+      roughjs: 4.6.6
+      stylis: 4.3.6
+      ts-dedent: 2.2.0
+      uuid: 11.1.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /mermaid@11.9.0:
+    resolution: {integrity: sha512-YdPXn9slEwO0omQfQIsW6vS84weVQftIyyTGAZCwM//MGhPzL1+l6vO6bkf0wnP4tHigH1alZ5Ooy3HXI2gOag==, tarball: https://registry.npmjs.org/mermaid/-/mermaid-11.9.0.tgz}
+    dependencies:
+      '@braintree/sanitize-url': 7.1.1
+      '@iconify/utils': 2.3.0
+      '@mermaid-js/parser': 0.6.2
+      '@types/d3': 7.4.3
+      cytoscape: 3.32.1
+      cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.1)
+      cytoscape-fcose: 2.2.0(cytoscape@3.32.1)
+      d3: 7.9.0
+      d3-sankey: 0.12.3
+      dagre-d3-es: 7.0.11
+      dayjs: 1.11.13
+      dompurify: 3.2.6
+      katex: 0.16.22
+      khroma: 2.1.0
+      lodash-es: 4.17.21
+      marked: 16.0.0
       roughjs: 4.6.6
       stylis: 4.3.6
       ts-dedent: 2.2.0
