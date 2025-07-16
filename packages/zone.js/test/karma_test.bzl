@@ -1,12 +1,13 @@
 load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
-load("//tools:defaults.bzl", "rollup_bundle", "ts_library")
+load("//tools:defaults.bzl", "rollup_bundle")
+load("//tools:defaults2.bzl", "ts_project")
 
 def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point):
-    ts_library(
+    ts_project(
         name = name + "_env",
         testonly = True,
         srcs = env_srcs,
-        deps = env_deps,
+        interop_deps = env_deps,
     )
     rollup_bundle(
         name = name + "_env_rollup",
@@ -21,11 +22,11 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
             "@npm//magic-string",
         ],
     )
-    ts_library(
+    ts_project(
         name = name + "_test",
         testonly = True,
         srcs = test_srcs,
-        deps = test_deps,
+        interop_deps = test_deps,
     )
     rollup_bundle(
         name = name + "_rollup",
