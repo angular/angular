@@ -1,3 +1,30 @@
+<a name="20.1.1"></a>
+# 20.1.1 (2025-07-16)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [75d2a349b4](https://github.com/angular/angular/commit/75d2a349b4d0ee1ed0489f1804dc1938046eaace) | fix | incorrect spans for left side of binary operation ([#62641](https://github.com/angular/angular/pull/62641)) |
+| [70c8780c54](https://github.com/angular/angular/commit/70c8780c5443929539631a06c5e09c18d108e51b) | fix | more permissive parsing of @ characters ([#62644](https://github.com/angular/angular/pull/62644)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9506cdfaad](https://github.com/angular/angular/commit/9506cdfaad2693a0350a74f4ee4bb7fa27fa3086) | fix | infer type of event target for void elements ([#62648](https://github.com/angular/angular/pull/62648)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [26ade4a337](https://github.com/angular/angular/commit/26ade4a3370911f6c8e9c0e6504d9335d637cfe1) | fix | Ensure application remains unstable during bootstrap ([#62631](https://github.com/angular/angular/pull/62631)) |
+| [a81f0faa1a](https://github.com/angular/angular/commit/a81f0faa1a72decf9bdd35b243486a510b9352ee) | fix | InputBinding marks component a dirty. ([#62613](https://github.com/angular/angular/pull/62613)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [276836ee73](https://github.com/angular/angular/commit/276836ee7351c5d605fac5dc0abe0ae898dcfa5d) | fix | do not display warnings `Angular detected that a `HttpClient` request with the `keepalive` option was sent using XHR` when option is not true ([#62536](https://github.com/angular/angular/pull/62536)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5949373692](https://github.com/angular/angular/commit/59493736925d27ca26f0bb041978a51c4ced975b) | fix | handle errors from view transition readiness ([#62535](https://github.com/angular/angular/pull/62535)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.0-next.0"></a>
 # 20.2.0-next.0 (2025-07-09)
 ### http
