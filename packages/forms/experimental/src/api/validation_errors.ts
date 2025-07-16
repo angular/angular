@@ -44,7 +44,7 @@ export function createError<TError extends ValidationError, TArgs extends any[]>
   ...params: TArgs
 ): TError | WithField<TError> {
   const instance = new errorCtor(...(params as unknown as TArgs));
-  (instance as Mutable<ValidationError | WithField<ValidationError>>).field = target;
+  addDefaultField(instance, target!);
   return instance;
 }
 
@@ -61,6 +61,20 @@ export function stripField<E extends ValidationError>(e: WithField<E> | E): E {
   Reflect.setPrototypeOf(newE, Object.getPrototypeOf(e));
   Object.assign(newE, e, {field: undefined});
   return newE as E;
+}
+
+/**
+ * Adds the given default field on to the given error if the error does not already have a field.
+ * @param e The error to add the field to
+ * @param field The default field to add
+ * @returns The passed in error, with its field set.
+ */
+export function addDefaultField<E extends ValidationError>(
+  e: E | WithField<E>,
+  field: Field<unknown>,
+): WithField<E> {
+  (e as Mutable<ValidationError | WithField<ValidationError>>).field ??= field;
+  return e as WithField<E>;
 }
 
 /**

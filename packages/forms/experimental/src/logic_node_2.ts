@@ -27,6 +27,10 @@ import {
   Predicate,
 } from './logic_node';
 
+function isFalseOrNull(e: unknown): e is false | null {
+  return e === false || e === null;
+}
+
 /**
  * Abstract base class for building a `LogicNode`.
  * This class defines the interface for adding various logic rules (e.g., hidden, disabled)
@@ -288,18 +292,12 @@ export class LogicContainer {
     this.hidden = new BooleanOrLogic(predicates);
     this.disabledReasons = new ArrayMergeLogic(predicates);
     this.readonly = new BooleanOrLogic(predicates);
-    this.syncErrors = new ArrayMergeIgnoreLogic<ValidationError, false | null>(
-      predicates,
-      (e) => e === false || e === null,
-    );
-    this.syncTreeErrors = new ArrayMergeIgnoreLogic<WithField<ValidationError>, false | null>(
-      predicates,
-      (e) => e === false || e === null,
-    );
-    this.asyncErrors = new ArrayMergeIgnoreLogic<
-      WithField<ValidationError> | 'pending',
-      false | null
-    >(predicates, (e) => e === false || e === null);
+    this.syncErrors = ArrayMergeIgnoreLogic.ignoreFalseAndNull<ValidationError>(predicates);
+    this.syncTreeErrors =
+      ArrayMergeIgnoreLogic.ignoreFalseAndNull<WithField<ValidationError>>(predicates);
+    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreFalseAndNull<
+      WithField<ValidationError> | 'pending'
+    >(predicates);
   }
 
   /**

@@ -9,16 +9,8 @@
 import {ReactiveMetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import type {
-  FieldContext,
-  FieldPath,
-  LogicFn,
-  Mutable,
-  PathKind,
-  TreeValidator,
-  Validator,
-} from './types';
-import {ValidationError, WithField} from './validation_errors';
+import type {FieldContext, FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
+import {addDefaultField, ValidationError, WithField} from './validation_errors';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -116,10 +108,10 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
     const errors = logic(ctx);
     if (Array.isArray(errors)) {
       for (const error of errors) {
-        (error as Mutable<ValidationError | WithField<ValidationError>>).field ??= ctx.field;
+        addDefaultField(error, ctx.field);
       }
     } else if (errors) {
-      (errors as Mutable<ValidationError | WithField<ValidationError>>).field ??= ctx.field;
+      addDefaultField(errors as WithField<ValidationError>, ctx.field);
     }
     return errors;
   };
