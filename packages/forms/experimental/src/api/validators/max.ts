@@ -27,25 +27,23 @@ import {BaseValidatorConfig} from './types';
  */
 export function max<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<number, TPathKind>,
-  maxValue: number | LogicFn<number | undefined, number | undefined, TPathKind>,
+  maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
   const reactiveMaxValue = typeof maxValue === 'number' ? () => maxValue : maxValue;
 
   metadata(path, MAX, reactiveMaxValue);
   validate(path, (ctx) => {
-    // TODO: resolve TODO below
-    // TODO(kirjs): Do we need to handle Null, parseFloat, NaN?
-    const value = reactiveMaxValue(ctx);
+    const max = reactiveMaxValue(ctx);
 
-    if (value === undefined) {
+    if (max === undefined || Number.isNaN(max)) {
       return undefined;
     }
-    if (ctx.value() > value) {
+    if (ctx.value() > max) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
-        return ValidationError.max(value);
+        return ValidationError.max(max);
       }
     }
 

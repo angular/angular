@@ -73,6 +73,19 @@ describe('max validator', () => {
     ]);
   });
 
+  it('treats NaN as no maximum', () => {
+    const cat = signal({name: 'pirojok-the-cat', age: 6});
+    const f = form(
+      cat,
+      (p) => {
+        max(p.age, NaN);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.age().errors()).toEqual([]);
+  });
+
   describe('metadata', () => {
     it('stores the metadata on max', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 6});

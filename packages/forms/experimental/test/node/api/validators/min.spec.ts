@@ -73,6 +73,19 @@ describe('min validator', () => {
     ]);
   });
 
+  it('treats NaN as no minimum', () => {
+    const cat = signal({name: 'pirojok-the-cat', age: 4});
+    const f = form(
+      cat,
+      (p) => {
+        min(p.age, NaN);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.age().errors()).toEqual([]);
+  });
+
   describe('metadata', () => {
     it('stores the metadata on min', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 3});

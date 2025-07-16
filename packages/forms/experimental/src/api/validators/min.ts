@@ -27,23 +27,23 @@ import {BaseValidatorConfig} from './types';
  */
 export function min<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<number, TPathKind>,
-  minValue: number | LogicFn<number | undefined, number | undefined, TPathKind>,
+  minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
   const reactiveMinValue = typeof minValue === 'number' ? () => minValue : minValue;
+
   metadata(path, MIN, reactiveMinValue);
   validate(path, (ctx) => {
-    // TODO(kirjs): Do we need to handle Null, parseFloat, NaN?
-    const value = reactiveMinValue(ctx);
-    if (value === undefined) {
+    const min = reactiveMinValue(ctx);
+
+    if (min === undefined || Number.isNaN(min)) {
       return undefined;
     }
-
-    if (ctx.value() < value) {
+    if (ctx.value() < min) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
-        return ValidationError.min(value);
+        return ValidationError.min(min);
       }
     }
 
