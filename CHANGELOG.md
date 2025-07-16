@@ -1,3 +1,38 @@
+<a name="20.2.0-next.1"></a>
+# 20.2.0-next.1 (2025-07-16)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a1e3f2bcd1](https://github.com/angular/angular/commit/a1e3f2bcd14f897e685e11a84e011406dd6f7a33) | fix | incorrect spans for left side of binary operation ([#62641](https://github.com/angular/angular/pull/62641)) |
+| [18a675081f](https://github.com/angular/angular/commit/18a675081f945ed4d7f4c0ee83172ca1528e7b2e) | fix | more permissive parsing of @ characters ([#62644](https://github.com/angular/angular/pull/62644)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [527bd778a7](https://github.com/angular/angular/commit/527bd778a7b23c23766bad7fb272d61df9a884b1) | fix | infer type of event target for void elements ([#62648](https://github.com/angular/angular/pull/62648)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [745ea44394](https://github.com/angular/angular/commit/745ea4439465494ab5b7002dd1fa320cd32220fb) | feat | support TypeScript 5.9 ([#62541](https://github.com/angular/angular/pull/62541)) |
+| [859958dbfe](https://github.com/angular/angular/commit/859958dbfe5b8b505c84ecfed81d43e6c59e6f0c) | fix | Ensure application remains unstable during bootstrap ([#62631](https://github.com/angular/angular/pull/62631)) |
+| [780774f948](https://github.com/angular/angular/commit/780774f94806b8eb895cb2a77c0d2a154f3d2d22) | fix | InputBinding marks component a dirty. ([#62613](https://github.com/angular/angular/pull/62613)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [be811fee79](https://github.com/angular/angular/commit/be811fee7925fb482567fa7cd9d485ac28acdade) | feat | add referrer & integrity support for fetch requests in httpResource ([#62461](https://github.com/angular/angular/pull/62461)) |
+| [1408baff45](https://github.com/angular/angular/commit/1408baff453e636da05838fa17c6e4abd86c4b72) | fix | Add missing timeout and transferCache options to `HttpClient` ([#62586](https://github.com/angular/angular/pull/62586)) |
+| [75a5d08c5e](https://github.com/angular/angular/commit/75a5d08c5e9947f835ef911aacfe6c673e4c9e94) | fix | do not display warnings `Angular detected that a `HttpClient` request with the `keepalive` option was sent using XHR` when option is not true ([#62536](https://github.com/angular/angular/pull/62536)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d64dd27a02](https://github.com/angular/angular/commit/d64dd27a02630b631bc9890d7292d4683493cb65) | feat | support to report the deprecated API in the template ([#62054](https://github.com/angular/angular/pull/62054)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9c45c322d1](https://github.com/angular/angular/commit/9c45c322d1ac3b05c916b7c956263066fb9be47f) | fix | ensure preloaded components are properly activated ([#62502](https://github.com/angular/angular/pull/62502)) |
+| [e9f215624f](https://github.com/angular/angular/commit/e9f215624f73c6aec6ec78117339c803830f4114) | fix | handle errors from view transition readiness ([#62535](https://github.com/angular/angular/pull/62535)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.1"></a>
 # 20.1.1 (2025-07-16)
 ### compiler
