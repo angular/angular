@@ -7,7 +7,7 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import type {MetadataKey} from '../api/metadata';
+import type {ReactiveMetadataKey} from '../api/metadata';
 import type {FieldNode} from './node';
 import {cast} from './util';
 
@@ -15,12 +15,12 @@ import {cast} from './util';
  * Tracks `metadata` associated with a `FieldNode`.
  */
 export class FieldMetadataState {
-  private readonly metadataMap = new Map<MetadataKey<unknown>, Signal<unknown>>();
+  private readonly metadataMap = new Map<ReactiveMetadataKey<unknown>, Signal<unknown>>();
 
   constructor(private readonly node: FieldNode) {}
 
-  get<M>(key: MetadataKey<M>): Signal<M> {
-    cast<MetadataKey<unknown>>(key);
+  get<M>(key: ReactiveMetadataKey<M>): Signal<M> {
+    cast<ReactiveMetadataKey<unknown>>(key);
     if (!this.metadataMap.has(key)) {
       const logic = this.node.logicNode.logic.getMetadata(key);
       const result = computed(() => logic.compute(this.node.context));

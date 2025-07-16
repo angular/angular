@@ -12,7 +12,7 @@ import {
   DisabledReason,
   FieldContext,
   LogicFn,
-  MetadataKey,
+  ReactiveMetadataKey,
   ValidationResult,
 } from '../public_api';
 import {ValidationError, WithField} from './api/validation_errors';
@@ -51,7 +51,7 @@ export abstract class AbstractLogicNodeBuilder {
   /** Adds a rule for asynchronous validation errors for a field. */
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
   /** Adds a rule to compute metadata for a field. */
-  abstract addMetadataRule<M>(key: MetadataKey<M>, logic: LogicFn<any, M>): void;
+  abstract addMetadataRule<M>(key: ReactiveMetadataKey<M>, logic: LogicFn<any, M>): void;
   /** Adds a factory function to produce a data value associated with a field. */
   abstract addDataFactory<D>(key: DataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
   /**
@@ -123,7 +123,7 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addAsyncErrorRule(logic);
   }
 
-  override addMetadataRule<T>(key: MetadataKey<T>, logic: LogicFn<any, T>): void {
+  override addMetadataRule<T>(key: ReactiveMetadataKey<T>, logic: LogicFn<any, T>): void {
     this.getCurrent().addMetadataRule(key, logic);
   }
 
@@ -233,7 +233,7 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addMetadataRule<T>(key: MetadataKey<T>, logic: LogicFn<any, T>): void {
+  override addMetadataRule<T>(key: ReactiveMetadataKey<T>, logic: LogicFn<any, T>): void {
     this.logic.getMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
@@ -271,7 +271,7 @@ export class LogicContainer {
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
   readonly asyncErrors: ArrayMergeLogic<WithField<ValidationError> | 'pending'>;
   /** A map of metadata keys to the `AbstractLogic` instances that compute their values. */
-  private readonly metadata = new Map<MetadataKey<unknown>, AbstractLogic<unknown>>();
+  private readonly metadata = new Map<ReactiveMetadataKey<unknown>, AbstractLogic<unknown>>();
   /** A map of data keys to the factory functions that create their values. */
   private readonly dataFactories = new Map<
     DataKey<unknown>,
@@ -317,14 +317,17 @@ export class LogicContainer {
 
   /**
    * Retrieves or creates the `AbstractLogic` for a given metadata key.
-   * @param key The `MetadataKey` for which to get the logic.
+   * @param key The `ReactiveMetadataKey` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
    */
-  getMetadata<T>(key: MetadataKey<T>): AbstractLogic<T> {
-    if (!this.metadata.has(key as MetadataKey<unknown>)) {
-      this.metadata.set(key as MetadataKey<unknown>, new MetadataMergeLogic(this.predicates, key));
+  getMetadata<T>(key: ReactiveMetadataKey<T>): AbstractLogic<T> {
+    if (!this.metadata.has(key as ReactiveMetadataKey<unknown>)) {
+      this.metadata.set(
+        key as ReactiveMetadataKey<unknown>,
+        new MetadataMergeLogic(this.predicates, key),
+      );
     }
-    return this.metadata.get(key as MetadataKey<unknown>)! as AbstractLogic<T>;
+    return this.metadata.get(key as ReactiveMetadataKey<unknown>)! as AbstractLogic<T>;
   }
 
   /**
