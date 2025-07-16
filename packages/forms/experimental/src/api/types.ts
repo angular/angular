@@ -48,13 +48,21 @@ export interface DisabledReason {
  * a single `ValidationError`, or a list of `ValidationError` which can be used to indicate multiple
  * errors.
  */
-export type ValidationResult = readonly ValidationError[] | ValidationError | undefined;
+export type ValidationResult =
+  | readonly ValidationError[]
+  | ValidationError
+  | false
+  | null
+  | undefined;
 
-export type AsyncValidationResult =
+export type TreeValidationResult =
   | readonly WithField<ValidationError>[]
   | WithField<ValidationError>
-  | 'pending'
+  | false
+  | null
   | undefined;
+
+export type AsyncValidationResult = TreeValidationResult | 'pending';
 
 /**
  * An object that represents a single field in a form. This includes both primitive value fields
@@ -252,7 +260,7 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
 
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  (ValidationError | WithField<ValidationError>)[],
+  TreeValidationResult,
   TPathKind
 >;
 
