@@ -75,15 +75,13 @@
       }
     }
   }
-  .overlay {
+
+  ng-signals-details {
     position: absolute;
-    bottom: 8px;
-    right: 8px;
-    border: 1px solid var(--full-contrast);
-    border-radius: 8px;
-    background: var(--color-background);
-    padding: 8px;
+    bottom: 0.5rem;
+    right: 0.5rem;
   }
+
   .no-signals {
     position: absolute;
     top: 0;
@@ -97,35 +95,13 @@
 
   .close {
     position: absolute;
-    top: 8px;
-    right: 8px;
-  }
-}
+    top: 0.5rem;
+    right: 0.5rem;
 
-ng-signals-value-tree {
-  margin-top: 8px;
-  border: 1px solid var(--tertiary-contrast);
-}
-
-.signal-metadata {
-  display: flex;
-  background-color: var(--color-background);
-  color: var(--color-text);
-  flex-direction: column;
-
-  .metadata-field {
-    display: flex;
-
-    &:not(:first-child) {
-      border-top: 1px solid var(--tertiary-contrast);
-    }
-
-    .metadata-field-label {
-      background: var(--color-foreground);
-      padding-right: 2px;
-      margin-right: 4px;
-      min-width: 40px;
-      border-right: 1px solid var(--tertiary-contrast);
+    mat-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
     }
   }
 }
