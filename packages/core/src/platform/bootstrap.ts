@@ -138,8 +138,8 @@ export function bootstrap<M>(
       const initStatus = envInjector.get(ApplicationInitStatus);
       initStatus.runInitializers();
 
-      return initStatus.donePromise.then(() => {
-        try {
+      return initStatus.donePromise
+        .then(() => {
           // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
           const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
           setLocaleId(localeId || DEFAULT_LOCALE_ID);
@@ -172,10 +172,8 @@ export function bootstrap<M>(
             moduleBootstrapImpl?.(config.moduleRef, config.allPlatformModules);
             return config.moduleRef;
           }
-        } finally {
-          pendingTasks.remove(taskId);
-        }
-      });
+        })
+        .finally(() => void pendingTasks.remove(taskId));
     });
   });
 }
