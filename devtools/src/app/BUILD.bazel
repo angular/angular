@@ -12,6 +12,7 @@ ng_project(
     srcs = [
         "app.component.ts",
         "app.config.ts",
+        "transfer-state.ts",
     ],
     angular_assets = [
         "app.component.html",
