@@ -6,17 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationConfig} from '@angular/core';
+import {ApplicationConfig, provideAppInitializer} from '@angular/core';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideRouter} from '@angular/router';
 import {ApplicationEnvironment, ApplicationOperations} from '../../projects/ng-devtools';
 
 import {DemoApplicationEnvironment} from '../demo-application-environment';
 import {DemoApplicationOperations} from '../demo-application-operations';
+import {serializeTransferState} from './transfer-state';
+import {provideHttpClient, ɵwithHttpTransferCache} from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
+    provideHttpClient(),
     provideRouter([
       {
         path: '',
@@ -37,5 +40,9 @@ export const appConfig: ApplicationConfig = {
       provide: ApplicationEnvironment,
       useClass: DemoApplicationEnvironment,
     },
+    // We simulate a transfer state created by the server-side rendering.
+    // We use the privately exported interceptor to cache HTTP requests.
+    ɵwithHttpTransferCache({}),
+    provideAppInitializer(async () => serializeTransferState()),
   ],
 };
