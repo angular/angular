@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular/material/tree';
 import {MatIcon} from '@angular/material/icon';
-import {Descriptor} from '../../../../../../protocol';
+import {Descriptor} from '../../../../../../../../protocol';
 import {DataSource} from '@angular/cdk/collections';
 
 export interface FlatNode {

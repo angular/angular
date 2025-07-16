@@ -23,12 +23,16 @@ import {
 import {SignalsGraphVisualizer} from './signals-visualizer';
 import {
   DebugSignalGraph,
+  DebugSignalGraphNode,
   ElementPosition,
   Events,
   MessageBus,
   PropType,
 } from '../../../../../../protocol';
-import {FlatNode, Property, SignalsValueTreeComponent} from './signals-value-tree.component';
+import {
+  FlatNode,
+  Property,
+} from './signals-details/signals-value-tree/signals-value-tree.component';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {arrayifyProps, SignalDataSource} from './signal-data-source';
 import {DataSource} from '@angular/cdk/collections';
@@ -36,13 +40,14 @@ import {MatTreeFlattener} from '@angular/material/tree';
 import {MatIcon} from '@angular/material/icon';
 import {ApplicationOperations} from '../../../application-operations/index';
 import {FrameManager} from '../../../application-services/frame_manager';
-import {MatButton, MatIconButton} from '@angular/material/button';
+import {SignalsDetailsComponent} from './signals-details/signals-details.component';
+import {ButtonComponent} from '../../../shared/button/button.component';
 
 @Component({
   templateUrl: './signals-tab.component.html',
   selector: 'ng-signals-tab',
   styleUrl: './signals-tab.component.scss',
-  imports: [SignalsValueTreeComponent, MatIcon, MatIconButton, MatButton],
+  imports: [SignalsDetailsComponent, MatIcon, ButtonComponent],
 })
 export class SignalsTabComponent implements OnDestroy {
   private svgComponent = viewChild.required<ElementRef>('component');
@@ -78,9 +83,8 @@ export class SignalsTabComponent implements OnDestroy {
   });
 
   protected dataSource = computed<DataSource<FlatNode> | null>(() => {
-    const selected = this.selected();
     const selectedNode = this.selectedNode();
-    if (!selectedNode || !selected) {
+    if (!selectedNode) {
       return null;
     }
 
@@ -103,7 +107,7 @@ export class SignalsTabComponent implements OnDestroy {
         },
       ),
       this.treeControl(),
-      {element: this.currentElement()!, signalId: selected},
+      {element: this.currentElement()!, signalId: selectedNode.id},
       this.messageBus,
     );
   });
@@ -159,16 +163,12 @@ export class SignalsTabComponent implements OnDestroy {
     this.signalsVisualizer.cleanup();
   }
 
-  gotoSource() {
-    const selected = this.selected();
-    if (!selected) {
-      return;
-    }
+  gotoSource(node: DebugSignalGraphNode) {
     const frame = this.frameManager.selectedFrame();
     this.appOperations.inspectSignal(
       {
         element: this.currentElement()!,
-        signalId: selected,
+        signalId: node.id,
       },
       frame!,
     );

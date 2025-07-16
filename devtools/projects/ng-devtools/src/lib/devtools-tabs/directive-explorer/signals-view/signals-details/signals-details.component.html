@@ -1,0 +1,27 @@
+@let node = this.node();
+
+<div class="header">
+  <button ng-button size="compact" (click)="gotoSource.emit(node)" [disabled]="!node.debuggable">
+    <mat-icon> arrow_outward </mat-icon>
+    View Source
+  </button>
+</div>
+
+<dl>
+  <dt>Name:</dt>
+  <dd class="node-name">{{node.label}}</dd>
+  <dt>Type:</dt>
+  <dd>
+    <span [class]="TYPE_CLASS_MAP[node.kind]" [class.type]="true">{{node.kind}}</span>
+  </dd>
+  <dt>Epoch:</dt>
+  <dd>{{node.epoch}}</dd>
+</dl>
+
+@if (['signal', 'computed'].includes(node.kind)) {
+  @if (node.preview.preview === 'undefined') {
+    <div class="value">undefined</div>
+  } @else {
+    <ng-signals-value-tree [dataSource]="dataSource()" [treeControl]="treeControl()" />
+  }
+}
