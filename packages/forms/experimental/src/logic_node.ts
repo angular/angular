@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {untracked} from '@angular/core';
@@ -109,7 +109,7 @@ export class ArrayMergeLogic<TElement> extends AbstractLogic<
 
 export class MetadataMergeLogic<T> extends AbstractLogic<T> {
   override get defaultValue() {
-    return this.key.defaultValue();
+    return this.key.getDefault();
   }
 
   constructor(
@@ -121,11 +121,11 @@ export class MetadataMergeLogic<T> extends AbstractLogic<T> {
 
   override compute(ctx: FieldContext<any>): T {
     if (this.fns.length === 0) {
-      return this.key.defaultValue();
+      return this.key.getDefault();
     }
     let value = this.fns[0](ctx);
     for (let i = 1; i < this.fns.length; i++) {
-      value = this.key.merge(value, this.fns[i](ctx));
+      value = this.key.accumulate(value, this.fns[i](ctx));
     }
     return value;
   }
