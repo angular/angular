@@ -95,7 +95,7 @@ export class MetadataKey<TValue> {
 }
 
 /**
- * Re-cast the MetadataKey constructor to allow oursevles to exetend it.
+ * Re-cast the MetadataKey constructor to allow ourselves to extend it.
  */
 const KeyCtor = MetadataKey as unknown as new <TValue>() => MetadataKey<TValue>;
 
@@ -115,7 +115,7 @@ export class ReactiveMetadataKey<TValue> extends KeyCtor<TValue> {
 }
 
 /**
- * Re-cast the ReactiveMetadataKey constructor to allow oursevles to new it.
+ * Re-cast the ReactiveMetadataKey constructor to allow ourselves to new it.
  */
 const ReactiveKeyCtor = ReactiveMetadataKey as unknown as new <TValue>(
   accumulate: (prev: TValue, next: TValue) => TValue,
