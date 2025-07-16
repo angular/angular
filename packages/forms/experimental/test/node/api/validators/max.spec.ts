@@ -57,7 +57,7 @@ describe('max validator', () => {
       cat,
       (p) => {
         max(p.age, 5, {
-          errors: ({value}) => {
+          error: ({value}) => {
             return ValidationError.custom({kind: 'special-max', message: value().toString()});
           },
         });
@@ -80,7 +80,7 @@ describe('max validator', () => {
         cat,
         (p) => {
           max(p.age, 5, {
-            errors: ({value}) => {
+            error: ({value}) => {
               return ValidationError.custom({kind: 'special-max', message: value().toString()});
             },
           });

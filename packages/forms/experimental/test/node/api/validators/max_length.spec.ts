@@ -70,7 +70,7 @@ describe('maxLength validator', () => {
       data,
       (p) => {
         maxLength(p.text, 5, {
-          errors: ({value}) => {
+          error: ({value}) => {
             return ValidationError.custom({
               kind: 'special-maxLength',
               message: `Length is ${value().length}`,
@@ -96,7 +96,7 @@ describe('maxLength validator', () => {
         data,
         (p) => {
           maxLength(p.text, 5, {
-            errors: ({value}) => {
+            error: ({value}) => {
               return ValidationError.custom({
                 kind: 'special-maxLength',
                 message: `Length is ${value().length}`,

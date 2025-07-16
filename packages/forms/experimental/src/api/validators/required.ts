@@ -19,8 +19,8 @@ import {BaseValidatorConfig} from './types';
  *
  * @param path Path of the field to validate
  * @param config Optional, allows providing any of the following options:
- *  - `errors`: A function that recevies the `FieldContext` and returns custom validation error(s)
- *    to be used instead of the default `ValidationError.required()`
+ *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.required()`
+ *    or a function that receives the `FieldContext` and returns custom validation error(s).
  *  - `emptyPredicate`: A function that receives the value, and returns `true` if it is considered empty.
  *    By default `false`, `''`, `null`, and `undefined` are considered empty
  *  - `condition`: A function that receives the `FieldContext` and returns true if the field is required
@@ -41,8 +41,8 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
   metadata(path, REQUIRED, condition);
   validate(path, (ctx) => {
     if (condition(ctx) && emptyPredicate(ctx.value())) {
-      if (config?.errors) {
-        return config.errors(ctx);
+      if (config?.error) {
+        return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
         return ValidationError.required();
       }

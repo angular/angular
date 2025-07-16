@@ -57,7 +57,7 @@ describe('min validator', () => {
       cat,
       (p) => {
         min(p.age, 5, {
-          errors: ({value}) => {
+          error: ({value}) => {
             return ValidationError.custom({kind: 'special-min', message: value().toString()});
           },
         });
@@ -80,7 +80,7 @@ describe('min validator', () => {
         cat,
         (p) => {
           min(p.age, 5, {
-            errors: ({value}) => {
+            error: ({value}) => {
               return ValidationError.custom({kind: 'special-min', message: value().toString()});
             },
           });

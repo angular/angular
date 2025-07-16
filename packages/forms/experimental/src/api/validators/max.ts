@@ -21,8 +21,8 @@ import {BaseValidatorConfig} from './types';
  * @param path Path of the field to validate
  * @param maxValue The minimum value, or a LogicFn that returns the minimum value.
  * @param config Optional, allows providing any of the following options:
- *  - `errors`: A function that recevies the `FieldContext` and returns custom validation error(s)
- *    to be used instead of the default `ValidationError.max(maxValue)`
+ *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.max(maxValue)`
+ *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
 export function max<TPathKind extends PathKind = PathKind.Root>(
@@ -42,8 +42,8 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
       return undefined;
     }
     if (ctx.value() > value) {
-      if (config?.errors) {
-        return config.errors(ctx);
+      if (config?.error) {
+        return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
         return ValidationError.max(value);
       }

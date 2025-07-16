@@ -54,8 +54,8 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
 
     const regex = strToRegexp(value);
     if (!regex.test(ctx.value())) {
-      if (config?.errors) {
-        return config.errors(ctx);
+      if (config?.error) {
+        return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
         return ValidationError.pattern(value);
       }

@@ -35,7 +35,7 @@ describe('email validator', () => {
       cat,
       (p) => {
         email(p.email, {
-          errors: (ctx) => ValidationError.custom({kind: `special-email-${ctx.valueOf(p.name)}`}),
+          error: (ctx) => ValidationError.custom({kind: `special-email-${ctx.valueOf(p.name)}`}),
         });
       },
       {

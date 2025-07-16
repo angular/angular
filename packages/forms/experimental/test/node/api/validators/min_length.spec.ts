@@ -70,7 +70,7 @@ describe('minLength validator', () => {
       data,
       (p) => {
         minLength(p.text, 5, {
-          errors: ({value}) => {
+          error: ({value}) => {
             return ValidationError.custom({
               kind: 'special-minLength',
               message: `Length is ${value().length}`,
@@ -96,7 +96,7 @@ describe('minLength validator', () => {
         data,
         (p) => {
           minLength(p.text, 5, {
-            errors: ({value}) => {
+            error: ({value}) => {
               return ValidationError.custom({
                 kind: 'special-minLength',
                 message: `Length is ${value().length}`,

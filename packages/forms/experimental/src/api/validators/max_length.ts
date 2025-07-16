@@ -21,8 +21,8 @@ import {BaseValidatorConfig, ValueWithLength} from './types';
  * @param path Path of the field to validate
  * @param maxLength The maximum length, or a LogicFn that returns the maximum length.
  * @param config Optional, allows providing any of the following options:
- *  - `errors`: A function that recevies the `FieldContext` and returns custom validation error(s)
- *    to be used instead of the default `ValidationError.maxlength(maxLength)`
+ *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.maxlength(maxLength)`
+ *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
 // TODO: We should decide whether we want to use camel case or all-lowercase, to create an error we
@@ -43,8 +43,8 @@ export function maxLength<TPathKind extends PathKind = PathKind.Root>(
     }
 
     if (ctx.value().length > value) {
-      if (config?.errors) {
-        return config.errors(ctx);
+      if (config?.error) {
+        return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
         return ValidationError.maxlength(value);
       }
