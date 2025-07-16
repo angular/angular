@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {computed} from '@angular/core';
+import {define} from '../data';
 import {metadata, validate} from '../logic';
 import {MAX_LENGTH} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
@@ -30,21 +32,22 @@ export function maxLength<TPathKind extends PathKind = PathKind.Root>(
   maxLength: number | LogicFn<ValueWithLength, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<ValueWithLength, TPathKind>,
 ) {
-  // TODO: should we memoize this in a computed? (applies to other metadata validators as well)
-  const reactiveMaxLengthValue = typeof maxLength === 'number' ? () => maxLength : maxLength;
-  metadata(path, MAX_LENGTH, reactiveMaxLengthValue);
+  const reactiveMaxLength = define(path, (ctx) => {
+    return computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx)));
+  });
 
+  metadata(path, MAX_LENGTH, ({state}) => state.data(reactiveMaxLength)!());
   validate(path, (ctx) => {
-    const value = reactiveMaxLengthValue(ctx);
-    if (value === undefined) {
+    const maxLength = ctx.state.data(reactiveMaxLength)!();
+    if (maxLength === undefined) {
       return undefined;
     }
 
-    if (ctx.value().length > value) {
+    if (ctx.value().length > maxLength) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
-        return ValidationError.maxLength(value);
+        return ValidationError.maxLength(maxLength);
       }
     }
 

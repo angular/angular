@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {computed} from '@angular/core';
+import {define} from '../data';
 import {metadata, validate} from '../logic';
 import {MIN} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
@@ -30,11 +32,13 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const reactiveMinValue = typeof minValue === 'number' ? () => minValue : minValue;
+  const reactiveMinValue = define(path, (ctx) => {
+    return computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx)));
+  });
 
-  metadata(path, MIN, reactiveMinValue);
+  metadata(path, MIN, ({state}) => state.data(reactiveMinValue)!());
   validate(path, (ctx) => {
-    const min = reactiveMinValue(ctx);
+    const min = ctx.state.data(reactiveMinValue)!();
 
     if (min === undefined || Number.isNaN(min)) {
       return undefined;

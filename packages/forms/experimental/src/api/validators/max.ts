@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {computed} from '@angular/core';
+import {define} from '../data';
 import {metadata, validate} from '../logic';
 import {MAX} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
@@ -30,11 +32,13 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const reactiveMaxValue = typeof maxValue === 'number' ? () => maxValue : maxValue;
+  const reactiveMaxValue = define(path, (ctx) => {
+    return computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx)));
+  });
 
-  metadata(path, MAX, reactiveMaxValue);
+  metadata(path, MAX, ({state}) => state.data(reactiveMaxValue)!());
   validate(path, (ctx) => {
-    const max = reactiveMaxValue(ctx);
+    const max = ctx.state.data(reactiveMaxValue)!();
 
     if (max === undefined || Number.isNaN(max)) {
       return undefined;

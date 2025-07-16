@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {computed} from '@angular/core';
+import {define} from '../data';
 import {metadata, validate} from '../logic';
 import {MIN_LENGTH} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
@@ -30,22 +32,24 @@ export function minLength<TPathKind extends PathKind = PathKind.Root>(
   minLength: number | LogicFn<ValueWithLength, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<ValueWithLength, TPathKind>,
 ) {
-  const reactiveMinLengthValue = typeof minLength === 'number' ? () => minLength : minLength;
-  metadata(path, MIN_LENGTH, reactiveMinLengthValue);
+  const reactiveMinLength = define(path, (ctx) => {
+    return computed(() => (typeof minLength === 'number' ? minLength : minLength(ctx)));
+  });
 
+  metadata(path, MIN_LENGTH, ({state}) => state.data(reactiveMinLength)!());
   validate(path, (ctx) => {
     // TODO: resolve TODO below
     // TODO(kirjs): Should this support set? undefined?
-    const value = reactiveMinLengthValue(ctx);
-    if (value === undefined) {
+    const minLength = ctx.state.data(reactiveMinLength)!();
+    if (minLength === undefined) {
       return undefined;
     }
 
-    if (ctx.value().length < value) {
+    if (ctx.value().length < minLength) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
-        return ValidationError.minLength(value);
+        return ValidationError.minLength(minLength);
       }
     }
 
