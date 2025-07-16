@@ -20,11 +20,13 @@ import {
   watchFile,
   write,
   writeFile,
+  writeFileSync,
+  rmSync,
+  mkdtempSync,
 } from 'fs';
-import url from 'url';
+import {join} from 'path';
+import {tmpdir} from 'os';
 import util from 'util';
-
-const currentFile = url.fileURLToPath(import.meta.url);
 
 describe('nodejs file system', () => {
   describe('async method patch test', () => {
@@ -169,9 +171,14 @@ describe('nodejs file system', () => {
 });
 
 describe('util.promisify', () => {
+  let tmpDir: string;
+  beforeAll(() => {
+    tmpDir = mkdtempSync(join(process.env['TEST_TMPDIR']!, 'zone-fs-test-'));
+  });
+
   it('fs.exists should work with util.promisify', (done: DoneFn) => {
     const promisifyExists = util.promisify(exists);
-    promisifyExists(currentFile).then(
+    promisifyExists(tmpDir).then(
       (r) => {
         expect(r).toBe(true);
         done();
@@ -184,7 +191,7 @@ describe('util.promisify', () => {
 
   it('fs.realpath should work with util.promisify', (done: DoneFn) => {
     const promisifyRealpath = util.promisify(realpath);
-    promisifyRealpath(currentFile).then(
+    promisifyRealpath(tmpDir).then(
       (r) => {
         expect(r).toBeDefined();
         done();
@@ -197,7 +204,7 @@ describe('util.promisify', () => {
 
   it('fs.realpath.native should work with util.promisify', (done: DoneFn) => {
     const promisifyRealpathNative = util.promisify(realpath.native);
-    promisifyRealpathNative(currentFile).then(
+    promisifyRealpathNative(tmpDir).then(
       (r) => {
         expect(r).toBeDefined();
         done();
@@ -209,11 +216,18 @@ describe('util.promisify', () => {
   });
 
   it('fs.read should work with util.promisify', (done: DoneFn) => {
+    const readFilePath = join(tmpDir, 'readCheckFile');
     const promisifyRead = util.promisify(read);
-    const fd = openSync(currentFile, 'r');
+    writeFileSync(
+      readFilePath,
+      `This is a file that was placed for a test, it's file size is 63`,
+      'utf-8',
+    );
+    const fd = openSync(readFilePath, 'r');
     const stats = fstatSync(fd);
     const bufferSize = stats.size;
-    const chunkSize = 512;
+    // We read a chunk that we know is smaller than the file size.
+    const chunkSize = 60;
     const buffer = new Buffer(bufferSize);
     let bytesRead = 0;
     // fd, buffer, offset, length, position, callback
@@ -232,7 +246,7 @@ describe('util.promisify', () => {
 
   it('fs.write should work with util.promisify', (done: DoneFn) => {
     const promisifyWrite = util.promisify(write);
-    const dest = currentFile + 'write';
+    const dest = join(tmpDir, 'write');
     const fd = openSync(dest, 'a');
     const stats = fstatSync(fd);
     const chunkSize = 512;

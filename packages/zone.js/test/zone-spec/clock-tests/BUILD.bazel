@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
-ts_library(
+ts_project(
     name = "patched_init",
     testonly = True,
     srcs = [
@@ -8,51 +8,61 @@ ts_library(
         "patched.init.ts",
     ],
     deps = [
-        "//packages/zone.js/test:node_entry_point",
+        "//packages/zone.js/test:node_entry_point_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_patched_lib",
     testonly = True,
     srcs = [
         "fake-async-patched-clock.spec.ts",
     ],
     deps = [
-        "//packages/zone.js/lib:zone_d_ts",
+        "//packages/zone.js/lib:zone_d_ts_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "unpatched_init",
     testonly = True,
     srcs = [
         "unpatched.init.ts",
     ],
     deps = [
-        "//packages/zone.js/test:node_entry_point",
+        "//packages/zone.js/test:node_entry_point_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_unpatched_lib",
     testonly = True,
     srcs = [
         "fake-async-unpatched-clock.spec.ts",
     ],
     deps = [
-        "//packages/zone.js/lib:zone_d_ts",
+        "//packages/zone.js/lib:zone_d_ts_rjs",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test_patched",
-    bootstrap = [":patched_init"],
-    deps = [":test_patched_lib"],
+    data = [
+        ":patched_init_rjs",
+        ":test_patched_lib",
+    ],
+    fixed_args = [
+        "--require={root}/packages/zone.js/test/zone-spec/clock-tests/patched.init.js",
+    ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test_unpatched",
-    bootstrap = [":unpatched_init"],
-    deps = [":test_unpatched_lib"],
+    data = [
+        ":test_unpatched_lib_rjs",
+        ":unpatched_init_rjs",
+    ],
+    fixed_args = [
+        "--require={root}/packages/zone.js/test/zone-spec/clock-tests/unpatched.init.js",
+    ],
 )
