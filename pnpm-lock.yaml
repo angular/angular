@@ -439,8 +439,8 @@ importers:
         specifier: ^7.0.0
         version: 7.1.0
       cypress:
-        specifier: 14.5.1
-        version: 14.5.1
+        specifier: 14.5.2
+        version: 14.5.2
       emoji-regex:
         specifier: ^10.3.0
         version: 10.4.0
@@ -709,8 +709,8 @@ importers:
         specifier: 16.0.0
         version: 16.0.0
       mermaid:
-        specifier: 11.8.1
-        version: 11.8.1
+        specifier: 11.9.0
+        version: 11.9.0
       ngx-progressbar:
         specifier: 14.0.0
         version: 14.0.0(@angular/cdk@20.1.0-rc.0)(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
@@ -11034,8 +11034,8 @@ packages:
   /custom-event@1.0.1:
     resolution: {integrity: sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==, tarball: https://registry.npmjs.org/custom-event/-/custom-event-1.0.1.tgz}
 
-  /cypress@14.5.1:
-    resolution: {integrity: sha512-vYBeZKW3UAtxwv5mFuSlOBCYhyO0H86TeDKRJ7TgARyHiREIaiDjeHtqjzrXRFrdz9KnNavqlm+z+hklC7v8XQ==, tarball: https://registry.npmjs.org/cypress/-/cypress-14.5.1.tgz}
+  /cypress@14.5.2:
+    resolution: {integrity: sha512-O4E4CEBqDHLDrJD/dfStHPcM+8qFgVVZ89Li7xDU0yL/JxO/V0PEcfF2I8aGa7uA2MGNLkNUAnghPM83UcHOJw==, tarball: https://registry.npmjs.org/cypress/-/cypress-14.5.2.tgz}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     dependencies:
@@ -16625,12 +16625,6 @@ packages:
     hasBin: true
     dev: true
 
-  /marked@15.0.12:
-    resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==, tarball: https://registry.npmjs.org/marked/-/marked-15.0.12.tgz}
-    engines: {node: '>= 18'}
-    hasBin: true
-    dev: false
-
   /marked@16.0.0:
     resolution: {integrity: sha512-MUKMXDjsD/eptB7GPzxo4xcnLS6oo7/RHimUMHEDRhUooPwmN9BEpMl7AEOJv3bmso169wHI2wUF9VQgL7zfmA==, tarball: https://registry.npmjs.org/marked/-/marked-16.0.0.tgz}
     engines: {node: '>= 20'}
@@ -16709,33 +16703,6 @@ packages:
   /merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==, tarball: https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz}
     engines: {node: '>= 8'}
-
-  /mermaid@11.8.1:
-    resolution: {integrity: sha512-VSXJLqP1Sqw5sGr273mhvpPRhXwE6NlmMSqBZQw+yZJoAJkOIPPn/uT3teeCBx60Fkt5zEI3FrH2eVT0jXRDzw==, tarball: https://registry.npmjs.org/mermaid/-/mermaid-11.8.1.tgz}
-    dependencies:
-      '@braintree/sanitize-url': 7.1.1
-      '@iconify/utils': 2.3.0
-      '@mermaid-js/parser': 0.6.2
-      '@types/d3': 7.4.3
-      cytoscape: 3.32.1
-      cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.1)
-      cytoscape-fcose: 2.2.0(cytoscape@3.32.1)
-      d3: 7.9.0
-      d3-sankey: 0.12.3
-      dagre-d3-es: 7.0.11
-      dayjs: 1.11.13
-      dompurify: 3.2.6
-      katex: 0.16.22
-      khroma: 2.1.0
-      lodash-es: 4.17.21
-      marked: 15.0.12
-      roughjs: 4.6.6
-      stylis: 4.3.6
-      ts-dedent: 2.2.0
-      uuid: 11.1.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
 
   /mermaid@11.9.0:
     resolution: {integrity: sha512-YdPXn9slEwO0omQfQIsW6vS84weVQftIyyTGAZCwM//MGhPzL1+l6vO6bkf0wnP4tHigH1alZ5Ooy3HXI2gOag==, tarball: https://registry.npmjs.org/mermaid/-/mermaid-11.9.0.tgz}

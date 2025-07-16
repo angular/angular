@@ -7113,10 +7113,10 @@ custom-event@~1.0.0:
   resolved "https://registry.yarnpkg.com/custom-event/-/custom-event-1.0.1.tgz#5d02a46850adf1b4a317946a3928fccb5bfd0425"
   integrity sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==
 
-cypress@14.5.1:
-  version "14.5.1"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-14.5.1.tgz#0af3f2ce7beb82f8d88a8a3cb7d8e40326114ce2"
-  integrity sha512-vYBeZKW3UAtxwv5mFuSlOBCYhyO0H86TeDKRJ7TgARyHiREIaiDjeHtqjzrXRFrdz9KnNavqlm+z+hklC7v8XQ==
+cypress@14.5.2:
+  version "14.5.2"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-14.5.2.tgz#b45563bf9a96b815ab6e5d028b49ce0b0fe80cb2"
+  integrity sha512-O4E4CEBqDHLDrJD/dfStHPcM+8qFgVVZ89Li7xDU0yL/JxO/V0PEcfF2I8aGa7uA2MGNLkNUAnghPM83UcHOJw==
   dependencies:
     "@cypress/request" "^3.0.8"
     "@cypress/xvfb" "^1.2.4"
