@@ -154,7 +154,7 @@ jobs:
           yarn bazel build \
           //packages/zone.js/bundles:zone.umd.js \
           //packages/zone.js:npm_package \
-          //packages/zone.js/test/closure:closure_js \
+          //packages/zone.js/test/closure:closure_rjs
 
       - run: |
           rm -Rf packages/zone.js/build
@@ -166,7 +166,7 @@ jobs:
           cp dist/bin/packages/zone.js/bundles/zone.umd.js packages/zone.js/build/zone.umd.js
           cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/
           cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/
-          cp dist/bin/packages/zone.js/test/closure/zone.closure.mjs ./packages/zone.js/build/test/zone.closure.mjs
+          cp dist/bin/packages/zone.js/test/closure/zone.closure.js ./packages/zone.js/build/test/zone.closure.mjs
 
         # Install
       - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
