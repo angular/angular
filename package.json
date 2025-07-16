@@ -186,7 +186,7 @@
     "cldr": "7.9.0",
     "cldrjs": "0.5.5",
     "conventional-changelog": "^7.0.0",
-    "cypress": "14.5.1",
+    "cypress": "14.5.2",
     "emoji-regex": "^10.3.0",
     "firebase-tools": "^14.0.0",
     "get-tsconfig": "^4.10.1",
