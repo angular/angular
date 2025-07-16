@@ -1642,8 +1642,9 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         // `HTMLElement.addEventListener` using `HTMLElementEventMap` to infer an accurate type for
         // `$event` depending on the event name. For unknown event names, TypeScript resorts to the
         // base `Event` type.
-        const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Infer);
         let target: ts.Expression;
+        let domEventAssertion: ts.Expression | undefined;
+
         // Only check for `window` and `document` since in theory any target can be passed.
         if (output.target === 'window' || output.target === 'document') {
           target = ts.factory.createIdentifier(output.target);
@@ -1652,11 +1653,52 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         } else {
           target = elId;
         }
+
+        // By default the target of an event is `EventTarget | null`, because of bubbling
+        // and custom events. This can be inconvenient in some common cases like `input` elements
+        // since we don't have the ability to type cast in templates. We can improve the type
+        // checking for some of these cases by inferring the target based on the element it was
+        // bound to. We can only do this safely if the element is a void element (e.g. `input` or
+        // `img`), because we know that it couldn't have bubbled from a child. The event handler
+        // with the assertion would look as follows:
+        //
+        // ```
+        // const _t1 = document.createElement('input');
+        //
+        // _t1.addEventListener('input', ($event) => {
+        //   ɵassertType<typeof _t1>($event.target);
+        //   handler($event.target);
+        // });
+        // ```
+        if (
+          this.target instanceof TmplAstElement &&
+          this.target.isVoid &&
+          ts.isIdentifier(target)
+        ) {
+          domEventAssertion = ts.factory.createCallExpression(
+            this.tcb.env.referenceExternalSymbol('@angular/core', 'ɵassertType'),
+            [ts.factory.createTypeQueryNode(target)],
+            [
+              ts.factory.createPropertyAccessExpression(
+                ts.factory.createIdentifier(EVENT_PARAMETER),
+                'target',
+              ),
+            ],
+          );
+        }
+
         const propertyAccess = ts.factory.createPropertyAccessExpression(
           target,
           'addEventListener',
         );
         addParseSpanInfo(propertyAccess, output.keySpan);
+        const handler = tcbCreateEventHandler(
+          output,
+          this.tcb,
+          this.scope,
+          EventParamType.Infer,
+          domEventAssertion,
+        );
         const call = ts.factory.createCallExpression(
           /* expression */ propertyAccess,
           /* typeArguments */ undefined,
@@ -3476,9 +3518,14 @@ function tcbCreateEventHandler(
   tcb: Context,
   scope: Scope,
   eventType: EventParamType | ts.TypeNode,
+  assertionExpression?: ts.Expression,
 ): ts.Expression {
   const handler = tcbEventHandlerExpression(event.handler, tcb, scope);
   const statements: ts.Statement[] = [];
+
+  if (assertionExpression !== undefined) {
+    statements.push(ts.factory.createExpressionStatement(assertionExpression));
+  }
 
   // TODO(crisbeto): remove the `checkTwoWayBoundEvents` check in v20.
   if (event.type === ParsedEventType.TwoWay && tcb.env.config.checkTwoWayBoundEvents) {
