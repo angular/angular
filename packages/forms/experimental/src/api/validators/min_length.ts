@@ -21,7 +21,7 @@ import {BaseValidatorConfig, ValueWithLength} from './types';
  * @param path Path of the field to validate
  * @param minLength The minimum length, or a LogicFn that returns the minimum length.
  * @param config Optional, allows providing any of the following options:
- *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.minlength(minLength)`
+ *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.minLength(minLength)`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
@@ -45,7 +45,7 @@ export function minLength<TPathKind extends PathKind = PathKind.Root>(
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
-        return ValidationError.minlength(value);
+        return ValidationError.minLength(value);
       }
     }
 

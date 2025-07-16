@@ -34,13 +34,13 @@ describe('standard schema integration', () => {
 
     expect(nameForm.first().errors()).toEqual([
       jasmine.objectContaining({
-        kind: 'standardschema',
+        kind: 'standardSchema',
         issue: jasmine.objectContaining({message: 'String must contain at least 2 character(s)'}),
       }),
     ]);
     expect(nameForm.last().errors()).toEqual([
       jasmine.objectContaining({
-        kind: 'standardschema',
+        kind: 'standardSchema',
         issue: jasmine.objectContaining({message: 'String must contain at least 3 character(s)'}),
       }),
     ]);
@@ -71,13 +71,13 @@ describe('standard schema integration', () => {
 
     expect(nameForm.first().errors()).toEqual([
       jasmine.objectContaining({
-        kind: 'standardschema',
+        kind: 'standardSchema',
         issue: jasmine.objectContaining({message: 'String must contain at least 2 character(s)'}),
       }),
     ]);
     expect(nameForm.last().errors()).toEqual([
       jasmine.objectContaining({
-        kind: 'standardschema',
+        kind: 'standardSchema',
         issue: jasmine.objectContaining({message: 'String must contain at least 3 character(s)'}),
       }),
     ]);
