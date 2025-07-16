@@ -7,18 +7,14 @@ load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@devinfra//bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
 load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
-load("@npm//@bazel/concatjs:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//typescript:index.bzl", "tsc")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
-load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
-
-_DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 
 http_server = _http_server
 extract_types = _extract_types
@@ -53,59 +49,6 @@ PKG_GROUP_REPLACEMENTS = {
       %s
     ]""" % ",\n      ".join(["\"%s\"" % s for s in ANGULAR_SCOPED_PACKAGES]),
 }
-
-ts_config = _ts_config
-
-def ts_library(
-        name,
-        tsconfig = None,
-        testonly = False,
-        deps = [],
-        module_name = None,
-        package_name = None,
-        devmode_target = "es2022",
-        prodmode_target = "es2022",
-        **kwargs):
-    """Default values for ts_library"""
-    deps = deps + ["@npm//tslib"]
-    if testonly:
-        # Match the types[] in //packages:tsconfig-test.json
-        deps.append("@npm//@types/jasmine")
-        deps.append("@npm//@types/node")
-    if not tsconfig and testonly:
-        tsconfig = _DEFAULT_TSCONFIG_TEST
-
-    if not module_name:
-        module_name = compute_module_name(testonly)
-
-    # If no `package_name` is explicitly set, we use the default module name as package
-    # name, so that the target can be resolved within NodeJS executions, by activating
-    # the Bazel NodeJS linker. See: https://github.com/bazelbuild/rules_nodejs/pull/2799.
-    if not package_name:
-        package_name = compute_module_name(testonly)
-
-    default_module = "esnext"
-
-    _ts_library(
-        name = name,
-        tsconfig = tsconfig,
-        testonly = testonly,
-        deps = deps,
-        devmode_target = devmode_target,
-        devmode_module = default_module,
-        # For prodmode, the target is set to `ES2022`. `@bazel/typecript` sets `ES2015` by
-        # default. Note that this should be in sync with the `ng_module` tsconfig generation.
-        # https://github.com/bazelbuild/rules_nodejs/blob/901df3868e3ceda177d3ed181205e8456a5592ea/third_party/github.com/bazelbuild/rules_typescript/internal/common/tsconfig.bzl#L195
-        # https://github.com/bazelbuild/rules_nodejs/blob/9b36274dba34204625579463e3da054a9f42cb47/packages/typescript/internal/build_defs.bzl#L85.
-        prodmode_target = prodmode_target,
-        prodmode_module = default_module,
-        # `module_name` is used for AMD module names within emitted JavaScript files.
-        module_name = module_name,
-        # `package_name` can be set to allow for the Bazel NodeJS linker to run. This
-        # allows for resolution of the given target within the `node_modules/`.
-        package_name = package_name,
-        **kwargs
-    )
 
 def pkg_npm(name, deps = [], validate = True, **kwargs):
     """Default values for pkg_npm"""
