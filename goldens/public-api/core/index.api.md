@@ -188,12 +188,15 @@ export interface Binding {
 // @public
 export function booleanAttribute(value: unknown): boolean;
 
-// @public
+// @public @deprecated
 export interface BootstrapOptions {
     // @deprecated
     ignoreChangesOutsideZone?: boolean;
+    // @deprecated
     ngZone?: NgZone | 'zone.js' | 'noop';
+    // @deprecated
     ngZoneEventCoalescing?: boolean;
+    // @deprecated
     ngZoneRunCoalescing?: boolean;
 }
 
