@@ -9,7 +9,7 @@ import {metadata, validate} from '../logic';
 import {PATTERN} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig} from './types';
+import {BaseValidatorConfig} from './util';
 
 function strToRegexp(pattern: string) {
   let regexStr = '';

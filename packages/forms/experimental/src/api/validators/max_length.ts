@@ -12,7 +12,7 @@ import {metadata, validate} from '../logic';
 import {MAX_LENGTH} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig, ValueWithLength} from './types';
+import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
 
 /**
  * Binds a validator to the given path that requires the length of the value to be less than or
@@ -25,12 +25,16 @@ import {BaseValidatorConfig, ValueWithLength} from './types';
  * @param config Optional, allows providing any of the following options:
  *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.maxLength(maxLength)`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
+ * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
-export function maxLength<TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<ValueWithLength, TPathKind>,
-  maxLength: number | LogicFn<ValueWithLength, number | undefined, TPathKind>,
-  config?: BaseValidatorConfig<ValueWithLength, TPathKind>,
+export function maxLength<
+  TValue extends ValueWithLengthOrSize,
+  TPathKind extends PathKind = PathKind.Root,
+>(
+  path: FieldPath<TValue, TPathKind>,
+  maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   const reactiveMaxLength = define(path, (ctx) => {
     return computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx)));
@@ -43,7 +47,7 @@ export function maxLength<TPathKind extends PathKind = PathKind.Root>(
       return undefined;
     }
 
-    if (ctx.value().length > maxLength) {
+    if (getLengthOrSize(ctx.value()) > maxLength) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {

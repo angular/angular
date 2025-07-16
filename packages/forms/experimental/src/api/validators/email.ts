@@ -9,7 +9,7 @@
 import {validate} from '../logic';
 import {FieldPath, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig} from './types';
+import {BaseValidatorConfig} from './util';
 
 /**
  * A regular expression that matches valid e-mail addresses.

@@ -12,7 +12,7 @@ import {metadata, validate} from '../logic';
 import {MIN_LENGTH} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig, ValueWithLength} from './types';
+import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
 
 /**
  * Binds a validator to the given path that requires the length of the value to be greater than or
@@ -25,12 +25,16 @@ import {BaseValidatorConfig, ValueWithLength} from './types';
  * @param config Optional, allows providing any of the following options:
  *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.minLength(minLength)`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
+ * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
-export function minLength<TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<ValueWithLength, TPathKind>,
-  minLength: number | LogicFn<ValueWithLength, number | undefined, TPathKind>,
-  config?: BaseValidatorConfig<ValueWithLength, TPathKind>,
+export function minLength<
+  TValue extends ValueWithLengthOrSize,
+  TPathKind extends PathKind = PathKind.Root,
+>(
+  path: FieldPath<TValue, TPathKind>,
+  minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   const reactiveMinLength = define(path, (ctx) => {
     return computed(() => (typeof minLength === 'number' ? minLength : minLength(ctx)));
@@ -38,14 +42,12 @@ export function minLength<TPathKind extends PathKind = PathKind.Root>(
 
   metadata(path, MIN_LENGTH, ({state}) => state.data(reactiveMinLength)!());
   validate(path, (ctx) => {
-    // TODO: resolve TODO below
-    // TODO(kirjs): Should this support set? undefined?
     const minLength = ctx.state.data(reactiveMinLength)!();
     if (minLength === undefined) {
       return undefined;
     }
 
-    if (ctx.value().length < minLength) {
+    if (getLengthOrSize(ctx.value()) < minLength) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {

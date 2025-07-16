@@ -89,6 +89,19 @@ describe('maxLength validator', () => {
     ]);
   });
 
+  it('works with sets', () => {
+    const data = signal(new Set([1, 2, 3, 4]));
+    const f = form(
+      data,
+      (p) => {
+        maxLength(p, 3);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().errors()).toEqual([ValidationError.maxLength(3)]);
+  });
+
   describe('metadata', () => {
     it('stores the metadata on maxLength', () => {
       const data = signal({text: 'abcdef'});

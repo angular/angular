@@ -12,7 +12,7 @@ import {metadata, validate} from '../logic';
 import {MAX} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig} from './types';
+import {BaseValidatorConfig} from './util';
 
 /**
  * Binds a validator to the given path that requires the the value to be less than or equal to the

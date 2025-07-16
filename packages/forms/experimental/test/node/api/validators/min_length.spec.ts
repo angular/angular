@@ -89,6 +89,19 @@ describe('minLength validator', () => {
     ]);
   });
 
+  it('works with sets', () => {
+    const data = signal(new Set([1, 2, 3, 4]));
+    const f = form(
+      data,
+      (p) => {
+        minLength(p, 5);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().errors()).toEqual([ValidationError.minLength(5)]);
+  });
+
   describe('metadata', () => {
     it('stores the metadata on minLength', () => {
       const data = signal({text: 'ab'});
