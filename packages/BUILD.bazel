@@ -1,8 +1,7 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
-load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
+load("@npm//@bazel/concatjs:index.bzl", rules_node_js_ts_config = "ts_config")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
-load("//tools:defaults.bzl", "ts_config")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -35,13 +34,7 @@ ts_project(
     ],
 )
 
-ts_config(
-    name = "tsconfig-test",
-    src = "tsconfig-test.json",
-    deps = [":tsconfig-build.json"],
-)
-
-ts_config(
+rules_node_js_ts_config(
     name = "tsec_config",
     src = "tsconfig-tsec-base.json",
     deps = [
@@ -50,7 +43,7 @@ ts_config(
     ],
 )
 
-rules_js_tsconfig(
+ts_config(
     name = "tsconfig_build",
     src = "tsconfig-build.json",
     deps = [
@@ -58,7 +51,7 @@ rules_js_tsconfig(
     ],
 )
 
-rules_js_tsconfig(
+ts_config(
     name = "tsconfig_test",
     src = "tsconfig-test.json",
     deps = [
