@@ -41,6 +41,12 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('(-1)');
   });
 
+  it('should assert the type for DOM events bound on void elements', () => {
+    const result = tcb(`<input (input)="handleInput($event.target.value)">`);
+    expect(result).toContain('i1.ɵassertType<typeof _t1>($event.target);');
+    expect(result).toContain('(this).handleInput((((($event).target)).value));');
+  });
+
   it('should handle keyed property access', () => {
     const TEMPLATE = `{{a[b]}}`;
     expect(tcb(TEMPLATE)).toContain('(((this).a))[((this).b)]');
@@ -371,7 +377,7 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE);
     expect(block).not.toContain('"div"');
     expect(block).toContain(
-      'var _t2 = document.createElement("button"); ' + 'var _t1 = _t2; ' + '_t2.addEventListener',
+      'var _t1 = document.createElement("button"); ' + 'var _t2 = _t1; ' + '_t1.addEventListener',
     );
   });
 
