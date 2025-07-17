@@ -18,7 +18,7 @@
   <dd>{{node.epoch}}</dd>
 </dl>
 
-@if (['signal', 'computed'].includes(node.kind)) {
+@if (node.kind === 'signal' || node.kind === 'computed') {
   @if (node.preview.preview === 'undefined') {
     <div class="value">undefined</div>
   } @else {
