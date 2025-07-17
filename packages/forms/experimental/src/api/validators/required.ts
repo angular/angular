@@ -15,7 +15,7 @@ import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
 
 /**
- * Binds a validator to the given path that requires the the value to be non-empty.
+ * Binds a validator to the given path that requires the value to be non-empty.
  * This function can only be called on any type of path.
  * In addition to binding a validator, this function adds `REQUIRED` metadata to the field.
  *

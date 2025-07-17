@@ -15,7 +15,7 @@ import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
 
 /**
- * Binds a validator to the given path that requires the the value to be greater than or equal to
+ * Binds a validator to the given path that requires the value to be greater than or equal to
  * the given `minValue`.
  * This function can only be called on number paths.
  * In addition to binding a validator, this function adds `MIN` metadata to the field.
