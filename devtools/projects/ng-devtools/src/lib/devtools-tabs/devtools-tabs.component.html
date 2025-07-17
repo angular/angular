@@ -1,13 +1,12 @@
-<section id="main-toolbar">
+<section class="main-toolbar">
   <div class="tools">
-    <button (click)="toggleInspector()" matTooltip="Inspect element" aria-label="Inspect element">
+    <button
+      class="toolbar-btn"
+      (click)="toggleInspector()"
+      matTooltip="Inspect element"
+      aria-label="Inspect element"
+    >
       <mat-icon [class.inspector-active]="inspectorRunning()"> pin_end </mat-icon>
-    </button>
-    <button [matMenuTriggerFor]="menu" matTooltip="Open settings" aria-label="Open settings">
-      <mat-icon> settings </mat-icon>
-    </button>
-    <button [matMenuTriggerFor]="info" matTooltip="Info" aria-label="Info">
-      <mat-icon> info </mat-icon>
     </button>
   </div>
 
@@ -43,30 +42,20 @@
     }
   </nav>
 
-  @if (angularVersion()) {
-    <div id="app-angular-version">
-      Angular version:
-
-      @if (majorAngularVersion() > 12 || majorAngularVersion() == 0) {
-        <span id="version-number">
-          {{ angularVersion() }}
-        </span>
-      } @else {
-        <span
-          id="version-number"
-          matTooltip="
-            Angular Devtools supports Angular versions 12 and above. Some DevTools features may be available in
-            older versions of Angular, but it is not officially supported.
-          "
-          class="unsupported-version"
-        >
-          {{ angularVersion() }} (unsupported)
-        </span>
-      }
-
-      | DevTools: {{ extensionVersion() }}
-    </div>
-  }
+  <div class="settings">
+    <div class="ver-ruler"></div>
+    <button class="toolbar-btn" [matMenuTriggerFor]="info" matTooltip="Info" aria-label="Info">
+      <mat-icon> info </mat-icon>
+    </button>
+    <button
+      class="toolbar-btn"
+      [matMenuTriggerFor]="menu"
+      matTooltip="Open settings"
+      aria-label="Open settings"
+    >
+      <mat-icon> settings </mat-icon>
+    </button>
+  </div>
 </section>
 
 <mat-tab-nav-panel #tabPanel>
@@ -152,16 +141,32 @@
 </mat-menu>
 
 <mat-menu #info="matMenu">
+  <p mat-menu-item class="version-label">
+    Angular version:
+    @if (majorAngularVersion() > 12 || majorAngularVersion() === 0) {
+      {{ angularVersion() }}
+    } @else {
+      <span
+        matTooltip="
+          Angular Devtools supports Angular versions 12 and above. Some DevTools features may be available in
+          older versions of Angular, but it is not officially supported.
+        "
+      >
+        {{ angularVersion() }} (unsupported)
+      </span>
+    }
+  </p>
+  <p mat-menu-item class="version-label">DevTools version: {{ extensionVersion() }}</p>
   <a mat-menu-item href="https://angular.dev/tools/devtools" target="_blank">
-    <mat-icon>library_books</mat-icon>
+    <mat-icon class="menu-icon">library_books</mat-icon>
     Guide
   </a>
   <a mat-menu-item href="https://github.com/angular/angular" target="_blank">
-    <mat-icon>launch</mat-icon>
+    <mat-icon class="menu-icon">launch</mat-icon>
     GitHub
   </a>
   <a mat-menu-item href="https://github.com/angular/angular/issues" target="_blank">
-    <mat-icon>bug_report</mat-icon>
+    <mat-icon class="menu-icon">bug_report</mat-icon>
     Issues
   </a>
 </mat-menu>

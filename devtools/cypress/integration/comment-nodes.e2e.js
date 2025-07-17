@@ -7,7 +7,7 @@
  */
 
 function showComments() {
-  cy.get('#main-toolbar > .tools > button:nth-child(2)').click();
+  cy.get('.main-toolbar > .settings > button:last-child').click();
   cy.get('.cdk-overlay-container mat-slide-toggle + span:contains("Show comment nodes")').click();
 }
 
