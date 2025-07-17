@@ -1,3 +1,12 @@
+<a name="20.1.2"></a>
+# 20.1.2 (2025-07-17)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ad10fd63b](https://github.com/angular/angular/commit/8ad10fd63b01a906efbfa50ccccb7914610c61bd) | fix | fix detection of directive deps in JIT ([#62666](https://github.com/angular/angular/pull/62666)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.1"></a>
 # 20.1.1 (2025-07-16)
 ### compiler

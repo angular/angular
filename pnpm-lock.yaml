@@ -878,7 +878,7 @@ importers:
     dependencies:
       '@angular/core':
         specifier: ^20.1.0-next
-        version: 20.1.0(@angular/compiler@packages+compiler)(zone.js@packages+zone.js)
+        version: 20.1.1(@angular/compiler@packages+compiler)(zone.js@packages+zone.js)
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -2153,11 +2153,11 @@ packages:
       - supports-color
     dev: false
 
-  /@angular/core@20.1.0(@angular/compiler@packages+compiler)(zone.js@packages+zone.js):
-    resolution: {integrity: sha512-/dJooZi+OAACkjWgGMPrOOGikdtlTJXwdeXPJTgZSUD5L8oQMbhZFG0XW/1Hldvsti87wPjZPz67ivB7zR86VA==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.1.0.tgz}
+  /@angular/core@20.1.1(@angular/compiler@packages+compiler)(zone.js@packages+zone.js):
+    resolution: {integrity: sha512-7zzULRROtejS7AlLqG7fpzlebLd+FoE1eV3QiVD9GOkg+KzuUUbX7WFWmY8HkvS7ye6mSQEWfv4+yYa3AyA9SA==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.1.1.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/compiler': 20.1.0
+      '@angular/compiler': 20.1.1
       zone.js: ~0.15.0
     peerDependenciesMeta:
       '@angular/compiler':
