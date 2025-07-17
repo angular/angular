@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs")
-load("//tools:defaults2.bzl", "ng_package", "ng_project", "npm_package")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -58,18 +58,18 @@ api_golden_test_npm_package(
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden_dir = "angular/goldens/public-api/forms",
-    npm_package = "angular/packages/forms/npm_package",
+    golden_dir = "goldens/public-api/forms",
+    npm_package = "packages/forms/npm_package",
 )
 
 api_golden_test(
     name = "forms_errors",
     data = [
         "//goldens:public-api",
-        "//packages/forms",
+        "//packages/forms:forms_rjs",
     ],
-    entry_point = "angular/packages/forms/src/errors.d.ts",
-    golden = "angular/goldens/public-api/forms/errors.api.md",
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/forms/errors.api.md",
 )
 
 filegroup(

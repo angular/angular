@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs")
-load("//tools:defaults2.bzl", "ng_package", "npm_package", "ts_project")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "api_golden_test_npm_package", "ng_package", "npm_package", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -59,14 +59,14 @@ api_golden_test_npm_package(
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden_dir = "angular/goldens/public-api/localize",
-    npm_package = "angular/packages/localize/npm_package",
+    golden_dir = "goldens/public-api/localize",
+    npm_package = "packages/localize/npm_package",
     # The logic for the localize function is exported in the primary entry-point, but users
     # are not supposed to import it from there. We still want to guard these exports though.
     strip_export_pattern = "^ɵ(?!.localize|LocalizeFn|TranslateFn)",
-    # The tool entry-point uses namespace aliases and API extractor needs to be
-    # able to resolve `@babel/core` to fully understand the `types` re-export/alias.
-    types = ["@npm//@types/babel__core"],
+    types = {
+        "//:node_modules/@types/babel__core": "babel",
+    },
 )
 
 filegroup(
