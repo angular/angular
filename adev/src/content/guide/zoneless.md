@@ -11,7 +11,7 @@ The main advantages to removing ZoneJS as a dependency are:
 
 ## Enabling Zoneless in an application
 
-The API for enabling Zoneless is currently in developer preview. The shape of the API and underlying behavior can change in patch versions.
+
 
 ```typescript
 // standalone bootstrap
