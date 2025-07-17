@@ -108,7 +108,7 @@ const KeyCtor = MetadataKey as unknown as new <TValue>() => MetadataKey<TValue>;
 
 /**
  * Represents static metadata that is set once when the field is created and cannot change.
- * If the metadata is not defined for a given field, its valud is undefined.
+ * If the metadata is not defined for a given field, its value is undefined.
  */
 export class StaticMetadataKey<TValue> extends KeyCtor<TValue> {
   protected constructor() {
