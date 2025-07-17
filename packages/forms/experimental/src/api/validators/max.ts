@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {define} from '../data';
+import {defineComputed} from '../data';
 import {metadata, validate} from '../logic';
 import {MAX} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
@@ -21,7 +20,7 @@ import {BaseValidatorConfig} from './util';
  * In addition to binding a validator, this function adds `MAX` metadata to the field.
  *
  * @param path Path of the field to validate
- * @param maxValue The minimum value, or a LogicFn that returns the minimum value.
+ * @param maxValue The maximum value, or a LogicFn that returns the maximum value.
  * @param config Optional, allows providing any of the following options:
  *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.max(maxValue)`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
@@ -32,9 +31,9 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const reactiveMaxValue = define(path, (ctx) => {
-    return computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx)));
-  });
+  const reactiveMaxValue = defineComputed(path, (ctx) =>
+    typeof maxValue === 'number' ? maxValue : maxValue(ctx),
+  );
 
   metadata(path, MAX, ({state}) => state.data(reactiveMaxValue)!());
   validate(path, (ctx) => {
