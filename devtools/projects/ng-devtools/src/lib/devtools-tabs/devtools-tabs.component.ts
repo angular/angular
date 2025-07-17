@@ -115,7 +115,7 @@ export class DevToolsTabsComponent {
     return parseInt(version.toString().split('.')[0], 10);
   });
 
-  readonly extensionVersion = signal('Development Build');
+  readonly extensionVersion = signal('dev-build');
 
   public tabUpdate = inject(TabUpdate);
   public themeService = inject(ThemeService);
