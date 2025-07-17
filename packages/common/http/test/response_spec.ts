@@ -20,6 +20,7 @@ describe('HttpResponse', () => {
         status: HttpStatusCode.Created,
         statusText: 'Created',
         url: '/test',
+        redirected: true,
       });
       expect(resp.body).toBe('test body');
       expect(resp.headers instanceof HttpHeaders).toBeTruthy();
@@ -27,6 +28,7 @@ describe('HttpResponse', () => {
       expect(resp.status).toBe(HttpStatusCode.Created);
       expect(resp.statusText).toBe('Created');
       expect(resp.url).toBe('/test');
+      expect(resp.redirected).toBe(true);
     });
     it('uses defaults if no args passed', () => {
       const resp = new HttpResponse({});
@@ -36,6 +38,7 @@ describe('HttpResponse', () => {
       expect(resp.body).toBeNull();
       expect(resp.ok).toBeTruthy();
       expect(resp.url).toBeNull();
+      expect(resp.redirected).toBeUndefined();
     });
     it('accepts a falsy body', () => {
       expect(new HttpResponse({body: false}).body).toEqual(false);
@@ -59,12 +62,14 @@ describe('HttpResponse', () => {
         status: HttpStatusCode.Created,
         statusText: 'created',
         url: '/test',
+        redirected: false,
       }).clone();
       expect(clone.body).toBe('test');
       expect(clone.status).toBe(HttpStatusCode.Created);
       expect(clone.statusText).toBe('created');
       expect(clone.url).toBe('/test');
       expect(clone.headers).not.toBeNull();
+      expect(clone.redirected).toBe(false);
     });
     it('overrides the original', () => {
       const orig = new HttpResponse({
@@ -72,18 +77,21 @@ describe('HttpResponse', () => {
         status: HttpStatusCode.Created,
         statusText: 'created',
         url: '/test',
+        redirected: true,
       });
       const clone = orig.clone({
         body: {data: 'test'},
         status: HttpStatusCode.Ok,
         statusText: 'Okay',
         url: '/bar',
+        redirected: false,
       });
       expect(clone.body).toEqual({data: 'test'});
       expect(clone.status).toBe(HttpStatusCode.Ok);
       expect(clone.statusText).toBe('Okay');
       expect(clone.url).toBe('/bar');
       expect(clone.headers).toBe(orig.headers);
+      expect(clone.redirected).toBe(false);
     });
   });
 });

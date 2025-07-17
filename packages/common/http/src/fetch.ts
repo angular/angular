@@ -271,6 +271,8 @@ export class FetchBackend implements HttpBackend {
     // asked for JSON data and the body cannot be parsed as such.
     const ok = status >= 200 && status < 300;
 
+    const redirected = response.redirected;
+
     if (ok) {
       observer.next(
         new HttpResponse({
@@ -279,6 +281,7 @@ export class FetchBackend implements HttpBackend {
           status,
           statusText,
           url,
+          redirected,
         }),
       );
 
@@ -293,6 +296,7 @@ export class FetchBackend implements HttpBackend {
           status,
           statusText,
           url,
+          redirected,
         }),
       );
     }
