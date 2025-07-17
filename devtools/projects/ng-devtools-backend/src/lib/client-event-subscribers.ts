@@ -9,6 +9,7 @@
 import {
   ComponentExplorerViewQuery,
   ComponentType,
+  DebugSignalGraphNode,
   DevToolsNode,
   DirectivePosition,
   DirectiveType,
@@ -702,13 +703,14 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
 
   const graph = ng.ɵgetSignalGraph?.(injector);
   if (graph) {
-    const nodes = graph.nodes.map((node) => {
+    const nodes = graph.nodes.map<DebugSignalGraphNode>((node) => {
       return {
         id: node.id,
         kind: node.kind,
         label: node.label,
         epoch: node.epoch,
         preview: serializeValue(node.value),
+        debuggable: !!node.debuggableFn,
       };
     });
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);

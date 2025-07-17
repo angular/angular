@@ -22,6 +22,7 @@ export interface DebugSignalGraphNode {
   epoch: number;
   label?: string;
   preview: Descriptor;
+  debuggable: boolean;
 }
 
 export interface DebugSignalGraphEdge {

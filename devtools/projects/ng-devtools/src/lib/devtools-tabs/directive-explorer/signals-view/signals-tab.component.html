@@ -2,7 +2,7 @@
 @if (selectedNode(); as node) {
   <div class="overlay">
     <div class="header">
-      <button mat-flat-button (click)="gotoSource()">
+      <button mat-flat-button (click)="gotoSource()" [disabled]="!node.debuggable">
         <mat-icon> arrow_outward </mat-icon>
         View Source
       </button>
