@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "api_golden_test", "generate_api_docs")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "api_golden_test", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -35,10 +35,10 @@ api_golden_test(
     name = "http_errors",
     data = [
         "//goldens:public-api",
-        "//packages/common/http",
+        "//packages/common/http:http_rjs",
     ],
-    entry_point = "angular/packages/common/http/src/errors.d.ts",
-    golden = "angular/goldens/public-api/common/http/errors.api.md",
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/common/http/errors.api.md",
 )
 
 generate_api_docs(

@@ -1,6 +1,8 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+
 package(default_visibility = ["//visibility:public"])
 
-filegroup(
+copy_to_bin(
     name = "public-api",
     srcs = glob([
         "public-api/**/*.md",

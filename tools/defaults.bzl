@@ -5,7 +5,6 @@ load("@devinfra//bazel:extract_js_module_output.bzl", "extract_js_module_output"
 load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@devinfra//bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
-load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
@@ -319,16 +318,6 @@ def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
     )
     terser_minified(name = name + ".min.es5umd", testonly = testonly, src = name + ".es5umd", **common_terser_args)
     native.filegroup(name = name + ".min.es5umd.js", testonly = testonly, srcs = [name + ".min.es5umd"])
-
-def api_golden_test(**kwargs):
-    _api_golden_test(
-        **kwargs
-    )
-
-def api_golden_test_npm_package(**kwargs):
-    _api_golden_test_npm_package(
-        **kwargs
-    )
 
 def tsec_test(**kwargs):
     """Default values for tsec_test"""

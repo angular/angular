@@ -1,7 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//packages/common/locales:index.bzl", "generate_base_currencies_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs")
-load("//tools:defaults2.bzl", "ng_package", "ng_project", "npm_package")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -90,18 +90,18 @@ api_golden_test_npm_package(
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden_dir = "angular/goldens/public-api/common",
-    npm_package = "angular/packages/common/npm_package",
+    golden_dir = "goldens/public-api/common",
+    npm_package = "packages/common/npm_package",
 )
 
 api_golden_test(
     name = "common_errors",
     data = [
         "//goldens:public-api",
-        "//packages/common",
+        "//packages/common:common_rjs",
     ],
-    entry_point = "angular/packages/common/src/errors.d.ts",
-    golden = "angular/goldens/public-api/common/errors.api.md",
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/common/errors.api.md",
 )
 
 filegroup(

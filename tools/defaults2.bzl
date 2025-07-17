@@ -3,6 +3,7 @@ load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
+load("//tools/bazel:api_golden_test.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("//tools/bazel:esbuild.bzl", _esbuild_checked_in = "esbuild_checked_in")
 load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test", _zone_compatible_jasmine_test = "zone_compatible_jasmine_test", _zoneless_jasmine_test = "zoneless_jasmine_test")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
@@ -26,6 +27,8 @@ npm_sass_library = _npm_sass_library
 protractor_web_test_suite = _protractor_web_test_suite
 esbuild_checked_in = _esbuild_checked_in
 http_server = _http_server
+api_golden_test = _api_golden_test
+api_golden_test_npm_package = _api_golden_test_npm_package
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):
