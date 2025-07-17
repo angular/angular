@@ -62,11 +62,9 @@ export class PlatformRef {
         }),
         scheduleInRootZone,
       });
-    const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
     const allAppProviders = [
       internalProvideZoneChangeDetection({
         ngZoneFactory,
-        ignoreChangesOutsideZone,
       }),
       {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
       errorHandlerEnvironmentInitializer,

@@ -85,11 +85,9 @@ export const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
 
 export function internalProvideZoneChangeDetection({
   ngZoneFactory,
-  ignoreChangesOutsideZone,
   scheduleInRootZone,
 }: {
   ngZoneFactory?: () => NgZone;
-  ignoreChangesOutsideZone?: boolean;
   scheduleInRootZone?: boolean;
 }): StaticProvider[] {
   ngZoneFactory ??= () =>
@@ -126,9 +124,6 @@ export function internalProvideZoneChangeDetection({
         };
       },
     },
-    // Always disable scheduler whenever explicitly disabled, even if another place called
-    // `provideZoneChangeDetection` without the 'ignore' option.
-    ignoreChangesOutsideZone === true ? {provide: ZONELESS_SCHEDULER_DISABLED, useValue: true} : [],
     {
       provide: SCHEDULE_IN_ROOT_ZONE,
       useValue: scheduleInRootZone ?? SCHEDULE_IN_ROOT_ZONE_DEFAULT,
@@ -157,7 +152,6 @@ export function internalProvideZoneChangeDetection({
  * @see {@link NgZoneOptions}
  */
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
-  const ignoreChangesOutsideZone = options?.ignoreChangesOutsideZone;
   const scheduleInRootZone = (options as any)?.scheduleInRootZone;
   const zoneProviders = internalProvideZoneChangeDetection({
     ngZoneFactory: () => {
@@ -168,7 +162,6 @@ export function provideZoneChangeDetection(options?: NgZoneOptions): Environment
       }
       return new NgZone(ngZoneOptions);
     },
-    ignoreChangesOutsideZone,
     scheduleInRootZone,
   });
   return makeEnvironmentProviders([
@@ -227,25 +220,6 @@ export interface NgZoneOptions {
    *
    */
   runCoalescing?: boolean;
-
-  /**
-   * When false, change detection is scheduled when Angular receives
-   * a clear indication that templates need to be refreshed. This includes:
-   *
-   * - calling `ChangeDetectorRef.markForCheck`
-   * - calling `ComponentRef.setInput`
-   * - updating a signal that is read in a template
-   * - attaching a view that is marked dirty
-   * - removing a view
-   * - registering a render hook (templates are only refreshed if render hooks do one of the above)
-   *
-   * @deprecated This option was introduced out of caution as a way for developers to opt out of the
-   *    new behavior in v18 which schedule change detection for the above events when they occur
-   *    outside the Zone. After monitoring the results post-release, we have determined that this
-   *    feature is working as desired and do not believe it should ever be disabled by setting
-   *    this option to `true`.
-   */
-  ignoreChangesOutsideZone?: boolean;
 }
 
 // Transforms a set of `BootstrapOptions` (supported by the NgModule-based bootstrap APIs) ->
