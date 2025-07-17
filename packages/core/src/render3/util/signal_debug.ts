@@ -13,7 +13,7 @@ import {
 import {assertTNode, assertLView} from '../assert';
 import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
 import {NodeInjector, getNodeInjectorTNode, getNodeInjectorLView} from '../di';
-import {REACTIVE_TEMPLATE_CONSUMER, HOST, LView} from '../interfaces/view';
+import {REACTIVE_TEMPLATE_CONSUMER, HOST, LView, CONTEXT} from '../interfaces/view';
 import {EffectNode, EffectRefImpl, ROOT_EFFECT_NODE, VIEW_EFFECT_NODE} from '../reactivity/effect';
 import {Injector} from '../../di/injector';
 import {R3Injector} from '../../di/r3_injector';
@@ -133,6 +133,9 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         label: consumer.debugName ?? consumer.lView?.[HOST]?.tagName?.toLowerCase?.(),
         kind: consumer.kind,
         epoch: consumer.version,
+        // The `lView[CONTEXT]` is a reference to an instance of the component's class.
+        // We get the constructor so that `inspect(.constructor)` shows the component class.
+        debuggableFn: consumer.lView?.[CONTEXT]?.constructor as (() => unknown) | undefined,
         id,
       });
     } else {
