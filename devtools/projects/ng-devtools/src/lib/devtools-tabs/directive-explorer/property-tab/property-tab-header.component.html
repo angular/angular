@@ -1,29 +1,34 @@
 @let comp = currentSelectedElement().component;
 @if (comp) {
   <mat-accordion class="property-tab-header">
-    <div>
-      <mat-expansion-panel [hideToggle]="true">
-        <mat-expansion-panel-header collapsedHeight="32px" expandedHeight="32px">
-          <mat-panel-title>
-            <div class="element-header">
-              <div class="component-name">{{ comp.name }}</div>
-              @if (signalGraphEnabled()) {
-                <button ng-button type="button" size="compact" (click)="showGraph($event)">
-                  Show Signal Graph
-                </button>
-              }
-            </div>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-component-metadata [currentSelectedComponent]="comp"></ng-component-metadata>
-      </mat-expansion-panel>
-    </div>
+    <mat-expansion-panel [hideToggle]="true" [expanded]="expanded()" disabled>
+      <mat-expansion-panel-header collapsedHeight="32px" expandedHeight="32px">
+        <mat-panel-title>
+          <div class="element-header">
+            <button
+              class="component-name"
+              (click)="expanded.set(!expanded())"
+              [class.expanded]="expanded()"
+            >
+              <span>{{ comp.name }}</span>
+              <mat-icon> keyboard_arrow_down </mat-icon>
+            </button>
+            @if (signalGraphEnabled()) {
+              <button ng-button type="button" size="compact" (click)="showSignalGraph.emit()">
+                Show Signal Graph
+              </button>
+            }
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-component-metadata [currentSelectedComponent]="comp"></ng-component-metadata>
+    </mat-expansion-panel>
   </mat-accordion>
 } @else {
   <div class="element-header">
     <div class="element-name">{{ currentSelectedElement().element }}</div>
     @if (signalGraphEnabled()) {
-      <button ng-button type="button" size="compact" (click)="showGraph($event)">
+      <button ng-button type="button" size="compact" (click)="showSignalGraph.emit()">
         Show Signal Graph
       </button>
     }
