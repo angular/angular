@@ -4,16 +4,13 @@ load("@build_bazel_rules_nodejs//:index.bzl", _npm_package_bin = "npm_package_bi
 load("@devinfra//bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
-load("@devinfra//bazel/spec-bundling:spec-entrypoint.bzl", "spec_entrypoint")
-load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
-load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//typescript:index.bzl", "tsc")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
-load("//tools/esm-interop:index.bzl", "enable_esm_node_module_loader", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
+load("//tools/esm-interop:index.bzl", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
 
 http_server = _http_server
 extract_types = _extract_types
@@ -146,73 +143,6 @@ def npm_package_bin(args = [], **kwargs):
         # Disable the linker and rely on patched resolution which works better on Windows
         # and is less prone to race conditions when targets build concurrently.
         args = ["--nobazel_run_linker"] + args,
-        **kwargs
-    )
-
-# TODO(devversion): Jasmine Node tests are only bundled using `spec_bundle`
-# because `async/await` syntax needs to be downleveled for ZoneJS. In the
-# future this can be removed when ZoneJS can work with native async/await in NodeJS.
-def zone_compatible_jasmine_node_test(name, external = [], srcs = [], deps = [], bootstrap = [], **kwargs):
-    spec_bundle(
-        name = "%s_bundle" % name,
-        # Specs from this attribute are filtered and will be executed. We
-        # add bootstrap here for discovery of the module mappings aspect.
-        deps = srcs + deps + bootstrap,
-        bootstrap = bootstrap,
-        external = external + ["domino", "typescript"],
-        platform = "node",
-    )
-
-    jasmine_node_test(
-        name = name,
-        deps = [":%s_bundle" % name],
-        **kwargs
-    )
-
-def jasmine_node_test(name, srcs = [], data = [], bootstrap = [], env = {}, **kwargs):
-    # Very common dependencies for tests
-    deps = kwargs.pop("deps", []) + [
-        "@npm//chokidar",
-        "@npm//domino",
-        "@npm//jasmine-core",
-        "@npm//reflect-metadata",
-        "@npm//source-map-support",
-        "@npm//tslib",
-        "@npm//xhr2",
-    ]
-    configuration_env_vars = kwargs.pop("configuration_env_vars", [])
-
-    # Disable the linker and rely on patched resolution which works better on Windows
-    # and is less prone to race conditions when targets build concurrently.
-    templated_args = ["--nobazel_run_linker"] + kwargs.pop("templated_args", [])
-
-    # We disable the linker, so the ESM node module loader needs to be enabled.
-    npm_workspace = _node_modules_workspace_name()
-    env = enable_esm_node_module_loader(npm_workspace, env)
-
-    spec_entrypoint(
-        name = "%s_spec_entrypoint.spec" % name,
-        testonly = True,
-        deps = deps + srcs,
-        bootstrap = bootstrap,
-    )
-
-    extra_data = []
-
-    if native.package_name().startswith("packages/"):
-        extra_data.append("//packages:package_json")
-
-    _jasmine_node_test(
-        name = name,
-        srcs = [":%s_spec_entrypoint.spec" % name],
-        # Note: `deps`, `srcs` and `bootstrap` are explicitly added here as otherwise their linker
-        # mappings may not be discovered, given the `bootstrap` attr not being covered by the aspect.
-        data = extra_data + data + deps + srcs + bootstrap,
-        use_direct_specs = True,
-        configuration_env_vars = configuration_env_vars,
-        env = env,
-        templated_args = templated_args,
-        use_esm = True,
         **kwargs
     )
 
