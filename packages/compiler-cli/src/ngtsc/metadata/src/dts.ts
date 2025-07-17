@@ -175,6 +175,8 @@ export class DtsMetadataReader implements MetadataReader {
         : null;
     const isSignal =
       def.type.typeArguments.length > 9 && (readBooleanType(def.type.typeArguments[9]) ?? false);
+    const boundListenersMarkForCheck =
+      def.type.typeArguments.length > 10 && (readBooleanType(def.type.typeArguments[10]) ?? true);
 
     // At this point in time, the `.d.ts` may not be fully extractable when
     // trying to resolve host directive types to their declarations.
@@ -201,6 +203,7 @@ export class DtsMetadataReader implements MetadataReader {
       ngContentSelectors,
       isStandalone,
       isSignal,
+      boundListenersMarkForCheck,
       // We do not transfer information about inputs from class metadata
       // via `.d.ts` declarations. This is fine because this metadata is
       // currently only used for classes defined in source files. E.g. in migrations.

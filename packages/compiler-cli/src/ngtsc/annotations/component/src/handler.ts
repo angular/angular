@@ -1044,6 +1044,7 @@ export class ComponentDecoratorHandler
       isStructural: false,
       isStandalone: analysis.meta.isStandalone,
       isSignal: analysis.meta.isSignal,
+      boundListenersMarkForCheck: analysis.meta.boundListenersMarkForCheck,
       imports: analysis.resolvedImports,
       rawImports: analysis.rawImports,
       deferredImports: analysis.resolvedDeferredImports,

@@ -11,7 +11,7 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
 import type {TNode} from '../interfaces/node';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, type LView, type TView} from '../interfaces/view';
+import {CLEANUP, CONTEXT, FLAGS, LViewFlags, type LView, type TView} from '../interfaces/view';
 import {
   getComponentLViewByIndex,
   getNativeByTNode,
@@ -53,7 +53,9 @@ export function wrapListener(
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
     const startView = isComponentHost(tNode) ? getComponentLViewByIndex(tNode.index, lView) : lView;
-    markViewDirty(startView, NotificationSource.Listener);
+    if (lView[FLAGS] & LViewFlags.BoundListenersMarkForCheck) {
+      markViewDirty(startView, NotificationSource.Listener);
+    }
 
     const context = lView[CONTEXT];
     let result = executeListenerWithErrorHandling(lView, context, listenerFn, event);

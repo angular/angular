@@ -203,6 +203,7 @@ export interface R3DirectiveMetadataFacade {
   viewQueries: R3QueryMetadataFacade[];
   isStandalone: boolean;
   isSignal: boolean;
+  boundListenersMarkForCheck: boolean;
   hostDirectives: R3HostDirectiveMetadataFacade[] | null;
 }
 

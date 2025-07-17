@@ -204,6 +204,7 @@ export interface R3DirectiveMetadataFacade {
   isStandalone: boolean;
   hostDirectives: R3HostDirectiveMetadataFacade[] | null;
   isSignal: boolean;
+  boundListenersMarkForCheck: boolean;
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
@@ -256,6 +257,7 @@ export interface R3DeclareDirectiveFacade {
   usesOnChanges?: boolean;
   isStandalone?: boolean;
   isSignal?: boolean;
+  boundListenersMarkForCheck?: boolean;
   hostDirectives?: R3HostDirectiveMetadataFacade[] | null;
 }
 

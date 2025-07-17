@@ -382,6 +382,19 @@ export function extractDirectiveMetadata(
     }
     isSignal = resolved;
   }
+  let boundListenersMarkForCheck = true;
+  if (directive.has('boundListenersMarkForCheck')) {
+    const expr = directive.get('boundListenersMarkForCheck')!;
+    const resolved = evaluator.evaluate(expr);
+    if (typeof resolved !== 'boolean') {
+      throw createValueHasWrongTypeError(
+        expr,
+        resolved,
+        `boundListenersMarkForCheck flag must be a boolean`,
+      );
+    }
+    boundListenersMarkForCheck = resolved;
+  }
 
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
@@ -441,6 +454,7 @@ export function extractDirectiveMetadata(
     providers,
     isStandalone,
     isSignal,
+    boundListenersMarkForCheck,
     hostDirectives:
       hostDirectives?.map((hostDir) => toHostDirectiveMetadata(hostDir, sourceFile, refEmitter)) ||
       null,

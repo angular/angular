@@ -586,6 +586,7 @@ type ComponentDefExpectations = jasmine.Expected<
     | 'onPush'
     | 'styles'
     | 'data'
+    | 'boundListenersMarkForCheck'
   >
 > & {
   directives: Type<unknown>[] | null;
@@ -619,6 +620,7 @@ function expectComponentDef(
     // encapsulation is `None` as this is chosen when no styles are present.
     encapsulation: ViewEncapsulation.None,
     onPush: false,
+    boundListenersMarkForCheck: true,
     styles: [],
     directives: [],
     pipes: [],
@@ -644,6 +646,9 @@ function expectComponentDef(
     .toEqual(expectation.providersResolver);
   expect(actual.encapsulation).withContext('encapsulation').toEqual(expectation.encapsulation);
   expect(actual.onPush).withContext('onPush').toEqual(expectation.onPush);
+  expect(actual.boundListenersMarkForCheck)
+    .withContext('boundListenersMarkForCheck')
+    .toEqual(expectation.boundListenersMarkForCheck);
   expect(actual.styles).withContext('styles').toEqual(expectation.styles);
   expect(actual.data).withContext('data').toEqual(expectation.data);
 

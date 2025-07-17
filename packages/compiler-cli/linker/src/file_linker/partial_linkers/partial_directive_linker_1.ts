@@ -102,6 +102,9 @@ export function toR3DirectiveMeta<TExpression>(
       ? metaObj.getBoolean('isStandalone')
       : getDefaultStandaloneValue(version),
     isSignal: metaObj.has('isSignal') ? metaObj.getBoolean('isSignal') : false,
+    boundListenersMarkForCheck: metaObj.has('boundListenersMarkForCheck')
+      ? metaObj.getBoolean('boundListenersMarkForCheck')
+      : true,
     hostDirectives: metaObj.has('hostDirectives')
       ? toHostDirectivesMetadata(metaObj.getValue('hostDirectives'))
       : null,

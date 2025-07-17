@@ -392,6 +392,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
     isStandalone: metadata.standalone === undefined ? true : !!metadata.standalone,
     isSignal: !!metadata.signals,
+    boundListenersMarkForCheck: metadata.boundListenersMarkForCheck ?? true,
     hostDirectives:
       metadata.hostDirectives?.map((directive) =>
         typeof directive === 'function' ? {directive} : directive,

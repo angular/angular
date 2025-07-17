@@ -60,6 +60,9 @@ export function createDirectiveDefinitionMap(
   if (meta.isSignal) {
     definitionMap.set('isSignal', o.literal(meta.isSignal));
   }
+  if (meta.boundListenersMarkForCheck) {
+    definitionMap.set('boundListenersMarkForCheck', o.literal(meta.boundListenersMarkForCheck));
+  }
 
   // e.g. `selector: 'some-dir'`
   if (meta.selector !== null) {

@@ -350,6 +350,8 @@ export interface Directive {
    */
   signals?: boolean;
 
+  boundListenersMarkForCheck?: boolean;
+
   /**
    * Standalone directives that should be applied to the host whenever the directive is matched.
    * By default, none of the inputs or outputs of the host directives will be available on the host,
@@ -648,6 +650,18 @@ export interface Component extends Directive {
    * guide](guide/components/importing).
    */
   standalone?: boolean;
+
+  /**
+   * Whether this component and parents will be marked for check when listener callbacks execute.
+   *
+   * When a bound listener is triggered, Angular will automatically mark the component for check
+   * and schedule change detection. However, in some cases, you may want to disable this behavior.
+   * For example, if you have a component that is used in a high-frequency event, you may want to
+   * disable automatic change detection to avoid performance issues. Other situations may also include
+   * when listeners don't change the component's state or when the updated state is a signal,
+   * which can update without marking parent views for check as well.
+   */
+  boundListenersMarkForCheck?: boolean;
 
   /**
    * The imports property specifies the standalone component's template dependencies — those

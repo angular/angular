@@ -571,6 +571,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     isStandalone:
       declaration.isStandalone ?? getJitStandaloneDefaultForVersion(declaration.version),
     isSignal: declaration.isSignal ?? false,
+    boundListenersMarkForCheck: declaration.boundListenersMarkForCheck ?? true,
     hostDirectives,
   };
 }
