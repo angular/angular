@@ -78,6 +78,8 @@ filegroup(
 filegroup(
     name = "common_files_and_deps_for_docs",
     srcs = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages:types",
         "//packages/common:files_for_docgen",
         "//packages/common/http:files_for_docgen",
@@ -91,8 +93,6 @@ filegroup(
         "//packages/examples:files_for_docgen",
         "//packages/platform-browser:files_for_docgen",
         "//packages/platform-browser-dynamic:files_for_docgen",
-        "@npm//rxjs",
-        "@npm//zone.js",
     ],
 )
 

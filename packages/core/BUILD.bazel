@@ -1,8 +1,8 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "tsec_test")
-load("//tools:defaults2.bzl", "ng_package", "ng_project", "npm_package", "ts_config")
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -120,8 +120,8 @@ api_golden_test_npm_package(
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden_dir = "angular/goldens/public-api/core",
-    npm_package = "angular/packages/core/npm_package",
+    golden_dir = "goldens/public-api/core",
+    npm_package = "packages/core/npm_package",
     strip_export_pattern = "^ɵ(?!.*ApiGuard)",
 )
 
@@ -129,28 +129,20 @@ api_golden_test(
     name = "ng_global_utils_api",
     data = [
         "//goldens:public-api",
-        "//packages/core",
-        # Additional targets the entry-point indirectly resolves `.d.ts` source files from.
-        # These are transitive to `:core`, but need to be listed explicitly here as only
-        # transitive `JSModule` information is collected (missing the type definitions).
-        "//packages/core/src/compiler",
-        "//packages/core/src/di/interface",
-        "//packages/core/src/interface",
-        "//packages/core/src/reflection",
-        "//packages/core/src/util",
+        "//packages/core:core_rjs",
     ],
-    entry_point = "angular/packages/core/src/render3/global_utils_api.d.ts",
-    golden = "angular/goldens/public-api/core/global_utils.api.md",
+    entry_point = "src/render3/global_utils_api.d.ts",
+    golden = "goldens/public-api/core/global_utils.api.md",
 )
 
 api_golden_test(
     name = "core_errors",
     data = [
         "//goldens:public-api",
-        "//packages/core",
+        "//packages/core:core_rjs",
     ],
-    entry_point = "angular/packages/core/src/errors.d.ts",
-    golden = "angular/goldens/public-api/core/errors.api.md",
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/core/errors.api.md",
 )
 
 filegroup(

@@ -1,6 +1,6 @@
 load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs")
-load("//tools:defaults2.bzl", "ng_package", "ng_project")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -76,8 +76,8 @@ api_golden_test_npm_package(
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden_dir = "angular/goldens/public-api/service-worker",
-    npm_package = "angular/packages/service-worker/npm_package",
+    golden_dir = "goldens/public-api/service-worker",
+    npm_package = "packages/service-worker/npm_package",
 )
 
 filegroup(
@@ -92,10 +92,10 @@ api_golden_test(
     name = "service-worker_errors",
     data = [
         "//goldens:public-api",
-        "//packages/service-worker",
+        "//packages/service-worker:service-worker_rjs",
     ],
-    entry_point = "angular/packages/service-worker/src/errors.d.ts",
-    golden = "angular/goldens/public-api/service-worker/errors.api.md",
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/service-worker/errors.api.md",
 )
 
 generate_api_docs(
