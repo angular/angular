@@ -14,8 +14,11 @@ import {
   Injector,
   input,
   Input,
+  isSignal,
   NgModule,
   Output,
+  signal,
+  WritableSignal,
 } from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
@@ -316,6 +319,29 @@ describe('createCustomElement', () => {
     expect(strategy.inputs.get('fooSignal')).toBe('value-signal');
   });
 
+  it('should return value from input getter for input signal', () => {
+    const {selector, ElementCtor} = createTestCustomElementForSignal();
+    const element = document.createElement(selector) as HTMLElement & {
+      fooSignal: string | null;
+    };
+    element.setAttribute('foo-signal', 'value-signal');
+
+    customElements.define(selector, ElementCtor);
+    testContainer.appendChild(element);
+    expect(element.fooSignal).toBe('value-signal');
+  });
+
+  it('should not unpack signal value with input decorator having signal as value', () => {
+    const {selector, ElementCtor} = createTestCustomElementForSignal();
+    const element = document.createElement(selector) as HTMLElement & {
+      fooFoo: WritableSignal<string | null>;
+    };
+
+    customElements.define(selector, ElementCtor);
+    testContainer.appendChild(element);
+    expect(isSignal(element.fooFoo)).toBe(true);
+  });
+
   // Helpers
   function createAndRegisterTestCustomElement(strategyFactory: NgElementStrategyFactory) {
     const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
@@ -329,6 +355,13 @@ describe('createCustomElement', () => {
     return {
       selector: `test-element-${++selectorUid}`,
       ElementCtor: createCustomElement<WithFooBar>(TestComponent, {injector, strategyFactory}),
+    };
+  }
+
+  function createTestCustomElementForSignal() {
+    return {
+      selector: `test-element-${++selectorUid}`,
+      ElementCtor: createCustomElement(TestSignalComponent, {injector}),
     };
   }
 
@@ -349,9 +382,21 @@ describe('createCustomElement', () => {
     @Output() bazBaz = new EventEmitter<boolean>();
     @Output('quxqux') quxQux = new EventEmitter<Object>();
   }
+
+  @Component({
+    selector: 'test-signal-component',
+    template: 'TestSignalComponent|foo({{ fooFoo() }})|signal({{ fooSignal() }})',
+    standalone: false,
+  })
+  class TestSignalComponent {
+    @Input() fooFoo = signal<string | null>(null);
+    // This needs to apply the decorator and pass `isSignal`, because
+    // the compiler transform doesn't run against JIT tests.
+    @Input({isSignal: true} as Input) fooSignal = input<string | null>(null);
+  }
   @NgModule({
     imports: [BrowserModule],
-    declarations: [TestComponent],
+    declarations: [TestComponent, TestSignalComponent],
   })
   class TestModule implements DoBootstrap {
     ngDoBootstrap() {}
