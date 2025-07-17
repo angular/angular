@@ -1,10 +1,27 @@
-@if (viewEncapsulation()) {
-  <a href="https://angular.dev/api/core/ViewEncapsulation" target="_blank">
-    View Encapsulation: <span class="meta-data">{{ viewEncapsulation() }}</span>
-  </a>
-}
-@if (changeDetectionStrategy()) {
-  <a href="https://angular.dev/api/core/ChangeDetectionStrategy" target="_blank">
-    Change Detection Strategy: <span class="meta-data">{{ changeDetectionStrategy() }}</span>
-  </a>
-}
+<hr />
+<ul>
+  @if (viewEncapsulation()) {
+    <li>
+      View Encapsulation: <span class="meta-data">{{ viewEncapsulation() }}</span>
+      <a
+        href="https://angular.dev/api/core/ViewEncapsulation"
+        target="_blank"
+        matTooltip="Open docs reference"
+      >
+        <mat-icon>open_in_new</mat-icon>
+      </a>
+    </li>
+  }
+  @if (changeDetectionStrategy()) {
+    <li>
+      Change Detection Strategy: <span class="meta-data">{{ changeDetectionStrategy() }}</span>
+      <a
+        href="https://angular.dev/api/core/ChangeDetectionStrategy"
+        target="_blank"
+        matTooltip="Open docs reference"
+      >
+        <mat-icon>open_in_new</mat-icon>
+      </a>
+    </li>
+  }
+</ul>

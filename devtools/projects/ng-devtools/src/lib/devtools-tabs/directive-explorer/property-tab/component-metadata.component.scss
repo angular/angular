@@ -1,12 +1,35 @@
+@use '../../../../styles/typography';
+
 :host {
-  padding: 0.25rem 0.75rem;
   display: block;
+  padding-inline: 0.625rem;
 
-  a {
-    display: block;
+  hr {
+    margin: 0;
+  }
 
-    &:not(:last-child) {
-      margin-bottom: 0.25rem;
+  ul {
+    @extend %body-01;
+    list-style-type: none;
+    margin: 0;
+    padding: 0.5rem 0;
+
+    li {
+      &:not(:last-child) {
+        margin-bottom: 0.25rem;
+      }
+
+      .meta-data {
+        font-weight: bold;
+      }
+
+      mat-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+        vertical-align: bottom;
+        margin-left: 0.125rem;
+      }
     }
   }
 }
