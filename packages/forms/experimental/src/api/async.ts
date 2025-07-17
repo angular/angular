@@ -13,7 +13,7 @@ import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {defineResource} from './data';
 import {FieldContext, FieldPath, PathKind} from './types';
-import {ValidationError, WithField} from './validation_errors';
+import {addDefaultField, ValidationError, WithField} from './validation_errors';
 
 /**
  * A function that takes the result of an async operation, and the current field context and maps it
@@ -63,7 +63,7 @@ export interface AsyncValidatorOptions<
 
   /**
    * A function that receives the resource params and returns a resource of the given params.
-   * The given params should be used as is to create the resoruce.
+   * The given params should be used as is to create the resource.
    * The forms system will report the params as `undefined` when this validation doesn't need to be run.
    *
    * @param params The params to use for constructing the resource
@@ -133,14 +133,9 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
  * @template TResult The type of result returned by the resource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  */
-export function validateAsync<
-  TValue,
-  TRequest,
-  TResult,
-  TPathKind extends PathKind = PathKind.Root,
->(
+export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  opts: AsyncValidatorOptions<TValue, TRequest, TResult, TPathKind>,
+  opts: AsyncValidatorOptions<TValue, TParams, TResult, TPathKind>,
 ): void {
   assertPathIsCurrent(path);
   const pathNode = FieldPathNode.unwrapFieldPath(path);
@@ -172,10 +167,10 @@ export function validateAsync<
         const errors = opts.errors(res.value()!, ctx as FieldContext<TValue, TPathKind>);
         if (Array.isArray(errors)) {
           for (const error of errors) {
-            (error as any).field ??= ctx.field;
+            addDefaultField(error, ctx.field);
           }
         } else if (errors) {
-          (errors as any).field ??= ctx.field;
+          addDefaultField(errors, ctx.field);
         }
         return errors as WithField<ValidationError> | WithField<ValidationError>[];
       case 'error':
