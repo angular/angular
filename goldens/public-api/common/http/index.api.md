@@ -2508,6 +2508,7 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
         status?: number;
         statusText?: string;
         url?: string;
+        redirected?: boolean;
     });
     // (undocumented)
     readonly error: any | null;
@@ -2931,6 +2932,7 @@ export class HttpResponse<T> extends HttpResponseBase {
         status?: number;
         statusText?: string;
         url?: string;
+        redirected?: boolean;
     });
     readonly body: T | null;
     // (undocumented)
@@ -2941,6 +2943,7 @@ export class HttpResponse<T> extends HttpResponseBase {
         status?: number;
         statusText?: string;
         url?: string;
+        redirected?: boolean;
     }): HttpResponse<T>;
     // (undocumented)
     clone<V>(update: {
@@ -2949,6 +2952,7 @@ export class HttpResponse<T> extends HttpResponseBase {
         status?: number;
         statusText?: string;
         url?: string;
+        redirected?: boolean;
     }): HttpResponse<V>;
     // (undocumented)
     readonly type: HttpEventType.Response;
@@ -2961,9 +2965,11 @@ export abstract class HttpResponseBase {
         status?: number;
         statusText?: string;
         url?: string;
+        redirected?: boolean;
     }, defaultStatus?: number, defaultStatusText?: string);
     readonly headers: HttpHeaders;
     readonly ok: boolean;
+    readonly redirected?: boolean;
     readonly status: number;
     readonly statusText: string;
     readonly type: HttpEventType.Response | HttpEventType.ResponseHeader;
