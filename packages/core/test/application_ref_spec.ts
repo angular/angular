@@ -940,7 +940,6 @@ describe('AppRef', () => {
     beforeEach(() => {
       stableCalled = false;
       TestBed.configureTestingModule({
-        providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: true})],
         declarations: [
           SyncComp,
           MicroTaskComp,

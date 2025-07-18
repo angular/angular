@@ -762,27 +762,6 @@ describe('Angular with scheduler and ZoneJS', () => {
     });
   });
 
-  it('requires updates inside Angular zone when using ngZoneOnly', async () => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: true})],
-    });
-    @Component({template: '{{thing()}}'})
-    class App {
-      thing = signal('initial');
-    }
-
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    expect(fixture.nativeElement.innerText).toContain('initial');
-
-    TestBed.inject(NgZone).runOutsideAngular(() => {
-      fixture.componentInstance.thing.set('new');
-    });
-    expect(fixture.isStable()).toBe(true);
-    await fixture.whenStable();
-    expect(fixture.nativeElement.innerText).toContain('initial');
-  });
-
   it('will not schedule change detection if listener callback is outside the zone', async () => {
     let renders = 0;
     TestBed.runInInjectionContext(() => {
@@ -894,7 +873,7 @@ describe('Angular with scheduler and ZoneJS', () => {
   it('should not run change detection twice if notified during AppRef.tick', async () => {
     TestBed.configureTestingModule({
       providers: [
-        provideZoneChangeDetection({ignoreChangesOutsideZone: false}),
+        provideZoneChangeDetection(),
         {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
       ],
     });
@@ -931,9 +910,7 @@ describe('Angular with scheduler and ZoneJS', () => {
     }
 
     TestBed.configureTestingModule({
-      providers: [
-        provideZoneChangeDetection({runCoalescing: true, ignoreChangesOutsideZone: false}),
-      ],
+      providers: [provideZoneChangeDetection({runCoalescing: true})],
     });
     @Component({template: '{{thing()}}'})
     class App {
@@ -959,9 +936,7 @@ describe('Angular with scheduler and ZoneJS', () => {
     }
 
     TestBed.configureTestingModule({
-      providers: [
-        provideZoneChangeDetection({runCoalescing: true, ignoreChangesOutsideZone: false}),
-      ],
+      providers: [provideZoneChangeDetection({runCoalescing: true})],
     });
     @Component({template: '{{thing()}}'})
     class App {
