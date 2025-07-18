@@ -553,7 +553,7 @@ describe('validation status', () => {
           case 'min':
             e.min;
             break;
-          case 'standardschema':
+          case 'standardSchema':
             e.issue;
             break;
           // @ts-expect-error

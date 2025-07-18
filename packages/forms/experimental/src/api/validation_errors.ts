@@ -172,53 +172,53 @@ export abstract class ValidationError {
   }
 
   /**
-   * Create a minlength error
-   * @param minlength The minlength constraint
+   * Create a minLength error
+   * @param minLength The minLength constraint
    * @param message The optional human readable error message
    */
-  static minlength(minlength: number, message?: string): MinlengthValidationError;
+  static minLength(minLength: number, message?: string): MinLengthValidationError;
   /**
-   * Create a minlength error targeted at a specific field
-   * @param minlength The minlength constraint
+   * Create a minLength error targeted at a specific field
+   * @param minLength The minLength constraint
    * @param message The optional human readable error message
    * @param field The target field
    */
-  static minlength(
-    minlength: number,
+  static minLength(
+    minLength: number,
     message: string | undefined,
     field: Field<unknown>,
-  ): WithField<MinlengthValidationError>;
-  static minlength(
-    minlength: number,
+  ): WithField<MinLengthValidationError>;
+  static minLength(
+    minLength: number,
     message?: string,
     field?: Field<unknown>,
-  ): MinlengthValidationError | WithField<MinlengthValidationError> {
-    return createError(MinlengthValidationError, field, minlength, message);
+  ): MinLengthValidationError | WithField<MinLengthValidationError> {
+    return createError(MinLengthValidationError, field, minLength, message);
   }
 
   /**
-   * Create a maxlength error
-   * @param maxlength The maxlength constraint
+   * Create a maxLength error
+   * @param maxLength The maxLength constraint
    * @param message The optional human readable error message
    */
-  static maxlength(maxlength: number, message?: string): MaxlengthValidationError;
+  static maxLength(maxLength: number, message?: string): MaxLengthValidationError;
   /**
-   * Create a maxlength error targeted at a specific field
-   * @param maxlength The maxlength constraint
+   * Create a maxLength error targeted at a specific field
+   * @param maxLength The maxLength constraint
    * @param message The optional human readable error message
    * @param field The target field
    */
-  static maxlength(
-    maxlength: number,
+  static maxLength(
+    maxLength: number,
     message: string | undefined,
     field: Field<unknown>,
-  ): WithField<MaxlengthValidationError>;
-  static maxlength(
-    maxlength: number,
+  ): WithField<MaxLengthValidationError>;
+  static maxLength(
+    maxLength: number,
     message?: string,
     field?: Field<unknown>,
-  ): MaxlengthValidationError | WithField<MaxlengthValidationError> {
-    return createError(MaxlengthValidationError, field, maxlength, message);
+  ): MaxLengthValidationError | WithField<MaxLengthValidationError> {
+    return createError(MaxLengthValidationError, field, maxLength, message);
   }
 
   /**
@@ -366,11 +366,11 @@ export class MaxValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value is shorter than the minimum allowed length.
  */
-export class MinlengthValidationError extends _NgValidationError {
-  override readonly kind = 'minlength';
+export class MinLengthValidationError extends _NgValidationError {
+  override readonly kind = 'minLength';
 
   constructor(
-    readonly minlength: number,
+    readonly minLength: number,
     message?: string,
   ) {
     super(message);
@@ -380,11 +380,11 @@ export class MinlengthValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value is longer than the maximum allowed length.
  */
-export class MaxlengthValidationError extends _NgValidationError {
-  override readonly kind = 'maxlength';
+export class MaxLengthValidationError extends _NgValidationError {
+  override readonly kind = 'maxLength';
 
   constructor(
-    readonly maxlength: number,
+    readonly maxLength: number,
     message?: string,
   ) {
     super(message);
@@ -416,7 +416,7 @@ export class EmailValidationError extends _NgValidationError {
  * An error used to indicate an issue validating against a standard schema.
  */
 export class StandardSchemaValidationError extends _NgValidationError {
-  override readonly kind = 'standardschema';
+  override readonly kind = 'standardSchema';
 
   constructor(
     readonly issue: StandardSchemaV1.Issue,
@@ -452,8 +452,8 @@ export type NgValidationError =
   | RequiredValidationError
   | MinValidationError
   | MaxValidationError
-  | MinlengthValidationError
-  | MaxlengthValidationError
+  | MinLengthValidationError
+  | MaxLengthValidationError
   | PatternValidationError
   | EmailValidationError
   | StandardSchemaValidationError;

@@ -35,7 +35,7 @@ describe('required validator', () => {
       cat,
       (p) => {
         required(p.name, {
-          errors: (ctx) => ValidationError.custom({kind: `required-${ctx.valueOf(p.age)}`}),
+          error: (ctx) => ValidationError.custom({kind: `required-${ctx.valueOf(p.age)}`}),
         });
       },
       {
