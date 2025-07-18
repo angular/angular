@@ -15,7 +15,7 @@ function inputSearchText(text) {
 }
 
 function checkComponentName(name) {
-  cy.get('.component-name').should('have.text', name);
+  cy.get('.component-name > span').should('have.text', name);
 }
 
 function checkEmptyNodes() {

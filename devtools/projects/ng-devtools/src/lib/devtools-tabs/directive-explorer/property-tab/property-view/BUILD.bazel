@@ -63,6 +63,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver:property-resolver_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view/resolution-path:resolution-path_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button:docs-ref-button_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
