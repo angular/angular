@@ -33,6 +33,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler:profiler_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree:router-tree_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update:tab-update_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/transfer-state:transfer-state_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

@@ -68,6 +68,7 @@ export class DevToolsComponent implements OnDestroy {
     dependencyInjection: false,
     routes: false,
     signals: false,
+    transferState: false,
   });
   readonly ivy = signal<boolean | undefined>(undefined);
 

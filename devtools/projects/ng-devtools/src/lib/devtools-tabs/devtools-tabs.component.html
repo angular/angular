@@ -92,6 +92,11 @@
           [providers]="providers()"
         />
       }
+
+      @let transferStateVisible = activeTab() === 'Transfer State';
+      @defer (when transferStateVisible; prefetch on idle) {
+        <ng-transfer-state [hidden]="!transferStateVisible" />
+      }
     </div>
   }
 </mat-tab-nav-panel>
@@ -135,6 +140,16 @@
           (change)="setSignalGraph($event.checked)"
         />
         <span class="ng-mat-menu-label-text">Enable Signal Graph (experimental)</span>
+      </label>
+    }
+    @if (supportedApis().transferState) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle
+          [checked]="transferStateTabEnabled()"
+          (change)="setTransferStateTab($event.checked)"
+        >
+          Show Transfer State Tab</mat-slide-toggle
+        >
       </label>
     }
   </div>

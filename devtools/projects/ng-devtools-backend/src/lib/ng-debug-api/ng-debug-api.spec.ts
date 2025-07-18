@@ -12,6 +12,7 @@ import {
   ngDebugProfilerApiIsSupported,
   ngDebugRoutesApiIsSupported,
   ngDebugSignalGraphApiIsSupported,
+  ngDebugTransferStateApiIsSupported,
 } from './ng-debug-api';
 import {Framework} from '../component-tree/core-enums';
 
@@ -132,6 +133,26 @@ describe('ng-debug-api', () => {
       (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
       (globalThis as any).ng.ɵgetSignalGraph = undefined;
       expect(ngDebugSignalGraphApiIsSupported()).toBeFalse();
+    });
+  });
+
+  describe('ngDebugTransferStateApiIsSupported', () => {
+    beforeEach(() => mockRoot());
+
+    it('should support Transfer State API with getTransferState', () => {
+      (globalThis as any).ng = fakeNgGlobal(Framework.Angular);
+      (globalThis as any).ng.ɵgetTransferState = () => {};
+      expect(ngDebugTransferStateApiIsSupported()).toBeTrue();
+    });
+
+    it('should not support Transfer State API with no getTransferState', () => {
+      (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
+      (globalThis as any).ng.ɵgetTransferState = 'not implemented';
+      expect(ngDebugTransferStateApiIsSupported()).toBeFalse();
+
+      (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
+      (globalThis as any).ng.ɵgetTransferState = undefined;
+      expect(ngDebugTransferStateApiIsSupported()).toBeFalse();
     });
   });
 });
