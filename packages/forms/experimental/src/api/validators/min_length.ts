@@ -39,9 +39,9 @@ export function minLength<
     typeof minLength === 'number' ? minLength : minLength(ctx),
   );
 
-  metadata(path, MIN_LENGTH, ({state}) => state.data(reactiveMinLength)!());
+  metadata(path, MIN_LENGTH, ({state}) => state.metadata(reactiveMinLength)!());
   validate(path, (ctx) => {
-    const minLength = ctx.state.data(reactiveMinLength)!();
+    const minLength = ctx.state.metadata(reactiveMinLength)!();
     if (minLength === undefined) {
       return undefined;
     }

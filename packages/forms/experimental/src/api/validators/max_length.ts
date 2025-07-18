@@ -39,9 +39,9 @@ export function maxLength<
     typeof maxLength === 'number' ? maxLength : maxLength(ctx),
   );
 
-  metadata(path, MAX_LENGTH, ({state}) => state.data(reactiveMaxLength)!());
+  metadata(path, MAX_LENGTH, ({state}) => state.metadata(reactiveMaxLength)!());
   validate(path, (ctx) => {
-    const maxLength = ctx.state.data(reactiveMaxLength)!();
+    const maxLength = ctx.state.metadata(reactiveMaxLength)!();
     if (maxLength === undefined) {
       return undefined;
     }

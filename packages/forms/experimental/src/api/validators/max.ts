@@ -35,9 +35,9 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
     typeof maxValue === 'number' ? maxValue : maxValue(ctx),
   );
 
-  metadata(path, MAX, ({state}) => state.data(reactiveMaxValue)!());
+  metadata(path, MAX, ({state}) => state.metadata(reactiveMaxValue)!());
   validate(path, (ctx) => {
-    const max = ctx.state.data(reactiveMaxValue)!();
+    const max = ctx.state.metadata(reactiveMaxValue)!();
 
     if (max === undefined || Number.isNaN(max)) {
       return undefined;

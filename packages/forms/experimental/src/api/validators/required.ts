@@ -39,9 +39,9 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
     config?.emptyPredicate ?? ((value) => value === false || value == null || value === '');
   const condition = defineComputed(path, (ctx) => (config?.when ? config.when(ctx) : true));
 
-  metadata(path, REQUIRED, ({state}) => state.data(condition)!());
+  metadata(path, REQUIRED, ({state}) => state.metadata(condition)!());
   validate(path, (ctx) => {
-    if (ctx.state.data(condition)!() && emptyPredicate(ctx.value())) {
+    if (ctx.state.metadata(condition)!() && emptyPredicate(ctx.value())) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
