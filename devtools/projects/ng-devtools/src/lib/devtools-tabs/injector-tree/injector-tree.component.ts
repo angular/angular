@@ -19,8 +19,6 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import {MatIcon} from '@angular/material/icon';
-import {MatTooltip} from '@angular/material/tooltip';
 import {
   ComponentExplorerView,
   DevToolsNode,
@@ -53,6 +51,7 @@ import {
 import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
 import {SplitComponent} from '../../shared/split/split.component';
 import {Direction} from '../../shared/split/interface';
+import {DocsRefButtonComponent} from '../../shared/docs-ref-button/docs-ref-button.component';
 
 const ENV_HIERARCHY_VER_SIZE = 35;
 const EL_HIERARCHY_VER_SIZE = 65;
@@ -65,9 +64,8 @@ const HIERARCHY_HOR_SIZE = 50;
     SplitAreaDirective,
     InjectorProvidersComponent,
     TreeVisualizerHostComponent,
-    MatIcon,
-    MatTooltip,
     ResponsiveSplitDirective,
+    DocsRefButtonComponent,
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
