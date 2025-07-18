@@ -55,6 +55,7 @@ export {
   PLATFORM_ID,
   ANIMATION_MODULE_TYPE,
   CSP_NONCE,
+  ANIMATIONS_DISABLED,
 } from './application/application_tokens';
 export {
   APP_INITIALIZER,
@@ -121,6 +122,7 @@ export {booleanAttribute, numberAttribute} from './util/coercion';
 export {REQUEST, REQUEST_CONTEXT, RESPONSE_INIT} from './application/platform_tokens';
 export {DOCUMENT} from './document';
 export {provideNgReflectAttributes} from './ng_reflect';
+export {AnimationCallbackEvent, AnimationFunction} from './animation';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

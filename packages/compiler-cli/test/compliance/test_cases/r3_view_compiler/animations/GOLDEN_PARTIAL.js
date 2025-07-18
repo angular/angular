@@ -148,9 +148,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: animate_enter_with_event_listener.d.ts
  ****************************************************************************************************/
+import { AnimationCallbackEvent } from '@angular/core';
 import * as i0 from "@angular/core";
 export declare class MyComponent {
-    slideFn(event: any): void;
+    slideFn(event: AnimationCallbackEvent): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;
 }
@@ -258,9 +259,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: animate_leave_with_event_listener.d.ts
  ****************************************************************************************************/
+import { AnimationCallbackEvent } from '@angular/core';
 import * as i0 from "@angular/core";
 export declare class MyComponent {
-    fadeFn(event: any): void;
+    fadeFn(event: AnimationCallbackEvent): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;
 }

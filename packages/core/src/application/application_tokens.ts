@@ -164,3 +164,15 @@ export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(ngDevMode ? 'ImageCo
   providedIn: 'root',
   factory: () => IMAGE_CONFIG_DEFAULTS,
 });
+
+/**
+ * A [DI token](api/core/InjectionToken) that enables or disables all enter and leave animations.
+ * @publicApi 20.2
+ */
+export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
+  ngDevMode ? 'AnimationsDisabled' : '',
+  {
+    providedIn: 'root',
+    factory: () => false,
+  },
+);
