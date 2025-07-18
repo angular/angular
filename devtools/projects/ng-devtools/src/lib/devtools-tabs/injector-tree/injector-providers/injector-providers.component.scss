@@ -1,18 +1,31 @@
 @use '../../../../styles/typography';
 
 :host {
-  display: block;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  height: 100%;
+
+  h2,
+  .filter,
+  .no-providers-label,
+  table {
+    padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
 
   h2 {
     @extend %heading-400;
     margin-top: 0;
+    padding-bottom: 0;
   }
 
   .filter {
     display: flex;
     gap: 0.75rem;
     margin-bottom: 0.5rem;
+    padding-block: 0;
 
     label,
     select,
@@ -55,11 +68,17 @@
   }
 
   .no-providers-label {
-    padding: 0.5rem 0;
+    padding-block: 0.5rem;
     text-align: center;
   }
 
   table {
+    padding-top: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    display: block;
+    flex: 1;
+
     .token-cell {
       overflow: hidden;
       text-overflow: ellipsis;
