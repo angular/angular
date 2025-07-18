@@ -1,0 +1,137 @@
+<div class="transfer-state-container">
+  <div class="header">
+    <h2>
+      <mat-icon>swap_horiz</mat-icon>
+      Transfer State
+    </h2>
+    <div class="actions">
+      <button ng-button btnType="icon" (click)="refresh()" matTooltip="Refresh transfer state">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-icon class="spinning">hourglass_empty</mat-icon>
+      Loading transfer state...
+    </div>
+  } @else if (error()) {
+    <div class="error-card">
+      <div class="card-header">
+        <mat-icon>error</mat-icon>
+        <h3>No Transfer State Found</h3>
+      </div>
+      <div class="card-content">
+        <p>{{ error() }}</p>
+        <p>
+          Transfer state is used in Server-Side Rendering (SSR) to pass data from the server to the
+          client. If you're expecting transfer state data, make sure:
+        </p>
+        <ul>
+          <li>The application is using SSR</li>
+          <li>Transfer state is being used in your components</li>
+          <li>You're inspecting the initial page load (not after client-side navigation)</li>
+        </ul>
+      </div>
+    </div>
+  } @else if (!hasData()) {
+    <div class="empty-card">
+      <div class="card-header">
+        <mat-icon>info</mat-icon>
+        <h3>Transfer State is Empty</h3>
+      </div>
+      <div class="card-content">
+        <p>No transfer state data found on this page.</p>
+        <p>This could be normal if the page doesn't use SSR or doesn't transfer any state.</p>
+      </div>
+    </div>
+  } @else {
+    <div class="transfer-state-content">
+      <div class="summary">
+        <div class="summary-card">
+          <div class="summary-stats">
+            <div class="stat">
+              <span class="stat-value">{{ transferStateItems().length }}</span>
+              <span class="stat-label">Keys</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ totalSize() }}</span>
+              <span class="stat-label">Total Size</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="transferStateItems()" class="transfer-state-table">
+          <!-- Key Column -->
+          <ng-container matColumnDef="key">
+            <th mat-header-cell *matHeaderCellDef>Key</th>
+            <td mat-cell *matCellDef="let item" class="key-cell">
+              <code>{{ item.key }}</code>
+            </td>
+          </ng-container>
+
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="type-badge type-{{ item.type }}">{{ item.type }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Size Column -->
+          <ng-container matColumnDef="size">
+            <th mat-header-cell *matHeaderCellDef>
+              Size
+              <mat-icon class="info-icon" matTooltip="Uncompressed size">help_outline</mat-icon>
+            </th>
+            <td mat-cell *matCellDef="let item">{{ item.size }}</td>
+          </ng-container>
+
+          <!-- Value Column -->
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef>Value</th>
+            <td mat-cell *matCellDef="let item" class="value-cell">
+              <div class="value-container">
+                <pre
+                  #valuePreview
+                  class="value-preview"
+                  [class.is-expanded]="item.isExpanded"
+                ><code>{{ getFormattedValue(item.value) }}</code></pre>
+                <div class="action-buttons">
+                  @if (isValueLong(valuePreview, item.isExpanded)) {
+                    <button
+                      ng-button
+                      btnType="icon"
+                      size="compact"
+                      class="expand-button"
+                      (click)="toggleExpanded(item)"
+                      [matTooltip]="item.isExpanded ? 'Collapse value' : 'Expand value'"
+                    >
+                      <mat-icon>{{ item.isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </button>
+                  }
+                  <button
+                    ng-button
+                    btnType="icon"
+                    size="compact"
+                    class="copy-button"
+                    (click)="copyToClipboard(item)"
+                    [matTooltip]="item.isCopied ? 'Copied!' : 'Copy value to clipboard'"
+                  >
+                    <mat-icon>{{ item.isCopied ? 'check' : 'content_copy' }}</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </div>
+  }
+</div>
