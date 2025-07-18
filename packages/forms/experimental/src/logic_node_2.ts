@@ -52,7 +52,7 @@ export abstract class AbstractLogicNodeBuilder {
   /** Adds a rule for asynchronous validation errors for a field. */
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
   /** Adds a rule to compute metadata for a field. */
-  abstract addMetadataRule<M>(key: AggregateMetadataKey<M>, logic: LogicFn<any, M>): void;
+  abstract addMetadataRule<M>(key: AggregateMetadataKey<unknown, M>, logic: LogicFn<any, M>): void;
   /** Adds a factory function to produce a data value associated with a field. */
   abstract addDataFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
   /**
@@ -124,7 +124,7 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addAsyncErrorRule(logic);
   }
 
-  override addMetadataRule<T>(key: AggregateMetadataKey<T>, logic: LogicFn<any, T>): void {
+  override addMetadataRule<T>(key: AggregateMetadataKey<unknown, T>, logic: LogicFn<any, T>): void {
     this.getCurrent().addMetadataRule(key, logic);
   }
 
@@ -234,7 +234,7 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addMetadataRule<T>(key: AggregateMetadataKey<T>, logic: LogicFn<any, T>): void {
+  override addMetadataRule<T>(key: AggregateMetadataKey<unknown, T>, logic: LogicFn<any, T>): void {
     this.logic.getMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
@@ -272,7 +272,10 @@ export class LogicContainer {
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
   readonly asyncErrors: ArrayMergeIgnoreLogic<WithField<ValidationError> | 'pending', false | null>;
   /** A map of metadata keys to the `AbstractLogic` instances that compute their values. */
-  private readonly metadata = new Map<AggregateMetadataKey<unknown>, AbstractLogic<unknown>>();
+  private readonly metadata = new Map<
+    AggregateMetadataKey<unknown, unknown>,
+    AbstractLogic<unknown>
+  >();
   /** A map of data keys to the factory functions that create their values. */
   private readonly dataFactories = new Map<
     MetadataKey<unknown>,
@@ -321,17 +324,17 @@ export class LogicContainer {
 
   /**
    * Retrieves or creates the `AbstractLogic` for a given metadata key.
-   * @param key The `ReactiveMetadataKey` for which to get the logic.
+   * @param key The `AggregateMetadataKey` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
    */
-  getMetadata<T>(key: AggregateMetadataKey<T>): AbstractLogic<T> {
-    if (!this.metadata.has(key as AggregateMetadataKey<unknown>)) {
+  getMetadata<T>(key: AggregateMetadataKey<unknown, T>): AbstractLogic<T> {
+    if (!this.metadata.has(key as AggregateMetadataKey<unknown, unknown>)) {
       this.metadata.set(
-        key as AggregateMetadataKey<unknown>,
+        key as AggregateMetadataKey<unknown, unknown>,
         new MetadataMergeLogic(this.predicates, key),
       );
     }
-    return this.metadata.get(key as AggregateMetadataKey<unknown>)! as AbstractLogic<T>;
+    return this.metadata.get(key as AggregateMetadataKey<unknown, unknown>)! as AbstractLogic<T>;
   }
 
   /**

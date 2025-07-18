@@ -40,9 +40,9 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   metadata(path, PATTERN, (ctx) => {
     const result = reactivePatternValue(ctx);
     if (result === undefined) {
-      return [];
+      return undefined;
     }
-    return [result];
+    return result;
   });
 
   validate(path, (ctx) => {

@@ -7,19 +7,14 @@
  */
 
 /**
- * Base class for all metadata keys.
- */
-export class AbstractMetadataKey<TValue> {
-  private unusedType!: TValue;
-
-  protected constructor() {}
-}
-
-/**
  * Represents metadata that may be set on a field when it is created using `setMetadata` in the
  * schema. A particular `MetadataKey` can only be set on a particular field **once**.
  */
-export class MetadataKey<TValue> extends AbstractMetadataKey<TValue> {
+export class MetadataKey<TValue> {
+  private brand!: TValue;
+
+  protected constructor() {}
+
   /**
    * Creates a MetadataKey.
    */
@@ -34,13 +29,13 @@ export class MetadataKey<TValue> extends AbstractMetadataKey<TValue> {
  * the schema. There may be multiple rules in a schema that contribute values to the same
  * `AggregateMetadataKey`.
  */
-export class AggregateMetadataKey<TValue> extends AbstractMetadataKey<TValue> {
+export class AggregateMetadataKey<TAcc, TItem> {
+  private brand!: [TAcc, TItem];
+
   protected constructor(
-    readonly reduce: (acc: TValue, item: TValue) => TValue,
-    readonly getDefault: () => TValue,
-  ) {
-    super();
-  }
+    readonly reduce: (acc: TAcc, item: TItem) => TAcc,
+    readonly getDefault: () => TAcc,
+  ) {}
 
   /**
    * Creates an aggregate metadata key that reduces its individual values into an accumulated value
@@ -48,16 +43,16 @@ export class AggregateMetadataKey<TValue> extends AbstractMetadataKey<TValue> {
    * @param reduce The reducer function
    * @param getDefault A function that gets the default value for the reduce operation.
    */
-  static reduce<TValue>(reduce: (acc: TValue, item: TValue) => TValue, getDefault: () => TValue) {
+  static reduce<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getDefault: () => TAcc) {
     return new AggregateMetadataKey(reduce, getDefault);
   }
 
   /**
    * Creates an aggregate metadata key that reduces its individual values into a list.
    */
-  static list<TValue>() {
-    return new AggregateMetadataKey<TValue[]>(
-      (prev, next) => [...prev, ...next],
+  static list<TItem>() {
+    return new AggregateMetadataKey<TItem[], TItem | undefined>(
+      (acc, item) => (item === undefined ? acc : [...acc, item]),
       () => [],
     );
   }
@@ -66,7 +61,7 @@ export class AggregateMetadataKey<TValue> extends AbstractMetadataKey<TValue> {
    * Creates an aggregate metadata key that reduces its individual values by taking their min.
    */
   static min() {
-    return new AggregateMetadataKey<number | undefined>(
+    return new AggregateMetadataKey<number | undefined, number | undefined>(
       (prev, next) => {
         if (prev === undefined) {
           return next;
@@ -84,7 +79,7 @@ export class AggregateMetadataKey<TValue> extends AbstractMetadataKey<TValue> {
    * Creates an aggregate metadata key that reduces its individual values by taking their max.
    */
   static max() {
-    return new AggregateMetadataKey<number | undefined>(
+    return new AggregateMetadataKey<number | undefined, number | undefined>(
       (prev, next) => {
         if (prev === undefined) {
           return next;
@@ -103,7 +98,7 @@ export class AggregateMetadataKey<TValue> extends AbstractMetadataKey<TValue> {
    * Creates an aggregate metadata key that reduces its individual values by logically or-ing them.
    */
   static or() {
-    return new AggregateMetadataKey<boolean>(
+    return new AggregateMetadataKey<boolean, boolean>(
       (prev, next) => prev || next,
       () => false,
     );
@@ -113,7 +108,7 @@ export class AggregateMetadataKey<TValue> extends AbstractMetadataKey<TValue> {
    * Creates an aggregate metadata key that reduces its individual values by logically and-ing them.
    */
   static and() {
-    return new AggregateMetadataKey<boolean>(
+    return new AggregateMetadataKey<boolean, boolean>(
       (prev, next) => prev && next,
       () => true,
     );

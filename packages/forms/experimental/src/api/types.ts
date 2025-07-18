@@ -173,13 +173,13 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   readonly keyInParent: Signal<TKey>;
 
   /**
-   * Reads a reactive metadata value from the field.
+   * Reads a aggregate metadata value from the field.
    * @param key The metadata key to read.
    */
-  metadata<M>(key: AggregateMetadataKey<M>): Signal<M>;
+  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
 
   /**
-   * Reads a static metadata value from the field.
+   * Reads a metadata value from the field.
    * @param key The metadata key to read.
    */
   metadata<M>(key: MetadataKey<M>): M | undefined;

@@ -15,12 +15,12 @@ import {cast} from './util';
  * Tracks `metadata` associated with a `FieldNode`.
  */
 export class FieldMetadataState {
-  private readonly metadataMap = new Map<AggregateMetadataKey<unknown>, Signal<unknown>>();
+  private readonly metadataMap = new Map<AggregateMetadataKey<unknown, unknown>, Signal<unknown>>();
 
   constructor(private readonly node: FieldNode) {}
 
-  get<M>(key: AggregateMetadataKey<M>): Signal<M> {
-    cast<AggregateMetadataKey<unknown>>(key);
+  get<M>(key: AggregateMetadataKey<M, unknown>): Signal<M> {
+    cast<AggregateMetadataKey<unknown, unknown>>(key);
     if (!this.metadataMap.has(key)) {
       const logic = this.node.logicNode.logic.getMetadata(key);
       const result = computed(() => logic.compute(this.node.context));

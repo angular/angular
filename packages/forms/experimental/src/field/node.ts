@@ -7,7 +7,7 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import {AbstractMetadataKey, AggregateMetadataKey, MetadataKey} from '../api/metadata';
+import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
 import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 
@@ -151,9 +151,9 @@ export class FieldNode implements FieldState<unknown> {
     return this.submitState.submittedStatus;
   }
 
-  metadata<M>(key: AggregateMetadataKey<M>): Signal<M>;
+  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
   metadata<M>(key: MetadataKey<M>): M | undefined;
-  metadata<M>(key: AbstractMetadataKey<M>): Signal<M> | M | undefined {
+  metadata<M>(key: MetadataKey<M> | AggregateMetadataKey<M, any>): Signal<M> | M | undefined {
     if (key instanceof MetadataKey) {
       return this.dataState.get(key);
     } else if (key instanceof AggregateMetadataKey) {

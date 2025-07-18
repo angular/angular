@@ -124,7 +124,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  */
 export function metadata<TValue, TMetadata, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  key: AggregateMetadataKey<TMetadata>,
+  key: AggregateMetadataKey<any, TMetadata>,
   logic: NoInfer<LogicFn<TValue, TMetadata, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
