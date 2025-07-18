@@ -47,7 +47,7 @@ import {TNode} from '../render3/interfaces/node';
  * The name of the key used in the TransferState collection,
  * where hydration information is located.
  */
-const TRANSFER_STATE_TOKEN_ID = '__nghData__';
+export const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 
 /**
  * Lookup key used to reference DOM hydration data (ngh) in `TransferState`.

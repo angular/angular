@@ -340,7 +340,17 @@ export interface SupportedApis {
   dependencyInjection: boolean;
   routes: boolean;
   signals: boolean;
+  transferState: boolean;
 }
+
+export type TransferStateValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | Record<string, unknown>
+  | unknown[];
 
 export interface Events {
   handshake: () => void;
@@ -403,6 +413,9 @@ export interface Events {
   ) => void;
 
   logProvider: (injector: SerializedInjector, providers: SerializedProviderRecord) => void;
+
+  getTransferState: () => void;
+  transferStateData: (data: Record<string, TransferStateValue> | null) => void;
 
   contentScriptConnected: (frameId: number, name: string, url: string) => void;
   contentScriptDisconnected: (frameId: number, name: string, url: string) => void;
