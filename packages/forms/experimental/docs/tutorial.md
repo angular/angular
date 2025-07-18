@@ -557,12 +557,12 @@ This code should look familiar: Both fields are required, and the email has its 
 ```typescript
 // friend.ts
 import {
-  Schema,
+  schema,
   required,
   validate,
 } from '@angular/forms/experimental';
 
-export const friendSchema: Schema<Friend> = (friend) => {
+export const friendSchema = schema<Friend>((friend) => {
   required(friend.name);
   required(friend.email);
   validate(friend.email, ({value}) => {
@@ -570,7 +570,7 @@ export const friendSchema: Schema<Friend> = (friend) => {
        undefined :
        { kind: 'emailFormat' };
   })
-};
+});
 ```
 
 But, uh oh, the email validation code is duplicated from our main form. Let's extract it.
@@ -603,11 +603,11 @@ import {
 import {emailValidator} from './validators';
 
 // Schema is not used in this file.
-export const friendSchema: Schema<Friend> = (friend) => {
+export const friendSchema = schema<Friend>((friend) => {
   required(friend.name);
   required(friend.email);
   validate(friend.email, emailValidator)
-};
+});
 ```
 
 ### Creating Friend Component
