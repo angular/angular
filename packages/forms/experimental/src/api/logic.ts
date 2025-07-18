@@ -104,17 +104,9 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const wrappedLogic = (ctx: FieldContext<TValue, TPathKind>) => {
-    const errors = logic(ctx);
-    if (Array.isArray(errors)) {
-      for (const error of errors) {
-        addDefaultField(error, ctx.field);
-      }
-    } else if (errors) {
-      addDefaultField(errors as WithField<ValidationError>, ctx.field);
-    }
-    return errors;
-  };
+  const wrappedLogic = (ctx: FieldContext<TValue, TPathKind>) =>
+    addDefaultField(logic(ctx), ctx.field);
+
   pathNode.logic.addSyncTreeErrorRule(
     wrappedLogic as LogicFn<TValue, WithField<ValidationError>[]>,
   );
