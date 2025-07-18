@@ -83,9 +83,6 @@ using the proper flags with your Bazel test runs in Angular.
 The process should automatically connect to the debugger.
 For more, see the [rules_nodejs Debugging documentation](https://bazelbuild.github.io/rules_nodejs/index.html#debugging).
 
-For additional info and testing options, see the
-[nodejs_test documentation](https://bazelbuild.github.io/rules_nodejs/Built-ins.html#nodejs_test).
-
 - Click on "Resume script execution" to let the code run until the first `debugger` statement or a
   previously set breakpoint.
 - If you want to inspect generated template instructions while debugging, find the
