@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {computed, Signal} from '@angular/core';
-import type {ReactiveMetadataKey} from '../api/metadata';
+import type {AggregateMetadataKey} from '../api/metadata';
 import type {FieldNode} from './node';
 import {cast} from './util';
 
@@ -15,12 +15,12 @@ import {cast} from './util';
  * Tracks `metadata` associated with a `FieldNode`.
  */
 export class FieldMetadataState {
-  private readonly metadataMap = new Map<ReactiveMetadataKey<unknown>, Signal<unknown>>();
+  private readonly metadataMap = new Map<AggregateMetadataKey<unknown>, Signal<unknown>>();
 
   constructor(private readonly node: FieldNode) {}
 
-  get<M>(key: ReactiveMetadataKey<M>): Signal<M> {
-    cast<ReactiveMetadataKey<unknown>>(key);
+  get<M>(key: AggregateMetadataKey<M>): Signal<M> {
+    cast<AggregateMetadataKey<unknown>>(key);
     if (!this.metadataMap.has(key)) {
       const logic = this.node.logicNode.logic.getMetadata(key);
       const result = computed(() => logic.compute(this.node.context));

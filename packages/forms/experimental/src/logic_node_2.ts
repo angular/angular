@@ -7,12 +7,12 @@
  */
 
 import {
+  AggregateMetadataKey,
   AsyncValidationResult,
   DisabledReason,
   FieldContext,
   LogicFn,
-  ReactiveMetadataKey,
-  StaticMetadataKey,
+  MetadataKey,
   ValidationResult,
 } from '../public_api';
 import {ValidationError, WithField} from './api/validation_errors';
@@ -52,12 +52,9 @@ export abstract class AbstractLogicNodeBuilder {
   /** Adds a rule for asynchronous validation errors for a field. */
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
   /** Adds a rule to compute metadata for a field. */
-  abstract addMetadataRule<M>(key: ReactiveMetadataKey<M>, logic: LogicFn<any, M>): void;
+  abstract addMetadataRule<M>(key: AggregateMetadataKey<M>, logic: LogicFn<any, M>): void;
   /** Adds a factory function to produce a data value associated with a field. */
-  abstract addDataFactory<D>(
-    key: StaticMetadataKey<D>,
-    factory: (ctx: FieldContext<any>) => D,
-  ): void;
+  abstract addDataFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
   /**
    * Gets a builder for a child node associated with the given property key.
    * @param key The property key of the child.
@@ -127,14 +124,11 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addAsyncErrorRule(logic);
   }
 
-  override addMetadataRule<T>(key: ReactiveMetadataKey<T>, logic: LogicFn<any, T>): void {
+  override addMetadataRule<T>(key: AggregateMetadataKey<T>, logic: LogicFn<any, T>): void {
     this.getCurrent().addMetadataRule(key, logic);
   }
 
-  override addDataFactory<D>(
-    key: StaticMetadataKey<D>,
-    factory: (ctx: FieldContext<any>) => D,
-  ): void {
+  override addDataFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void {
     this.getCurrent().addDataFactory(key, factory);
   }
 
@@ -240,14 +234,11 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addMetadataRule<T>(key: ReactiveMetadataKey<T>, logic: LogicFn<any, T>): void {
+  override addMetadataRule<T>(key: AggregateMetadataKey<T>, logic: LogicFn<any, T>): void {
     this.logic.getMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addDataFactory<D>(
-    key: StaticMetadataKey<D>,
-    factory: (ctx: FieldContext<any>) => D,
-  ): void {
+  override addDataFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void {
     this.logic.addDataFactory(key, setBoundPathDepthForResolution(factory, this.depth));
   }
 
@@ -281,10 +272,10 @@ export class LogicContainer {
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
   readonly asyncErrors: ArrayMergeIgnoreLogic<WithField<ValidationError> | 'pending', false | null>;
   /** A map of metadata keys to the `AbstractLogic` instances that compute their values. */
-  private readonly metadata = new Map<ReactiveMetadataKey<unknown>, AbstractLogic<unknown>>();
+  private readonly metadata = new Map<AggregateMetadataKey<unknown>, AbstractLogic<unknown>>();
   /** A map of data keys to the factory functions that create their values. */
   private readonly dataFactories = new Map<
-    StaticMetadataKey<unknown>,
+    MetadataKey<unknown>,
     (ctx: FieldContext<unknown>) => unknown
   >();
 
@@ -333,14 +324,14 @@ export class LogicContainer {
    * @param key The `ReactiveMetadataKey` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
    */
-  getMetadata<T>(key: ReactiveMetadataKey<T>): AbstractLogic<T> {
-    if (!this.metadata.has(key as ReactiveMetadataKey<unknown>)) {
+  getMetadata<T>(key: AggregateMetadataKey<T>): AbstractLogic<T> {
+    if (!this.metadata.has(key as AggregateMetadataKey<unknown>)) {
       this.metadata.set(
-        key as ReactiveMetadataKey<unknown>,
+        key as AggregateMetadataKey<unknown>,
         new MetadataMergeLogic(this.predicates, key),
       );
     }
-    return this.metadata.get(key as ReactiveMetadataKey<unknown>)! as AbstractLogic<T>;
+    return this.metadata.get(key as AggregateMetadataKey<unknown>)! as AbstractLogic<T>;
   }
 
   /**
@@ -349,10 +340,7 @@ export class LogicContainer {
    * @param factory The factory function.
    * @throws If a factory is already defined for the given key.
    */
-  addDataFactory(
-    key: StaticMetadataKey<unknown>,
-    factory: (ctx: FieldContext<unknown>) => unknown,
-  ) {
+  addDataFactory(key: MetadataKey<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
     if (this.dataFactories.has(key)) {
       // TODO: name of the key?
       throw new Error(`Can't define data twice for the same key`);

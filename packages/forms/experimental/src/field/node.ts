@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import {MetadataKey, ReactiveMetadataKey, StaticMetadataKey} from '../api/metadata';
+import {AbstractMetadataKey, AggregateMetadataKey, MetadataKey} from '../api/metadata';
 import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 
@@ -151,12 +151,12 @@ export class FieldNode implements FieldState<unknown> {
     return this.submitState.submittedStatus;
   }
 
-  metadata<M>(key: ReactiveMetadataKey<M>): Signal<M>;
-  metadata<M>(key: StaticMetadataKey<M>): M | undefined;
-  metadata<M>(key: MetadataKey<M>): Signal<M> | M | undefined {
-    if (key instanceof StaticMetadataKey) {
+  metadata<M>(key: AggregateMetadataKey<M>): Signal<M>;
+  metadata<M>(key: MetadataKey<M>): M | undefined;
+  metadata<M>(key: AbstractMetadataKey<M>): Signal<M> | M | undefined {
+    if (key instanceof MetadataKey) {
       return this.dataState.get(key);
-    } else if (key instanceof ReactiveMetadataKey) {
+    } else if (key instanceof AggregateMetadataKey) {
       return this.metadataState.get(key);
     }
     throw Error('Unrecognized MetadataKey type');

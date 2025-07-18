@@ -9,33 +9,33 @@
 import {computed, Resource, ResourceRef, Signal} from '@angular/core';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import {MetadataKey, StaticMetadataKey} from './metadata';
+import {MetadataKey} from './metadata';
 import type {FieldContext, FieldPath, LogicFn, PathKind} from './types';
 
 export interface DefineOptions<TKey> {
-  readonly asKey?: StaticMetadataKey<TKey>;
+  readonly asKey?: MetadataKey<TKey>;
 }
 
 export function define<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
   opts?: DefineOptions<TData>,
-): StaticMetadataKey<TData> {
+): MetadataKey<TData> {
   assertPathIsCurrent(path);
-  const key = opts?.asKey ?? MetadataKey.static<Resource<TData>>();
+  const key = opts?.asKey ?? MetadataKey.create<Resource<TData>>();
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
   pathNode.logic.addDataFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
-  return key as StaticMetadataKey<TData>;
+  return key as MetadataKey<TData>;
 }
 
 export function defineComputed<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   fn: LogicFn<TValue, TData, TPathKind>,
   opts?: DefineOptions<Signal<TData>>,
-): StaticMetadataKey<Signal<TData>> {
+): MetadataKey<Signal<TData>> {
   assertPathIsCurrent(path);
-  const key = opts?.asKey ?? MetadataKey.static<Signal<TData>>();
+  const key = opts?.asKey ?? MetadataKey.create<Signal<TData>>();
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addDataFactory(key, (ctx) =>
@@ -57,9 +57,9 @@ export interface DefineResourceOptions<
 export function defineResource<TValue, TData, TRequest, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   opts: DefineResourceOptions<TValue, TData, TRequest, TPathKind>,
-): StaticMetadataKey<ResourceRef<TData | undefined>> {
+): MetadataKey<ResourceRef<TData | undefined>> {
   assertPathIsCurrent(path);
-  const key = opts.asKey ?? MetadataKey.static<ResourceRef<TData>>();
+  const key = opts.asKey ?? MetadataKey.create<ResourceRef<TData>>();
 
   const factory = (ctx: FieldContext<unknown>) => {
     const params = computed(() => opts.params(ctx as FieldContext<TValue, TPathKind>));
@@ -70,5 +70,5 @@ export function defineResource<TValue, TData, TRequest, TPathKind extends PathKi
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addDataFactory(key, factory);
 
-  return key as StaticMetadataKey<ResourceRef<TData | undefined>>;
+  return key as MetadataKey<ResourceRef<TData | undefined>>;
 }

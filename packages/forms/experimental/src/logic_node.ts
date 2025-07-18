@@ -7,7 +7,7 @@
  */
 
 import {untracked} from '@angular/core';
-import {ReactiveMetadataKey} from './api/metadata';
+import {AggregateMetadataKey} from './api/metadata';
 import {type FieldContext, type FieldPath, type LogicFn} from './api/types';
 import {FieldNode} from './field/node';
 
@@ -137,7 +137,7 @@ export class MetadataMergeLogic<T> extends AbstractLogic<T> {
 
   constructor(
     predicates: ReadonlyArray<BoundPredicate>,
-    private key: ReactiveMetadataKey<T>,
+    private key: AggregateMetadataKey<T>,
   ) {
     super(predicates);
   }
@@ -148,7 +148,7 @@ export class MetadataMergeLogic<T> extends AbstractLogic<T> {
     }
     let value = this.fns[0](ctx);
     for (let i = 1; i < this.fns.length; i++) {
-      value = this.key.accumulate(value, this.fns[i](ctx));
+      value = this.key.reduce(value, this.fns[i](ctx));
     }
     return value;
   }
