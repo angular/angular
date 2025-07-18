@@ -10,7 +10,7 @@ load("@npm//typescript:index.bzl", "tsc")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
-load("//tools/esm-interop:index.bzl", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test")
+load("//tools/esm-interop:index.bzl", _nodejs_binary = "nodejs_binary")
 
 http_server = _http_server
 extract_types = _extract_types
@@ -114,24 +114,6 @@ def nodejs_binary(
         npm_workspace = npm_workspace,
         linker_enabled = enable_linker,
         templated_args = templated_args,
-        **kwargs
-    )
-
-def nodejs_test(name, templated_args = [], enable_linker = False, **kwargs):
-    npm_workspace = _node_modules_workspace_name()
-
-    if not enable_linker:
-        templated_args = templated_args + [
-            # Disable the linker and rely on patched resolution which works better on Windows
-            # and is less prone to race conditions when targets build concurrently.
-            "--nobazel_run_linker",
-        ]
-
-    _nodejs_test(
-        name = name,
-        templated_args = templated_args,
-        linker_enabled = enable_linker,
-        npm_workspace = npm_workspace,
         **kwargs
     )
 
