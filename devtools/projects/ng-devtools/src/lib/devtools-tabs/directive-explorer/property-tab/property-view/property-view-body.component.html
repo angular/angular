@@ -7,15 +7,7 @@
           <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
             <mat-panel-title>
               Injected Services
-              <a
-                href="https://angular.dev/guide/di"
-                target="_blank"
-                class="documentation"
-                matTooltip="Open docs reference"
-                (click)="$event.stopPropagation()"
-              >
-                <mat-icon class="docs-link">open_in_new</mat-icon>
-              </a>
+              <ng-docs-ref-button docs="dependency-injection" />
             </mat-panel-title>
           </mat-expansion-panel-header>
           <ng-injected-services [controller]="controller()" />

@@ -14,7 +14,6 @@ import {
   inject,
   input,
 } from '@angular/core';
-import {MatIcon} from '@angular/material/icon';
 
 import {
   AngularDirectiveMetadata,
@@ -23,13 +22,13 @@ import {
 } from '../../../../../../protocol';
 
 import {ElementPropertyResolver} from '../property-resolver/element-property-resolver';
-import {MatTooltip} from '@angular/material/tooltip';
+import {DocsRefButtonComponent} from '../../../shared/docs-ref-button/docs-ref-button.component';
 
 @Component({
   selector: 'ng-component-metadata',
   templateUrl: './component-metadata.component.html',
   styleUrls: ['./component-metadata.component.scss'],
-  imports: [MatIcon, MatTooltip],
+  imports: [DocsRefButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComponentMetadataComponent {

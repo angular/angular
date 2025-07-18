@@ -49,18 +49,6 @@
           display: flex;
           align-items: center;
           gap: 0.375rem;
-
-          .hierarchy-ref {
-            color: currentColor;
-            text-decoration: none;
-          }
-
-          mat-icon {
-            font-size: 1rem;
-            width: 1rem;
-            height: 1rem;
-            display: block;
-          }
         }
       }
 
