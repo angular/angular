@@ -35,9 +35,9 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
     typeof minValue === 'number' ? minValue : minValue(ctx),
   );
 
-  metadata(path, MIN, ({state}) => state.data(reactiveMinValue)!());
+  metadata(path, MIN, ({state}) => state.metadata(reactiveMinValue)!());
   validate(path, (ctx) => {
-    const min = ctx.state.data(reactiveMinValue)!();
+    const min = ctx.state.metadata(reactiveMinValue)!();
 
     if (min === undefined || Number.isNaN(min)) {
       return undefined;
