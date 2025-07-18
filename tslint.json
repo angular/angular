@@ -1,7 +1,6 @@
 {
   "rulesDirectory": [
     "tools/tslint",
-    "node_modules/@angular/build-tooling/lint-rules/tslint",
     "node_modules/vrsource-tslint-rules/rules",
     "node_modules/tslint-eslint-rules/dist/rules",
     "node_modules/tslint-no-toplevel-property-access/rules"
