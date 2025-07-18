@@ -649,11 +649,11 @@ describe('FieldNode', () => {
         (tx) => {
           required(tx.name, {
             when: ({valueOf}) => valueOf(tx.country) === 'USA',
-            errors: () => ValidationError.required('Name is required in your country'),
+            error: ValidationError.required('Name is required in your country'),
           });
           required(tx.name, {
             when: ({valueOf}) => valueOf(tx.amount) >= 1000,
-            errors: () => ValidationError.required('Name is required for large transactions'),
+            error: ValidationError.required('Name is required for large transactions'),
           });
         },
         {injector: TestBed.inject(Injector)},

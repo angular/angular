@@ -6,39 +6,47 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {defineComputed} from '../data';
 import {metadata, validate} from '../logic';
 import {MAX} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig} from './types';
+import {BaseValidatorConfig} from './util';
 
 /**
- * Validator requiring a field value to be smaller than or equal to a maximum value.
+ * Binds a validator to the given path that requires the value to be less than or equal to the
+ * given `maxValue`.
+ * This function can only be called on number paths.
+ * In addition to binding a validator, this function adds `MAX` metadata to the field.
  *
- * @param path Path to the target field
- * @param maxValue The minimum value, or a LogicFn returning it.
- * @param config Optional, currently allows providing custom errors function.
+ * @param path Path of the field to validate
+ * @param maxValue The maximum value, or a LogicFn that returns the maximum value.
+ * @param config Optional, allows providing any of the following options:
+ *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.max(maxValue)`
+ *    or a function that receives the `FieldContext` and returns custom validation error(s).
+ * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
 export function max<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<number, TPathKind>,
-  maxValue: number | LogicFn<number | undefined, number | undefined, TPathKind>,
+  maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const reactiveMaxValue = typeof maxValue === 'number' ? () => maxValue : maxValue;
+  const reactiveMaxValue = defineComputed(path, (ctx) =>
+    typeof maxValue === 'number' ? maxValue : maxValue(ctx),
+  );
 
-  metadata(path, MAX, reactiveMaxValue);
+  metadata(path, MAX, ({state}) => state.data(reactiveMaxValue)!());
   validate(path, (ctx) => {
-    // TODO(kirjs): Do we need to handle Null, parseFloat, NaN?
-    const value = reactiveMaxValue(ctx);
+    const max = ctx.state.data(reactiveMaxValue)!();
 
-    if (value === undefined) {
+    if (max === undefined || Number.isNaN(max)) {
       return undefined;
     }
-    if (ctx.value() > value) {
-      if (config?.errors) {
-        return config.errors(ctx);
+    if (ctx.value() > max) {
+      if (config?.error) {
+        return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
-        return ValidationError.max(value);
+        return ValidationError.max(max);
       }
     }
 

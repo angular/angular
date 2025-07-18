@@ -22,7 +22,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text().errors()).toEqual([ValidationError.maxlength(3)]);
+    expect(f.text().errors()).toEqual([ValidationError.maxLength(3)]);
   });
 
   it('returns maxLength error when the length is larger for arrays', () => {
@@ -35,7 +35,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.list().errors()).toEqual([ValidationError.maxlength(3)]);
+    expect(f.list().errors()).toEqual([ValidationError.maxLength(3)]);
   });
 
   it('is inclusive (no error if length equals maxLength)', () => {
@@ -70,7 +70,7 @@ describe('maxLength validator', () => {
       data,
       (p) => {
         maxLength(p.text, 5, {
-          errors: ({value}) => {
+          error: ({value}) => {
             return ValidationError.custom({
               kind: 'special-maxLength',
               message: `Length is ${value().length}`,
@@ -89,6 +89,19 @@ describe('maxLength validator', () => {
     ]);
   });
 
+  it('works with sets', () => {
+    const data = signal(new Set([1, 2, 3, 4]));
+    const f = form(
+      data,
+      (p) => {
+        maxLength(p, 3);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().errors()).toEqual([ValidationError.maxLength(3)]);
+  });
+
   describe('metadata', () => {
     it('stores the metadata on maxLength', () => {
       const data = signal({text: 'abcdef'});
@@ -96,7 +109,7 @@ describe('maxLength validator', () => {
         data,
         (p) => {
           maxLength(p.text, 5, {
-            errors: ({value}) => {
+            error: ({value}) => {
               return ValidationError.custom({
                 kind: 'special-maxLength',
                 message: `Length is ${value().length}`,
@@ -123,12 +136,12 @@ describe('maxLength validator', () => {
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([
-        ValidationError.maxlength(10),
-        ValidationError.maxlength(5),
+        ValidationError.maxLength(10),
+        ValidationError.maxLength(5),
       ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([ValidationError.maxlength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(5)]);
 
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
@@ -150,19 +163,19 @@ describe('maxLength validator', () => {
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([
-        ValidationError.maxlength(10),
-        ValidationError.maxlength(5),
+        ValidationError.maxLength(10),
+        ValidationError.maxLength(5),
       ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([ValidationError.maxlength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(5)]);
 
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
 
       maxLengthSignal.set(2);
 
-      expect(f.text().errors()).toEqual([ValidationError.maxlength(2)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(2)]);
       expect(f.text().metadata(MAX_LENGTH)()).toBe(2);
     });
   });
@@ -179,7 +192,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([ValidationError.maxlength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(5)]);
       dynamicMaxLength.set(7);
       expect(f.text().errors()).toEqual([]);
     });
@@ -194,7 +207,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([ValidationError.maxlength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(5)]);
       dynamicMaxLength.set(undefined);
       expect(f.text().errors()).toEqual([]);
     });
@@ -211,7 +224,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([ValidationError.maxlength(8)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(8)]);
 
       f.category().value.set('B');
       expect(f.text().errors()).toEqual([]);

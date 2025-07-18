@@ -9,7 +9,7 @@
 import {validate} from '../logic';
 import {FieldPath, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig} from './types';
+import {BaseValidatorConfig} from './util';
 
 /**
  * A regular expression that matches valid e-mail addresses.
@@ -44,20 +44,24 @@ import {BaseValidatorConfig} from './types';
 const EMAIL_REGEXP =
   /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-/*
- * Validator validating email addresses.
+/**
+ * Binds a validator to the given path that requires the value to match the standard email format.
+ * This function can only be called on string paths.
  *
- * @param path Path to the target field
- * @param config Optional, currently allows providing custom errors function.
+ * @param path Path of the field to validate
+ * @param config Optional, allows providing any of the following options:
+ *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.email()`
+ *    or a function that receives the `FieldContext` and returns custom validation error(s).
+ * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
 export function email<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<string, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  return validate(path, (ctx) => {
+  validate(path, (ctx) => {
     if (!EMAIL_REGEXP.test(ctx.value())) {
-      if (config?.errors) {
-        return config.errors(ctx);
+      if (config?.error) {
+        return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
         return ValidationError.email();
       }

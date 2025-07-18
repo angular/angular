@@ -30,7 +30,7 @@ describe('pattern validator', () => {
     const f = form(
       cat,
       (p) => {
-        pattern(p.name, 'pir.*jok', {errors: () => ValidationError.custom()});
+        pattern(p.name, 'pir.*jok', {error: ValidationError.custom()});
       },
       {injector: TestBed.inject(Injector)},
     );

@@ -22,7 +22,7 @@ describe('minLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text().errors()).toEqual([ValidationError.minlength(5)]);
+    expect(f.text().errors()).toEqual([ValidationError.minLength(5)]);
   });
 
   it('returns minLength error when the length is smaller for arrays', () => {
@@ -35,7 +35,7 @@ describe('minLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.list().errors()).toEqual([ValidationError.minlength(5)]);
+    expect(f.list().errors()).toEqual([ValidationError.minLength(5)]);
   });
 
   it('is inclusive (no error if length equals minLength)', () => {
@@ -70,7 +70,7 @@ describe('minLength validator', () => {
       data,
       (p) => {
         minLength(p.text, 5, {
-          errors: ({value}) => {
+          error: ({value}) => {
             return ValidationError.custom({
               kind: 'special-minLength',
               message: `Length is ${value().length}`,
@@ -89,6 +89,19 @@ describe('minLength validator', () => {
     ]);
   });
 
+  it('works with sets', () => {
+    const data = signal(new Set([1, 2, 3, 4]));
+    const f = form(
+      data,
+      (p) => {
+        minLength(p, 5);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().errors()).toEqual([ValidationError.minLength(5)]);
+  });
+
   describe('metadata', () => {
     it('stores the metadata on minLength', () => {
       const data = signal({text: 'ab'});
@@ -96,7 +109,7 @@ describe('minLength validator', () => {
         data,
         (p) => {
           minLength(p.text, 5, {
-            errors: ({value}) => {
+            error: ({value}) => {
               return ValidationError.custom({
                 kind: 'special-minLength',
                 message: `Length is ${value().length}`,
@@ -123,12 +136,12 @@ describe('minLength validator', () => {
 
       f.text().value.set('ab');
       expect(f.text().errors()).toEqual([
-        ValidationError.minlength(5),
-        ValidationError.minlength(10),
+        ValidationError.minLength(5),
+        ValidationError.minLength(10),
       ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([ValidationError.minlength(10)]);
+      expect(f.text().errors()).toEqual([ValidationError.minLength(10)]);
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([]);
@@ -150,19 +163,19 @@ describe('minLength validator', () => {
 
       f.text().value.set('ab');
       expect(f.text().errors()).toEqual([
-        ValidationError.minlength(5),
-        ValidationError.minlength(10),
+        ValidationError.minLength(5),
+        ValidationError.minLength(10),
       ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([ValidationError.minlength(10)]);
+      expect(f.text().errors()).toEqual([ValidationError.minLength(10)]);
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([]);
 
       minLengthSignal.set(20);
 
-      expect(f.text().errors()).toEqual([ValidationError.minlength(20)]);
+      expect(f.text().errors()).toEqual([ValidationError.minLength(20)]);
       expect(f.text().metadata(MIN_LENGTH)()).toBe(20);
     });
   });
@@ -179,7 +192,7 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([ValidationError.minlength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.minLength(5)]);
       dynamicMinLength.set(3);
       expect(f.text().errors()).toEqual([]);
     });
@@ -195,7 +208,7 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([ValidationError.minlength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.minLength(5)]);
       dynamicMinLength.set(undefined);
       expect(f.text().errors()).toEqual([]);
     });
@@ -212,7 +225,7 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([ValidationError.minlength(8)]);
+      expect(f.text().errors()).toEqual([ValidationError.minLength(8)]);
 
       f.category().value.set('B');
       expect(f.text().errors()).toEqual([]);
