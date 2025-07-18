@@ -34,9 +34,9 @@ http_archive(
 
 http_archive(
     name = "aspect_rules_js",
-    sha256 = "304c51726b727d53277dd28fcda1b8e43b7e46818530b8d6265e7be98d5e2b25",
-    strip_prefix = "rules_js-2.3.8",
-    url = "https://github.com/aspect-build/rules_js/releases/download/v2.3.8/rules_js-v2.3.8.tar.gz",
+    sha256 = "961393890a58de989ad7aa36ce147fc9b15a77c8144454889bf068bdd12c5165",
+    strip_prefix = "rules_js-2.4.0",
+    url = "https://github.com/aspect-build/rules_js/releases/download/v2.4.0/rules_js-v2.4.0.tar.gz",
 )
 
 load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
@@ -285,7 +285,7 @@ setup_dependencies_2()
 
 git_repository(
     name = "rules_angular",
-    commit = "88ddcf8cccbfef57f8cc3dda4881f18ec739428e",
+    commit = "8bf9ae3fa3017ec12877908533001daed9c6ce83",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
@@ -306,7 +306,7 @@ rules_angular_step3(
 
 git_repository(
     name = "rules_browsers",
-    commit = "0d8211868d682a9880f4fe6e735d3c82ff63889d",
+    commit = "56ef8007ea07cd1916429bca8bb523433b0e9cdc",
     remote = "https://github.com/devversion/rules_browsers.git",
 )
 
