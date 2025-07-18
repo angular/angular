@@ -11,7 +11,7 @@ import {computed, ResourceRef, Signal} from '@angular/core';
 import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import {setMetadata} from './data';
+import {setMetadata} from './logic';
 import {MetadataKey} from './metadata';
 import {FieldContext, FieldPath, PathKind, TreeValidationResult, ValidationResult} from './types';
 import {addDefaultField} from './validation_errors';

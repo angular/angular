@@ -7,8 +7,7 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import {setMetadata} from '../data';
-import {addToMetadata, validate} from '../logic';
+import {addToMetadata, setMetadata, validate} from '../logic';
 import {MetadataKey, REQUIRED} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';

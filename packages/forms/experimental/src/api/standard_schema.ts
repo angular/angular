@@ -8,8 +8,7 @@
 
 import {computed, resource, Signal, ɵisPromise} from '@angular/core';
 import {validateAsync} from './async';
-import {setMetadata} from './data';
-import {validateTree} from './logic';
+import {setMetadata, validateTree} from './logic';
 import {MetadataKey} from './metadata';
 import {StandardSchemaV1} from './standard_schema_types';
 import {Field, FieldPath} from './types';
