@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {defineComputed} from '../data';
+import {computed} from '@angular/core';
+import {define} from '../data';
 import {metadata, validate} from '../logic';
 import {REQUIRED} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
@@ -37,7 +38,7 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
 ): void {
   const emptyPredicate =
     config?.emptyPredicate ?? ((value) => value === false || value == null || value === '');
-  const condition = defineComputed(path, (ctx) => (config?.when ? config.when(ctx) : true));
+  const condition = define(path, (ctx) => computed(() => (config?.when ? config.when(ctx) : true)));
 
   metadata(path, REQUIRED, ({state}) => state.metadata(condition)!());
   validate(path, (ctx) => {

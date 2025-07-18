@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {defineComputed} from '../data';
+import {computed} from '@angular/core';
+import {define} from '../data';
 import {metadata, validate} from '../logic';
 import {MAX_LENGTH} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
@@ -35,8 +36,8 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const reactiveMaxLength = defineComputed(path, (ctx) =>
-    typeof maxLength === 'number' ? maxLength : maxLength(ctx),
+  const reactiveMaxLength = define(path, (ctx) =>
+    computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx))),
   );
 
   metadata(path, MAX_LENGTH, ({state}) => state.metadata(reactiveMaxLength)!());
