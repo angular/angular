@@ -10,6 +10,7 @@ ts_project(
     deps = [
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/application-services:settings",
+        "//devtools/projects/ng-devtools/src/lib/application-services:settings_store",
     ],
 )
 

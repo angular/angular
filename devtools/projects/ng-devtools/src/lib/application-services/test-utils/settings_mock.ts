@@ -8,15 +8,26 @@
 
 import {Provider, signal, WritableSignal} from '@angular/core';
 import {Settings} from '../settings';
+import {SettingsStore} from '../settings_store';
 
-export class SettingsMock {
+export class SettingsMock extends Settings {
   routerGraphEnabled = signal(false);
   showCommentNodes = signal(false);
   signalGraphEnabled = signal(false);
   timingAPIEnabled = signal(false);
 }
 
-export const SETTINGS_MOCK: Provider = {
-  provide: Settings,
-  useClass: SettingsMock,
-};
+export const SETTINGS_MOCK: Provider[] = [
+  {
+    provide: SettingsStore,
+    useClass: class {
+      create(config: unknown): WritableSignal<unknown> {
+        return signal<unknown>(null);
+      }
+    },
+  },
+  {
+    provide: Settings,
+    useClass: SettingsMock,
+  },
+];
