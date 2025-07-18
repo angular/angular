@@ -72,6 +72,7 @@ export {
   WizComponentDebugMetadata as ɵWizComponentDebugMetadata,
   DirectiveDebugMetadata as ɵDirectiveDebugMetadata,
   ɵɵadvance,
+  ɵɵariaProperty,
   ɵɵattribute,
   ɵɵinterpolate,
   ɵɵinterpolate1,

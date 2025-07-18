@@ -12,6 +12,7 @@ import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
 const CHAIN_COMPATIBILITY = new Map<o.ExternalReference, o.ExternalReference>([
+  [R3.ariaProperty, R3.ariaProperty],
   [R3.attribute, R3.attribute],
   [R3.classProp, R3.classProp],
   [R3.element, R3.element],

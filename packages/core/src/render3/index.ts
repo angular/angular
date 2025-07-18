@@ -53,6 +53,7 @@ export {ɵɵgetInheritedFactory} from './di';
 export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 export {
   ɵɵadvance,
+  ɵɵariaProperty,
   ɵɵattribute,
   ɵɵinterpolate,
   ɵɵinterpolate1,

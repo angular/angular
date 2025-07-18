@@ -344,7 +344,7 @@ function setNgReflectProperty(lView: LView, tNode: TNode, attrName: string, valu
   }
 }
 
-function setNgReflectProperties(
+export function setNgReflectProperties(
   lView: LView,
   tView: TView,
   tNode: TNode,
