@@ -21,7 +21,6 @@
     "executionMode": "branch"
   },
   "ignoreDeps": [
-    "@angular/build-tooling",
     "@types/selenium-webdriver",
     "angular-1.5",
     "angular-1.6",
