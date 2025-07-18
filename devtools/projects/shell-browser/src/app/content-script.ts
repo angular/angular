@@ -94,7 +94,7 @@ if (!backendInitialized) {
 }
 
 const proxyEventFromWindowToDevToolsExtension = (event: MessageEvent) => {
-  if (event.source === window && event.data) {
+  if (event.source === window && event.data && event.data.__NG_DEVTOOLS_EVENT__) {
     try {
       chrome.runtime.sendMessage(event.data);
     } catch (e) {
