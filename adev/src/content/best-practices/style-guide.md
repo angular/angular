@@ -76,7 +76,7 @@ tests into a single `tests` directory.
 
 ### Organize your project by feature areas
 
-Organize your project into subdirectories based on the features or your application or common themes
+Organize your project into subdirectories based on the features of your application or common themes
 to the code in those directories. For example, the project structure for a movie theater site,
 MovieReel, might look like this:
 
@@ -164,8 +164,7 @@ accommodate [JavaScript-like expressions](guide/templates/expression-syntax).
 You should take advantage of these expressions to capture relatively straightforward logic directly
 in template expressions.
 
-When the code in a template gets too complex, though, refactor logic into the TypeScript code (
-typically with a [computed](guide/signals#computed-signals)).
+When the code in a template gets too complex, though, refactor logic into the TypeScript code (typically with a [computed](guide/signals#computed-signals)).
 
 There's no one hard-and-fast rule that determines what constitutes "complex". Use your best
 judgement.
