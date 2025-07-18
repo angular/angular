@@ -24,7 +24,17 @@ const userResource = resource({
 });
 
 // Create a computed signal based on the result of the resource's loader function.
-const firstName = computed(() => userResource.value().firstName);
+const firstName = computed(() => {
+  if (useResource.hasValue()) {
+    // `hasValue` serves 2 purposes:
+    // - It acts as type guard to strip `undefined` from the type
+    // - If protects against reading a throwing `value` when the resource is in error state
+    return userResource.value().firstName;
+  }
+
+  // fallback in case the resource value is `undefined` or if the resource is in error state
+  return undefined;
+});
 ```
 
 The `resource` function accepts a `ResourceOptions` object with two main properties: `params` and `loader`.
