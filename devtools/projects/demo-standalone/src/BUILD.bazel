@@ -58,7 +58,6 @@ ng_project(
 esbuild(
     name = "bundle",
     srcs = [
-        "//:node_modules/@angular/build-tooling",
         "//devtools/tools/esbuild:esbuild_base_rjs",
         "//devtools/tools/esbuild:esbuild_config_esm_rjs",
     ],

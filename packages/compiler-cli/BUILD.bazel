@@ -132,7 +132,6 @@ pkg_npm(
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/core/test/bundling:__subpackages__",
         "//packages/core/test/playground/zone-signal-input:__pkg__",
-        "@npm//@angular/build-tooling/shared-scripts:__subpackages__",
     ],
     deps = [
         ":api_type_definitions",
