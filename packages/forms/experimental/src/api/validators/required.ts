@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {define} from '../data';
-import {metadata, validate} from '../logic';
-import {REQUIRED} from '../metadata';
+import {computed, Signal} from '@angular/core';
+import {setMetadata} from '../data';
+import {addToMetadata, validate} from '../logic';
+import {MetadataKey, REQUIRED} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -36,13 +36,16 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
 ): void {
+  const REQUIRED_MEMO = MetadataKey.create<Signal<boolean>>();
   const emptyPredicate =
     config?.emptyPredicate ?? ((value) => value === false || value == null || value === '');
-  const condition = define(path, (ctx) => computed(() => (config?.when ? config.when(ctx) : true)));
 
-  metadata(path, REQUIRED, ({state}) => state.metadata(condition)!());
+  setMetadata(path, REQUIRED_MEMO, (ctx) =>
+    computed(() => (config?.when ? config.when(ctx) : true)),
+  );
+  addToMetadata(path, REQUIRED, ({state}) => state.metadata(REQUIRED_MEMO)!());
   validate(path, (ctx) => {
-    if (ctx.state.metadata(condition)!() && emptyPredicate(ctx.value())) {
+    if (ctx.state.metadata(REQUIRED_MEMO)!() && emptyPredicate(ctx.value())) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {

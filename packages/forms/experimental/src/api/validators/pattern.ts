@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {metadata, validate} from '../logic';
+import {addToMetadata, validate} from '../logic';
 import {PATTERN} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
@@ -37,7 +37,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
 ) {
   const reactivePatternValue = typeof pattern === 'string' ? () => pattern : pattern;
 
-  metadata(path, PATTERN, (ctx) => {
+  addToMetadata(path, PATTERN, (ctx) => {
     const result = reactivePatternValue(ctx);
     if (result === undefined) {
       return undefined;

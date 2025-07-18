@@ -11,7 +11,8 @@ import {computed, ResourceRef, Signal} from '@angular/core';
 import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import {define} from './data';
+import {setMetadata} from './data';
+import {MetadataKey} from './metadata';
 import {FieldContext, FieldPath, PathKind, TreeValidationResult, ValidationResult} from './types';
 import {addDefaultField} from './validation_errors';
 
@@ -135,9 +136,10 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   opts: AsyncValidatorOptions<TValue, TParams, TResult, TPathKind>,
 ): void {
   assertPathIsCurrent(path);
+  const RESOURCE = MetadataKey.create<ResourceRef<TResult>>();
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  const dataKey = define(path, (ctx) => {
+  setMetadata(path, RESOURCE, (ctx) => {
     const params = computed(() => {
       const node = ctx.stateOf(path) as FieldNode;
       if (node.validationState.shouldSkipValidation() || !node.syncValid()) {
@@ -149,7 +151,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   });
 
   pathNode.logic.addAsyncErrorRule((ctx) => {
-    const res = ctx.state.metadata(dataKey)!;
+    const res = ctx.state.metadata(RESOURCE)!;
     switch (res.status()) {
       case 'idle':
         return undefined;

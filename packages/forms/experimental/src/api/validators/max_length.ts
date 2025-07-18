@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {define} from '../data';
-import {metadata, validate} from '../logic';
-import {MAX_LENGTH} from '../metadata';
+import {computed, Signal} from '@angular/core';
+import {setMetadata} from '../data';
+import {addToMetadata, validate} from '../logic';
+import {MAX_LENGTH, MetadataKey} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
@@ -36,17 +36,17 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const reactiveMaxLength = define(path, (ctx) =>
+  const MAX_LENGTH_MEMO = MetadataKey.create<Signal<number | undefined>>();
+
+  setMetadata(path, MAX_LENGTH_MEMO, (ctx) =>
     computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx))),
   );
-
-  metadata(path, MAX_LENGTH, ({state}) => state.metadata(reactiveMaxLength)!());
+  addToMetadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
-    const maxLength = ctx.state.metadata(reactiveMaxLength)!();
+    const maxLength = ctx.state.metadata(MAX_LENGTH_MEMO)!();
     if (maxLength === undefined) {
       return undefined;
     }
-
     if (getLengthOrSize(ctx.value()) > maxLength) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
@@ -54,7 +54,6 @@ export function maxLength<
         return ValidationError.maxLength(maxLength);
       }
     }
-
     return undefined;
   });
 }

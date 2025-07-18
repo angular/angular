@@ -122,7 +122,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  * @template TMetadata The type of metadata.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
-export function metadata<TValue, TMetadata, TPathKind extends PathKind = PathKind.Root>(
+export function addToMetadata<TValue, TMetadata, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   key: AggregateMetadataKey<any, TMetadata>,
   logic: NoInfer<LogicFn<TValue, TMetadata, TPathKind>>,
