@@ -163,6 +163,34 @@ describe('Angular with zoneless enabled', () => {
       expect(fixture.nativeElement.innerText).toEqual('new');
     });
 
+    it('_not_ on event listener bound in template with boundListenersMarkForCheck: false', async () => {
+      @Component({
+        boundListenersMarkForCheck: false,
+        template: '<div (click)="updateVal()">{{val}}</div>',
+      })
+      class TestComponent {
+        val = 'initial';
+
+        updateVal() {
+          this.val = 'new';
+        }
+      }
+
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      fixture.debugElement
+        .query((p) => p.nativeElement.tagName === 'DIV')
+        .triggerEventHandler('click');
+      expect(fixture.isStable()).toBe(true);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      fixture.changeDetectorRef.markForCheck();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
+    });
+
     it('on event listener bound in host', async () => {
       @Component({host: {'(click)': 'updateVal()'}, template: '{{val}}'})
       class TestComponent {
@@ -178,6 +206,32 @@ describe('Angular with zoneless enabled', () => {
 
       fixture.debugElement.triggerEventHandler('click');
       expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
+    });
+
+    it('_not_ on event listener bound in host with boundListenersMarkForCheck: false', async () => {
+      @Component({
+        boundListenersMarkForCheck: false,
+        host: {'(click)': 'updateVal()'},
+        template: '{{val}}',
+      })
+      class TestComponent {
+        val = 'initial';
+
+        updateVal() {
+          this.val = 'new';
+        }
+      }
+
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      fixture.debugElement.triggerEventHandler('click');
+      expect(fixture.isStable()).toBe(true);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
+
+      fixture.changeDetectorRef.markForCheck();
       await fixture.whenStable();
       expect(fixture.nativeElement.innerText).toEqual('new');
     });
