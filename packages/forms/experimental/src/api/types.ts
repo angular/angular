@@ -7,8 +7,7 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
-import {DataKey} from './data';
-import {ReactiveMetadataKey} from './metadata';
+import {ReactiveMetadataKey, StaticMetadataKey} from './metadata';
 import {ValidationError, WithField} from './validation_errors';
 
 /**
@@ -173,13 +172,17 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly keyInParent: Signal<TKey>;
 
-  data<D>(key: DataKey<D>): D | undefined;
-
   /**
-   * Reactviely reads a metadata value from the field.
+   * Reads a reactive metadata value from the field.
    * @param key The metadata key to read.
    */
   metadata<M>(key: ReactiveMetadataKey<M>): Signal<M>;
+
+  /**
+   * Reads a static metadata value from the field.
+   * @param key The metadata key to read.
+   */
+  metadata<M>(key: StaticMetadataKey<M>): M | undefined;
 
   /**
    * Sets the touched status of the field to `true`.

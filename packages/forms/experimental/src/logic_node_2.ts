@@ -8,11 +8,11 @@
 
 import {
   AsyncValidationResult,
-  DataKey,
   DisabledReason,
   FieldContext,
   LogicFn,
   ReactiveMetadataKey,
+  StaticMetadataKey,
   ValidationResult,
 } from '../public_api';
 import {ValidationError, WithField} from './api/validation_errors';
@@ -54,7 +54,10 @@ export abstract class AbstractLogicNodeBuilder {
   /** Adds a rule to compute metadata for a field. */
   abstract addMetadataRule<M>(key: ReactiveMetadataKey<M>, logic: LogicFn<any, M>): void;
   /** Adds a factory function to produce a data value associated with a field. */
-  abstract addDataFactory<D>(key: DataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
+  abstract addDataFactory<D>(
+    key: StaticMetadataKey<D>,
+    factory: (ctx: FieldContext<any>) => D,
+  ): void;
   /**
    * Gets a builder for a child node associated with the given property key.
    * @param key The property key of the child.
@@ -128,7 +131,10 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addMetadataRule(key, logic);
   }
 
-  override addDataFactory<D>(key: DataKey<D>, factory: (ctx: FieldContext<any>) => D): void {
+  override addDataFactory<D>(
+    key: StaticMetadataKey<D>,
+    factory: (ctx: FieldContext<any>) => D,
+  ): void {
     this.getCurrent().addDataFactory(key, factory);
   }
 
@@ -238,7 +244,10 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.getMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addDataFactory<D>(key: DataKey<D>, factory: (ctx: FieldContext<any>) => D): void {
+  override addDataFactory<D>(
+    key: StaticMetadataKey<D>,
+    factory: (ctx: FieldContext<any>) => D,
+  ): void {
     this.logic.addDataFactory(key, setBoundPathDepthForResolution(factory, this.depth));
   }
 
@@ -275,7 +284,7 @@ export class LogicContainer {
   private readonly metadata = new Map<ReactiveMetadataKey<unknown>, AbstractLogic<unknown>>();
   /** A map of data keys to the factory functions that create their values. */
   private readonly dataFactories = new Map<
-    DataKey<unknown>,
+    StaticMetadataKey<unknown>,
     (ctx: FieldContext<unknown>) => unknown
   >();
 
@@ -336,11 +345,14 @@ export class LogicContainer {
 
   /**
    * Adds a data factory function for a given data key.
-   * @param key The `DataKey` to associate the factory with.
+   * @param key The `StaticMetadataKey` to associate the factory with.
    * @param factory The factory function.
    * @throws If a factory is already defined for the given key.
    */
-  addDataFactory(key: DataKey<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
+  addDataFactory(
+    key: StaticMetadataKey<unknown>,
+    factory: (ctx: FieldContext<unknown>) => unknown,
+  ) {
     if (this.dataFactories.has(key)) {
       // TODO: name of the key?
       throw new Error(`Can't define data twice for the same key`);
