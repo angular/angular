@@ -1,5 +1,5 @@
 <as-split unit="percent" [gutterSize]="9">
-  <as-split-area size="75">
+  <as-split-area size="70">
     @switch (visualizationMode()) {
       @case (cmpVisualizationModes.FlameGraph) {
         <ng-flamegraph-visualizer
@@ -18,7 +18,7 @@
   </as-split-area>
 
   @if (selectedEntry(); as entry) {
-    <as-split-area size="25" minSize="15" class="selected-entry">
+    <as-split-area size="30" minSize="25" class="selected-entry">
       <p class="title">{{ entry.label }} details</p>
       <div class="entry-statistics">
         <p class="total-time">

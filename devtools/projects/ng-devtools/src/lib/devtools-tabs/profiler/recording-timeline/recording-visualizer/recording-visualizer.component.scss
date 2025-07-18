@@ -14,6 +14,7 @@
   .selected-entry {
     padding: 0.75rem;
     box-sizing: border-box;
+    overflow: auto;
 
     .title {
       @extend %heading-400;
