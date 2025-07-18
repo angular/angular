@@ -7,15 +7,16 @@
  */
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {ApplicationRef, Injector, resource, signal} from '@angular/core';
+import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 
 import {
   applyEach,
-  define,
   form,
+  MetadataKey,
   SchemaOrSchemaFn,
+  setMetadata,
   validate,
   validateAsync,
   validateHttp,
@@ -48,7 +49,8 @@ describe('resources', () => {
 
   it('Takes a simple resource which reacts to data changes', async () => {
     const s: SchemaOrSchemaFn<Cat> = function (p) {
-      const res = define(p.name, ({value}) => {
+      const RES = MetadataKey.create<Resource<string | undefined>>();
+      const res = setMetadata(p.name, RES, ({value}) => {
         return resource({
           params: () => ({x: value()}),
           loader: async ({params}) => `got: ${params.x}`,
@@ -56,9 +58,9 @@ describe('resources', () => {
       });
 
       validate(p.name, ({state}) => {
-        const remote = state.metadata(res)!;
+        const remote = state.metadata(RES)!;
         if (remote.hasValue()) {
-          return ValidationError.custom({message: remote.value()!.toString()});
+          return ValidationError.custom({message: remote.value()});
         } else {
           return undefined;
         }
@@ -88,7 +90,8 @@ describe('resources', () => {
   it('should create a resource per entry in an array', async () => {
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       applyEach(p, (p) => {
-        const res = define(p.name, ({value}) => {
+        const RES = MetadataKey.create<Resource<string | undefined>>();
+        setMetadata(p.name, RES, ({value}) => {
           return resource({
             params: () => ({x: value()}),
             loader: async ({params}) => `got: ${params.x}`,
@@ -96,9 +99,9 @@ describe('resources', () => {
         });
 
         validate(p.name, ({state}) => {
-          const remote = state.metadata(res)!;
+          const remote = state.metadata(RES)!;
           if (remote.hasValue()) {
-            return ValidationError.custom({message: remote.value()!.toString()});
+            return ValidationError.custom({message: remote.value()});
           } else {
             return undefined;
           }

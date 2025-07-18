@@ -7,11 +7,12 @@
  */
 
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
-import {ResourceRef, Signal} from '@angular/core';
+import {computed, ResourceRef, Signal} from '@angular/core';
 import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import {defineResource} from './data';
+import {setMetadata} from './logic';
+import {MetadataKey} from './metadata';
 import {FieldContext, FieldPath, PathKind, TreeValidationResult, ValidationResult} from './types';
 import {addDefaultField} from './validation_errors';
 
@@ -135,21 +136,22 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   opts: AsyncValidatorOptions<TValue, TParams, TResult, TPathKind>,
 ): void {
   assertPathIsCurrent(path);
+  const RESOURCE = MetadataKey.create<ResourceRef<TResult>>();
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  const dataKey = defineResource(path, {
-    params: (ctx) => {
+  setMetadata(path, RESOURCE, (ctx) => {
+    const params = computed(() => {
       const node = ctx.stateOf(path) as FieldNode;
       if (node.validationState.shouldSkipValidation() || !node.syncValid()) {
         return undefined;
       }
       return opts.params(ctx);
-    },
-    factory: opts.factory,
+    });
+    return opts.factory(params);
   });
 
   pathNode.logic.addAsyncErrorRule((ctx) => {
-    const res = ctx.state.metadata(dataKey)!;
+    const res = ctx.state.metadata(RESOURCE)!;
     switch (res.status()) {
       case 'idle':
         return undefined;

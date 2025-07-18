@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {defineComputed} from '../data';
-import {metadata, validate} from '../logic';
-import {MIN} from '../metadata';
+import {computed, Signal} from '@angular/core';
+import {addToMetadata, setMetadata, validate} from '../logic';
+import {MetadataKey, MIN} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -31,14 +31,14 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const reactiveMinValue = defineComputed(path, (ctx) =>
-    typeof minValue === 'number' ? minValue : minValue(ctx),
+  const MIN_MEMO = MetadataKey.create<Signal<number | undefined>>();
+
+  setMetadata(path, MIN_MEMO, (ctx) =>
+    computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
   );
-
-  metadata(path, MIN, ({state}) => state.metadata(reactiveMinValue)!());
+  addToMetadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
   validate(path, (ctx) => {
-    const min = ctx.state.metadata(reactiveMinValue)!();
-
+    const min = ctx.state.metadata(MIN_MEMO)!();
     if (min === undefined || Number.isNaN(min)) {
       return undefined;
     }
@@ -49,7 +49,6 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
         return ValidationError.min(min);
       }
     }
-
     return undefined;
   });
 }

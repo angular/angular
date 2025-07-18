@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {defineComputed} from '../data';
-import {metadata, validate} from '../logic';
-import {MAX} from '../metadata';
+import {computed, Signal} from '@angular/core';
+import {addToMetadata, setMetadata, validate} from '../logic';
+import {MAX, MetadataKey} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -31,14 +31,14 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const reactiveMaxValue = defineComputed(path, (ctx) =>
-    typeof maxValue === 'number' ? maxValue : maxValue(ctx),
+  const MAX_MEMO = MetadataKey.create<Signal<number | undefined>>();
+
+  setMetadata(path, MAX_MEMO, (ctx) =>
+    computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx))),
   );
-
-  metadata(path, MAX, ({state}) => state.metadata(reactiveMaxValue)!());
+  addToMetadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());
   validate(path, (ctx) => {
-    const max = ctx.state.metadata(reactiveMaxValue)!();
-
+    const max = ctx.state.metadata(MAX_MEMO)!();
     if (max === undefined || Number.isNaN(max)) {
       return undefined;
     }
@@ -49,7 +49,6 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
         return ValidationError.max(max);
       }
     }
-
     return undefined;
   });
 }

@@ -3,18 +3,18 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {computed, runInInjectionContext, untracked} from '@angular/core';
-import {StaticMetadataKey} from '../api/metadata';
+import {MetadataKey} from '../api/metadata';
 import {FieldNode} from './node';
 
 /**
  * Tracks `data` associated with a `FieldNode`.
  */
 export class FieldDataState {
-  private readonly dataMap = new Map<StaticMetadataKey<unknown>, unknown>();
+  private readonly dataMap = new Map<MetadataKey<unknown>, unknown>();
 
   constructor(private readonly node: FieldNode) {
     // Instantiate data dependencies.
@@ -38,7 +38,7 @@ export class FieldDataState {
     return maps;
   });
 
-  get<D>(key: StaticMetadataKey<D>): D | undefined {
+  get<D>(key: MetadataKey<D>): D | undefined {
     return this.dataMap.get(key) as D | undefined;
   }
 }

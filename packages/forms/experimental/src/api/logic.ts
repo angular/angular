@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ReactiveMetadataKey} from '../api/metadata';
+import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import type {FieldContext, FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
@@ -122,13 +122,24 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  * @template TMetadata The type of metadata.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
-export function metadata<TValue, TMetadata, TPathKind extends PathKind = PathKind.Root>(
+export function addToMetadata<TValue, TMetadata, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  key: ReactiveMetadataKey<TMetadata>,
+  key: AggregateMetadataKey<any, TMetadata>,
   logic: NoInfer<LogicFn<TValue, TMetadata, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addMetadataRule(key, logic);
+}
+
+export function setMetadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<TValue, TPathKind>,
+  key: MetadataKey<TData>,
+  factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
+) {
+  assertPathIsCurrent(path);
+
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  pathNode.logic.addDataFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
 }

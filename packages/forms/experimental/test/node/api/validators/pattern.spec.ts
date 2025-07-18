@@ -65,6 +65,18 @@ describe('pattern validator', () => {
 
       expect(f.name().metadata(PATTERN)()).toEqual(['pir.*jok', 'pelmeni']);
     });
+
+    it('metadata defaults to empty list', () => {
+      const cat = signal({name: 'pelmeni-the-cat'});
+      const f = form(
+        cat,
+        (p) => {
+          pattern(p.name, () => undefined);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f.name().metadata(PATTERN)()).toEqual([]);
+    });
   });
 
   describe('dynamic values', () => {

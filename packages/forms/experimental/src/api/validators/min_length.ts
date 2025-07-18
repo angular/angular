@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {defineComputed} from '../data';
-import {metadata, validate} from '../logic';
-import {MIN_LENGTH} from '../metadata';
+import {computed, Signal} from '@angular/core';
+import {addToMetadata, setMetadata, validate} from '../logic';
+import {MetadataKey, MIN_LENGTH} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
@@ -35,17 +35,17 @@ export function minLength<
   minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const reactiveMinLength = defineComputed(path, (ctx) =>
-    typeof minLength === 'number' ? minLength : minLength(ctx),
-  );
+  const MIN_LENGTH_MEMO = MetadataKey.create<Signal<number | undefined>>();
 
-  metadata(path, MIN_LENGTH, ({state}) => state.metadata(reactiveMinLength)!());
+  setMetadata(path, MIN_LENGTH_MEMO, (ctx) =>
+    computed(() => (typeof minLength === 'number' ? minLength : minLength(ctx))),
+  );
+  addToMetadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());
   validate(path, (ctx) => {
-    const minLength = ctx.state.metadata(reactiveMinLength)!();
+    const minLength = ctx.state.metadata(MIN_LENGTH_MEMO)!();
     if (minLength === undefined) {
       return undefined;
     }
-
     if (getLengthOrSize(ctx.value()) < minLength) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
@@ -53,7 +53,6 @@ export function minLength<
         return ValidationError.minLength(minLength);
       }
     }
-
     return undefined;
   });
 }
