@@ -186,6 +186,13 @@ export abstract class HttpResponseBase {
   readonly type!: HttpEventType.Response | HttpEventType.ResponseHeader;
 
   /**
+   * Indicates whether the HTTP response was redirected during the request.
+   * This property is only available when using the Fetch API using `withFetch()`
+   * When using the default XHR Request this property will be `undefined`
+   */
+  readonly redirected?: boolean;
+
+  /**
    * Super-constructor for all responses.
    *
    * The single parameter accepted is an initialization hash. Any properties
@@ -197,6 +204,7 @@ export abstract class HttpResponseBase {
       status?: number;
       statusText?: string;
       url?: string;
+      redirected?: boolean;
     },
     defaultStatus: number = 200,
     defaultStatusText: string = 'OK',
@@ -207,6 +215,7 @@ export abstract class HttpResponseBase {
     this.status = init.status !== undefined ? init.status : defaultStatus;
     this.statusText = init.statusText || defaultStatusText;
     this.url = init.url || null;
+    this.redirected = init.redirected;
 
     // Cache the ok value to avoid defining a getter.
     this.ok = this.status >= 200 && this.status < 300;
@@ -244,7 +253,12 @@ export class HttpHeaderResponse extends HttpResponseBase {
    * given parameter hash.
    */
   clone(
-    update: {headers?: HttpHeaders; status?: number; statusText?: string; url?: string} = {},
+    update: {
+      headers?: HttpHeaders;
+      status?: number;
+      statusText?: string;
+      url?: string;
+    } = {},
   ): HttpHeaderResponse {
     // Perform a straightforward initialization of the new HttpHeaderResponse,
     // overriding the current parameters with new ones if given.
@@ -282,6 +296,7 @@ export class HttpResponse<T> extends HttpResponseBase {
       status?: number;
       statusText?: string;
       url?: string;
+      redirected?: boolean;
     } = {},
   ) {
     super(init);
@@ -296,6 +311,7 @@ export class HttpResponse<T> extends HttpResponseBase {
     status?: number;
     statusText?: string;
     url?: string;
+    redirected?: boolean;
   }): HttpResponse<T>;
   clone<V>(update: {
     body?: V | null;
@@ -303,6 +319,7 @@ export class HttpResponse<T> extends HttpResponseBase {
     status?: number;
     statusText?: string;
     url?: string;
+    redirected?: boolean;
   }): HttpResponse<V>;
   clone(
     update: {
@@ -311,6 +328,7 @@ export class HttpResponse<T> extends HttpResponseBase {
       status?: number;
       statusText?: string;
       url?: string;
+      redirected?: boolean;
     } = {},
   ): HttpResponse<any> {
     return new HttpResponse<any>({
@@ -319,6 +337,7 @@ export class HttpResponse<T> extends HttpResponseBase {
       status: update.status !== undefined ? update.status : this.status,
       statusText: update.statusText || this.statusText,
       url: update.url || this.url || undefined,
+      redirected: update.redirected ?? this.redirected,
     });
   }
 }
@@ -352,6 +371,7 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
     status?: number;
     statusText?: string;
     url?: string;
+    redirected?: boolean;
   }) {
     // Initialize with a default status of 0 / Unknown Error.
     super(init, 0, 'Unknown Error');
