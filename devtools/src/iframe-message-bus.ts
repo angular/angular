@@ -78,6 +78,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
         // event listeners but also not prevent the NgZone in the devtools app
         // from updating its UI.
         __ignore_ng_zone__: this._source === 'angular-devtools',
+        __NG_DEVTOOLS_EVENT__: true,
       },
       '*',
     );
