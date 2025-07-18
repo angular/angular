@@ -14,7 +14,7 @@ Angular Router is included by default in all Angular projects setup with the Ang
 
 ### Add to an existing project
 
-If your project does not have routing, you can install it manually with the following command:
+If your project does not include Angular Router, you can install it manually with the following command:
 
 ```bash
 ng add @angular/router
