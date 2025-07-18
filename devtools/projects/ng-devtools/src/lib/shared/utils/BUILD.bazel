@@ -4,7 +4,10 @@ package(default_visibility = ["//devtools:__subpackages__"])
 
 ts_project(
     name = "utils",
-    srcs = ["debouncer.ts"],
+    srcs = [
+        "debouncer.ts",
+        "formatting.ts",
+    ],
 )
 
 ts_test_library(

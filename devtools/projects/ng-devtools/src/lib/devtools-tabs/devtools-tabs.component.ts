@@ -38,9 +38,10 @@ import {DirectiveExplorerComponent} from './directive-explorer/directive-explore
 import {InjectorTreeComponent} from './injector-tree/injector-tree.component';
 import {ProfilerComponent} from './profiler/profiler.component';
 import {RouterTreeComponent} from './router-tree/router-tree.component';
+import {TransferStateComponent} from './transfer-state/transfer-state.component';
 import {TabUpdate} from './tab-update/index';
 
-type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
+type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transfer State';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -59,6 +60,7 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
     ProfilerComponent,
     RouterTreeComponent,
     InjectorTreeComponent,
+    TransferStateComponent,
     MatSlideToggle,
   ],
   providers: [TabUpdate],
@@ -76,6 +78,7 @@ export class DevToolsTabsComponent {
   readonly routerGraphEnabled = signal(false);
   readonly timingAPIEnabled = signal(false);
   readonly signalGraphEnabled = signal(false);
+  readonly transferStateTabEnabled = signal(false);
 
   readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
   readonly providers = signal<SerializedProviderRecord[]>([]);
@@ -96,6 +99,9 @@ export class DevToolsTabsComponent {
     }
     if (supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0) {
       tabs.push('Router Tree');
+    }
+    if (supportedApis.transferState && this.transferStateTabEnabled()) {
+      tabs.push('Transfer State');
     }
 
     return tabs;
@@ -198,5 +204,12 @@ export class DevToolsTabsComponent {
 
   protected setSignalGraph(enabled: boolean): void {
     this.signalGraphEnabled.set(enabled);
+  }
+
+  protected setTransferStateTab(enabled: boolean): void {
+    this.transferStateTabEnabled.set(enabled);
+    if (!enabled && this.activeTab() === 'Transfer State') {
+      this.activeTab.set('Components');
+    }
   }
 }
