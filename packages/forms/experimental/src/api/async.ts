@@ -12,11 +12,11 @@ import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {defineResource} from './data';
-import {FieldContext, FieldPath, PathKind} from './types';
-import {addDefaultField, ValidationError, WithField} from './validation_errors';
+import {FieldContext, FieldPath, PathKind, TreeValidationResult, ValidationResult} from './types';
+import {addDefaultField} from './validation_errors';
 
 /**
- * A function that takes the result of an async operation, and the current field context and maps it
+ * A function that takes the result of an async operation and the current field context, and maps it
  * to a list of validation errors.
  *
  * @param result The result of the async operation.
@@ -32,11 +32,7 @@ import {addDefaultField, ValidationError, WithField} from './validation_errors';
 export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind.Root> = (
   result: TResult,
   ctx: FieldContext<TValue, TPathKind>,
-) =>
-  | ValidationError
-  | WithField<ValidationError>
-  | (ValidationError | WithField<ValidationError>)[]
-  | undefined;
+) => ValidationResult | TreeValidationResult;
 
 /**
  * Options that indicate how to create a resource for async validation for a field,
@@ -86,31 +82,32 @@ export interface AsyncValidatorOptions<
 }
 
 /**
- * Options that indicate how to create an http resource for async validation for a field,
+ * Options that indicate how to create an httpResource for async validation for a field,
  * and map its result to validation errors.
  *
  * @template TValue The type of value stored in the field being validated.
- * @template TResult The type of result returned by the http resource
+ * @template TResult The type of result returned by the httpResource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  */
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
   /**
-   * A function that receives the field context and returns the url or request for the http resource.
+   * A function that receives the field context and returns the url or request for the httpResource.
+   * If given a URL, the underlying httpResource will perform an HTTP GET on it.
    *
    * @param ctx The field context for the field being validated.
-   * @returns The url or request for creating the http resource.
+   * @returns The URL or request for creating the httpResource.
    */
   readonly request:
     | ((ctx: FieldContext<TValue, TPathKind>) => string | undefined)
     | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
 
   /**
-   * A function that takes the http resource result, and the current field context and maps it to a
+   * A function that takes the httpResource result, and the current field context and maps it to a
    * list of validation errors.
    *
-   * @param result The http resource result.
+   * @param result The httpResource result.
    * @param ctx The context for the field the validator is attached to.
-   * @return A validation error, or list of validation errors to report based on the http resource result.
+   * @return A validation error, or list of validation errors to report based on the httpResource result.
    *   The returned errors can optionally specify a field that the error should be targeted to.
    *   A targeted error will show up as an error on its target field rather than the field being validated.
    *   If a field is not given, the error is assumed to apply to the field being validated.
@@ -118,13 +115,13 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
   readonly errors: MapToErrorsFn<TValue, TResult, TPathKind>;
 
   /**
-   * The options to use when creating the http resource.
+   * The options to use when creating the httpResource.
    */
   readonly options?: HttpResourceOptions<TResult, unknown>;
 }
 
 /**
- * Adds async validation to the field coresponding to the given path based on a resource.
+ * Adds async validation to the field corresponding to the given path based on a resource.
  *
  * @param path A path indicating the field to bind the async validation logic to.
  * @param opts The async validation options.
@@ -165,14 +162,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
           return undefined;
         }
         const errors = opts.errors(res.value()!, ctx as FieldContext<TValue, TPathKind>);
-        if (Array.isArray(errors)) {
-          for (const error of errors) {
-            addDefaultField(error, ctx.field);
-          }
-        } else if (errors) {
-          addDefaultField(errors, ctx.field);
-        }
-        return errors as WithField<ValidationError> | WithField<ValidationError>[];
+        return addDefaultField(errors, ctx.field);
       case 'error':
         // TODO: Design error handling for async validation. For now, just throw the error.
         throw res.error();
@@ -181,12 +171,12 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
 }
 
 /**
- * Adds async validation to the field coresponding to the given path based on an http resource.
+ * Adds async validation to the field corresponding to the given path based on an httpResource.
  *
  * @param path A path indicating the field to bind the async validation logic to.
  * @param opts The http validation options.
  * @template TValue The type of value stored in the field being validated.
- * @template TResult The type of result returned by the http resource
+ * @template TResult The type of result returned by the httpResource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  */
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(

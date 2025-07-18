@@ -64,17 +64,23 @@ export function stripField<E extends ValidationError>(e: WithField<E> | E): E {
 }
 
 /**
- * Adds the given default field on to the given error if the error does not already have a field.
- * @param e The error to add the field to
+ * Adds the given default field on to the given error(s) if the error does not already have a field.
+ * @param errors The error(s) to add the field to
  * @param field The default field to add
- * @returns The passed in error, with its field set.
+ * @returns The passed in error(s), with its field set.
  */
 export function addDefaultField<E extends ValidationError>(
-  e: E | WithField<E>,
+  errors: E | WithField<E> | readonly (E | WithField<E>)[] | false | null | undefined,
   field: Field<unknown>,
-): WithField<E> {
-  (e as Mutable<ValidationError | WithField<ValidationError>>).field ??= field;
-  return e as WithField<E>;
+): WithField<E> | WithField<E>[] | false | null | undefined {
+  if (Array.isArray(errors)) {
+    for (const error of errors) {
+      (error as Mutable<ValidationError | WithField<ValidationError>>).field ??= field;
+    }
+  } else if (errors) {
+    (errors as Mutable<ValidationError | WithField<ValidationError>>).field ??= field;
+  }
+  return errors as WithField<E> | WithField<E>[];
 }
 
 /**
