@@ -48,6 +48,12 @@ const updateGuidePageRoute: Route = {
   data: commonReferenceRouteData,
 };
 
+const compilerOutputDemoRoute: Route = {
+  path: referenceNavigationItems.find((r) => r.path === DefaultPage.COMPILER_OUTPUT)!.path,
+  loadComponent: () => import('./features/compiler-output/compiler-output-demo'),
+  data: commonReferenceRouteData,
+};
+
 const cliReferencePageRoutes = mapNavigationItemsToRoutes(
   referenceNavigationItems.filter((r) => r.path?.startsWith(`${PagePrefix.CLI}/`)),
   {
@@ -69,6 +75,7 @@ const docsReferencePageRoutes = mapNavigationItemsToRoutes(
     (r) =>
       r.path !== DefaultPage.REFERENCE &&
       r.path !== DefaultPage.UPDATE &&
+      r.path !== DefaultPage.COMPILER_OUTPUT &&
       !r.path?.startsWith(`${PagePrefix.API}/`) &&
       !r.path?.startsWith(`${PagePrefix.CLI}/`),
   ),
@@ -269,6 +276,7 @@ export const routes: Route[] = [
       ...API_REFERENCE_ROUTES,
       ...FOOTER_ROUTES,
       updateGuidePageRoute,
+      compilerOutputDemoRoute,
       ...REDIRECT_ROUTES,
     ],
   },

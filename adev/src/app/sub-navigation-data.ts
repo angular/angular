@@ -1241,7 +1241,7 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
   },
   {
     label: 'Update guide',
-    path: 'update-guide',
+    path: DefaultPage.UPDATE,
   },
   {
     label: 'Configurations',
@@ -1320,6 +1320,15 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Self-closing tags',
         path: 'reference/migrations/self-closing-tags',
         contentPath: 'reference/migrations/self-closing-tags',
+      },
+    ],
+  },
+  {
+    label: 'Demo tools',
+    children: [
+      {
+        label: 'Compiler output',
+        path: DefaultPage.COMPILER_OUTPUT,
       },
     ],
   },
