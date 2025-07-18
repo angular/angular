@@ -35,10 +35,6 @@
     }
 
     .trees {
-      as-split-area {
-        overflow-y: auto !important;
-      }
-
       .injector-hierarchy {
         height: 100%;
         overflow: hidden;
@@ -69,7 +65,6 @@
       }
 
       .injector-graph {
-        overflow: auto;
         background: var(--octonary-contrast);
         height: calc(100% - 50px);
       }
