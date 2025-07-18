@@ -114,6 +114,10 @@ bundle_entrypoints = [
         "control-flow-migration",
         "packages/core/schematics/migrations/control-flow-migration/index.js",
     ],
+    [
+        "bootstrap-options-migration",
+        "packages/core/schematics/migrations/bootstrap-options-migration/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -125,6 +129,7 @@ rollup.rollup(
         "//:node_modules/magic-string",
         "//:node_modules/semver",
         "//packages/core/schematics:tsconfig_build",
+        "//packages/core/schematics/migrations/bootstrap-options-migration:bootstrap-options-migration_rjs",
         "//packages/core/schematics/migrations/control-flow-migration:control-flow-migration_rjs",
         "//packages/core/schematics/migrations/document-core:document-core_rjs",
         "//packages/core/schematics/migrations/inject-flags:inject-flags_rjs",
