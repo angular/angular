@@ -11,53 +11,42 @@ import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './types';
 
-function strToRegexp(pattern: string) {
-  let regexStr = '';
-
-  if (pattern.charAt(0) !== '^') regexStr += '^';
-
-  regexStr += pattern;
-
-  if (pattern.charAt(pattern.length - 1) !== '$') regexStr += '$';
-
-  return new RegExp(regexStr);
-}
-
-/*
+/**
  * Validator allowing to validate a string against a pattern.
  *
  * @param path Path to the target field
- * @param pattern Regex as a string. `^` and `$` would be added automatically if not present.
+ * @param pattern Regular expression to validate against.
  * @param config Optional, currently allows providing custom errors function.
  */
 export function pattern<TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<string, TPathKind>,
-  pattern: string | LogicFn<string | undefined, string | undefined, TPathKind>,
+  pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const reactivePatternValue = typeof pattern === 'string' ? () => pattern : pattern;
+  const reactivePatternValue = pattern instanceof RegExp ? () => pattern : pattern;
 
   metadata(path, PATTERN, (ctx) => {
     const result = reactivePatternValue(ctx);
     if (result === undefined) {
       return [];
     }
-    return [result];
+    return [result.source];
   });
 
   validate(path, (ctx) => {
-    const value = reactivePatternValue(ctx);
+    const regex = reactivePatternValue(ctx);
+    const value = ctx.value();
 
-    if (value === undefined) {
+    // A pattern validator should not fail on an empty value.
+    if (regex === undefined || value == null || value === '') {
       return undefined;
     }
 
-    const regex = strToRegexp(value);
-    if (!regex.test(ctx.value())) {
+    if (!regex.test(value)) {
       if (config?.errors) {
         return config.errors(ctx);
       } else {
-        return ValidationError.pattern(value);
+        return ValidationError.pattern(regex.source);
       }
     }
 
