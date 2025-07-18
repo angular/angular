@@ -1,0 +1,11 @@
+<section class="product-container">
+  @for (product of products(); track product.id) {
+    <article class="product-card">
+      <div class="product-info">
+        <span class="name">{{ product.name }}</span>
+        <span class="price">${{ product.price.toFixed(2) }}</span>
+      </div>
+      <button (click)="cartService.addToCart(product)">Add</button>
+    </article>
+  }
+</section>

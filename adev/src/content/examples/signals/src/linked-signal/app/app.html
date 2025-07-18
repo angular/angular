@@ -1,0 +1,26 @@
+<article class="container">
+  <h2>Demo: Resettable Quantity</h2>
+  <p>Change the quantity. Then select a different product. The quantity will reset to that new product's default value.</p>
+
+  <section class="form-wrapper">
+    <div class="form-group">
+      <label for="productSelect">Select Product</label>
+      <select id="productSelect" [(ngModel)]="selectedProductId">
+        @for (product of allProducts(); track product.id) {
+          <option [value]="product.id">
+            {{ product.name }} (Default: {{ product.defaultQuantity }})
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="quantityInput">Quantity</label>
+      <input id="quantityInput" type="number" [(ngModel)]="quantity">
+    </div>
+
+    <div class="result-box">
+      <span>Current quantity signal: <strong>{{ quantity() }}</strong></span>
+    </div>
+  </section>
+</article>

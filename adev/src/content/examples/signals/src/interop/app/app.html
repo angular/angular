@@ -1,0 +1,24 @@
+<article class="container">
+  <h2>Demo: Debounced API Search</h2>
+  <p>The input value is a signal, converted to an Observable for debouncing, then converted back to a signal for display.</p>
+
+  <div class="form-group">
+    <label for="citySearch">Search for a city:</label>
+    <input id="citySearch" type="text" [(ngModel)]="searchTerm" placeholder="e.g., 'New York'">
+  </div>
+
+  <section class="result-box">
+    <h3>Search Results</h3>
+    @if (searchTerm().length === 0) {
+      <p class="placeholder">Type to start searching...</p>
+    } @else {
+      <ul>
+        @for (item of searchResults(); track item) {
+          <li>{{ item }}</li>
+        } @empty {
+          <p class="placeholder">No results found.</p>
+        }
+      </ul>
+    }
+  </section>
+</article>

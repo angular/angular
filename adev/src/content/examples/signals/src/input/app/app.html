@@ -1,0 +1,26 @@
+<article class="container">
+  <h2>Demo: Parent-Child Inputs</h2>
+  <p>The "Parent Controls" modify state that is passed down to the "Child Component" via signal inputs. The child reactively updates its view when the inputs change.</p>
+
+  <section class="control-box">
+    <h3>Parent Controls</h3>
+    <div class="inputs-wrapper">
+      <div class="form-group">
+        <label for="userName">User Name</label>
+        <input id="userName" type="text" [(ngModel)]="userName">
+      </div>
+      <div class="form-group">
+        <label for="theme">Theme</label>
+        <select id="theme" [(ngModel)]="selectedTheme">
+          <option value="light">light</option>
+          <option value="dark">dark</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <section class="child-view-box">
+    <h3>Simulated Child Component View</h3>
+    <app-child [user]="userObject()" [theme]="selectedTheme()" />
+  </section>
+</article>
