@@ -54,7 +54,7 @@ export function validateAsync<TValue, TRequest, TData, TPathKind extends PathKin
   });
 
   pathNode.logic.addAsyncErrorRule((ctx) => {
-    const res = ctx.state.data(dataKey)!;
+    const res = ctx.state.metadata(dataKey)!;
     switch (res.status()) {
       case 'idle':
         return undefined;
