@@ -2564,6 +2564,7 @@ import {envIsSupported} from '../testing/utils';
           expect(await makeRequest(scope, '/foo.hash.js', 'client-2')).toBeNull();
           expect(mockClient2.messages).toEqual([
             jasmine.objectContaining({type: 'UNRECOVERABLE_STATE'}),
+            jasmine.objectContaining({type: 'VERSION_FAILED'}),
           ]);
 
           // This should also enter the `SW` into degraded mode, because the broken version was the

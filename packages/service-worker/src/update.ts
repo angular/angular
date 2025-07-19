@@ -66,6 +66,7 @@ export class SwUpdate {
       'VERSION_INSTALLATION_FAILED',
       'VERSION_READY',
       'NO_NEW_VERSION_DETECTED',
+      'VERSION_FAILED',
     ]);
     this.unrecoverable = this.sw.eventsOfType<UnrecoverableStateEvent>('UNRECOVERABLE_STATE');
   }
