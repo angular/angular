@@ -58,6 +58,7 @@
       "shimStylesContent"
     ],
     "lazy": [
+      "DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "APP_BOOTSTRAP_LISTENER",
       "APP_ID",
@@ -312,10 +313,8 @@
       "applyValueToInputField",
       "applyView",
       "arrRemove",
-      "assertConsumerNode",
       "assertDefined",
       "assertNotDestroyed",
-      "assertProducerNode",
       "attachPatchData",
       "augmentRuntimeError",
       "bind",
@@ -553,7 +552,6 @@
       "isBoundToModule",
       "isComponentDef",
       "isComponentHost",
-      "isConsumerNode",
       "isContentQueryHost",
       "isCssClassMatching",
       "isCurrentTNodeParent",
@@ -644,7 +642,7 @@
       "processHostBindingOpCodes",
       "processInjectorTypesWithProviders",
       "producerMarkClean",
-      "producerRemoveLiveConsumerAtIndex",
+      "producerRemoveLiveConsumerLink",
       "producerUpdateValueVersion",
       "profiler",
       "profilerCallbacks",
@@ -749,8 +747,7 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput",
-      "DeferComponent"
+      "writeToDirectiveInput"
     ]
   }
 }
