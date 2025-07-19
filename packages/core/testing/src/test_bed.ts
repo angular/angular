@@ -667,7 +667,7 @@ export class TestBedImpl implements TestBed {
       const componentRef = componentFactory.create(
         Injector.NULL,
         [],
-        `#${rootElId}`,
+        `[data-ng-test-id=${rootElId}]`,
         this.testModuleRef,
         undefined,
         options?.bindings,
