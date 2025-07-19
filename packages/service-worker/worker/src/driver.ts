@@ -956,7 +956,8 @@ export class Driver implements Debuggable, UpdateSource {
     // Therefore, we keep clients on their current version (even if broken) and ensure that no new
     // clients will be assigned to it.
 
-    // TODO: notify affected apps.
+    // Notify clients that are using this broken version about the failure.
+    await this.notifyClientsAboutVersionFailure(brokenHash, err);
 
     // The action taken depends on whether the broken manifest is the active (latest) or not.
     // - If the broken version is not the latest, no further action is necessary, since new clients
@@ -1294,6 +1295,29 @@ export class Driver implements Debuggable, UpdateSource {
         };
 
         client.postMessage(notice);
+      }),
+    );
+  }
+
+  async notifyClientsAboutVersionFailure(brokenHash: string, error: Error): Promise<void> {
+    await this.initialized;
+
+    // Find all clients using the broken version
+    const affectedClients = Array.from(this.clientVersionMap.entries())
+      .filter(([clientId, hash]) => hash === brokenHash)
+      .map(([clientId]) => clientId);
+
+    await Promise.all(
+      affectedClients.map(async (clientId) => {
+        const client = await this.scope.clients.get(clientId);
+        if (client) {
+          const brokenVersion = this.versions.get(brokenHash);
+          client.postMessage({
+            type: 'VERSION_FAILED',
+            version: this.mergeHashWithAppData(brokenVersion!.manifest, brokenHash),
+            error: errorToString(error),
+          });
+        }
       }),
     );
   }
