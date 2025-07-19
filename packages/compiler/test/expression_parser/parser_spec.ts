@@ -1249,6 +1249,11 @@ describe('parser', () => {
         parseInterpolation('foo {{  }}')!,
         'Parser Error: Blank expressions are not allowed in interpolated strings',
       );
+
+      expectError(
+        parseInterpolation('{{  }}')!,
+        'Parser Error: Blank expressions are not allowed in interpolated strings',
+      );
     });
 
     it('should produce an empty expression ast for empty interpolations', () => {
@@ -1279,6 +1284,13 @@ describe('parser', () => {
     describe('comments', () => {
       it('should ignore comments in interpolation expressions', () => {
         checkInterpolation('{{a //comment}}', '{{ a }}');
+      });
+
+      it('should error when interpolation only contains a comment', () => {
+        expectError(
+          parseInterpolation('{{ // foobar  }}')!,
+          'Parser Error: Interpolation expression cannot only contain a comment at column 0 in [{{ // foobar  }}]',
+        );
       });
 
       it('should retain // in single quote strings', () => {
