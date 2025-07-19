@@ -15,7 +15,12 @@ import {
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
-import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
+import {
+  formatCurrency,
+  formatNumber,
+  formatPercent,
+  isUsingLegacyImplementation,
+} from '../i18n/format_number';
 import {getCurrencySymbol} from '../i18n/locale_data_api';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
@@ -196,7 +201,6 @@ export class PercentPipe implements PipeTransform {
  * and other locale-specific configurations.
  *
  *
- * @see {@link getCurrencySymbol}
  * @see {@link formatCurrency}
  *
  * @usageNotes
@@ -290,18 +294,30 @@ export class CurrencyPipe implements PipeTransform {
       display = display ? 'symbol' : 'code';
     }
 
-    let currency: string = currencyCode || this._defaultCurrencyCode;
-    if (display !== 'code') {
-      if (display === 'symbol' || display === 'symbol-narrow') {
-        currency = getCurrencySymbol(currency, display === 'symbol' ? 'wide' : 'narrow', locale);
-      } else {
-        currency = display;
+    let currencyOrDisplay: string;
+    if (isUsingLegacyImplementation()) {
+      currencyOrDisplay = currencyCode || this._defaultCurrencyCode;
+      if (display !== 'code') {
+        if (display === 'symbol' || display === 'symbol-narrow') {
+          currencyOrDisplay = getCurrencySymbol(
+            currencyOrDisplay,
+            display === 'symbol' ? 'wide' : 'narrow',
+            locale,
+          );
+        } else {
+          currencyOrDisplay = display;
+        }
       }
+    } else {
+      if (display === 'symbol-narrow') {
+        display = 'narrowSymbol'; // Its Intl equivalent
+      }
+      currencyOrDisplay = display;
     }
 
     try {
       const num = strToNumber(value);
-      return formatCurrency(num, locale, currency, currencyCode, digitsInfo);
+      return formatCurrency(num, locale, currencyOrDisplay, currencyCode, digitsInfo);
     } catch (error) {
       throw invalidPipeArgumentError(CurrencyPipe, (error as Error).message);
     }

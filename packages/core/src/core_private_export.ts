@@ -111,6 +111,10 @@ export {
   registerLocaleData as ɵregisterLocaleData,
   unregisterAllLocaleData as ɵunregisterLocaleData,
 } from './i18n/locale_data_api';
+export {
+  usePluralIntlImplementation as ɵusePluralIntlImplementation,
+  usePluralLegacyImplementation as ɵusePluralLegacyImplementation,
+} from './i18n/implementation';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {Writable as ɵWritable} from './interface/type';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';

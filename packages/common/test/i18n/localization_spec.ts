@@ -11,10 +11,22 @@ import localeRo from '../../locales/ro';
 import localeSr from '../../locales/sr';
 import localeZgh from '../../locales/zgh';
 import {getPluralCategory, NgLocaleLocalization, NgLocalization} from '../../src/i18n/localization';
-import {LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
+import {
+  LOCALE_ID,
+  ɵregisterLocaleData,
+  ɵunregisterLocaleData,
+  ɵusePluralIntlImplementation as usePluralIntlImplementation,
+  ɵusePluralLegacyImplementation as usePluralLegacyImplementation,
+} from '@angular/core';
 import {inject, TestBed} from '@angular/core/testing';
 
+// Following ignore is to ease the review of the diff
+// prettier-ignore
 describe('l10n', () => {
+  [true, false].forEach((useIntl) => {
+  describe(useIntl ? '- Intl formatting - ' : ' - Legacy formatting -', () => {
+  
+  if(!useIntl) {
   beforeAll(() => {
     ɵregisterLocaleData(localeRo);
     ɵregisterLocaleData(localeSr);
@@ -23,6 +35,17 @@ describe('l10n', () => {
   });
 
   afterAll(() => ɵunregisterLocaleData());
+  }
+
+  beforeEach(() => {
+    if (useIntl) {
+      usePluralIntlImplementation();
+    }
+  });
+
+  afterEach(() => {
+    usePluralLegacyImplementation();
+  });
 
   describe('NgLocalization', () => {
     function roTests() {
@@ -188,4 +211,7 @@ describe('l10n', () => {
       });
     });
   });
+
+});
+});
 });
