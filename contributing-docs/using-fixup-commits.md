@@ -68,7 +68,7 @@ You can create a fixup commit by specifying an appropriate commit message (
 i.e. `fixup! <original-commit-message-subject>`).
 
 In addition, the `git` command-line tool provides an easy way to create a fixup commit
-via [git commit --fixup](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---fixupltcommitgt):
+via [git commit --fixup](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---fixupamendrewordcommit):
 
 ```sh
 # Create a fixup commit to fix up the last commit on the branch:
