@@ -287,14 +287,9 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/di/overview',
           },
           {
-            label: 'Understanding dependency injection',
-            path: 'guide/di/dependency-injection',
-            contentPath: 'guide/di/dependency-injection',
-          },
-          {
-            label: 'Creating an injectable service',
-            path: 'guide/di/creating-injectable-service',
-            contentPath: 'guide/di/creating-injectable-service',
+            label: 'Creating and using services',
+            path: 'guide/di/creating-and-using-services',
+            contentPath: 'guide/di/creating-and-using-services',
           },
           {
             label: 'Defining dependency providers',
