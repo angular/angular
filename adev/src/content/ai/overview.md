@@ -145,3 +145,11 @@ Consider this example: The LLM provider is not responding. A potential strategy 
 * Save the response from the user to used in a retry scenario (now or at a later time)
 * Alert the user to the outage with an appropriate message that doesn't reveal sensitive information
 * Resume the conversation at a later time once the services are available again.
+
+## Next steps
+
+To learn about LLM prompts and AI IDE setup, see the following guides:
+
+<docs-pill-row>
+  <docs-pill href="ai/develop-with-ai" title="LLM prompts and IDE setup"/>
+</docs-pill-row>
