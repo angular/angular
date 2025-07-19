@@ -3,12 +3,12 @@
 # This file should be checked into version control along with the pnpm-lock.yaml file.
 .npmrc=-1406867100
 .pnpmfile.cjs=-1995198127
-adev/package.json=-1044419666
-adev/shared-docs/package.json=-1807862896
+adev/package.json=1710513003
+adev/shared-docs/package.json=-1522726993
 adev/shared-docs/pipeline/api-gen/package.json=939673974
 integration/package.json=-239561259
-modules/package.json=-2058841741
-package.json=1396400570
+modules/package.json=-233205964
+package.json=274373083
 packages/animations/package.json=-678724831
 packages/benchpress/package.json=-2137616181
 packages/common/package.json=1729763064
@@ -26,7 +26,7 @@ packages/platform-server/package.json=-737662753
 packages/router/package.json=860819913
 packages/upgrade/package.json=16347051
 packages/zone.js/package.json=-1005735564
-pnpm-lock.yaml=-2146550171
+pnpm-lock.yaml=-877615951
 pnpm-workspace.yaml=1738525657
 tools/bazel/rules_angular_store/package.json=-239561259
-yarn.lock=156215782
+yarn.lock=-1354103991
