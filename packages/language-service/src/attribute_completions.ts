@@ -289,16 +289,14 @@ export function buildAttributeCompletionTable(
 
   // Next, explore hypothetical directives and determine if the addition of any single attributes
   // can cause the directive to match the element.
-  const directivesInScope = checker
-    .getPotentialTemplateDirectives(component, ls, {
-      includeExternalModule: false,
-    })
-    .filter((d) => d.isInScope);
-  if (directivesInScope !== null) {
+  const potentialDirectives = checker.getPotentialTemplateDirectives(component, ls, {
+    includeExternalModule: includeExternalModule ?? false,
+  });
+  if (potentialDirectives !== null) {
     const elementSelector = makeElementSelector(element);
 
-    for (const dirInScope of directivesInScope) {
-      const directive = dirInScope.tsSymbol.valueDeclaration;
+    for (const currentDir of potentialDirectives) {
+      const directive = currentDir.tsSymbol.valueDeclaration;
       // Skip directives that are present on the element.
       if (!ts.isClassDeclaration(directive) || presentDirectives.has(directive)) {
         continue;
@@ -343,7 +341,7 @@ export function buildAttributeCompletionTable(
               // This attribute corresponds to an input binding.
               table.set(attrName, {
                 kind: AttributeCompletionKind.DirectiveInput,
-                directive: dirInScope,
+                directive: currentDir,
                 propertyName: attrName,
                 classPropertyName:
                   meta.inputs.getByBindingPropertyName(attrName)![0].classPropertyName,
@@ -353,7 +351,7 @@ export function buildAttributeCompletionTable(
               // This attribute corresponds to an output binding.
               table.set(attrName, {
                 kind: AttributeCompletionKind.DirectiveOutput,
-                directive: dirInScope,
+                directive: currentDir,
                 eventName: attrName,
                 classPropertyName:
                   meta.outputs.getByBindingPropertyName(attrName)![0].classPropertyName,
@@ -364,7 +362,7 @@ export function buildAttributeCompletionTable(
               table.set(attrName, {
                 kind: AttributeCompletionKind.DirectiveAttribute,
                 attribute: attrName,
-                directive: dirInScope,
+                directive: currentDir,
               });
             }
           }
@@ -383,7 +381,7 @@ export function buildAttributeCompletionTable(
           table.set(attrName, {
             kind: AttributeCompletionKind.StructuralDirectiveAttribute,
             attribute: attrName,
-            directive: dirInScope,
+            directive: currentDir,
           });
         }
       }
@@ -453,6 +451,9 @@ export function addAttributeCompletionEntries(
   replacementSpan: ts.TextSpan | undefined,
   insertSnippet: true | undefined,
 ): void {
+  const directive = 'directive' in completion ? completion.directive : null;
+  const tsEntryData = directive?.tsCompletionEntryInfos?.[0]?.tsCompletionEntryData;
+
   switch (completion.kind) {
     case AttributeCompletionKind.DirectiveAttribute: {
       entries.push({
@@ -460,6 +461,7 @@ export function addAttributeCompletionEntries(
         name: completion.attribute,
         sortText: AsciiSortPriority.Second + completion.attribute,
         replacementSpan,
+        data: tsEntryData,
       });
       break;
     }
@@ -475,6 +477,7 @@ export function addAttributeCompletionEntries(
         isSnippet: insertSnippet,
         sortText: AsciiSortPriority.Second + prefix + completion.attribute,
         replacementSpan,
+        data: tsEntryData,
       });
       break;
     }
@@ -488,6 +491,7 @@ export function addAttributeCompletionEntries(
           isSnippet: insertSnippet,
           sortText: AsciiSortPriority.First + completion.propertyName,
           replacementSpan,
+          data: tsEntryData,
         });
         // If the directive supports banana-in-a-box for this input, offer that as well.
         if (completion.twoWayBindingSupported) {
@@ -499,6 +503,7 @@ export function addAttributeCompletionEntries(
             // This completion should sort after the property binding.
             sortText: AsciiSortPriority.First + completion.propertyName + '_1',
             replacementSpan,
+            data: tsEntryData,
           });
         }
         // Offer a completion of the input binding as an attribute.
@@ -510,6 +515,7 @@ export function addAttributeCompletionEntries(
           // This completion should sort after both property binding options (one-way and two-way).
           sortText: AsciiSortPriority.First + completion.propertyName + '_2',
           replacementSpan,
+          data: tsEntryData,
         });
       } else {
         entries.push({
@@ -519,6 +525,7 @@ export function addAttributeCompletionEntries(
           isSnippet: insertSnippet,
           sortText: AsciiSortPriority.First + completion.propertyName,
           replacementSpan,
+          data: tsEntryData,
         });
       }
       break;
@@ -532,6 +539,7 @@ export function addAttributeCompletionEntries(
           isSnippet: insertSnippet,
           sortText: AsciiSortPriority.First + completion.eventName,
           replacementSpan,
+          data: tsEntryData,
         });
       } else {
         entries.push({
@@ -541,6 +549,7 @@ export function addAttributeCompletionEntries(
           isSnippet: insertSnippet,
           sortText: AsciiSortPriority.First + completion.eventName,
           replacementSpan,
+          data: tsEntryData,
         });
       }
       break;
@@ -589,23 +598,27 @@ export function addAttributeCompletionEntries(
 }
 
 export function getAttributeCompletionSymbol(
-  completion: AttributeCompletion,
+  attrKind: AttributeCompletionKind,
+  directive: PotentialDirective | null,
+  classPropertyName: string | null,
   checker: ts.TypeChecker,
 ): ts.Symbol | null {
-  switch (completion.kind) {
+  switch (attrKind) {
     case AttributeCompletionKind.DomAttribute:
     case AttributeCompletionKind.DomEvent:
     case AttributeCompletionKind.DomProperty:
       return null;
     case AttributeCompletionKind.DirectiveAttribute:
     case AttributeCompletionKind.StructuralDirectiveAttribute:
-      return completion.directive.tsSymbol;
+      return directive?.tsSymbol ?? null;
     case AttributeCompletionKind.DirectiveInput:
     case AttributeCompletionKind.DirectiveOutput:
+      if (directive === null || classPropertyName === null) {
+        return null;
+      }
+
       return (
-        checker
-          .getDeclaredTypeOfSymbol(completion.directive.tsSymbol)
-          .getProperty(completion.classPropertyName) ?? null
+        checker.getDeclaredTypeOfSymbol(directive.tsSymbol).getProperty(classPropertyName) ?? null
       );
   }
 }
