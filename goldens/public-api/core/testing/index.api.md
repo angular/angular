@@ -185,7 +185,7 @@ export interface TestComponentOptions {
 // @public
 export class TestComponentRenderer {
     // (undocumented)
-    insertRootElement(rootElementId: string): void;
+    insertRootElement(rootElementId: string, tagName?: string): void;
     // (undocumented)
     removeAllRootElements?(): void;
 }
