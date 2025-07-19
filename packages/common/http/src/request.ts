@@ -101,13 +101,6 @@ export const CONTENT_TYPE_HEADER = 'Content-Type';
 export const ACCEPT_HEADER = 'Accept';
 
 /**
- * `X-Request-URL` is a custom HTTP header used in older browser versions,
- * including Firefox (< 32), Chrome (< 37), Safari (< 8), and Internet Explorer,
- * to include the full URL of the request in cross-origin requests.
- */
-export const X_REQUEST_URL_HEADER = 'X-Request-URL';
-
-/**
  * `text/plain` is a content type used to indicate that the content being
  * sent is plain text with no special formatting or structured data
  * like HTML, XML, or JSON.
