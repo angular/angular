@@ -202,7 +202,7 @@ export function timeout(delay: number): Promise<void> {
 }
 
 export function getHydrationInfoFromTransferState(input: string): string | undefined {
-  return input.match(/<script[^>]+>(.*?)<\/script>/)?.[1];
+  return input.match(/<script.*application\/json[^>]+>(.*?)<\/script>/)?.[1];
 }
 
 export function withNoopErrorHandler() {

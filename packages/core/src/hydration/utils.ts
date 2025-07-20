@@ -69,6 +69,13 @@ export const NGH_DEFER_BLOCKS_KEY: StateKey<{[key: string]: SerializedDeferBlock
 }>(TRANSFER_STATE_DEFER_BLOCKS_INFO);
 
 /**
+ * Checks whether a given key is used by the framework for transferring hydration data.
+ */
+export function isInternalHydrationTransferStateKey(key: string): boolean {
+  return key === TRANSFER_STATE_TOKEN_ID || key === TRANSFER_STATE_DEFER_BLOCKS_INFO;
+}
+
+/**
  * The name of the attribute that would be added to host component
  * nodes and contain a reference to a particular slot in transferred
  * state that contains the necessary hydration info for this component.
