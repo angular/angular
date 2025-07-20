@@ -72,6 +72,7 @@ export abstract class SwRegistrationOptions {
     enabled?: boolean;
     registrationStrategy?: string | (() => Observable<unknown>);
     scope?: string;
+    updateViaCache?: ServiceWorkerUpdateViaCache;
 }
 
 // @public

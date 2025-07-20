@@ -67,10 +67,14 @@ async function waitForReadyToRegister() {
       };
 
       it('sets the registration options', async () => {
-        await configTestBed({enabled: true, scope: 'foo'});
+        await configTestBed({enabled: true, scope: 'foo', updateViaCache: 'all'});
 
-        expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'foo'});
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'foo'});
+        expect(TestBed.inject(SwRegistrationOptions)).toEqual({
+          enabled: true,
+          scope: 'foo',
+          updateViaCache: 'all',
+        });
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'foo', updateViaCache: 'all'});
       });
 
       it('can disable the SW', async () => {
@@ -84,14 +88,30 @@ async function waitForReadyToRegister() {
         await configTestBed({enabled: true});
 
         expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: undefined,
+          updateViaCache: undefined,
+        });
+      });
+
+      it('can set updateViaCache', async () => {
+        await configTestBed({enabled: true, updateViaCache: 'imports'});
+
+        expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: undefined,
+          updateViaCache: 'imports',
+        });
       });
 
       it('defaults to enabling the SW', async () => {
         await configTestBed({});
 
         expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: undefined,
+          updateViaCache: undefined,
+        });
       });
 
       it('catches and logs registration errors', async () => {
@@ -113,14 +133,19 @@ async function waitForReadyToRegister() {
         if (apiFnName === provideServiceWorkerApi) {
           TestBed.configureTestingModule({
             providers: [
-              provideServiceWorker('sw.js', staticOpts || {scope: 'static'}),
+              provideServiceWorker('sw.js', staticOpts || {scope: 'static', updateViaCache: 'all'}),
               {provide: PLATFORM_ID, useValue: 'browser'},
               {provide: SwRegistrationOptions, useFactory: () => providerOpts},
             ],
           });
         } else {
           TestBed.configureTestingModule({
-            imports: [ServiceWorkerModule.register('sw.js', staticOpts || {scope: 'static'})],
+            imports: [
+              ServiceWorkerModule.register(
+                'sw.js',
+                staticOpts || {scope: 'static', updateViaCache: 'all'},
+              ),
+            ],
             providers: [
               {provide: PLATFORM_ID, useValue: 'browser'},
               {provide: SwRegistrationOptions, useFactory: () => providerOpts},
@@ -130,11 +155,18 @@ async function waitForReadyToRegister() {
       };
 
       it('sets the registration options (and overwrites those set via `provideServiceWorker()`', async () => {
-        configTestBed({enabled: true, scope: 'provider'});
+        configTestBed({enabled: true, scope: 'provider', updateViaCache: 'imports'});
         await untilStable();
-        expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'provider'});
+        expect(TestBed.inject(SwRegistrationOptions)).toEqual({
+          enabled: true,
+          scope: 'provider',
+          updateViaCache: 'imports',
+        });
         await waitForReadyToRegister();
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'provider'});
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: 'provider',
+          updateViaCache: 'imports',
+        });
       });
 
       it('can disable the SW', async () => {
@@ -151,7 +183,10 @@ async function waitForReadyToRegister() {
 
         expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
         await waitForReadyToRegister();
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: undefined,
+          updateViaCache: undefined,
+        });
       });
 
       it('defaults to enabling the SW', async () => {
@@ -160,7 +195,10 @@ async function waitForReadyToRegister() {
 
         expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
         await waitForReadyToRegister();
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: undefined,
+          updateViaCache: undefined,
+        });
       });
 
       describe('registrationStrategy', () => {
@@ -230,14 +268,20 @@ async function waitForReadyToRegister() {
           isStableSub.next(true);
 
           tick();
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('defaults to registering the SW after 30s if the app does not stabilize sooner', fakeAsync(() => {
           configTestBedWithMockedStability();
           expect(swRegisterSpy).not.toHaveBeenCalled();
           tick(30000);
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('registers the SW when the app stabilizes with `registerWhenStable:<timeout>`', fakeAsync(() => {
@@ -251,14 +295,20 @@ async function waitForReadyToRegister() {
           isStableSub.next(true);
 
           tick();
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('registers the SW after `timeout` if the app does not stabilize with `registerWhenStable:<timeout>`', fakeAsync(() => {
           configTestBedWithMockedStability('registerWhenStable:1000');
           expect(swRegisterSpy).not.toHaveBeenCalled();
           tick(1000);
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('registers the SW asap (asynchronously) before the app stabilizes with `registerWhenStable:0`', fakeAsync(() => {
@@ -270,7 +320,10 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           tick(0);
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('registers the SW only when the app stabilizes with `registerWhenStable:`', fakeAsync(() => {
@@ -284,7 +337,10 @@ async function waitForReadyToRegister() {
           isStableSub.next(true);
 
           tick();
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('registers the SW only when the app stabilizes with `registerWhenStable`', fakeAsync(() => {
@@ -298,13 +354,19 @@ async function waitForReadyToRegister() {
           isStableSub.next(true);
 
           tick();
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('registers the SW immediatelly (synchronously) with `registerImmediately`', async () => {
           configTestBedWithMockedStability('registerImmediately');
           await waitForReadyToRegister();
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         });
 
         it('registers the SW after the specified delay with `registerWithDelay:<delay>`', fakeAsync(() => {
@@ -316,7 +378,10 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           tick(100000);
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('registers the SW asap (asynchronously) with `registerWithDelay:`', fakeAsync(() => {
@@ -329,7 +394,10 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           tick(0);
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('registers the SW asap (asynchronously) with `registerWithDelay`', fakeAsync(() => {
@@ -342,7 +410,10 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           tick(0);
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('registers the SW on first emitted value with observable factory function', fakeAsync(() => {
@@ -355,7 +426,10 @@ async function waitForReadyToRegister() {
 
           registerSub.next();
           tick();
-          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+          expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+            scope: undefined,
+            updateViaCache: undefined,
+          });
         }));
 
         it('throws an error with unknown strategy', () => {
