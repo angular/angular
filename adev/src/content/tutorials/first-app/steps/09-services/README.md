@@ -81,7 +81,7 @@ In the **Edit** pane of your IDE, in `src/app/home/home.ts`:
 
 1. Add a new file level import for the `HousingService`:
 
-    <docs-code header="Add import to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[7]"/>
+    <docs-code header="Add import to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[4]"/>
 
 1. From `Home`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
 
