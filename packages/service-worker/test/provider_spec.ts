@@ -67,10 +67,14 @@ async function waitForReadyToRegister() {
       };
 
       it('sets the registration options', async () => {
-        await configTestBed({enabled: true, scope: 'foo'});
+        await configTestBed({enabled: true, scope: 'foo', updateViaCache: 'all'});
 
-        expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'foo'});
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'foo'});
+        expect(TestBed.inject(SwRegistrationOptions)).toEqual({
+          enabled: true,
+          scope: 'foo',
+          updateViaCache: 'all',
+        });
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'foo', updateViaCache: 'all'});
       });
 
       it('can disable the SW', async () => {
@@ -84,14 +88,27 @@ async function waitForReadyToRegister() {
         await configTestBed({enabled: true});
 
         expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: undefined,
+        });
+      });
+
+      it('can set updateViaCache', async () => {
+        await configTestBed({enabled: true, updateViaCache: 'imports'});
+
+        expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          updateViaCache: 'imports',
+        });
       });
 
       it('defaults to enabling the SW', async () => {
         await configTestBed({});
 
         expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: undefined,
+        });
       });
 
       it('catches and logs registration errors', async () => {
@@ -113,14 +130,19 @@ async function waitForReadyToRegister() {
         if (apiFnName === provideServiceWorkerApi) {
           TestBed.configureTestingModule({
             providers: [
-              provideServiceWorker('sw.js', staticOpts || {scope: 'static'}),
+              provideServiceWorker('sw.js', staticOpts || {scope: 'static', updateViaCache: 'all'}),
               {provide: PLATFORM_ID, useValue: 'browser'},
               {provide: SwRegistrationOptions, useFactory: () => providerOpts},
             ],
           });
         } else {
           TestBed.configureTestingModule({
-            imports: [ServiceWorkerModule.register('sw.js', staticOpts || {scope: 'static'})],
+            imports: [
+              ServiceWorkerModule.register(
+                'sw.js',
+                staticOpts || {scope: 'static', updateViaCache: 'all'},
+              ),
+            ],
             providers: [
               {provide: PLATFORM_ID, useValue: 'browser'},
               {provide: SwRegistrationOptions, useFactory: () => providerOpts},
@@ -130,11 +152,18 @@ async function waitForReadyToRegister() {
       };
 
       it('sets the registration options (and overwrites those set via `provideServiceWorker()`', async () => {
-        configTestBed({enabled: true, scope: 'provider'});
+        configTestBed({enabled: true, scope: 'provider', updateViaCache: 'imports'});
         await untilStable();
-        expect(TestBed.inject(SwRegistrationOptions)).toEqual({enabled: true, scope: 'provider'});
+        expect(TestBed.inject(SwRegistrationOptions)).toEqual({
+          enabled: true,
+          scope: 'provider',
+          updateViaCache: 'imports',
+        });
         await waitForReadyToRegister();
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'provider'});
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: 'provider',
+          updateViaCache: 'imports',
+        });
       });
 
       it('can disable the SW', async () => {
