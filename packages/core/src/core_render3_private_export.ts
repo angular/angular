@@ -268,6 +268,7 @@ export {
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
   GlobalDevModeUtils as ɵGlobalDevModeUtils,
 } from './render3/util/global_utils';
+export {getTransferState as ɵgetTransferState} from './render3/util/transfer_state_utils';
 export {
   ViewRef as ɵViewRef,
   isViewDirty as ɵisViewDirty,
