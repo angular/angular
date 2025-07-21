@@ -32,11 +32,6 @@
       "description": "Custom HTTP headers to be added to all responses."
     },
     {
-      "name": "headers",
-      "type": "string",
-      "description": "Custom HTTP headers to be added to all responses."
-    },
-    {
       "name": "help",
       "type": "boolean",
       "description": "Shows a help message for this command in the console."
