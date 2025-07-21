@@ -71,11 +71,6 @@
       "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
     },
     {
-      "name": "define",
-      "type": "string",
-      "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
-    },
-    {
       "name": "delete-output-path",
       "type": "boolean",
       "default": true,
