@@ -133,6 +133,8 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         label: consumer.debugName ?? consumer.lView?.[HOST]?.tagName?.toLowerCase?.(),
         kind: consumer.kind,
         epoch: consumer.version,
+        // The `lView[CONTEXT]` is a reference to an instance of the component's class.
+        // We get the constructor so that `inspect(.constructor)` shows the component class.
         debuggableFn: consumer.lView?.[CONTEXT]?.constructor as (() => unknown) | undefined,
         id,
       });
