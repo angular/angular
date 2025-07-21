@@ -14,6 +14,10 @@ function inputSearchText(text) {
   cy.get('ng-filter .filter-input').type(text, {force: true});
 }
 
+function clearSearchInput() {
+  cy.get('ng-filter .filter-input').clear({force: true});
+}
+
 function checkComponentName(name) {
   cy.get('.component-name > span').should('have.text', name);
 }
@@ -23,12 +27,10 @@ function checkEmptyNodes() {
 }
 
 function clickSearchArrows(upwards) {
-  const buttons = cy.get('.up-down-buttons').find('button');
-
   if (upwards) {
-    buttons.first().then((btn) => btn[0].click());
+    cy.get('#up-button').click();
   } else {
-    buttons.last().then((btn) => btn[0].click());
+    cy.get('#down-button').click();
   }
 }
 
@@ -96,6 +98,22 @@ describe('Search items in component tree', () => {
 
     // should show correct component properties
     cy.get('ng-property-view').find('mat-tree-node');
+  });
+
+  it('should be able to search and select @defers in different Angular applications', () => {
+    inputSearchText('@defer');
+    checkSearchedNodesLength('.matched-text', 2);
+    cy.get('.defer-details').should('contain.text', '@placeholder(minimum 5000 ms)');
+    inputSearchText('{enter}');
+    cy.get('.defer-details').should('contain.text', '@placeholder(minimum 2000 ms)');
+  });
+
+  it('should not duplicate application roots if multiple applications are present', () => {
+    inputSearchText('app-root');
+    checkSearchedNodesLength('.matched-text', 1); // only one app-root should be found
+    clearSearchInput();
+    inputSearchText('other-app');
+    checkSearchedNodesLength('.matched-text', 1); // only one other-app should be found
   });
 
   // todo(aleksanderbodurri): revive this test if we decide to revive this functionality
