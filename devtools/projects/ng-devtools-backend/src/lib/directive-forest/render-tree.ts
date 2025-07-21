@@ -21,6 +21,7 @@ const extractViewTree = (
   domNode: Node | Element,
   result: ComponentTreeNode[],
   deferBlocks: DeferBlocksIterator,
+  rootId: number,
   getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
   getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
   getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
@@ -81,6 +82,7 @@ const extractViewTree = (
       deferredNodesToSkip,
       appendTo,
       deferBlocks,
+      rootId,
       getComponent,
       getDirectives,
       getDirectiveMetadata,
@@ -91,6 +93,7 @@ const extractViewTree = (
         node,
         appendTo,
         deferBlocks,
+        rootId,
         getComponent,
         getDirectives,
         getDirectiveMetadata,
@@ -117,6 +120,7 @@ function groupDeferChildrenIfNeeded(
   deferredNodesToSkip: Set<Node>,
   appendTo: ComponentTreeNode[],
   deferBlocks: DeferBlocksIterator,
+  rootId: number,
   getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
   getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
   getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
@@ -134,6 +138,7 @@ function groupDeferChildrenIfNeeded(
         child,
         childrenTree,
         deferBlocks,
+        rootId,
         getComponent,
         getDirectives,
         getDirectiveMetadata,
@@ -148,7 +153,7 @@ function groupDeferChildrenIfNeeded(
       nativeElement: undefined,
       hydration: null,
       defer: {
-        id: `deferId-${deferBlocks.currentIndex}`,
+        id: `deferId-${rootId}-${deferBlocks.currentIndex}`,
         state: currentDeferBlock.state,
         currentBlock: currentBlock(currentDeferBlock),
         triggers: groupTriggers(currentDeferBlock.triggers),
@@ -221,19 +226,15 @@ export class RTreeStrategy {
     );
   }
 
-  build(element: Element): ComponentTreeNode[] {
+  build(element: Element, rootId: number = 0): ComponentTreeNode[] {
     const ng = ngDebugClient();
     const deferBlocks = ng.ɵgetDeferBlocks?.(element) ?? [];
 
-    // We want to start from the root element so that we can find components which are attached to
-    // the application ref and which host elements have been inserted with DOM APIs.
-    while (element.parentElement && element !== document.body) {
-      element = element.parentElement;
-    }
     return extractViewTree(
       element,
       [],
       new DeferBlocksIterator(deferBlocks),
+      rootId,
       ng.getComponent,
       ng.getDirectives,
       ng.getDirectiveMetadata,
