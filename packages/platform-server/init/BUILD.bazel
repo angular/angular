@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@devinfra//bazel/esbuild:index.bzl", "esbuild")
 load("//tools:defaults.bzl", "tsec_test")
 load("//tools:defaults2.bzl", "ng_project")
@@ -14,7 +14,7 @@ ng_project(
         ],
         exclude = ["src/bundled-domino.d.ts"],
     ),
-    interop_deps = [
+    deps = [
         ":bundled_domino_lib",
     ],
 )

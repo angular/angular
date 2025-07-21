@@ -6,10 +6,10 @@ ts_project(
     srcs = glob(
         ["*.ts"],
     ),
-    interop_deps = [
-        "//packages/compiler",
-    ],
     visibility = [
         "//packages/compiler/test:__subpackages__",
+    ],
+    deps = [
+        "//packages/compiler:compiler_rjs",
     ],
 )

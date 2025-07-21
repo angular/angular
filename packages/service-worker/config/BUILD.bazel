@@ -18,5 +18,7 @@ filegroup(
 ng_project(
     name = "config",
     srcs = [":sources"],
-    interop_deps = ["//packages/core"],
+    deps = [
+        "//packages/core:core_rjs",
+    ],
 )

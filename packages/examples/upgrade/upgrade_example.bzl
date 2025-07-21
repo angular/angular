@@ -13,10 +13,8 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = [
     ng_project(
         name = "%s_sources" % name,
         srcs = srcs,
-        interop_deps = [
-            "//packages/platform-browser",
-        ],
         deps = [
+            "//packages/platform-browser:platform-browser_rjs",
             "//:node_modules/@types/angular",
             "//:node_modules/@types/jasmine",
             "//:node_modules/tslib",
@@ -32,10 +30,8 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = [
         name = "%s_e2e_lib" % name,
         srcs = e2e_srcs,
         testonly = True,
-        interop_deps = [
-            "//packages/private/testing",
-        ],
         deps = [
+            "//packages/private/testing:testing_rjs",
             "//:node_modules/@types/jasminewd2",
             "//:node_modules/protractor",
             "//packages/examples/test-utils:test-utils_rjs",

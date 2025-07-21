@@ -27,14 +27,12 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/private/testing",
-    ],
     deps = [
         "//:node_modules/@bazel/runfiles",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 

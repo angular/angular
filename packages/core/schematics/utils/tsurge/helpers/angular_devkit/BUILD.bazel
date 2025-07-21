@@ -5,14 +5,12 @@ package(default_visibility = ["//packages/core/schematics:__subpackages__"])
 ts_project(
     name = "angular_devkit",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler-cli",
-        "//packages/core/schematics/utils",
-        "//packages/core/schematics/utils/tsurge",
-    ],
     deps = [
         "//:node_modules/@angular-devkit/core",
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/core/schematics/utils:utils_rjs",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
     ],
 )

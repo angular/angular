@@ -4,9 +4,9 @@ ts_project(
     name = "util",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages:types",
-        "//packages/compiler",
-    ],
     visibility = ["//visibility:public"],
+    deps = [
+        "//packages:types_rjs",
+        "//packages/compiler:compiler_rjs",
+    ],
 )

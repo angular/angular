@@ -9,9 +9,9 @@ ts_project(
         "index.ts",
         "launcher.ts",
     ],
-    interop_deps = [
-        "//tools/saucelabs-daemon",
-        "@npm//@types/node",
+    deps = [
+        "//:node_modules/@types/node",
+        "//tools/saucelabs-daemon:saucelabs-daemon_rjs",
     ],
 )
 

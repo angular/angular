@@ -6,9 +6,9 @@ ts_project(
     name = "ivy_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/src/di/interface",
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
     ],
 )
 

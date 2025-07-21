@@ -102,7 +102,6 @@ def ts_project(
         name,
         module_name = None,
         deps = [],
-        interop_deps = [],
         tsconfig = None,
         testonly = False,
         visibility = None,
@@ -126,7 +125,7 @@ def ts_project(
 
     ts_deps_interop(
         name = "%s_interop_deps" % name,
-        deps = [] + interop_deps + rjs_modules_to_rnjs,
+        deps = [] + rjs_modules_to_rnjs,
         visibility = visibility,
         testonly = testonly,
     )

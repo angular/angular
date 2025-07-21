@@ -8,9 +8,9 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/core/src/compiler",
-        "//packages/core/src/util",
+    deps = [
+        "//packages/core/src/compiler:compiler_rjs",
+        "//packages/core/src/util:util_rjs",
     ],
 )
 

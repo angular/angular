@@ -9,8 +9,8 @@ ts_project(
         "example_spec.ts",
         "fake_async.ts",
     ],
-    interop_deps = [
-        "//packages/core/testing",
+    deps = [
+        "//packages/core/testing:testing_rjs",
     ],
 )
 

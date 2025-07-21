@@ -8,16 +8,14 @@ ng_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/primitives/dom-navigation/testing",
-        "//packages/localize",
-    ],
     deps = [
         "//:node_modules/@types/jasmine",
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/dom-navigation/testing:testing_rjs",
+        "//packages/localize:localize_rjs",
     ],
 )
 

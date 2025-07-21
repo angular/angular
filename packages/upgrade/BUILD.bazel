@@ -11,12 +11,10 @@ ng_project(
             "src/dynamic/src/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core",
-        "//packages/platform-browser-dynamic",
-    ],
     deps = [
         "//:node_modules/zone.js",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser-dynamic:platform-browser-dynamic_rjs",
         "//packages/upgrade/src/common:common_rjs",
     ],
 )

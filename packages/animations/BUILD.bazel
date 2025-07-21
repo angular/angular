@@ -11,10 +11,8 @@ ng_project(
             "src/**/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/common",
-    ],
     deps = [
+        "//packages/common:common_rjs",
         "//packages/core:core_rjs",
     ],
 )

@@ -7,13 +7,11 @@ ts_project(
     srcs = glob([
         "**/*.ts",
     ]),
-    interop_deps = [
-        "//packages:types",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-    ],
     deps = [
         "//:node_modules/@types/jasmine",
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
+        "//packages:types_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
     ],
 )

@@ -8,11 +8,9 @@ ts_project(
     srcs = glob([
         "*.ts",
     ]),
-    interop_deps = [
-        "//packages/core/testing",
-    ],
     deps = [
         "//:node_modules/@types/jasmine",
+        "//packages/core/testing:testing_rjs",
         "//packages/upgrade/src/common:common_rjs",
     ],
 )
