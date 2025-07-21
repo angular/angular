@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal} from '@angular/core';
+import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
-import {Property, REQUIRED} from '../property';
+import {REQUIRED} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -35,11 +35,12 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
 ): void {
-  const REQUIRED_MEMO = Property.create<Signal<boolean>>();
   const emptyPredicate =
     config?.emptyPredicate ?? ((value) => value === false || value == null || value === '');
 
-  property(path, REQUIRED_MEMO, (ctx) => computed(() => (config?.when ? config.when(ctx) : true)));
+  const REQUIRED_MEMO = property(path, (ctx) =>
+    computed(() => (config?.when ? config.when(ctx) : true)),
+  );
   aggregateProperty(path, REQUIRED, ({state}) => state.property(REQUIRED_MEMO)!());
   validate(path, (ctx) => {
     if (ctx.state.property(REQUIRED_MEMO)!() && emptyPredicate(ctx.value())) {

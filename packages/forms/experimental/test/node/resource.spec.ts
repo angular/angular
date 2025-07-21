@@ -49,8 +49,7 @@ describe('resources', () => {
 
   it('Takes a simple resource which reacts to data changes', async () => {
     const s: SchemaOrSchemaFn<Cat> = function (p) {
-      const RES = Property.create<Resource<string | undefined>>();
-      property(p.name, RES, ({value}) => {
+      const RES = property(p.name, ({value}) => {
         return resource({
           params: () => ({x: value()}),
           loader: async ({params}) => `got: ${params.x}`,

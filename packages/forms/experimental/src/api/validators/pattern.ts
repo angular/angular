@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {computed, Signal} from '@angular/core';
+import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
-import {PATTERN, Property} from '../property';
+import {PATTERN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -36,9 +36,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   pattern: string | LogicFn<string | undefined, string | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const PATTERN_MEMO = Property.create<Signal<string | undefined>>();
-
-  property(path, PATTERN_MEMO, (ctx) =>
+  const PATTERN_MEMO = property(path, (ctx) =>
     computed(() => (typeof pattern === 'string' ? pattern : pattern(ctx))),
   );
   aggregateProperty(path, PATTERN, ({state}) => state.property(PATTERN_MEMO)!());

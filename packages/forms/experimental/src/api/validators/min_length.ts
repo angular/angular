@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal} from '@angular/core';
+import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
-import {MIN_LENGTH, Property} from '../property';
+import {MIN_LENGTH} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
@@ -35,9 +35,7 @@ export function minLength<
   minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_LENGTH_MEMO = Property.create<Signal<number | undefined>>();
-
-  property(path, MIN_LENGTH_MEMO, (ctx) =>
+  const MIN_LENGTH_MEMO = property(path, (ctx) =>
     computed(() => (typeof minLength === 'number' ? minLength : minLength(ctx))),
   );
   aggregateProperty(path, MIN_LENGTH, ({state}) => state.property(MIN_LENGTH_MEMO)!());

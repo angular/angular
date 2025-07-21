@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal} from '@angular/core';
+import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
-import {MAX_LENGTH, Property} from '../property';
+import {MAX_LENGTH} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
@@ -35,9 +35,7 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MAX_LENGTH_MEMO = Property.create<Signal<number | undefined>>();
-
-  property(path, MAX_LENGTH_MEMO, (ctx) =>
+  const MAX_LENGTH_MEMO = property(path, (ctx) =>
     computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx))),
   );
   aggregateProperty(path, MAX_LENGTH, ({state}) => state.property(MAX_LENGTH_MEMO)!());

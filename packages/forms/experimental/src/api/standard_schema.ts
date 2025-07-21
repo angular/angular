@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, resource, Signal, ɵisPromise} from '@angular/core';
+import {computed, resource, ɵisPromise} from '@angular/core';
 import {validateAsync} from './async';
 import {property, validateTree} from './logic';
-import {Property} from './property';
 import {StandardSchemaV1} from './standard_schema_types';
 import {Field, FieldPath} from './types';
 import {StandardSchemaValidationError, ValidationError, WithField} from './validation_errors';
@@ -27,19 +26,12 @@ export function validateStandardSchema<TValue>(
   path: FieldPath<TValue>,
   schema: NoInfer<StandardSchemaV1<TValue>>,
 ) {
-  // TODO: this is bleh, should we have `const KEY = property(p, () => ...)`?
-  // (the equivalent of the old 2-param define, but with less confusing semantics)
-  const VALIDATOR_MEMO =
-    Property.create<
-      Signal<StandardSchemaV1.Result<TValue> | Promise<StandardSchemaV1.Result<TValue>>>
-    >();
-
   // We create both a sync and async validator because the standard schema validator can return
   // either a sync result or a Promise, and we need to handle both cases. The sync validator
   // handles the sync result, and the async validator handles the Promise.
   // We memoize the result of the validation function here, so that it is only run once for both
   // validators, it can then be passed through both sync & async validation.
-  property(path, VALIDATOR_MEMO, ({value}) => {
+  const VALIDATOR_MEMO = property(path, ({value}) => {
     return computed(() => schema['~standard'].validate(value()));
   });
   validateTree(path, ({state, fieldOf}) => {

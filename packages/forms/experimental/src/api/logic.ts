@@ -142,11 +142,30 @@ export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind 
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
+  factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
+): Property<TData>;
+export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<TValue, TPathKind>,
   key: Property<TData>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
-) {
+): Property<TData>;
+export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<TValue, TPathKind>,
+  ...rest:
+    | [(ctx: FieldContext<TValue, TPathKind>) => TData]
+    | [Property<TData>, (ctx: FieldContext<TValue, TPathKind>) => TData]
+): Property<TData> {
   assertPathIsCurrent(path);
+  let key: Property<TData>;
+  let factory: (ctx: FieldContext<TValue, TPathKind>) => TData;
+  if (rest.length === 2) {
+    [key, factory] = rest;
+  } else {
+    [factory] = rest;
+  }
+  key ??= Property.create();
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addPropertyFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
+  return key;
 }

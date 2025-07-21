@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal} from '@angular/core';
+import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
-import {MIN, Property} from '../property';
+import {MIN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -31,9 +31,7 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MIN_MEMO = Property.create<Signal<number | undefined>>();
-
-  property(path, MIN_MEMO, (ctx) =>
+  const MIN_MEMO = property(path, (ctx) =>
     computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
   );
   aggregateProperty(path, MIN, ({state}) => state.property(MIN_MEMO)!());

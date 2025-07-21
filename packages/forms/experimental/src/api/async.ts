@@ -12,7 +12,6 @@ import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {property} from './logic';
-import {Property} from './property';
 import {FieldContext, FieldPath, PathKind, TreeValidationResult, ValidationResult} from './types';
 import {addDefaultField} from './validation_errors';
 
@@ -136,10 +135,9 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   opts: AsyncValidatorOptions<TValue, TParams, TResult, TPathKind>,
 ): void {
   assertPathIsCurrent(path);
-  const RESOURCE = Property.create<ResourceRef<TResult>>();
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  property(path, RESOURCE, (ctx) => {
+  const RESOURCE = property(path, (ctx) => {
     const params = computed(() => {
       const node = ctx.stateOf(path) as FieldNode;
       if (node.validationState.shouldSkipValidation() || !node.syncValid()) {

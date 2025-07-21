@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal} from '@angular/core';
+import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
-import {MAX, Property} from '../property';
+import {MAX} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -31,9 +31,7 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MAX_MEMO = Property.create<Signal<number | undefined>>();
-
-  property(path, MAX_MEMO, (ctx) =>
+  const MAX_MEMO = property(path, (ctx) =>
     computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx))),
   );
   aggregateProperty(path, MAX, ({state}) => state.property(MAX_MEMO)!());
