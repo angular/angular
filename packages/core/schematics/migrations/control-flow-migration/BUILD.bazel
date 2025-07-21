@@ -16,12 +16,10 @@ copy_to_bin(
 ts_project(
     name = "control-flow-migration",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core/schematics/utils",
-    ],
     deps = [
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core/schematics/utils:utils_rjs",
     ],
 )

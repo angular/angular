@@ -46,14 +46,12 @@ ts_project(
     testonly = 1,
     srcs = ["node_zoneless_tests.init.mts"],
     enable_runtime_rnjs_interop = False,
-    interop_deps = [
-        "//packages/platform-server:bundled_domino_lib",
-    ],
     deps = [
         "//:node_modules/reflect-metadata",
         "//packages/compiler:compiler_rjs",
         "//packages/core:core_rjs",
         "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:bundled_domino_lib",
         "//packages/platform-server:platform-server_rjs",
         "//packages/platform-server/testing:testing_rjs",
     ],
@@ -64,15 +62,13 @@ ts_project(
     testonly = 1,
     srcs = ["node_tests.init.mts"],
     enable_runtime_rnjs_interop = False,
-    interop_deps = [
-        "//packages/platform-server:bundled_domino_lib",
-    ],
     deps = [
         ":zone_base_setup_lib_rjs",
         "//:node_modules/reflect-metadata",
         "//:node_modules/zone.js",
         "//packages/compiler:compiler_rjs",
         "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:bundled_domino_lib",
         "//packages/platform-server:platform-server_rjs",
         "//packages/platform-server/testing:testing_rjs",
     ],
@@ -82,7 +78,7 @@ ts_project(
     name = "node_no_angular",
     testonly = 1,
     srcs = ["node_no_angular_tests.init.mts"],
-    interop_deps = [
-        "//packages:types",
+    deps = [
+        "//packages:types_rjs",
     ],
 )

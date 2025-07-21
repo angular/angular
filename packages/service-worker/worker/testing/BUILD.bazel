@@ -6,13 +6,11 @@ ts_project(
     name = "testing",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/typescript",
         "//packages:types_rjs",
+        "//packages/core:core_rjs",
         "//packages/service-worker/worker:worker_rjs",
     ],
 )

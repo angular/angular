@@ -13,13 +13,11 @@ ng_project(
             "src/**/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
         "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
     ],
 )
 

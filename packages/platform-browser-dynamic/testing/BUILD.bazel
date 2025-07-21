@@ -8,11 +8,9 @@ exports_files(["package.json"])
 ng_project(
     name = "testing",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler",
-    ],
     deps = [
         "//packages/common:common_rjs",
+        "//packages/compiler:compiler_rjs",
         "//packages/core:core_rjs",
         "//packages/core/testing:testing_rjs",
         "//packages/platform-browser:platform-browser_rjs",

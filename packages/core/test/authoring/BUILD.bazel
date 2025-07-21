@@ -11,7 +11,9 @@ ts_project(
         "signal_queries_signature_test.ts",
         "unwrap_writable_signal_signature_test.ts",
     ],
-    interop_deps = ["//packages/core"],
+    deps = [
+        "//packages/core:core_rjs",
+    ],
 )
 
 ts_project(
@@ -50,10 +52,10 @@ ts_project(
         "input_signal_spec.ts",
         "model_input_spec.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/primitives/signals",
-        "//packages/core/testing",
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )
 

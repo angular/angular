@@ -6,10 +6,8 @@ ts_project(
     srcs = glob(
         ["*_spec.ts"],
     ),
-    interop_deps = [
-        "//packages:types",
-    ],
     deps = [
+        "//packages:types_rjs",
         "//packages/localize/src/localize:localize_rjs",
     ],
 )

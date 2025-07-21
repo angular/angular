@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@devinfra//bazel/esbuild:index.bzl", "esbuild")
 load("//tools:defaults.bzl", "generate_api_docs", "tsec_test")
 load("//tools:defaults2.bzl", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
@@ -14,18 +14,16 @@ ng_project(
         ],
         exclude = ["src/bundled-domino.d.ts"],
     ),
-    interop_deps = [
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/compiler",
-        "//packages/platform-browser",
-        ":bundled_domino_lib",
-    ],
     deps = [
+        ":bundled_domino_lib",
         "//:node_modules/@types/node",
         "//:node_modules/rxjs",
         "//:node_modules/xhr2",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/compiler:compiler_rjs",
         "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
     ],
 )
 

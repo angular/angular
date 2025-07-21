@@ -10,16 +10,14 @@ package(
 ts_project(
     name = "test-bed-get",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/core/schematics/utils",
-        "//packages/core/schematics/utils/tsurge",
-        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
-    ],
     deps = [
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
+        "//packages/compiler-cli/private:private_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/core/schematics/utils:utils_rjs",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit:angular_devkit_rjs",
     ],
 )

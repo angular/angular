@@ -6,15 +6,13 @@ package(default_visibility = ["//visibility:public"])
 ts_project(
     name = "background-service_lib",
     srcs = glob(["*.ts"]),
-    interop_deps = [
-        "//:browser-providers",
-        "//tools/saucelabs-daemon",
-    ],
     deps = [
+        "//:browser-providers",
         "//:node_modules/@types/node",
         "//:node_modules/@types/selenium-webdriver4",
         "//:node_modules/chalk",
         "//:node_modules/selenium-webdriver4",
+        "//tools/saucelabs-daemon:saucelabs-daemon_rjs",
     ],
 )
 

@@ -8,12 +8,10 @@ ts_project(
     srcs = glob([
         "**/*.ts",
     ]),
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/upgrade/src/common",
-    ],
     deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/upgrade/src/common:common_rjs",
         "//packages/upgrade/src/common/test/helpers:helpers_rjs",
         "//packages/upgrade/static:static_rjs",
         "//packages/upgrade/static/testing:testing_rjs",

@@ -4,10 +4,10 @@ ts_project(
     name = "selector_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/platform-browser/testing",
-        "//packages/private/testing",
+    deps = [
+        "//packages/compiler:compiler_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
