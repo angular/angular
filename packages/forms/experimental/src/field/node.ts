@@ -22,9 +22,8 @@ import {
 import {LogicNode} from '../logic_node_2';
 import {FieldPathNode} from '../path_node';
 import {FieldNodeContext} from './context';
-import {FieldPropertyState} from './data';
 import type {FormFieldManager} from './manager';
-import {FieldAggregatePropertyState} from './metadata';
+import {FieldPropertyState} from './property';
 import {FIELD_PROXY_HANDLER} from './proxy';
 import {FieldNodeState} from './state';
 import {FieldSubmitState} from './submit';
@@ -43,9 +42,8 @@ import {FieldValidationState} from './validation';
 export class FieldNode implements FieldState<unknown> {
   readonly structure: FieldNodeStructure;
   readonly validationState: FieldValidationState;
-  readonly dataState: FieldPropertyState;
+  readonly propertyState: FieldPropertyState;
   readonly nodeState: FieldNodeState;
-  readonly aggregatePropertyState: FieldAggregatePropertyState;
   readonly submitState: FieldSubmitState;
 
   private _context: FieldContext<unknown> | undefined = undefined;
@@ -82,8 +80,7 @@ export class FieldNode implements FieldState<unknown> {
 
     this.validationState = new FieldValidationState(this);
     this.nodeState = new FieldNodeState(this);
-    this.dataState = new FieldPropertyState(this);
-    this.aggregatePropertyState = new FieldAggregatePropertyState(this);
+    this.propertyState = new FieldPropertyState(this);
     this.submitState = new FieldSubmitState(this);
   }
 
@@ -151,15 +148,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.submitState.submittedStatus;
   }
 
-  property<M>(key: AggregateProperty<M, any>): Signal<M>;
-  property<M>(key: Property<M>): M | undefined;
-  property<M>(key: Property<M> | AggregateProperty<M, any>): Signal<M> | M | undefined {
-    if (key instanceof Property) {
-      return this.dataState.get(key);
-    } else if (key instanceof AggregateProperty) {
-      return this.aggregatePropertyState.get(key);
-    }
-    return undefined;
+  property<M>(prop: AggregateProperty<M, any>): Signal<M>;
+  property<M>(prop: Property<M>): M | undefined;
+  property<M>(prop: Property<M> | AggregateProperty<M, any>): Signal<M> | M | undefined {
+    return this.propertyState.get(prop);
   }
 
   /**

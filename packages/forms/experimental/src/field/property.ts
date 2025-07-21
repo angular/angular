@@ -6,14 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, runInInjectionContext, untracked} from '@angular/core';
-import {Property} from '../api/metadata';
+import {computed, runInInjectionContext, Signal, untracked} from '@angular/core';
+import {AggregateProperty, Property} from '../api/metadata';
 import {FieldNode} from './node';
+import {cast} from './util';
 
 /**
- * Tracks property factories associated with a `FieldNode`.
+ * Tracks custom properties associated with a `FieldNode`.
  */
 export class FieldPropertyState {
+  private readonly aggregatePropertyMap = new Map<
+    AggregateProperty<unknown, unknown>,
+    Signal<unknown>
+  >();
   private readonly propertyMap = new Map<Property<unknown>, unknown>();
 
   constructor(private readonly node: FieldNode) {
@@ -33,12 +38,21 @@ export class FieldPropertyState {
   private readonly dataMaps = computed(() => {
     const maps = [this.propertyMap];
     for (const child of this.node.structure.childrenMap()?.values() ?? []) {
-      maps.push(...child.dataState.dataMaps());
+      maps.push(...child.propertyState.dataMaps());
     }
     return maps;
   });
 
-  get<D>(key: Property<D>): D | undefined {
-    return this.propertyMap.get(key) as D | undefined;
+  get<T>(prop: Property<T> | AggregateProperty<T, unknown>): T | undefined | Signal<T> {
+    if (prop instanceof Property) {
+      return this.propertyMap.get(prop) as T | undefined;
+    }
+    cast<AggregateProperty<unknown, unknown>>(prop);
+    if (!this.aggregatePropertyMap.has(prop)) {
+      const logic = this.node.logicNode.logic.getAggregateProperty(prop);
+      const result = computed(() => logic.compute(this.node.context));
+      this.aggregatePropertyMap.set(prop, result);
+    }
+    return this.aggregatePropertyMap.get(prop)! as Signal<T>;
   }
 }
