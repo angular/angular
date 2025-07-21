@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ComponentTreeNode} from '../interfaces';
 import {LTreeStrategy} from './ltree';
 import {RTreeStrategy} from './render-tree';
 
@@ -16,11 +17,11 @@ export {
 } from './ltree';
 
 // The order of the strategies matters. Lower indices have higher priority.
-const strategies = [new RTreeStrategy(), new LTreeStrategy()];
+const rTreeStrategy = new RTreeStrategy();
+const lTreeStrategy = new LTreeStrategy();
+const strategies = [rTreeStrategy, lTreeStrategy];
 
-let strategy: null | RTreeStrategy | LTreeStrategy = null;
-
-const selectStrategy = (element: Element) => {
+const selectStrategy = (element: Element): RTreeStrategy | LTreeStrategy | null => {
   for (const s of strategies) {
     if (s.supports(element)) {
       return s;
@@ -29,13 +30,35 @@ const selectStrategy = (element: Element) => {
   return null;
 };
 
-export const buildDirectiveTree = (element: Element) => {
-  if (!strategy) {
-    strategy = selectStrategy(element);
-  }
-  if (!strategy) {
-    console.error('Unable to parse the component tree');
+export const buildDirectiveForestWithStrategy = (elements: Element[]) => {
+  if (!elements || !elements.length) {
     return [];
   }
-  return strategy.build(element);
+
+  // Different roots can have different Angular versions.
+  // Diffent versions depend on different component tree discovery strategies.
+  const strategies: {
+    strategy: RTreeStrategy | LTreeStrategy;
+    element: Element;
+  }[] = elements
+    .map((element) => {
+      const strategy = selectStrategy(element);
+      if (!strategy) {
+        return null;
+      }
+
+      return {strategy, element};
+    })
+    .filter((s) => s !== null);
+
+  const result: ComponentTreeNode[][] = [];
+  for (const [index, {strategy, element}] of strategies.entries()) {
+    if (strategy === rTreeStrategy) {
+      result.push(rTreeStrategy.build(element, index));
+    } else if (strategy === lTreeStrategy) {
+      result.push(lTreeStrategy.build(element));
+    }
+  }
+
+  return result.flat();
 };
