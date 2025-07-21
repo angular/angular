@@ -50,10 +50,8 @@ ts_project(
         glob(["*.spec.mts"]) + [
             "fake-examples.mts",
         ],
-    interop_deps = [
-        "@angular//packages/compiler-cli",
-    ],
     deps = [
+        "//adev:node_modules/@angular/compiler-cli",
         "//adev:node_modules/@types/node",
         "//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json_lib_rjs",
     ],

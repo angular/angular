@@ -16,14 +16,12 @@ copy_to_bin(
 ts_project(
     name = "self-closing-tags-migration",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/core/schematics/migrations/self-closing-tags-migration:migration",
-        "//packages/core/schematics/utils",
-        "//packages/core/schematics/utils/tsurge",
-        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
-    ],
     deps = [
         "//:node_modules/@angular-devkit/schematics",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/core/schematics/migrations/self-closing-tags-migration:migration_rjs",
+        "//packages/core/schematics/utils:utils_rjs",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit:angular_devkit_rjs",
     ],
 )

@@ -6,11 +6,11 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages:types",
-        "//packages/compiler",
-        "//packages/compiler/test/expression_parser/utils",
-        "//packages/core",
+    deps = [
+        "//packages:types_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler/test/expression_parser/utils:utils_rjs",
+        "//packages/core:core_rjs",
     ],
 )
 

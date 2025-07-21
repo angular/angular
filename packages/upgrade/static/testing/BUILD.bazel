@@ -13,10 +13,8 @@ ng_project(
             "src/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core/testing",
-    ],
     deps = [
+        "//packages/core/testing:testing_rjs",
         "//packages/upgrade/static:static_rjs",
     ],
 )

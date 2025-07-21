@@ -10,8 +10,8 @@ ts_project(
             "src/**/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/compiler",
+    deps = [
+        "//packages/compiler:compiler_rjs",
     ],
 )
 

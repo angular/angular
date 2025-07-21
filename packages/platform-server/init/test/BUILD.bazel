@@ -4,10 +4,8 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/platform-server/init:bundled_domino_lib",
-    ],
     deps = [
+        "//packages/platform-server/init:bundled_domino_lib",
         "//packages/platform-server/init:init_rjs",
     ],
 )

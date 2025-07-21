@@ -4,11 +4,9 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages:types",
-    ],
     deps = [
         "//:node_modules/protractor",
+        "//packages:types_rjs",
         "//packages/benchpress:benchpress_rjs",
         "//packages/core:core_rjs",
         "//packages/core/testing:testing_rjs",

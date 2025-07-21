@@ -7,7 +7,7 @@ ts_project(
     srcs = glob([
         "**/*.ts",
     ]),
-    interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/logging",
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
     ],
 )

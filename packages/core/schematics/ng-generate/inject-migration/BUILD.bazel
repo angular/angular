@@ -16,12 +16,10 @@ copy_to_bin(
 ts_project(
     name = "inject-migration",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/core/schematics/utils",
-        "//packages/core/schematics/utils/tsurge/helpers/ast",
-    ],
     deps = [
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
+        "//packages/core/schematics/utils:utils_rjs",
+        "//packages/core/schematics/utils/tsurge/helpers/ast:ast_rjs",
     ],
 )

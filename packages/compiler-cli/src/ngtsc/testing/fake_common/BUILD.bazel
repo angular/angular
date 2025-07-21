@@ -7,10 +7,10 @@ ts_project(
     srcs = [
         "index.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     module_name = "@angular/common",
+    deps = [
+        "//packages/core:core_rjs",
+    ],
 )
 
 ng_package(

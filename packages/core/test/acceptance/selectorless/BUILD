@@ -7,12 +7,12 @@ ng_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     extends = "//packages/core:tsconfig_test",
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/testing",
-    ],
     tsconfig = ":tsconfig.json",
     visibility = ["//:__pkg__"],
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+    ],
 )
 
 angular_jasmine_test(
