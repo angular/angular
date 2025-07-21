@@ -64,7 +64,6 @@ export function getRendererFactory2(document: any): RendererFactory2 {
     fakeNgZone,
     null,
     null,
-    null,
   );
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {

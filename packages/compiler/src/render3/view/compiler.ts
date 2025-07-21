@@ -32,10 +32,12 @@ import {getTemplateSourceLocationsEnabled} from './config';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {makeBindingParser} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
+import {analyzeTemplateForAnimations} from '../../template_parser/animation_analyzer';
 
 const COMPONENT_VARIABLE = '%COMP%';
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+const ANIMATE_LEAVE = `animate.leave`;
 
 function baseDirectiveFields(
   meta: R3DirectiveMetadata,
@@ -102,6 +104,16 @@ function baseDirectiveFields(
   return definitionMap;
 }
 
+function hasAnimationHostBinding(
+  meta: R3DirectiveMetadata | R3ComponentMetadata<R3TemplateDependency>,
+): boolean {
+  return (
+    meta.host.attributes[ANIMATE_LEAVE] !== undefined ||
+    meta.host.properties[ANIMATE_LEAVE] !== undefined ||
+    meta.host.listeners[ANIMATE_LEAVE] !== undefined
+  );
+}
+
 /**
  * Add features to the definition map.
  */
@@ -146,6 +158,13 @@ function addFeatures(
       o.importExpr(R3.ExternalStylesFeature).callFn([o.literalArr(externalStyleNodes)]),
     );
   }
+  const template = (meta as R3ComponentMetadata<R3TemplateDependency>).template;
+  if (hasAnimationHostBinding(meta) || (template && template.nodes.length > 0)) {
+    if (hasAnimationHostBinding(meta) || analyzeTemplateForAnimations(template.nodes)) {
+      features.push(o.importExpr(R3.AnimationsFeature).callFn([]));
+    }
+  }
+
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }

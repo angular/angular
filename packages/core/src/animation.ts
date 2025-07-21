@@ -5,8 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {InjectionToken} from './di/injection_token';
 
-import {Injectable} from './di';
+/**
+ * A [DI token](api/core/InjectionToken) that enables or disables all enter and leave animations.
+ */
+export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
+  ngDevMode ? 'AnimationsDisabled' : '',
+  {
+    providedIn: 'root',
+    factory: () => false,
+  },
+);
 
 /**
  * The event type for when `animate.enter` and `animate.leave` are used with function
@@ -55,6 +65,10 @@ export interface AnimationDetails {
   animateFn: AnimationRemoveFunction;
 }
 
+export interface AnimationRemovalRegistry {
+  elements: ElementRegistry | undefined;
+}
+
 /**
  * Registers elements for delayed removal action for animation in the case
  * that `animate.leave` is used. This stores the target element and any
@@ -63,7 +77,6 @@ export interface AnimationDetails {
  * removal function from the dom renderer to be called after the
  * animation is finished.
  */
-@Injectable({providedIn: 'root'})
 export class ElementRegistry {
   private outElements = new WeakMap<Element, AnimationDetails>();
 
@@ -137,6 +150,8 @@ export class ElementRegistry {
     let timeoutId: ReturnType<typeof setTimeout>;
     let called = false;
     const remove = () => {
+      // This called check is to prevent a rare race condition where the timing of removal
+      // might result in the removal function being called twice.
       if (called) return;
       called = true;
       clearTimeout(timeoutId);

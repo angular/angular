@@ -7,17 +7,16 @@
  */
 
 import {stringify} from '../../util/stringify'; // Adjust imports as per actual location
-import {ANIMATIONS_DISABLED} from '../../application/application_tokens';
 import {
   AnimationCallbackEvent,
   AnimationClassFunction,
   AnimationEventFunction,
   AnimationFunction,
   AnimationRemoveFunction,
-  ElementRegistry,
+  ANIMATIONS_DISABLED,
   LongestAnimation,
 } from '../../animation';
-import {getLView, getCurrentTNode, getTView} from '../state';
+import {getLView, getCurrentTNode, getTView, getAnimationElementRemovalRegistry} from '../state';
 import {RENDERER, INJECTOR, CONTEXT, FLAGS, LViewFlags} from '../interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {getNativeByTNode, storeCleanupWithContext} from '../util/view_utils';
@@ -25,6 +24,7 @@ import {performanceMarkFeature} from '../../util/performance';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {NgZone} from '../../zone';
+import {assertDefined} from '../../util/assert';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
 const WS_REGEXP = /\s+/;
@@ -47,7 +47,7 @@ const noOpAnimationComplete = () => {};
 export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEnter {
   performanceMarkFeature('NgAnimateEnter');
 
-  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+  if ((typeof ngServerMode !== 'undefined' && ngServerMode) || !areAnimationSupported) {
     return ɵɵanimateEnter;
   }
 
@@ -77,15 +77,10 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
     setupAnimationCancel(event, activeClasses, renderer);
     longestAnimation = getLongestAnimation(event);
 
-    if (event instanceof AnimationEvent) {
-      ngZone.runOutsideAngular(() => {
-        cleanupFns.push(renderer.listen(nativeElement, 'animationend', handleInAnimationEnd));
-      });
-    } else {
-      ngZone.runOutsideAngular(() => {
-        cleanupFns.push(renderer.listen(nativeElement, 'transitionend', handleInAnimationEnd));
-      });
-    }
+    const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
+    ngZone.runOutsideAngular(() => {
+      cleanupFns.push(renderer.listen(nativeElement, eventName, handleInAnimationEnd));
+    });
   };
 
   // When the longest animation ends, we can remove all the classes
@@ -95,10 +90,12 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   // We only need to add these event listeners if there are actual classes to apply
   if (activeClasses && activeClasses.length > 0) {
-    ngZone.runOutsideAngular(() => {
-      cleanupFns.push(renderer.listen(nativeElement, 'animationstart', handleAnimationStart));
-      cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
-    });
+    if (!animationsDisabled) {
+      ngZone.runOutsideAngular(() => {
+        cleanupFns.push(renderer.listen(nativeElement, 'animationstart', handleAnimationStart));
+        cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
+      });
+    }
 
     for (const klass of activeClasses) {
       renderer.addClass(nativeElement as HTMLElement, klass);
@@ -137,7 +134,7 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵanimateEnterListener {
   performanceMarkFeature('NgAnimateEnter');
 
-  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+  if ((typeof ngServerMode !== 'undefined' && ngServerMode) || !areAnimationSupported) {
     return ɵɵanimateEnterListener;
   }
 
@@ -146,10 +143,6 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
-
-  if ((nativeElement as Node).nodeType !== Node.ELEMENT_NODE) {
-    return ɵɵanimateEnterListener;
-  }
 
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
 
@@ -169,7 +162,7 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
 export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLeave {
   performanceMarkFeature('NgAnimateLeave');
 
-  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+  if ((typeof ngServerMode !== 'undefined' && ngServerMode) || !areAnimationSupported) {
     return ɵɵanimateLeave;
   }
 
@@ -185,7 +178,13 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
   const injector = lView[INJECTOR]!;
 
   // Assume ElementRegistry and ANIMATIONS_DISABLED are injectable services.
-  const elementRegistry = injector.get(ElementRegistry);
+  const elementRegistry = getAnimationElementRemovalRegistry();
+  ngDevMode &&
+    assertDefined(
+      elementRegistry.elements,
+      'Expected `ElementRegistry` to be present in animations subsystem',
+    );
+
   const animationsDisabled = injector.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
   const ngZone = injector.get(NgZone);
 
@@ -213,11 +212,11 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
   // Ensure cleanup if the LView is destroyed before the animation runs.
   if (lView[FLAGS] & LViewFlags.FirstLViewPass) {
     storeCleanupWithContext(tView, lView, nativeElement, (elToClean: Element) => {
-      elementRegistry.remove(elToClean);
+      elementRegistry.elements!.remove(elToClean);
     });
   }
 
-  elementRegistry.add(nativeElement, value, animate);
+  elementRegistry.elements!.add(nativeElement, value, animate);
 
   return ɵɵanimateLeave; // For chaining
 }
@@ -236,7 +235,7 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
 export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵanimateLeaveListener {
   performanceMarkFeature('NgAnimateLeave');
 
-  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+  if ((typeof ngServerMode !== 'undefined' && ngServerMode) || !areAnimationSupported) {
     return ɵɵanimateLeaveListener;
   }
 
@@ -253,8 +252,14 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
 
   // Assume ElementRegistry and ANIMATIONS_DISABLED are injectable services.
   const injector = lView[INJECTOR]!;
-  const elementRegistry = injector!.get(ElementRegistry);
-  const animationsDisabled = injector!.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
+  const elementRegistry = getAnimationElementRemovalRegistry();
+  ngDevMode &&
+    assertDefined(
+      elementRegistry.elements,
+      'Expected `ElementRegistry` to be present in animations subsystem',
+    );
+
+  const animationsDisabled = injector.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
 
   const animate: AnimationEventFunction = (
     el: Element,
@@ -268,7 +273,11 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
         },
       };
       if (animationsDisabled) {
-        removeFn();
+        // add a microtask for test environments to be able to see classes
+        // were added, then removed.
+        Promise.resolve().then(() => {
+          removeFn();
+        });
       } else {
         value.call(lView[CONTEXT], event);
       }
@@ -276,12 +285,12 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   };
 
   // Ensure cleanup if the LView is destroyed before the animation runs.
-  if (tView.firstCreatePass) {
+  if (lView[FLAGS] & LViewFlags.FirstLViewPass) {
     storeCleanupWithContext(tView, lView, nativeElement, (elToClean: Element) => {
-      elementRegistry.remove(elToClean);
+      elementRegistry.elements!.remove(elToClean);
     });
   }
-  elementRegistry.addCallback(nativeElement, value, animate);
+  elementRegistry.elements!.addCallback(nativeElement, value, animate);
 
   return ɵɵanimateLeaveListener; // For chaining
 }
@@ -417,6 +426,10 @@ function animationEnd(
   cleanupFns: Function[],
 ) {
   if (isLongestAnimation(event, nativeElement, longestAnimation)) {
+    // Now that we've found the longest animation, there's no need
+    // to keep bubbling up this event as it's not going to apply to
+    // other elements further up. We don't want it to inadvertently
+    // affect any other animations on the page.
     event.stopImmediatePropagation();
     if (classList !== null) {
       for (const klass of classList) {
@@ -459,23 +472,33 @@ function animateLeaveClassRunner(
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent) => {
     if (isLongestAnimation(event, el, longestAnimation)) {
+      // Now that we've found the longest animation, there's no need
+      // to keep bubbling up this event as it's not going to apply to
+      // other elements further up. We don't want it to inadvertently
+      // affect any other animations on the page.
       event.stopImmediatePropagation();
       finalRemoveFn();
     }
   };
 
-  ngZone.runOutsideAngular(() => {
-    renderer.listen(el, 'animationstart', handleAnimationStart, {once: true});
-    renderer.listen(el, 'transitionstart', handleAnimationStart, {once: true});
-    renderer.listen(el, 'animationend', handleOutAnimationEnd);
-    renderer.listen(el, 'transitionend', handleOutAnimationEnd);
-  });
+  if (!animationsDisabled) {
+    ngZone.runOutsideAngular(() => {
+      renderer.listen(el, 'animationstart', handleAnimationStart, {once: true});
+      renderer.listen(el, 'transitionstart', handleAnimationStart, {once: true});
+      renderer.listen(el, 'animationend', handleOutAnimationEnd);
+      renderer.listen(el, 'transitionend', handleOutAnimationEnd);
+    });
+  }
 
   for (const item of classList) {
     renderer.addClass(el, item);
   }
 
   if (animationsDisabled) {
-    finalRemoveFn();
+    // add a microtask for test environments to be able to see classes
+    // were added, then removed.
+    Promise.resolve().then(() => {
+      finalRemoveFn();
+    });
   }
 }

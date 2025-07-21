@@ -9,8 +9,8 @@
 import {ViewEncapsulation} from '@angular/compiler';
 import {
   AnimationCallbackEvent,
-  ANIMATIONS_DISABLED,
   Component,
+  Directive,
   ElementRef,
   signal,
   ViewChild,
@@ -18,6 +18,7 @@ import {
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
+import {ANIMATIONS_DISABLED} from '../../src/animation';
 
 describe('Animation', () => {
   if (isNode) {
@@ -290,6 +291,80 @@ describe('Animation', () => {
       );
 
       expect(fixture.nativeElement.outerHTML).not.toContain('fade');
+      expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
+      expect(fixture.debugElement.query(By.css('child-cmp'))).toBeNull();
+    });
+
+    it('should compose class list when host binding on a directive and regular binding', () => {
+      const multiple = `
+        .slide-out {
+          animation: slide-out 2s;
+        }
+        .fade {
+          animation: fade-out 1s;
+        }
+        @keyframes slide-out {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(10px);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+      @Directive({
+        selector: '[dir]',
+        host: {'[animate.leave]': 'clazz'},
+      })
+      class StuffDirective {
+        clazz = 'slide-out';
+      }
+
+      @Component({
+        selector: 'child-cmp',
+        styles: multiple,
+        template: '<p>I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class ChildComponent {}
+
+      @Component({
+        selector: 'test-cmp',
+        styles: multiple,
+        imports: [ChildComponent, StuffDirective],
+        template: '@if (show()) { <child-cmp dir /> }',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      const childCmp = fixture.debugElement.query(By.css('child-cmp'));
+
+      expect(childCmp.nativeElement.className).not.toContain('slide-out');
+      cmp.show.set(false);
+      fixture.detectChanges();
+      expect(cmp.show()).toBeFalsy();
+      fixture.detectChanges();
+      childCmp.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      expect(childCmp.nativeElement.className).toContain('slide-out');
+      fixture.detectChanges();
+
+      childCmp.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-out'}),
+      );
+
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
       expect(fixture.debugElement.query(By.css('child-cmp'))).toBeNull();
     });

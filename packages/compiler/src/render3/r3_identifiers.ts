@@ -447,6 +447,11 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static AnimationsFeature: o.ExternalReference = {
+    name: 'ɵɵAnimationsFeature',
+    moduleName: CORE,
+  };
+
   static listener: o.ExternalReference = {name: 'ɵɵlistener', moduleName: CORE};
 
   static getInheritedFactory: o.ExternalReference = {
