@@ -140,7 +140,7 @@ export class ArrayMergeLogic<TElement> extends ArrayMergeIgnoreLogic<TElement, n
 
 export class AggregatePropertyMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
   override get defaultValue() {
-    return this.key.getDefault();
+    return this.key.getInitial();
   }
 
   constructor(
@@ -152,9 +152,9 @@ export class AggregatePropertyMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc
 
   override compute(ctx: FieldContext<any>): TAcc {
     if (this.fns.length === 0) {
-      return this.key.getDefault();
+      return this.key.getInitial();
     }
-    let acc: TAcc = this.key.getDefault();
+    let acc: TAcc = this.key.getInitial();
     for (let i = 0; i < this.fns.length; i++) {
       const item = this.fns[i](ctx);
       if (item !== IGNORED) {

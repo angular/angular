@@ -34,17 +34,17 @@ export class AggregateProperty<TAcc, TItem> {
 
   protected constructor(
     readonly reduce: (acc: TAcc, item: TItem) => TAcc,
-    readonly getDefault: () => TAcc,
+    readonly getInitial: () => TAcc,
   ) {}
 
   /**
    * Creates an aggregate property that reduces its individual values into an accumulated value
    * using the given `reduce` and `getDefault` functions.
    * @param reduce The reducer function
-   * @param getDefault A function that gets the default value for the reduce operation.
+   * @param getInitial A function that gets the initial value for the reduce operation.
    */
-  static reduce<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getDefault: () => TAcc) {
-    return new AggregateProperty(reduce, getDefault);
+  static reduce<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getInitial: () => TAcc) {
+    return new AggregateProperty(reduce, getInitial);
   }
 
   /**
