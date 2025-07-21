@@ -7,6 +7,7 @@
  */
 
 module.exports = {
+  defaultCommandTimeout: 10000, // Increase the default command timeout to 10 seconds
   e2e: {
     specPattern: 'integration/*.e2e.js',
     supportFile: 'support/index.js',
