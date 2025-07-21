@@ -370,8 +370,8 @@ importers:
         specifier: https://github.com/angular/dev-infra-private-build-tooling-builds.git#d6f2b1159c52268160c02e701b80646e8f311257
         version: github.com/angular/dev-infra-private-build-tooling-builds/d6f2b1159c52268160c02e701b80646e8f311257(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.0)(chokidar@4.0.3)(karma-chrome-launcher@3.2.0)(karma-firefox-launcher@2.1.3)(karma-jasmine@5.1.0)(karma-requirejs@1.1.0)(karma-sourcemap-loader@0.4.0)(karma@6.4.4)(terser@5.43.1)(tsx@4.20.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#385f44abcf5e2a2180306e45db85a806fe8ce059
-        version: github.com/angular/dev-infra-private-ng-dev-builds/385f44abcf5e2a2180306e45db85a806fe8ce059
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#75a2aee57f2d3bf783f74fcf4338228a3a69d0e6
+        version: github.com/angular/dev-infra-private-ng-dev-builds/75a2aee57f2d3bf783f74fcf4338228a3a69d0e6
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.0)
@@ -23030,10 +23030,10 @@ packages:
       - yaml
     dev: true
 
-  github.com/angular/dev-infra-private-ng-dev-builds/385f44abcf5e2a2180306e45db85a806fe8ce059:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/385f44abcf5e2a2180306e45db85a806fe8ce059}
+  github.com/angular/dev-infra-private-ng-dev-builds/75a2aee57f2d3bf783f74fcf4338228a3a69d0e6:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75a2aee57f2d3bf783f74fcf4338228a3a69d0e6}
     name: '@angular/ng-dev'
-    version: 0.0.0-64e129b9b9b27fc54b1e6e08d012d0d4fd2ed798
+    version: 0.0.0-5293c189424a61f7255d8171e3d653f983404851
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 8.0.0(supports-color@10.0.0)
