@@ -50,7 +50,7 @@ describe('resources', () => {
   it('Takes a simple resource which reacts to data changes', async () => {
     const s: SchemaOrSchemaFn<Cat> = function (p) {
       const RES = MetadataKey.create<Resource<string | undefined>>();
-      const res = setMetadata(p.name, RES, ({value}) => {
+      setMetadata(p.name, RES, ({value}) => {
         return resource({
           params: () => ({x: value()}),
           loader: async ({params}) => `got: ${params.x}`,
