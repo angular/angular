@@ -7,8 +7,8 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import {addToMetadata, setMetadata, validate} from '../logic';
-import {MAX_LENGTH, MetadataKey} from '../metadata';
+import {aggregateProperty, property, validate} from '../logic';
+import {MAX_LENGTH, Property} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
@@ -17,7 +17,7 @@ import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './uti
  * Binds a validator to the given path that requires the length of the value to be less than or
  * equal to the given `maxLength`.
  * This function can only be called on string or array paths.
- * In addition to binding a validator, this function adds `MAX_LENGTH` metadata to the field.
+ * In addition to binding a validator, this function adds `MAX_LENGTH` property to the field.
  *
  * @param path Path of the field to validate
  * @param maxLength The maximum length, or a LogicFn that returns the maximum length.
@@ -35,14 +35,14 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MAX_LENGTH_MEMO = MetadataKey.create<Signal<number | undefined>>();
+  const MAX_LENGTH_MEMO = Property.create<Signal<number | undefined>>();
 
-  setMetadata(path, MAX_LENGTH_MEMO, (ctx) =>
+  property(path, MAX_LENGTH_MEMO, (ctx) =>
     computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx))),
   );
-  addToMetadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
+  aggregateProperty(path, MAX_LENGTH, ({state}) => state.property(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
-    const maxLength = ctx.state.metadata(MAX_LENGTH_MEMO)!();
+    const maxLength = ctx.state.property(MAX_LENGTH_MEMO)!();
     if (maxLength === undefined) {
       return undefined;
     }

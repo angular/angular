@@ -7,8 +7,8 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import {addToMetadata, setMetadata, validate} from '../logic';
-import {MetadataKey, MIN_LENGTH} from '../metadata';
+import {aggregateProperty, property, validate} from '../logic';
+import {MIN_LENGTH, Property} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
@@ -17,7 +17,7 @@ import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './uti
  * Binds a validator to the given path that requires the length of the value to be greater than or
  * equal to the given `minLength`.
  * This function can only be called on string or array paths.
- * In addition to binding a validator, this function adds `MIN_LENGTH` metadata to the field.
+ * In addition to binding a validator, this function adds `MIN_LENGTH` property to the field.
  *
  * @param path Path of the field to validate
  * @param minLength The minimum length, or a LogicFn that returns the minimum length.
@@ -35,14 +35,14 @@ export function minLength<
   minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_LENGTH_MEMO = MetadataKey.create<Signal<number | undefined>>();
+  const MIN_LENGTH_MEMO = Property.create<Signal<number | undefined>>();
 
-  setMetadata(path, MIN_LENGTH_MEMO, (ctx) =>
+  property(path, MIN_LENGTH_MEMO, (ctx) =>
     computed(() => (typeof minLength === 'number' ? minLength : minLength(ctx))),
   );
-  addToMetadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());
+  aggregateProperty(path, MIN_LENGTH, ({state}) => state.property(MIN_LENGTH_MEMO)!());
   validate(path, (ctx) => {
-    const minLength = ctx.state.metadata(MIN_LENGTH_MEMO)!();
+    const minLength = ctx.state.property(MIN_LENGTH_MEMO)!();
     if (minLength === undefined) {
       return undefined;
     }

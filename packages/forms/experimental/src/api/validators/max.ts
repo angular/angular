@@ -7,8 +7,8 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import {addToMetadata, setMetadata, validate} from '../logic';
-import {MAX, MetadataKey} from '../metadata';
+import {aggregateProperty, property, validate} from '../logic';
+import {MAX, Property} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -17,7 +17,7 @@ import {BaseValidatorConfig} from './util';
  * Binds a validator to the given path that requires the value to be less than or equal to the
  * given `maxValue`.
  * This function can only be called on number paths.
- * In addition to binding a validator, this function adds `MAX` metadata to the field.
+ * In addition to binding a validator, this function adds `MAX` property to the field.
  *
  * @param path Path of the field to validate
  * @param maxValue The maximum value, or a LogicFn that returns the maximum value.
@@ -31,14 +31,14 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MAX_MEMO = MetadataKey.create<Signal<number | undefined>>();
+  const MAX_MEMO = Property.create<Signal<number | undefined>>();
 
-  setMetadata(path, MAX_MEMO, (ctx) =>
+  property(path, MAX_MEMO, (ctx) =>
     computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx))),
   );
-  addToMetadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());
+  aggregateProperty(path, MAX, ({state}) => state.property(MAX_MEMO)!());
   validate(path, (ctx) => {
-    const max = ctx.state.metadata(MAX_MEMO)!();
+    const max = ctx.state.property(MAX_MEMO)!();
     if (max === undefined || Number.isNaN(max)) {
       return undefined;
     }

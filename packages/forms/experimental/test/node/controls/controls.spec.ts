@@ -3,12 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Component, Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Control, Field, form, min} from '../../../public_api';
+import {Control, Field, form} from '../../../public_api';
 
 describe('control directive with native input', () => {
   beforeEach(() => {
@@ -64,26 +64,5 @@ describe('control directive with native input', () => {
     fixture.detectChanges();
 
     expect(input.value).toBe('new-cat-the-cat');
-  });
-
-  // TODO: Uncomment once the metadata is actually attached.
-  xdescribe('built-in validators', () => {
-    it('binds min to the input', () => {
-      const cat = signal({name: 4});
-      const f = form(
-        cat,
-        (p) => {
-          min(p.name, 5);
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-      const {input, fixture} = setupControl(cat, f);
-
-      expect(input.value).toBe('4');
-
-      fixture.detectChanges();
-
-      expect(input.getAttribute('min')).toBe('5');
-    });
   });
 });

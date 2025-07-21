@@ -7,7 +7,7 @@
  */
 
 import {untracked} from '@angular/core';
-import {AggregateMetadataKey} from './api/metadata';
+import {AggregateProperty} from './api/metadata';
 import {type FieldContext, type FieldPath, type LogicFn} from './api/types';
 import {FieldNode} from './field/node';
 
@@ -138,14 +138,14 @@ export class ArrayMergeLogic<TElement> extends ArrayMergeIgnoreLogic<TElement, n
   }
 }
 
-export class MetadataMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
+export class AggregatePropertyMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
   override get defaultValue() {
     return this.key.getDefault();
   }
 
   constructor(
     predicates: ReadonlyArray<BoundPredicate>,
-    private key: AggregateMetadataKey<TAcc, TItem>,
+    private key: AggregateProperty<TAcc, TItem>,
   ) {
     super(predicates);
   }

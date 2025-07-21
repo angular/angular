@@ -7,7 +7,7 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
+import {AggregateProperty, Property} from '../api/metadata';
 import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 
@@ -22,9 +22,9 @@ import {
 import {LogicNode} from '../logic_node_2';
 import {FieldPathNode} from '../path_node';
 import {FieldNodeContext} from './context';
-import {FieldDataState} from './data';
+import {FieldPropertyState} from './data';
 import type {FormFieldManager} from './manager';
-import {FieldMetadataState} from './metadata';
+import {FieldAggregatePropertyState} from './metadata';
 import {FIELD_PROXY_HANDLER} from './proxy';
 import {FieldNodeState} from './state';
 import {FieldSubmitState} from './submit';
@@ -43,9 +43,9 @@ import {FieldValidationState} from './validation';
 export class FieldNode implements FieldState<unknown> {
   readonly structure: FieldNodeStructure;
   readonly validationState: FieldValidationState;
-  readonly dataState: FieldDataState;
+  readonly dataState: FieldPropertyState;
   readonly nodeState: FieldNodeState;
-  readonly metadataState: FieldMetadataState;
+  readonly aggregatePropertyState: FieldAggregatePropertyState;
   readonly submitState: FieldSubmitState;
 
   private _context: FieldContext<unknown> | undefined = undefined;
@@ -82,8 +82,8 @@ export class FieldNode implements FieldState<unknown> {
 
     this.validationState = new FieldValidationState(this);
     this.nodeState = new FieldNodeState(this);
-    this.dataState = new FieldDataState(this);
-    this.metadataState = new FieldMetadataState(this);
+    this.dataState = new FieldPropertyState(this);
+    this.aggregatePropertyState = new FieldAggregatePropertyState(this);
     this.submitState = new FieldSubmitState(this);
   }
 
@@ -151,15 +151,15 @@ export class FieldNode implements FieldState<unknown> {
     return this.submitState.submittedStatus;
   }
 
-  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
-  metadata<M>(key: MetadataKey<M>): M | undefined;
-  metadata<M>(key: MetadataKey<M> | AggregateMetadataKey<M, any>): Signal<M> | M | undefined {
-    if (key instanceof MetadataKey) {
+  property<M>(key: AggregateProperty<M, any>): Signal<M>;
+  property<M>(key: Property<M>): M | undefined;
+  property<M>(key: Property<M> | AggregateProperty<M, any>): Signal<M> | M | undefined {
+    if (key instanceof Property) {
       return this.dataState.get(key);
-    } else if (key instanceof AggregateMetadataKey) {
-      return this.metadataState.get(key);
+    } else if (key instanceof AggregateProperty) {
+      return this.aggregatePropertyState.get(key);
     }
-    throw Error('Unrecognized MetadataKey type');
+    return undefined;
   }
 
   /**

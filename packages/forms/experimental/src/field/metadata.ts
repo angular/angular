@@ -7,25 +7,25 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import type {AggregateMetadataKey} from '../api/metadata';
+import type {AggregateProperty} from '../api/metadata';
 import type {FieldNode} from './node';
 import {cast} from './util';
 
 /**
- * Tracks `metadata` associated with a `FieldNode`.
+ * Tracks aggregate properties associated with a `FieldNode`.
  */
-export class FieldMetadataState {
-  private readonly metadataMap = new Map<AggregateMetadataKey<unknown, unknown>, Signal<unknown>>();
+export class FieldAggregatePropertyState {
+  private readonly propertyMap = new Map<AggregateProperty<unknown, unknown>, Signal<unknown>>();
 
   constructor(private readonly node: FieldNode) {}
 
-  get<M>(key: AggregateMetadataKey<M, unknown>): Signal<M> {
-    cast<AggregateMetadataKey<unknown, unknown>>(key);
-    if (!this.metadataMap.has(key)) {
-      const logic = this.node.logicNode.logic.getMetadata(key);
+  get<M>(key: AggregateProperty<M, unknown>): Signal<M> {
+    cast<AggregateProperty<unknown, unknown>>(key);
+    if (!this.propertyMap.has(key)) {
+      const logic = this.node.logicNode.logic.getAggregateProperty(key);
       const result = computed(() => logic.compute(this.node.context));
-      this.metadataMap.set(key, result);
+      this.propertyMap.set(key, result);
     }
-    return this.metadataMap.get(key)! as Signal<M>;
+    return this.propertyMap.get(key)! as Signal<M>;
   }
 }

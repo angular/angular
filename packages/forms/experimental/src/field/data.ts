@@ -7,14 +7,14 @@
  */
 
 import {computed, runInInjectionContext, untracked} from '@angular/core';
-import {MetadataKey} from '../api/metadata';
+import {Property} from '../api/metadata';
 import {FieldNode} from './node';
 
 /**
- * Tracks `data` associated with a `FieldNode`.
+ * Tracks property factories associated with a `FieldNode`.
  */
-export class FieldDataState {
-  private readonly dataMap = new Map<MetadataKey<unknown>, unknown>();
+export class FieldPropertyState {
+  private readonly propertyMap = new Map<Property<unknown>, unknown>();
 
   constructor(private readonly node: FieldNode) {
     // Instantiate data dependencies.
@@ -23,22 +23,22 @@ export class FieldDataState {
     }
     untracked(() =>
       runInInjectionContext(this.node.structure.injector, () => {
-        for (const [key, factory] of this.node.logicNode.logic.getDataFactoryEntries()) {
-          this.dataMap.set(key, factory(this.node.context));
+        for (const [key, factory] of this.node.logicNode.logic.getPropertyFactoryEntries()) {
+          this.propertyMap.set(key, factory(this.node.context));
         }
       }),
     );
   }
 
   private readonly dataMaps = computed(() => {
-    const maps = [this.dataMap];
+    const maps = [this.propertyMap];
     for (const child of this.node.structure.childrenMap()?.values() ?? []) {
       maps.push(...child.dataState.dataMaps());
     }
     return maps;
   });
 
-  get<D>(key: MetadataKey<D>): D | undefined {
-    return this.dataMap.get(key) as D | undefined;
+  get<D>(key: Property<D>): D | undefined {
+    return this.propertyMap.get(key) as D | undefined;
   }
 }

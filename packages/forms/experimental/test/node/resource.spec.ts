@@ -14,9 +14,9 @@ import {isNode} from '@angular/private/testing';
 import {
   applyEach,
   form,
-  MetadataKey,
+  Property,
+  property,
   SchemaOrSchemaFn,
-  setMetadata,
   validate,
   validateAsync,
   validateHttp,
@@ -49,8 +49,8 @@ describe('resources', () => {
 
   it('Takes a simple resource which reacts to data changes', async () => {
     const s: SchemaOrSchemaFn<Cat> = function (p) {
-      const RES = MetadataKey.create<Resource<string | undefined>>();
-      setMetadata(p.name, RES, ({value}) => {
+      const RES = Property.create<Resource<string | undefined>>();
+      property(p.name, RES, ({value}) => {
         return resource({
           params: () => ({x: value()}),
           loader: async ({params}) => `got: ${params.x}`,
@@ -58,7 +58,7 @@ describe('resources', () => {
       });
 
       validate(p.name, ({state}) => {
-        const remote = state.metadata(RES)!;
+        const remote = state.property(RES)!;
         if (remote.hasValue()) {
           return ValidationError.custom({message: remote.value()});
         } else {
@@ -90,8 +90,8 @@ describe('resources', () => {
   it('should create a resource per entry in an array', async () => {
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       applyEach(p, (p) => {
-        const RES = MetadataKey.create<Resource<string | undefined>>();
-        setMetadata(p.name, RES, ({value}) => {
+        const RES = Property.create<Resource<string | undefined>>();
+        property(p.name, RES, ({value}) => {
           return resource({
             params: () => ({x: value()}),
             loader: async ({params}) => `got: ${params.x}`,
@@ -99,7 +99,7 @@ describe('resources', () => {
         });
 
         validate(p.name, ({state}) => {
-          const remote = state.metadata(RES)!;
+          const remote = state.property(RES)!;
           if (remote.hasValue()) {
             return ValidationError.custom({message: remote.value()});
           } else {

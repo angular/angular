@@ -8,8 +8,8 @@
 
 import {computed, resource, Signal, ɵisPromise} from '@angular/core';
 import {validateAsync} from './async';
-import {setMetadata, validateTree} from './logic';
-import {MetadataKey} from './metadata';
+import {property, validateTree} from './logic';
+import {Property} from './metadata';
 import {StandardSchemaV1} from './standard_schema_types';
 import {Field, FieldPath} from './types';
 import {StandardSchemaValidationError, ValidationError, WithField} from './validation_errors';
@@ -27,10 +27,10 @@ export function validateStandardSchema<TValue>(
   path: FieldPath<TValue>,
   schema: NoInfer<StandardSchemaV1<TValue>>,
 ) {
-  // TODO: this is bleh, should we have `const KEY = createMetadata(p, () => ...)`?
+  // TODO: this is bleh, should we have `const KEY = property(p, () => ...)`?
   // (the equivalent of the old 2-param define, but with less confusing semantics)
   const VALIDATOR_MEMO =
-    MetadataKey.create<
+    Property.create<
       Signal<StandardSchemaV1.Result<TValue> | Promise<StandardSchemaV1.Result<TValue>>>
     >();
 
@@ -39,12 +39,12 @@ export function validateStandardSchema<TValue>(
   // handles the sync result, and the async validator handles the Promise.
   // We memoize the result of the validation function here, so that it is only run once for both
   // validators, it can then be passed through both sync & async validation.
-  setMetadata(path, VALIDATOR_MEMO, ({value}) => {
+  property(path, VALIDATOR_MEMO, ({value}) => {
     return computed(() => schema['~standard'].validate(value()));
   });
   validateTree(path, ({state, fieldOf}) => {
     // Skip sync validation if the result is a Promise.
-    const result = state.metadata(VALIDATOR_MEMO)!();
+    const result = state.property(VALIDATOR_MEMO)!();
     if (ɵisPromise(result)) {
       return [];
     }
@@ -53,7 +53,7 @@ export function validateStandardSchema<TValue>(
   validateAsync(path, {
     params: ({state}) => {
       // Skip async validation if the result is *not* a Promise.
-      const result = state.metadata(VALIDATOR_MEMO)!();
+      const result = state.property(VALIDATOR_MEMO)!();
       return ɵisPromise(result) ? result : undefined;
     },
     factory: (params) => {

@@ -38,8 +38,8 @@ describe('pattern validator', () => {
     expect(f.name().errors()).toEqual([ValidationError.custom()]);
   });
 
-  describe('metadata', () => {
-    it('sets the metadata', () => {
+  describe('custom properties', () => {
+    it('sets the PATTERN property', () => {
       const cat = signal({name: 'pelmeni-the-cat'});
       const f = form(
         cat,
@@ -49,10 +49,10 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().metadata(PATTERN)()).toEqual(['pir.*jok']);
+      expect(f.name().property(PATTERN)()).toEqual(['pir.*jok']);
     });
 
-    it('merges the metadata in an array', () => {
+    it('merges the PATTERN property in an array', () => {
       const cat = signal({name: 'pelmeni-the-cat'});
       const f = form(
         cat,
@@ -63,10 +63,10 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().metadata(PATTERN)()).toEqual(['pir.*jok', 'pelmeni']);
+      expect(f.name().property(PATTERN)()).toEqual(['pir.*jok', 'pelmeni']);
     });
 
-    it('metadata defaults to empty list', () => {
+    it('PATTERN property defaults to empty list', () => {
       const cat = signal({name: 'pelmeni-the-cat'});
       const f = form(
         cat,
@@ -75,7 +75,7 @@ describe('pattern validator', () => {
         },
         {injector: TestBed.inject(Injector)},
       );
-      expect(f.name().metadata(PATTERN)()).toEqual([]);
+      expect(f.name().property(PATTERN)()).toEqual([]);
     });
   });
 

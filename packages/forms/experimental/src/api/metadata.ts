@@ -7,29 +7,29 @@
  */
 
 /**
- * Represents metadata that may be set on a field when it is created using `setMetadata` in the
- * schema. A particular `MetadataKey` can only be set on a particular field **once**.
+ * Represents a property that may be defined on a field when it is created using a `property` rule
+ * in the schema. A particular `Property` can only be defined on a particular field **once**.
  */
-export class MetadataKey<TValue> {
+export class Property<TValue> {
   private brand!: TValue;
 
   protected constructor() {}
 
   /**
-   * Creates a MetadataKey.
+   * Creates a `Property`.
    */
   static create<TValue>() {
-    return new MetadataKey<TValue>();
+    return new Property<TValue>();
   }
 }
 
 /**
- * Represents metadata that is aggregated from multiple parts according to the key's reducer
- * function. A value can be contributed to the aggregated value for a field using `addToMetadata` in
- * the schema. There may be multiple rules in a schema that contribute values to the same
- * `AggregateMetadataKey`.
+ * Represents a property that is aggregated from multiple parts according to the property's reducer
+ * function. A value can be contributed to the aggregated value for a field using an
+ * `aggregateProperty` rule in the schema. There may be multiple rules in a schema that contribute
+ * values to the same `AggregateProperty` of the same field.
  */
-export class AggregateMetadataKey<TAcc, TItem> {
+export class AggregateProperty<TAcc, TItem> {
   private brand!: [TAcc, TItem];
 
   protected constructor(
@@ -38,30 +38,30 @@ export class AggregateMetadataKey<TAcc, TItem> {
   ) {}
 
   /**
-   * Creates an aggregate metadata key that reduces its individual values into an accumulated value
+   * Creates an aggregate property that reduces its individual values into an accumulated value
    * using the given `reduce` and `getDefault` functions.
    * @param reduce The reducer function
    * @param getDefault A function that gets the default value for the reduce operation.
    */
   static reduce<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getDefault: () => TAcc) {
-    return new AggregateMetadataKey(reduce, getDefault);
+    return new AggregateProperty(reduce, getDefault);
   }
 
   /**
-   * Creates an aggregate metadata key that reduces its individual values into a list.
+   * Creates an aggregate property that reduces its individual values into a list.
    */
   static list<TItem>() {
-    return new AggregateMetadataKey<TItem[], TItem | undefined>(
+    return new AggregateProperty<TItem[], TItem | undefined>(
       (acc, item) => (item === undefined ? acc : [...acc, item]),
       () => [],
     );
   }
 
   /**
-   * Creates an aggregate metadata key that reduces its individual values by taking their min.
+   * Creates an aggregate property that reduces its individual values by taking their min.
    */
   static min() {
-    return new AggregateMetadataKey<number | undefined, number | undefined>(
+    return new AggregateProperty<number | undefined, number | undefined>(
       (prev, next) => {
         if (prev === undefined) {
           return next;
@@ -76,10 +76,10 @@ export class AggregateMetadataKey<TAcc, TItem> {
   }
 
   /**
-   * Creates an aggregate metadata key that reduces its individual values by taking their max.
+   * Creates an aggregate property that reduces its individual values by taking their max.
    */
   static max() {
-    return new AggregateMetadataKey<number | undefined, number | undefined>(
+    return new AggregateProperty<number | undefined, number | undefined>(
       (prev, next) => {
         if (prev === undefined) {
           return next;
@@ -95,20 +95,20 @@ export class AggregateMetadataKey<TAcc, TItem> {
 
   // TODO: are `any` and `all` better names?
   /**
-   * Creates an aggregate metadata key that reduces its individual values by logically or-ing them.
+   * Creates an aggregate property that reduces its individual values by logically or-ing them.
    */
   static or() {
-    return new AggregateMetadataKey<boolean, boolean>(
+    return new AggregateProperty<boolean, boolean>(
       (prev, next) => prev || next,
       () => false,
     );
   }
 
   /**
-   * Creates an aggregate metadata key that reduces its individual values by logically and-ing them.
+   * Creates an aggregate property that reduces its individual values by logically and-ing them.
    */
   static and() {
-    return new AggregateMetadataKey<boolean, boolean>(
+    return new AggregateProperty<boolean, boolean>(
       (prev, next) => prev && next,
       () => true,
     );
@@ -116,31 +116,31 @@ export class AggregateMetadataKey<TAcc, TItem> {
 }
 
 /**
- * Metadata representing whether the field is required.
+ * An aggregate property representing whether the field is required.
  */
-export const REQUIRED = AggregateMetadataKey.or();
+export const REQUIRED = AggregateProperty.or();
 
 /**
- * Metadata representing the min value of the field.
+ * An aggregate property representing the min value of the field.
  */
-export const MIN = AggregateMetadataKey.max();
+export const MIN = AggregateProperty.max();
 
 /**
- * Metadata representing the max value of the field.
+ * An aggregate property representing the max value of the field.
  */
-export const MAX = AggregateMetadataKey.min();
+export const MAX = AggregateProperty.min();
 
 /**
- * Metadata representing the min length of the field.
+ * An aggregate property representing the min length of the field.
  */
-export const MIN_LENGTH = AggregateMetadataKey.max();
+export const MIN_LENGTH = AggregateProperty.max();
 
 /**
- * Metadata representing the max length of the field.
+ * An aggregate property representing the max length of the field.
  */
-export const MAX_LENGTH = AggregateMetadataKey.min();
+export const MAX_LENGTH = AggregateProperty.min();
 
 /**
- * Metadata representing the patterns the field must match.
+ * An aggregate property representing the patterns the field must match.
  */
-export const PATTERN = AggregateMetadataKey.list<string>();
+export const PATTERN = AggregateProperty.list<string>();

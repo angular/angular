@@ -7,7 +7,7 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
-import {AggregateMetadataKey, MetadataKey} from './metadata';
+import {AggregateProperty, Property} from './metadata';
 import {ValidationError, WithField} from './validation_errors';
 
 /**
@@ -88,7 +88,7 @@ export type MaybeField<T, TKey extends string | number = string | number> =
   | Field<Exclude<T, undefined>, TKey>;
 
 /**
- * Contains all of the state (e.g. value, statuses, metadata) associated with a `Field`, exposed as
+ * Contains all of the state (e.g. value, statuses, etc.) associated with a `Field`, exposed as
  * signals.
  */
 export interface FieldState<TValue, TKey extends string | number = string | number> {
@@ -173,16 +173,16 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   readonly keyInParent: Signal<TKey>;
 
   /**
-   * Reads a aggregate metadata value from the field.
-   * @param key The metadata key to read.
+   * Reads a aggregate property value from the field.
+   * @param prop The property to read.
    */
-  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
+  property<M>(prop: AggregateProperty<M, any>): Signal<M>;
 
   /**
-   * Reads a metadata value from the field.
-   * @param key The metadata key to read.
+   * Reads a property value from the field.
+   * @param prop The property key to read.
    */
-  metadata<M>(key: MetadataKey<M>): M | undefined;
+  property<M>(prop: Property<M>): M | undefined;
 
   /**
    * Sets the touched status of the field to `true`.

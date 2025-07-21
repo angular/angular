@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -14,8 +14,8 @@ import {
   type ValidationErrors,
   type ValidatorFn,
 } from '@angular/forms';
-import type {FieldState} from '../api/types';
 import {REQUIRED} from '../api/metadata';
+import type {FieldState} from '../api/types';
 
 export type InteropSharedKeys =
   | 'value'
@@ -98,7 +98,7 @@ export class InteropNgControl
 
   hasValidator(validator: ValidatorFn): boolean {
     if (validator === Validators.required) {
-      return this.field().metadata(REQUIRED)();
+      return this.field().property(REQUIRED)();
     }
     return false;
   }

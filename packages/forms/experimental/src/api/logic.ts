@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
+import {AggregateProperty, Property} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import type {FieldContext, FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
@@ -113,33 +113,40 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
 }
 
 /**
- * Adds metadata to a field.
+ * Adds a value to an `AggregateProperty` of a field.
  *
- * @param path The target path to add metadata to.
- * @param key The metadata key
- * @param logic A `LogicFn<T, M>` that returns the metadata value for the given key.
+ * @param path The target path to set the aggregate property on.
+ * @param prop The aggregate property
+ * @param logic A `LogicFn<TValue, TPropItem>` that returns a value to add to the aggregate property.
  * @template TValue The type of value stored in the field the logic is bound to.
- * @template TMetadata The type of metadata.
+ * @template TPropItem The type of value the property aggregates over.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
-export function addToMetadata<TValue, TMetadata, TPathKind extends PathKind = PathKind.Root>(
+export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  key: AggregateMetadataKey<any, TMetadata>,
-  logic: NoInfer<LogicFn<TValue, TMetadata, TPathKind>>,
+  prop: AggregateProperty<any, TPropItem>,
+  logic: NoInfer<LogicFn<TValue, TPropItem, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addMetadataRule(key, logic);
+  pathNode.logic.addAggregatePropertyRule(prop, logic);
 }
 
-export function setMetadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
+/**
+ * Defines the value of a `Property` of a field.
+ *
+ * @param path The path to define the property for.
+ * @param key  The property to define.
+ * @param factory A factory function that creates the value for the property.
+ */
+export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  key: MetadataKey<TData>,
+  key: Property<TData>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
 ) {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addDataFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
+  pathNode.logic.addPropertyFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
 }

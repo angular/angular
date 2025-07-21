@@ -7,8 +7,8 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import {addToMetadata, setMetadata, validate} from '../logic';
-import {MetadataKey, REQUIRED} from '../metadata';
+import {aggregateProperty, property, validate} from '../logic';
+import {Property, REQUIRED} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -16,7 +16,7 @@ import {BaseValidatorConfig} from './util';
 /**
  * Binds a validator to the given path that requires the value to be non-empty.
  * This function can only be called on any type of path.
- * In addition to binding a validator, this function adds `REQUIRED` metadata to the field.
+ * In addition to binding a validator, this function adds `REQUIRED` property to the field.
  *
  * @param path Path of the field to validate
  * @param config Optional, allows providing any of the following options:
@@ -35,16 +35,14 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
 ): void {
-  const REQUIRED_MEMO = MetadataKey.create<Signal<boolean>>();
+  const REQUIRED_MEMO = Property.create<Signal<boolean>>();
   const emptyPredicate =
     config?.emptyPredicate ?? ((value) => value === false || value == null || value === '');
 
-  setMetadata(path, REQUIRED_MEMO, (ctx) =>
-    computed(() => (config?.when ? config.when(ctx) : true)),
-  );
-  addToMetadata(path, REQUIRED, ({state}) => state.metadata(REQUIRED_MEMO)!());
+  property(path, REQUIRED_MEMO, (ctx) => computed(() => (config?.when ? config.when(ctx) : true)));
+  aggregateProperty(path, REQUIRED, ({state}) => state.property(REQUIRED_MEMO)!());
   validate(path, (ctx) => {
-    if (ctx.state.metadata(REQUIRED_MEMO)!() && emptyPredicate(ctx.value())) {
+    if (ctx.state.property(REQUIRED_MEMO)!() && emptyPredicate(ctx.value())) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {

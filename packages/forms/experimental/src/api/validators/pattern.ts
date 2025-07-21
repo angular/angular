@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {computed, Signal} from '@angular/core';
-import {addToMetadata, setMetadata, validate} from '../logic';
-import {MetadataKey, PATTERN} from '../metadata';
+import {aggregateProperty, property, validate} from '../logic';
+import {PATTERN, Property} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -36,14 +36,14 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   pattern: string | LogicFn<string | undefined, string | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const PATTERN_MEMO = MetadataKey.create<Signal<string | undefined>>();
+  const PATTERN_MEMO = Property.create<Signal<string | undefined>>();
 
-  setMetadata(path, PATTERN_MEMO, (ctx) =>
+  property(path, PATTERN_MEMO, (ctx) =>
     computed(() => (typeof pattern === 'string' ? pattern : pattern(ctx))),
   );
-  addToMetadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
+  aggregateProperty(path, PATTERN, ({state}) => state.property(PATTERN_MEMO)!());
   validate(path, (ctx) => {
-    const pattern = ctx.state.metadata(PATTERN_MEMO)!();
+    const pattern = ctx.state.property(PATTERN_MEMO)!();
     if (pattern === undefined) {
       return undefined;
     }

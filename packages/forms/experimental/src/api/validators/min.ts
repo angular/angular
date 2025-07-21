@@ -7,8 +7,8 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import {addToMetadata, setMetadata, validate} from '../logic';
-import {MetadataKey, MIN} from '../metadata';
+import {aggregateProperty, property, validate} from '../logic';
+import {MIN, Property} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -17,7 +17,7 @@ import {BaseValidatorConfig} from './util';
  * Binds a validator to the given path that requires the value to be greater than or equal to
  * the given `minValue`.
  * This function can only be called on number paths.
- * In addition to binding a validator, this function adds `MIN` metadata to the field.
+ * In addition to binding a validator, this function adds `MIN` property to the field.
  *
  * @param path Path of the field to validate
  * @param minValue The minimum value, or a LogicFn that returns the minimum value.
@@ -31,14 +31,14 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MIN_MEMO = MetadataKey.create<Signal<number | undefined>>();
+  const MIN_MEMO = Property.create<Signal<number | undefined>>();
 
-  setMetadata(path, MIN_MEMO, (ctx) =>
+  property(path, MIN_MEMO, (ctx) =>
     computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
   );
-  addToMetadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
+  aggregateProperty(path, MIN, ({state}) => state.property(MIN_MEMO)!());
   validate(path, (ctx) => {
-    const min = ctx.state.metadata(MIN_MEMO)!();
+    const min = ctx.state.property(MIN_MEMO)!();
     if (min === undefined || Number.isNaN(min)) {
       return undefined;
     }
