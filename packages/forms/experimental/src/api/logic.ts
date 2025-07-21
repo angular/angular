@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateProperty, Property} from '../api/metadata';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
+import {AggregateProperty, Property} from './property';
 import type {FieldContext, FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
 import {addDefaultField, ValidationError, WithField} from './validation_errors';
 

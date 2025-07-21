@@ -7,7 +7,7 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
-import {AggregateProperty, Property} from './metadata';
+import {AggregateProperty, Property} from './property';
 import {ValidationError, WithField} from './validation_errors';
 
 /**

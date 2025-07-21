@@ -9,7 +9,7 @@
 import {computed, resource, Signal, ɵisPromise} from '@angular/core';
 import {validateAsync} from './async';
 import {property, validateTree} from './logic';
-import {Property} from './metadata';
+import {Property} from './property';
 import {StandardSchemaV1} from './standard_schema_types';
 import {Field, FieldPath} from './types';
 import {StandardSchemaValidationError, ValidationError, WithField} from './validation_errors';

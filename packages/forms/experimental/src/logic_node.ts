@@ -7,7 +7,7 @@
  */
 
 import {untracked} from '@angular/core';
-import {AggregateProperty} from './api/metadata';
+import {AggregateProperty} from './api/property';
 import {type FieldContext, type FieldPath, type LogicFn} from './api/types';
 import {FieldNode} from './field/node';
 

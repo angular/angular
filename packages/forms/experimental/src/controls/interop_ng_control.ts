@@ -14,7 +14,7 @@ import {
   type ValidationErrors,
   type ValidatorFn,
 } from '@angular/forms';
-import {REQUIRED} from '../api/metadata';
+import {REQUIRED} from '../api/property';
 import type {FieldState} from '../api/types';
 
 export type InteropSharedKeys =

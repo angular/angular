@@ -7,7 +7,7 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import {AggregateProperty, Property} from '../api/metadata';
+import {AggregateProperty, Property} from '../api/property';
 import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 
