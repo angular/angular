@@ -150,6 +150,7 @@ export {
   ɵɵproperty,
   ɵɵProvidersFeature,
   ɵɵHostDirectivesFeature,
+  ɵɵAnimationsFeature,
   ɵɵpureFunction0,
   ɵɵpureFunction1,
   ɵɵpureFunction2,
@@ -301,3 +302,4 @@ export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker'
 export {generateStandaloneInDeclarationsError as ɵgenerateStandaloneInDeclarationsError} from './render3/jit/module';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
 export {DeferBlockData as ɵDeferBlockData} from './render3/util/defer';
+export {getAnimationElementRemovalRegistry as ɵgetAnimationElementRemovalRegistry} from './render3/state';

@@ -55,7 +55,6 @@ export {
   PLATFORM_ID,
   ANIMATION_MODULE_TYPE,
   CSP_NONCE,
-  ANIMATIONS_DISABLED,
 } from './application/application_tokens';
 export {
   APP_INITIALIZER,
