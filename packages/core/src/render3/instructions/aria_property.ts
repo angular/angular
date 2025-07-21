@@ -64,6 +64,12 @@ export function ɵɵariaProperty<T>(name: string, value: T): typeof ɵɵariaProp
  * For example, converts `ariaLabel` to `aria-label`.
  *
  * https://www.w3.org/TR/wai-aria-1.2/#accessibilityroleandproperties-correspondence
+ *
+ * This must be kept in sync with the the function of the same name in
+ * packages/compiler/src/template/pipeline/src/phases/reify.ts
+ *
+ * @param name A property name that starts with `aria`.
+ * @returns The corresponding attribute name.
  */
 function ariaAttrName(name: string): string {
   return name.charAt(ARIA_PREFIX.length) !== '-'

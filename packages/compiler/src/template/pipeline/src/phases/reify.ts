@@ -693,6 +693,12 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
  * For example, converts `ariaLabel` to `aria-label`.
  *
  * https://www.w3.org/TR/wai-aria-1.2/#accessibilityroleandproperties-correspondence
+ *
+ * This must be kept in sync with the the function of the same name in
+ * packages/core/src/render3/instructions/aria_property.ts.
+ *
+ * @param name A property name that starts with `aria`.
+ * @returns The corresponding attribute name.
  */
 function ariaAttrName(name: string): string {
   return name.charAt(ARIA_PREFIX.length) !== '-'
@@ -710,6 +716,15 @@ function isAriaProperty(name: string): boolean {
   return name.startsWith(ARIA_PREFIX) && name.length > ARIA_PREFIX.length;
 }
 
+/**
+ * Reifies a DOM property binding operation.
+ *
+ * This is an optimized version of {@link reifyProperty} that avoids unnecessarily trying to bind
+ * to directive inputs at runtime for views that don't import any directives.
+ *
+ * @param op A property binding operation.
+ * @returns A statement to update the property at runtime.
+ */
 function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
   return isAriaProperty(op.name)
     ? ng.attribute(ariaAttrName(op.name), op.expression, null, null, op.sourceSpan)
@@ -721,6 +736,15 @@ function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
       );
 }
 
+/**
+ * Reifies a property binding operation.
+ *
+ * The returned statement attempts to bind to directive inputs before falling back to a DOM
+ * property.
+ *
+ * @param op A property binding operation.
+ * @returns A statement to update the property at runtime.
+ */
 function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
   return isAriaProperty(op.name)
     ? ng.ariaProperty(op.name, op.expression, op.sourceSpan)

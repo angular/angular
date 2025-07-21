@@ -228,6 +228,39 @@ describe('property bindings', () => {
     });
   });
 
+  it('should no bind to ARIA properties if they correspond to inputs', () => {
+    @Component({
+      template: '',
+      selector: 'my-comp',
+    })
+    class MyComp {
+      @Input() ariaLabel?: string;
+    }
+
+    @Component({
+      template: '<my-comp [ariaLabel]="label"></my-comp>',
+      imports: [MyComp],
+    })
+    class App {
+      label = 'a';
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const myCompNode = fixture.debugElement.query(By.directive(MyComp));
+
+    fixture.componentInstance.label = 'a';
+    fixture.detectChanges();
+
+    expect(myCompNode.nativeElement.getAttribute('aria-label')).toBeFalsy();
+    expect(myCompNode.componentInstance.ariaLabel).toBe('a');
+
+    fixture.componentInstance.label = 'b';
+    fixture.detectChanges();
+
+    expect(myCompNode.nativeElement.getAttribute('aria-label')).toBeFalsy();
+    expect(myCompNode.componentInstance.ariaLabel).toBe('b');
+  });
+
   it(
     'should not bind to ARIA properties by their corresponding attribute names, if they ' +
       'correspond to inputs',
