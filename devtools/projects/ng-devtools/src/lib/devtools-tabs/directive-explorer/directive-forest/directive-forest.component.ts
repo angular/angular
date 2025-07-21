@@ -165,7 +165,6 @@ export class DirectiveForestComponent {
     this.populateParents(node.position);
     this.selectNode.emit(node.original);
     this.selectedNode.set(node);
-    this.currentlyMatchedIndex.set(-1);
   }
 
   clearSelectedNode(): void {
