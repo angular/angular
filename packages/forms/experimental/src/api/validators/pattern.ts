@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {addToMetadata, validate} from '../logic';
-import {PATTERN} from '../metadata';
+import {computed, Signal} from '@angular/core';
+import {addToMetadata, setMetadata, validate} from '../logic';
+import {MetadataKey, PATTERN} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -35,32 +36,25 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   pattern: string | LogicFn<string | undefined, string | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const reactivePatternValue = typeof pattern === 'string' ? () => pattern : pattern;
+  const PATTERN_MEMO = MetadataKey.create<Signal<string | undefined>>();
 
-  addToMetadata(path, PATTERN, (ctx) => {
-    const result = reactivePatternValue(ctx);
-    if (result === undefined) {
-      return undefined;
-    }
-    return result;
-  });
-
+  setMetadata(path, PATTERN_MEMO, (ctx) =>
+    computed(() => (typeof pattern === 'string' ? pattern : pattern(ctx))),
+  );
+  addToMetadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
   validate(path, (ctx) => {
-    const value = reactivePatternValue(ctx);
-
-    if (value === undefined) {
+    const pattern = ctx.state.metadata(PATTERN_MEMO)!();
+    if (pattern === undefined) {
       return undefined;
     }
-
-    const regex = strToRegexp(value);
+    const regex = strToRegexp(pattern);
     if (!regex.test(ctx.value())) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
-        return ValidationError.pattern(value);
+        return ValidationError.pattern(pattern);
       }
     }
-
     return undefined;
   });
 }
