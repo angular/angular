@@ -62,13 +62,6 @@
       "positional": 0
     },
     {
-      "name": "packages",
-      "type": "string",
-      "default": [],
-      "description": "The names of package(s) to update.",
-      "positional": 0
-    },
-    {
       "name": "to",
       "type": "string",
       "description": "Version up to which to apply migrations. Only available when a single package is updated, and only with 'migrate-only' option. Requires 'from' to be specified. Default to the installed version detected."
