@@ -4,14 +4,12 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/testing",
-    ],
     deps = [
         "//packages/common:common_rjs",
         "//packages/common/testing:testing_rjs",
         "//packages/common/upgrade:upgrade_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
         "//packages/upgrade/static:static_rjs",
     ],
 )

@@ -222,16 +222,16 @@ env_srcs = [
 ]
 
 env_deps = [
-    ":common_spec_env",
-    ":common_spec_srcs",
-    ":common_spec_util",
-    ":error_spec_srcs",
-    "//packages/zone.js/lib",
-    "@npm//@types/shelljs",
-    "@npm//@types/systemjs",
-    "@npm//rxjs",
-    "@npm//shelljs",
-    "@npm//systemjs",
+    ":common_spec_env_rjs",
+    ":common_spec_srcs_rjs",
+    ":common_spec_util_rjs",
+    ":error_spec_srcs_rjs",
+    "//packages/zone.js/lib:lib_rjs",
+    "//:node_modules/@types/shelljs",
+    "//:node_modules/@types/systemjs",
+    "//:node_modules/rxjs",
+    "//:node_modules/shelljs",
+    "//:node_modules/systemjs",
 ]
 
 env_entry_point = ":browser-env-setup.ts"
@@ -251,16 +251,16 @@ test_srcs = glob(
 ]
 
 test_deps = [
-    ":common_spec_env",
-    ":common_spec_srcs",
-    ":common_spec_util",
-    ":error_spec_srcs",
-    "//packages/zone.js/lib",
-    "@npm//@types/shelljs",
-    "@npm//@types/systemjs",
-    "@npm//rxjs",
-    "@npm//shelljs",
-    "@npm//systemjs",
+    ":common_spec_env_rjs",
+    ":common_spec_srcs_rjs",
+    ":common_spec_util_rjs",
+    ":error_spec_srcs_rjs",
+    "//packages/zone.js/lib:lib_rjs",
+    "//:node_modules/@types/shelljs",
+    "//:node_modules/@types/systemjs",
+    "//:node_modules/rxjs",
+    "//:node_modules/shelljs",
+    "//:node_modules/systemjs",
 ]
 
 test_entry_point = ":browser_entry_point.ts"
@@ -302,12 +302,12 @@ karma_test(
     ]},
     ci = False,
     env_deps = [
-        "//packages/zone.js/lib",
+        "//packages/zone.js/lib:lib_rjs",
     ],
     env_entry_point = ":browser_shadydom_setup.ts",
     env_srcs = ["browser_shadydom_setup.ts"],
     test_deps = [
-        "//packages/zone.js/lib",
+        "//packages/zone.js/lib:lib_rjs",
     ],
     test_entry_point = ":browser_shadydom_entry_point.ts",
     test_srcs = [
@@ -324,12 +324,12 @@ karma_test(
     ]},
     ci = False,
     env_deps = [
-        "//packages/zone.js/lib",
+        "//packages/zone.js/lib:lib_rjs",
     ],
     env_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_setup.ts",
     env_srcs = ["browser_disable_wrap_uncaught_promise_rejection_setup.ts"],
     test_deps = [
-        "//packages/zone.js/lib",
+        "//packages/zone.js/lib:lib_rjs",
     ],
     test_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_entry_point.ts",
     test_srcs = [

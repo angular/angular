@@ -10,13 +10,11 @@ ng_project(
             "src/**/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/common",
-        "//packages/common/http",
-    ],
     module_name = "angular-in-memory-web-api",
     deps = [
         "//:node_modules/rxjs",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
         "//packages/core:core_rjs",
     ],
 )

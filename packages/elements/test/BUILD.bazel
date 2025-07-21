@@ -4,17 +4,15 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/elements",
-        "//packages/platform-browser",
-        "//packages/platform-browser/testing",
-    ],
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/elements:elements_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
     ],
 )
 

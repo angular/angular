@@ -8,15 +8,12 @@ TEST_FILES = glob(
     exclude = ["authoring_test_compiler.ts"],
 )
 
-TEST_INTEROP_DEPS = [
-    "//packages/core",
-    "//packages/core/rxjs-interop",
-    "//packages/core/testing",
-    "//packages/platform-browser",
-    "//packages/core/primitives/signals",
-]
-
 TEST_DEPS = [
+    "//packages/core:core_rjs",
+    "//packages/core/rxjs-interop:rxjs-interop_rjs",
+    "//packages/core/testing:testing_rjs",
+    "//packages/platform-browser:platform-browser_rjs",
+    "//packages/core/primitives/signals:signals_rjs",
     "//:node_modules/rxjs",
 ]
 
@@ -24,15 +21,13 @@ ts_project(
     name = "test_compiler_lib",
     testonly = True,
     srcs = ["authoring_test_compiler.ts"],
-    interop_deps = [
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/imports",
-        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/transform/jit",
-    ],
     deps = [
         "//:node_modules/typescript",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli/src/ngtsc/imports:imports_rjs",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator:partial_evaluator_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/compiler-cli/src/ngtsc/transform/jit:jit_rjs",
     ],
 )
 
@@ -59,7 +54,6 @@ ts_project(
     name = "test_jit_lib",
     testonly = True,
     srcs = ["transformed_%s" % file for file in TEST_FILES],
-    interop_deps = TEST_INTEROP_DEPS,
     deps = TEST_DEPS,
 )
 
@@ -67,7 +61,6 @@ ng_project(
     name = "test_lib",
     testonly = True,
     srcs = TEST_FILES,
-    interop_deps = TEST_INTEROP_DEPS,
     deps = TEST_DEPS,
 )
 

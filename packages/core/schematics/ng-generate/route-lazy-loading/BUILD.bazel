@@ -16,15 +16,13 @@ copy_to_bin(
 ts_project(
     name = "route-lazy-loading",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/core/schematics/utils",
-    ],
     deps = [
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli/private:private_rjs",
+        "//packages/compiler-cli/src/ngtsc/annotations:annotations_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/core/schematics/utils:utils_rjs",
     ],
 )

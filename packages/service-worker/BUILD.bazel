@@ -21,11 +21,9 @@ ng_project(
             "src/**/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
         "//:node_modules/rxjs",
+        "//packages/core:core_rjs",
     ],
 )
 

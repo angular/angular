@@ -7,11 +7,9 @@ ng_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/platform-browser",
-    ],
     deps = [
         "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
         "//packages/router:router_rjs",
     ],
 )

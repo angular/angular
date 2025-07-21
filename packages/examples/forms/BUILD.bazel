@@ -10,14 +10,12 @@ ng_project(
         ["**/*.ts"],
         exclude = ["**/*_spec.ts"],
     ),
-    interop_deps = [
-        "//packages/platform-browser",
-    ],
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
         "//packages/core:core_rjs",
         "//packages/forms:forms_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
         "//packages/router:router_rjs",
     ],
 )
@@ -26,14 +24,12 @@ ts_project(
     name = "forms_e2e_tests_lib",
     testonly = True,
     srcs = glob(["**/e2e_test/*_spec.ts"]),
-    interop_deps = [
-        "//packages/private/testing",
-    ],
     tsconfig = "//packages/examples:tsconfig_e2e",
     deps = [
         "//:node_modules/@types/jasminewd2",
         "//:node_modules/protractor",
         "//packages/examples/test-utils:test-utils_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 

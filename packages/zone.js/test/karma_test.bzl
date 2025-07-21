@@ -7,7 +7,7 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
         name = name + "_env",
         testonly = True,
         srcs = env_srcs,
-        interop_deps = env_deps,
+        deps = env_deps,
     )
     rollup_bundle(
         name = name + "_env_rollup",
@@ -26,7 +26,7 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
         name = name + "_test",
         testonly = True,
         srcs = test_srcs,
-        interop_deps = test_deps,
+        deps = test_deps,
     )
     rollup_bundle(
         name = name + "_rollup",

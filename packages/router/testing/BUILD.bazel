@@ -8,12 +8,10 @@ exports_files(["package.json"])
 ng_project(
     name = "testing",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/common",
-        "//packages/common/testing",
-    ],
     deps = [
         "//:node_modules/rxjs",
+        "//packages/common:common_rjs",
+        "//packages/common/testing:testing_rjs",
         "//packages/core:core_rjs",
         "//packages/core/testing:testing_rjs",
         "//packages/router:router_rjs",

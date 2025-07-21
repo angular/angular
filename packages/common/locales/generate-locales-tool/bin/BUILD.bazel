@@ -13,11 +13,9 @@ BIN_ENTRYPOINTS = [
 ts_project(
     name = "bin",
     srcs = glob(["*.ts"]),
-    interop_deps = [
-        "//packages/common/locales/generate-locales-tool",
-    ],
     deps = [
         "//:node_modules/@types/node",
+        "//packages/common/locales/generate-locales-tool:generate-locales-tool_rjs",
     ],
 )
 

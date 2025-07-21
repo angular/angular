@@ -28,12 +28,10 @@ ng_project(
             "src/**/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/primitives/dom-navigation",
-    ],
     deps = [
         "//:node_modules/rxjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/dom-navigation:dom-navigation_rjs",
     ],
 )
 

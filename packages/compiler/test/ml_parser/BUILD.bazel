@@ -4,10 +4,10 @@ ts_project(
     name = "ml_parser_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages:types",
-        "//packages/compiler",
-        "//packages/compiler/test/ml_parser/util",
+    deps = [
+        "//packages:types_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler/test/ml_parser/util:util_rjs",
     ],
 )
 
