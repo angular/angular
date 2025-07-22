@@ -7,8 +7,9 @@
  */
 
 import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
-import type {SubmittedStatus} from '../api/types';
-import {stripField, WithField, type ValidationError} from '../api/validation_errors';
+import type {SubmittedStatus, TreeValidationResult} from '../api/types';
+import {stripField, type ValidationError} from '../api/validation_errors';
+import {isArray} from '../util/is_array';
 import type {FieldNode} from './node';
 
 /**
@@ -34,13 +35,8 @@ export class FieldSubmitState {
       : (this.node.structure.parent?.submitState.submittedStatus() ?? 'unsubmitted'),
   );
 
-  setServerErrors(
-    result:
-      | ValidationError
-      | WithField<ValidationError>
-      | (ValidationError | WithField<ValidationError>)[],
-  ) {
-    this.serverErrors.set(Array.isArray(result) ? result.map(stripField) : [stripField(result)]);
+  setServerErrors(result: Exclude<TreeValidationResult, false | null | undefined>) {
+    this.serverErrors.set(isArray(result) ? result.map(stripField) : [stripField(result)]);
   }
 
   reset(): void {

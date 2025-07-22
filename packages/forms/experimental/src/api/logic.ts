@@ -9,8 +9,16 @@
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {AggregateProperty, Property} from './property';
-import type {FieldContext, FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
-import {addDefaultField, ValidationError, WithField} from './validation_errors';
+import type {
+  FieldContext,
+  FieldPath,
+  LogicFn,
+  PathKind,
+  TreeValidationResultWithField,
+  TreeValidator,
+  Validator,
+} from './types';
+import {addDefaultField} from './validation_errors';
 
 /**
  * Adds logic to a field to conditionally disable it.
@@ -108,7 +116,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
     addDefaultField(logic(ctx), ctx.field);
 
   pathNode.logic.addSyncTreeErrorRule(
-    wrappedLogic as LogicFn<TValue, WithField<ValidationError>[]>,
+    wrappedLogic as LogicFn<TValue, TreeValidationResultWithField>,
   );
 }
 

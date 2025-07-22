@@ -19,6 +19,7 @@ import {DYNAMIC} from '../logic_node';
 import {LogicNode} from '../logic_node_2';
 import type {FieldPathNode} from '../path_node';
 import {deepSignal} from '../util/deep_signal';
+import {isArray} from '../util/is_array';
 import type {FormFieldManager} from './manager';
 import type {FieldNode} from './node';
 
@@ -87,7 +88,7 @@ export abstract class FieldNodeStructure {
       return undefined;
     }
 
-    if (Array.isArray(value)) {
+    if (isArray(value)) {
       const childValue = value[key];
       if (isObject(childValue) && childValue.hasOwnProperty(this.identitySymbol)) {
         // For arrays, we want to use the tracking identity of the value instead of the raw property
@@ -193,7 +194,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
         // shouldn't affect `keyInParent`. We currently mitigate this issue via `lastKnownKey`
         // which avoids a search.
         const parentValue = parent.structure.value();
-        if (!Array.isArray(parentValue)) {
+        if (!isArray(parentValue)) {
           // The parent is no longer an array?
           throw new Error(`RuntimeError: orphan field`);
         }
@@ -293,12 +294,12 @@ function makeChildrenMapSignal(
         // Non-object values have no children.
         return undefined;
       }
-      const isArray = Array.isArray(value);
+      const isValueArray = isArray(value);
 
       // Remove fields that have disappeared since the last time this map was computed.
       if (childrenMap !== undefined) {
         let oldKeys: Set<TrackingKey> | undefined = undefined;
-        if (isArray) {
+        if (isValueArray) {
           oldKeys = new Set(childrenMap.keys());
           for (let i = 0; i < value.length; i++) {
             const childValue = value[i] as unknown;
@@ -335,7 +336,7 @@ function makeChildrenMapSignal(
           continue;
         }
 
-        if (isArray && isObject(childValue)) {
+        if (isValueArray && isObject(childValue)) {
           // For object values in arrays, assign a synthetic identity instead.
           trackingId = (childValue[identitySymbol] as TrackingKey) ??= Symbol(
             ngDevMode ? `id:${globalId++}` : '',
@@ -351,7 +352,7 @@ function makeChildrenMapSignal(
         // Determine the logic for the field that we're defining.
         let childPath: FieldPathNode | undefined;
         let childLogic: LogicNode;
-        if (isArray) {
+        if (isValueArray) {
           // Fields for array elements have their logic defined by the `element` mechanism.
           // TODO: other dynamic data
           childPath = logicPath.getChild(DYNAMIC);

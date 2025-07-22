@@ -73,33 +73,65 @@ export interface DisabledReason {
  * 1. `undefined`, `null`, or `false` to indicate no errors.
  * 2. A single `ValidationError` to indicate an error on the field being validated.
  * 3. A list of `ValidationError` to indicate multiple errors on the field being validated.
+ *
+ * @template E the type of `ValidationError` (defaults to any `ValidationError`).
  */
-export type ValidationResult =
-  | readonly ValidationError[]
-  | ValidationError
+export type ValidationResult<E extends ValidationError = ValidationError> =
+  | readonly E[]
+  | E
   | false
   | null
   | undefined;
 
 /**
- * The result of running a tree validation function. The result may be `undefined` to indicate no
- * errors, a single `WithFiled<ValidationError>`, or a list of `WithField<ValidationError>` which
- * can be used to indicate multiple errors.
+ * The result of running a tree validation function. The result may be:
+ * 1. `undefined`, `null`, or `false` to indicate no errors.
+ * 2. A single `ValidationError` to indicate an error on the field being validated.
+ * 3. A single `ValidationError` with a field to indicate an error on the target field.
+ * 4. A list of `ValidationError` (potentially with a field) to indicate multiple errors.
+ *
+ * @template E the type of `ValidationError` (defaults to any `ValidationError`).
  */
-// TODO: Fix this. Should be `(ValidationError | WithField<ValidationError>)[]`
-export type TreeValidationResult =
-  | readonly WithField<ValidationError>[]
-  | WithField<ValidationError>
+export type TreeValidationResult<E extends ValidationError = ValidationError> =
+  | readonly (E | WithField<E>)[]
+  | E
+  | WithField<E>
   | false
   | null
   | undefined;
 
 /**
- * The result of running a tree validation function. The result may be `undefined` to indicate no
- * errors, a single `WithFiled<ValidationError>`, or a list of `WithField<ValidationError>` which
- * can be used to indicate multiple errors.
+ * The result of running an async validation function. The result may be:
+ * 1. `undefined`, `null`, or `false` to indicate no errors.
+ * 2. A single `ValidationError` to indicate an error on the field being validated.
+ * 3. A single `ValidationError` with a field to indicate an error on the target field.
+ * 4. A list of `ValidationError` (potentially with a field) to indicate multiple errors.
+ * 5. 'pending' if the validation is not yet resolved.
+ *
+ * @template E the type of `ValidationError` (defaults to any `ValidationError`).
  */
-export type AsyncValidationResult = TreeValidationResult | 'pending';
+export type AsyncValidationResult<E extends ValidationError = ValidationError> =
+  | TreeValidationResult<E>
+  | 'pending';
+
+/**
+ * The same as `TreeValidationResult`, except that any errors **must** specify a target field.
+ *
+ * @template E the type of `ValidationError` (defaults to any `ValidationError`).
+ */
+export type TreeValidationResultWithField<E extends ValidationError = ValidationError> =
+  | readonly WithField<E>[]
+  | WithField<E>
+  | false
+  | null
+  | undefined;
+
+/**
+ * The same as `AsyncValidationResult`, except that any errors **must** specify a target field.
+ *
+ * @template E the type of `ValidationError` (defaults to any `ValidationError`).
+ */
+export type AsyncValidationResultWithField = TreeValidationResultWithField | 'pending';
 
 /**
  * An object that represents a single field in a form. This includes both primitive value fields
