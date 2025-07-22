@@ -183,6 +183,20 @@ export class FieldNode implements FieldState<unknown> {
     this.nodeState.selfDirty.set(true);
   }
 
+  /**
+   * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
+   *
+   * Note this does not change the data model, which can be reset directly if desired.
+   */
+  reset(): void {
+    this.nodeState.selfTouched.set(false);
+    this.nodeState.selfDirty.set(false);
+
+    for (const child of this.structure.children()) {
+      child.reset();
+    }
+  }
+
   static newRoot<T>(
     formRoot: FormFieldManager,
     value: WritableSignal<T>,
