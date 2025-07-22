@@ -648,12 +648,8 @@ export class DataGroup {
           `DataGroup(${this.config.name}@${this.config.version}).detectStorageFull()`,
         );
       }
-    } catch (err) {
-      // Storage API call failed
-      this.debugHandler.log(
-        err as Error,
-        `DataGroup(${this.config.name}@${this.config.version}).detectStorageFull() - Storage detection failed`,
-      );
+    } catch {
+      //  Error estimating storage, possibly by unsupported browser.
     }
   }
 }
