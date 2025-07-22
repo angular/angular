@@ -193,6 +193,14 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Sets the dirty status of the field to `true`.
    */
   markAsDirty(): void;
+
+  /**
+   * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
+   *
+   * Note this does not change the data model, which can be reset directly if desired.
+   */
+  reset(): void;
+
   /**
    * Resets the `submittedStatus` of the field and all descendant fields to unsubmitted.
    */
