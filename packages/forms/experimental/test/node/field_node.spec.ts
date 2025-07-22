@@ -509,12 +509,12 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f().metadata(REQUIRED)()).toBe(true);
+      expect(f().property(REQUIRED)()).toBe(true);
       expect(f().valid()).toBe(false);
       expect(f().readonly()).toBe(false);
 
       isReadonly.set(true);
-      expect(f().metadata(REQUIRED)()).toBe(true);
+      expect(f().property(REQUIRED)()).toBe(true);
       expect(f().valid()).toBe(true);
       expect(f().readonly()).toBe(true);
     });
@@ -587,13 +587,13 @@ describe('FieldNode', () => {
 
       expect(f.first().errors()).toEqual([ValidationError.required()]);
       expect(f.first().valid()).toBe(false);
-      expect(f.first().metadata(REQUIRED)()).toBe(true);
+      expect(f.first().property(REQUIRED)()).toBe(true);
 
       f.first().value.set('Bob');
 
       expect(f.first().errors()).toEqual([]);
       expect(f.first().valid()).toBe(true);
-      expect(f.first().metadata(REQUIRED)()).toBe(true);
+      expect(f.first().property(REQUIRED)()).toBe(true);
     });
 
     it('should validate conditionally required field', () => {
@@ -609,19 +609,19 @@ describe('FieldNode', () => {
 
       expect(f.first().errors()).toEqual([]);
       expect(f.first().valid()).toBe(true);
-      expect(f.first().metadata(REQUIRED)()).toBe(false);
+      expect(f.first().property(REQUIRED)()).toBe(false);
 
       f.last().value.set('Loblaw');
 
       expect(f.first().errors()).toEqual([ValidationError.required()]);
       expect(f.first().valid()).toBe(false);
-      expect(f.first().metadata(REQUIRED)()).toBe(true);
+      expect(f.first().property(REQUIRED)()).toBe(true);
 
       f.first().value.set('Bob');
 
       expect(f.first().errors()).toEqual([]);
       expect(f.first().valid()).toBe(true);
-      expect(f.first().metadata(REQUIRED)()).toBe(true);
+      expect(f.first().property(REQUIRED)()).toBe(true);
     });
 
     it('should support custom empty predicate', () => {
@@ -634,11 +634,11 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.quantity().metadata(REQUIRED)()).toBe(true);
+      expect(f.quantity().property(REQUIRED)()).toBe(true);
       expect(f.quantity().errors()).toEqual([ValidationError.required()]);
 
       f.quantity().value.set(1);
-      expect(f.quantity().metadata(REQUIRED)()).toBe(true);
+      expect(f.quantity().property(REQUIRED)()).toBe(true);
       expect(f.quantity().errors()).toEqual([]);
     });
 
@@ -1061,11 +1061,11 @@ describe('FieldNode', () => {
         s,
         {injector: TestBed.inject(Injector)},
       );
-      expect(f.level().metadata(MIN)()).toBe(0);
-      expect(f.next.level().metadata(MIN)()).toBe(1);
-      expect(f.next.next.level().metadata(MIN)()).toBe(2);
-      expect(f.next.next.next.level().metadata(MIN)()).toBe(undefined);
-      expect(f.next.next.next.next.level().metadata(MIN)()).toBe(undefined);
+      expect(f.level().property(MIN)()).toBe(0);
+      expect(f.next.level().property(MIN)()).toBe(1);
+      expect(f.next.next.level().property(MIN)()).toBe(2);
+      expect(f.next.next.next.level().property(MIN)()).toBe(undefined);
+      expect(f.next.next.next.next.level().property(MIN)()).toBe(undefined);
     });
 
     it('should support recursive logic with arrays', () => {
