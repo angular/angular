@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {defineComputed} from '../data';
-import {metadata, validate} from '../logic';
-import {MIN} from '../metadata';
+import {computed} from '@angular/core';
+import {aggregateProperty, property, validate} from '../logic';
+import {MIN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -17,7 +17,7 @@ import {BaseValidatorConfig} from './util';
  * Binds a validator to the given path that requires the value to be greater than or equal to
  * the given `minValue`.
  * This function can only be called on number paths.
- * In addition to binding a validator, this function adds `MIN` metadata to the field.
+ * In addition to binding a validator, this function adds `MIN` property to the field.
  *
  * @param path Path of the field to validate
  * @param minValue The minimum value, or a LogicFn that returns the minimum value.
@@ -31,14 +31,12 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const reactiveMinValue = defineComputed(path, (ctx) =>
-    typeof minValue === 'number' ? minValue : minValue(ctx),
+  const MIN_MEMO = property(path, (ctx) =>
+    computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
   );
-
-  metadata(path, MIN, ({state}) => state.metadata(reactiveMinValue)!());
+  aggregateProperty(path, MIN, ({state}) => state.property(MIN_MEMO)!());
   validate(path, (ctx) => {
-    const min = ctx.state.metadata(reactiveMinValue)!();
-
+    const min = ctx.state.property(MIN_MEMO)!();
     if (min === undefined || Number.isNaN(min)) {
       return undefined;
     }
@@ -49,7 +47,6 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
         return ValidationError.min(min);
       }
     }
-
     return undefined;
   });
 }

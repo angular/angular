@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import {MetadataKey, ReactiveMetadataKey, StaticMetadataKey} from '../api/metadata';
+import {AggregateProperty, Property} from '../api/property';
 import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 
@@ -22,9 +22,8 @@ import {
 import {LogicNode} from '../logic_node_2';
 import {FieldPathNode} from '../path_node';
 import {FieldNodeContext} from './context';
-import {FieldDataState} from './data';
 import type {FormFieldManager} from './manager';
-import {FieldMetadataState} from './metadata';
+import {FieldPropertyState} from './property';
 import {FIELD_PROXY_HANDLER} from './proxy';
 import {FieldNodeState} from './state';
 import {FieldSubmitState} from './submit';
@@ -43,9 +42,8 @@ import {FieldValidationState} from './validation';
 export class FieldNode implements FieldState<unknown> {
   readonly structure: FieldNodeStructure;
   readonly validationState: FieldValidationState;
-  readonly dataState: FieldDataState;
+  readonly propertyState: FieldPropertyState;
   readonly nodeState: FieldNodeState;
-  readonly metadataState: FieldMetadataState;
   readonly submitState: FieldSubmitState;
 
   private _context: FieldContext<unknown> | undefined = undefined;
@@ -82,8 +80,7 @@ export class FieldNode implements FieldState<unknown> {
 
     this.validationState = new FieldValidationState(this);
     this.nodeState = new FieldNodeState(this);
-    this.dataState = new FieldDataState(this);
-    this.metadataState = new FieldMetadataState(this);
+    this.propertyState = new FieldPropertyState(this);
     this.submitState = new FieldSubmitState(this);
   }
 
@@ -151,15 +148,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.submitState.submittedStatus;
   }
 
-  metadata<M>(key: ReactiveMetadataKey<M>): Signal<M>;
-  metadata<M>(key: StaticMetadataKey<M>): M | undefined;
-  metadata<M>(key: MetadataKey<M>): Signal<M> | M | undefined {
-    if (key instanceof StaticMetadataKey) {
-      return this.dataState.get(key);
-    } else if (key instanceof ReactiveMetadataKey) {
-      return this.metadataState.get(key);
-    }
-    throw Error('Unrecognized MetadataKey type');
+  property<M>(prop: AggregateProperty<M, any>): Signal<M>;
+  property<M>(prop: Property<M>): M | undefined;
+  property<M>(prop: Property<M> | AggregateProperty<M, any>): Signal<M> | M | undefined {
+    return this.propertyState.get(prop);
   }
 
   /**

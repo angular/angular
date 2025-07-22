@@ -7,14 +7,19 @@
  */
 
 import {untracked} from '@angular/core';
-import {ReactiveMetadataKey} from './api/metadata';
+import {AggregateProperty} from './api/property';
 import {type FieldContext, type FieldPath, type LogicFn} from './api/types';
 import {FieldNode} from './field/node';
 
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
  */
-export const DYNAMIC: unique symbol = Symbol('DYNAMIC');
+export const DYNAMIC = Symbol('DYNAMIC');
+
+/**
+ * Represents a result that should be ignored because its predicate indicates it is not active.
+ */
+const IGNORED = Symbol('IGNORED');
 
 export interface Predicate {
   readonly fn: LogicFn<any, boolean>;
@@ -54,21 +59,21 @@ export interface DataDefinition {
 }
 
 export abstract class AbstractLogic<TReturn, TValue = TReturn> {
-  protected readonly fns: Array<LogicFn<any, TValue>> = [];
+  protected readonly fns: Array<LogicFn<any, TValue | typeof IGNORED>> = [];
 
   constructor(private predicates: ReadonlyArray<BoundPredicate>) {}
 
   abstract compute(arg: FieldContext<any>): TReturn;
 
-  abstract get defaultValue(): TValue;
+  abstract get defaultValue(): TReturn;
 
   push(logicFn: LogicFn<any, TValue>) {
-    this.fns.push(wrapWithPredicates(this.predicates, logicFn, this.defaultValue));
+    this.fns.push(wrapWithPredicates(this.predicates, logicFn));
   }
 
   mergeIn(other: AbstractLogic<TReturn, TValue>) {
     const fns = this.predicates
-      ? other.fns.map((fn) => wrapWithPredicates(this.predicates, fn, this.defaultValue))
+      ? other.fns.map((fn) => wrapWithPredicates(this.predicates, fn))
       : other.fns;
     this.fns.push(...fns);
   }
@@ -80,7 +85,10 @@ export class BooleanOrLogic extends AbstractLogic<boolean> {
   }
 
   override compute(arg: FieldContext<any>): boolean {
-    return this.fns.some((f) => f(arg));
+    return this.fns.some((f) => {
+      const result = f(arg);
+      return result && result !== IGNORED;
+    });
   }
 }
 
@@ -103,14 +111,14 @@ export class ArrayMergeIgnoreLogic<TElement, TIgnore = never> extends AbstractLo
   }
 
   override get defaultValue() {
-    return undefined;
+    return [];
   }
 
   override compute(arg: FieldContext<any>): readonly TElement[] {
     return this.fns.reduce((prev, f) => {
       const value = f(arg);
 
-      if (value === undefined) {
+      if (value === undefined || value === IGNORED) {
         return prev;
       } else if (Array.isArray(value)) {
         return [...prev, ...(this.ignore ? value.filter((e) => !this.ignore!(e)) : value)];
@@ -130,39 +138,41 @@ export class ArrayMergeLogic<TElement> extends ArrayMergeIgnoreLogic<TElement, n
   }
 }
 
-export class MetadataMergeLogic<T> extends AbstractLogic<T> {
+export class AggregatePropertyMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
   override get defaultValue() {
-    return this.key.getDefault();
+    return this.key.getInitial();
   }
 
   constructor(
     predicates: ReadonlyArray<BoundPredicate>,
-    private key: ReactiveMetadataKey<T>,
+    private key: AggregateProperty<TAcc, TItem>,
   ) {
     super(predicates);
   }
 
-  override compute(ctx: FieldContext<any>): T {
+  override compute(ctx: FieldContext<any>): TAcc {
     if (this.fns.length === 0) {
-      return this.key.getDefault();
+      return this.key.getInitial();
     }
-    let value = this.fns[0](ctx);
-    for (let i = 1; i < this.fns.length; i++) {
-      value = this.key.accumulate(value, this.fns[i](ctx));
+    let acc: TAcc = this.key.getInitial();
+    for (let i = 0; i < this.fns.length; i++) {
+      const item = this.fns[i](ctx);
+      if (item !== IGNORED) {
+        acc = this.key.reduce(acc, item);
+      }
     }
-    return value;
+    return acc;
   }
 }
 
 function wrapWithPredicates<TValue, TReturn>(
   predicates: ReadonlyArray<BoundPredicate>,
   logicFn: LogicFn<TValue, TReturn>,
-  defaultValue: TReturn,
-) {
+): LogicFn<TValue, TReturn | typeof IGNORED> {
   if (predicates.length === 0) {
     return logicFn;
   }
-  return (arg: FieldContext<any>): TReturn => {
+  return (arg: FieldContext<any>): TReturn | typeof IGNORED => {
     for (const predicate of predicates) {
       let predicateField = arg.stateOf(predicate.path) as FieldNode;
       // Check the depth of the current field vs the depth this predicate is supposed to be
@@ -176,7 +186,7 @@ function wrapWithPredicates<TValue, TReturn>(
       // If any of the predicates don't match, don't actually run the logic function, just return
       // the default value.
       if (!predicate.fn(predicateField.context)) {
-        return defaultValue;
+        return IGNORED;
       }
     }
     return logicFn(arg);

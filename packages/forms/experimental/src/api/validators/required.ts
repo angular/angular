@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {defineComputed} from '../data';
-import {metadata, validate} from '../logic';
-import {REQUIRED} from '../metadata';
+import {computed} from '@angular/core';
+import {aggregateProperty, property, validate} from '../logic';
+import {REQUIRED} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
@@ -16,7 +16,7 @@ import {BaseValidatorConfig} from './util';
 /**
  * Binds a validator to the given path that requires the value to be non-empty.
  * This function can only be called on any type of path.
- * In addition to binding a validator, this function adds `REQUIRED` metadata to the field.
+ * In addition to binding a validator, this function adds `REQUIRED` property to the field.
  *
  * @param path Path of the field to validate
  * @param config Optional, allows providing any of the following options:
@@ -37,11 +37,13 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
 ): void {
   const emptyPredicate =
     config?.emptyPredicate ?? ((value) => value === false || value == null || value === '');
-  const condition = defineComputed(path, (ctx) => (config?.when ? config.when(ctx) : true));
 
-  metadata(path, REQUIRED, ({state}) => state.metadata(condition)!());
+  const REQUIRED_MEMO = property(path, (ctx) =>
+    computed(() => (config?.when ? config.when(ctx) : true)),
+  );
+  aggregateProperty(path, REQUIRED, ({state}) => state.property(REQUIRED_MEMO)!());
   validate(path, (ctx) => {
-    if (ctx.state.metadata(condition)!() && emptyPredicate(ctx.value())) {
+    if (ctx.state.property(REQUIRED_MEMO)!() && emptyPredicate(ctx.value())) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {

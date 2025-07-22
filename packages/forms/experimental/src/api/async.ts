@@ -7,11 +7,11 @@
  */
 
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
-import {ResourceRef, Signal} from '@angular/core';
+import {computed, ResourceRef, Signal} from '@angular/core';
 import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
-import {defineResource} from './data';
+import {property} from './logic';
 import {FieldContext, FieldPath, PathKind, TreeValidationResult, ValidationResult} from './types';
 import {addDefaultField} from './validation_errors';
 
@@ -137,19 +137,19 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   assertPathIsCurrent(path);
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  const dataKey = defineResource(path, {
-    request: (ctx) => {
+  const RESOURCE = property(path, (ctx) => {
+    const params = computed(() => {
       const node = ctx.stateOf(path) as FieldNode;
       if (node.validationState.shouldSkipValidation() || !node.syncValid()) {
         return undefined;
       }
       return opts.params(ctx);
-    },
-    factory: opts.factory,
+    });
+    return opts.factory(params);
   });
 
   pathNode.logic.addAsyncErrorRule((ctx) => {
-    const res = ctx.state.metadata(dataKey)!;
+    const res = ctx.state.property(RESOURCE)!;
     switch (res.status()) {
       case 'idle':
         return undefined;

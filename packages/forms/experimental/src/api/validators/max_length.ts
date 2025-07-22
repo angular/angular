@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {defineComputed} from '../data';
-import {metadata, validate} from '../logic';
-import {MAX_LENGTH} from '../metadata';
+import {computed} from '@angular/core';
+import {aggregateProperty, property, validate} from '../logic';
+import {MAX_LENGTH} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
@@ -17,7 +17,7 @@ import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './uti
  * Binds a validator to the given path that requires the length of the value to be less than or
  * equal to the given `maxLength`.
  * This function can only be called on string or array paths.
- * In addition to binding a validator, this function adds `MAX_LENGTH` metadata to the field.
+ * In addition to binding a validator, this function adds `MAX_LENGTH` property to the field.
  *
  * @param path Path of the field to validate
  * @param maxLength The maximum length, or a LogicFn that returns the maximum length.
@@ -35,17 +35,15 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const reactiveMaxLength = defineComputed(path, (ctx) =>
-    typeof maxLength === 'number' ? maxLength : maxLength(ctx),
+  const MAX_LENGTH_MEMO = property(path, (ctx) =>
+    computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx))),
   );
-
-  metadata(path, MAX_LENGTH, ({state}) => state.metadata(reactiveMaxLength)!());
+  aggregateProperty(path, MAX_LENGTH, ({state}) => state.property(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
-    const maxLength = ctx.state.metadata(reactiveMaxLength)!();
+    const maxLength = ctx.state.property(MAX_LENGTH_MEMO)!();
     if (maxLength === undefined) {
       return undefined;
     }
-
     if (getLengthOrSize(ctx.value()) > maxLength) {
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
@@ -53,7 +51,6 @@ export function maxLength<
         return ValidationError.maxLength(maxLength);
       }
     }
-
     return undefined;
   });
 }

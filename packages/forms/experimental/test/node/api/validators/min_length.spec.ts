@@ -102,8 +102,8 @@ describe('minLength validator', () => {
     expect(f().errors()).toEqual([ValidationError.minLength(5)]);
   });
 
-  describe('metadata', () => {
-    it('stores the metadata on minLength', () => {
+  describe('custom properties', () => {
+    it('stores the MIN_LENGTH property on minLength', () => {
       const data = signal({text: 'ab'});
       const f = form(
         data,
@@ -120,7 +120,7 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().metadata(MIN_LENGTH)()).toBe(5);
+      expect(f.text().property(MIN_LENGTH)()).toBe(5);
     });
 
     it('merges two minLengths preferring the larger option', () => {
@@ -146,7 +146,7 @@ describe('minLength validator', () => {
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([]);
 
-      expect(f.text().metadata(MIN_LENGTH)()).toBe(10);
+      expect(f.text().property(MIN_LENGTH)()).toBe(10);
     });
 
     it('merges two minLengths _dynamically_ preferring the larger option', () => {
@@ -176,7 +176,7 @@ describe('minLength validator', () => {
       minLengthSignal.set(20);
 
       expect(f.text().errors()).toEqual([ValidationError.minLength(20)]);
-      expect(f.text().metadata(MIN_LENGTH)()).toBe(20);
+      expect(f.text().property(MIN_LENGTH)()).toBe(20);
     });
   });
 

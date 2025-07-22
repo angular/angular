@@ -86,8 +86,8 @@ describe('max validator', () => {
     expect(f.age().errors()).toEqual([]);
   });
 
-  describe('metadata', () => {
-    it('stores the metadata on max', () => {
+  describe('custom properties', () => {
+    it('stores the MAX property on max', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 6});
       const f = form(
         cat,
@@ -101,7 +101,7 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().metadata(MAX)()).toBe(5);
+      expect(f.age().property(MAX)()).toBe(5);
     });
 
     it('merges two maxes preferring the smaller option', () => {
@@ -122,7 +122,7 @@ describe('max validator', () => {
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([]);
 
-      expect(f.age().metadata(MAX)()).toBe(5);
+      expect(f.age().property(MAX)()).toBe(5);
     });
 
     it('merges two maxes _dynamically_ preferring the smaller option', () => {
@@ -144,12 +144,12 @@ describe('max validator', () => {
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([]);
 
-      expect(f.age().metadata(MAX)()).toBe(5);
+      expect(f.age().property(MAX)()).toBe(5);
 
       maxSignal.set(2);
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([ValidationError.max(2)]);
-      expect(f.age().metadata(MAX)()).toBe(2);
+      expect(f.age().property(MAX)()).toBe(2);
     });
 
     it('merges two maxes _dynamically_ ignores undefined', () => {

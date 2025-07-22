@@ -7,23 +7,23 @@
  */
 
 import {
+  AggregateProperty,
   AsyncValidationResult,
   DisabledReason,
   FieldContext,
   LogicFn,
-  ReactiveMetadataKey,
-  StaticMetadataKey,
+  Property,
   ValidationResult,
 } from '../public_api';
 import {ValidationError, WithField} from './api/validation_errors';
 import {setBoundPathDepthForResolution} from './field/context';
 import {
   AbstractLogic,
+  AggregatePropertyMergeLogic,
   ArrayMergeIgnoreLogic,
   ArrayMergeLogic,
   BooleanOrLogic,
   BoundPredicate,
-  MetadataMergeLogic,
   Predicate,
 } from './logic_node';
 
@@ -51,13 +51,13 @@ export abstract class AbstractLogicNodeBuilder {
   abstract addSyncTreeErrorRule(logic: LogicFn<any, WithField<ValidationError>[]>): void;
   /** Adds a rule for asynchronous validation errors for a field. */
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
-  /** Adds a rule to compute metadata for a field. */
-  abstract addMetadataRule<M>(key: ReactiveMetadataKey<M>, logic: LogicFn<any, M>): void;
-  /** Adds a factory function to produce a data value associated with a field. */
-  abstract addDataFactory<D>(
-    key: StaticMetadataKey<D>,
-    factory: (ctx: FieldContext<any>) => D,
+  /** Adds a rule to compute an aggregate property for a field. */
+  abstract addAggregatePropertyRule<M>(
+    key: AggregateProperty<unknown, M>,
+    logic: LogicFn<any, M>,
   ): void;
+  /** Adds a factory function to produce a data value associated with a field. */
+  abstract addPropertyFactory<D>(key: Property<D>, factory: (ctx: FieldContext<any>) => D): void;
   /**
    * Gets a builder for a child node associated with the given property key.
    * @param key The property key of the child.
@@ -127,15 +127,15 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addAsyncErrorRule(logic);
   }
 
-  override addMetadataRule<T>(key: ReactiveMetadataKey<T>, logic: LogicFn<any, T>): void {
-    this.getCurrent().addMetadataRule(key, logic);
+  override addAggregatePropertyRule<T>(
+    key: AggregateProperty<unknown, T>,
+    logic: LogicFn<any, T>,
+  ): void {
+    this.getCurrent().addAggregatePropertyRule(key, logic);
   }
 
-  override addDataFactory<D>(
-    key: StaticMetadataKey<D>,
-    factory: (ctx: FieldContext<any>) => D,
-  ): void {
-    this.getCurrent().addDataFactory(key, factory);
+  override addPropertyFactory<D>(key: Property<D>, factory: (ctx: FieldContext<any>) => D): void {
+    this.getCurrent().addPropertyFactory(key, factory);
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
@@ -240,15 +240,15 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addMetadataRule<T>(key: ReactiveMetadataKey<T>, logic: LogicFn<any, T>): void {
-    this.logic.getMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
+  override addAggregatePropertyRule<T>(
+    key: AggregateProperty<unknown, T>,
+    logic: LogicFn<any, T>,
+  ): void {
+    this.logic.getAggregateProperty(key).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addDataFactory<D>(
-    key: StaticMetadataKey<D>,
-    factory: (ctx: FieldContext<any>) => D,
-  ): void {
-    this.logic.addDataFactory(key, setBoundPathDepthForResolution(factory, this.depth));
+  override addPropertyFactory<D>(key: Property<D>, factory: (ctx: FieldContext<any>) => D): void {
+    this.logic.addPropertyFactory(key, setBoundPathDepthForResolution(factory, this.depth));
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
@@ -280,11 +280,14 @@ export class LogicContainer {
   readonly syncTreeErrors: ArrayMergeIgnoreLogic<WithField<ValidationError>, false | null>;
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
   readonly asyncErrors: ArrayMergeIgnoreLogic<WithField<ValidationError> | 'pending', false | null>;
-  /** A map of metadata keys to the `AbstractLogic` instances that compute their values. */
-  private readonly metadata = new Map<ReactiveMetadataKey<unknown>, AbstractLogic<unknown>>();
-  /** A map of data keys to the factory functions that create their values. */
-  private readonly dataFactories = new Map<
-    StaticMetadataKey<unknown>,
+  /** A map of aggregate properties to the `AbstractLogic` instances that compute their values. */
+  private readonly aggregateProperties = new Map<
+    AggregateProperty<unknown, unknown>,
+    AbstractLogic<unknown>
+  >();
+  /** A map of property keys to the factory functions that create their values. */
+  private readonly propertyFactories = new Map<
+    Property<unknown>,
     (ctx: FieldContext<unknown>) => unknown
   >();
 
@@ -306,58 +309,57 @@ export class LogicContainer {
   }
 
   /**
-   * Gets an iterable of [metadata key, metadata logic] pairs.
-   * @returns An iterable of metadata entries.
+   * Gets an iterable of [aggregate property, logic function] pairs.
+   * @returns An iterable of aggregate property entries.
    */
-  getMetadataEntries() {
-    return this.metadata.entries();
+  getAggregatePropertyEntries() {
+    return this.aggregateProperties.entries();
   }
 
   /**
-   * Gets an iterable of [data key, data factory function] pairs.
-   * @returns An iterable of data factory entries.
+   * Gets an iterable of [property, value factory function] pairs.
+   * @returns An iterable of property factory entries.
    */
-  getDataFactoryEntries() {
-    return this.dataFactories.entries();
+  getPropertyFactoryEntries() {
+    return this.propertyFactories.entries();
   }
 
   /**
    * Checks whether this logic container has any data factories associated with it.
    */
   hasData() {
-    return this.dataFactories.size > 0;
+    return this.propertyFactories.size > 0;
   }
 
   /**
-   * Retrieves or creates the `AbstractLogic` for a given metadata key.
-   * @param key The `ReactiveMetadataKey` for which to get the logic.
+   * Retrieves or creates the `AbstractLogic` for a given aggregate property.
+   * @param prop The `AggregateProperty` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
    */
-  getMetadata<T>(key: ReactiveMetadataKey<T>): AbstractLogic<T> {
-    if (!this.metadata.has(key as ReactiveMetadataKey<unknown>)) {
-      this.metadata.set(
-        key as ReactiveMetadataKey<unknown>,
-        new MetadataMergeLogic(this.predicates, key),
+  getAggregateProperty<T>(prop: AggregateProperty<unknown, T>): AbstractLogic<T> {
+    if (!this.aggregateProperties.has(prop as AggregateProperty<unknown, unknown>)) {
+      this.aggregateProperties.set(
+        prop as AggregateProperty<unknown, unknown>,
+        new AggregatePropertyMergeLogic(this.predicates, prop),
       );
     }
-    return this.metadata.get(key as ReactiveMetadataKey<unknown>)! as AbstractLogic<T>;
+    return this.aggregateProperties.get(
+      prop as AggregateProperty<unknown, unknown>,
+    )! as AbstractLogic<T>;
   }
 
   /**
    * Adds a data factory function for a given data key.
-   * @param key The `StaticMetadataKey` to associate the factory with.
+   * @param prop The `Property` to associate the factory with.
    * @param factory The factory function.
    * @throws If a factory is already defined for the given key.
    */
-  addDataFactory(
-    key: StaticMetadataKey<unknown>,
-    factory: (ctx: FieldContext<unknown>) => unknown,
-  ) {
-    if (this.dataFactories.has(key)) {
+  addPropertyFactory(prop: Property<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
+    if (this.propertyFactories.has(prop)) {
       // TODO: name of the key?
       throw new Error(`Can't define data twice for the same key`);
     }
-    this.dataFactories.set(key, factory);
+    this.propertyFactories.set(prop, factory);
   }
 
   /**
@@ -371,11 +373,11 @@ export class LogicContainer {
     this.syncErrors.mergeIn(other.syncErrors);
     this.syncTreeErrors.mergeIn(other.syncTreeErrors);
     this.asyncErrors.mergeIn(other.asyncErrors);
-    for (const [key, metadataLogic] of other.getMetadataEntries()) {
-      this.getMetadata(key).mergeIn(metadataLogic);
+    for (const [prop, propertyLogic] of other.getAggregatePropertyEntries()) {
+      this.getAggregateProperty(prop).mergeIn(propertyLogic);
     }
-    for (const [key, dataFactory] of other.getDataFactoryEntries()) {
-      this.addDataFactory(key, dataFactory);
+    for (const [prop, propertyFactory] of other.getPropertyFactoryEntries()) {
+      this.addPropertyFactory(prop, propertyFactory);
     }
   }
 }

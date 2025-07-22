@@ -8,8 +8,7 @@
 
 import {computed, resource, ɵisPromise} from '@angular/core';
 import {validateAsync} from './async';
-import {define} from './data';
-import {validateTree} from './logic';
+import {property, validateTree} from './logic';
 import {StandardSchemaV1} from './standard_schema_types';
 import {Field, FieldPath} from './types';
 import {StandardSchemaValidationError, ValidationError, WithField} from './validation_errors';
@@ -32,23 +31,21 @@ export function validateStandardSchema<TValue>(
   // handles the sync result, and the async validator handles the Promise.
   // We memoize the result of the validation function here, so that it is only run once for both
   // validators, it can then be passed through both sync & async validation.
-  const schemaResult = define(path, ({value}) => {
+  const VALIDATOR_MEMO = property(path, ({value}) => {
     return computed(() => schema['~standard'].validate(value()));
   });
-
   validateTree(path, ({state, fieldOf}) => {
     // Skip sync validation if the result is a Promise.
-    const result = state.metadata(schemaResult)!();
+    const result = state.property(VALIDATOR_MEMO)!();
     if (ɵisPromise(result)) {
       return [];
     }
     return result.issues?.map((issue) => standardIssueToFormTreeError(fieldOf(path), issue)) ?? [];
   });
-
   validateAsync(path, {
     params: ({state}) => {
       // Skip async validation if the result is *not* a Promise.
-      const result = state.metadata(schemaResult)!();
+      const result = state.property(VALIDATOR_MEMO)!();
       return ɵisPromise(result) ? result : undefined;
     },
     factory: (params) => {

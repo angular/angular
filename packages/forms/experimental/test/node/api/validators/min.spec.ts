@@ -86,8 +86,8 @@ describe('min validator', () => {
     expect(f.age().errors()).toEqual([]);
   });
 
-  describe('metadata', () => {
-    it('stores the metadata on min', () => {
+  describe('custom properties', () => {
+    it('stores the MIN property on min', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 3});
       const f = form(
         cat,
@@ -101,7 +101,7 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().metadata(MIN)()).toBe(5);
+      expect(f.age().property(MIN)()).toBe(5);
     });
 
     it('merges two mins preferring the larger option', () => {
@@ -122,7 +122,7 @@ describe('min validator', () => {
       f.age().value.set(15);
       expect(f.age().errors()).toEqual([]);
 
-      expect(f.age().metadata(MIN)()).toBe(10);
+      expect(f.age().property(MIN)()).toBe(10);
     });
 
     it('merges two mins _dynamically_ preferring the larger option', () => {
@@ -145,7 +145,7 @@ describe('min validator', () => {
       expect(f.age().errors()).toEqual([]);
       minSignal.set(30);
       expect(f.age().errors()).toEqual([ValidationError.min(30)]);
-      expect(f.age().metadata(MIN)()).toBe(30);
+      expect(f.age().property(MIN)()).toBe(30);
     });
 
     it('merges two mins _dynamically_ ignores undefined', () => {
