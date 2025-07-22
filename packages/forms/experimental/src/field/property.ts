@@ -35,14 +35,6 @@ export class FieldPropertyState {
     );
   }
 
-  private readonly dataMaps = computed(() => {
-    const maps = [this.propertyMap];
-    for (const child of this.node.structure.childrenMap()?.values() ?? []) {
-      maps.push(...child.propertyState.dataMaps());
-    }
-    return maps;
-  });
-
   get<T>(prop: Property<T> | AggregateProperty<T, unknown>): T | undefined | Signal<T> {
     if (prop instanceof Property) {
       return this.propertyMap.get(prop) as T | undefined;

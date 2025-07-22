@@ -134,21 +134,31 @@ export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind 
 }
 
 /**
- * Defines the value of a `Property` of a field.
+ * Defines the value of a `Property` for a given field.
  *
  * @param path The path to define the property for.
- * @param key  The property to define.
+ * @param prop  The property to define.
  * @param factory A factory function that creates the value for the property.
+ * @returns The given property
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
 ): Property<TData>;
+
+/**
+ * Creates a new `Property` and defines the value of the new property for the given field.
+ *
+ * @param path The path to define the property for.
+ * @param factory A factory function that creates the value for the property.
+ * @returns The newly created property
+ */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  key: Property<TData>,
+  prop: Property<TData>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
 ): Property<TData>;
+
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   ...rest:
@@ -156,6 +166,7 @@ export function property<TValue, TData, TPathKind extends PathKind = PathKind.Ro
     | [Property<TData>, (ctx: FieldContext<TValue, TPathKind>) => TData]
 ): Property<TData> {
   assertPathIsCurrent(path);
+
   let key: Property<TData>;
   let factory: (ctx: FieldContext<TValue, TPathKind>) => TData;
   if (rest.length === 2) {
