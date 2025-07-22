@@ -42,7 +42,7 @@
     "@xterm/addon-fit": "0.10.0",
     "@xterm/xterm": "5.5.0",
     "algoliasearch": "5.34.0",
-    "angular-split": "19.0.0",
+    "angular-split": "20.0.0",
     "diff": "8.0.2",
     "emoji-regex": "10.4.0",
     "fflate": "0.8.2",
