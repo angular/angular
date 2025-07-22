@@ -15,17 +15,38 @@ import {ValidationError, WithField} from './validation_errors';
  */
 declare const ɵɵTYPE: unique symbol;
 
+/**
+ * Creates a type based on the given type T, but with all readonly properties made writable.
+ * @template T The type to create a mutable version of.
+ */
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
 
+/**
+ * The kind of `FieldPath` (`Root`, `Child` of another `FieldPath`, or `Item` in a `FieldPath` array)
+ */
 export declare namespace PathKind {
+  /**
+   * The `PathKind` for a `FieldPath` that is at the root of its field tree.
+   */
   export interface Root {
+    /**
+     * The `ɵɵTYPE` is constructed to allow the `extends` clause on `Child` and `Item` to narrow the
+     * type. Another way to think about this is, if we have a function that expects to this kind of
+     * path, the `ɵɵTYPE` lists the kinds of path we are allowed to pas to it.
+     */
     [ɵɵTYPE]: 'root' | 'child' | 'item';
   }
+  /**
+   * The `PathKind` for a `FieldPath` that is a child of another `FieldPath`.
+   */
   export interface Child extends PathKind.Root {
     [ɵɵTYPE]: 'child' | 'item';
   }
+  /**
+   * The `PathKind` for a `FieldPath` that is an item in a `FieldPath` array.
+   */
   export interface Item extends PathKind.Child {
     [ɵɵTYPE]: 'item';
   }
@@ -33,19 +54,25 @@ export declare namespace PathKind {
 export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
 
 /**
- * Indicates whether the form is unsubmitted, submitted, or currently submitting.
+ * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
  */
 export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
 
+/**
+ * A reason for a field's disablement.
+ */
 export interface DisabledReason {
+  /** The field that is disabled. */
   readonly field: Field<unknown>;
+  /** The reason for the disablement. */
   readonly reason?: string;
 }
 
 /**
- * The result of running a validation function. The result may be `undefined` to indicate no errors,
- * a single `ValidationError`, or a list of `ValidationError` which can be used to indicate multiple
- * errors.
+ * The result of running a validation function. The result may be:
+ * 1. `undefined`, `null`, or `false` to indicate no errors.
+ * 2. A single `ValidationError` to indicate an error on the field being validated.
+ * 3. A list of `ValidationError` to indicate multiple errors on the field being validated.
  */
 export type ValidationResult =
   | readonly ValidationError[]
@@ -54,6 +81,12 @@ export type ValidationResult =
   | null
   | undefined;
 
+/**
+ * The result of running a tree validation function. The result may be `undefined` to indicate no
+ * errors, a single `WithFiled<ValidationError>`, or a list of `WithField<ValidationError>` which
+ * can be used to indicate multiple errors.
+ */
+// TODO: Fix this. Should be `(ValidationError | WithField<ValidationError>)[]`
 export type TreeValidationResult =
   | readonly WithField<ValidationError>[]
   | WithField<ValidationError>
@@ -61,6 +94,11 @@ export type TreeValidationResult =
   | null
   | undefined;
 
+/**
+ * The result of running a tree validation function. The result may be `undefined` to indicate no
+ * errors, a single `WithFiled<ValidationError>`, or a list of `WithField<ValidationError>` which
+ * can be used to indicate multiple errors.
+ */
 export type AsyncValidationResult = TreeValidationResult | 'pending';
 
 /**
@@ -83,6 +121,16 @@ export type Field<TValue, TKey extends string | number = string | number> = (() 
       ? {[K in keyof TValue]: MaybeField<TValue[K], string>}
       : unknown);
 
+/**
+ * Helper type for defining `Field`. Given a type `TValue` that may include `undefined`, it extracts
+ * the `undefined` outside the `Field` type.
+ *
+ * For example `MaybeField<{a: number} | undefined, TKey>` would be equivalent to
+ * `undefined | Field<{a: number}, TKey>`.
+ *
+ * @template TValue The type of the data which the field is wrapped around.
+ * @template TKey The type of the property key which this field resides under in its parent.
+ */
 export type MaybeField<T, TKey extends string | number = string | number> =
   | (T & undefined)
   | Field<Exclude<T, undefined>, TKey>;
@@ -154,7 +202,8 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly pending: Signal<boolean>;
   /**
-   * A signal indicating whether the field's value is currently valid.
+   * A signal indicating whether the field's value is currently valid according to its synchronous
+   * validators. (The field's asynchronous validators may still be pending or failing).
    */
   readonly syncValid: Signal<boolean>;
   /**
@@ -162,22 +211,16 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * being submitted.
    */
   readonly submittedStatus: Signal<SubmittedStatus>;
-
   /**
    * The property key in the parent field under which this field is stored. If the parent field is
    * array-valued, for example, this is the index of this field in that array.
-   *
-   * @throws if the field is no longer connected to its parent, or if it's the root field of the
-   * form (it has no parent).
    */
   readonly keyInParent: Signal<TKey>;
-
   /**
-   * Reads a aggregate property value from the field.
+   * Reads an aggregate property value from the field.
    * @param prop The property to read.
    */
   property<M>(prop: AggregateProperty<M, any>): Signal<M>;
-
   /**
    * Reads a property value from the field.
    * @param prop The property key to read.
@@ -188,7 +231,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Sets the touched status of the field to `true`.
    */
   markAsTouched(): void;
-
   /**
    * Sets the dirty status of the field to `true`.
    */
@@ -224,7 +266,9 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
     : {});
 
 /**
- * Defines logic for a form of type T.
+ * Defines logic for a form.
+ *
+ * @template TValue The type of data stored in the form that this schema is attached to.
  */
 export type Schema<in TValue> = {
   [ɵɵTYPE]: SchemaFn<TValue, PathKind.Root>;
@@ -232,6 +276,9 @@ export type Schema<in TValue> = {
 
 /**
  * Function that defines rules for a schema.
+ *
+ * @template TValue The type of data stored in the form that this schema function is attached to.
+ * @template TPathKind The kind of path this schema function can be bound to.
  */
 export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (
   p: FieldPath<TValue, TPathKind>,
@@ -239,6 +286,9 @@ export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (
 
 /**
  * A schema or schema definition function.
+ *
+ * @template TValue The type of data stored in the form that this schema function is attached to.
+ * @template TPathKind The kind of path this schema function can be bound to.
  */
 export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> =
   | Schema<TValue>
@@ -257,11 +307,11 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
 ) => TReturn;
 
 /**
- * A Validator is a function that
- *  takes a `logic argument` and returns a validation result.
+ * A function that takes the `FieldContext` for the field being validated and returns a
+ * `ValidationResult` indicating errors for the field.
  *
- *  @template TValue Value type
- *  @template TPathKind The kind of path being validated (root field, child field, or item of an array)
+ * @template TValue The type of value stored in the field being validated
+ * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
  */
 export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
@@ -269,12 +319,23 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
   TPathKind
 >;
 
+/**
+ * A function that takes the `FieldContext` for the field being validated and returns a
+ * `TreeValidationResult` indicating errors for the field and its sub-fields.
+ *
+ * @template TValue The type of value stored in the field being validated
+ * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
+ */
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
   TreeValidationResult,
   TPathKind
 >;
 
+/**
+ * Provides access to the state of the current field as well as functions that can be used to look
+ * up state of other fields based on a `FieldPath`.
+ */
 export type FieldContext<
   TValue,
   TPathKind extends PathKind = PathKind.Root,
@@ -284,19 +345,36 @@ export type FieldContext<
     ? ChildFieldContext<TValue>
     : RootFieldContext<TValue>;
 
+/**
+ * The base field context that is available for all fields.
+ */
 export interface RootFieldContext<TValue> {
+  /** A signal containing the value of the current field. */
   readonly value: Signal<TValue>;
+  /** The state of the current field. */
   readonly state: FieldState<TValue>;
+  /** The current field. */
   readonly field: Field<TValue>;
+  /** Gets the value of the field represented by the given path. */
   readonly valueOf: <P>(p: FieldPath<P>) => P;
+  /** Gets the state of the field represented by the given path. */
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
+  /** Gets the field represented by the given path. */
   readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
 }
 
+/**
+ * Field context that is available for all fields that are a child of another field.
+ */
 export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
+  /** The key of the current field in its parent field. */
   readonly key: Signal<string>;
 }
 
+/**
+ * Field context that is available for all fields that are an item in an array field.
+ */
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
+  /** The index of the current field in its parent field. */
   readonly index: Signal<number>;
 }
