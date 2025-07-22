@@ -1,0 +1,99 @@
+/* ProductCard Component Styles */
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+  background: #f9f9f9;
+}
+
+.price {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+.description {
+  color: #666;
+  margin: 8px 0;
+}
+
+.product-card button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #1976d2;
+  color: white;
+}
+
+.product-card button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* QuantitySelector Component Styles */
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.quantity {
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.quantity-selector button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.quantity-selector button:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* App Component Styles */
+.shopping-app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.cart-section {
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.cart-info {
+  margin: 16px 0;
+  padding: 16px;
+  background: #f0f8ff;
+  border-radius: 4px;
+}
+
+.shopping-app button {
+  margin-right: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #1976d2;
+  color: white;
+}
