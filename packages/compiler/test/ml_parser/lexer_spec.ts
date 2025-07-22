@@ -1965,6 +1965,107 @@ describe('HtmlLexer', () => {
         ['Unexpected character "EOF"', '0:8'],
       ]);
     });
+
+    it('should permit more characters in square-bracketed attributes', () => {
+      expect(tokenizeAndHumanizeParts('<foo [class.text-primary/80]="expr"/>')).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'foo'],
+        [TokenType.ATTR_NAME, '', '[class.text-primary/80]'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'expr'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+      expect(
+        tokenizeAndHumanizeParts('<foo [class.data-active:text-green-300/80]="expr"/>'),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'foo'],
+        [TokenType.ATTR_NAME, '', '[class.data-active:text-green-300/80]'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'expr'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts(`<foo [class.data-[size='large']:p-8] = "expr"/>`)).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'foo'],
+        [TokenType.ATTR_NAME, '', "[class.data-[size='large']:p-8]"],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'expr'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts(`<foo [class.data-[size='large']:p-8]/>`)).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'foo'],
+        [TokenType.ATTR_NAME, '', "[class.data-[size='large']:p-8]"],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+      expect(
+        tokenizeAndHumanizeParts(`<foo [class.data-[size='hello white space']]="expr"/>`),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'foo'],
+        [TokenType.ATTR_NAME, '', "[class.data-[size='hello white space']]"],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'expr'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+      expect(
+        tokenizeAndHumanizeParts(
+          `<foo [class.text-primary/80]="expr" ` +
+            `[class.data-active:text-green-300/80]="expr2" ` +
+            `[class.data-[size='large']:p-8] = "expr3" some-attr/>`,
+        ),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'foo'],
+        [TokenType.ATTR_NAME, '', '[class.text-primary/80]'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'expr'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_NAME, '', '[class.data-active:text-green-300/80]'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'expr2'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_NAME, '', `[class.data-[size='large']:p-8]`],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'expr3'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_NAME, '', `some-attr`],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should allow mismatched square brackets in attribute name', () => {
+      expect(tokenizeAndHumanizeParts(`<foo [class.a]b]c]="expr"/>`)).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'foo'],
+        [TokenType.ATTR_NAME, '', '[class.a]b]c]'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'expr'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts(`<foo [class.a[]][[]]b]][c]/>`)).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'foo'],
+        [TokenType.ATTR_NAME, '', '[class.a[]][[]]b]][c]'],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should stop permissive parsing of square brackets on new line', () => {
+      expect(tokenizeAndHumanizeParts(`<foo [class.text-\nprimary/80]="expr"/>`)).toEqual([
+        [TokenType.INCOMPLETE_TAG_OPEN, '', 'foo'],
+        [TokenType.ATTR_NAME, '', '[class.text-'],
+        [TokenType.ATTR_NAME, '', 'primary'],
+        [TokenType.TEXT, '80]="expr"/>'],
+        [TokenType.EOF],
+      ]);
+    });
   });
 
   describe('closing tags', () => {
