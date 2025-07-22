@@ -3,12 +3,20 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Signal, untracked, WritableSignal} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
 
+/**
+ * Creates a writable signal for a specific property on a source writeable signal.
+ * @param source A writeable signal to derive from
+ * @param prop A signal of a property key of the source value
+ * @returns A writeable signal for the given property of the source value.
+ * @template S The source value type
+ * @template K The key type for S
+ */
 export function deepSignal<S, K extends keyof S>(
   source: WritableSignal<S>,
   prop: Signal<K>,
@@ -19,7 +27,7 @@ export function deepSignal<S, K extends keyof S>(
 
   read[SIGNAL] = source[SIGNAL];
   read.set = (value: S[K]) => {
-    source.update((current) => valueForWrite(current, value, [prop()]) as S);
+    source.update((current) => valueForWrite(current, value, prop()) as S);
   };
 
   read.update = (fn: (current: S[K]) => S[K]) => {
@@ -30,21 +38,19 @@ export function deepSignal<S, K extends keyof S>(
   return read;
 }
 
-function valueForWrite(parentValue: unknown, leafValue: unknown, path: PropertyKey[]): unknown {
-  if (path.length === 0) {
-    return leafValue;
-  }
-
-  const prop = path.pop()!;
-  const oldChildValue = (parentValue as any)[prop];
-  const newChildValue = valueForWrite(oldChildValue, leafValue, path);
-
-  if (parentValue instanceof Array) {
-    parentValue = [...parentValue];
-    (parentValue as any)[prop] = newChildValue;
+/**
+ * Gets an updated root value to use when setting a value on a deepSignal with the given path.
+ * @param sourceValue The current value of the deepSignal's source.
+ * @param newPropValue The value being written to the deepSignal's property
+ * @param prop The deepSignal's property key
+ * @returns An updated value for the deepSignal's source
+ */
+function valueForWrite(sourceValue: unknown, newPropValue: unknown, prop: PropertyKey): unknown {
+  if (Array.isArray(sourceValue)) {
+    const newValue = [...sourceValue];
+    newValue[prop as number] = newPropValue;
+    return newValue;
   } else {
-    parentValue = {...(parentValue as object), [prop]: newChildValue};
+    return {...(sourceValue as object), [prop]: newPropValue};
   }
-
-  return parentValue;
 }
