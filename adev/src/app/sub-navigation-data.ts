@@ -643,6 +643,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'ai/develop-with-ai',
         contentPath: 'ai/develop-with-ai',
       },
+      {
+        label: 'Angular CLI MCP Server setup',
+        path: 'ai/mcp',
+        contentPath: 'ai/mcp-server-setup',
+      },
     ],
   },
   {
