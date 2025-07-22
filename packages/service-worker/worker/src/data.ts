@@ -292,8 +292,7 @@ export class DataGroup {
         err as Error,
         `DataGroup(${this.config.name}@${this.config.version}).syncLru()`,
       );
-      // TODO: Better detect/handle full storage; e.g. using
-      // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
+      await this.detectStorageFull();
     }
   }
 
@@ -486,8 +485,7 @@ export class DataGroup {
           `DataGroup(${this.config.name}@${this.config.version}).safeCacheResponse(${req.url}, status: ${res.status})`,
         );
 
-        // TODO: Better detect/handle full storage; e.g. using
-        // [navigator.storage](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorStorage/storage).
+        await this.detectStorageFull();
       }
     } catch {
       // Request failed
@@ -622,6 +620,36 @@ export class DataGroup {
         status: 504,
         statusText: 'Gateway Timeout',
       });
+    }
+  }
+
+  /**
+   * Detect if storage is full or approaching capacity.
+   * Returns true if storage is at or near capacity.
+   */
+  private async detectStorageFull() {
+    try {
+      const estimate = await navigator.storage.estimate();
+      const {quota, usage} = estimate;
+
+      // Handle cases where quota or usage might be undefined
+      if (typeof quota !== 'number' || typeof usage !== 'number') {
+        return;
+      }
+
+      // Consider storage "full" if usage is >= 95% of quota
+      // This provides a safety buffer before actual storage exhaustion
+      const usagePercentage = (usage / quota) * 100;
+      const isStorageFull = usagePercentage >= 95;
+
+      if (isStorageFull) {
+        this.debugHandler.log(
+          'Storage is full or nearly full',
+          `DataGroup(${this.config.name}@${this.config.version}).detectStorageFull()`,
+        );
+      }
+    } catch {
+      //  Error estimating storage, possibly by unsupported browser.
     }
   }
 }
