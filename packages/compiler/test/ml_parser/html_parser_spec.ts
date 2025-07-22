@@ -502,6 +502,25 @@ describe('HtmlParser', () => {
           ]);
         });
       });
+
+      it('should parse square-bracketed attributes more permissively', () => {
+        expect(
+          humanizeDom(
+            parser.parse(
+              `<foo [class.text-primary/80]="expr" ` +
+                `[class.data-active:text-green-300/80]="expr2" ` +
+                `[class.data-[size='large']:p-8] = "expr3" some-attr/>`,
+              'TestComp',
+            ),
+          ),
+        ).toEqual([
+          [html.Element, 'foo', 0, '#selfClosing'],
+          [html.Attribute, '[class.text-primary/80]', 'expr', ['expr']],
+          [html.Attribute, '[class.data-active:text-green-300/80]', 'expr2', ['expr2']],
+          [html.Attribute, "[class.data-[size='large']:p-8]", 'expr3', ['expr3']],
+          [html.Attribute, 'some-attr', ''],
+        ]);
+      });
     });
 
     describe('comments', () => {

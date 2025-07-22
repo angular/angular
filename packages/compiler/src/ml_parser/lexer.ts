@@ -962,6 +962,22 @@ class _Tokenizer {
         }
         return isNameEnd(code);
       };
+    } else if (attrNameStart === chars.$LBRACKET) {
+      let openBrackets = 0;
+
+      // Be more permissive for which characters are allowed inside square-bracketed attributes,
+      // because they usually end up being bound as attribute values. Some third-party packages
+      // like Tailwind take advantage of this.
+      nameEndPredicate = (code: number) => {
+        if (code === chars.$LBRACKET) {
+          openBrackets++;
+        } else if (code === chars.$RBRACKET) {
+          openBrackets--;
+        }
+        // Only check for name-ending characters if the brackets are balanced or mismatched.
+        // Also interrupt the matching on new lines.
+        return openBrackets <= 0 ? isNameEnd(code) : chars.isNewLine(code);
+      };
     } else {
       nameEndPredicate = isNameEnd;
     }

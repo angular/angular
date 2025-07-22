@@ -375,6 +375,20 @@ describe('R3 template transform', () => {
         ['BoundAttribute', BindingType.Style, 'someStyle', 'v'],
       ]);
     });
+
+    it('should parse class bindings with various characters', () => {
+      expectFromHtml(
+        `<foo [class.text-primary/80]="expr" ` +
+          `[class.data-active:text-green-300/80]="expr2" ` +
+          `[class.data-[size='large']:p-8] = "expr3" some-attr/>`,
+      ).toEqual([
+        ['Element', 'foo', '#selfClosing'],
+        ['TextAttribute', 'some-attr', ''],
+        ['BoundAttribute', BindingType.Class, 'text-primary/80', 'expr'],
+        ['BoundAttribute', BindingType.Class, 'data-active:text-green-300/80', 'expr2'],
+        ['BoundAttribute', BindingType.Class, `data-[size='large']:p-8`, 'expr3'],
+      ]);
+    });
   });
 
   describe('animation bindings', () => {
