@@ -26,6 +26,11 @@ Several editors, such as <a href="https://studio.firebase.google.com?utm_source=
 | VS Code | <a download=".instructions.md" href="/assets/context/guidelines.md" target="_blank">.instructions.md</a>  | <a href="https://code.visualstudio.com/docs/copilot/copilot-customization#_custom-instructions" target="_blank">Configure `.instructions.md`</a> |
 | Windsurf | <a download href="/assets/context/guidelines.md" target="_blank">guidelines.md</a>  | <a href="https://docs.windsurf.com/windsurf/cascade/memories#rules" target="_blank">Configure `guidelines.md`</a> |
 
+## Angular CLI MCP Server setup
+The Angular CLI includes an experimental [Model Context Protocol (MCP) server](https://modelcontextprotocol.io/) that allows AI assistants in your development environment to interact with the Angular CLI.
+
+[**Learn how to set up the Angular CLI MCP Server**](/ai/mcp)
+
 ## Providing Context with `llms.txt`
 `llms.txt` is a proposed standard for websites designed to help LLMs better understand and process their content. The Angular team has developed two versions of this file to help LLMs and tools that use LLMs for code generation to create better modern Angular code.
 
