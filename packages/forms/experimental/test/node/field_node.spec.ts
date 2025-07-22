@@ -38,18 +38,6 @@ interface TreeData {
 const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
 
 describe('FieldNode', () => {
-  it('is untouched initially', () => {
-    const f = form(
-      signal({
-        a: 1,
-        b: 2,
-      }),
-      noopSchema,
-      {injector: TestBed.inject(Injector)},
-    );
-    expect(f().touched()).toBe(false);
-  });
-
   it('can get a child of a key that exists', () => {
     const f = form(
       signal({
@@ -153,6 +141,16 @@ describe('FieldNode', () => {
 
       f().markAsDirty();
       expect(f().dirty()).toBe(true);
+    });
+
+    it('can be reset', () => {
+      const model = signal({a: 1, b: 2});
+      const f = form(model, noopSchema, {injector: TestBed.inject(Injector)});
+      f().markAsDirty();
+      expect(f().dirty()).toBe(true);
+
+      f().reset();
+      expect(f().dirty()).toBe(false);
     });
 
     it('propagates from the children', () => {
@@ -268,6 +266,16 @@ describe('FieldNode', () => {
       value.set({a: 2});
       expect(f().touched()).toBe(false);
       expect(f.b).toBeUndefined();
+    });
+
+    it('can be reset', () => {
+      const model = signal({a: 1, b: 2});
+      const f = form(model, noopSchema, {injector: TestBed.inject(Injector)});
+      f().markAsTouched();
+      expect(f().touched()).toBe(true);
+
+      f().reset();
+      expect(f().touched()).toBe(false);
     });
   });
 
@@ -1112,6 +1120,23 @@ describe('FieldNode', () => {
 
       data.set({tag: 'table', children: [{tag: 'tr', children: [{tag: 'td', children: []}]}]});
       expect(f().valid()).toBe(true);
+    });
+  });
+
+  describe('reset', () => {
+    it('should propagate to descendants', () => {
+      const model = signal({a: {b: 2}});
+      const f = form(model, noopSchema, {injector: TestBed.inject(Injector)});
+
+      f.a.b().markAsDirty();
+      expect(f().dirty()).toBe(true);
+      expect(f.a().dirty()).toBe(true);
+      expect(f.a.b().dirty()).toBe(true);
+
+      f().reset();
+      expect(f().dirty()).toBe(false);
+      expect(f.a().dirty()).toBe(false);
+      expect(f.a.b().dirty()).toBe(false);
     });
   });
 });
