@@ -42,9 +42,10 @@ import {
   getLoadedRoutes,
   getProvidersInjector,
 } from '../src/utils/config';
-import {timeout} from './helpers';
+import {timeout, useAutoTick} from './helpers';
 
 describe('RouterPreloader', () => {
+  useAutoTick();
   @Component({
     template: '',
     standalone: false,
