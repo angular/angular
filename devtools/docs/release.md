@@ -22,6 +22,13 @@ Bump the version numbers listed in
 [`manifest.chrome.json`](/devtools/projects/shell-browser/src/manifest/manifest.chrome.json)
 and [`manifest.firefox.json`](/devtools/projects/shell-browser/src/manifest/manifest.firefox.json).
 
+While technically optional, it's recommended to clean up potential artifacts from previous releases:
+
+```shell
+rm -f ~/devtools-chrome.zip ~/devtools-firefox.zip ~/angular-source.zip
+git branch -D devtools-release
+```
+
 ## 2. Commit and merge
 
 Commit the version bump:
@@ -30,6 +37,8 @@ Commit the version bump:
 git checkout -b devtools-release
 git add . && git commit -m "release: bump Angular DevTools version to ${VERSION}"
 git push -u origin devtools-release
+# Alternatively, if there might be a pre-existing branch from a previous release:
+git push -u origin devtools-release --force-with-lease
 ```
 
 Then create and merge a PR targeting `minor` with this change. Merging this PR does not
