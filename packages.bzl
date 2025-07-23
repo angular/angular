@@ -50,7 +50,7 @@ UNPUBLISHED_PACKAGES = [
 ALL_PACKAGES = PUBLISHED_PACKAGES + UNPUBLISHED_PACKAGES
 
 # Packages used by integration tests
-INTEGRATION_PACKAGES = _exclude_pkgs(PUBLISHED_PACKAGES, "angular-in-memory-web-api")
+INTEGRATION_PACKAGES = _exclude_pkgs(PUBLISHED_PACKAGES, "zone.js", "angular-in-memory-web-api")
 
 # Package names under //packages that have `files_for_docgen` targets
 DOCS_ENTRYPOINTS = [
