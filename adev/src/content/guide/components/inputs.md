@@ -349,9 +349,10 @@ export class CustomSlider {
     return this.internalValue;
   }
 
-set value(newValue: number) { this.internalValue = newValue; }
+  set value(newValue: number) { this.internalValue = newValue; }
 
-private internalValue = 0; }
+  private internalValue = 0;
+}
 </docs-code>
 
 You can even create a _write-only_ input by only defining a public setter:
@@ -363,7 +364,8 @@ export class CustomSlider {
     this.internalValue = newValue;
   }
 
-private internalValue = 0; }
+  private internalValue = 0;
+}
 </docs-code>
 
 **Prefer using input transforms instead of getters and setters** if possible.
