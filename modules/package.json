@@ -24,6 +24,6 @@
     "source-map": "0.7.6",
     "tslib": "2.8.1",
     "yargs": "18.0.0",
-    "zone.js": "workspace:*"
+    "zone.js": "0.15.1"
   }
 }

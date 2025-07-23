@@ -25,6 +25,7 @@ NPM_PACKAGE_ARCHIVES = [
     "@types/jasmine",
     "@types/jasminewd2",
     "@types/node",
+    "zone.js",
 ]
 
 def npm_package_archive_label(package_name):
