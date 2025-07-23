@@ -21,5 +21,4 @@ packages:
   - packages/elements/
   - packages/benchpress/
   - packages/upgrade/
-  - packages/zone.js/
   - tools/bazel/rules_angular_store/
