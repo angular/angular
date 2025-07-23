@@ -1,3 +1,16 @@
+<a name="20.1.3"></a>
+# 20.1.3 (2025-07-23)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2c522efbe5](https://github.com/angular/angular/commit/2c522efbe500e7c6c9929ce76df435b3dae49c84) | fix | fix change tracking for Resource#hasValue ([#62595](https://github.com/angular/angular/pull/62595)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2fd1f7beb5](https://github.com/angular/angular/commit/2fd1f7beb5e524aea8dcb24c5b87cb81689363ba) | fix | resolve component resources before bootstrapping in JIT mode ([#62758](https://github.com/angular/angular/pull/62758)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.2"></a>
 # 20.1.2 (2025-07-17)
 ### compiler
