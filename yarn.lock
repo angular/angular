@@ -43,121 +43,121 @@
   resolved "https://registry.yarnpkg.com/@actions/io/-/io-1.1.3.tgz#4cdb6254da7962b07473ff5c335f3da485d94d71"
   integrity sha512-wi9JjgKLYS7U/z8PPbco+PvTb/nRWjeoFlJ1Qer83k/3C5PHQi28hiVdeE2kHXmIL99mQFawx8qt/JPjZilJ8Q==
 
-"@algolia/client-abtesting@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/client-abtesting/-/client-abtesting-5.32.0.tgz#b9ce496665c5385ef09d2297e280381c78598e9d"
-  integrity sha512-HG/6Eib6DnJYm/B2ijWFXr4txca/YOuA4K7AsEU0JBrOZSB+RU7oeDyNBPi3c0v0UDDqlkBqM3vBU/auwZlglA==
+"@algolia/client-abtesting@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-abtesting/-/client-abtesting-5.34.0.tgz#1b7162c76cb77179a114d34efd76b0078ba2cab3"
+  integrity sha512-d6ardhDtQsnMpyr/rPrS3YuIE9NYpY4rftkC7Ap9tyuhZ/+V3E/LH+9uEewPguKzVqduApdwJzYq2k+vAXVEbQ==
   dependencies:
-    "@algolia/client-common" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
-"@algolia/client-analytics@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/client-analytics/-/client-analytics-5.32.0.tgz#844ae80626bdaa1b5a1750b538db585734ec70ee"
-  integrity sha512-8Y9MLU72WFQOW3HArYv16+Wvm6eGmsqbxxM1qxtm0hvSASJbxCm+zQAZe5stqysTlcWo4BJ82KEH1PfgHbJAmQ==
+"@algolia/client-analytics@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-analytics/-/client-analytics-5.34.0.tgz#1eb5c5cfdf4be62f5a71600c9e04e71d7a742dc5"
+  integrity sha512-WXIByjHNA106JO1Dj6b4viSX/yMN3oIB4qXr2MmyEmNq0MgfuPfPw8ayLRIZPa9Dp27hvM3G8MWJ4RG978HYFw==
   dependencies:
-    "@algolia/client-common" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
-"@algolia/client-common@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/client-common/-/client-common-5.32.0.tgz#468b36d0ee7c9c64bafc62099475a1889d032196"
-  integrity sha512-w8L+rgyXMCPBKmEdOT+RfgMrF0mT6HK60vPYWLz8DBs/P7yFdGo7urn99XCJvVLMSKXrIbZ2FMZ/i50nZTXnuQ==
+"@algolia/client-common@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-common/-/client-common-5.34.0.tgz#c617f62d73325f2c61bf5ee1c122f385f66fc117"
+  integrity sha512-JeN1XJLZIkkv6yK0KT93CIXXk+cDPUGNg5xeH4fN9ZykYFDWYRyqgaDo+qvg4RXC3WWkdQ+hogQuuCk4Y3Eotw==
 
-"@algolia/client-insights@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/client-insights/-/client-insights-5.32.0.tgz#18c4011a782b8ab8bb73af5afbc8aca1a16474d7"
-  integrity sha512-AdWfynhUeX7jz/LTiFU3wwzJembTbdLkQIOLs4n7PyBuxZ3jz4azV1CWbIP8AjUOFmul6uXbmYza+KqyS5CzOA==
+"@algolia/client-insights@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-insights/-/client-insights-5.34.0.tgz#5623db7c926e1e600dd5b8e6f76ab703b8920eb7"
+  integrity sha512-gdFlcQa+TWXJUsihHDlreFWniKPFIQ15i5oynCY4m9K3DCex5g5cVj9VG4Hsquxf2t6Y0yv8w6MvVTGDO8oRLw==
   dependencies:
-    "@algolia/client-common" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
-"@algolia/client-personalization@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/client-personalization/-/client-personalization-5.32.0.tgz#3b3fd95f8c437ed5becfa4ec97f3c3b8396d5a20"
-  integrity sha512-bTupJY4xzGZYI4cEQcPlSjjIEzMvv80h7zXGrXY1Y0KC/n/SLiMv84v7Uy+B6AG1Kiy9FQm2ADChBLo1uEhGtQ==
+"@algolia/client-personalization@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-personalization/-/client-personalization-5.34.0.tgz#e9e8d8af7ff74ab1c72fed259da0c916ada88719"
+  integrity sha512-g91NHhIZDkh1IUeNtsUd8V/ZxuBc2ByOfDqhCkoQY3Z/mZszhpn3Czn6AR5pE81fx793vMaiOZvQVB5QttArkQ==
   dependencies:
-    "@algolia/client-common" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
-"@algolia/client-query-suggestions@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/client-query-suggestions/-/client-query-suggestions-5.32.0.tgz#4582f47f120da89029d3511818342c0a90a22f62"
-  integrity sha512-if+YTJw1G3nDKL2omSBjQltCHUQzbaHADkcPQrGFnIGhVyHU3Dzq4g46uEv8mrL5sxL8FjiS9LvekeUlL2NRqw==
+"@algolia/client-query-suggestions@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-query-suggestions/-/client-query-suggestions-5.34.0.tgz#50fdd06c47d949c315590806dba33b549e300365"
+  integrity sha512-cvRApDfFrlJ3Vcn37U4Nd/7S6T8cx7FW3mVLJPqkkzixv8DQ/yV+x4VLirxOtGDdq3KohcIbIGWbg1QuyOZRvQ==
   dependencies:
-    "@algolia/client-common" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
-"@algolia/client-search@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/client-search/-/client-search-5.32.0.tgz#0e3b4775bf98e9215b683d598d0fce2d94b7b062"
-  integrity sha512-kmK5nVkKb4DSUgwbveMKe4X3xHdMsPsOVJeEzBvFJ+oS7CkBPmpfHAEq+CcmiPJs20YMv6yVtUT9yPWL5WgAhg==
+"@algolia/client-search@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/client-search/-/client-search-5.34.0.tgz#44867a0b0be7103d4d72601b7dd534bad6fe6d6d"
+  integrity sha512-m9tK4IqJmn+flEPRtuxuHgiHmrKV0su5fuVwVpq8/es4DMjWMgX1a7Lg1PktvO8AbKaTp9kTtBAPnwXpuCwmEg==
   dependencies:
-    "@algolia/client-common" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
-"@algolia/ingestion@1.32.0":
-  version "1.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/ingestion/-/ingestion-1.32.0.tgz#4ab08b4c72205c8727dfafeefc4651a07ea2ed9d"
-  integrity sha512-PZTqjJbx+fmPuT2ud1n4vYDSF1yrT//vOGI9HNYKNA0PM0xGUBWigf5gRivHsXa3oBnUlTyHV9j7Kqx5BHbVHQ==
+"@algolia/ingestion@1.34.0":
+  version "1.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/ingestion/-/ingestion-1.34.0.tgz#393e20c4948f304349230de7cdfd4be5ce6efe93"
+  integrity sha512-2rxy4XoeRtIpzxEh5u5UgDC5HY4XbNdjzNgFx1eDrfFkSHpEVjirtLhISMy2N5uSFqYu1uUby5/NC1Soq8J7iw==
   dependencies:
-    "@algolia/client-common" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
-"@algolia/monitoring@1.32.0":
-  version "1.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/monitoring/-/monitoring-1.32.0.tgz#6c9343081184e40c3bf0a4c01b96ac3d8c0c2190"
-  integrity sha512-kYYoOGjvNQAmHDS1v5sBj+0uEL9RzYqH/TAdq8wmcV+/22weKt/fjh+6LfiqkS1SCZFYYrwGnirrUhUM36lBIQ==
+"@algolia/monitoring@1.34.0":
+  version "1.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/monitoring/-/monitoring-1.34.0.tgz#f163560f660195e028b02a81e4bc3475cf001225"
+  integrity sha512-OJiDhlJX8ZdWAndc50Z6aUEW/YmnhFK2ul3rahMw5/c9Damh7+oY9SufoK2LimJejy+65Qka06YPG29v2G/vww==
   dependencies:
-    "@algolia/client-common" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
-"@algolia/recommend@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/recommend/-/recommend-5.32.0.tgz#fb508fc35bc0ad2f549fe520e4961733081f334c"
-  integrity sha512-jyIBLdskjPAL7T1g57UMfUNx+PzvYbxKslwRUKBrBA6sNEsYCFdxJAtZSLUMmw6MC98RDt4ksmEl5zVMT5bsuw==
+"@algolia/recommend@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/recommend/-/recommend-5.34.0.tgz#5adec4b49c32612309204e9f17f9180c6e4e1da9"
+  integrity sha512-fzNQZAdVxu/Gnbavy8KW5gurApwdYcPW6+pjO7Pw8V5drCR3eSqnOxSvp79rhscDX8ezwqMqqK4F3Hsq+KpRzg==
   dependencies:
-    "@algolia/client-common" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
-"@algolia/requester-browser-xhr@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/requester-browser-xhr/-/requester-browser-xhr-5.32.0.tgz#17617ec3b1ec304f9ff43f7eee482766aa7b49e0"
-  integrity sha512-eDp14z92Gt6JlFgiexImcWWH+Lk07s/FtxcoDaGrE4UVBgpwqOO6AfQM6dXh1pvHxlDFbMJihHc/vj3gBhPjqQ==
+"@algolia/requester-browser-xhr@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/requester-browser-xhr/-/requester-browser-xhr-5.34.0.tgz#3882e55907d6a3cf7160aef5b6743be398b88c57"
+  integrity sha512-gEI0xjzA/xvMpEdYmgQnf6AQKllhgKRtnEWmwDrnct+YPIruEHlx1dd7nRJTy/33MiYcCxkB4khXpNrHuqgp3Q==
   dependencies:
-    "@algolia/client-common" "5.32.0"
+    "@algolia/client-common" "5.34.0"
 
-"@algolia/requester-fetch@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/requester-fetch/-/requester-fetch-5.32.0.tgz#4d388574c0cce3edcd430d915c136d94c6ea0d4b"
-  integrity sha512-rnWVglh/K75hnaLbwSc2t7gCkbq1ldbPgeIKDUiEJxZ4mlguFgcltWjzpDQ/t1LQgxk9HdIFcQfM17Hid3aQ6Q==
+"@algolia/requester-fetch@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/requester-fetch/-/requester-fetch-5.34.0.tgz#bda378f9e5d70d7516d15478a5a7123eaf62afb0"
+  integrity sha512-5SwGOttpbACT4jXzfSJ3mnTcF46SVNSnZ1JjxC3qBa3qKi4U0CJGzuVVy3L798u8dG5H0SZ2MAB5v7180Gnqew==
   dependencies:
-    "@algolia/client-common" "5.32.0"
+    "@algolia/client-common" "5.34.0"
 
-"@algolia/requester-node-http@5.32.0":
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/@algolia/requester-node-http/-/requester-node-http-5.32.0.tgz#ef7d878e62c30d97e7588ad05752bb080f52a90e"
-  integrity sha512-LbzQ04+VLkzXY4LuOzgyjqEv/46Gwrk55PldaglMJ4i4eDXSRXGKkwJpXFwsoU+c1HMQlHIyjJBhrfsfdyRmyQ==
+"@algolia/requester-node-http@5.34.0":
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/@algolia/requester-node-http/-/requester-node-http-5.34.0.tgz#047bf7f7027c2d94752da55d60d2a3f6d38d12c3"
+  integrity sha512-409XlyIyEXrxyGjWxd0q5RASizHSRVUU0AXPCEdqnbcGEzbCgL1n7oYI8YxzE/RqZLha+PNwWCcTVn7EE5tyyQ==
   dependencies:
-    "@algolia/client-common" "5.32.0"
+    "@algolia/client-common" "5.34.0"
 
 "@ampproject/remapping@2.3.0", "@ampproject/remapping@^2.2.0":
   version "2.3.0"
@@ -167,35 +167,35 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@angular-devkit/architect-cli@0.2002.0-next.0":
-  version "0.2002.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect-cli/-/architect-cli-0.2002.0-next.0.tgz#b379f982ee3e1114d61fb610a85f5e5cfc728816"
-  integrity sha512-IsVotH1Z0GJl4r48G1PwU3RLEp6/hBZlxfCRAzOPMK23rcz2Tdl2e676b09KV1k5/lp8JveTcM1D0Fv5VJENPg==
+"@angular-devkit/architect-cli@0.2002.0-next.1":
+  version "0.2002.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect-cli/-/architect-cli-0.2002.0-next.1.tgz#3a9f8d027f834da875dd26a0daf2e47487f90078"
+  integrity sha512-ck9LgVQaSone/fNMhu3aNcrGTP1wGJc/PxLEpEjpO6v9nT57wsbPyPIRVx3/VsRqyhO2FfM8FsxS3TW+3uUUpQ==
   dependencies:
-    "@angular-devkit/architect" "0.2002.0-next.0"
-    "@angular-devkit/core" "20.2.0-next.0"
+    "@angular-devkit/architect" "0.2002.0-next.1"
+    "@angular-devkit/core" "20.2.0-next.1"
     ansi-colors "4.1.3"
     progress "2.0.3"
     yargs-parser "22.0.0"
 
-"@angular-devkit/architect@0.2002.0-next.0":
-  version "0.2002.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.2002.0-next.0.tgz#497a6c72f462ca96f182c99218445b4a5d4e3bfc"
-  integrity sha512-TpA0Xnj66HGmBAo0vbajDlvTyB4WsTJwMtmY5QodVlXf51xKUrR1Ac0r8/lN8nCON7QG9n10s5iyHfYF+AISqA==
+"@angular-devkit/architect@0.2002.0-next.1":
+  version "0.2002.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.2002.0-next.1.tgz#97c2fff1cf2d0d94151df660c3390bec189cd837"
+  integrity sha512-cbcCcXWxp/eVQQv53PYVw6mUMN0QEz0swAVNV7cB92uze8xLz5nqREHPwOyOKkX8kuM4/NZr35/lIuLd55Uvcw==
   dependencies:
-    "@angular-devkit/core" "20.2.0-next.0"
+    "@angular-devkit/core" "20.2.0-next.1"
     rxjs "7.8.2"
 
-"@angular-devkit/build-angular@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-20.2.0-next.0.tgz#7ed86efceff1e988587b12b7ca5fcb60501f23e2"
-  integrity sha512-qmGU3ZbH0+BlNAhqs/LH/L9/hi3Qee2RaDBqQtCD/YXGzeCIFs2Rh/dPohlXE0hjBiUlljzkBrGjqmtWwct6sQ==
+"@angular-devkit/build-angular@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-20.2.0-next.1.tgz#94e51cd1d73ab4715aeedf4901a07e0de0bb022f"
+  integrity sha512-b9WxCuWFuUQu8FyOfss4BNdpquFEmJqw0ke1bmI9r/atN6U0tlsHWntdrKNX0+s06MfeDwGUz4I2Pwa7XcCKyQ==
   dependencies:
     "@ampproject/remapping" "2.3.0"
-    "@angular-devkit/architect" "0.2002.0-next.0"
-    "@angular-devkit/build-webpack" "0.2002.0-next.0"
-    "@angular-devkit/core" "20.2.0-next.0"
-    "@angular/build" "20.2.0-next.0"
+    "@angular-devkit/architect" "0.2002.0-next.1"
+    "@angular-devkit/build-webpack" "0.2002.0-next.1"
+    "@angular-devkit/core" "20.2.0-next.1"
+    "@angular/build" "20.2.0-next.1"
     "@babel/core" "7.28.0"
     "@babel/generator" "7.28.0"
     "@babel/helper-annotate-as-pure" "7.27.3"
@@ -206,27 +206,27 @@
     "@babel/preset-env" "7.28.0"
     "@babel/runtime" "7.27.6"
     "@discoveryjs/json-ext" "0.6.3"
-    "@ngtools/webpack" "20.2.0-next.0"
+    "@ngtools/webpack" "20.2.0-next.1"
     ansi-colors "4.1.3"
     autoprefixer "10.4.21"
     babel-loader "10.0.0"
     browserslist "^4.21.5"
     copy-webpack-plugin "13.0.0"
     css-loader "7.1.2"
-    esbuild-wasm "0.25.6"
+    esbuild-wasm "0.25.8"
     fast-glob "3.3.3"
     http-proxy-middleware "3.0.5"
     istanbul-lib-instrument "6.0.3"
     jsonc-parser "3.3.1"
     karma-source-map-support "1.4.0"
-    less "4.3.0"
+    less "4.4.0"
     less-loader "12.3.0"
     license-webpack-plugin "4.0.2"
     loader-utils "3.3.1"
     mini-css-extract-plugin "2.9.2"
     open "10.2.0"
     ora "8.2.0"
-    picomatch "4.0.2"
+    picomatch "4.0.3"
     piscina "5.1.3"
     postcss "8.5.6"
     postcss-loader "8.1.1"
@@ -246,7 +246,7 @@
     webpack-merge "6.0.1"
     webpack-subresource-integrity "5.1.0"
   optionalDependencies:
-    esbuild "0.25.6"
+    esbuild "0.25.8"
 
 "@angular-devkit/build-optimizer@0.14.0-beta.5":
   version "0.14.0-beta.5"
@@ -258,52 +258,52 @@
     typescript "3.2.4"
     webpack-sources "1.3.0"
 
-"@angular-devkit/build-webpack@0.2002.0-next.0":
-  version "0.2002.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.2002.0-next.0.tgz#4c4dca9f56e144130034f97be581778efdeaa945"
-  integrity sha512-VoE0d1m8IjlUPM8NSWCrSM0b1XoEWtWHTiuGeh7HjmqlwYGEfO9nv7sx8t3/pxKXfJRCwltF/NRFo0DKdJX64Q==
+"@angular-devkit/build-webpack@0.2002.0-next.1":
+  version "0.2002.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.2002.0-next.1.tgz#655f2baa8d1388902ed37429d46bd77959c7840a"
+  integrity sha512-JakMKQgj2jE5dPHsi5Xq3SnlYooaXuWWGMlBKsqB3EVTGGtJlc4Jtkwa5tYnloql1/gLG5chHXdEEfdZgbCafw==
   dependencies:
-    "@angular-devkit/architect" "0.2002.0-next.0"
+    "@angular-devkit/architect" "0.2002.0-next.1"
     rxjs "7.8.2"
 
-"@angular-devkit/core@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-20.2.0-next.0.tgz#3178def66fc394a5f0f6ff46d5821a18ed67ae0a"
-  integrity sha512-wfeqYkEcWP90/JilIio6WHRabGrVNxgA+YnaONdhJtCSlbB61J6DMWBgYx8HAoOOubKcpLxDaFSOIE9wXi4WYg==
+"@angular-devkit/core@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-20.2.0-next.1.tgz#11c25c60815cbc547f8c0001930b6bf1c66b020f"
+  integrity sha512-3fjDWrGAYQVMLGMwDPuTjeleLmGBecrNXo7Xh9rv2sHSOTLpNlYYCbPEOofFuXNf041eIIuCzA9/e3tuLqghkQ==
   dependencies:
     ajv "8.17.1"
     ajv-formats "3.0.1"
     jsonc-parser "3.3.1"
-    picomatch "4.0.2"
+    picomatch "4.0.3"
     rxjs "7.8.2"
     source-map "0.7.4"
 
-"@angular-devkit/schematics@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-20.2.0-next.0.tgz#d49fdceed86c4bf842f5b27853ab5fbe234015fc"
-  integrity sha512-Ylkxqdajt4RW+wHRvIusBQJKOm2kTqUhHWqTMfXzMc4ENCjDPbTPQ5Q625DP3s4DYb+aaI6rnSZ8JbIzFZMcHg==
+"@angular-devkit/schematics@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-20.2.0-next.1.tgz#de63da549da75794f39d7decaba2a9537c931965"
+  integrity sha512-VBD6ksio+wvjrMrKzRhtS75SiBO8ARrsqsp20/oFFUAy5/zOvOH25CyPImoBq9qnSdRaYgse9vV9qjFId4bL0Q==
   dependencies:
-    "@angular-devkit/core" "20.2.0-next.0"
+    "@angular-devkit/core" "20.2.0-next.1"
     jsonc-parser "3.3.1"
     magic-string "0.30.17"
     ora "8.2.0"
     rxjs "7.8.2"
 
-"@angular/build@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular/build/-/build-20.2.0-next.0.tgz#01762dfd6e1d555c73293c6c0a908b83334a701b"
-  integrity sha512-egl8S/TU4yLohiylXfCptF5hsc0fZs1VObnZk+SIsaZjmemQ+dRF5lBtp8jMPMK60KWXWmjw6nuSpUVHKirrwA==
+"@angular/build@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular/build/-/build-20.2.0-next.1.tgz#374bf8c0092862eb37997947de61d99b65d46319"
+  integrity sha512-eh983fDoIr7UdMCzKbfQBt56/5SzOaYZ+uQTSxoDTr+ewcb3gGJPuxJOSBaB/tQr7iGapCwnRaAwAUu98q77VA==
   dependencies:
     "@ampproject/remapping" "2.3.0"
-    "@angular-devkit/architect" "0.2002.0-next.0"
+    "@angular-devkit/architect" "0.2002.0-next.1"
     "@babel/core" "7.28.0"
     "@babel/helper-annotate-as-pure" "7.27.3"
     "@babel/helper-split-export-declaration" "7.24.7"
-    "@inquirer/confirm" "5.1.13"
+    "@inquirer/confirm" "5.1.14"
     "@vitejs/plugin-basic-ssl" "2.1.0"
     beasties "0.3.5"
     browserslist "^4.23.0"
-    esbuild "0.25.6"
+    esbuild "0.25.8"
     https-proxy-agent "7.0.6"
     istanbul-lib-instrument "6.0.3"
     jsonc-parser "3.3.1"
@@ -311,40 +311,40 @@
     magic-string "0.30.17"
     mrmime "2.0.1"
     parse5-html-rewriting-stream "8.0.0"
-    picomatch "4.0.2"
+    picomatch "4.0.3"
     piscina "5.1.3"
     rollup "4.45.1"
     sass "1.89.2"
     semver "7.7.2"
     source-map-support "0.5.21"
     tinyglobby "0.2.14"
-    vite "7.0.4"
+    vite "7.0.5"
     watchpack "2.4.4"
   optionalDependencies:
     lmdb "3.4.1"
 
-"@angular/cdk@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-20.2.0-next.0.tgz#a29427ee4b1200601e82251d61182110d38bc3a7"
-  integrity sha512-cQk8LQW4/Xj6Gfv3eVb6IkD71/dGrdjWqclzdVopVhRnF6s5/QbjiQkojr4UzbC1mqAZ3L+EFnJCrjfOCcxrIg==
+"@angular/cdk@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-20.2.0-next.1.tgz#e7c5fb6ab66a00425dc27ecaf2ec77679144ac6c"
+  integrity sha512-4c8ABT7dxcI8grU+RR3ZX00ifB3hWfrtxNp1BbwlvRR3R/WSzuTdQqScBAV1gnmel/oNn2o1ehkWXHHOTCw/0w==
   dependencies:
     parse5 "^8.0.0"
     tslib "^2.3.0"
 
-"@angular/cli@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-20.2.0-next.0.tgz#0297c5cc99643daf2f4662a941ff01aab8fe73c0"
-  integrity sha512-pZgHSqnb2R1nnEwmNgbBoJEEVbdmQRIOC2zpkshRV/WeHWKIBcFed9T2gKma7DdC6Bv7tDkYPzZDswQNmCEDgw==
+"@angular/cli@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-20.2.0-next.1.tgz#bc7fe809f599d393537ebd5082496c62f3a7138d"
+  integrity sha512-qhP/j/wjktzc6+uLPBGHsCseQUY7itRxWn3/V1kpZ0Y5J6pBMetjzNxWSADjPhzDEjKX13jdnpWB6DPeaq6now==
   dependencies:
-    "@angular-devkit/architect" "0.2002.0-next.0"
-    "@angular-devkit/core" "20.2.0-next.0"
-    "@angular-devkit/schematics" "20.2.0-next.0"
-    "@inquirer/prompts" "7.6.0"
+    "@angular-devkit/architect" "0.2002.0-next.1"
+    "@angular-devkit/core" "20.2.0-next.1"
+    "@angular-devkit/schematics" "20.2.0-next.1"
+    "@inquirer/prompts" "7.7.1"
     "@listr2/prompt-adapter-inquirer" "3.0.1"
-    "@modelcontextprotocol/sdk" "1.15.1"
-    "@schematics/angular" "20.2.0-next.0"
+    "@modelcontextprotocol/sdk" "1.16.0"
+    "@schematics/angular" "20.2.0-next.1"
     "@yarnpkg/lockfile" "1.1.0"
-    algoliasearch "5.32.0"
+    algoliasearch "5.34.0"
     ini "5.0.0"
     jsonc-parser "3.3.1"
     listr2 "9.0.1"
@@ -356,17 +356,17 @@
     yargs "18.0.0"
     zod "3.25.76"
 
-"@angular/material@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.2.0-next.0.tgz#56ea2feef7031048936c6e5207e69c87afdea335"
-  integrity sha512-u+3k/jp1/5qDrkPv9EpzZ6M+LDSZDZ5FJtXtiu4g3RpmtVUKIN0zGvPWHJJiWWHeY5rOa7cHOcPzyairOFsHGw==
+"@angular/material@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.2.0-next.1.tgz#e29b3534cdaad0f598813f40a5132c523ee8fac5"
+  integrity sha512-0hdT0iQl9iswTP/GCqD3QjO0fy6PlbSdfEEctJy79tTdCmZo6zrKHNm5y7AtFmyaT84nD7ERz2Q0/tQbF1x14g==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#75a2aee57f2d3bf783f74fcf4338228a3a69d0e6":
-  version "0.0.0-5293c189424a61f7255d8171e3d653f983404851"
-  uid "75a2aee57f2d3bf783f74fcf4338228a3a69d0e6"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#75a2aee57f2d3bf783f74fcf4338228a3a69d0e6"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#978d5324645961844afc086ac61da96e395a597d":
+  version "0.0.0-f71394b25149037558248a41a5a18a8e17a01c69"
+  uid "978d5324645961844afc086ac61da96e395a597d"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#978d5324645961844afc086ac61da96e395a597d"
   dependencies:
     "@google-cloud/spanner" "8.0.0"
     "@google/genai" "^1.4.0"
@@ -382,10 +382,10 @@
     which "^5.0.0"
     yaml "2.8.0"
 
-"@angular/ssr@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@angular/ssr/-/ssr-20.2.0-next.0.tgz#2d779c2fb2a9364111251a5b2f89014e17fcf2f0"
-  integrity sha512-jMoW2IU/YtGB3lDfWvJd9jL2zDBXYhdAm9RnaezgULqAi/rXjPGt5dGMOir7HZMozPK9uTbqFj2tLu96bGKg/Q==
+"@angular/ssr@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@angular/ssr/-/ssr-20.2.0-next.1.tgz#cdc962d5ae63d967d9e0046b0632f7f7dbd167df"
+  integrity sha512-D553HWxYEeU8ukr2ByuI4R6swgCm9wR4h4kQY85S+H0nuVFw+QScRoUE6c2dPxCD+m5q2dr+64nVdmDt8FXlQQ==
   dependencies:
     tslib "^2.3.0"
 
@@ -1908,7 +1908,26 @@
     ansi-escapes "^4.3.2"
     yoctocolors-cjs "^2.1.2"
 
-"@inquirer/confirm@5.1.13", "@inquirer/confirm@^5.1.13":
+"@inquirer/checkbox@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@inquirer/checkbox/-/checkbox-4.2.0.tgz#84101e167f8ae5853c6b1f8c0aacf74c1969aef5"
+  integrity sha512-fdSw07FLJEU5vbpOPzXo5c6xmMGDzbZE2+niuDHX5N6mc6V0Ebso/q3xiHra4D73+PMsC8MJmcaZKuAAoaQsSA==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/figures" "^1.0.13"
+    "@inquirer/type" "^3.0.8"
+    ansi-escapes "^4.3.2"
+    yoctocolors-cjs "^2.1.2"
+
+"@inquirer/confirm@5.1.14", "@inquirer/confirm@^5.1.14":
+  version "5.1.14"
+  resolved "https://registry.yarnpkg.com/@inquirer/confirm/-/confirm-5.1.14.tgz#e6321edf51a3a5f54dc548b80ef6ba89891351ad"
+  integrity sha512-5yR4IBfe0kXe59r1YCTG8WXkUbl7Z35HK87Sw+WUyGD8wNUx7JvY7laahzeytyE1oLn74bQnL7hstctQxisQ8Q==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/type" "^3.0.8"
+
+"@inquirer/confirm@^5.1.13":
   version "5.1.13"
   resolved "https://registry.yarnpkg.com/@inquirer/confirm/-/confirm-5.1.13.tgz#4931515edc63e25d833c9a40ccf1855e8e822dbc"
   integrity sha512-EkCtvp67ICIVVzjsquUiVSd+V5HRGOGQfsqA4E4vMWhYnB7InUL0pa0TIWt1i+OfP16Gkds8CdIu6yGZwOM1Yw==
@@ -1930,6 +1949,20 @@
     wrap-ansi "^6.2.0"
     yoctocolors-cjs "^2.1.2"
 
+"@inquirer/core@^10.1.15":
+  version "10.1.15"
+  resolved "https://registry.yarnpkg.com/@inquirer/core/-/core-10.1.15.tgz#8feb69fd536786181a2b6bfb84d8674faa9d2e59"
+  integrity sha512-8xrp836RZvKkpNbVvgWUlxjT4CraKk2q+I3Ksy+seI2zkcE+y6wNs1BVhgcv8VyImFecUhdQrYLdW32pAjwBdA==
+  dependencies:
+    "@inquirer/figures" "^1.0.13"
+    "@inquirer/type" "^3.0.8"
+    ansi-escapes "^4.3.2"
+    cli-width "^4.1.0"
+    mute-stream "^2.0.0"
+    signal-exit "^4.1.0"
+    wrap-ansi "^6.2.0"
+    yoctocolors-cjs "^2.1.2"
+
 "@inquirer/editor@^4.2.14":
   version "4.2.14"
   resolved "https://registry.yarnpkg.com/@inquirer/editor/-/editor-4.2.14.tgz#74565caa37cd5f892a44663455194c35a527bfaf"
@@ -1937,6 +1970,15 @@
   dependencies:
     "@inquirer/core" "^10.1.14"
     "@inquirer/type" "^3.0.7"
+    external-editor "^3.1.0"
+
+"@inquirer/editor@^4.2.15":
+  version "4.2.15"
+  resolved "https://registry.yarnpkg.com/@inquirer/editor/-/editor-4.2.15.tgz#9ea2cbceca009a0de9e281c8a2e24752b5063809"
+  integrity sha512-wst31XT8DnGOSS4nNJDIklGKnf+8shuauVrWzgKegWUe28zfCftcWZ2vktGdzJgcylWSS2SrDnYUb6alZcwnCQ==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/type" "^3.0.8"
     external-editor "^3.1.0"
 
 "@inquirer/expand@^4.0.16":
@@ -1948,10 +1990,24 @@
     "@inquirer/type" "^3.0.7"
     yoctocolors-cjs "^2.1.2"
 
+"@inquirer/expand@^4.0.17":
+  version "4.0.17"
+  resolved "https://registry.yarnpkg.com/@inquirer/expand/-/expand-4.0.17.tgz#b688f4a1a65daf2bf77a11de7734766769cce343"
+  integrity sha512-PSqy9VmJx/VbE3CT453yOfNa+PykpKg/0SYP7odez1/NWBGuDXgPhp4AeGYYKjhLn5lUUavVS/JbeYMPdH50Mw==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/type" "^3.0.8"
+    yoctocolors-cjs "^2.1.2"
+
 "@inquirer/figures@^1.0.12":
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/@inquirer/figures/-/figures-1.0.12.tgz#667d6254cc7ba3b0c010a323d78024a1d30c6053"
   integrity sha512-MJttijd8rMFcKJC8NYmprWr6hD3r9Gd9qUC0XwPNwoEPWSMVJwA2MlXxF+nhZZNMY+HXsWa+o7KY2emWYIn0jQ==
+
+"@inquirer/figures@^1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@inquirer/figures/-/figures-1.0.13.tgz#ad0afd62baab1c23175115a9b62f511b6a751e45"
+  integrity sha512-lGPVU3yO9ZNqA7vTYz26jny41lE7yoQansmqdMLBEfqaGsmdg7V3W9mK9Pvb5IL4EVZ9GnSDGMO/cJXud5dMaw==
 
 "@inquirer/input@^4.2.0":
   version "4.2.0"
@@ -1961,6 +2017,14 @@
     "@inquirer/core" "^10.1.14"
     "@inquirer/type" "^3.0.7"
 
+"@inquirer/input@^4.2.1":
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/@inquirer/input/-/input-4.2.1.tgz#c174654eb1ab34dfd42a9cf6095a7e735a4db130"
+  integrity sha512-tVC+O1rBl0lJpoUZv4xY+WGWY8V5b0zxU1XDsMsIHYregdh7bN5X5QnIONNBAl0K765FYlAfNHS2Bhn7SSOVow==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/type" "^3.0.8"
+
 "@inquirer/number@^3.0.16":
   version "3.0.16"
   resolved "https://registry.yarnpkg.com/@inquirer/number/-/number-3.0.16.tgz#1abf6fc71af9f44954291a6d9211a9e572c64906"
@@ -1968,6 +2032,14 @@
   dependencies:
     "@inquirer/core" "^10.1.14"
     "@inquirer/type" "^3.0.7"
+
+"@inquirer/number@^3.0.17":
+  version "3.0.17"
+  resolved "https://registry.yarnpkg.com/@inquirer/number/-/number-3.0.17.tgz#32a66136ce35cad9f40ceb5f82a8cfac4f306517"
+  integrity sha512-GcvGHkyIgfZgVnnimURdOueMk0CztycfC8NZTiIY9arIAkeOgt6zG57G+7vC59Jns3UX27LMkPKnKWAOF5xEYg==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/type" "^3.0.8"
 
 "@inquirer/password@^4.0.16":
   version "4.0.16"
@@ -1978,7 +2050,32 @@
     "@inquirer/type" "^3.0.7"
     ansi-escapes "^4.3.2"
 
-"@inquirer/prompts@7.6.0", "@inquirer/prompts@^7.0.0", "@inquirer/prompts@^7.4.0":
+"@inquirer/password@^4.0.17":
+  version "4.0.17"
+  resolved "https://registry.yarnpkg.com/@inquirer/password/-/password-4.0.17.tgz#45480c8ace688ebf071e350536ea746792b3eeba"
+  integrity sha512-DJolTnNeZ00E1+1TW+8614F7rOJJCM4y4BAGQ3Gq6kQIG+OJ4zr3GLjIjVVJCbKsk2jmkmv6v2kQuN/vriHdZA==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/type" "^3.0.8"
+    ansi-escapes "^4.3.2"
+
+"@inquirer/prompts@7.7.1":
+  version "7.7.1"
+  resolved "https://registry.yarnpkg.com/@inquirer/prompts/-/prompts-7.7.1.tgz#e735651b28c6d6a4f6e90b950d3fbd0ad26d20e8"
+  integrity sha512-XDxPrEWeWUBy8scAXzXuFY45r/q49R0g72bUzgQXZ1DY/xEFX+ESDMkTQolcb5jRBzaNJX2W8XQl6krMNDTjaA==
+  dependencies:
+    "@inquirer/checkbox" "^4.2.0"
+    "@inquirer/confirm" "^5.1.14"
+    "@inquirer/editor" "^4.2.15"
+    "@inquirer/expand" "^4.0.17"
+    "@inquirer/input" "^4.2.1"
+    "@inquirer/number" "^3.0.17"
+    "@inquirer/password" "^4.0.17"
+    "@inquirer/rawlist" "^4.1.5"
+    "@inquirer/search" "^3.0.17"
+    "@inquirer/select" "^4.3.1"
+
+"@inquirer/prompts@^7.0.0", "@inquirer/prompts@^7.4.0":
   version "7.6.0"
   resolved "https://registry.yarnpkg.com/@inquirer/prompts/-/prompts-7.6.0.tgz#46f82154d9d9e4d8a2999d36f9da3594b1dda9f8"
   integrity sha512-jAhL7tyMxB3Gfwn4HIJ0yuJ5pvcB5maYUcouGcgd/ub79f9MqZ+aVnBtuFf+VC2GTkCBF+R+eo7Vi63w5VZlzw==
@@ -2003,6 +2100,15 @@
     "@inquirer/type" "^3.0.7"
     yoctocolors-cjs "^2.1.2"
 
+"@inquirer/rawlist@^4.1.5":
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/@inquirer/rawlist/-/rawlist-4.1.5.tgz#e3664e3da3fba93f34ee25813faa7957aa717991"
+  integrity sha512-R5qMyGJqtDdi4Ht521iAkNqyB6p2UPuZUbMifakg1sWtu24gc2Z8CJuw8rP081OckNDMgtDCuLe42Q2Kr3BolA==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/type" "^3.0.8"
+    yoctocolors-cjs "^2.1.2"
+
 "@inquirer/search@^3.0.16":
   version "3.0.16"
   resolved "https://registry.yarnpkg.com/@inquirer/search/-/search-3.0.16.tgz#b72a75216f59a42a77fc5727b47f6bc776d88d3d"
@@ -2011,6 +2117,16 @@
     "@inquirer/core" "^10.1.14"
     "@inquirer/figures" "^1.0.12"
     "@inquirer/type" "^3.0.7"
+    yoctocolors-cjs "^2.1.2"
+
+"@inquirer/search@^3.0.17":
+  version "3.0.17"
+  resolved "https://registry.yarnpkg.com/@inquirer/search/-/search-3.0.17.tgz#e282482c5a2d15b3f0beb063aa174275d2abe0b6"
+  integrity sha512-CuBU4BAGFqRYors4TNCYzy9X3DpKtgIW4Boi0WNkm4Ei1hvY9acxKdBdyqzqBCEe4YxSdaQQsasJlFlUJNgojw==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/figures" "^1.0.13"
+    "@inquirer/type" "^3.0.8"
     yoctocolors-cjs "^2.1.2"
 
 "@inquirer/select@^4.2.4":
@@ -2024,10 +2140,26 @@
     ansi-escapes "^4.3.2"
     yoctocolors-cjs "^2.1.2"
 
+"@inquirer/select@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@inquirer/select/-/select-4.3.1.tgz#b49e76dab47f7c729e4e1e520fedc268e5b88cdc"
+  integrity sha512-Gfl/5sqOF5vS/LIrSndFgOh7jgoe0UXEizDqahFRkq5aJBLegZ6WjuMh/hVEJwlFQjyLq1z9fRtvUMkb7jM1LA==
+  dependencies:
+    "@inquirer/core" "^10.1.15"
+    "@inquirer/figures" "^1.0.13"
+    "@inquirer/type" "^3.0.8"
+    ansi-escapes "^4.3.2"
+    yoctocolors-cjs "^2.1.2"
+
 "@inquirer/type@^3.0.7":
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/@inquirer/type/-/type-3.0.7.tgz#b46bcf377b3172dbc768fdbd053e6492ad801a09"
   integrity sha512-PfunHQcjwnju84L+ycmcMKB/pTPIngjUJvfnRhKY6FKPuYXlM4aQCb/nIdTFR6BEhMjFvngzvng/vBAJMZpLSA==
+
+"@inquirer/type@^3.0.8":
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/@inquirer/type/-/type-3.0.8.tgz#efc293ba0ed91e90e6267f1aacc1c70d20b8b4e8"
+  integrity sha512-lg9Whz8onIHRthWaN1Q9EGLa/0LFJjyM8mEUbL1eTi6yMGvBf8gvyDLtxSXztQsxMvhxxNpJYrwa1YHdq+w4Jw==
 
 "@isaacs/balanced-match@^4.0.1":
   version "4.0.1"
@@ -2227,10 +2359,10 @@
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.15.1.tgz#d4f6937353bc4568292654efb0a0e0532adbcba2"
   integrity sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==
 
-"@modelcontextprotocol/sdk@1.15.1":
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.15.1.tgz#30a235f91e144b62ef1810bc63679e423bac37ec"
-  integrity sha512-W/XlN9c528yYn+9MQkVjxiTPgPxoxt+oczfjHBDsJx0+59+O7B75Zhsp0B16Xbwbz8ANISDajh6+V7nIcPMc5w==
+"@modelcontextprotocol/sdk@1.16.0":
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/@modelcontextprotocol/sdk/-/sdk-1.16.0.tgz#39a28a4f775778ec90369ddb5ccfb58a5b9b838f"
+  integrity sha512-8ofX7gkZcLj9H9rSd50mCgm3SSF8C7XoclxJuLoV0Cz3rEQ1tv9MZRYYvJtm9n1BiEQQMzSmE/w2AEkNacLYfg==
   dependencies:
     ajv "^6.12.6"
     content-type "^1.0.5"
@@ -2406,10 +2538,10 @@
     tinyglobby "0.2.12"
     typescript "^5.8.3"
 
-"@ngtools/webpack@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-20.2.0-next.0.tgz#ac84192e4b90317694659c9fbc0ed7d90d310c2b"
-  integrity sha512-XcClkucgd7nP4BlKtAJKDepI1pkztzRQ5ZSKmIEoREFwsYkS0LRPdq2Tknym3xbEhBPzmiu9YcIiaRjJdoXxag==
+"@ngtools/webpack@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-20.2.0-next.1.tgz#9bc95d3ab0070e8ffdeb0c01f513fa6610620ba9"
+  integrity sha512-bNmeGTgrV8oboGjOnymkqFWyaJDt/TelGQcK6yylYwjAFbpNfc5qGoPaQeEg3ajMcMZrsfwqENwhp6ItUD7Kmw==
 
 "@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3":
   version "2.1.8-no-fsevents.3"
@@ -3212,13 +3344,13 @@
     argparse "~1.0.9"
     string-argv "~0.3.1"
 
-"@schematics/angular@20.2.0-next.0":
-  version "20.2.0-next.0"
-  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-20.2.0-next.0.tgz#e003708836d9484a4e2deed6a8ad127b6c6c9756"
-  integrity sha512-+RNNB4zLPqgU3K17hIgXSMb0b6qAxhCL/bmijI4S3xitPM9Yf/nDnrsAxLrvuvhMA5KewKQjUF7O0LdJxNbGnw==
+"@schematics/angular@20.2.0-next.1":
+  version "20.2.0-next.1"
+  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-20.2.0-next.1.tgz#57c806ae5b5732d6dfe78bd40490f99bb631e277"
+  integrity sha512-l+d6Ctc0r+hoOLAR20fgoYGRskFqWsGr30aHbapEn06bv0OLpZiwHeW2lDfYVtl7oPe0nvjkS9Vj0uRnmXiykg==
   dependencies:
-    "@angular-devkit/core" "20.2.0-next.0"
-    "@angular-devkit/schematics" "20.2.0-next.0"
+    "@angular-devkit/core" "20.2.0-next.1"
+    "@angular-devkit/schematics" "20.2.0-next.1"
     jsonc-parser "3.3.1"
 
 "@sigstore/bundle@^3.1.0":
@@ -4445,24 +4577,24 @@ ajv@~8.13.0:
     require-from-string "^2.0.2"
     uri-js "^4.4.1"
 
-algoliasearch@5.32.0:
-  version "5.32.0"
-  resolved "https://registry.yarnpkg.com/algoliasearch/-/algoliasearch-5.32.0.tgz#2b9d17c4592b573146e3a2322a563aef68d473e3"
-  integrity sha512-84xBncKNPBK8Ae89F65+SyVcOihrIbm/3N7to+GpRBHEUXGjA3ydWTMpcRW6jmFzkBQ/eqYy/y+J+NBpJWYjBg==
+algoliasearch@5.34.0:
+  version "5.34.0"
+  resolved "https://registry.yarnpkg.com/algoliasearch/-/algoliasearch-5.34.0.tgz#eb71f52b254059bfe40342ff47a2d3641b93c68b"
+  integrity sha512-wioVnf/8uuG8Bmywhk5qKIQ3wzCCtmdvicPRb0fa3kKYGGoewfgDqLEaET1MV2NbTc3WGpPv+AgauLVBp1nB9A==
   dependencies:
-    "@algolia/client-abtesting" "5.32.0"
-    "@algolia/client-analytics" "5.32.0"
-    "@algolia/client-common" "5.32.0"
-    "@algolia/client-insights" "5.32.0"
-    "@algolia/client-personalization" "5.32.0"
-    "@algolia/client-query-suggestions" "5.32.0"
-    "@algolia/client-search" "5.32.0"
-    "@algolia/ingestion" "1.32.0"
-    "@algolia/monitoring" "1.32.0"
-    "@algolia/recommend" "5.32.0"
-    "@algolia/requester-browser-xhr" "5.32.0"
-    "@algolia/requester-fetch" "5.32.0"
-    "@algolia/requester-node-http" "5.32.0"
+    "@algolia/client-abtesting" "5.34.0"
+    "@algolia/client-analytics" "5.34.0"
+    "@algolia/client-common" "5.34.0"
+    "@algolia/client-insights" "5.34.0"
+    "@algolia/client-personalization" "5.34.0"
+    "@algolia/client-query-suggestions" "5.34.0"
+    "@algolia/client-search" "5.34.0"
+    "@algolia/ingestion" "1.34.0"
+    "@algolia/monitoring" "1.34.0"
+    "@algolia/recommend" "5.34.0"
+    "@algolia/requester-browser-xhr" "5.34.0"
+    "@algolia/requester-fetch" "5.34.0"
+    "@algolia/requester-node-http" "5.34.0"
 
 "angular-1.5@npm:angular@1.5":
   version "1.5.11"
@@ -7515,42 +7647,10 @@ es6-module-loader@^0.17.4:
   dependencies:
     when "^3.7.2"
 
-esbuild-wasm@0.25.6:
-  version "0.25.6"
-  resolved "https://registry.yarnpkg.com/esbuild-wasm/-/esbuild-wasm-0.25.6.tgz#ab9f0740c28c981367e5ca63ea14df2d837ea34e"
-  integrity sha512-iYdYzDQgw0RQYUVInYITxPNj6qGfoQ1SWg/tAUMZQQFGw0bexdY9qrvAgGHl7k0Xf23qw/956KTF7EcBUU1PJA==
-
-esbuild@0.25.6, esbuild@^0.25.0, esbuild@~0.25.0:
-  version "0.25.6"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.25.6.tgz#9b82a3db2fa131aec069ab040fd57ed0a880cdcd"
-  integrity sha512-GVuzuUwtdsghE3ocJ9Bs8PNoF13HNQ5TXbEi2AhvVb8xU1Iwt9Fos9FEamfoee+u/TOsn7GUWc04lz46n2bbTg==
-  optionalDependencies:
-    "@esbuild/aix-ppc64" "0.25.6"
-    "@esbuild/android-arm" "0.25.6"
-    "@esbuild/android-arm64" "0.25.6"
-    "@esbuild/android-x64" "0.25.6"
-    "@esbuild/darwin-arm64" "0.25.6"
-    "@esbuild/darwin-x64" "0.25.6"
-    "@esbuild/freebsd-arm64" "0.25.6"
-    "@esbuild/freebsd-x64" "0.25.6"
-    "@esbuild/linux-arm" "0.25.6"
-    "@esbuild/linux-arm64" "0.25.6"
-    "@esbuild/linux-ia32" "0.25.6"
-    "@esbuild/linux-loong64" "0.25.6"
-    "@esbuild/linux-mips64el" "0.25.6"
-    "@esbuild/linux-ppc64" "0.25.6"
-    "@esbuild/linux-riscv64" "0.25.6"
-    "@esbuild/linux-s390x" "0.25.6"
-    "@esbuild/linux-x64" "0.25.6"
-    "@esbuild/netbsd-arm64" "0.25.6"
-    "@esbuild/netbsd-x64" "0.25.6"
-    "@esbuild/openbsd-arm64" "0.25.6"
-    "@esbuild/openbsd-x64" "0.25.6"
-    "@esbuild/openharmony-arm64" "0.25.6"
-    "@esbuild/sunos-x64" "0.25.6"
-    "@esbuild/win32-arm64" "0.25.6"
-    "@esbuild/win32-ia32" "0.25.6"
-    "@esbuild/win32-x64" "0.25.6"
+esbuild-wasm@0.25.8:
+  version "0.25.8"
+  resolved "https://registry.yarnpkg.com/esbuild-wasm/-/esbuild-wasm-0.25.8.tgz#98c85576a4e67aef51018db2507863838bb1eba7"
+  integrity sha512-VFUDMoZdf/NsyCepv5heZqvNLYj9HL+xEKG5tktsFbx+shR8Dt9MchKBEdu/5the2RfTzgxkO6B/nUfzmsWN9Q==
 
 esbuild@0.25.8:
   version "0.25.8"
@@ -7583,6 +7683,38 @@ esbuild@0.25.8:
     "@esbuild/win32-arm64" "0.25.8"
     "@esbuild/win32-ia32" "0.25.8"
     "@esbuild/win32-x64" "0.25.8"
+
+esbuild@^0.25.0, esbuild@~0.25.0:
+  version "0.25.6"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.25.6.tgz#9b82a3db2fa131aec069ab040fd57ed0a880cdcd"
+  integrity sha512-GVuzuUwtdsghE3ocJ9Bs8PNoF13HNQ5TXbEi2AhvVb8xU1Iwt9Fos9FEamfoee+u/TOsn7GUWc04lz46n2bbTg==
+  optionalDependencies:
+    "@esbuild/aix-ppc64" "0.25.6"
+    "@esbuild/android-arm" "0.25.6"
+    "@esbuild/android-arm64" "0.25.6"
+    "@esbuild/android-x64" "0.25.6"
+    "@esbuild/darwin-arm64" "0.25.6"
+    "@esbuild/darwin-x64" "0.25.6"
+    "@esbuild/freebsd-arm64" "0.25.6"
+    "@esbuild/freebsd-x64" "0.25.6"
+    "@esbuild/linux-arm" "0.25.6"
+    "@esbuild/linux-arm64" "0.25.6"
+    "@esbuild/linux-ia32" "0.25.6"
+    "@esbuild/linux-loong64" "0.25.6"
+    "@esbuild/linux-mips64el" "0.25.6"
+    "@esbuild/linux-ppc64" "0.25.6"
+    "@esbuild/linux-riscv64" "0.25.6"
+    "@esbuild/linux-s390x" "0.25.6"
+    "@esbuild/linux-x64" "0.25.6"
+    "@esbuild/netbsd-arm64" "0.25.6"
+    "@esbuild/netbsd-x64" "0.25.6"
+    "@esbuild/openbsd-arm64" "0.25.6"
+    "@esbuild/openbsd-x64" "0.25.6"
+    "@esbuild/openharmony-arm64" "0.25.6"
+    "@esbuild/sunos-x64" "0.25.6"
+    "@esbuild/win32-arm64" "0.25.6"
+    "@esbuild/win32-ia32" "0.25.6"
+    "@esbuild/win32-x64" "0.25.6"
 
 escalade@^3.1.1, escalade@^3.2.0:
   version "3.2.0"
@@ -10774,10 +10906,10 @@ less-loader@12.3.0:
   resolved "https://registry.yarnpkg.com/less-loader/-/less-loader-12.3.0.tgz#d4a00361568be86a97da3df4f16954b0d4c15340"
   integrity sha512-0M6+uYulvYIWs52y0LqN4+QM9TqWAohYSNTo4htE8Z7Cn3G/qQMEmktfHmyJT23k+20kU9zHH2wrfFXkxNLtVw==
 
-less@4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/less/-/less-4.3.0.tgz#ef0cfc260a9ca8079ed8d0e3512bda8a12c82f2a"
-  integrity sha512-X9RyH9fvemArzfdP8Pi3irr7lor2Ok4rOttDXBhlwDg+wKQsXOXgHWduAJE1EsF7JJx0w0bcO6BC6tCKKYnXKA==
+less@4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/less/-/less-4.4.0.tgz#deaf881f4880ee80691beae925b8fac699d3a76d"
+  integrity sha512-kdTwsyRuncDfjEs0DlRILWNvxhDG/Zij4YLO4TMJgDLW+8OzpfkdPnRgrsRuY1o+oaxJGWsps5f/RVBgGmmN0w==
   dependencies:
     copy-anything "^2.0.1"
     parse-node-version "^1.0.1"
@@ -12701,15 +12833,20 @@ picocolors@^1.0.0, picocolors@^1.1.1:
   resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-1.1.1.tgz#3d321af3eab939b083c8f929a1d12cda81c26b6b"
   integrity sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==
 
-picomatch@4.0.2, picomatch@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.2.tgz#77c742931e8f3b8820946c76cd0c1f13730d1dab"
-  integrity sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==
+picomatch@4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.3.tgz#796c76136d1eead715db1e7bad785dedd695a042"
+  integrity sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==
 
 picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.2, picomatch@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.1.tgz#3ba3833733646d9d3e4995946c1365a67fb07a42"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
+
+picomatch@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.2.tgz#77c742931e8f3b8820946c76cd0c1f13730d1dab"
+  integrity sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==
 
 pify@^2.0.0, pify@^2.2.0:
   version "2.3.0"
@@ -16080,10 +16217,10 @@ vinyl@^3.0.0, vinyl@^3.0.1:
     replace-ext "^2.0.0"
     teex "^1.0.1"
 
-vite@7.0.4:
-  version "7.0.4"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-7.0.4.tgz#481204416277cfa7c93384c55984475c4276b18f"
-  integrity sha512-SkaSguuS7nnmV7mfJ8l81JGBFV7Gvzp8IzgE8A8t23+AxuNX61Q5H1Tpz5efduSN7NHC8nQXD3sKQKZAu5mNEA==
+vite@7.0.5:
+  version "7.0.5"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-7.0.5.tgz#deb2d3b777378f6d3e47c3d41b59f3c93f485738"
+  integrity sha512-1mncVwJxy2C9ThLwz0+2GKZyEXuC3MyWtAAlNftlZZXZDP3AJt5FmwcMit/IGGaNZ8ZOB2BNO/HFUB+CpN0NQw==
   dependencies:
     esbuild "^0.25.0"
     fdir "^6.4.6"
