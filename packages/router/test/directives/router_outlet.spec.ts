@@ -27,9 +27,10 @@ import {
 } from '../../index';
 import {RouterTestingHarness} from '../../testing';
 import {InjectionToken} from '../../../core/src/di';
-import {timeout} from '../helpers';
+import {timeout, useAutoTick} from '../helpers';
 
 describe('router outlet name', () => {
+  useAutoTick();
   it('should support name binding', async () => {
     @Component({
       template: '<router-outlet [name]="name"></router-outlet>',
