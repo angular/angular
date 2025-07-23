@@ -281,7 +281,6 @@ groups:
         - ~pkozlowski-opensource
         - mgechev
         - MarkTechson
-        - kirjs
         - mmalerba
         - ~hawkgs
 
@@ -369,7 +368,7 @@ groups:
         - ~alan-agius4
       teams:
         - angular-caretaker
-        - ~framework-team
+        - framework-team
 
   # =========================================================
   #  Public API
