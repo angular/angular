@@ -165,6 +165,7 @@ export class FieldNode implements FieldState<unknown> {
    * Marks this specific field as touched.
    */
   markAsTouched(): void {
+    // TODO: should this be noop for fields that are hidden/disabled/readonly
     this.nodeState.selfTouched.set(true);
   }
 
@@ -172,6 +173,7 @@ export class FieldNode implements FieldState<unknown> {
    * Marks this specific field as dirty.
    */
   markAsDirty(): void {
+    // TODO: should this be noop for fields that are hidden/disabled/readonly
     this.nodeState.selfDirty.set(true);
   }
 
