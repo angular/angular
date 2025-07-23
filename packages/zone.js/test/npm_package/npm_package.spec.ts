@@ -118,8 +118,8 @@ describe('Zone.js npm_package', () => {
 
       it('zone-patch-rxjs.js should have rxjs external', () => {
         checkInSubFolder('./fesm2015', () => {
-          expect(shx.cat('zone-patch-rxjs.js')).toContain(` from 'rxjs'`);
-          expect(shx.cat('zone-patch-rxjs.js')).toContain(`Zone.__load_patch('rxjs',`);
+          expect(shx.cat('zone-patch-rxjs.js')).toContain(` from "rxjs"`);
+          expect(shx.cat('zone-patch-rxjs.js')).toContain(`Zone2.__load_patch("rxjs",`);
         });
       });
     });
