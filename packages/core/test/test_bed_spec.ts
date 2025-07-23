@@ -2476,6 +2476,28 @@ describe('TestBed defer block behavior', () => {
   });
 });
 
+describe('TestBed animations behavior', () => {
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+  });
+
+  it('should default animations behavior to disabled', () => {
+    expect(TestBedImpl.INSTANCE.getAnimationsEnabled()).toBe(false);
+  });
+
+  it('should be able to configure animations behavior', () => {
+    TestBed.configureTestingModule({animationsEnabled: true});
+    expect(TestBedImpl.INSTANCE.getAnimationsEnabled()).toBe(true);
+  });
+
+  it('should reset the animations behavior back to the default when TestBed is reset', () => {
+    TestBed.configureTestingModule({animationsEnabled: true});
+    expect(TestBedImpl.INSTANCE.getAnimationsEnabled()).toBe(true);
+    TestBed.resetTestingModule();
+    expect(TestBedImpl.INSTANCE.getAnimationsEnabled()).toBe(false);
+  });
+});
+
 describe('TestBed module teardown', () => {
   beforeEach(() => {
     TestBed.resetTestingModule();

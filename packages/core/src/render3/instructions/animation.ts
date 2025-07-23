@@ -59,8 +59,12 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   const renderer = lView[RENDERER];
   const injector = lView[INJECTOR]!;
-  const ngZone = injector.get(NgZone);
   const animationsDisabled = injector.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
+  const ngZone = injector.get(NgZone);
+
+  if (animationsDisabled) {
+    return ɵɵanimateEnter;
+  }
 
   // Retrieve the actual class list from the value. This will resolve any resolver functions from
   // bindings.
@@ -90,33 +94,14 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   // We only need to add these event listeners if there are actual classes to apply
   if (activeClasses && activeClasses.length > 0) {
-    if (!animationsDisabled) {
-      ngZone.runOutsideAngular(() => {
-        cleanupFns.push(renderer.listen(nativeElement, 'animationstart', handleAnimationStart));
-        cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
-      });
-    }
+    ngZone.runOutsideAngular(() => {
+      cleanupFns.push(renderer.listen(nativeElement, 'animationstart', handleAnimationStart));
+      cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
+    });
 
     for (const klass of activeClasses) {
       renderer.addClass(nativeElement as HTMLElement, klass);
     }
-  }
-
-  if (animationsDisabled) {
-    // The animations will only be disabled in a test environment, and adding a microtask here
-    // will allow the tests to be able to tick forward to resolve the next phase of animation
-    // in their tests.
-    Promise.resolve().then(() => {
-      if (activeClasses !== null) {
-        for (const klass of activeClasses) {
-          renderer.removeClass(nativeElement, klass);
-        }
-      }
-      for (const fn of cleanupFns) {
-        fn();
-      }
-      // Classes remain, no animation, no automatic cleanup of these classes by this instruction.
-    });
   }
 
   return ɵɵanimateEnter; // For chaining
@@ -143,6 +128,11 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
+  const animationsDisabled = lView[INJECTOR]!.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
+
+  if (animationsDisabled) {
+    return ɵɵanimateEnterListener;
+  }
 
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
 
@@ -266,19 +256,15 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
     value: AnimationFunction,
   ): AnimationRemoveFunction => {
     return (removeFn: VoidFunction): void => {
-      const event: AnimationCallbackEvent = {
-        target: nativeElement,
-        animationComplete: () => {
-          removeFn();
-        },
-      };
       if (animationsDisabled) {
-        // add a microtask for test environments to be able to see classes
-        // were added, then removed.
-        Promise.resolve().then(() => {
-          removeFn();
-        });
+        removeFn();
       } else {
+        const event: AnimationCallbackEvent = {
+          target: nativeElement,
+          animationComplete: () => {
+            removeFn();
+          },
+        };
         value.call(lView[CONTEXT], event);
       }
     };
@@ -463,6 +449,10 @@ function animateLeaveClassRunner(
   animationsDisabled: boolean,
   ngZone: NgZone,
 ) {
+  if (animationsDisabled) {
+    finalRemoveFn();
+  }
+
   cancelAnimationsIfRunning(el);
 
   let longestAnimation: LongestAnimation | undefined;
@@ -488,17 +478,8 @@ function animateLeaveClassRunner(
       renderer.listen(el, 'animationend', handleOutAnimationEnd);
       renderer.listen(el, 'transitionend', handleOutAnimationEnd);
     });
-  }
-
-  for (const item of classList) {
-    renderer.addClass(el, item);
-  }
-
-  if (animationsDisabled) {
-    // add a microtask for test environments to be able to see classes
-    // were added, then removed.
-    Promise.resolve().then(() => {
-      finalRemoveFn();
-    });
+    for (const item of classList) {
+      renderer.addClass(el, item);
+    }
   }
 }

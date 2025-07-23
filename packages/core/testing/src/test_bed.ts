@@ -45,6 +45,7 @@ import {
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {
+  ANIMATIONS_ENABLED_DEFAULT,
   ComponentFixtureNoNgZone,
   DEFER_BLOCK_DEFAULT_BEHAVIOR,
   ModuleTeardownOptions,
@@ -239,6 +240,11 @@ export class TestBedImpl implements TestBed {
    * or set to play through.
    */
   private _instanceDeferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
+
+  /**
+   * Animations behavior option that specifies whether animations are enabled or disabled.
+   */
+  private _instanceAnimationsEnabled = ANIMATIONS_ENABLED_DEFAULT;
 
   /**
    * "Error on unknown elements" option that has been configured at the `TestBed` instance level.
@@ -535,6 +541,7 @@ export class TestBedImpl implements TestBed {
         this._instanceErrorOnUnknownPropertiesOption = undefined;
         this._instanceInferTagName = undefined;
         this._instanceDeferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
+        this._instanceAnimationsEnabled = ANIMATIONS_ENABLED_DEFAULT;
       }
     }
     return this;
@@ -567,6 +574,7 @@ export class TestBedImpl implements TestBed {
     this._instanceErrorOnUnknownPropertiesOption = moduleDef.errorOnUnknownProperties;
     this._instanceInferTagName = moduleDef.inferTagName;
     this._instanceDeferBlockBehavior = moduleDef.deferBlockBehavior ?? DEFER_BLOCK_DEFAULT_BEHAVIOR;
+    this._instanceAnimationsEnabled = moduleDef.animationsEnabled ?? ANIMATIONS_ENABLED_DEFAULT;
     // Store the current value of the strict mode option,
     // so we can restore it later
     this._previousErrorOnUnknownElementsOption = getUnknownElementStrictMode();
@@ -821,6 +829,10 @@ export class TestBedImpl implements TestBed {
 
   getDeferBlockBehavior(): DeferBlockBehavior {
     return this._instanceDeferBlockBehavior;
+  }
+
+  getAnimationsEnabled(): boolean {
+    return this._instanceAnimationsEnabled;
   }
 
   tearDownTestingModule() {
