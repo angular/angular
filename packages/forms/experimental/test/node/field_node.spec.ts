@@ -145,7 +145,7 @@ describe('FieldNode', () => {
 
     it('can be reset', () => {
       const model = signal({a: 1, b: 2});
-      const f = form(model, noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(model, {injector: TestBed.inject(Injector)});
       f().markAsDirty();
       expect(f().dirty()).toBe(true);
 
@@ -270,7 +270,7 @@ describe('FieldNode', () => {
 
     it('can be reset', () => {
       const model = signal({a: 1, b: 2});
-      const f = form(model, noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(model, {injector: TestBed.inject(Injector)});
       f().markAsTouched();
       expect(f().touched()).toBe(true);
 
@@ -1126,7 +1126,7 @@ describe('FieldNode', () => {
   describe('reset', () => {
     it('should propagate to descendants', () => {
       const model = signal({a: {b: 2}});
-      const f = form(model, noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(model, {injector: TestBed.inject(Injector)});
 
       f.a.b().markAsDirty();
       expect(f().dirty()).toBe(true);
