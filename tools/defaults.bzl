@@ -4,9 +4,6 @@ load("@build_bazel_rules_nodejs//:index.bzl", _npm_package_bin = "npm_package_bi
 load("@devinfra//bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
-load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
-load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("@npm//typescript:index.bzl", "tsc")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
@@ -127,109 +124,6 @@ def npm_package_bin(args = [], **kwargs):
         args = ["--nobazel_run_linker"] + args,
         **kwargs
     )
-
-# TODO: Consider removing this rule in favor of `esbuild` for more consistent bundling.
-def rollup_bundle(name, testonly = False, sourcemap = "true", **kwargs):
-    """A drop in replacement for the rules nodejs [legacy rollup_bundle].
-
-    Runs [rollup_bundle], [terser_minified] and [babel] for downleveling to es5
-    to produce a number of output bundles.
-
-    es2015 iife                  : "%{name}.es2015.js"
-    es2015 iife minified         : "%{name}.min.es2015.js"
-    es2015 iife minified (debug) : "%{name}.min_debug.es2015.js"
-    esm                          : "%{name}.esm.js"
-    esm                          : "%{name}.min.esm.js"
-    es5 iife                     : "%{name}.js"
-    es5 iife minified            : "%{name}.min.js"
-    es5 iife minified (debug)    : "%{name}.min_debug.js"
-    es5 umd                      : "%{name}.es5umd.js"
-    es5 umd minified             : "%{name}.min.es5umd.js"
-    es2015 umd                   : "%{name}.umd.js"
-    es2015 umd minified          : "%{name}.min.umd.js"
-
-    ".js.map" files are also produced for each bundle.
-
-    [legacy rollup_bundle]: https://github.com/bazelbuild/rules_nodejs/blob/0.38.3/internal/rollup/rollup_bundle.bzl
-    [rollup_bundle]: https://bazelbuild.github.io/rules_nodejs/Rollup.html
-    [terser_minified]: https://bazelbuild.github.io/rules_nodejs/Terser.html
-    [babel]: https://babeljs.io/
-    """
-
-    # Common arguments for all terser_minified targets
-    common_terser_args = {
-        "args": ["--comments"],
-        "sourcemap": False,
-    }
-
-    # esm
-    _rollup_bundle(name = name + ".esm", testonly = testonly, format = "esm", sourcemap = sourcemap, **kwargs)
-    terser_minified(name = name + ".min.esm", testonly = testonly, src = name + ".esm", **common_terser_args)
-    native.filegroup(name = name + ".min.esm.js", testonly = testonly, srcs = [name + ".min.esm"])
-
-    # es2015
-    _rollup_bundle(name = name + ".es2015", testonly = testonly, format = "iife", sourcemap = sourcemap, **kwargs)
-    terser_minified(name = name + ".min.es2015", testonly = testonly, src = name + ".es2015", **common_terser_args)
-    native.filegroup(name = name + ".min.es2015.js", testonly = testonly, srcs = [name + ".min.es2015"])
-    terser_minified(name = name + ".min_debug.es2015", testonly = testonly, src = name + ".es2015", **common_terser_args)
-    native.filegroup(name = name + ".min_debug.es2015.js", testonly = testonly, srcs = [name + ".min_debug.es2015"])
-
-    # es5
-    tsc(
-        name = name,
-        testonly = testonly,
-        outs = [
-            name + ".js",
-        ],
-        args = [
-            "$(execpath :%s.es2015.js)" % name,
-            "--types",
-            "--skipLibCheck",
-            "--target",
-            "es5",
-            "--lib",
-            "es2015,dom",
-            "--allowJS",
-            "--outFile",
-            "$(execpath :%s.js)" % name,
-        ],
-        data = [
-            name + ".es2015.js",
-        ],
-    )
-    terser_minified(name = name + ".min", testonly = testonly, src = name + "", **common_terser_args)
-    native.filegroup(name = name + ".min.js", testonly = testonly, srcs = [name + ".min"])
-    terser_minified(name = name + ".min_debug", testonly = testonly, src = name + "", debug = True, **common_terser_args)
-    native.filegroup(name = name + ".min_debug.js", testonly = testonly, srcs = [name + ".min_debug"])
-
-    # umd
-    _rollup_bundle(name = name + ".umd", testonly = testonly, format = "umd", sourcemap = sourcemap, **kwargs)
-    terser_minified(name = name + ".min.umd", testonly = testonly, src = name + ".umd", **common_terser_args)
-    native.filegroup(name = name + ".min.umd.js", testonly = testonly, srcs = [name + ".min.umd"])
-    tsc(
-        name = name + ".es5umd",
-        testonly = testonly,
-        outs = [
-            name + ".es5umd.js",
-        ],
-        args = [
-            "$(execpath :%s.umd.js)" % name,
-            "--types",
-            "--skipLibCheck",
-            "--target",
-            "es5",
-            "--lib",
-            "es2015,dom",
-            "--allowJS",
-            "--outFile",
-            "$(execpath :%s.es5umd.js)" % name,
-        ],
-        data = [
-            name + ".umd.js",
-        ],
-    )
-    terser_minified(name = name + ".min.es5umd", testonly = testonly, src = name + ".es5umd", **common_terser_args)
-    native.filegroup(name = name + ".min.es5umd.js", testonly = testonly, srcs = [name + ".min.es5umd"])
 
 def tsec_test(**kwargs):
     """Default values for tsec_test"""

@@ -1,5 +1,5 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
-load("//tools:defaults.bzl", "rollup_bundle")
 load("//tools:defaults2.bzl", "ts_project")
 
 def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point):
@@ -9,37 +9,32 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
         srcs = env_srcs,
         deps = env_deps,
     )
-    rollup_bundle(
-        name = name + "_env_rollup",
-        testonly = True,
-        sourcemap = "false",
+    esbuild(
+        name = name + "_env_rollup.umd",
         entry_point = env_entry_point,
-        silent = True,
+        testonly = True,
+        sourcemap = False,
+        config = "//tools/bazel/esbuild/zone-config:umd",
         deps = [
-            ":" + name + "_env",
-            "@npm//@rollup/plugin-commonjs",
-            "@npm//@rollup/plugin-node-resolve",
-            "@npm//magic-string",
+            ":" + name + "_env_rjs",
         ],
     )
+
     ts_project(
         name = name + "_test",
         testonly = True,
         srcs = test_srcs,
         deps = test_deps,
     )
-    rollup_bundle(
-        name = name + "_rollup",
-        testonly = True,
-        silent = True,
-        sourcemap = "false",
+
+    esbuild(
+        name = name + "_rollup.umd",
         entry_point = test_entry_point,
-        config_file = "//packages/zone.js:rollup.config.js",
+        testonly = True,
+        sourcemap = False,
+        config = "//tools/bazel/esbuild/zone-config:umd",
         deps = [
-            ":" + name + "_test",
-            "@npm//@rollup/plugin-commonjs",
-            "@npm//@rollup/plugin-node-resolve",
-            "@npm//magic-string",
+            ":" + name + "_test_rjs",
         ],
     )
 

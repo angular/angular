@@ -22,7 +22,6 @@ ts_config(
 
 exports_files([
     "tsconfig.json",
-    "rollup.config.js",
 ])
 
 genrule(
