@@ -128,7 +128,6 @@ npm_translate_lock(
         "//packages/platform-server:package.json",
         "//packages/router:package.json",
         "//packages/upgrade:package.json",
-        "//packages/zone.js:package.json",
         "//tools/bazel/rules_angular_store:package.json",
     ],
     npmrc = "//:.npmrc",

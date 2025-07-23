@@ -17,6 +17,6 @@
     "protractor": "7.0.0",
     "selenium-webdriver": "3.6.0",
     "tslib": "2.8.1",
-    "zone.js": "workspace:*"
+    "zone.js": "0.15.1"
   }
 }
