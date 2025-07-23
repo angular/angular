@@ -93,7 +93,6 @@ export class AggregateProperty<TAcc, TItem> {
     );
   }
 
-  // TODO: are `any` and `all` better names?
   /**
    * Creates an aggregate property that reduces its individual values by logically or-ing them.
    */
