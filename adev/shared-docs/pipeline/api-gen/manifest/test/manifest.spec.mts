@@ -14,18 +14,21 @@ describe('api manifest generation', () => {
   it('should generate a manifest from multiple collections', () => {
     const manifest: Manifest = generateManifest([
       {
+        repo: 'angular/router',
         moduleName: '@angular/router',
         entries: [entry({name: 'Router', entryType: EntryType.UndecoratedClass})],
         normalizedModuleName: 'angular_router',
         moduleLabel: 'router',
       },
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [entry({name: 'PI', entryType: EntryType.Constant})],
         normalizedModuleName: 'angular_core',
         moduleLabel: 'core',
       },
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [entry({name: 'foo', entryType: EntryType.Constant})],
         normalizedModuleName: 'angular_core',
@@ -79,12 +82,14 @@ describe('api manifest generation', () => {
   it('should generate a manifest when collections share a symbol with the same name', () => {
     const manifest = generateManifest([
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [entry({name: 'PI', entryType: EntryType.Constant})],
         normalizedModuleName: 'angular_core',
         moduleLabel: 'core',
       },
       {
+        repo: 'angular/router',
         moduleName: '@angular/router',
         entries: [entry({name: 'PI', entryType: EntryType.Constant})],
         normalizedModuleName: 'angular_router',
@@ -129,12 +134,14 @@ describe('api manifest generation', () => {
   it('should union collections for the same module into one manifest', () => {
     const manifest = generateManifest([
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [entry({name: 'PI', entryType: EntryType.Constant})],
         normalizedModuleName: 'angular_core',
         moduleLabel: 'core',
       },
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [entry({name: 'TAO', entryType: EntryType.Constant})],
         normalizedModuleName: 'angular_core',
@@ -172,6 +179,7 @@ describe('api manifest generation', () => {
   it('should mark a manifest entry as deprecated', () => {
     const manifest = generateManifest([
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [
           entry({name: 'PI', entryType: EntryType.Constant, jsdocTags: jsdocTags('deprecated')}),
@@ -212,6 +220,7 @@ describe('api manifest generation', () => {
   it('should not mark a function as deprecated if only one overload is deprecated', () => {
     const manifest = generateManifest([
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [
           functionEntry({
@@ -271,6 +280,7 @@ describe('api manifest generation', () => {
   it('should mark a function as deprecated if all overloads are deprecated', () => {
     const manifest = generateManifest([
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [
           functionEntry({
@@ -330,6 +340,7 @@ describe('api manifest generation', () => {
   it("should mark a fn as deprecated if there's one w/ the same name in another collection", () => {
     const manifest = generateManifest([
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [
           entry({name: 'save', entryType: EntryType.Function, jsdocTags: jsdocTags('deprecated')}),
@@ -338,6 +349,7 @@ describe('api manifest generation', () => {
         moduleLabel: 'core',
       },
       {
+        repo: 'angular/more',
         moduleName: '@angular/more',
         entries: [entry({name: 'save', entryType: EntryType.Function})],
         normalizedModuleName: 'angular_more',
@@ -382,6 +394,7 @@ describe('api manifest generation', () => {
   it('should mark a manifest entry as developerPreview', () => {
     const manifest = generateManifest([
       {
+        repo: 'angular/core',
         moduleName: '@angular/core',
         entries: [
           entry({
