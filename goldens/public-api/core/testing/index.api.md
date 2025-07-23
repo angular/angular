@@ -200,6 +200,7 @@ export interface TestEnvironmentOptions {
 
 // @public (undocumented)
 export interface TestModuleMetadata {
+    animationsEnabled?: boolean;
     // (undocumented)
     declarations?: any[];
     deferBlockBehavior?: DeferBlockBehavior;

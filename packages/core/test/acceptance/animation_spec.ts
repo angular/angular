@@ -15,10 +15,9 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
-import {ANIMATIONS_DISABLED} from '../../src/animation';
 
 describe('Animation', () => {
   if (isNode) {
@@ -52,6 +51,8 @@ describe('Animation', () => {
         show = signal(true);
       }
 
+      TestBed.configureTestingModule({animationsEnabled: true});
+
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
       fixture.detectChanges();
@@ -83,9 +84,6 @@ describe('Animation', () => {
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
 
-      TestBed.configureTestingModule({
-        providers: [{provide: ANIMATIONS_DISABLED, useValue: true}],
-      });
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
       fixture.detectChanges();
@@ -133,6 +131,8 @@ describe('Animation', () => {
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
 
+      TestBed.configureTestingModule({animationsEnabled: true});
+
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
       fixture.detectChanges();
@@ -170,6 +170,7 @@ describe('Animation', () => {
         };
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -199,6 +200,7 @@ describe('Animation', () => {
       class TestComponent {
         show = signal(true);
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -266,6 +268,7 @@ describe('Animation', () => {
         fadeExp = 'fade';
         show = signal(true);
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -346,6 +349,7 @@ describe('Animation', () => {
       class TestComponent {
         show = signal(true);
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -413,6 +417,7 @@ describe('Animation', () => {
       class TestComponent {
         show = signal(true);
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -477,6 +482,7 @@ describe('Animation', () => {
         show = signal(false);
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -500,6 +506,7 @@ describe('Animation', () => {
         slide = signal('slide-in');
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -521,6 +528,7 @@ describe('Animation', () => {
         show = signal(false);
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -552,6 +560,7 @@ describe('Animation', () => {
         };
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -599,6 +608,7 @@ describe('Animation', () => {
         classArray = ['slide-in', 'fade-in'];
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
@@ -621,16 +631,12 @@ describe('Animation', () => {
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
 
-      TestBed.configureTestingModule({
-        providers: [{provide: ANIMATIONS_DISABLED, useValue: true}],
-      });
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
       fixture.detectChanges();
       cmp.show.set(true);
       fixture.detectChanges();
       expect(cmp.show()).toBeTruthy();
-      tick();
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in"');
     }));
 
@@ -643,6 +649,7 @@ describe('Animation', () => {
         encapsulation: ViewEncapsulation.None,
       })
       class TestComponent {}
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
@@ -670,6 +677,7 @@ describe('Animation', () => {
       class TestComponent {
         fadeExp = 'fade-in';
       }
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
@@ -696,6 +704,7 @@ describe('Animation', () => {
         template: '<child-cmp animate.enter="fade-in" />',
       })
       class TestComponent {}
+      TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();

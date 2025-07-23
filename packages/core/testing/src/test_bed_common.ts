@@ -24,6 +24,9 @@ export const THROW_ON_UNKNOWN_PROPERTIES_DEFAULT = false;
 /** Whether defer blocks should use manual triggering or play through normally. */
 export const DEFER_BLOCK_DEFAULT_BEHAVIOR = DeferBlockBehavior.Playthrough;
 
+/** Whether animations are enabled or disabled. */
+export const ANIMATIONS_ENABLED_DEFAULT = false;
+
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
  *
@@ -93,6 +96,12 @@ export interface TestModuleMetadata {
    * Otherwise `div` will be used as the tag name for test components.
    */
   inferTagName?: boolean;
+
+  /**
+   * Whether animate.enter / animate.leave should trigger as normal or be disabled.
+   * Defaults to `true`.
+   */
+  animationsEnabled?: boolean;
 }
 
 /**
