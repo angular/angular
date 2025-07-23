@@ -146,8 +146,6 @@ export class SelectControlValueAccessor
   // Attempting to use afterNextRender with the node injector would evntually
   // run into that already destroyed injector.
   private readonly appRefInjector = inject(ApplicationRef).injector;
-  // TODO(atscott): Remove once destroyed is exposed on EnvironmentInjector
-  private readonly appRefDestroyRef = this.appRefInjector.get(DestroyRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   private _queuedWrite = false;
@@ -173,7 +171,7 @@ export class SelectControlValueAccessor
    * @internal
    */
   _writeValueAfterRender(): void {
-    if (this._queuedWrite || this.appRefDestroyRef.destroyed) {
+    if (this._queuedWrite || this.appRefInjector.destroyed) {
       return;
     }
 
