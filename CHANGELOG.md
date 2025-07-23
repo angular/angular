@@ -1,3 +1,34 @@
+<a name="20.2.0-next.2"></a>
+# 20.2.0-next.2 (2025-07-23)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7767aa640c](https://github.com/angular/angular/commit/7767aa640c542f5058df9322f2bbe974fa8d3c81) | fix | allow more characters in square-bracketed attribute names ([#62742](https://github.com/angular/angular/pull/62742)) |
+| [3171d01452](https://github.com/angular/angular/commit/3171d01452444721dbea53d1d1ca758f38d083a5) | fix | fix detection of directive deps in JIT ([#62666](https://github.com/angular/angular/pull/62666)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5abfe4a899](https://github.com/angular/angular/commit/5abfe4a8999e42ad44e6f1d4414f241094bb8fdb) | feat | add diagnostic for uninvoked functions in text interpolation ([#59191](https://github.com/angular/angular/pull/59191)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6b1f4b9e8b](https://github.com/angular/angular/commit/6b1f4b9e8bb981377e271e6af0d9768ff7f765e9) | feat | add enter and leave animation instructions ([#62682](https://github.com/angular/angular/pull/62682)) |
+| [cec91c0035](https://github.com/angular/angular/commit/cec91c00356ee3974c39c9471b243a2a16149f5b) | feat | add option to infer the tag names of components in tests ([#62283](https://github.com/angular/angular/pull/62283)) |
+| [4138aca91f](https://github.com/angular/angular/commit/4138aca91fe828f0cfbd779d0c456cdea7703bdc) | feat | render ARIA property bindings as attributes ([#62630](https://github.com/angular/angular/pull/62630)) |
+| [593cc8a368](https://github.com/angular/angular/commit/593cc8a3684dfb163bfffa265c5efb3bc7efacd1) | fix | checks if body exists before continuing ([#62768](https://github.com/angular/angular/pull/62768)) |
+| [b8e415a717](https://github.com/angular/angular/commit/b8e415a717fd3747c7bab3f6ea652874082a19bb) | fix | fix change tracking for Resource#hasValue ([#62595](https://github.com/angular/angular/pull/62595)) |
+| [063b5e166f](https://github.com/angular/angular/commit/063b5e166f66bce1abd06c258242212009e76cca) | fix | switch check to documentElement with chaining ([#62773](https://github.com/angular/angular/pull/62773)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [74d99ed379](https://github.com/angular/angular/commit/74d99ed3796a3ced462e327c9b5857e5de4b7cb9) | fix | resolve component resources before bootstrapping in JIT mode ([#62758](https://github.com/angular/angular/pull/62758)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4ac6171b09](https://github.com/angular/angular/commit/4ac6171b09e449c619e0588c366861f8f3bb59be) | feat | Adds support for updateViaCache in provideServiceWorker ([#62721](https://github.com/angular/angular/pull/62721)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.3"></a>
 # 20.1.3 (2025-07-23)
 ### core
