@@ -1,3 +1,4 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@aspect_rules_js//js:defs.bzl", _js_binary = "js_binary", _js_test = "js_test")
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
@@ -12,7 +13,9 @@ load("//tools/bazel:ng_package.bzl", _ng_package = "ng_package")
 load("//tools/bazel:protractor_test.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
 load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _zoneless_web_test_suite = "zoneless_web_test_suite")
+load("//tools/bazel/esbuild:zone_bundle.bzl", _zone_bundle = "zone_bundle")
 
+zone_bundle = _zone_bundle
 js_binary = _js_binary
 js_test = _js_test
 npm_package = _npm_package
@@ -32,6 +35,7 @@ esbuild_checked_in = _esbuild_checked_in
 http_server = _http_server
 api_golden_test = _api_golden_test
 api_golden_test_npm_package = _api_golden_test_npm_package
+copy_to_bin = _copy_to_bin
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):

@@ -365,7 +365,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#49ddfff4b185dccf8aa3d705021bbf3385aa25e8":
   version "0.0.0-1ac037c7ae34201335dc7513f18b0edeef8a14ec"
-  uid "49ddfff4b185dccf8aa3d705021bbf3385aa25e8"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#49ddfff4b185dccf8aa3d705021bbf3385aa25e8"
   dependencies:
     "@google-cloud/spanner" "8.0.0"
@@ -1306,29 +1305,10 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.25.0.tgz#5431a4622ebc5c5bc48ea8b979f82f745a210d25"
   integrity sha512-dtosfsuZCSaqlUe5EyxNdaN7Gow0Y+ZJixdlciytcSieUcB/1lXPFTx6OihxhjgtTHkeFovlQ/QbvArRPnk+nQ==
 
-"@bazel/rollup@5.8.1":
-  version "5.8.1"
-  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-5.8.1.tgz#ee876c35595b456f700d258385412e4f0dd57c15"
-  integrity sha512-Ys+UWbRp1TY2j+z15N+SZgID/nuqAtJTgJDsz0NZVjm8F8KzmgXxLDnBb/cUKFVk83pNOAi84G/bq1tINjMSNA==
-  dependencies:
-    "@bazel/worker" "5.8.1"
-
 "@bazel/runfiles@^6.3.1":
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/@bazel/runfiles/-/runfiles-6.3.1.tgz#3f8824b2d82853377799d42354b4df78ab0ace0b"
   integrity sha512-1uLNT5NZsUVIGS4syuHwTzZ8HycMPyr6POA3FCE4GbMtc4rhoJk8aZKtNIRthJYfL+iioppi+rTfH3olMPr9nA==
-
-"@bazel/terser@5.8.1":
-  version "5.8.1"
-  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-5.8.1.tgz#729a0ec6dcc83e99c4f6d3f2bebb0ff254c10c48"
-  integrity sha512-TPjSDhw1pSZt9P2hd/22IJwl8KCZiJL+u2gB5mghBTCFDVdC5Dgsx135pFtvlqc6LjjOvd3s6dzcQr0YJo2HSg==
-
-"@bazel/worker@5.8.1":
-  version "5.8.1"
-  resolved "https://registry.yarnpkg.com/@bazel/worker/-/worker-5.8.1.tgz#65af7a70dd2f1aaedd6c19330abd9a198f96e7b2"
-  integrity sha512-GMyZSNW3F34f9GjbJqvs1aHyed5BNrNeiDzNJhC1fIizo/UeBM21oBBONIYLBDoBtq936U85VyPZ76JaP/83hw==
-  dependencies:
-    google-protobuf "^3.6.1"
 
 "@colors/colors@1.5.0":
   version "1.5.0"
@@ -7256,6 +7236,11 @@ es6-module-loader@^0.17.4:
   dependencies:
     when "^3.7.2"
 
+esbuild-plugin-umd-wrapper@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/esbuild-plugin-umd-wrapper/-/esbuild-plugin-umd-wrapper-3.0.0.tgz#96a08bef69e13b52ae10c366fab21c9bcc910ef0"
+  integrity sha512-Ht3jrO7r8oF8FgPIhMnfNQvYLHhz2QA1ggPqfBhoVq0VfYNczqJ6nwQ4PhO5UvrUymn+Q0Nc50xpiDbxI+KR2Q==
+
 esbuild-wasm@0.25.8:
   version "0.25.8"
   resolved "https://registry.yarnpkg.com/esbuild-wasm/-/esbuild-wasm-0.25.8.tgz#98c85576a4e67aef51018db2507863838bb1eba7"
@@ -8639,11 +8624,6 @@ google-logging-utils@^1.0.0, google-logging-utils@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/google-logging-utils/-/google-logging-utils-1.1.1.tgz#4a1f44a69a187eb954629c88c5af89c0dfbca51a"
   integrity sha512-rcX58I7nqpu4mbKztFeOAObbomBbHU2oIb/d3tJfF3dizGSApqtSwYJigGCooHdnMyQBIw8BrWyK96w3YXgr6A==
-
-google-protobuf@^3.6.1:
-  version "3.21.4"
-  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.21.4.tgz#2f933e8b6e5e9f8edde66b7be0024b68f77da6c9"
-  integrity sha512-MnG7N936zcKTco4Jd2PX2U96Kf9PxygAPKBug+74LHzmHXmceN16MmRcdgZv+DGef/S9YvQAfRsNCn4cjf9yyQ==
 
 googleapis-common@^8.0.2-rc.0:
   version "8.0.2-rc.0"
