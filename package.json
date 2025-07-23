@@ -176,7 +176,7 @@
     "@typescript/vfs": "^1.5.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "adm-zip": "^0.5.10",
-    "angular-split": "^19.0.0",
+    "angular-split": "^20.0.0",
     "check-side-effects": "0.0.23",
     "cldr": "7.9.0",
     "cldrjs": "0.5.5",

@@ -412,8 +412,8 @@ importers:
         specifier: ^0.5.10
         version: 0.5.16
       angular-split:
-        specifier: ^19.0.0
-        version: 19.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        specifier: ^20.0.0
+        version: 20.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       check-side-effects:
         specifier: 0.0.23
         version: 0.0.23
@@ -655,8 +655,8 @@ importers:
         specifier: 5.34.1
         version: 5.34.1
       angular-split:
-        specifier: 19.0.0
-        version: 19.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        specifier: 20.0.0
+        version: 20.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       crelt:
         specifier: 1.0.6
         version: 1.0.6
@@ -866,7 +866,7 @@ importers:
     dependencies:
       '@angular/core':
         specifier: ^20.1.0-next
-        version: 20.1.2(@angular/compiler@packages+compiler)(zone.js@packages+zone.js)
+        version: 20.1.3(@angular/compiler@packages+compiler)(zone.js@packages+zone.js)
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -2152,11 +2152,11 @@ packages:
       - supports-color
     dev: false
 
-  /@angular/core@20.1.2(@angular/compiler@packages+compiler)(zone.js@packages+zone.js):
-    resolution: {integrity: sha512-8jAvpkHoXHSH0HoqNVgPstSMGmC0oaYN93HW7K2rMRxj1Uhtahkeb/7/kfnj7yLi5FDfm98ofOFT4Lxzf2eZXQ==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.1.2.tgz}
+  /@angular/core@20.1.3(@angular/compiler@packages+compiler)(zone.js@packages+zone.js):
+    resolution: {integrity: sha512-haQypZGbKKsClDbR0I4eK+PmKGaZ8b/9QDwNYzInaEqHrTX/rkFXu0L0ejTTznElutQuMM6OPh6aVfnJ9nRr2g==, tarball: https://registry.npmjs.org/@angular/core/-/core-20.1.3.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/compiler': 20.1.2
+      '@angular/compiler': 20.1.3
       zone.js: ~0.15.0
     peerDependenciesMeta:
       '@angular/compiler':
@@ -8222,8 +8222,8 @@ packages:
     resolution: {integrity: sha512-vqsT6zwu80cZ8RY7qRQBZuy6Fq5X7/N5hkV9LzNT0c8b546rw4ErGK6muW1u2JnDKYa7+jJuaGM702bWir4HGw==, tarball: https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.8.3.tgz}
     dev: false
 
-  /angular-split@19.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
-    resolution: {integrity: sha512-vQqXWLcCimFmInu2lpGKIfS9FtYBgKmoWenPjeYkHSRdWmb7HLGlQoNPj1oALrwdhIWFPdySgp0BIXDe2IAepQ==, tarball: https://registry.npmjs.org/angular-split/-/angular-split-19.0.0.tgz}
+  /angular-split@20.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
+    resolution: {integrity: sha512-MtoR8NeFgzBDqiXaSbXPGFqpYsNsaI5W8w2mM/JpYyyU9hkrQ8b3GVhxraR/kGFGEDVmfEUGaqmy2yG0hraOHQ==, tarball: https://registry.npmjs.org/angular-split/-/angular-split-20.0.0.tgz}
     peerDependencies:
       '@angular/common': '>=19.0.0'
       '@angular/core': '>=19.0.0'
