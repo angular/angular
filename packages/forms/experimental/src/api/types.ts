@@ -163,9 +163,9 @@ export type Field<TValue, TKey extends string | number = string | number> = (() 
  * @template TValue The type of the data which the field is wrapped around.
  * @template TKey The type of the property key which this field resides under in its parent.
  */
-export type MaybeField<T, TKey extends string | number = string | number> =
-  | (T & undefined)
-  | Field<Exclude<T, undefined>, TKey>;
+export type MaybeField<TValue, TKey extends string | number = string | number> =
+  | (TValue & undefined)
+  | Field<Exclude<TValue, undefined>, TKey>;
 
 /**
  * Contains all of the state (e.g. value, statuses, etc.) associated with a `Field`, exposed as
