@@ -32,9 +32,7 @@ const areAnimationSupported =
   (typeof ngServerMode === 'undefined' || !ngServerMode) &&
   typeof document !== 'undefined' &&
   // tslint:disable-next-line:no-toplevel-property-access
-  typeof document.body !== 'undefined' &&
-  // tslint:disable-next-line:no-toplevel-property-access
-  typeof document.body.getAnimations === 'function';
+  typeof document?.documentElement?.getAnimations === 'function';
 
 const noOpAnimationComplete = () => {};
 
