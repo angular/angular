@@ -276,11 +276,11 @@ export class LogicContainer {
   /** Logic that determines if the field is read-only. */
   readonly readonly: BooleanOrLogic;
   /** Logic that produces synchronous validation errors for the field. */
-  readonly syncErrors: ArrayMergeIgnoreLogic<ValidationError, false | null>;
+  readonly syncErrors: ArrayMergeIgnoreLogic<ValidationError, null>;
   /** Logic that produces synchronous validation errors for the field's subtree. */
-  readonly syncTreeErrors: ArrayMergeIgnoreLogic<WithField<ValidationError>, false | null>;
+  readonly syncTreeErrors: ArrayMergeIgnoreLogic<WithField<ValidationError>, null>;
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
-  readonly asyncErrors: ArrayMergeIgnoreLogic<WithField<ValidationError> | 'pending', false | null>;
+  readonly asyncErrors: ArrayMergeIgnoreLogic<WithField<ValidationError> | 'pending', null>;
   /** A map of aggregate properties to the `AbstractLogic` instances that compute their values. */
   private readonly aggregateProperties = new Map<
     AggregateProperty<unknown, unknown>,
@@ -301,12 +301,11 @@ export class LogicContainer {
     this.hidden = new BooleanOrLogic(predicates);
     this.disabledReasons = new ArrayMergeLogic(predicates);
     this.readonly = new BooleanOrLogic(predicates);
-    this.syncErrors = ArrayMergeIgnoreLogic.ignoreFalseAndNull<ValidationError>(predicates);
-    this.syncTreeErrors =
-      ArrayMergeIgnoreLogic.ignoreFalseAndNull<WithField<ValidationError>>(predicates);
-    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreFalseAndNull<
-      WithField<ValidationError> | 'pending'
-    >(predicates);
+    this.syncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError>(predicates);
+    this.syncTreeErrors = ArrayMergeIgnoreLogic.ignoreNull<WithField<ValidationError>>(predicates);
+    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<WithField<ValidationError> | 'pending'>(
+      predicates,
+    );
   }
 
   /**

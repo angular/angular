@@ -79,7 +79,6 @@ export interface DisabledReason {
 export type ValidationResult<E extends ValidationError = ValidationError> =
   | readonly E[]
   | E
-  | false
   | null
   | undefined;
 
@@ -96,7 +95,6 @@ export type TreeValidationResult<E extends ValidationError = ValidationError> =
   | readonly (E | WithField<E>)[]
   | E
   | WithField<E>
-  | false
   | null
   | undefined;
 
@@ -122,7 +120,6 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
 export type TreeValidationResultWithField<E extends ValidationError = ValidationError> =
   | readonly WithField<E>[]
   | WithField<E>
-  | false
   | null
   | undefined;
 
