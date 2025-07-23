@@ -19,9 +19,9 @@ export class DOMTestComponentRenderer extends TestComponentRenderer {
     super();
   }
 
-  override insertRootElement(rootElId: string) {
+  override insertRootElement(rootElId: string, tagName = 'div') {
     this.removeAllRootElementsImpl();
-    const rootElement = getDOM().getDefaultDocument().createElement('div');
+    const rootElement = getDOM().getDefaultDocument().createElement(tagName);
     rootElement.setAttribute('id', rootElId);
     this._doc.body.appendChild(rootElement);
   }

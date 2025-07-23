@@ -2400,6 +2400,58 @@ describe('TestBed', () => {
       });
     });
   });
+
+  describe('inferTagName', () => {
+    it('should not infer the tag name of the root component by default', () => {
+      @Component({selector: 'my-test-comp[foo]', template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('DIV');
+    });
+
+    it('should be able to opt into inferring the tag of the root component from the selector', () => {
+      @Component({selector: 'my-test-comp[foo]', template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp, {inferTagName: true});
+      expect(fixture.nativeElement.tagName).toBe('MY-TEST-COMP');
+    });
+
+    it('should fall back to `div` if the test component does not have a tag selector', () => {
+      @Component({selector: '[foo]', template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp, {inferTagName: true});
+      expect(fixture.nativeElement.tagName).toBe('DIV');
+    });
+
+    it('should fall back to `ng-component` if the test component does not have any selector', () => {
+      @Component({template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp, {inferTagName: true});
+      expect(fixture.nativeElement.tagName).toBe('NG-COMPONENT');
+    });
+
+    it('should be able to opt into inferring the tag name through configureTestingModule', () => {
+      @Component({selector: 'my-test-comp', template: ''})
+      class TestComp {}
+
+      TestBed.configureTestingModule({inferTagName: true});
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('MY-TEST-COMP');
+    });
+
+    it('should give precedence to inferTagName from createComponent over configureTestingModule', () => {
+      @Component({selector: 'my-test-comp', template: ''})
+      class TestComp {}
+
+      TestBed.configureTestingModule({inferTagName: false});
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('DIV');
+    });
+  });
 });
 
 describe('TestBed defer block behavior', () => {
