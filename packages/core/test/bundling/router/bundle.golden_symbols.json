@@ -753,6 +753,7 @@
       "includeViewProviders",
       "increaseElementDepthCount",
       "incrementInitPhaseFlags",
+      "inferTagNameFromDefinition",
       "initDomAdapter",
       "initFeatures",
       "initTNodeFlags",

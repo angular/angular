@@ -29,6 +29,7 @@ export {
   NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
 } from './metadata/ng_module_def';
 export {getLContext as ɵgetLContext} from './render3/context_discovery';
+export {inferTagNameFromDefinition as ɵinferTagNameFromDefinition} from './render3/component_ref';
 export {
   NG_COMP_DEF as ɵNG_COMP_DEF,
   NG_DIR_DEF as ɵNG_DIR_DEF,
