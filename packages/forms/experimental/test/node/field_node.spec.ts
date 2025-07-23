@@ -35,8 +35,6 @@ interface TreeData {
   next: TreeData;
 }
 
-const noopSchema: SchemaOrSchemaFn<unknown> = () => {};
-
 describe('FieldNode', () => {
   it('can get a child of a key that exists', () => {
     const f = form(
@@ -44,7 +42,6 @@ describe('FieldNode', () => {
         a: 1,
         b: 2,
       }),
-      noopSchema,
       {injector: TestBed.inject(Injector)},
     );
     expect(f.a).toBeDefined();
@@ -58,7 +55,6 @@ describe('FieldNode', () => {
           a: 1,
           b: 2,
         }),
-        noopSchema,
         {injector: TestBed.inject(Injector)},
       );
       const child = f.a;
@@ -67,7 +63,7 @@ describe('FieldNode', () => {
 
     it('should get the same instance when asking for a child multiple times', () => {
       const value = signal<{a: number; b?: number}>({a: 1, b: 2});
-      const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(value, {injector: TestBed.inject(Injector)});
       const child = f.a;
       value.set({a: 3});
       expect(f.a).toBe(child);
@@ -80,7 +76,6 @@ describe('FieldNode', () => {
         a: 1,
         b: 2,
       }),
-      noopSchema,
       {
         injector: TestBed.inject(Injector),
       },
@@ -94,7 +89,6 @@ describe('FieldNode', () => {
         a: 1,
         b: 2,
       }),
-      noopSchema,
       {injector: TestBed.inject(Injector)},
     );
     const childA = computed(() => f.a);
@@ -107,7 +101,6 @@ describe('FieldNode', () => {
         a: 1,
         b: 2,
       }),
-      noopSchema,
       {injector: TestBed.inject(Injector)},
     );
     const childA = computed(() => f.a);
@@ -121,7 +114,6 @@ describe('FieldNode', () => {
           a: 1,
           b: 2,
         }),
-        noopSchema,
         {injector: TestBed.inject(Injector)},
       );
       expect(f().dirty()).toBe(false);
@@ -134,7 +126,6 @@ describe('FieldNode', () => {
           a: 1,
           b: 2,
         }),
-        noopSchema,
         {injector: TestBed.inject(Injector)},
       );
       expect(f().dirty()).toBe(false);
@@ -159,7 +150,6 @@ describe('FieldNode', () => {
           a: 1,
           b: 2,
         }),
-        noopSchema,
         {injector: TestBed.inject(Injector)},
       );
       expect(f().dirty()).toBe(false);
@@ -174,7 +164,6 @@ describe('FieldNode', () => {
           a: 1,
           b: 2,
         }),
-        noopSchema,
         {injector: TestBed.inject(Injector)},
       );
 
@@ -185,7 +174,7 @@ describe('FieldNode', () => {
 
     it('does not consider children that get removed', () => {
       const value = signal<{a: number; b?: number}>({a: 1, b: 2});
-      const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(value, {injector: TestBed.inject(Injector)});
       expect(f().dirty()).toBe(false);
 
       f.b!().markAsDirty();
@@ -204,7 +193,6 @@ describe('FieldNode', () => {
           a: 1,
           b: 2,
         }),
-        noopSchema,
         {injector: TestBed.inject(Injector)},
       );
       expect(f().touched()).toBe(false);
@@ -216,7 +204,6 @@ describe('FieldNode', () => {
           a: 1,
           b: 2,
         }),
-        noopSchema,
         {injector: TestBed.inject(Injector)},
       );
       expect(f().touched()).toBe(false);
@@ -231,7 +218,6 @@ describe('FieldNode', () => {
           a: 1,
           b: 2,
         }),
-        noopSchema,
         {injector: TestBed.inject(Injector)},
       );
       expect(f().touched()).toBe(false);
@@ -246,7 +232,6 @@ describe('FieldNode', () => {
           a: 1,
           b: 2,
         }),
-        noopSchema,
         {injector: TestBed.inject(Injector)},
       );
 
@@ -257,7 +242,7 @@ describe('FieldNode', () => {
 
     it('does not consider children that get removed', () => {
       const value = signal<{a: number; b?: number}>({a: 1, b: 2});
-      const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(value, {injector: TestBed.inject(Injector)});
       expect(f().touched()).toBe(false);
 
       f.b!().markAsTouched();
@@ -281,7 +266,7 @@ describe('FieldNode', () => {
 
   describe('arrays', () => {
     it('should only have child nodes for elements that exist', () => {
-      const f = form(signal([1, 2]), noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(signal([1, 2]), {injector: TestBed.inject(Injector)});
       expect(f[0]).toBeDefined();
       expect(f[1]).toBeDefined();
       expect(f[2]).not.toBeDefined();
@@ -341,7 +326,7 @@ describe('FieldNode', () => {
 
     it('should support removing elements', () => {
       const value = signal([1, 2, 3]);
-      const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
+      const f = form(value, {injector: TestBed.inject(Injector)});
       f[2]().markAsTouched();
       expect(f().touched()).toBe(true);
 
@@ -352,7 +337,7 @@ describe('FieldNode', () => {
     describe('tracking', () => {
       it('maintains identity across value moves', () => {
         const value = signal([{name: 'Alex'}, {name: 'Kirill'}]);
-        const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
+        const f = form(value, {injector: TestBed.inject(Injector)});
         const alex = f[0];
         const kirill = f[1];
 
@@ -364,7 +349,7 @@ describe('FieldNode', () => {
 
       it('maintains identity across value update', () => {
         const value = signal([{name: 'Alex'}, {name: 'Kirill'}]);
-        const f = form(value, noopSchema, {injector: TestBed.inject(Injector)});
+        const f = form(value, {injector: TestBed.inject(Injector)});
         const alex = f[0];
         const kirill = f[1];
 
