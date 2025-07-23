@@ -244,7 +244,7 @@ export class FetchBackend implements HttpBackend {
       const chunksAll = this.concatChunks(chunks, receivedLength);
       try {
         const contentType = response.headers.get(CONTENT_TYPE_HEADER) ?? '';
-        body = this.parseBody(request, chunksAll, contentType);
+        body = this.parseBody(request, chunksAll, contentType, status);
       } catch (error) {
         // Body loading or parsing failed
         observer.error(
@@ -302,12 +302,27 @@ export class FetchBackend implements HttpBackend {
     request: HttpRequest<any>,
     binContent: Uint8Array<ArrayBuffer>,
     contentType: string,
+    status: number,
   ): string | ArrayBuffer | Blob | object | null {
     switch (request.responseType) {
       case 'json':
         // stripping the XSSI when present
         const text = new TextDecoder().decode(binContent).replace(XSSI_PREFIX, '');
-        return text === '' ? null : (JSON.parse(text) as object);
+        if (text === '') {
+          return null;
+        }
+        try {
+          return JSON.parse(text) as object;
+        } catch (e: unknown) {
+          // Allow handling non-JSON errors (!) as plain text, same as the XHR
+          // backend. Without this special sauce, any non-JSON error would be
+          // completely inaccessible downstream as the `HttpErrorResponse.error`
+          // would be set to the `SyntaxError` from then failing `JSON.parse`.
+          if (status < 200 || status >= 300) {
+            return text;
+          }
+          throw e;
+        }
       case 'text':
         return new TextDecoder().decode(binContent);
       case 'blob':

@@ -213,6 +213,15 @@ describe('FetchBackend', async () => {
     expect(res.error.data).toBe('some data');
   });
 
+  it('handles a text error response when a json success response was expected', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+    fetchMock.mockFlush(HttpStatusCode.InternalServerError, 'Error', 'simple text error');
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as any as HttpErrorResponse;
+    expect(res.error).toBe('simple text error');
+  });
+
   it('handles a json error response with XSSI prefix', async () => {
     const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
     fetchMock.mockFlush(
@@ -224,6 +233,19 @@ describe('FetchBackend', async () => {
     expect(events.length).toBe(2);
     const res = events[1] as any as HttpErrorResponse;
     expect(res.error.data).toBe('some data');
+  });
+
+  it('handles a text error response with XSSI prefix when a json success response was expected', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+    fetchMock.mockFlush(
+      HttpStatusCode.InternalServerError,
+      'Error',
+      XSSI_PREFIX + 'simple text error',
+    );
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as any as HttpErrorResponse;
+    expect(res.error).toBe('simple text error');
   });
 
   it('handles a json string response', async () => {
