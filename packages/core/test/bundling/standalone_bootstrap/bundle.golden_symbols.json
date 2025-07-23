@@ -433,6 +433,7 @@
       "importProvidersFrom",
       "includeViewProviders",
       "incrementInitPhaseFlags",
+      "inferTagNameFromDefinition",
       "initDomAdapter",
       "initFeatures",
       "initTNodeFlags",

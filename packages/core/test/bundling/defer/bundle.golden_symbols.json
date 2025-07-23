@@ -525,6 +525,7 @@
       "includeViewProviders",
       "increaseElementDepthCount",
       "incrementInitPhaseFlags",
+      "inferTagNameFromDefinition",
       "initFeatures",
       "initTNodeFlags",
       "initializeDirectives",

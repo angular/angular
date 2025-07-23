@@ -541,6 +541,7 @@
       "importProvidersFrom",
       "includeViewProviders",
       "incrementInitPhaseFlags",
+      "inferTagNameFromDefinition",
       "initDisconnectedNodes",
       "initDomAdapter",
       "initFeatures",
