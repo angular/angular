@@ -12,7 +12,7 @@
     "@angular/platform-browser-dynamic": "workspace:*",
     "@angular/router": "workspace:*",
     "@angular/upgrade": "workspace:*",
-    "@types/node": "24.0.15",
+    "@types/node": "24.1.0",
     "@types/selenium-webdriver": "3.0.7",
     "protractor": "7.0.0",
     "selenium-webdriver": "3.6.0",
