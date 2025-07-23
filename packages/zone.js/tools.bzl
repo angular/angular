@@ -1,22 +1,6 @@
 """Provides the rollup and dist file generation macro."""
 
-load("//tools:defaults.bzl", "rollup_bundle")
-
-def zone_rollup_bundle(module_name, entry_point):
-    config_file = "//packages/zone.js:rollup.config.js"
-    rollup_bundle(
-        name = module_name + "-rollup",
-        config_file = config_file,
-        entry_point = entry_point + ".ts",
-        silent = True,
-        sourcemap = "false",
-        deps = [
-            "//packages/zone.js/lib",
-            "@npm//@rollup/plugin-commonjs",
-            "@npm//@rollup/plugin-node-resolve",
-            "@npm//magic-string",
-        ],
-    )
+load("//tools:defaults2.bzl", "zone_bundle")
 
 def copy_dist(module_name, module_format, output_module_name, suffix, umd):
     umd_output = umd
@@ -43,22 +27,38 @@ def generate_rollup_bundle(bundles):
         rollup_config = b[1]
         if rollup_config.get("entrypoint") != None:
             entry_point = rollup_config.get("entrypoint")
-            zone_rollup_bundle(
-                module_name = module_name + "-es5",
-                entry_point = entry_point,
+            zone_bundle(
+                name = module_name + "-es5-rollup",
+                entry_point = entry_point + ".js",
+                external = rollup_config.get("external"),
+                deps = [
+                    "//packages/zone.js/lib:lib_rjs",
+                ],
             )
-            zone_rollup_bundle(
-                module_name = module_name + "-es2015",
-                entry_point = entry_point,
+            zone_bundle(
+                name = module_name + "-es2015-rollup",
+                entry_point = entry_point + ".js",
+                external = rollup_config.get("external"),
+                deps = [
+                    "//packages/zone.js/lib:lib_rjs",
+                ],
             )
         else:
-            zone_rollup_bundle(
-                module_name = module_name + "-es5",
-                entry_point = rollup_config.get("es5"),
+            zone_bundle(
+                name = module_name + "-es5-rollup",
+                entry_point = rollup_config.get("es5") + ".js",
+                external = rollup_config.get("external"),
+                deps = [
+                    "//packages/zone.js/lib:lib_rjs",
+                ],
             )
-            zone_rollup_bundle(
-                module_name = module_name + "-es2015",
-                entry_point = rollup_config.get("es2015"),
+            zone_bundle(
+                name = module_name + "-es2015-rollup",
+                entry_point = rollup_config.get("es2015") + ".js",
+                external = rollup_config.get("external"),
+                deps = [
+                    "//packages/zone.js/lib:lib_rjs",
+                ],
             )
 
 def generate_dist(bundles, output_format, umd):

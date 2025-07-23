@@ -1,0 +1,74 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+
+package(default_visibility = ["//visibility:public"])
+
+js_library(
+    name = "base",
+    srcs = ["base.mjs"],
+)
+
+js_library(
+    name = "esm_lib",
+    srcs = ["esm.mjs"],
+    deps = [
+        ":base",
+    ],
+)
+
+esbuild(
+    name = "esm",
+    config = {
+        "target": "node22",
+        "format": "esm",
+        "legalComments": "none",
+        "minify": True,
+        "platform": "node",
+    },
+    entry_point = "esm.mjs",
+    sourcemap = False,
+    deps = [":esm_lib"],
+)
+
+js_library(
+    name = "iife_lib",
+    srcs = ["iife.mjs"],
+    deps = [":base"],
+)
+
+esbuild(
+    name = "iife",
+    config = {
+        "target": "node22",
+        "format": "esm",
+        "legalComments": "none",
+        "minify": True,
+        "platform": "node",
+    },
+    entry_point = "iife.mjs",
+    sourcemap = False,
+    deps = [":iife_lib"],
+)
+
+js_library(
+    name = "umd_lib",
+    srcs = ["umd.mjs"],
+    deps = [
+        ":base",
+        "//:node_modules/esbuild-plugin-umd-wrapper",
+    ],
+)
+
+esbuild(
+    name = "umd",
+    config = {
+        "target": "node22",
+        "format": "esm",
+        "legalComments": "none",
+        "minify": False,
+        "platform": "node",
+    },
+    entry_point = "umd.mjs",
+    sourcemap = False,
+    deps = [":umd_lib"],
+)
