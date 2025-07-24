@@ -33,7 +33,7 @@ export declare namespace PathKind {
   export interface Root {
     /**
      * The `ɵɵTYPE` is constructed to allow the `extends` clause on `Child` and `Item` to narrow the
-     * type. Another way to think about this is, if we have a function that expects to this kind of
+     * type. Another way to think about this is, if we have a function that expects this kind of
      * path, the `ɵɵTYPE` lists the kinds of path we are allowed to pass to it.
      */
     [ɵɵTYPE]: 'root' | 'child' | 'item';
