@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "appData": {
+      "type": "object",
+      "description": "This section enables you to pass any data you want that describes this particular version of the app. The SwUpdate service includes that data in the update notifications. Many apps use this section to provide additional information for the display of UI popups, notifying users of the available update."
+    },
+    "index": {
+      "type": "string",
+      "description": "Specifies the file that serves as the index page to satisfy navigation requests. Usually this is '/index.html'."
+    },
+    "assetGroups": {
+      "type": "array",
+      "description": "Assets are resources that are part of the app version that update along with the app. They can include resources loaded from the page's origin as well as third-party resources loaded from CDNs and other external URLs. As not all such external URLs may be known at build time, URL patterns can be matched.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "It identifies this particular group of assets between versions of the configuration."
+          },
+          "installMode": {
+            "enum": [
+              "prefetch",
+              "lazy"
+            ],
+            "default": "prefetch",
+            "description": "Determines how the resources are initially cached. 'prefetch' tells the Angular service worker to fetch every single listed resource while it's caching the current version of the app. This is bandwidth-intensive but ensures resources are available whenever they're requested, even if the browser is currently offline. 'lazy' does not cache any of the resources up front. Instead, the Angular service worker only caches resources for which it receives requests. This is an on-demand caching mode. Resources that are never requested will not be cached. This is useful for things like images at different resolutions, so the service worker only caches the correct assets for the particular screen and orientation."
+          },
+          "updateMode": {
+            "enum": [
+              "prefetch",
+              "lazy"
+            ],
+            "description": "For resources already in the cache, determines the caching behavior when a new version of the app is discovered. Any resources in the group that have changed since the previous version are updated in accordance with 'updateMode'. 'prefetch' tells the service worker to download and cache the changed resources immediately. 'lazy' tells the service worker to not cache those resources. Instead, it treats them as unrequested and waits until they're requested again before updating them. An 'updateMode' of lazy is only valid if the 'installMode' is also lazy. Defaults to the value `installMode` is set to."
+          },
+          "resources": {
+            "type": "object",
+            "description": "This section describes the resources to cache.",
+            "properties": {
+              "files": {
+                "type": "array",
+                "description": "Lists patterns that match files in the distribution directory. These can be single files or glob-like patterns that match a number of files.",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "urls": {
+                "type": "array",
+                "description": "Includes both URLs and URL patterns that will be matched at runtime. These resources are not fetched directly and do not have content hashes, but they will be cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service. (Negative glob patterns are not supported and '?' will be matched literally; i.e. it will not match any character other than '?'.)",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "cacheQueryOptions" : {
+            "type": "object",
+            "description": "Provide options that are passed to Cache#match.",
+            "properties" : {
+              "ignoreSearch": {
+                "type": "boolean",
+                "description": "Whether to ignore the query string in the URL."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "name",
+          "resources"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "dataGroups": {
+      "type": "array",
+      "description": "Policies for caching data requests, such as API requests and other data dependencies. Unlike asset resources, data requests are not versioned along with the app.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "It identifies this particular group of data between versions of the configuration."
+          },
+          "urls": {
+            "type": "array",
+            "description": "A list of URL patterns. URLs that match these patterns will be cached according to this data group's policy. (Negative glob patterns are not supported and '?' will be matched literally; i.e. it will not match any character other than '?'.)",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "version": {
+            "type": "integer",
+            "default": 1,
+            "description": "Occasionally APIs change formats in a way that is not backward-compatible. A new version of the app may not be compatible with the old API format and thus may not be compatible with existing cached resources from that API. 'version' provides a mechanism to indicate that the resources being cached have been updated in a backwards-incompatible way, and that the old cache entries—those from previous versions—should be discarded."
+          },
+          "cacheConfig": {
+            "type": "object",
+            "description": "This section defines the policy by which matching requests will be cached.",
+            "properties": {
+              "maxSize": {
+                "type": "integer",
+                "description": "The maximum number of entries, or responses, in the cache. Open-ended caches can grow in unbounded ways and eventually exceed storage quotas, calling for eviction."
+              },
+              "maxAge": {
+                "type": "string",
+                "description": "Indicates how long responses are allowed to remain in the cache before being considered invalid and evicted. 'maxAge' is a duration string, using the following unit suffixes: d= days, h= hours, m= minutes, s= seconds, u= milliseconds. For example, the string '3d12h' will cache content for up to three and a half days."
+              },
+              "timeout": {
+                "type": "string",
+                "description": "This duration string specifies the network timeout. The network timeout is how long the Angular service worker will wait for the network to respond before using a cached response, if configured to do so. 'timeout' is a duration string, using the following unit suffixes: d= days, h= hours, m= minutes, s= seconds, u= milliseconds. For example, the string '5s30u' will translate to five seconds and 30 milliseconds of network timeout."
+              },
+              "refreshAhead": {
+                "type": "string",
+                "description": "This duration string specifies the time ahead of the expiration of a cached resource when the Angular service worker should proactively attempt to refresh the resource from the network. The `refreshAhead` duration is an optional configuration that determines how much time before the expiration of a cached response the service worker should initiate a request to refresh the resource from the network."
+              },
+              "strategy": {
+                "enum": [
+                  "freshness",
+                  "performance"
+                ],
+                "default": "performance",
+                "description": "The Angular service worker can use either of two caching strategies for data resources. 'performance', the default, optimizes for responses that are as fast as possible. If a resource exists in the cache, the cached version is used. This allows for some staleness, depending on the 'maxAge', in exchange for better performance. This is suitable for resources that don't change often; for example, user avatar images. 'freshness' optimizes for currency of data, preferentially fetching requested data from the network. Only if the network times out, according to 'timeout', does the request fall back to the cache. This is useful for resources that change frequently; for example, account balances."
+              },
+              "cacheOpaqueResponses": {
+                "type": "boolean",
+                "description": "Whether to cache opaque responses or not. The default value is 'false' for groups with the 'performance' strategy and 'true' for groups with the 'freshness' strategy. Opaque responses are special in that it is not possible for the service worker to distinguish successful responses from errors. Therefore, be careful with caching opaque responses, especially when combined with a strategy/configuration that could result in a response being retained in the cache for a long time."
+              }
+            },
+            "required": [
+              "maxSize",
+              "maxAge"
+            ],
+            "additionalProperties": false
+          },
+          "cacheQueryOptions" : {
+            "type": "object",
+            "description": "Provide options that are passed to Cache#match.",
+            "properties" : {
+              "ignoreSearch": {
+                "type": "boolean",
+                "description": "Whether to ignore the query string in the URL."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "name",
+          "urls",
+          "cacheConfig"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "navigationUrls": {
+      "type": "array",
+      "description": "This optional section enables you to specify a custom list of URLs or URL patterns that will be redirected to the 'index' file.",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "navigationRequestStrategy": {
+      "enum": [
+        "freshness",
+        "performance"
+      ],
+      "default": "performance",
+      "description": "The Angular service worker can use two request strategies for navigation requests. 'performance', the default, skips navigation requests. The other strategy, 'freshness', forces all navigation requests through the network."
+    },
+    "applicationMaxAge": {
+      "type": "string",
+      "description": "Indicates how long the entire application is allowed to remain in the cache before being considered invalid and bypassed. 'maxAge' is a duration string, using the following unit suffixes: d= days, h= hours, m= minutes, s= seconds, u= milliseconds. For example, the string '3d12h' will cache content for up to three and a half days."
+    }
+  },
+  "required": [
+    "index"
+  ],
+  "additionalProperties": false
+}

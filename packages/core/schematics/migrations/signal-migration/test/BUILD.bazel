@@ -1,0 +1,125 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary")
+load("@devinfra//bazel/integration:index.bzl", "integration_test")
+load("//tools:defaults.bzl", "nodejs_binary")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_runners_lib",
+    testonly = True,
+    srcs = [
+        "batch_runner.ts",
+        "golden_test_runner.ts",
+    ],
+    deps = [
+        "//:node_modules/chalk",
+        "//:node_modules/tinyglobby",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+    ],
+)
+
+nodejs_binary(
+    name = "golden_test_runner",
+    testonly = True,
+    data = [":test_runners_lib"],
+    entry_point = ":golden_test_runner.js",
+)
+
+js_binary(
+    name = "batch_runner",
+    testonly = True,
+    data = [":test_runners_lib"],
+    entry_point = ":batch_runner.js",
+)
+
+integration_test(
+    name = "test",
+    srcs = [
+        "golden.txt",
+        "//packages/core/schematics/migrations/signal-migration/test/golden-test:test_files",
+    ],
+    commands = [
+        "$(rootpath //packages/core/schematics/migrations/signal-migration/src:bin) ./golden-test/tsconfig.json --insert-todos",
+        "$(rootpath :golden_test_runner) ./golden-test ./golden.txt",
+    ],
+    data = [
+        ":golden_test_runner",
+        "//packages:package_json",
+        "//packages/core/schematics/migrations/signal-migration/src:bin",
+    ],
+    environment = {
+        "BAZEL_BINDIR": ".",
+        "FORCE_COLOR": "3",
+    },
+)
+
+integration_test(
+    name = "test_best_effort",
+    srcs = [
+        "golden_best_effort.txt",
+        "//packages/core/schematics/migrations/signal-migration/test/golden-test:test_files",
+    ],
+    commands = [
+        "$(rootpath //packages/core/schematics/migrations/signal-migration/src:bin) ./golden-test/tsconfig.json --best-effort-mode --insert-todos",
+        "$(rootpath :golden_test_runner) ./golden-test ./golden_best_effort.txt",
+    ],
+    data = [
+        ":golden_test_runner",
+        "//packages:package_json",
+        "//packages/core/schematics/migrations/signal-migration/src:bin",
+    ],
+    environment = {
+        "BAZEL_BINDIR": ".",
+        "FORCE_COLOR": "3",
+    },
+)
+
+integration_test(
+    name = "test_batch",
+    size = "large",
+    srcs = [
+        "golden.txt",
+        "//packages/core/schematics/migrations/signal-migration/test/golden-test:test_files",
+    ],
+    commands = [
+        "$(rootpath :batch_runner) analyze ./golden-test",
+        "$(rootpath :batch_runner) combine-all ./golden-test",
+        "$(rootpath :batch_runner) global-meta ./golden-test",
+        "$(rootpath :batch_runner) migrate ./golden-test",
+        "$(rootpath :golden_test_runner) ./golden-test ./golden.txt",
+    ],
+    data = [
+        ":batch_runner",
+        ":golden_test_runner",
+        "//packages:package_json",
+        "//packages/core/schematics/migrations/signal-migration/src:batch_test_bin",
+        "//packages/core/schematics/migrations/signal-migration/src:bin",
+    ],
+    environment = {
+        "FORCE_COLOR": "3",
+    },
+    tags = [
+        # Only used for manual verification at this point.
+        # The test is extremely expensive due to no caching between units.
+        "manual",
+    ],
+    tool_mappings = {
+        "//packages/core/schematics/migrations/signal-migration/src:batch_test_bin": "migration",
+    },
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["migration_spec.ts"],
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/core/schematics/migrations/signal-migration/src:src_rjs",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test_jasmine",
+    data = [":test_lib_rjs"],
+)

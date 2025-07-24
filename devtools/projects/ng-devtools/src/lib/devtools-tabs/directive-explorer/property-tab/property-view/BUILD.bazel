@@ -1,0 +1,69 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+_STYLE_SRCS = [
+    "property-editor.component.scss",
+    "property-preview.component.scss",
+    "property-tab-body.component.scss",
+    "property-view.component.scss",
+    "property-view-body.component.scss",
+    "property-view-header.component.scss",
+    "property-view-tree.component.scss",
+    "dependency-viewer.component.scss",
+]
+
+_STYLE_LABELS = [
+    src[:-len(".component.scss")].replace("-", "_") + "_styles"
+    for src in _STYLE_SRCS
+]
+
+[
+    sass_binary(
+        name = label,
+        src = src,
+        deps = [
+            "//devtools/projects/ng-devtools/src/styles:typography",
+        ],
+    )
+    for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
+]
+
+ng_project(
+    name = "property-view",
+    srcs = [
+        "dependency-viewer.component.ts",
+        "property-editor.component.ts",
+        "property-preview.component.ts",
+        "property-tab-body.component.ts",
+        "property-view.component.ts",
+        "property-view-body.component.ts",
+        "property-view-header.component.ts",
+        "property-view-tree.component.ts",
+    ],
+    angular_assets = [
+        "property-view.component.html",
+        "property-view-tree.component.html",
+        "property-view-header.component.html",
+        "property-view-body.component.html",
+        "property-preview.component.html",
+        "property-editor.component.html",
+        "property-tab-body.component.html",
+        "dependency-viewer.component.html",
+    ] + _STYLE_LABELS,
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
+        "//:node_modules/@angular/material",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver:property-resolver_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view/resolution-path:resolution-path_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button:docs-ref-button_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)

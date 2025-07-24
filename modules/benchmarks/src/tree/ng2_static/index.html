@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Prevent the browser from requesting any favicon. -->
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <h2>Params</h2>
+    <form>
+      Depth:
+      <input type="number" name="depth" placeholder="depth" value="10" />
+      <br />
+      <button>Apply</button>
+    </form>
+
+    <h2>Ng2 Static Tree Benchmark</h2>
+    <p>
+      <button id="destroyDom">destroyDom</button>
+      <button id="createDom">createDom</button>
+      <button id="updateDomProfile">profile updateDom</button>
+      <button id="createDomProfile">profile createDom</button>
+    </p>
+
+    <div>
+      <tree id="root"></tree>
+    </div>
+
+    <!-- BEGIN-EXTERNAL -->
+    <script src="/angular/modules/node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="/angular/modules/node_modules/zone.js/bundles/zone.umd.js"></script>
+    <!-- END-EXTERNAL -->
+
+    <!-- Needs to be named `app_bundle` for sync into Google. -->
+    <script src="/app_bundle.js"></script>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+// Pill
+
+@mixin docs-pill() {
+  .docs-pill {
+    display: flex;
+    align-items: center;
+    // Default blue
+    --pill-accent: var(--bright-blue);
+    background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
+    // Darken the text a bit for contrast
+    color: color-mix(in srgb, var(--pill-accent) 70%, var(--full-contrast));
+    padding-inline: 0.75rem;
+    padding-block: 0.375rem;
+    border-radius: 2.75rem;
+    border: 0;
+    transition: background 0.3s ease;
+    font-family: var(--inter-font);
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.4rem;
+    letter-spacing: -0.00875rem;
+
+    &:hover {
+      background: color-mix(in srgb, var(--pill-accent) 15%, transparent);
+    }
+
+    .docs-icon-small {
+      margin-inline-start: 0.25rem;
+    }
+
+    .docs-dark-mode & {
+      // Lighten the text a bit for contrast
+      color: color-mix(in srgb, var(--pill-accent) 60%, white 70%);
+      background: color-mix(in srgb, var(--pill-accent) 10%, white 2%);
+      &:hover {
+        background: color-mix(in srgb, var(--pill-accent) 20%, white 10%);
+      }
+    }
+  }
+
+  .docs-pill-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block: 0.75rem;
+    .docs-pill {
+      // TODO: This gradient supports longer rows
+      // we may want to refine it
+      &:nth-child(6n + 1) {
+        --pill-accent: var(--hot-red);
+      }
+      &:nth-child(6n + 2) {
+        --pill-accent: var(--hot-pink);
+      }
+      &:nth-child(6n + 3) {
+        --pill-accent: var(--electric-violet);
+      }
+      &:nth-child(6n + 4) {
+        --pill-accent: var(--french-violet);
+      }
+      &:nth-child(6n + 5) {
+        --pill-accent: var(--indigo-blue);
+      }
+      &:nth-child(6n + 6) {
+        --pill-accent: var(--bright-blue);
+      }
+    }
+  }
+}

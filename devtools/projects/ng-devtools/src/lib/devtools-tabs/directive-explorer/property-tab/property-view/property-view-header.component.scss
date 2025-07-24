@@ -1,0 +1,40 @@
+@use '../../../../../styles/typography';
+
+mat-toolbar {
+  @extend %body-medium-01;
+  padding: 0.25rem 0.625rem;
+  justify-content: space-between;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 25px;
+  height: auto;
+  border-bottom: 1px solid var(--color-separator);
+}
+
+.mat-icon-button {
+  font-size: 16px;
+  line-height: 10px;
+}
+
+button {
+  padding: 0;
+  background: none;
+  border: none;
+  height: 24px;
+  width: 24px;
+  cursor: pointer;
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 0.75;
+  }
+
+  &:active {
+    opacity: 1;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 1;
+  }
+}

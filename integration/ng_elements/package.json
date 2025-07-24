@@ -1,0 +1,36 @@
+{
+  "name": "angular-integration",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/elements": "file:../../dist/packages-dist/elements",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "file:../../node_modules/tslib",
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../node_modules/zone.js"
+  },
+  "devDependencies": {
+    "@babel/core": "file:../../node_modules/@babel/core",
+    "@rollup/plugin-babel": "file:../../node_modules/@rollup/plugin-babel",
+    "@rollup/plugin-node-resolve": "file:../../node_modules/@rollup/plugin-node-resolve",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
+    "concurrently": "3.4.0",
+    "lite-server": "2.2.2",
+    "protractor": "file:../../node_modules/protractor",
+    "rollup": "file:../../node_modules/rollup"
+  },
+  "scripts": {
+    "build": "yarn ngc && yarn rollup -c rollup.config.mjs",
+    "test": "yarn build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
+    "serve": "lite-server -c e2e/browser.config.json",
+    "preprotractor": "tsc -p e2e",
+    "protractor": "protractor e2e/protractor.config.js"
+  },
+  "private": true
+}

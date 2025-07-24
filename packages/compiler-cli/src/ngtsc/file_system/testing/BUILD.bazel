@@ -1,0 +1,17 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "testing",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+        "//packages:types_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+    ],
+)

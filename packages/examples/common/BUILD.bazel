@@ -1,0 +1,69 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "http_server")
+load("//tools:defaults2.bzl", "ng_project", "protractor_web_test_suite", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "common_examples",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/router:router_rjs",
+    ],
+)
+
+ts_project(
+    name = "common_tests_lib",
+    testonly = True,
+    srcs = glob(["**/*_spec.ts"]),
+    tsconfig = "//packages/examples:tsconfig_e2e",
+    deps = [
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/protractor",
+        "//packages/examples/test-utils:test-utils_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+esbuild(
+    name = "app_bundle",
+    config = {
+        "resolveExtensions": [".js"],
+    },
+    entry_point = ":main.ts",
+    tsconfig = "//packages/examples:tsconfig_build",
+    deps = [
+        ":common_examples_rjs",
+        "//packages/examples:tsconfig_build",
+    ],
+)
+
+http_server(
+    name = "devserver",
+    srcs = ["//packages/examples:index.html"],
+    additional_root_paths = ["angular/packages/examples"],
+    deps = [":app_bundle"],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    server = ":devserver",
+    deps = [
+        ":common_tests_lib_rjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)

@@ -1,0 +1,29 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib_rjs",
+    ],
+)

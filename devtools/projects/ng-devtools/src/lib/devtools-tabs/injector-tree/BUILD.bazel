@@ -1,0 +1,64 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//:__subpackages__"])
+
+sass_binary(
+    name = "injector_tree_styles",
+    src = "injector-tree.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "injector_tree",
+    srcs = [
+        "injector-tree.component.ts",
+    ],
+    angular_assets = [
+        ":injector_tree_styles",
+        "injector-tree.component.html",
+    ],
+    deps = [
+        ":injector_tree_fns_rjs",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@types/d3",
+        "//:node_modules/d3",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree/injector-providers:injector-providers_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button:docs-ref-button_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":injector_tree_fns_test_lib_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "injector_tree_fns_test_lib",
+    srcs = [
+        "injector-tree-fns.spec.ts",
+    ],
+    deps = [
+        ":injector_tree_fns_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "injector_tree_fns",
+    srcs = ["injector-tree-fns.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)

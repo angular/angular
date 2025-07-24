@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularSelfClosingTagMigration",
+  "title": "Angular Self Closing Tag Migration Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path to the directory where all templates should be migrated.",
+      "x-prompt": "Which directory do you want to migrate?",
+      "default": "./"
+    }
+  }
+}

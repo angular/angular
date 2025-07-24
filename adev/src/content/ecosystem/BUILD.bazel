@@ -1,0 +1,16 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "ecosystem",
+    srcs = glob([
+        "*.md",
+    ]),
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = ["//adev/src/content/ecosystem/rxjs-interop:guide_files"] + glob(["**/*.md"]),
+    visibility = ["//adev:__subpackages__"],
+)

@@ -1,0 +1,14 @@
+<h2 highlight>{{ title }}</h2>
+
+<div class="grid grid-pad">
+  <!-- #docregion dashboard-hero -->
+  @for (hero of heroes; track hero) {
+    <dashboard-hero
+      class="col-1-4"
+      [hero]="hero"
+      (selected)="gotoDetail($event)"
+    >
+    </dashboard-hero>
+  }
+  <!-- #enddocregion dashboard-hero -->
+</div>

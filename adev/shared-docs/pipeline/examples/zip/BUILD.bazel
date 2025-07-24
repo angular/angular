@@ -1,0 +1,54 @@
+load("//adev/shared-docs:defaults.bzl", "esbuild", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "zip",
+    srcs = glob(
+        [
+            "*.mts",
+        ],
+        exclude = [
+            "index.mts",
+        ],
+    ),
+    enable_runtime_rnjs_interop = True,
+    deps = [
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/fflate",
+        "//adev:node_modules/tinyglobby",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/pipeline/examples/shared:shared_rjs",
+        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
+    ],
+)
+
+ts_project(
+    name = "index",
+    srcs = [
+        "index.mts",
+    ],
+    enable_runtime_rnjs_interop = True,
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":zip_rjs",
+        "//adev:node_modules/@types/node",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    entry_point = ":index.mts",
+    format = "esm",
+    output = "zip.mjs",
+    platform = "node",
+    target = "es2022",
+    tsconfig = "//adev/shared-docs:tsconfig_build",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index_rjs",
+    ],
+)

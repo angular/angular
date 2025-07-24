@@ -1,0 +1,14 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+ts_project(
+    name = "helpers",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    visibility = ["//packages/localize/tools/test:__subpackages__"],
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+    ],
+)

@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "outDir": "../built/e2e",
+    "types": ["jasmine", "jasminewd2"],
+  }
+}

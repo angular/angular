@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig-test.json",
+  "compilerOptions": {
+    "strict": true
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "_enableSelectorless": true
+  }
+}

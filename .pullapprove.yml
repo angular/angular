@@ -1,0 +1,581 @@
+####################################################################################
+####################################################################################
+#                               Angular Code Ownership                             #
+####################################################################################
+####################################################################################
+#
+#  Configuration of code ownership and review approvals for the angular/angular repo.
+#
+#  More info: https://docs.pullapprove.com/
+#
+# =========================================================
+#  General rules / philosophy
+# =========================================================
+#
+#  - We trust that people do the right thing and won't approve changes they don't feel confident reviewing
+#  - We enforce that only approved PRs are merged ensuring that unreviewed code isn't accidentally merged
+#  - We distribute approval rights as much as possible to help us scale better
+#  - Groups have one or two global approvers groups as fallbacks:
+#    - @angular/fw-global-approvers: for approving minor changes, large-scale refactorings, and emergency situations.
+#    - @angular/fw-global-approvers-for-docs-only-changes: for approving minor documentation-only changes that don't require engineering review
+#  - A small number of file groups have very limited number of reviewers because incorrect changes to the files they guard would have serious consequences (e.g. security, public api)
+#
+#  Configuration nuances:
+#
+#  - This configuration works in conjunction with the protected branch settings that require all changes to be made via pull requests with at least one approval.
+#  - This approval can come from an appropriate codeowner, or any repo collaborator (person with write access) if the PR is authored by a codeowner.
+#  - All groups whose pullapprove rules are matched will be required for overall approval.
+#
+#  NOTE:
+#    In the case of emergency, the repo administrators which include the current angular caretaker
+#    can bypass this reviewer approval requirement, this is expected as a last resort and to be
+#    done exceedingly sparingly.
+
+####################################################################################
+#  GitHub usernames
+####################################################################################
+# See reviewer list under `required-minimum-review` group.  Team member names and
+# usernames are managed there.
+
+####################################################################################
+#  Approval Groups
+####################################################################################
+# =========================================================
+# @angular/framework-global-approvers
+# =========================================================
+#  Used for approving minor changes, large-scale refactorings, and in emergency situations.
+#
+# alxhub
+# jelbourn
+# josephperrott
+#
+# =========================================================
+# @angular/framework-global-approvers-for-docs-only-changes
+# =========================================================
+#  Used for approving minor documentation-only changes that don't require engineering review.
+
+version: 3
+
+# availability:
+#   users_unavailable: ['atscott']
+
+# Meta field that goes unused by PullApprove to allow for defining aliases to be
+# used throughout the config.
+meta:
+  # Note: Because all inactive groups start as pending, we are only checking pending and rejected active groups.
+  no-groups-above-this-pending: &no-groups-above-this-pending len(groups.active.pending.exclude("required-minimum-review")) == 0
+  no-groups-above-this-rejected: &no-groups-above-this-rejected len(groups.active.rejected.exclude("required-minimum-review")) == 0
+
+  defaults: &defaults
+    reviews:
+      # Authors provide their approval implicitly, this approval allows for a reviewer
+      # from a group not to need a review specifically for an area of the repository
+      # they own.  This is coupled with the `required-minimum-review` group which requires
+      # that all PRs are reviewed by at least one team member who is not the author of
+      # the PR.
+      author_value: 1
+
+# turn on 'draft' support
+# https://docs.pullapprove.com/config/github-api-version/
+# https://developer.github.com/v3/previews/#draft-pull-requests
+github_api_version: 'shadow-cat-preview'
+
+# https://docs.pullapprove.com/config/overrides/
+# Note that overrides are processed in order.
+overrides:
+  # For PRs which are still being worked on, either still in draft mode or indicated through WIP in
+  # title or label, PullApprove stays in a pending state until its ready for review.
+  - if: "draft or 'WIP' in title or 'PR state: WIP' in labels"
+    status: pending
+    explanation: 'Waiting to send reviews as PR is WIP'
+  # Disable PullApprove on specific PRs by adding the `PullApprove: disable` label
+  - if: "'PullApprove: disable' in labels"
+    status: success
+    explanation: "PullApprove skipped because of 'PullApprove: disable' label"
+  # If no file matching based groups are active, report this pull request as failing. Most likely,
+  # the PR author would need to update the PullApprove config, or create new group.
+  - if: len(groups.active.exclude("required-minimum-review").exclude("global-*")) == 0 and len(groups.approved.include("global-*")) == 0
+    status: failure
+    explanation: 'At least one group must match this PR. Please update an existing review group, or create a new group.'
+  # If any global dev-infra approval is given the status should be passing.
+  - if: len(groups.approved.include("global-dev-infra-approvers")) == 1
+    status: success
+    explanation: 'Passing as globally approved by dev-infra'
+  # If any global docs approval is given the status should be passing.
+  - if: len(groups.approved.include("global-docs-approvers")) == 1
+    status: success
+    explanation: 'Passing as globally approved by docs'
+  # If any global approval is given the status should be passing.
+  - if: len(groups.approved.include("global-approvers")) == 1
+    status: success
+    explanation: 'Passing as globally approved by global approvers'
+
+groups:
+  # =========================================================
+  #  Framework: Compiler
+  # =========================================================
+  fw-compiler:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/compiler/**/{*,.*}',
+          'packages/examples/compiler/**/{*,.*}',
+          'packages/compiler-cli/**/{*,.*}',
+          'packages/language-service/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - ~alxhub
+        - AndrewKushnir
+        - atscott
+        - crisbeto
+        - devversion
+        - thePunderWoman
+        - kirjs
+        - JoostK
+        - mmalerba
+
+  # =========================================================
+  #  Framework: General (most code in our packages)
+  # =========================================================
+  fw-general:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files.exclude('packages/core/primitives/*'), [
+          'contributing-docs/public-api-surface.md',
+          'integration/**/{*,.*}',
+          'modules/**/{*,.*}',
+          'packages/animations/**/{*,.*}',
+          'packages/benchpress/**/{*,.*}',
+          'packages/common/**/{*,.*}',
+          'packages/core/**/{*,.*}',
+          'packages/docs/**/{*,.*}',
+          'packages/elements/**/{*,.*}',
+          'packages/examples/**/{*,.*}',
+          'packages/forms/**/{*,.*}',
+          'packages/localize/**/{*,.*}',
+          'packages/misc/**/{*,.*}',
+          'packages/platform-browser/**/{*,.*}',
+          'packages/platform-browser-dynamic/**/{*,.*}',
+          'packages/platform-server/**/{*,.*}',
+          'packages/ssr/**/{*,.*}',
+          'packages/router/**/{*,.*}',
+          'packages/service-worker/**/{*,.*}',
+          'packages/upgrade/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - ~alxhub
+        - AndrewKushnir
+        - atscott
+        - crisbeto
+        - devversion
+        - kirjs
+        - ~jelbourn
+        - thePunderWoman
+        - ~pkozlowski-opensource
+        - mmalerba
+
+  # =========================================================
+  #  Framework: Security-sensitive files which require extra review
+  # =========================================================
+  fw-security:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/core/src/sanitization/**/{*,.*}',
+          'packages/core/test/linker/security_integration_spec.ts',
+          'packages/compiler/src/schema/**/{*,.*}',
+          'packages/platform-browser/src/security/**/{*,.*}',
+          'packages/tsconfig-tsec-base.json',
+          'packages/tsec-exemption.json',
+          'tools/tsec.bzl',
+          'adev/src/content/guide/security.md',
+          'adev/src/content/examples/security/**/{*,.*}',
+          ])
+    reviewers:
+      users:
+        - ~alxhub
+        - jelbourn
+        - josephperrott
+        - ~pkozlowski-opensource
+    reviews:
+      request: -1 # request reviews from everyone
+      required: 2 # require at least 2 approvals
+      reviewed_for: required
+
+  # =========================================================
+  #  zone.js
+  # =========================================================
+  zone-js:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files.exclude('yarn.lock'), [
+          'packages/zone.js/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - ~JiaLiPassion
+        - ~jelbourn
+        - ~alxhub
+        - AndrewKushnir
+        - atscott
+        - crisbeto
+        - devversion
+        - kirjs
+        - thePunderWoman
+        - ~pkozlowski-opensource
+        - mmalerba
+
+  # =========================================================
+  #  Tooling: Compiler API shared with Angular CLI
+  #
+  #  Changing this API might break Angular CLI, so we require
+  #  the CLI team to approve changes here.
+  # =========================================================
+  tooling-cli-shared-api:
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/compiler-cli/private/tooling.ts',
+          'packages/localize/tools/index.ts'
+        ])
+    reviewers:
+      users:
+        - alan-agius4
+        - clydin
+        - dgp1130
+    reviews:
+      request: -1 # request reviews from everyone
+      required: 2 # require at least 2 approvals
+      reviewed_for: required
+
+  # =========================================================
+  #  Documentation content
+  # =========================================================
+  angular-dev:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'adev/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - alan-agius4
+        - ~alxhub
+        - AndrewKushnir
+        - atscott
+        - bencodezen
+        - crisbeto
+        - kirjs
+        - ~JeanMeche
+        - jelbourn
+        - thePunderWoman
+        - devversion
+        - josephperrott
+        - ~pkozlowski-opensource
+        - mgechev
+        - MarkTechson
+        - mmalerba
+        - ~hawkgs
+
+  # =========================================================
+  #  Angular DevTools
+  # =========================================================
+  devtools:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'devtools/**/{*,.*}',
+          ])
+    reviewers:
+      users:
+        - AleksanderBodurri
+        - ~devversion
+        - dgp1130
+        - hawkgs
+        - jkrems
+        - ~josephperrott
+        - JeanMeche
+        - milomg
+
+  # =========================================================
+  #  Dev-infra
+  # =========================================================
+  dev-infra:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files.exclude('.pullapprove.yml'), [
+          '{*,.*}',
+          '.devcontainer/**/{*,.*}',
+          '.github/**/{*,.*}',
+          '.husky/**/{*,.*}',
+          '.gemini/**/{*,.*}',
+          '.ng-dev/**/{*,.*}',
+          '.vscode/**/{*,.*}',
+          '.yarn/**/{*,.*}',
+          'contributing-docs/*.md',
+          'contributing-docs/images/**/{*,.*}',
+          'goldens/{*,.*}',
+          'goldens/public-api/manage.js',
+          'modules/{*,.*}',
+          'packages/{*,.*}',
+          'packages/examples/test-utils/**/{*,.*}',
+          'packages/private/**/{*,.*}',
+          'packages/examples/{*,.*}',
+          'scripts/**/{*,.*}',
+          'third_party/**/{*,.*}',
+          'tools/bazel-repo-patches/**/{*,.*}',
+          'tools/contributing-stats/**/{*,.*}',
+          'tools/esm-interop/**/{*,.*}',
+          'tools/gulp-tasks/**/{*,.*}',
+          'tools/legacy-saucelabs/**/{*,.*}',
+          'tools/manual_api_docs/**/{*,.*}',
+          'tools/npm-patches/**/{*,.*}',
+          'tools/rxjs/**/{*,.*}',
+          'tools/saucelabs-daemon/**/{*,.*}',
+          'tools/saucelabs/**/{*,.*}',
+          'tools/symbol-extractor/**/{*,.*}',
+          'tools/testing/**/{*,.*}',
+          'tools/tslint/**/{*,.*}',
+          'tools/utils/**/{*,.*}',
+          'tools/yarn/**/{*,.*}',
+          'tools/{*,.*}',
+          '**/*.bzl'
+          ])
+      - author not in ["angular-robot"]
+    reviewers:
+      users:
+        - devversion
+        - josephperrott
+
+  # =========================================================
+  #  Renovate Changes
+  # =========================================================
+  renovate-changes:
+    <<: *defaults
+    conditions:
+      - author in ["angular-robot"]
+    reviewers:
+      users:
+        - ~alan-agius4
+      teams:
+        - angular-caretaker
+        - framework-team
+
+  # =========================================================
+  #  Public API
+  # =========================================================
+  public-api:
+    <<: *defaults
+    conditions:
+      - *no-groups-above-this-pending
+      - *no-groups-above-this-rejected
+      - >
+        contains_any_globs(files.exclude("goldens/public-api/manage.js"), [
+          'goldens/public-api/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - AndrewKushnir
+        - ~alxhub
+        - atscott
+        - ~jelbourn
+        - thePunderWoman
+        - ~pkozlowski-opensource
+        - kirjs
+        - mmalerba
+        - crisbeto
+        - devversion
+        - JeanMeche
+        - ~jkrems
+        - ~iteriani
+        - ~tbondwilkinson
+        - ~rahatarmanahmed
+    reviews:
+      request: 3 # Request reviews from 3 people
+      required: 2 # Require that 2 people approve
+      reviewed_for: required
+
+  # ================================================
+  #  Size tracking
+  # ================================================
+  size-tracking:
+    <<: *defaults
+    conditions:
+      - *no-groups-above-this-pending
+      - *no-groups-above-this-rejected
+      - >
+        contains_any_globs(files, [
+          'integration/**/size.json'
+          ])
+    reviewers:
+      users:
+        - ~alxhub
+        - AndrewKushnir
+        - atscott
+        - kirjs
+        - ~jelbourn
+        - thePunderWoman
+        - ~pkozlowski-opensource
+        - mmalerba
+    reviews:
+      request: 2 # Request reviews from 2 people
+      required: 1 # Require that 1 person approve
+      reviewed_for: required
+
+  ####################################################################################
+  #  Special Cases
+  ####################################################################################
+
+  # =========================================================
+  #  Code Ownership
+  # =========================================================
+  code-ownership:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          '.pullapprove.yml'
+        ])
+    reviewers:
+      users:
+        - ~alxhub
+        - AndrewKushnir
+        - andrewseguin
+        - dgp1130
+        - ~jelbourn
+        - thePunderWoman
+        - josephperrott
+
+  # =========================================================
+  #  Primitives
+  # =========================================================
+
+  # Angular team required reviews
+  primitives:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/core/primitives/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - ~pkozlowski-opensource # Pawel Kozlowski
+        - ~alxhub # Alex Rickabaugh
+        - thePunderWoman # Jessica Janiuk
+        - AndrewKushnir # Andrew Kushnir
+        - atscott # Andrew Scott
+    labels:
+      pending: 'requires: TGP'
+      approved: 'requires: TGP'
+      rejected: 'requires: TGP'
+
+  # External team required reviews
+  primitives-shared:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'packages/core/primitives/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - csmick # Cameron Smick
+        - mturco # Matt Turco
+        - iteriani # Thomas Nguyen
+        - tbondwilkinson # Tom Wilkinson
+        - rahatarmanahmed # Rahat Ahmed
+        - ENAML # Ethan Cline
+    labels:
+      pending: 'requires: TGP'
+      approved: 'requires: TGP'
+      rejected: 'requires: TGP'
+
+  ####################################################################################
+  # Override managed result groups
+  #
+  # Groups which are only used to determine the value of an override are managed at
+  # the bottom of the list as they will set a status on the PR directly, they
+  # therefore can always be process last without concern.
+  ####################################################################################
+
+  # =========================================================
+  # Global Approvers
+  #
+  # All reviews performed for global approvals require using
+  # the `Reviewed-for:` specifier to set the approval
+  # specificity as documented at:
+  # https://docs.pullapprove.com/reviewed-for/
+  # =========================================================
+  global-approvers:
+    type: optional
+    reviewers:
+      teams:
+        - framework-global-approvers
+    reviews:
+      request: 0
+      required: 1
+      reviewed_for: required
+
+  # =========================================================
+  # Global Approvers For Docs
+  #
+  # All reviews performed for global docs approvals require
+  # using the `Reviewed-for:` specifier to set the approval
+  # specificity as documented at:
+  # https://docs.pullapprove.com/reviewed-for/
+  # =========================================================
+  global-docs-approvers:
+    type: optional
+    reviewers:
+      teams:
+        - framework-global-approvers-for-docs-only-changes
+    reviews:
+      request: 0
+      required: 1
+      reviewed_for: required
+
+  # =========================================================
+  # Global Approvers For Dev-Infra changes
+  #
+  # All reviews performed for global dev-infra approvals
+  # require using the `Reviewed-for:` specifier to set the
+  # approval specificity as documented at:
+  # https://docs.pullapprove.com/reviewed-for/
+  # =========================================================
+  global-dev-infra-approvers:
+    type: optional
+    reviewers:
+      teams:
+        - dev-infra-framework
+    reviews:
+      request: 0
+      required: 1
+      reviewed_for: required
+
+  # =========================================================
+  # Require review on all PRs
+  #
+  # All PRs require at least one review.  This rule will not
+  # request any reviewers, however will require that at least
+  # one review is provided before the group is satisfied.
+  # =========================================================
+  required-minimum-review:
+    reviews:
+      request: 0 # Do not request any reviews from the reviewer group
+      required: 1 # Require that all PRs have approval from at least one of the users in the group
+      author_value: 0 # The author of the PR cannot provide an approval for themself
+      reviewed_for: ignored # All reviews apply to this group whether noted via Reviewed-for or not
+    reviewers:
+      teams:
+        # Any member of the team can provide a review to perform the minimum review required
+        - team

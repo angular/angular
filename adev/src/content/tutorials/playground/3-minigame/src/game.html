@@ -1,0 +1,194 @@
+<div class="wrapper">
+  <div class="col">
+    <h1>Goal: {{ goal() }}º</h1>
+    <div id="quote" [class.show]="rotateVal() >= 74">"{{ updatedInteractions().quote }}"</div>
+    <div
+      id="angle"
+      (mouseup)="stopDragging()"
+      (mouseleave)="stopDragging()"
+      (mousemove)="mouseMove($event)"
+      (touchmove)="touchMove($event)"
+      (touchend)="stopDragging()"
+      (touchcanceled)="stopDragging()"
+    >
+      <div class="arrow" id="static" #staticArrow>
+        <div class="center"></div>
+        @if(rotateVal() >= 20) {
+        <div class="svg" [style.transform]="getIndicatorRotation()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75 75">
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="var(--orange-red)" />
+                <stop offset="50%" stop-color="var(--vivid-pink)" />
+                <stop offset="100%" stop-color="var(--electric-violet)" />
+              </linearGradient>
+            </defs>
+            <path
+              [style.stroke-dashoffset]="getIndicatorStyle()"
+              class="svg-arrow"
+              stroke="url(#gradient)"
+              d="m64.37,45.4c-3.41,11.62-14.15,20.1-26.87,20.1-15.46,0-28-12.54-28-28s12.54-28,28-28,28,12.54,28,28"
+            />
+            <polyline
+              class="svg-arrow"
+              stroke="url(#gradient)"
+              points="69.63 36.05 65.29 40.39 60.96 36.05"
+            />
+          </svg>
+        </div>
+        }
+      <div class="face">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 103.41 84.33" [class.show]="rotateVal() >= 74">
+          @switch(updatedInteractions().face) {
+          @case(0) {
+            <g>
+              <path class="c" d="m65.65,55.83v11c0,7.73-6.27,14-14,14h0c-7.73,0-14-6.27-14-14v-11"/>
+              <line class="c" x1="51.52" y1="65.83" x2="51.65" y2="57.06"/>
+              <path class="c" d="m19.8,44.06c7.26,7.89,18.83,13,31.85,13s24.59-5.11,31.85-13"/>
+              <path class="b" d="m3,14.33c3.35-5.71,9.55-9.54,16.65-9.54,6.66,0,12.53,3.37,16,8.5"/>
+              <path class="b" d="m100.3,14.33c-3.35-5.71-9.55-9.54-16.65-9.54-6.66,0-12.53,3.37-16,8.5"/>
+            </g>
+          }
+          @case(1) {
+            <g>
+              <path class="d" d="m22.11,48.83c-.08.65-.14,1.3-.14,1.97,0,11.94,13.37,21.62,29.87,21.62s29.87-9.68,29.87-21.62c0-.66-.06-1.32-.14-1.97H22.11Z"/>
+              <circle cx="19.26" cy="12.56" r="12.37"/>
+              <circle cx="84.25" cy="12.56" r="12.37"/>
+              <circle class="e" cx="14.86" cy="8.94" r="4.24"/>
+              <circle class="e" cx="80.29" cy="8.76" r="4.24"/>
+            </g>
+          }
+          @case(2) {
+            <g>
+              <circle cx="19.2" cy="12.72" r="12.37"/>
+              <circle cx="84.19" cy="12.72" r="12.37"/>
+              <circle class="e" cx="14.8" cy="9.09" r="4.24"/>
+              <circle class="e" cx="80.22" cy="8.92" r="4.24"/>
+              <path class="c" d="m19.45,44.33c7.26,7.89,18.83,13,31.85,13s24.59-5.11,31.85-13"/>
+            </g>
+          }
+          @case(3) {
+            <g>
+              <path class="b" d="m3.11,14.33c3.35-5.71,9.55-9.54,16.65-9.54,6.66,0,12.53,3.37,16,8.5"/>
+              <path class="b" d="m100.41,14.33c-3.35-5.71-9.55-9.54-16.65-9.54-6.66,0-12.53,3.37-16,8.5"/>
+              <path class="c" d="m19.91,44.06c7.26,7.89,18.83,13,31.85,13s24.59-5.11,31.85-13"/>
+            </g>
+          }
+          @case(4) {
+            <g>
+              <circle cx="19.26" cy="12.5" r="12.37"/>
+              <circle class="e" cx="14.86" cy="8.88" r="4.24"/>
+              <path class="c" d="m19.51,44.11c7.26,7.89,18.83,13,31.85,13s24.59-5.11,31.85-13"/>
+              <path class="b" d="m100.08,14.33c-3.35-5.71-9.55-9.54-16.65-9.54-6.66,0-12.53,3.37-16,8.5"/>
+            </g>
+          }
+          @default {
+            <g>
+              <circle cx="19.14" cy="12.44" r="12.37"/>
+              <circle cx="84.13" cy="12.44" r="12.37"/>
+              <circle class="e" cx="14.74" cy="8.82" r="4.24"/>
+              <circle class="e" cx="80.17" cy="8.64" r="4.24"/>
+              <circle class="b" cx="52.02" cy="53.33" r="14"/>
+            </g>
+          }
+        }
+        </svg>
+      </div>
+    </div>
+      <div
+        class="grabbable"
+        [style.transform]="getRotation()"
+        (mousedown)="mouseDown()"
+        (touchstart)="mouseDown()"
+      >
+        <div class="arrow" id="moving"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="overall-stats">
+      <h4>level: {{ gameStats().level + 1 }}</h4>
+      <h4>
+        accuracy: {{ totalAccuracyPercentage() > 0 ? (totalAccuracyPercentage() | number : '1.1-1') + '%' : '??' }}
+      </h4>
+      <button id="guess" class="gradient-button" (click)="guess()" [disabled]="isGuessModalOpen()"><span></span><span>guess</span></button>
+    </div>
+  </div>
+  @if(isGuessModalOpen()) {
+    <dialog id="result" cdkTrapFocus>
+      <button id="close" (click)="close()">X</button>
+      <div class="result-stats">
+        <h2>goal: {{ goal() }}º</h2>
+        <h2>actual: {{ rotateVal() | number : '1.1-1' }}º</h2>
+      </div>
+      <h2 class="accuracy">
+        <span>{{ animatedAccuracy() | number : '1.1-1' }}%</span>
+        accurate
+      </h2>
+      <svg class="personified" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 119.07 114.91">
+        <g>
+          <polyline class="i" points="1.5 103.62 56.44 1.5 40.73 8.68"/>
+          <line class="i" x1="59.1" y1="18.56" x2="56.44" y2="1.5"/>
+          <polyline class="i" points="1.61 103.6 117.57 102.9 103.74 92.56"/>
+          <line class="i" x1="103.86" y1="113.41" x2="117.57" y2="102.9"/>
+          <path class="i" d="m12.97,84.22c6.4,4.04,10.47,11.28,10.2,19.25"/>
+        </g>
+        @if(animatedAccuracy() > 95) {
+          <g>
+            <path class="i" d="m52.68,72.99c-.04.35-.07.71-.07,1.07,0,6.5,7.28,11.77,16.26,11.77s16.26-5.27,16.26-11.77c0-.36-.03-.72-.07-1.07h-32.37Z"/>
+            <circle cx="51.13" cy="53.25" r="6.73"/>
+            <circle cx="86.5" cy="53.25" r="6.73"/>
+            <circle class="g" cx="48.73" cy="51.28" r="2.31"/>
+            <circle class="g" cx="84.35" cy="51.18" r="2.31"/>
+          </g>
+        } @else if (animatedAccuracy() > 80) {
+          <g>
+            <path class="h" d="m52.59,70.26c3.95,4.3,10.25,7.08,17.34,7.08s13.38-2.78,17.34-7.08"/>
+            <path class="h" d="m43.44,54.08c1.82-3.11,5.2-5.19,9.06-5.19,3.62,0,6.82,1.84,8.71,4.63"/>
+            <path class="h" d="m96.41,54.08c-1.82-3.11-5.2-5.19-9.06-5.19-3.62,0-6.82,1.84-8.71,4.63"/>
+          </g>
+        } @else if (animatedAccuracy() > 60) {
+          <g>
+            <path class="h" d="m77.38,76.81v5.99c0,4.21-3.41,7.62-7.62,7.62h0c-4.21,0-7.62-3.41-7.62-7.62v-5.99"/>
+            <line class="h" x1="69.69" y1="82.25" x2="69.76" y2="77.47"/>
+            <path class="h" d="m52.42,70.4c3.95,4.3,10.25,7.08,17.34,7.08s13.38-2.78,17.34-7.08"/>
+            <path class="h" d="m43.28,54.21c1.82-3.11,5.2-5.19,9.06-5.19,3.62,0,6.82,1.84,8.71,4.63"/>
+            <path class="h" d="m96.24,54.21c-1.82-3.11-5.2-5.19-9.06-5.19-3.62,0-6.82,1.84-8.71,4.63"/>
+          </g>
+        } @else if (animatedAccuracy() > 40) {
+          <g>
+            <circle cx="51.55" cy="53.15" r="6.73"/>
+            <circle cx="86.92" cy="53.15" r="6.73"/>
+            <circle class="g" cx="49.15" cy="51.17" r="2.31"/>
+            <circle class="g" cx="84.77" cy="51.08" r="2.31"/>
+            <line class="h" x1="61.21" y1="76.81" x2="78.15" y2="76.81"/>
+          </g>
+        } @else {
+          <g>
+            <circle cx="51.55" cy="53.12" r="6.73"/>
+            <circle cx="86.92" cy="53.12" r="6.73"/>
+            <circle class="g" cx="49.15" cy="51.14" r="2.31"/>
+            <circle class="g" cx="84.77" cy="51.05" r="2.31"/>
+            <path class="h" d="m84.01,81.41c-2.37-5.86-8.11-10-14.83-10s-12.45,4.14-14.83,10"/>
+          </g>
+        }
+      </svg>
+      <div>"{{ resultQuote() }}"</div>
+      <div class="result-buttons">
+        <button (click)="close()" class="gradient-button"><span></span><span>again?</span></button>
+        <a target="_blank" class="gradient-button" [href]="'https://twitter.com/intent/tweet?text=' + getText()"><span></span><span>share<img src="assets/share.svg" aria-hidden="true"></span></a>
+      </div>
+    </dialog>
+  }
+  <div class="accessibility">
+    @if(isAccessiblePanelOpen()) {
+    <div>
+      <button [disabled]="isGuessModalOpen()" (click)="adjustAngle(-25)" aria-label="decrease angle a lot">--</button>
+      <button [disabled]="isGuessModalOpen()" (click)="adjustAngle(-5)" aria-label="decrease angle a little">-</button>
+      <button [disabled]="isGuessModalOpen()" (click)="adjustAngle(5)" aria-label="increase angle a little">+</button>
+      <button [disabled]="isGuessModalOpen()" (click)="adjustAngle(25)" aria-label="increase angle a lot">++</button>
+    </div>
+    }
+    <mat-slide-toggle [disabled]="isGuessModalOpen()" id="toggle" color="primary" (change)="toggleA11yControls($event)">Show Accessible Controls</mat-slide-toggle>
+  </div>
+</div>

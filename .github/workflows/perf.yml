@@ -1,0 +1,53 @@
+name: Performance Tracking
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  list:
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    outputs:
+      workflows: ${{ steps.workflows.outputs.workflows }}
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f71394b25149037558248a41a5a18a8e17a01c69
+      - name: Install node modules
+        run: yarn -s install --frozen-lockfile
+      - id: workflows
+        run: echo "workflows=$(yarn -s ng-dev perf workflows --list)" >> "$GITHUB_OUTPUT"
+
+  workflow:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs: list
+    strategy:
+      matrix:
+        workflow: ${{ fromJSON(needs.list.outputs.workflows) }}
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f71394b25149037558248a41a5a18a8e17a01c69
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f71394b25149037558248a41a5a18a8e17a01c69
+      - name: Install node modules
+        run: yarn -s install --frozen-lockfile
+      # We utilize the google-github-actions/auth action to allow us to get an active credential using workflow
+      # identity federation. This allows us to request short lived credentials on demand, rather than storing
+      # credentials in secrets long term. More information can be found at:
+      # https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
+      - uses: 'google-github-actions/auth@6fc4af4b145ae7821d527454aa9bd537d1f2dc5f' # v2
+        with:
+          project_id: 'internal-200822'
+          workload_identity_provider: 'projects/823469418460/locations/global/workloadIdentityPools/measurables-tracking/providers/angular'
+          service_account: 'measures-uploader@internal-200822.iam.gserviceaccount.com'
+      - run: yarn ng-dev perf workflows --name ${{ matrix.workflow }} --commit-sha ${{github.sha}}

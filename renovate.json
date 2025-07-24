@@ -1,0 +1,69 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>angular/dev-infra//renovate-presets/default.json5"
+  ],
+  "baseBranches": [
+    "main",
+    "20.1.x"
+  ],
+  "postUpgradeTasks": {
+    "commands": [
+      "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
+      "yarn install --frozen-lockfile --non-interactive",
+      "yarn bazel sync --only=repo || true",
+      "yarn bazel run //.github/actions/deploy-docs-site:main.update",
+      "yarn bazel run //packages/common:base_currencies_file.update",
+      "yarn bazel run //packages/common/locales:closure_locale_file.update",
+      "yarn bazel run //packages/core:base_locale_file.update"
+    ],
+    "fileFilters": [
+      ".aspect/rules/external_repository_action_cache/**/*",
+      ".github/actions/deploy-docs-site/**/*",
+      "packages/**/*",
+      "pnpm-lock.yaml"
+    ],
+    "executionMode": "branch"
+  },
+  "ignoreDeps": [
+    "@types/selenium-webdriver",
+    "angular-1.5",
+    "angular-1.6",
+    "angular-1.7",
+    "angular-1.8",
+    "angular-mocks-1.5",
+    "angular-mocks-1.6",
+    "angular-mocks-1.7",
+    "angular-mocks-1.8",
+    "convert-source-map",
+    "selenium-webdriver",
+    "systemjs",
+    "patch-package"
+  ],
+  "packageRules": [
+    {
+      "matchBaseBranches": [
+        "main"
+      ],
+      "addLabels": [
+        "target: minor"
+      ]
+    },
+    {
+      "matchBaseBranches": [
+        "!main"
+      ],
+      "addLabels": [
+        "target: patch"
+      ]
+    },
+    {
+      "matchFileNames": [
+        "integration/**",
+        "packages/core/schematics/migrations/signal-migration/test/**",
+        "packages/zone.js/test/typings/package.json"
+      ],
+      "enabled": false
+    }
+  ]
+}

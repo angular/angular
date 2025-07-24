@@ -1,0 +1,131 @@
+{
+  "name": "serve",
+  "command": "ng serve [project]",
+  "shortDescription": "Builds and serves your application, rebuilding on file changes.",
+  "aliases": [
+    "dev",
+    "s"
+  ],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "allowed-hosts",
+      "type": "boolean",
+      "description": "The hosts that the development server will respond to. This option sets the Vite option of the same name. For further details: https://vite.dev/config/server-options.html#server-allowedhosts"
+    },
+    {
+      "name": "build-target",
+      "type": "string",
+      "description": "A build builder target to serve in the format of `project:target[:configuration]`. You can also pass in more than one configuration name as a comma-separated list. Example: `project:target:production,staging`."
+    },
+    {
+      "name": "configuration",
+      "type": "string",
+      "aliases": [
+        "c"
+      ],
+      "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.dev/reference/configs/workspace-config#alternate-build-configurations."
+    },
+    {
+      "name": "headers",
+      "type": "array",
+      "description": "Custom HTTP headers to be added to all responses."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "hmr",
+      "type": "boolean",
+      "description": "Enable hot module replacement. Defaults to the value of 'liveReload'. Currently, only global and component stylesheets are supported."
+    },
+    {
+      "name": "host",
+      "type": "string",
+      "default": "localhost",
+      "description": "Host to listen on."
+    },
+    {
+      "name": "inspect",
+      "type": "string",
+      "description": "Activate debugging inspector. This option only has an effect when 'SSR' or 'SSG' are enabled."
+    },
+    {
+      "name": "live-reload",
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to reload the page on change, using live-reload."
+    },
+    {
+      "name": "open",
+      "type": "boolean",
+      "aliases": [
+        "o"
+      ],
+      "default": false,
+      "description": "Opens the url in default browser."
+    },
+    {
+      "name": "poll",
+      "type": "number",
+      "description": "Enable and define the file watching poll time period in milliseconds."
+    },
+    {
+      "name": "port",
+      "type": "number",
+      "default": 4200,
+      "description": "Port to listen on."
+    },
+    {
+      "name": "prebundle",
+      "type": "boolean",
+      "default": true,
+      "description": "Enable and control the Vite-based development server's prebundling capabilities. To enable prebundling, the Angular CLI cache must also be enabled."
+    },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "The name of the project to build. Can be an application or a library.",
+      "positional": 0
+    },
+    {
+      "name": "proxy-config",
+      "type": "string",
+      "description": "Proxy configuration file. For more information, see https://angular.dev/tools/cli/serve#proxying-to-a-backend-server."
+    },
+    {
+      "name": "serve-path",
+      "type": "string",
+      "description": "The pathname where the application will be served."
+    },
+    {
+      "name": "ssl",
+      "type": "boolean",
+      "default": false,
+      "description": "Serve using HTTPS."
+    },
+    {
+      "name": "ssl-cert",
+      "type": "string",
+      "description": "SSL certificate to use for serving HTTPS."
+    },
+    {
+      "name": "ssl-key",
+      "type": "string",
+      "description": "SSL key to use for serving HTTPS."
+    },
+    {
+      "name": "verbose",
+      "type": "boolean",
+      "description": "Adds more details to output logging."
+    },
+    {
+      "name": "watch",
+      "type": "boolean",
+      "default": true,
+      "description": "Rebuild on change."
+    }
+  ]
+}

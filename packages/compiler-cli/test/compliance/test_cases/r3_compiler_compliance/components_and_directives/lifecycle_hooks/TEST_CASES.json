@@ -1,0 +1,79 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "local reference",
+      "inputFiles": [
+        "local_reference.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect MyComponent.ɵcmp",
+          "files": [
+            "local_reference.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "local references in nested views",
+      "inputFiles": [
+        "local_reference_nested.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect MyComponent.ɵcmp",
+          "files": [
+            {
+              "generated": "local_reference_nested.js",
+              "expected": "local_reference_nested.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support local refs mixed with context assignments",
+      "inputFiles": [
+        "local_reference_and_context_variables.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            {
+              "expected": "local_reference_and_context_variables_template.js",
+              "generated": "local_reference_and_context_variables.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should gen hooks with a few simple components",
+      "inputFiles": [
+        "lifecycle_hooks.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid LifecycleComp definition",
+          "files": [
+            {
+              "expected": "lifecycle_hooks_lifecycle_comp_def.js",
+              "generated": "lifecycle_hooks.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Invalid SimpleLayout definition",
+          "files": [
+            {
+              "expected": "lifecycle_hooks_simple_layout_def.js",
+              "generated": "lifecycle_hooks.js"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

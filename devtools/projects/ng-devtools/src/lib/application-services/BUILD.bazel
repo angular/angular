@@ -1,0 +1,58 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "browser_styles",
+    srcs = ["browser_styles_service.ts"],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ng_project(
+    name = "frame_manager",
+    srcs = ["frame_manager.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_project(
+    name = "theme",
+    srcs = ["theme_service.ts"],
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "test_application_services_lib",
+    srcs = glob(["*_spec.ts"]),
+    deps = [
+        ":browser_styles_rjs",
+        ":frame_manager_rjs",
+        ":theme_rjs",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test_application_services",
+    deps = [
+        ":test_application_services_lib_rjs",
+    ],
+)

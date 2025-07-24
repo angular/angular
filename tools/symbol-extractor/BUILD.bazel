@@ -1,0 +1,45 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.mts"],
+        exclude = [
+            "**/*_spec.mts",
+            "**/*_spec",
+        ],
+    ),
+    tsconfig = "//tools:tsconfig_build",
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/tinyglobby",
+        "//:node_modules/typescript",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(
+        ["**/*_spec.mts"],
+        exclude = ["symbol_extractor_spec/**"],
+    ),
+    tsconfig = "//tools:tsconfig_test",
+    deps = [
+        ":lib_rjs",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/typescript",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = glob(["symbol_extractor_spec/**"]) + [
+        ":test_lib_rjs",
+        "//tools/symbol-extractor/symbol_extractor_spec:es2015_class_output_rjs",
+        "//tools/symbol-extractor/symbol_extractor_spec:fixtures",
+    ],
+)

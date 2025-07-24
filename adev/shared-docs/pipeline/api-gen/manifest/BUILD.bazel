@@ -1,0 +1,45 @@
+load("//adev/shared-docs:defaults.bzl", "esbuild", "js_binary", "ts_project")
+
+package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
+
+esbuild(
+    name = "bin",
+    entry_point = ":index.mts",
+    external = [
+        "@angular/compiler-cli",
+    ],
+    format = "esm",
+    output = "bin.mjs",
+    platform = "node",
+    target = "es2022",
+    deps = [
+        ":generate_api_manifest_lib_rjs",
+        "//adev:node_modules/@angular/compiler-cli",
+    ],
+)
+
+ts_project(
+    name = "generate_api_manifest_lib",
+    srcs = glob(["**/*.mts"]),
+    deps = [
+        "//adev:node_modules/@angular/compiler-cli",
+        "//adev:node_modules/@bazel/runfiles",
+        "//adev:node_modules/@types/node",
+    ],
+)
+
+js_binary(
+    name = "generate_api_manifest",
+    data = [
+        ":bin",
+        "@angular//packages/compiler-cli",
+    ],
+    entry_point = "bin.mjs",
+    visibility = ["//visibility:public"],
+)
+
+# Expose the sources in the dev-infra NPM package.
+filegroup(
+    name = "files",
+    srcs = glob(["**/*"]),
+)

@@ -1,0 +1,20 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "ivy_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "ivy",
+    data = [
+        ":ivy_lib_rjs",
+    ],
+)

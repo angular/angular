@@ -1,0 +1,32 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "util_lib",
+    srcs = ["util.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig_build",
+    deps = ["//modules/benchmarks/src:util_lib_rjs"],
+)
+
+ts_project(
+    name = "perf_tests_lib",
+    testonly = 1,
+    srcs = ["change_detection.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//modules:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
+    ],
+)
+
+ts_project(
+    name = "e2e_tests_lib",
+    testonly = 1,
+    srcs = ["change_detection.e2e-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//modules:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
+    ],
+)

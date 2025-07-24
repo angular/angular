@@ -1,0 +1,84 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "zone_base_setup_lib",
+    testonly = 1,
+    srcs = ["zone_base_setup.mts"],
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//:node_modules/zone.js",
+    ],
+)
+
+ts_project(
+    name = "browser",
+    testonly = 1,
+    srcs = ["browser_tests.init.mts"],
+    enable_runtime_rnjs_interop = False,
+    deps = [
+        ":zone_base_setup_lib_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+    ],
+)
+
+ts_project(
+    name = "browser_zoneless",
+    testonly = 1,
+    srcs = ["browser_zoneless_tests.init.mts"],
+    enable_runtime_rnjs_interop = False,
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+    ],
+)
+
+ts_project(
+    name = "node_zoneless",
+    testonly = 1,
+    srcs = ["node_zoneless_tests.init.mts"],
+    enable_runtime_rnjs_interop = False,
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:bundled_domino_lib",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/platform-server/testing:testing_rjs",
+    ],
+)
+
+ts_project(
+    name = "node",
+    testonly = 1,
+    srcs = ["node_tests.init.mts"],
+    enable_runtime_rnjs_interop = False,
+    deps = [
+        ":zone_base_setup_lib_rjs",
+        "//:node_modules/reflect-metadata",
+        "//:node_modules/zone.js",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:bundled_domino_lib",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/platform-server/testing:testing_rjs",
+    ],
+)
+
+ts_project(
+    name = "node_no_angular",
+    testonly = 1,
+    srcs = ["node_no_angular_tests.init.mts"],
+    deps = [
+        "//packages:types_rjs",
+    ],
+)

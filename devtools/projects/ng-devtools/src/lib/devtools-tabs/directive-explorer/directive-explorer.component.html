@@ -1,0 +1,65 @@
+<as-split unit="percent" [direction]="splitDirection()" [gutterSize]="9">
+  <as-split-area #directiveForestSplitArea size="60">
+    <as-split
+      [ngResponsiveSplit]="responsiveSplitConfig"
+      (directionChange)="onResponsiveSplitDirChange($event)"
+      direction="vertical"
+      [gutterSize]="9"
+      unit="percent"
+    >
+      <as-split-area class="forest-breadcrumbs" [size]="forestSplitSize()">
+        <ng-directive-forest
+          (selectNode)="handleNodeSelection($event)"
+          (selectDomElement)="handleSelectDomElement($event)"
+          (setParents)="handleSetParents($event)"
+          (highlightComponent)="highlightComponent($event)"
+          (removeComponentHighlight)="removeComponentHighlight()"
+          (toggleInspector)="toggleInspector.emit()"
+          [forest]="forest()"
+          [currentSelectedElement]="currentSelectedElement()!"
+          [showCommentNodes]="showCommentNodes()"
+        />
+        @if (parents()) {
+          <ng-breadcrumbs
+            (mouseLeaveNode)="unhighlight()"
+            (mouseOverNode)="highlight($event)"
+            (handleSelect)="handleSelect($event)"
+            [parents]="parents()!"
+          />
+        }
+      </as-split-area>
+      @if (signalsOpen() && currentSelectedElement(); as currentSelectedElement) {
+        <as-split-area [size]="signalGraphSplitSize()">
+          <ng-signals-tab
+            [currentElement]="currentSelectedElement.position"
+            (close)="signalsOpen.set(false)"
+          />
+        </as-split-area>
+      }
+    </as-split>
+  </as-split-area>
+  <as-split-area size="40" minSize="25" class="prop-split">
+    <div class="property-tab-wrapper">
+      @if (currentSelectedElement(); as currentSelectedElement) {
+        <ng-property-tab
+          [currentSelectedElement]="currentSelectedElement"
+          [signalGraphEnabled]="signalGraphEnabled()"
+          (showSignalGraph)="showSignalGraph($event)"
+          (inspect)="inspect($event)"
+          (viewSource)="viewSource($event)"
+        />
+      } @else {
+        <p class="no-selected-element">No selected element</p>
+      }
+    </div>
+    @if (isHydrationEnabled) {
+      <div class="hydration">
+        <mat-slide-toggle
+          [(ngModel)]="showHydrationNodeHighlights"
+          (change)="showHydrationNodeHighlights() ? hightlightHydrationNodes() : removeHydrationNodesHightlights()"
+          >Show hydration overlays</mat-slide-toggle
+        >
+      </div>
+    }
+  </as-split-area>
+</as-split>

@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = [
+    "//packages:__pkg__",
+    "//packages/common:__subpackages__",
+    "//packages/core/primitives/dom-navigation/testing:__subpackages__",
+    "//packages/core/testing:__subpackages__",
+    "//tools/public_api_guard:__pkg__",
+])
+
+ts_project(
+    name = "testing",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core/primitives/dom-navigation:dom-navigation_rjs",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "testing",
+    tsconfig = "//packages:tsec_config",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+    ]),
+)

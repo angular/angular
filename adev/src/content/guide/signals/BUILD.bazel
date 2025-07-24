@@ -1,0 +1,19 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "signals",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/assets/images:signals.svg",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)
+
+copy_to_bin(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
+    visibility = ["//adev:__subpackages__"],
+)

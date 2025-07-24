@@ -1,0 +1,103 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should handle safe keyed reads inside templates",
+      "inputFiles": ["safe_keyed_read.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_keyed_read_template.js",
+              "generated": "safe_keyed_read.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle deep safe property reads inside templates",
+      "inputFiles": ["safe_access_deep.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_deep_template.js",
+              "generated": "safe_access_deep.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle property reads requiring temporary variables",
+      "inputFiles": ["safe_access_temporaries.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_temporaries_template.js",
+              "generated": "safe_access_temporaries.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle safe method calls inside templates",
+      "inputFiles": ["safe_method_call.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_method_call.js",
+              "generated": "safe_method_call.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle safe calls inside templates",
+      "inputFiles": ["safe_call.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_call_template.js",
+              "generated": "safe_call.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle non-null assertions after a safe access",
+      "inputFiles": ["safe_access_non_null.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_non_null_template.js",
+              "generated": "safe_access_non_null.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

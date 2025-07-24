@@ -1,0 +1,34 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "state-serializer",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:directive-forest_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "prop-type.spec.ts",
+        "state-serializer.spec.ts",
+    ],
+    deps = [
+        ":state-serializer_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib_rjs",
+    ],
+)

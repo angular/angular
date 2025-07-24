@@ -1,0 +1,20 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "best-practices",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/assets/images:components.svg",
+        "//adev/src/content/examples",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
+    visibility = ["//adev:__subpackages__"],
+)

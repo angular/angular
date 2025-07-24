@@ -1,0 +1,25 @@
+.tag-active,
+.tag-inactive {
+  border-radius: 1rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid;
+}
+
+.tag-active {
+  border-color: var(--green-03);
+}
+
+.tag-inactive {
+  border-color: var(--red-06);
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  overflow-wrap: normal;
+}
+
+td {
+  width: 100%;
+}

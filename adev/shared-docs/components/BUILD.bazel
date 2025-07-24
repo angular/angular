@@ -1,0 +1,28 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:private"])
+
+ts_project(
+    name = "components",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__pkg__",
+    ],
+    deps = [
+        "//adev/shared-docs/components/algolia-icon:algolia-icon_rjs",
+        "//adev/shared-docs/components/breadcrumb:breadcrumb_rjs",
+        "//adev/shared-docs/components/cookie-popup:cookie-popup_rjs",
+        "//adev/shared-docs/components/copy-source-code-button:copy-source-code-button_rjs",
+        "//adev/shared-docs/components/icon:icon_rjs",
+        "//adev/shared-docs/components/navigation-list:navigation-list_rjs",
+        "//adev/shared-docs/components/search-dialog:search-dialog_rjs",
+        "//adev/shared-docs/components/select:select_rjs",
+        "//adev/shared-docs/components/slide-toggle:slide-toggle_rjs",
+        "//adev/shared-docs/components/table-of-contents:table-of-contents_rjs",
+        "//adev/shared-docs/components/text-field:text-field_rjs",
+        "//adev/shared-docs/components/top-level-banner:top-level-banner_rjs",
+        "//adev/shared-docs/components/viewers:viewers_rjs",
+    ],
+)

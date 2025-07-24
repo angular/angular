@@ -1,0 +1,38 @@
+<!-- #docregion v2, -->
+<h1>My First Attribute Directive</h1>
+
+<h2>Pick a highlight color</h2>
+<div>
+  <input type="radio" name="colors" (click)="color='lightgreen'">Green
+  <input type="radio" name="colors" (click)="color='yellow'">Yellow
+  <input type="radio" name="colors" (click)="color='cyan'">Cyan
+</div>
+<!-- #docregion color -->
+<p [appHighlight]="color">Highlight me!</p>
+<!-- #enddocregion color, v2 -->
+
+<!-- #docregion defaultColor -->
+<p [appHighlight]="color" defaultColor="violet">
+  Highlight me too!
+</p>
+<!-- #enddocregion defaultColor, -->
+
+<hr>
+<h2>Mouse over the following lines to see fixed highlights</h2>
+
+<p [appHighlight]="'yellow'">Highlighted in yellow</p>
+<p appHighlight="orange">Highlighted in orange</p>
+
+<hr>
+
+<h2>ngNonBindable</h2>
+<!-- #docregion ngNonBindable -->
+<p>Use ngNonBindable to stop evaluation.</p>
+<p ngNonBindable>This should not evaluate: {{ 1 + 1 }}</p>
+<!-- #enddocregion ngNonBindable -->
+
+<!-- #docregion ngNonBindable-with-directive -->
+<h3>ngNonBindable with a directive</h3>
+<div ngNonBindable [appHighlight]="'yellow'">This should not evaluate: {{ 1 +1 }}, but will highlight yellow.
+</div>
+<!-- #enddocregion ngNonBindable-with-directive -->

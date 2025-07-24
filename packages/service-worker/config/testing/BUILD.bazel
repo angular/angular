@@ -1,0 +1,16 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ts_project(
+    name = "testing",
+    srcs = glob([
+        "*.ts",
+    ]),
+    deps = [
+        "//packages/service-worker/cli:cli_rjs",
+        "//packages/service-worker/config:config_rjs",
+    ],
+)

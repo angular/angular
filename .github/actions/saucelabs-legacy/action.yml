@@ -1,0 +1,40 @@
+name: 'Saucelabs legacy test job'
+description: 'Runs tests against Saucelabs (outside of Bazel)'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Bazel
+      uses: angular/dev-infra/github-actions/bazel/setup@f71394b25149037558248a41a5a18a8e17a01c69
+    - name: Setup Saucelabs Variables
+      uses: angular/dev-infra/github-actions/saucelabs@f71394b25149037558248a41a5a18a8e17a01c69
+    - name: Starting Saucelabs tunnel service
+      shell: bash
+      run: ./tools/saucelabs/sauce-service.sh run &
+    # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
+    # specific tests which are reliant on such generated fixtures is not an option as SystemJS
+    # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
+    # guarded by an check to skip in the Saucelabs legacy job. We should be good running such
+    # test in all supported browsers on Saucelabs anyway until this job can be removed.
+    - name: Preparing Bazel-generated fixtures required in legacy tests
+      shell: bash
+      run: |
+        # Locale files are needed for i18n tests running within Saucelabs. These are added
+        # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
+        # can succeed. Note that the base locale and currencies files are checked-in, so
+        # we do not need to re-generate those through Bazel.
+        mkdir -p packages/common/locales/extra
+        cp dist/bin/packages/common/locales/*.ts packages/common/locales
+        cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
+    - name: Build bundle of tests to run on Saucelabs
+      shell: bash
+      run: node tools/legacy-saucelabs/build-saucelabs-test-bundle.mjs
+    - name: Wait and confirm Saucelabs tunnel has connected
+      shell: bash
+      run: ./tools/saucelabs/sauce-service.sh ready-wait
+    - name: Running tests on Saucelabs.
+      shell: bash
+      run: KARMA_WEB_TEST_MODE=SL_REQUIRED yarn karma start ./karma-js.conf.js --single-run
+    - name: Stop Saucelabs tunnel service
+      shell: bash
+      run: ./tools/saucelabs/sauce-service.sh stop

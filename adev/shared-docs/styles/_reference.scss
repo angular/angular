@@ -1,0 +1,404 @@
+@use './anchor' as anchor;
+
+/* Common styles for the API & CLI references */
+@mixin reference-common() {
+  .docs-code {
+    pre {
+      margin-block: 0;
+    }
+  }
+
+  .docs-reference-header {
+    // deprecated markers beside header
+    & ~ .docs-deprecated {
+      margin-block-start: 0.5rem;
+    }
+
+    & > p {
+      color: var(--secondary-contrast);
+      margin-block-start: 0;
+      margin-block-end: 1.5rem;
+    }
+
+    .docs-reference-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding-block-end: 0;
+      gap: 0.5rem;
+
+      > div {
+        margin-block: 0.67em;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+
+        h1 {
+          margin-block: 0;
+        }
+      }
+
+      a {
+        fill: var(--quinary-contrast);
+        transition: fill 0.3s ease;
+
+        &:hover {
+          fill: var(--primary-contrast);
+        }
+      }
+    }
+
+    .docs-reference-category {
+      color: var(--gray-400);
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1.4rem;
+      letter-spacing: -0.00875rem;
+    }
+
+    .docs-code {
+      margin-block-end: 1.5rem;
+    }
+  }
+
+  .docs-reference-section-heading {
+    padding-block-start: 3rem;
+
+    &--sub {
+      padding-block-start: 1rem;
+    }
+
+    & > a {
+      @include anchor.docs-anchor();
+      color: inherit;
+    }
+  }
+
+  .docs-reference-members {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    &:not(:first-child) {
+      margin-top: 1rem;
+    }
+
+    .docs-reference-member-card {
+      border: 1px solid var(--senary-contrast);
+      border-radius: 0.25rem;
+      position: relative;
+      transition: border 0.3s ease;
+
+      &::before {
+        content: '';
+        inset: -1px;
+        position: absolute;
+        background: transparent;
+        border-radius: 0.35rem;
+        z-index: 0;
+      }
+
+      &.docs-highlighted-card {
+        box-shadow: 10px 4px 40px 0 rgba(0, 0, 0, 0.01);
+
+        &::before {
+          background: var(--red-to-pink-to-purple-horizontal-gradient);
+        }
+      }
+
+      > p {
+        padding-inline: 1.25rem;
+        margin-block-end: 0;
+      }
+
+      .docs-reference-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 0.25rem 0.25rem 0 0;
+        background-color: var(--octonary-contrast);
+        position: relative;
+        z-index: 10;
+        padding: 0.7rem 1rem;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        transition:
+          background-color 0.3s ease,
+          border 0.3s ease;
+
+        &:focus {
+          outline: none;
+        }
+
+        &:has(+ .docs-reference-card-body:empty) {
+          border-radius: 0.25rem;
+        }
+
+        .docs-code {
+          flex: 1;
+
+          button[docs-copy-source-code] {
+            display: none;
+          }
+        }
+
+        code {
+          font-size: 0.875rem;
+        }
+
+        h3 {
+          display: inline-block;
+          font-family: var(--code-font);
+          font-size: 1rem;
+          letter-spacing: -0.025rem;
+          margin: 0;
+        }
+
+        span {
+          font-size: 0.875rem;
+        }
+      }
+
+      .docs-reference-card-body {
+        padding: 0.25rem 1.25rem;
+        background: var(--septenary-contrast);
+        transition: background-color 0.3s ease;
+        color: var(--quaternary-contrast);
+        border-radius: 0 0 0.25rem 0.25rem;
+        position: relative;
+        z-index: 10;
+
+        &:empty {
+          display: none;
+        }
+
+        &:first-child {
+          border-radius: 0.25rem;
+        }
+
+        hr {
+          margin-block: 2rem;
+        }
+
+        .docs-code {
+          margin-block-end: 1rem;
+        }
+
+        .docs-deprecation-message {
+          border-block-end: 1px solid var(--senary-contrast);
+
+          .docs-deprecated {
+            color: var(--page-background);
+            background-color: var(--quaternary-contrast);
+            width: max-content;
+            border-radius: 0.25rem;
+            padding: 0.1rem 0.25rem;
+            margin-block-start: 1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* API reference styles */
+@mixin api-reference {
+  // API section styles
+  .docs-reference-api-section {
+    .docs-code {
+      box-sizing: border-box;
+      width: 100%;
+      overflow: hidden;
+      padding: 0;
+
+      button {
+        transition: background-color 0.3s ease;
+
+        &.shiki-ln-line-highlighted {
+          background-color: var(--senary-contrast);
+        }
+
+        &:hover {
+          background-color: var(--septenary-contrast);
+        }
+
+        &:focus {
+          background-color: var(--senary-contrast);
+
+          span {
+            background-color: inherit;
+          }
+        }
+      }
+
+      // Hide copy source code button
+      button[docs-copy-source-code] {
+        display: none;
+      }
+    }
+
+    code {
+      margin-block: 0;
+    }
+
+    pre {
+      white-space: pre;
+      overflow-x: auto;
+      margin: 0;
+    }
+  }
+
+  .pipe-usage {
+    padding: 1rem;
+  }
+
+  // "API member card"-specific styles
+  .docs-reference-member-card {
+    .docs-reference-card-item {
+      // When it's not the only card ...
+      &:has(~ .docs-reference-card-item) {
+        border: 1px solid var(--senary-contrast);
+        margin-block: 1rem;
+        border-radius: 0.25rem;
+        padding-inline: 1rem;
+      }
+
+      // & the last card
+      &:last-child:not(:first-of-type) {
+        border: 1px solid var(--senary-contrast);
+        margin-block: 1rem;
+        border-radius: 0.25rem;
+        padding-inline: 1rem;
+      }
+
+      span {
+        display: inline-block;
+        font-size: 0.875rem;
+      }
+
+      code {
+        font-size: 0.875rem;
+      }
+
+      .docs-function-definition:has(*) {
+        border-block-end: 1px solid var(--senary-contrast);
+      }
+
+      .docs-param-group {
+        margin-block-start: 1rem;
+
+        // If it's the only param group...
+        &:not(:has(~ .docs-param-group)) {
+          margin-block: 1rem;
+        }
+
+        .docs-param-name {
+          color: var(--vivid-pink);
+          font-family: var(--code-font);
+          margin-inline-end: 0.25rem;
+
+          &::after {
+            content: ':';
+          }
+        }
+
+        .docs-parameter-description {
+          p:first-child {
+            margin-block-start: 0;
+          }
+        }
+      }
+
+      .docs-param-keyword {
+        color: var(--primary-contrast);
+        font-family: var(--code-font);
+        margin-inline-end: 0.5rem;
+      }
+
+      .docs-return-type {
+        padding-block: 1rem;
+
+        // & does not follow a function definition
+        &:not(.docs-function-definition + .docs-return-type) {
+          border-block-start: 1px solid var(--senary-contrast);
+        }
+      }
+    }
+  }
+}
+
+/* CLI reference styles */
+@mixin cli-reference {
+  // CLI TOC
+  .docs-reference-cli-toc {
+    margin-bottom: 1rem;
+
+    .shiki-ln-line-argument,
+    .shiki-ln-line-option {
+      padding: 0.1rem 0.2rem 0.2rem;
+      margin-inline: 0.1rem;
+      color: var(--quaternary-contrast);
+      background: transparent;
+      border-radius: 0.25rem;
+      position: relative;
+      transition:
+        color 0.3s ease,
+        background 0.3s ease,
+        border 0.3s ease;
+
+      &:hover {
+        color: var(--primary-contrast);
+        background: var(--septenary-contrast);
+      }
+
+      &.shiki-ln-line-highlighted {
+        color: var(--primary-contrast);
+        background: var(--senary-contrast);
+      }
+    }
+
+    .shiki-ln-line-argument {
+      margin-inline-start: 0.2rem;
+    }
+  }
+
+  .docs-reference-members {
+    .docs-reference-section-heading {
+      margin: 0;
+    }
+
+    // "CLI member card"-specific styles
+    .docs-reference-member-card {
+      .docs-ref-content {
+        padding: 1rem 0;
+
+        &:not(:first-child) {
+          border-block-start: 1px solid var(--senary-contrast);
+        }
+
+        .docs-reference-type-and-default {
+          flex-shrink: 0;
+
+          span {
+            display: block;
+            font-size: 0.875rem;
+            margin-block-end: 0.2rem;
+            white-space: nowrap;
+
+            &:not(:first-child) {
+              margin-block-start: 1rem;
+            }
+          }
+
+          code {
+            font-size: 0.775rem;
+          }
+        }
+      }
+    }
+  }
+}

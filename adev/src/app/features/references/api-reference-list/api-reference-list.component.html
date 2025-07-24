@@ -1,0 +1,42 @@
+<header>
+  <h1>API Reference</h1>
+</header>
+
+<div class="adev-reference-list-filter">
+  <div class="adev-reference-list-query-filter">
+    <docs-text-field name="query" placeholder="Filter" [(ngModel)]="query" />
+  </div>
+
+  <div class="adev-reference-list-status">
+    <mat-chip-listbox multiple="true" aria-label="Status selection">
+      <!-- null indicates to not re-order the object keys -->
+      @for (stat of statuses | keyvalue:null; track $index) {
+        <mat-chip-option [selected]="isStatusSelected(stat.value)" (click)="setStatus(stat.value)">
+          {{statusLabels[stat.value]}}
+        </mat-chip-option>
+      }
+    </mat-chip-listbox>
+  </div>
+
+  <p class="adev-reference-list-type-filter-label">Filter by Identifier type</p>
+  <ul class="adev-reference-list-type-filter">
+    @for (itemType of itemTypes; track itemType) {
+      <li
+        class="adev-reference-list-type-filter-item"
+        [class.adev-reference-list-type-filter-item-active]="type() === itemType"
+        (click)="setItemType(itemType)"
+      >
+        <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />
+        <span class="docs-api-item-label-full">{{ itemType | adevApiLabel : 'full' }}</span>
+      </li>
+    }
+  </ul>
+</div>
+
+@for (group of filteredGroups(); track group.id) {
+  <adev-api-items-section [group]="group" />
+} @empty {
+  <div class="adev-reference-list-empty">
+    <p>No API items found.</p>
+  </div>
+}

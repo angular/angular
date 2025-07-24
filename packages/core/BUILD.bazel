@@ -1,0 +1,175 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//packages/common/locales:index.bzl", "generate_base_locale_file")
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package", "ts_config")
+
+package(default_visibility = ["//visibility:public"])
+
+# This generates the `src/i18n/locale_en.ts` file through the `generate-locales` tool. Since
+# the base locale file is checked-in for Google3, we add a `generated_file_test` to ensure
+# the checked-in file is up-to-date. To disambiguate from the test, we use a more precise target
+# name here.
+generate_base_locale_file(
+    name = "base_locale_file_generated",
+    output_file = "base_locale_file_generated.ts",
+)
+
+generated_file_test(
+    name = "base_locale_file",
+    src = "src/i18n/locale_en.ts",
+    generated = ":base_locale_file_generated",
+)
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig-build.json",
+    deps = ["//packages:tsconfig_build"],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    deps = ["//packages:tsconfig_test"],
+)
+
+ng_project(
+    name = "core",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages:goog_types_rjs",
+        "//packages/core/primitives/defer:triggers_rjs",
+        "//packages/core/primitives/di:di_rjs",
+        "//packages/core/primitives/dom-navigation:dom-navigation_rjs",
+        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/src/compiler:compiler_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
+        "//packages/core/src/interface:interface_rjs",
+        "//packages/core/src/reflection:reflection_rjs",
+        "//packages/core/src/util:util_rjs",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "core",
+    tsconfig = "//packages:tsec_config",
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        ":event_dispatch_contract_binary",
+    ],
+    nested_packages = [
+        "//packages/core/schematics:npm_package",
+    ],
+    package = "@angular/core",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//adev/shared-docs:__subpackages__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+        "//packages/bazel/test/ng_package:__pkg__",
+        "//packages/compiler-cli/src/ngtsc/metadata/test:__subpackages__",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/test:__subpackages__",
+        "//packages/compiler-cli/src/ngtsc/typecheck/test:__subpackages__",
+        "//packages/compiler-cli/test:__subpackages__",
+        "//packages/compiler/test:__pkg__",
+        "//packages/language-service/test:__pkg__",
+    ],
+    deps = [
+        ":core_rjs",
+        "//packages/core/primitives/di:di_rjs",
+        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/rxjs-interop:rxjs-interop_rjs",
+        "//packages/core/testing:testing_rjs",
+    ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making this package usable in `core/test/bundling`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
+)
+
+api_golden_test_npm_package(
+    name = "core_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/core",
+    npm_package = "packages/core/npm_package",
+    strip_export_pattern = "^ɵ(?!.*ApiGuard)",
+)
+
+api_golden_test(
+    name = "ng_global_utils_api",
+    data = [
+        "//goldens:public-api",
+        "//packages/core:core_rjs",
+    ],
+    entry_point = "src/render3/global_utils_api.d.ts",
+    golden = "goldens/public-api/core/global_utils.api.md",
+)
+
+api_golden_test(
+    name = "core_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/core:core_rjs",
+    ],
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/core/errors.api.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + [
+        "PACKAGE.md",
+    ],
+)
+
+generate_api_docs(
+    name = "core_docs",
+    srcs = [
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/core",
+    private_modules = [
+        "//packages/core/primitives/di",
+        "core/primitives/signals",
+        "core/primitives/event-dispatch",
+    ],
+)
+
+genrule(
+    name = "event_dispatch_contract_binary",
+    srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min.js"],
+    outs = ["event-dispatch-contract.min.js"],
+    cmd = "cp $< $@",
+)

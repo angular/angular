@@ -1,0 +1,74 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "extract_types", "pkg_npm")
+load("//tools:defaults2.bzl", "ts_config", "ts_project")
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_project(
+    name = "tools",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    visibility = ["//packages/localize/tools:__subpackages__"],
+    deps = [
+        "//:node_modules/@babel/core",
+        "//:node_modules/@types/babel__core",
+        "//:node_modules/@types/node",
+        "//:node_modules/@types/yargs",
+        "//:node_modules/tinyglobby",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/private:private_rjs",
+        "//packages/localize:localize_rjs",
+    ],
+)
+
+esbuild(
+    name = "bundles",
+    config = "esbuild.config.js",
+    entry_points = [
+        ":index.ts",
+        ":src/extract/cli.ts",
+        ":src/migrate/cli.ts",
+        ":src/translate/cli.ts",
+    ],
+    external = [
+        "@angular/localize",
+        "@angular/compiler",
+        "@angular/compiler-cli/private/localize",
+        "@babel/core",
+        "yargs",
+        "tinyglobby",
+    ],
+    format = "esm",
+    metafile = False,
+    platform = "node",
+    splitting = True,
+    target = "node20",
+    deps = [
+        ":tools_rjs",
+    ],
+)
+
+extract_types(
+    name = "api_type_definitions",
+    deps = [":tools"],
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = ["README.md"],
+    visibility = ["//packages/localize:__pkg__"],
+    deps = [
+        ":api_type_definitions",
+        ":bundles",
+    ],
+)

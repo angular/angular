@@ -1,0 +1,17 @@
+name: 'Installing Yarn dependencies'
+description: 'Installs the dependencies using Yarn'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+      with:
+        path: |
+          ./node_modules/
+        # If just `WORKSPACE` or `yarn.lock` is changed, the most recent cache can be restored.
+        # See: https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action.
+        key: v1-angular-main-deps-${{hashFiles('WORKSPACE')}}-${{hashFiles('yarn.lock')}}
+        restore-keys: v1-angular-main-deps-
+
+    - run: yarn install --frozen-lockfile --non-interactive
+      shell: bash

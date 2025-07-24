@@ -1,0 +1,26 @@
+{
+  "name": "@angular/animations",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - animations integration with web-animations",
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-PLACEHOLDER"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/animations"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false
+}

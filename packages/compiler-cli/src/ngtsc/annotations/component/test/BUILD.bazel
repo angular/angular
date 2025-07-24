@@ -1,0 +1,37 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages:types_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/annotations/common:common_rjs",
+        "//packages/compiler-cli/src/ngtsc/annotations/component:component_rjs",
+        "//packages/compiler-cli/src/ngtsc/cycles:cycles_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/imports:imports_rjs",
+        "//packages/compiler-cli/src/ngtsc/metadata:metadata_rjs",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator:partial_evaluator_rjs",
+        "//packages/compiler-cli/src/ngtsc/perf:perf_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/compiler-cli/src/ngtsc/scope:scope_rjs",
+        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/transform:transform_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)

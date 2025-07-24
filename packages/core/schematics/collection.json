@@ -1,0 +1,62 @@
+{
+  "schematics": {
+    "standalone-migration": {
+      "description": "Converts the entire application or a part of it to standalone",
+      "factory": "./bundles/standalone-migration.cjs#migrate",
+      "schema": "./ng-generate/standalone-migration/schema.json",
+      "aliases": ["standalone"]
+    },
+    "inject-migration": {
+      "description": "Converts usages of constructor-based injection to the inject() function",
+      "factory": "./bundles/inject-migration.cjs#migrate",
+      "schema": "./ng-generate/inject-migration/schema.json",
+      "aliases": ["inject"]
+    },
+    "route-lazy-loading-migration": {
+      "description": "Updates route definitions to use lazy-loading of components instead of eagerly referencing them",
+      "factory": "./bundles/route-lazy-loading.cjs#migrate",
+      "schema": "./ng-generate/route-lazy-loading/schema.json",
+      "aliases": ["route-lazy-loading"]
+    },
+    "signal-input-migration": {
+      "description": "Updates `@Input` declarations to signal inputs, while also migrating all relevant references.",
+      "factory": "./bundles/signal-input-migration.cjs#migrate",
+      "schema": "./ng-generate/signal-input-migration/schema.json",
+      "aliases": ["signal-inputs", "signal-input"]
+    },
+    "signal-queries-migration": {
+      "description": "Updates query declarations to signal queries, while also migrating all relevant references.",
+      "factory": "./bundles/signal-queries-migration.cjs#migrate",
+      "schema": "./ng-generate/signal-queries-migration/schema.json",
+      "aliases": ["signal-queries", "signal-query", "signal-query-migration"]
+    },
+    "output-migration": {
+      "description": "Updates @output declarations to the functional equivalent, while also migrating all relevant references.",
+      "factory": "./bundles/output-migration.cjs#migrate",
+      "schema": "./ng-generate/output-migration/schema.json",
+      "aliases": ["outputs"]
+    },
+    "signals": {
+      "description": "Combines all signals-related migrations into a single migration",
+      "factory": "./bundles/signals.cjs#migrate",
+      "schema": "./ng-generate/signals/schema.json"
+    },
+    "cleanup-unused-imports": {
+      "description": "Removes unused imports from standalone components.",
+      "factory": "./bundles/cleanup-unused-imports.cjs#migrate",
+      "schema": "./ng-generate/cleanup-unused-imports/schema.json"
+    },
+    "self-closing-tags-migration": {
+      "description": "Updates the components templates to use self-closing tags where possible",
+      "factory": "./bundles/self-closing-tags-migration.cjs#migrate",
+      "schema": "./ng-generate/self-closing-tags-migration/schema.json",
+      "aliases": ["self-closing-tag"]
+    },
+    "control-flow-migration": {
+      "description": "Converts the entire application to block control flow syntax",
+      "factory": "./bundles/control-flow-migration.cjs#migrate",
+      "schema": "./migrations/control-flow-migration/schema.json",
+      "aliases": ["control-flow"]
+    }
+  }
+}

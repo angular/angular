@@ -1,0 +1,71 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "js_test", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "signal_authoring_signature_test_lib",
+    testonly = True,
+    srcs = [
+        "linked_signal_signature_test.ts",
+        "signal_input_signature_test.ts",
+        "signal_model_signature_test.ts",
+        "signal_queries_signature_test.ts",
+        "unwrap_writable_signal_signature_test.ts",
+    ],
+    deps = [
+        "//packages/core:core_rjs",
+    ],
+)
+
+ts_project(
+    name = "type_tester_lib",
+    testonly = True,
+    srcs = ["type_tester.ts"],
+    deps = [
+        "//:node_modules/typescript",
+    ],
+)
+
+filegroup(
+    name = "types",
+    testonly = True,
+    srcs = [
+        ":signal_authoring_signature_test_lib_rjs",
+        ":type_tester_lib_rjs",
+    ],
+    output_group = "types",
+)
+
+js_test(
+    name = "type_test",
+    data = [
+        ":type_tester_lib_rjs",
+        ":types",
+        "//packages:package_json",
+    ],
+    entry_point = ":type_tester.js",
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = [
+        "input_signal_spec.ts",
+        "model_input_spec.ts",
+    ],
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/testing:testing_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test_web",
+    deps = [":test_lib_rjs"],
+)

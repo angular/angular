@@ -1,0 +1,18 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+ts_project(
+    name = "interpolated_signal_not_invoked",
+    srcs = ["index.ts"],
+    visibility = [
+        "//packages/compiler-cli/src/ngtsc:__subpackages__",
+        "//packages/compiler-cli/test/ngtsc:__pkg__",
+    ],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck:typecheck_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api:api_rjs",
+    ],
+)

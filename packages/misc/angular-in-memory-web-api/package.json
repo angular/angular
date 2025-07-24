@@ -1,0 +1,24 @@
+{
+  "name": "angular-in-memory-web-api",
+  "version": "0.20.0",
+  "description": "An in-memory web api for Angular demos and tests",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/core": "^20.2.0-next",
+    "@angular/common": "^20.2.0-next",
+    "rxjs": "^6.5.3 || ^7.4.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/misc/angular-in-memory-web-api"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
+  }
+}

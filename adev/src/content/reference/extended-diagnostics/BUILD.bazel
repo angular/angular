@@ -1,0 +1,30 @@
+load("//adev/shared-docs:index.bzl", "generate_guides", "generate_nav_items")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+filegroup(
+    name = "files",
+    srcs = glob(
+        [
+            "*.md",
+        ],
+        exclude = [
+            "overview.md",
+        ],
+    ),
+    visibility = ["//visibility:private"],
+)
+
+generate_guides(
+    name = "extended-diagnostics",
+    srcs = [
+        "overview.md",
+        ":files",
+    ],
+)
+
+generate_nav_items(
+    name = "route-nav-items",
+    srcs = [":files"],
+    strategy = "extended-diagnostics",
+)

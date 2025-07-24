@@ -1,0 +1,38 @@
+:host {
+  margin: 5% auto;
+}
+
+.adev-preview-error {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 1rem;
+
+  p {
+    display: flex;
+    gap: 0.5rem;
+    font-weight: 600;
+    margin-top: 0;
+
+    &::before {
+      content: 'error';
+      font-family: var(--icons);
+      color: var(--orange-red);
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+  }
+
+  code {
+    &:not(pre *) {
+      white-space: pre-wrap;
+      background: linear-gradient(90deg, var(--hot-red) 0%, var(--orange-red) 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+
+      &::before {
+        background: transparent;
+      }
+    }
+  }
+}

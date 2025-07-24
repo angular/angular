@@ -1,0 +1,165 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+// horizontal tutorial nav bar
+.adev-tutorial-nav-container {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: var(--page-background);
+  padding-block-start: var(--layout-padding);
+  padding-block-end: calc(1.5rem + 50px);
+  margin-block-end: 1rem;
+  border-block-end: 1px solid var(--septenary-contrast);
+  z-index: var(--z-index-nav);
+  transition: background-color 0.3s ease;
+  container: nav-container / inline-size;
+
+  @include mq.for-tablet-landscape-down {
+    top: 60px;
+  }
+
+  @include mq.for-phone-only {
+    top: 55px;
+  }
+
+  &:has(.docs-reveal-answer-button) {
+    @container tutorial-content (max-width: 430px) {
+      padding-block-end: calc(1.5rem + 85px);
+    }
+    @container page-content (max-width: 430px) {
+      padding-block-end: calc(1.5rem + 85px);
+    }
+  }
+}
+
+.adev-tutorial-nav {
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  flex-wrap: wrap;
+  z-index: var(--z-index-nav);
+}
+
+.adev-unfold-button {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding-inline: 0;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  flex: 1;
+  z-index: var(--z-index-nav);
+
+  docs-icon {
+    min-width: 1.5rem;
+    color: var(--quinary-contrast);
+    transition: color 0.2s ease-in-out;
+  }
+
+  .adev-nav-open &,
+  &:hover {
+    docs-icon {
+      color: var(--primary-contrast);
+    }
+  }
+}
+
+.adev-current-tutorial {
+  text-align: left;
+  letter-spacing: 0.00875rem;
+
+  span:first-child {
+    margin-block-end: 0.2rem;
+    color: var(--quaternary-contrast);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  span {
+    color: var(--primary-contrast);
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.adev-download-button {
+  width: 2.875rem;
+  height: 2.875rem;
+  padding: 0;
+}
+
+.adev-reveal-desktop-button {
+  @container nav-container (max-width: 430px) {
+    display: none;
+  }
+}
+
+.adev-reveal-mobile-button-container {
+  display: flex;
+  @container nav-container (max-width: 430px) {
+    width: 100%;
+    justify-content: end;
+  }
+  @container nav-container (min-width: 430px) {
+    display: none;
+  }
+}
+
+.docs-reveal-answer-button {
+  height: 2.875rem;
+  width: 120px;
+}
+
+.adev-reset-answer-button {
+  background: var(--senary-contrast);
+  transition: opacity 0.3s ease, background 0.3s ease;
+
+  &:hover {
+    background: var(--quinary-contrast);
+    &::after {
+      opacity: 0;
+    }
+    &::before {
+      background: var(--octonary-contrast);
+    }
+  }
+}
+
+.adev-nav-arrows {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+
+  button {
+    width: 2.875rem;
+    height: 2.875rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:disabled {
+      //gradient stroke
+      background: var(--quinary-contrast);
+
+      docs-icon {
+        color: var(--quinary-contrast);
+      }
+    }
+
+    docs-icon {
+      z-index: var(--z-index-icon);
+      color: var(--primary-contrast);
+    }
+  }
+}

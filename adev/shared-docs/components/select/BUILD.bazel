@@ -1,0 +1,44 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project", "sass_binary", "ts_project", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_project(
+    name = "select",
+    srcs = [
+        "select.component.ts",
+    ],
+    assets = [
+        ":select.component.css",
+        "select.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/forms",
+    ],
+)
+
+sass_binary(
+    name = "style",
+    src = "select.component.scss",
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":select_rjs",
+        "//adev:node_modules/@angular/core",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib_rjs"],
+)

@@ -1,0 +1,11 @@
+<h2 highlight="gold">My Heroes</h2>
+<ul class="heroes">
+  @for (hero of heroes | async; track hero) {
+    <li>
+      <button [class.selected]="hero === selectedHero" type="button" (click)="onSelect(hero)">
+        <span class="badge">{{ hero.id }}</span>
+        <span class="name">{{ hero.name }}</span>
+      </button>
+    </li>
+  }
+</ul>

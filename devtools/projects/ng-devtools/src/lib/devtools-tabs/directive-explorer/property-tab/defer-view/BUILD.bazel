@@ -1,0 +1,26 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "defer_view.component.scss_styles",
+    src = "defer-view.component.scss",
+    deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
+)
+
+ng_project(
+    name = "defer-view",
+    srcs = [
+        "defer-view.component.ts",
+    ],
+    angular_assets = [
+        "defer-view.component.html",
+        "defer_view.component.scss_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/rxjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)

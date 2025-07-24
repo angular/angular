@@ -1,0 +1,48 @@
+load("//adev/shared-docs:defaults.bzl", "esbuild", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "previews.template",
+])
+
+ts_project(
+    name = "index",
+    srcs = [
+        "index.mts",
+    ],
+    enable_runtime_rnjs_interop = True,
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/tinyglobby",
+        "//adev:node_modules/typescript",
+    ],
+)
+
+filegroup(
+    name = "template",
+    srcs = ["previews.template"],
+    visibility = ["//visibility:public"],
+)
+
+esbuild(
+    name = "bundle",
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    entry_point = ":index.mts",
+    external = [
+        "typescript",
+        "path",
+    ],
+    format = "esm",
+    output = "previews.mjs",
+    platform = "node",
+    target = "es2022",
+    tsconfig = "//adev/shared-docs:tsconfig_build",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//adev/shared-docs/pipeline/examples/previews:index_rjs",
+    ],
+)

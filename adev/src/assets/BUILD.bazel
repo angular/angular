@@ -1,0 +1,135 @@
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+copy_to_directory(
+    name = "content",
+    srcs = [
+        "//adev/src/content",
+        "//adev/src/content/ai",
+        "//adev/src/content/best-practices",
+        "//adev/src/content/best-practices/runtime-performance",
+        "//adev/src/content/cdk:cdk_docs",
+        "//adev/src/content/cli/help:cli_docs",
+        "//adev/src/content/ecosystem",
+        "//adev/src/content/ecosystem/rxjs-interop",
+        "//adev/src/content/ecosystem/service-workers",
+        "//adev/src/content/guide",
+        "//adev/src/content/guide/animations",
+        "//adev/src/content/guide/components",
+        "//adev/src/content/guide/di",
+        "//adev/src/content/guide/directives",
+        "//adev/src/content/guide/forms",
+        "//adev/src/content/guide/http",
+        "//adev/src/content/guide/i18n",
+        "//adev/src/content/guide/ngmodules",
+        "//adev/src/content/guide/performance",
+        "//adev/src/content/guide/routing",
+        "//adev/src/content/guide/signals",
+        "//adev/src/content/guide/templates",
+        "//adev/src/content/guide/testing",
+        "//adev/src/content/introduction",
+        "//adev/src/content/introduction/essentials",
+        "//adev/src/content/reference",
+        "//adev/src/content/reference/concepts",
+        "//adev/src/content/reference/configs",
+        "//adev/src/content/reference/errors",
+        "//adev/src/content/reference/errors:route-nav-items",
+        "//adev/src/content/reference/extended-diagnostics",
+        "//adev/src/content/reference/extended-diagnostics:route-nav-items",
+        "//adev/src/content/reference/migrations",
+        "//adev/src/content/tools",
+        "//adev/src/content/tools/cli",
+        "//adev/src/content/tools/devtools",
+        "//adev/src/content/tools/libraries",
+        "//adev/src/content/tutorials",
+        "//adev/src/content/tutorials/deferrable-views:deferrable-views-guides",
+        "//adev/src/content/tutorials/first-app:first-app-guides",
+        "//adev/src/content/tutorials/learn-angular:learn-angular-guides",
+        "//packages/animations:animations_docs",
+        "//packages/animations/browser:animations_browser_docs",
+        "//packages/animations/browser/testing:animations_browser_testing_docs",
+        "//packages/common:common_docs",
+        "//packages/common/http:http_docs",
+        "//packages/common/http/testing:http_testing_docs",
+        "//packages/common/testing:common_testing_docs",
+        "//packages/common/upgrade:common_upgrade_docs",
+        "//packages/core:core_docs",
+        "//packages/core/global:core_global_docs",
+        "//packages/core/rxjs-interop:core_rxjs-interop_docs",
+        "//packages/core/testing:core_testing_docs",
+        "//packages/elements:elements_docs",
+        "//packages/forms:forms_docs",
+        "//packages/localize:localize_docs",
+        "//packages/localize/src/localize:localize_init_docs",
+        "//packages/platform-browser:platform-browser_docs",
+        "//packages/platform-browser-dynamic:platform-browser_dynamic_docs",
+        "//packages/platform-browser-dynamic/testing:platform-browser_dynamic_testing_docs",
+        "//packages/platform-browser/animations:platform-browser_animations_docs",
+        "//packages/platform-browser/animations/async:platform-browser_animations_async_docs",
+        "//packages/platform-browser/testing:platform-browser_testing_docs",
+        "//packages/platform-server:platform-server_docs",
+        "//packages/platform-server/testing:platform-server_testing_docs",
+        "//packages/router:router_docs",
+        "//packages/router/testing:router_testing_docs",
+        "//packages/router/upgrade:router_upgrade_docs",
+        "//packages/service-worker:service-worker_docs",
+        "//packages/ssr/docs:ssr_docs",
+        "//packages/ssr/docs:ssr_node_docs",
+        "//packages/upgrade:upgrade_docs",
+        "//packages/upgrade/static:upgrade_static_docs",
+        "//packages/upgrade/static/testing:upgrade_static_testing_docs",
+        "//tools/manual_api_docs/blocks:blocks_docs",
+        "//tools/manual_api_docs/elements:elements_docs",
+    ],
+    replace_prefixes = {
+        "adev/src/content/cli/help/cli_docs_html": "cli/",
+        "adev/src/content/cdk/cdk_docs_html": "api/",
+        "adev/src/content": "",
+        "packages/**/": "api/",
+        "tools/**/": "api/",
+    },
+)
+
+copy_to_directory(
+    name = "tutorials",
+    srcs = [
+        "//adev/src/content/tutorials/deferrable-views",
+        "//adev/src/content/tutorials/first-app",
+        "//adev/src/content/tutorials/homepage",
+        "//adev/src/content/tutorials/learn-angular",
+        "//adev/src/content/tutorials/playground",
+    ],
+    replace_prefixes = {
+        "adev/**/tutorials/*/": "",
+    },
+)
+
+generate_api_manifest(
+    name = "docs_api_manifest",
+    srcs = [
+        "//adev/src/content/cdk:cdk_extracted_apis",
+        "//packages:docs_extracted_apis",
+    ],
+)
+
+copy_to_directory(
+    name = "api",
+    srcs = [
+        ":docs_api_manifest",
+    ],
+    replace_prefixes = {
+        "**/": "",
+    },
+)
+
+copy_to_directory(
+    name = "context",
+    srcs = [
+        "//adev/src/context",
+    ],
+    replace_prefixes = {
+        "**/": "",
+    },
+)

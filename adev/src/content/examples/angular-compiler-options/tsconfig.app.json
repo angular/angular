@@ -1,0 +1,45 @@
+// #docplaster ...
+/* To learn more about this file see: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+// #docregion angular-compiler-options-app
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "outDir": "./out-tsc/app",
+      // #enddocregion angular-compiler-options-app
+      "types": []
+      // #docregion angular-compiler-options-app
+    },
+    // #enddocregion angular-compiler-options-app
+    "files": [
+      "src/main.ts"
+    ],
+    "include": [
+      "src/**/*.d.ts"
+    ],
+    "exclude": [
+      "src/test.ts",
+      "src/**/*.spec.ts",
+      "src/**/*-specs.ts",
+      "src/**/*.avoid.ts",
+      "src/**/*.0.ts",
+      "src/**/*.1.ts",
+      "src/**/*.1b.ts",
+      "src/**/*.2.ts",
+      "src/**/*.3.ts",
+      "src/**/*.4.ts",
+      "src/**/*.5.ts",
+      "src/**/*.6.ts",
+      "src/**/*.7.ts",
+      "src/**/testing"
+    ],
+    // #docregion angular-compiler-options-app
+    "angularCompilerOptions": {
+      "strictTemplates": true,
+      "preserveWhitespaces": true,
+      // #enddocregion angular-compiler-options-app
+      "sourceMap": true,
+      "declaration": false
+      // #docregion angular-compiler-options-app
+    }
+  }
+  // #enddocregion angular-compiler-options-app

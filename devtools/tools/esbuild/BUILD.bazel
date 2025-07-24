@@ -1,0 +1,47 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "esbuild_base",
+    srcs = ["esbuild-base.config.mts"],
+    deps = [
+        "//:node_modules/@angular/compiler-cli",
+        "//devtools/tools/angular-optimization:js_lib",
+        "//packages:package_json",
+    ],
+)
+
+ts_project(
+    name = "esbuild_config_esm",
+    srcs = ["esbuild-esm.config.mts"],
+    deps = [
+        ":esbuild_base_rjs",
+        "//devtools/tools/angular-optimization:js_lib",
+    ],
+)
+
+ts_project(
+    name = "esbuild_config_esm_prod",
+    srcs = ["esbuild-esm-prod.config.mts"],
+    deps = [
+        ":esbuild_base_rjs",
+    ],
+)
+
+ts_project(
+    name = "esbuild_config_iife",
+    srcs = ["esbuild-iife.config.mts"],
+    deps = [
+        ":esbuild_base_rjs",
+    ],
+)
+
+ts_project(
+    name = "esbuild_config_spec",
+    testonly = True,
+    srcs = ["esbuild-spec.config.mts"],
+    deps = [
+        ":esbuild_base_rjs",
+    ],
+)

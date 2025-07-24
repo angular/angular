@@ -1,0 +1,18 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_project(
+    name = "search-item",
+    srcs = [
+        "search-item.directive.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs/directives:__pkg__",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/core",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+    ],
+)

@@ -1,0 +1,20 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "testing_examples",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)

@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "inlineSources": true,
+    "declaration": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "target": "es2020",
+    "lib": ["es2020", "dom", "dom.iterable"],
+    "types": ["chrome"],
+    // TODO: Have an IDE specific tsconfig file
+    "paths": {
+      "@angular/*": ["../packages/*/index"]
+    }
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "strictInjectionParameters": true,
+    "unusedStandaloneImports": "error"
+  }
+}

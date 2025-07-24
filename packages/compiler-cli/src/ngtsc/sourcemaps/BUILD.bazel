@@ -1,0 +1,18 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "sourcemaps",
+    srcs = ["index.ts"] + glob([
+        "src/**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/@jridgewell/sourcemap-codec",
+        "//:node_modules/@types/convert-source-map",
+        "//:node_modules/@types/node",
+        "//:node_modules/convert-source-map",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
+    ],
+)

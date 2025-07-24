@@ -1,0 +1,15 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "esm-main-loader.mjs",
+])
+
+filegroup(
+    name = "loaders",
+    srcs = [
+        "esm-extension-loader.mjs",
+        "esm-main-loader.mjs",
+        "esm-node-module-loader.mjs",
+        "//third_party/github.com/lukeed/resolve.exports",
+    ],
+)

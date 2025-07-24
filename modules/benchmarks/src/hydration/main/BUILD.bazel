@@ -1,0 +1,54 @@
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
+load("//tools:defaults.bzl", "http_server")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+optimize_angular_app(
+    name = "bundles",
+    srcs = glob(["*.ts"]) + [
+        "index.html",
+        "//modules/benchmarks/src:util_lib_rjs",
+        "//modules/benchmarks/src/hydration:shared_lib_rjs",
+    ],
+    include_zonejs = True,
+    deps = [
+        "//modules:node_modules/@angular/build",
+        "//modules:node_modules/@angular/common",
+        "//modules:node_modules/@angular/core",
+        "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/rxjs",
+        "//modules:node_modules/tslib",
+        "//modules:node_modules/zone.js",
+    ],
+)
+
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
+    name = "app_bundle",
+    srcs = [":bundles"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $</main.js $@",
+)
+
+http_server(
+    name = "prodserver",
+    srcs = ["index.html"],
+    deps = [
+        ":app_bundle",
+        "//modules:node_modules/zone.js",
+    ],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/hydration:perf_tests_lib_rjs"],
+)
+
+e2e_test(
+    name = "e2e",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/hydration:e2e_tests_lib_rjs"],
+)

@@ -1,0 +1,62 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "filter_component_styles",
+    src = "filter.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "filter",
+    srcs = [
+        "filter.component.ts",
+    ],
+    angular_assets = [
+        "filter.component.html",
+        ":filter_component_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/rxjs",
+    ],
+)
+
+ts_test_library(
+    name = "filter_test",
+    srcs = ["filter.component.spec.ts"],
+    deps = [
+        ":filter_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+    ],
+)
+
+ts_project(
+    name = "directive-forest-filter-fn-generator",
+    srcs = ["directive-forest-filter-fn-generator.ts"],
+    deps = [
+        ":filter_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "directive-forest-filter-fn-generator_test",
+    srcs = ["directive-forest-filter-fn-generator.spec.ts"],
+    deps = [
+        ":directive-forest-filter-fn-generator_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":directive-forest-filter-fn-generator_test_rjs",
+        ":filter_test_rjs",
+    ],
+)

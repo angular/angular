@@ -1,0 +1,282 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should instantiate directives",
+      "inputFiles": ["directives.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect ChildComponent.ɵcmp",
+          "files": [
+            {
+              "expected": "directives_child_component_def.js",
+              "generated": "directives.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect ChildComponent.ɵfac",
+          "files": [
+            {
+              "expected": "directives_child_component_fac.js",
+              "generated": "directives.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect SomeDirective.ɵdir",
+          "files": [
+            {
+              "expected": "directives_some_directive_dir.js",
+              "generated": "directives.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect SomeDirective.ɵfac",
+          "files": [
+            {
+              "expected": "directives_some_directive_fac.js",
+              "generated": "directives.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect MyComponentDefinition.ɵcmp",
+          "files": [
+            {
+              "expected": "directives_my_component_def.js",
+              "generated": "directives.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect MyComponentDefinition.ɵfac",
+          "files": [
+            {
+              "expected": "directives_my_component_fac.js",
+              "generated": "directives.js"
+            }
+          ]
+        }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "local compile",
+        "declaration-only emit"
+      ]
+    },
+    {
+      "description": "should support complex selectors",
+      "inputFiles": ["complex_selectors.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect SomeDirective.ɵdir",
+          "files": [
+            {
+              "expected": "complex_selectors_some_directive_dir.js",
+              "generated": "complex_selectors.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect SomeDirective.ɵfac",
+          "files": [
+            {
+              "expected": "complex_selectors_some_directive_fac.js",
+              "generated": "complex_selectors.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect OtherDirective.ɵdir",
+          "files": [
+            {
+              "expected": "complex_selectors_other_directive_dir.js",
+              "generated": "complex_selectors.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect OtherDirective.ɵfac",
+          "files": [
+            {
+              "expected": "complex_selectors_other_directive_fac.js",
+              "generated": "complex_selectors.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should convert #my-app selector to [\"\", \"id\", \"my-app\"]",
+      "inputFiles": ["id_selector.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect SomeComponent.ɵcomp",
+          "files": ["id_selector.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support components without selector",
+      "inputFiles": ["no_selector.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect EmptyOutletComponent.ɵcmp",
+          "files": [
+            {
+              "expected": "no_selector_def.js",
+              "generated": "no_selector.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect EmptyOutletComponent.ɵfac",
+          "files": [
+            {
+              "expected": "no_selector_fac.js",
+              "generated": "no_selector.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting",
+      "inputFiles": ["view_tokens_di.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect MyComponent.ɵcmp",
+          "files": [
+            {
+              "expected": "view_tokens_di_def.js",
+              "generated": "view_tokens_di.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect MyComponent.ɵfac",
+          "files": [
+            {
+              "expected": "view_tokens_di_fac.js",
+              "generated": "view_tokens_di.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support structural directives",
+      "inputFiles": ["structural_directives.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect IfDirective.ɵdir",
+          "files": [
+            {
+              "expected": "structural_directives_if_directive_def.js",
+              "generated": "structural_directives.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect IfDirective.ɵfac",
+          "files": [
+            {
+              "expected": "structural_directives_if_directive_fac.js",
+              "generated": "structural_directives.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect MyComponent.ɵcmp",
+          "files": [
+            {
+              "expected": "structural_directives_my_component_def.js",
+              "generated": "structural_directives.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect MyComponent.ɵfac",
+          "files": [
+            {
+              "expected": "structural_directives_my_component_fac.js",
+              "generated": "structural_directives.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support array literals",
+      "inputFiles": ["array_literals.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid array emit",
+          "files": ["array_literals.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support 9+ bindings in array literals",
+      "inputFiles": ["array_literals_many.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid array binding",
+          "files": ["array_literals_many.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support object literals",
+      "inputFiles": ["object_literals.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid object literal binding",
+          "files": ["object_literals.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support expressions nested deeply in object/array literals",
+      "inputFiles": ["literal_nested_expression.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid array/object literal binding",
+          "files": ["literal_nested_expression.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support number literals with separators",
+      "inputFiles": ["number_separator.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid number literal",
+          "files": ["number_separator.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support template literals",
+      "inputFiles": ["template_literals.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template literal binding",
+          "files": ["template_literals.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support tagged template literals",
+      "inputFiles": ["tagged_template_literals.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid tagged template literal binding",
+          "files": ["tagged_template_literals.js"]
+        }
+      ]
+    }
+  ]
+}

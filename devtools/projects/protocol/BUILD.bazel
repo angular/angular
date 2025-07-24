@@ -1,0 +1,40 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig.lib.json",
+    "tsconfig.spec.json",
+])
+
+ts_project(
+    name = "protocol",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "src/test.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ts_test_library(
+    name = "protocol_test",
+    srcs = glob(
+        ["**/*.spec.ts"],
+    ),
+    deps = [
+        ":protocol_rjs",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":protocol_test_rjs",
+    ],
+)

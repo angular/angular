@@ -1,0 +1,87 @@
+// Doc Steps/Ordered Doc section
+// Did somebody order a doc?
+@use '../media-queries' as mq;
+
+@mixin docs-steps() {
+  .docs-steps {
+    --gutter: 4rem;
+    padding-inline-start: var(--gutter);
+    counter-reset: code-steps-list;
+    list-style-type: none;
+
+    li {
+      position: relative;
+    }
+  }
+
+  .docs-steps li h3 {
+    font-size: 1.75rem;
+    margin-block-start: 0;
+    margin-block-end: 0.5rem;
+    line-height: 2.5rem;
+  }
+
+  .docs-step-number {
+    counter-increment: code-steps-list;
+    display: block;
+    pointer-events: none;
+    position: absolute;
+    left: calc(var(--gutter) * -1);
+    top: 2.7rem;
+    bottom: 0;
+
+    &::before {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      content: counter(code-steps-list);
+      border-radius: 50%;
+      aspect-ratio: 1 / 1;
+      border: 1px solid transparent;
+      background-image: linear-gradient(var(--page-background), var(--page-background)),
+        var(--pink-to-purple-horizontal-gradient);
+      background-origin: border-box;
+      background-clip: content-box, border-box;
+      position: sticky;
+      top: 2rem;
+
+      // adjust for tablet nav bar height
+      @include mq.for-tablet-landscape-down {
+        top: calc(1rem + 75px);
+      }
+
+      // adjust for mobile nav bar height
+      @include mq.for-phone-only {
+        top: calc(1rem + 55px);
+      }
+    }
+
+    .docs-tutorial-content & {
+      &::before {
+        // calc(1rem + sticky tutorial nav height)
+        top: calc(1rem + 120px);
+
+        // adjust for tablet nav bar height
+        @include mq.for-tablet-landscape-down {
+          top: calc(1rem + 165px);
+        }
+
+        // adjust for mobile nav bar height
+        @include mq.for-phone-only {
+          top: calc(1rem + 140px);
+        }
+      }
+    }
+
+    .docs-tutorial-content:has(.docs-reveal-answer-button) & {
+      &::before {
+        // calc(1rem + sticky tutorial nav height
+        // + reveal answer button height when on smaller screens)
+        @container tutorial-content (max-width: 430px) {
+          top: calc(1rem + 175px);
+        }
+      }
+    }
+  }
+}

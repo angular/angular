@@ -1,0 +1,11 @@
+<mat-toolbar>
+  {{ directive() }}
+  <button
+    [disabled]="disableViewSourceButton()"
+    (click)="handleViewSource($event)"
+    [matTooltip]="viewSourceTooltip()"
+    [attr.aria-label]="viewSourceTooltip()"
+  >
+    <mat-icon> code </mat-icon>
+  </button>
+</mat-toolbar>

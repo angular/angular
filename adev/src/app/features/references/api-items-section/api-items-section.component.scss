@@ -1,0 +1,97 @@
+@use '@angular/docs/styles/anchor' as anchor;
+
+.adev-api-items-section-header {
+  display: flex;
+
+  svg {
+    fill: var(--primary-contrast);
+  }
+
+  h3 {
+    flex: 1;
+
+    display: flex;
+    gap: 0.75em;
+    align-items: flex-start;
+
+    margin-top: 1.43rem;
+    font-size: 1.25rem;
+  }
+
+  .adev-link-icon {
+    color: var(--quinary-contrast);
+    cursor: pointer;
+    &:hover {
+      color: var(--primary-contrast);
+    }
+  }
+}
+
+.adev-api-items-section-grid {
+  column-count: 3;
+  column-gap: 0.5rem;
+  padding: 0;
+
+  @container api-ref-page (max-width: 798px) {
+    column-count: 2;
+  }
+  @container api-ref-page (max-width: 600px) {
+    column-count: 1;
+  }
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    border-inline-start: 1px solid var(--senary-contrast);
+    padding: 0.3rem;
+    padding-inline-start: 0.75rem;
+    font-size: 0.875rem;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+    width: 100%;
+
+    a {
+      color: var(--quaternary-contrast);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding-block: 2px;
+    }
+
+    .adev-item-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:hover {
+      border-inline-start: 1px solid var(--quaternary-contrast);
+      background-color: var(--septenary-contrast);
+      a {
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}
+
+.adev-api-items-section-item {
+  display: flex;
+  flex: 1;
+  gap: 1em;
+}
+
+.adev-item-attribute {
+  width: 24px;
+  text-align: center;
+  font-family: var(--code-font);
+  background-color: var(--senary-contrast);
+  color: var(--tertiary-contrast);
+  border-radius: 0.25rem;
+  padding: 0.001rem 0.2rem 0.005rem;
+  margin-inline-start: 0.5rem;
+}
+
+.adev-api-anchor {
+  color: inherit;
+
+  @include anchor.docs-anchor();
+}

@@ -1,0 +1,14 @@
+/* To learn more about this file see: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/app",
+    "types": ["node", "dom-navigation"],
+    // Path mappings can result in two versions of e.g. `@angular/core`.
+    // core may be linked in `adev/node_modules`, but also ESBuild does
+    // respect the tsconfig path mappings.
+    "paths": {}
+  },
+  "files": ["src/main.ts", "src/main.server.ts"],
+  "include": ["src/**/*.d.ts"]
+}

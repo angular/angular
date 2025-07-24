@@ -1,0 +1,135 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
+
+# Uses separate test rules to allow the tests to run in parallel
+
+ts_project(
+    name = "test_utils",
+    testonly = True,
+    srcs = [
+        "mocks.ts",
+        "test_support.ts",
+    ],
+    visibility = [
+        ":__subpackages__",
+        "//packages/compiler-cli/src/ngtsc/transform/jit/test:__pkg__",
+        "//packages/language-service/test:__subpackages__",
+    ],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages:types_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
+    ],
+)
+
+# extract_18n_spec
+ts_project(
+    name = "extract_i18n_lib",
+    testonly = True,
+    srcs = [
+        "extract_i18n_spec.ts",
+    ],
+    deps = [
+        ":test_utils_rjs",
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "extract_i18n",
+    data = [
+        ":extract_i18n_lib_rjs",
+        "//:node_modules/yargs",
+        "//packages/common:npm_package",
+        "//packages/core:core_rjs",
+        "//packages/core:npm_package",
+    ],
+)
+
+# perform_watch_spec
+ts_project(
+    name = "perform_watch_lib",
+    testonly = True,
+    srcs = [
+        "perform_watch_spec.ts",
+    ],
+    deps = [
+        ":test_utils_rjs",
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "perform_watch",
+    data = [
+        ":perform_watch_lib_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core:npm_package",
+    ],
+)
+
+# perform_compile_spec
+ts_project(
+    name = "perform_compile_lib",
+    testonly = True,
+    srcs = [
+        "perform_compile_spec.ts",
+    ],
+    deps = [
+        ":test_utils_rjs",
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "perform_compile",
+    data = [
+        ":perform_compile_lib_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core:npm_package",
+    ],
+)
+
+ts_project(
+    name = "typescript_support_lib",
+    testonly = True,
+    srcs = [
+        "typescript_support_spec.ts",
+    ],
+    deps = [
+        "//packages/compiler-cli:compiler-cli_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "typescript_support",
+    data = [
+        ":typescript_support_lib_rjs",
+    ],
+)
+
+# version_helpers_spec
+ts_project(
+    name = "version_helpers_lib",
+    testonly = True,
+    srcs = ["version_helpers_spec.ts"],
+    deps = [
+        "//packages/compiler-cli:compiler-cli_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "version_helpers",
+    data = [
+        ":version_helpers_lib_rjs",
+    ],
+)

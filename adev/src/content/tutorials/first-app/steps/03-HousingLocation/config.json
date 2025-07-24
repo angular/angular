@@ -1,0 +1,7 @@
+{
+  "title": "Create housing location component",
+  "type": "editor",
+  "answerSrc": "../04-interfaces/src",
+  "answerRootDir": "../04-interfaces/",
+  "openFiles": ["src/app/home/home.ts"]
+}

@@ -1,0 +1,187 @@
+@use '../../styles/media-queries' as mq;
+
+:host {
+  display: flex;
+  min-width: var(--secondary-nav-width);
+  list-style: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  padding-block: 1.5rem;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    background-color: var(--septenary-contrast);
+
+    @include mq.for-tablet-landscape-down {
+      background-color: var(--quinary-contrast);
+    }
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--quinary-contrast);
+  }
+
+  .docs-nav-secondary & {
+    padding-block: 2rem;
+  }
+
+  > .docs-faceted-list {
+    border: 0;
+  }
+
+  .docs-faceted-list-item-text {
+    max-width: calc(100% - 1rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .docs-nav-item-has-icon {
+    &::after {
+      // FIXME: for some reason this disappears when transformed
+      content: 'chevron_right';
+      font-size: 1.25rem;
+      font-family: var(--icons);
+    }
+  }
+
+  .tag {
+    --label-theme: var(--symbolic-purple);
+    color: var(--label-theme);
+    background: color-mix(in srgb, var(--label-theme) 10%, white);
+    margin-inline-start: 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+
+    .docs-dark-mode & {
+      background: color-mix(in srgb, var(--label-theme) 17%, #272727);
+    }
+
+    .docs-light-mode & {
+      background: color-mix(in srgb, var(--label-theme) 10%, white);
+    }
+
+    &.docs-new-item {
+      --label-theme: var(--symbolic-green);
+    }
+
+    &.docs-updated-item {
+      --label-theme: var(--symbolic-blue);
+    }
+  }
+}
+
+.docs-secondary-nav-header {
+  padding-block: 1.25rem;
+  font-weight: 500;
+}
+
+.docs-secondary-nav-button {
+  width: 15rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: none;
+  padding-block: 1.25rem;
+  padding-inline-start: 0;
+  color: var(--primary-contrast);
+  font-size: 0.875rem;
+  font-family: var(--inter-font);
+  line-height: 160%;
+  letter-spacing: -0.00875rem;
+  transition:
+    color 0.3s ease,
+    background 0.3s ease;
+  text-align: left; // forces left alignment of text in button
+
+  &.docs-secondary-nav-button-active {
+    // font gradient
+    background-image: var(--pink-to-purple-vertical-gradient);
+    &::before {
+      opacity: 1;
+      transform: scaleY(1);
+      background: var(--pink-to-purple-vertical-gradient);
+    }
+    &:hover {
+      &::before {
+        opacity: 1;
+        transform: scaleY(1.1);
+      }
+    }
+  }
+}
+
+.docs-expanded-button {
+  justify-content: start;
+  gap: 0.5rem;
+}
+
+a,
+.docs-not-expanded-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  line-height: 1.4rem;
+  letter-spacing: -0.00875rem;
+  padding: 0.5rem;
+  padding-inline-start: 1rem;
+  text-align: left;
+}
+
+// Add padding-bottom to last item in the list
+.docs-navigation-list {
+  width: 100%;
+
+  li:last-of-type {
+    ul:last-of-type {
+      li:last-of-type {
+        padding-block-end: 1rem;
+      }
+    }
+  }
+  &:first-child {
+    margin-inline-start: 1rem;
+  }
+}
+
+.docs-external-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+  &::after {
+    content: 'open_in_new';
+    font-family: var(--icons);
+    font-size: 1.1rem;
+    color: var(--quinary-contrast);
+    transition: color 0.3s ease;
+    margin-inline-end: 0.4rem;
+  }
+}
+
+::ng-deep .API-tooltip {
+  .mat-mdc-tooltip-surface {
+    max-width: unset;
+    width: auto;
+    word-break: keep-all;
+    white-space: pre;
+  }
+}

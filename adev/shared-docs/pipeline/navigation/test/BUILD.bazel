@@ -1,0 +1,18 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
+
+package(default_visibility = ["//adev/shared-docs/pipeline/navigation:__subpackages__"])
+
+ts_project(
+    name = "unit_test_lib",
+    testonly = True,
+    srcs = glob(["*.spec.mts"]),
+    deps = [
+        "//adev:node_modules/@types/node",
+        "//adev/shared-docs/pipeline/navigation:lib_rjs",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "unit_tests",
+    data = [":unit_test_lib_rjs"],
+)

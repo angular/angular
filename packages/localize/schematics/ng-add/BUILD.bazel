@@ -1,0 +1,66 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "ng-add",
+    srcs = [
+        "index.ts",
+        "schema.d.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@schematics/angular",
+    ],
+)
+
+esbuild(
+    name = "ng_add_bundle",
+    entry_point = ":index.ts",
+    external = [
+        "@angular-devkit/*",
+        "@schematics/*",
+    ],
+    format = "cjs",
+    metafile = False,
+    output = "ng_add_bundle.cjs",
+    platform = "node",
+    target = "node20",
+    tsconfig = "//packages:tsconfig_build",
+    deps = [
+        ":ng-add_rjs",
+        "//packages:tsconfig_build",
+    ],
+)
+
+filegroup(
+    name = "assets",
+    srcs = [
+        "schema.json",
+        ":ng_add_bundle",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = [
+        "index_spec.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/typescript",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":assets",
+        ":ng-add_rjs",
+        ":test_lib_rjs",
+        "//packages/localize/schematics:collection_json",
+    ],
+)

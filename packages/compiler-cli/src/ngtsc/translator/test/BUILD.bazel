@@ -1,0 +1,27 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages:types_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/translator:translator_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)

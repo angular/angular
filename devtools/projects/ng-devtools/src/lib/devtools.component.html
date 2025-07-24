@@ -1,0 +1,131 @@
+<div class="devtools mat-app-background" style="height: 100%;">
+  @switch (angularStatus()) {
+    @case (AngularStatus.EXISTS) {
+      @if (angularIsInDevMode()) {
+        @if (supportedVersion()) {
+          <div class="devtools-wrapper noselect">
+            <ng-devtools-tabs
+              (frameSelected)="inspectFrame($event)"
+              [isHydrationEnabled]="hydration()"
+              [angularVersion]="angularVersion()"
+              [supportedApis]="supportedApis()"
+            ></ng-devtools-tabs>
+          </div>
+        } @else {
+          <p class="text-message">Angular Devtools only supports Angular versions 12 and above</p>
+        }
+      } @else {
+        <p
+          class="text-message"
+          matTooltip="A dev build is when the `optimization` flag is set to `false` in the angular.json config file."
+        >
+          We detected an application built with production configuration. Angular DevTools only
+          supports development builds.
+        </p>
+
+        <div class="ng-dev-mode-causes">
+          <p>
+            If this application was built in development mode, please check if the
+            <code>window.ng</code> global object is available in your application. If it is missing,
+            then something is preventing Angular from running in development mode properly.
+          </p>
+          <ul>
+            <li>
+              Are you calling <code>enableProdMode()</code> in your application? Read more about
+              <a target="_blank" href="https://angular.dev/api/core/enableProdMode"
+                >enableProdMode()</a
+              >
+              on angular.dev.
+            </li>
+            <li>
+              Is <code>"optimization": true</code> set in your angular.json? Read more about
+              <a
+                target="_blank"
+                href="https://angular.dev/reference/configs/workspace-config#optimization-configuration"
+                >optimization configuration</a
+              >
+              on angular.dev.
+            </li>
+            <li>
+              Is <code>"defaultConfiguration": "production"</code> set in your angular.json? Read
+              more about
+              <a
+                target="_blank"
+                href="https://angular.dev/tools/cli/environments#using-environment-specific-variables-in-your-app"
+                >default configurations</a
+              >
+              on angular.dev.
+            </li>
+          </ul>
+          <p>
+            If you are still experiencing problems, you can open an issue with a reproduction on our
+            <a
+              target="_blank"
+              href="https://github.com/angular/angular/issues/new?assignees=&labels=&projects=&template=4-devtools.yaml"
+              >issue tracker</a
+            >.
+          </p>
+        </div>
+      }
+    }
+    @case (AngularStatus.DOES_NOT_EXIST) {
+      <p class="text-message not-detected">
+        <span
+          class="info-icon"
+          matTooltip="You see this message because the app is still loading, or this is not an Angular application"
+          >i</span
+        >
+        Angular application not detected.
+      </p>
+    }
+    @case (AngularStatus.UNKNOWN) {
+      <div class="initializing">
+        <div class="loading">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 223 236" width="120">
+            <g clip-path="url(#a)">
+              <path
+                fill="url(#b)"
+                d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+              ></path>
+              <path
+                fill="url(#c)"
+                d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+              ></path>
+            </g>
+            <defs>
+              <linearGradient
+                id="b"
+                x1="49.009"
+                x2="225.829"
+                y1="213.75"
+                y2="129.722"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#E40035"></stop>
+                <stop offset=".24" stop-color="#F60A48"></stop>
+                <stop offset=".352" stop-color="#F20755"></stop>
+                <stop offset=".494" stop-color="#DC087D"></stop>
+                <stop offset=".745" stop-color="#9717E7"></stop>
+                <stop offset="1" stop-color="#6C00F5"></stop>
+              </linearGradient>
+              <linearGradient
+                id="c"
+                x1="41.025"
+                x2="156.741"
+                y1="28.344"
+                y2="160.344"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#FF31D9"></stop>
+                <stop offset="1" stop-color="#FF5BE1" stop-opacity="0"></stop>
+              </linearGradient>
+              <clipPath id="a">
+                <path fill="#fff" d="M0 0h223v236H0z"></path>
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    }
+  }
+</div>

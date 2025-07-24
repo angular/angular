@@ -1,0 +1,33 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
+
+package(default_visibility = ["//visibility:private"])
+
+ts_project(
+    name = "providers",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = ["//adev/shared-docs:__subpackages__"],
+    deps = [
+        ":lib_rjs",
+    ],
+)
+
+ng_project(
+    name = "lib",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+        exclude = [
+            "index.ts",
+            "**/*.spec.ts",
+        ],
+    ),
+    deps = [
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+    ],
+)

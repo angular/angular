@@ -1,0 +1,23 @@
+load("//tools:defaults2.bzl", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/upgrade/src/common:common_rjs",
+        "//packages/upgrade/src/common/test/helpers:helpers_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    data = [
+        "//:angularjs_scripts",
+    ],
+    deps = [
+        ":test_lib_rjs",
+    ],
+)

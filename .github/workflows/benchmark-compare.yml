@@ -1,0 +1,68 @@
+name: Run benchmark comparison
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions: read-all
+
+jobs:
+  benchmark-compare:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/benchmark-compare ')}}
+    steps:
+      - uses: TheModdingInquisition/actions-team-membership@a69636a92bc927f32c3910baac06bacc949c984c # v1.0
+        with:
+          team: 'team'
+          organization: angular
+          token: ${{secrets.BENCHMARK_COMPARE_MEMBERSHIP_GITHUB_TOKEN}}
+          exit: true
+
+      # Indicate that the benchmark command was received.
+      - uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        with:
+          comment-id: ${{github.event.comment.id}}
+          token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
+          reactions: 'rocket'
+
+      - uses: alessbell/pull-request-comment-branch@aad01d65d6982b8eacabed5e9a684cd8ceb98da6 # v1.1
+        id: comment-branch
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Specify repository as the PR branch might be from a fork.
+          repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
+          # Checkout the pull request and assume it being trusted given we've checked
+          # that the action was triggered by a team member.
+          ref: ${{steps.comment-branch.outputs.head_ref}}
+
+      - uses: ./.github/actions/yarn-install
+
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@f71394b25149037558248a41a5a18a8e17a01c69
+        with:
+          bazelrc: ./.bazelrc.user
+
+      - name: Preparing benchmark for GitHub action
+        id: info
+        env:
+          # Untrusted input used in an executable code, must be wrapped as an env var to prevent injections
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: yarn benchmarks prepare-for-github-action "$COMMENT_BODY"
+
+      - run: yarn benchmarks run-compare ${{steps.info.outputs.compareSha}} ${{steps.info.outputs.benchmarkTarget}}
+        id: benchmark
+        name: Running benchmark
+
+      - uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        with:
+          issue-number: ${{github.event.issue.number}}
+          token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
+          body: |
+            ## Benchmark Test Results
+            **Test**: `${{steps.info.outputs.benchmarkTarget}}`
+
+            ### PR (${{steps.info.outputs.prHeadSha}})
+            ${{steps.benchmark.outputs.workingStageResultsText}}
+
+            ### Compare Ref (${{steps.info.outputs.compareSha}})
+            ${{steps.benchmark.outputs.comparisonResultsText}}

@@ -1,0 +1,38 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//:node_modules/@angular-devkit/core",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/shelljs",
+        "//:node_modules/tslint",
+        "//packages/core/schematics/utils:utils_rjs",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    timeout = "moderate",
+    data = [
+        ":test_lib_rjs",
+        "//:node_modules/shelljs",
+        "//packages/core/schematics:bundles",
+        "//packages/core/schematics:schematics_jsons",
+        "//packages/core/schematics/migrations/control-flow-migration:static_files",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
+        "//packages/core/schematics/ng-generate/inject-migration:static_files",
+        "//packages/core/schematics/ng-generate/output-migration:static_files",
+        "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
+        "//packages/core/schematics/ng-generate/self-closing-tags-migration:static_files",
+        "//packages/core/schematics/ng-generate/signal-input-migration:static_files",
+        "//packages/core/schematics/ng-generate/signal-queries-migration:static_files",
+        "//packages/core/schematics/ng-generate/signals:static_files",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
+    ],
+    shard_count = 16,
+)

@@ -1,0 +1,13 @@
+<!-- #docplaster -->
+<h2>Remove Element Example</h2>
+
+<nav>
+  <button type="button" (click)="toggle()">Toggle Element</button>
+</nav>
+
+
+@if (isShown()) {
+  <div class="insert-container" [class.deleting]="deleting()">
+    <p>The box is inserted</p>
+  </div>
+}

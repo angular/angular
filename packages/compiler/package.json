@@ -1,0 +1,24 @@
+{
+  "name": "@angular/compiler",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the compiler library",
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/compiler"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": [
+    "./fesm2022/compiler.mjs"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "strict": true,
+    "declaration": true,
+    "sourceMap": true,
+    "lib": ["ES2022", "dom"],
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "types": ["node"],
+    "paths": {
+      "@angular/*": ["../../packages/*/index"]
+    },
+  }
+}

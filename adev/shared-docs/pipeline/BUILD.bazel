@@ -1,0 +1,85 @@
+load("//adev/shared-docs:defaults.bzl", "js_binary", "js_library")
+
+package(default_visibility = ["//adev/shared-docs/pipeline:__subpackages__"])
+
+js_library(
+    name = "esbuild-config",
+    srcs = ["esbuild.config.mjs"],
+)
+
+exports_files([
+    "_guides.bzl",
+    "_stackblitz.bzl",
+    "_previews.bzl",
+    "_playground.bzl",
+    "_tutorial.bzl",
+    "_navigation.bzl",
+    "BUILD.bazel",
+])
+
+js_binary(
+    name = "stackblitz",
+    data = [
+        "//adev:node_modules/jsdom",
+    ],
+    entry_point = "//adev/shared-docs/pipeline/examples/stackblitz:stackblitz.mjs",
+    visibility = ["//visibility:public"],
+)
+
+js_binary(
+    name = "previews",
+    data = [
+        "//adev:node_modules/typescript",
+    ],
+    entry_point = "//adev/shared-docs/pipeline/examples/previews:previews.mjs",
+    visibility = ["//visibility:public"],
+)
+
+js_binary(
+    name = "zip",
+    entry_point = "//adev/shared-docs/pipeline/examples/zip:zip.mjs",
+    visibility = ["//visibility:public"],
+)
+
+js_binary(
+    name = "markdown",
+    data = [
+        "//adev:node_modules/jsdom",
+        "//adev:node_modules/mermaid",
+        "//adev:node_modules/playwright-core",
+        "@rules_browsers//src/browsers/chromium",
+    ],
+    entry_point = "//adev/shared-docs/pipeline/guides:guides.mjs",
+    env = {
+        "CHROME_HEADLESS_BIN": "$(CHROME-HEADLESS-SHELL)",
+    },
+    toolchains = ["@rules_browsers//src/browsers/chromium:toolchain_alias"],
+    visibility = ["//visibility:public"],
+)
+
+js_binary(
+    name = "markdown_no_mermaid",
+    data = [
+        "//adev:node_modules/jsdom",
+    ],
+    entry_point = "//adev/shared-docs/pipeline/guides:guides-no-mermaid.mjs",
+    visibility = ["//visibility:public"],
+)
+
+js_binary(
+    name = "playground",
+    entry_point = "//adev/shared-docs/pipeline/tutorials:playground.mjs",
+    visibility = ["//visibility:public"],
+)
+
+js_binary(
+    name = "tutorial",
+    entry_point = "//adev/shared-docs/pipeline/tutorials:tutorial.mjs",
+    visibility = ["//visibility:public"],
+)
+
+js_binary(
+    name = "navigation",
+    entry_point = "//adev/shared-docs/pipeline/navigation:navigation.mjs",
+    visibility = ["//visibility:public"],
+)

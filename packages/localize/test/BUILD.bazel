@@ -1,0 +1,22 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//packages:types_rjs",
+        "//packages/localize:localize_rjs",
+        "//packages/localize/init:init_rjs",
+        "//packages/localize/src/utils:utils_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib",
+    ],
+)

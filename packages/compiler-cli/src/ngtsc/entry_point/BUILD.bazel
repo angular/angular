@@ -1,0 +1,20 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "entry_point",
+    srcs = ["index.ts"] + glob([
+        "src/**/*.ts",
+    ]),
+    module_name = "@angular/compiler-cli/src/ngtsc/entry_point",
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/compiler-cli/src/ngtsc/shims:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
+    ],
+)

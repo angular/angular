@@ -1,0 +1,17 @@
+load("//modules/playground/e2e_test:example_test.bzl", "example_test")
+
+example_test(
+    name = "sourcemap",
+    srcs = glob(["**/*.ts"]),
+    data = [
+        "//modules/playground/src/sourcemap:assets",
+    ],
+    # Source-Map is using WASM and cannot be bundled for specs.
+    external = ["source-map"],
+    server = "//modules/playground/src/sourcemap:devserver",
+    use_legacy_webdriver_types = False,
+    deps = [
+        "//modules:node_modules/@bazel/runfiles",
+        "//modules:node_modules/source-map",
+    ],
+)

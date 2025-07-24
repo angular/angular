@@ -1,0 +1,51 @@
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "api_golden_test", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_project(
+    name = "http",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+api_golden_test(
+    name = "http_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/common/http:http_rjs",
+    ],
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/common/http/errors.api.md",
+)
+
+generate_api_docs(
+    name = "http_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/common/http",
+)

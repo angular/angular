@@ -1,0 +1,29 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "devtools_app_component_styles",
+    src = "devtools-app.component.scss",
+)
+
+ng_project(
+    name = "devtools-app",
+    srcs = [
+        "devtools-app.component.ts",
+        "devtools-app.routes.ts",
+    ],
+    angular_assets = [
+        "devtools-app.component.html",
+        ":devtools_app_component_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/src:iframe_message_bus_rjs",
+    ],
+)

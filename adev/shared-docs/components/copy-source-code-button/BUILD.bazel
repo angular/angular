@@ -1,0 +1,40 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project", "zoneless_web_test_suite")
+
+ng_project(
+    name = "copy-source-code-button",
+    srcs = [
+        "copy-source-code-button.component.ts",
+    ],
+    assets = [
+        "copy-source-code-button.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/viewers:__pkg__",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev/shared-docs/components/icon:icon_rjs",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":copy-source-code-button_rjs",
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib_rjs"],
+)

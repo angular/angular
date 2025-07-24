@@ -1,0 +1,46 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project", "sass_binary", "ts_project", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_project(
+    name = "text-field",
+    srcs = [
+        "text-field.component.ts",
+    ],
+    assets = [
+        ":text-field.component.css",
+        "text-field.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/search-dialog:__pkg__",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/forms",
+        "//adev/shared-docs/components/icon:icon_rjs",
+    ],
+)
+
+sass_binary(
+    name = "style",
+    src = "text-field.component.scss",
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":text-field_rjs",
+        "//adev:node_modules/@angular/core",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib_rjs"],
+)

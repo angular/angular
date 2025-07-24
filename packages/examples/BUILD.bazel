@@ -1,0 +1,57 @@
+load("//tools:defaults2.bzl", "ts_config")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "index.html",
+])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_e2e",
+    src = "tsconfig-e2e.json",
+    deps = [
+        ":tsconfig_test",
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/@types/node",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = [
+        "//packages/examples/common:files_for_docgen",
+        "//packages/examples/core:files_for_docgen",
+        "//packages/examples/core/di/ts/forward_ref:files_for_docgen",
+        "//packages/examples/core/testing/ts:files_for_docgen",
+        "//packages/examples/forms:files_for_docgen",
+        "//packages/examples/injection-token:files_for_docgen",
+        "//packages/examples/platform-browser:files_for_docgen",
+        "//packages/examples/router:files_for_docgen",
+        "//packages/examples/router/activated-route:files_for_docgen",
+        "//packages/examples/router/testing:files_for_docgen",
+        "//packages/examples/service-worker/push:files_for_docgen",
+        "//packages/examples/service-worker/registration-options:files_for_docgen",
+        "//packages/examples/test-utils:files_for_docgen",
+        "//packages/examples/upgrade/static/ts/full:files_for_docgen",
+        "//packages/examples/upgrade/static/ts/lite:files_for_docgen",
+        "//packages/examples/upgrade/static/ts/lite-multi:files_for_docgen",
+        "//packages/examples/upgrade/static/ts/lite-multi-shared:files_for_docgen",
+    ],
+)

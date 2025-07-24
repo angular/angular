@@ -1,0 +1,38 @@
+# This workflow builds the previews for pull requests when a certain label is applied.
+# The actual deployment happens as part of a dedicated second workflow to avoid security
+# issues where the building would otherwise occur in an authorized context where secrets
+# could be leaked. More details can be found here:
+
+# https://securitylab.github.com/research/github-actions-preventing-pwn-requests/.
+
+name: Build adev for preview deployment
+
+on:
+  pull_request:
+    types: [synchronize, labeled]
+
+permissions: read-all
+
+jobs:
+  adev-build:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event.action == 'labeled' && github.event.label.name == 'adev: preview') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'adev: preview'))
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f71394b25149037558248a41a5a18a8e17a01c69
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f71394b25149037558248a41a5a18a8e17a01c69
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@f71394b25149037558248a41a5a18a8e17a01c69
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Build adev to ensure it continues to work
+        run: yarn bazel build //adev:build --full_build_adev --config=release
+      - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@f71394b25149037558248a41a5a18a8e17a01c69
+        with:
+          workflow-artifact-name: 'adev-preview'
+          pull-number: '${{github.event.pull_request.number}}'
+          artifact-build-revision: '${{github.event.pull_request.head.sha}}'
+          deploy-directory: './dist/bin/adev/dist/browser'

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "../dist/dev-infra-scripts",
+    "target": "es2020",
+    "lib": ["es2020"],
+    "module": "Node16",
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true
+  }
+}

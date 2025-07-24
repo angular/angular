@@ -1,0 +1,90 @@
+load("//adev/shared-docs:defaults.bzl", "esbuild", "ts_project")
+
+esbuild(
+    name = "guides",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    bundle = True,
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    define = {
+        "HANDLE_MERMAID": "true",
+    },
+    entry_point = ":index.mts",
+    external = [
+        "jsdom",
+        "playwright-core",
+    ],
+    format = "esm",
+    output = "guides.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index_rjs",
+    ],
+)
+
+esbuild(
+    name = "guides_no_mermaid",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    bundle = True,
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    define = {
+        "HANDLE_MERMAID": "false",
+    },
+    entry_point = ":index.mts",
+    external = [
+        "jsdom",
+    ],
+    output = "guides-no-mermaid.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index_rjs",
+    ],
+)
+
+ts_project(
+    name = "guides_lib",
+    srcs = glob(
+        [
+            "**/*.mts",
+            "shiki.d.ts",
+        ],
+        exclude = ["index.mts"],
+    ),
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        "//adev:node_modules/@bazel/runfiles",
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/diff",
+        "//adev:node_modules/emoji-regex",
+        "//adev:node_modules/html-entities",
+        "//adev:node_modules/jsdom",
+        "//adev:node_modules/marked",
+        "//adev:node_modules/mermaid",
+        "//adev:node_modules/playwright-core",
+        "//adev:node_modules/shiki",
+    ],
+)
+
+ts_project(
+    name = "index",
+    srcs = [
+        "index.mts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":guides_lib_rjs",
+        "//adev:node_modules/@types/node",
+    ],
+)

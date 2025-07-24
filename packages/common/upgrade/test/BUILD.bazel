@@ -1,0 +1,22 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/common/testing:testing_rjs",
+        "//packages/common/upgrade:upgrade_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/upgrade/static:static_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)

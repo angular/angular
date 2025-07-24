@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "testing",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/dom-navigation/testing:testing_rjs",
+        "//packages/localize:localize_rjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+    visibility = ["//visibility:public"],
+)
+
+generate_api_docs(
+    name = "core_testing_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/core/testing",
+)

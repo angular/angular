@@ -1,0 +1,10 @@
+<select
+  [attr.id]="id()"
+  [attr.name]="name()"
+  [ngModel]="selectedOption()"
+  (ngModelChange)="setOption($event)"
+>
+  @for (item of options(); track item) {
+    <option [value]="item.value">{{ item.label }}</option>
+  }
+</select>

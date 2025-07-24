@@ -1,0 +1,113 @@
+// Base Typography styles
+
+@mixin typography() {
+  :root {
+    --code-font: 'DM Mono', monospace;
+    --inter-font: 'Inter', var(--fallback-font-stack);
+    --inter-tight-font: 'Inter Tight', var(--fallback-font-stack);
+    --icons: 'Material Symbols Outlined';
+
+    --selection-background: var(--vivid-pink);
+    --selection-color: var(--vivid-pink);
+  }
+
+  :nth-child(6n + 1) {
+    --selection-color: var(--vivid-pink);
+  }
+  :nth-child(6n + 2) {
+    --selection-background: var(--hot-pink);
+    --selection-color: var(--hot-pink);
+  }
+  :nth-child(6n + 3) {
+    --selection-background: var(--electric-violet);
+    --selection-color: var(--electric-violet);
+  }
+  :nth-child(6n + 4) {
+    --selection-background: var(--french-violet);
+    --selection-color: var(--french-violet);
+  }
+  :nth-child(6n + 5) {
+    --selection-background: var(--indigo-blue);
+    --selection-color: var(--indigo-blue);
+  }
+  :nth-child(6n + 6) {
+    --selection-background: var(--bright-blue);
+    --selection-color: var(--bright-blue);
+  }
+
+  ::selection {
+    // Added fallback color due to browser idiosyncrasies with color-mix and ::selection
+    background: color-mix(in srgb, var(--selection-background) 10%, var(--octonary-contrast));
+    color: color-mix(in srgb, var(--selection-color) 40%, var(--primary-contrast));
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--inter-tight-font);
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  p {
+    font-size: 0.875rem;
+    line-height: 1.4rem;
+    font-weight: 400;
+    letter-spacing: -0.00875rem;
+  }
+
+  p ~ ul,
+  p ~ ol {
+    margin-block-start: 0;
+  }
+
+  ul,
+  ol {
+    font-size: 0.875rem;
+    line-height: 1.4rem;
+    font-weight: 400;
+    letter-spacing: -0.01rem;
+  }
+
+  a {
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  p > a,
+  p > em > a,
+  td > a,
+  div > a:not(.docs-card),
+  code > a,
+  li:not(.docs-faceted-list *) a {
+    color: var(--bright-blue);
+    &:hover {
+      color: var(--vivid-pink);
+    }
+    &:active {
+      color: var(--hot-red);
+    }
+  }
+
+  p > a,
+  p > em > a,
+  .docs-list a,
+  .docs-card a {
+    margin-block: 0;
+    text-decoration: underline;
+  }
+
+  hr {
+    border: 0;
+    border-block-start-width: 1px;
+    border-style: solid;
+    border-color: var(--senary-contrast);
+    width: 100%;
+    margin-block: 1rem;
+    transition: border-color 0.3s ease;
+  }
+}

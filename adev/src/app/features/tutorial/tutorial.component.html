@@ -1,0 +1,135 @@
+<div class="adev-page-content" [class.adev-nav-open]="showNavigationDropdown()">
+  <ng-container *ngTemplateOutlet="tutorialNav" />
+  @if (shouldRenderContent()) {
+    <div #content class="docs-tutorial-content" [class.adev-nav-open]="showNavigationDropdown()">
+      <!-- Tutorial Nav: Current Tutorial Title and Nav Buttons -->
+      <ng-container *ngTemplateOutlet="tutorialNav" />
+
+      <!-- Tutorial Content -->
+      @if (documentContent(); as documentContent) {
+        <docs-viewer
+          [docContent]="documentContent"
+          class="docs-viewer docs-viewer-scroll-margin-large"
+        />
+      }
+    </div>
+  }
+
+  <!-- Split View Resizer -->
+  <button
+    role="separator"
+    #resizer
+    class="adev-tutorial-resizer"
+    [class.adev-tutorial-resizer-hidden]="!shouldRenderEmbeddedEditor() || !shouldRenderContent()"
+  ></button>
+
+  <!-- Embedded Editor -->
+  @if (shouldRenderEmbeddedEditor()) {
+    <div #editor class="docs-tutorial-editor" [class.adev-split-tutorial]="shouldRenderContent()">
+      @if (embeddedEditorComponent) {
+        <ng-container
+          *ngComponentOutlet="embeddedEditorComponent; inputs:{restrictedMode:restrictedMode()}"
+        />
+      }
+    </div>
+  }
+</div>
+
+<!-- Tutorial Nav Template -->
+<ng-template #tutorialNav>
+  <div class="adev-tutorial-nav-container">
+    <div class="adev-tutorial-nav" [class.adev-nav-open]="showNavigationDropdown()">
+      <!-- Toggle Nav Button -->
+      <button class="adev-unfold-button" (click)="toggleNavigationDropdown($event)">
+        <docs-icon>unfold_more</docs-icon>
+        <div class="adev-current-tutorial">
+          <span>{{ tutorialName() }}</span>
+          <span>{{ stepName() }}</span>
+        </div>
+      </button>
+
+      <!-- Reveal Answer Button -->
+      @if (shouldRenderRevealAnswer()) {
+        <button
+          #revealAnswerButton
+          (click)="answerRevealed() ? handleResetAnswer() : handleRevealAnswer()"
+          [disabled]="!canRevealAnswer()"
+          class="docs-reveal-answer-button adev-reveal-desktop-button docs-primary-btn"
+          [attr.text]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
+          [attr.aria-label]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
+          [class.adev-reset-answer-button]="answerRevealed()"
+        >
+          {{ answerRevealed() ? 'Reset' : 'Reveal Answer' }}
+        </button>
+      }
+
+      <!-- Download code -->
+      @if (localTutorialZipUrl()) {
+        <a [download]="stepName() + '.zip'" [href]="localTutorialZipUrl()">
+          <button class="adev-download-button docs-primary-btn">
+            <docs-icon>download</docs-icon>
+          </button>
+        </a>
+      }
+
+      <div class="adev-nav-arrows">
+        @if (previousStepPath) {
+          <a [routerLink]="previousStepPath">
+            <button class="docs-primary-btn">
+              <docs-icon>chevron_left</docs-icon>
+            </button>
+          </a>
+        }
+        @if (!previousStepPath) {
+          <button class="docs-primary-btn" disabled>
+            <docs-icon>chevron_left</docs-icon>
+          </button>
+        }
+
+        @if (nextStepPath) {
+          <a [routerLink]="nextStepPath">
+            <button class="docs-primary-btn">
+              <docs-icon>chevron_right</docs-icon>
+            </button>
+          </a>
+        }
+        @if (!nextStepPath) {
+          <button class="docs-primary-btn" disabled>
+            <docs-icon>chevron_right</docs-icon>
+          </button>
+        }
+      </div>
+
+      <!-- Reveal Answer Button: for smaller container -->
+      <div class="adev-reveal-mobile-button-container">
+        @if (shouldRenderRevealAnswer()) {
+          <button
+            #revealAnswerButton
+            (click)="answerRevealed() ? handleResetAnswer() : handleRevealAnswer()"
+            [disabled]="!canRevealAnswer()"
+            class="docs-reveal-answer-button adev-reveal-mobile-button docs-primary-btn"
+            [attr.text]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
+            [attr.aria-label]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
+            [class.adev-reset-answer-button]="answerRevealed()"
+          >
+            {{ answerRevealed() ? 'Reset' : 'Reveal Answer' }}
+          </button>
+        }
+      </div>
+
+      <!-- Tutorial Nav: List -->
+      @if (showNavigationDropdown()) {
+        <div class="adev-tutorial-nav-list-dropdown" (docsClickOutside)="hideNavigationDropdown()">
+          <docs-navigation-list
+            [isDropdownView]="true"
+            [navigationItems]="tutorialNavigationItems()"
+            class="adev-nav-list"
+          />
+          @if (nextTutorialPath()) {
+            <a [routerLink]="'/' + nextTutorialPath()">Next Tutorial</a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</ng-template>

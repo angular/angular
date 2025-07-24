@@ -1,0 +1,191 @@
+<div class="page docs-viewer">
+  <h1 class="page-header" tabindex="-1">Update Guide</h1>
+  <div class="wizard">
+    <div>
+      <h2>Select the options that match your update</h2>
+
+      <h3>Angular versions</h3>
+
+      <div class="adev-version-selector">
+        <span class="adev-template-select">
+          From v.
+
+          <button [cdkMenuTriggerFor]="templatesMenuFrom">
+            <span>{{ from.name }}</span>
+            <docs-icon>expand_more</docs-icon>
+          </button>
+
+          <ng-template #templatesMenuFrom>
+            <ul class="adev-template-dropdown" cdkMenu>
+              @for (version of versions; track $index) {
+                <li>
+                  <button cdkMenuItem type="button" (click)="from=version; showUpdatePath()">
+                    <span>{{ version.name }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          </ng-template>
+        </span>
+
+        <span>
+          <span class="adev-template-select">
+            To v.
+            <button [cdkMenuTriggerFor]="templatesMenuTo">
+              <span>{{ to.name }}</span>
+              <docs-icon>expand_more</docs-icon>
+            </button>
+
+            <ng-template #templatesMenuTo>
+              <ul class="adev-template-dropdown" cdkMenu>
+                @for (version of versions; track $index) {
+                  <li>
+                    <button cdkMenuItem type="button" (click)="to=version; showUpdatePath()">
+                      <span>{{ version.name }}</span>
+                    </button>
+                  </li>
+                }
+              </ul>
+            </ng-template>
+          </span>
+        </span>
+      </div>
+
+      @if (from.number >= futureVersion || to.number >= futureVersion) {
+        <div class="docs-alert docs-alert-critical">
+          <p>
+            <strong>Warning:</strong>
+            Plans for releases after the current major release are not finalized and may change.
+            These recommendations are based on scheduled deprecations.
+          </p>
+        </div>
+      }
+
+      @if (from.number > to.number) {
+        <div class="docs-alert docs-alert-critical">
+          <p>
+            <strong>Warning:</strong>
+            We do not support downgrading versions of Angular.
+          </p>
+        </div>
+      }
+
+      @if ((to.number - from.number > 150) && from.number > 240) {
+        <div class="docs-alert docs-alert-critical">
+          <p>
+            <strong>Warning:</strong>
+            Be sure to follow the guide below to migrate your application to the new version. You
+            can't run
+            <code>ng update</code>
+            to update Angular applications more than one major version at a time.
+          </p>
+        </div>
+      }
+
+      <h3>Application complexity</h3>
+      <mat-button-toggle-group
+        (change)="level = $event.value; showUpdatePath()"
+        [value]="level"
+        style="margin-bottom:16px;"
+      >
+        <mat-button-toggle [value]="1">Basic</mat-button-toggle>
+        <mat-button-toggle [value]="2">Medium</mat-button-toggle>
+        <mat-button-toggle [value]="3">Advanced</mat-button-toggle>
+      </mat-button-toggle-group>
+      @if (level === 1) {
+        <p>Shows information for all Angular developers.</p>
+      } @else if (level === 2) {
+        <p>Shows information that's of interest to more advanced Angular developers.</p>
+      } @else if (level === 3) {
+        <p>Shows all the information we have about this update.</p>
+      }
+
+      <h3>Other dependencies</h3>
+      @for (option of optionList; track $index) {
+        <div>
+          <mat-checkbox
+            (change)="options[option.id] = $event.checked; showUpdatePath()"
+            [checked]="options[option.id]"
+            >I use {{option.name}} {{option.description}}</mat-checkbox
+          >
+        </div>
+      }
+
+      @if (from.number < 600) {
+        <h4>Package Manager</h4>
+        <mat-button-toggle-group
+          (change)="packageManager = $event.value; showUpdatePath()"
+          [value]="packageManager"
+        >
+          <mat-button-toggle value="npm install">npm</mat-button-toggle>
+          <mat-button-toggle value="yarn add">yarn</mat-button-toggle>
+        </mat-button-toggle-group>
+      }
+
+      <button
+        type="button"
+        (click)="showUpdatePath()"
+        class="docs-primary-btn show-button"
+        [attr.text]="'Show me how to update!'"
+      >
+        Show me how to update!
+      </button>
+    </div>
+  </div>
+
+  <hr />
+  <!-- RECOMMENDATIONS SECTION -->
+
+  @if (
+    beforeRecommendations.length > 0 || duringRecommendations.length > 0 || afterRecommendations.length > 0
+  ) {
+    <div class="recommendations">
+      <h2>{{title}}</h2>
+
+      <h3>Before you update</h3>
+      @for (r  of beforeRecommendations; track $index) {
+        <div class="adev-recommentation-item">
+          <mat-checkbox></mat-checkbox>
+          <div [innerHTML]="r.renderedStep"></div>
+        </div>
+      }
+      @if (beforeRecommendations.length <= 0) {
+        <div>
+          <em>You don't need to do anything before moving between these versions.</em>
+        </div>
+      }
+
+      <h3>Update to the new version</h3>
+      @if (duringRecommendations.length > 0) {
+        <div>
+          <em>Review these changes and perform the actions to update your application.</em>
+        </div>
+      }
+
+      @for (r of duringRecommendations; track $index) {
+        <div class="adev-recommentation-item">
+          <mat-checkbox></mat-checkbox>
+          <div [innerHTML]="r.renderedStep"></div>
+        </div>
+      }
+      @if (duringRecommendations.length <= 0) {
+        <div>
+          <em>There aren't any recommendations for moving between these versions.</em>
+        </div>
+      }
+
+      <h3>After you update</h3>
+      @for (r of afterRecommendations; track $index) {
+        <div class="adev-recommentation-item">
+          <mat-checkbox></mat-checkbox>
+          <div [innerHTML]="r.renderedStep"></div>
+        </div>
+      }
+      @if (afterRecommendations.length <= 0) {
+        <div>
+          <em>You don't need to do anything after moving between these versions.</em>
+        </div>
+      }
+    </div>
+  }
+</div>

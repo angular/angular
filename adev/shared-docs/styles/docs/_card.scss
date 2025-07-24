@@ -1,0 +1,103 @@
+// Card Grid
+
+@mixin docs-card() {
+  .docs-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1.25rem;
+    margin-block: 1rem;
+
+    @container docs-content (max-width: 450px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .docs-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--primary-contrast);
+    padding: 1.5rem;
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    transition:
+      border-color 0.3s ease,
+      background-color 0.3s ease;
+
+    p:first-of-type {
+      margin-block-start: 1.5rem;
+    }
+
+    p:last-of-type {
+      margin-block-end: 1.5rem;
+    }
+
+    span {
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-block: 0;
+      position: relative;
+    }
+
+    * + *:not(a):not(code):not(span) {
+      margin-block: 1.5rem;
+    }
+
+    &.docs-card-with-svg {
+      padding: 0;
+
+      .docs-card-text-content {
+        flex-grow: 1;
+        margin-block-start: 0;
+        padding-inline: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-block-start: 1px solid var(--senary-contrast);
+
+        h3 {
+          margin-bottom: 0;
+          margin-block-start: 1rem;
+          font-size: 1rem;
+        }
+        p {
+          margin-block-start: 0;
+        }
+      }
+    }
+  }
+
+  // docs-card with link
+  a.docs-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    span {
+      background: var(--pink-to-highlight-to-purple-to-blue-horizontal-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 0.875rem;
+      margin-block: 0;
+      transition: background-position 1.8s ease-out;
+      background-size: 200% 100%;
+      background-position: 100% 0%;
+      position: relative;
+    }
+
+    &:hover {
+      background: var(--subtle-purple);
+
+      span {
+        background-position: 0% 0%;
+      }
+    }
+  }
+
+  .docs-viewer .docs-card h3 {
+    margin-block-start: 0;
+    font-size: 1rem;
+  }
+}

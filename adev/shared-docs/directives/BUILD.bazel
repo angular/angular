@@ -1,0 +1,18 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:private"])
+
+ts_project(
+    name = "directives",
+    srcs = [
+        "index.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        "//adev/shared-docs/directives/click-outside:click-outside_rjs",
+        "//adev/shared-docs/directives/external-link:external-link_rjs",
+        "//adev/shared-docs/directives/search-item:search-item_rjs",
+    ],
+)

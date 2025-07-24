@@ -1,0 +1,38 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should be able to generate the TODO example",
+      "inputFiles": ["todo_example.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "todo_example_template.js",
+              "generated": "todo_example.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle binary and unary operators",
+      "compilerOptions": {
+        "target": "es2022"
+      },
+      "inputFiles": ["operators.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "operators_template.js",
+              "generated": "operators.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

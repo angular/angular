@@ -1,0 +1,11 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//packages/compiler-cli/test/compliance/partial:partial_compliance_goldens.bzl", "partial_compliance_golden")
+
+package(default_visibility = ["//packages/compiler-cli/test/compliance:__subpackages__"])
+
+copy_to_bin(
+    name = "test_cases",
+    srcs = glob(["*/**"]),
+)
+
+[partial_compliance_golden(filePath = path) for path in glob(include = ["**/TEST_CASES.json"])]

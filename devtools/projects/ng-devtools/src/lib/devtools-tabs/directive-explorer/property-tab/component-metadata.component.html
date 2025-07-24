@@ -1,0 +1,15 @@
+<hr />
+<ul>
+  @if (viewEncapsulation()) {
+    <li>
+      View Encapsulation: <span class="meta-data">{{ viewEncapsulation() }}</span>
+      <ng-docs-ref-button docs="view-encapsulation" />
+    </li>
+  }
+  @if (changeDetectionStrategy()) {
+    <li>
+      Change Detection Strategy: <span class="meta-data">{{ changeDetectionStrategy() }}</span>
+      <ng-docs-ref-button docs="change-detection" />
+    </li>
+  }
+</ul>

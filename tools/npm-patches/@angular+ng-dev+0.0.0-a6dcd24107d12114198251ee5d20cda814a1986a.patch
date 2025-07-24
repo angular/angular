@@ -1,0 +1,13 @@
+diff --git a/node_modules/@angular/ng-dev/utils/config.js b/node_modules/@angular/ng-dev/utils/config.js
+index 9d2fa6b..374acf0 100755
+--- a/node_modules/@angular/ng-dev/utils/config.js
++++ b/node_modules/@angular/ng-dev/utils/config.js
+@@ -14,7 +14,7 @@ import { determineRepoBaseDirFromCwd } from './repo-directory.js';
+  * The filename expected for creating the ng-dev config, without the file
+  * extension to allow either a typescript or javascript file to be used.
+  */
+-const CONFIG_FILE_PATH = '.ng-dev/config.mjs';
++const CONFIG_FILE_PATH = '.ng-dev/config.mts';
+ /**
+  * The filename expected for local user config, without the file extension to allow a typescript,
+  * javascript or json file to be used.

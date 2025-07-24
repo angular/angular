@@ -1,0 +1,11 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "application-environment",
+    srcs = ["index.ts"],
+    deps = [
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)

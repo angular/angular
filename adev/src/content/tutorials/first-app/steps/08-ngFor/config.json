@@ -1,0 +1,7 @@
+{
+  "title": "Use the `@for` block in templates",
+  "type": "editor",
+  "answerSrc": "../09-services/src",
+  "answerRootDir": "../09-services/",
+  "openFiles": ["src/app/home/home.ts"]
+}

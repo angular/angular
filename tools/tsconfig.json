@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "types": ["node"],
+    "paths": {
+      "@angular/*": ["../packages/*/index"],
+    }
+  }
+}

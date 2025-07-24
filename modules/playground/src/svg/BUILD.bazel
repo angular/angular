@@ -1,0 +1,36 @@
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//tools:defaults.bzl", "http_server")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+optimize_angular_app(
+    name = "bundles",
+    srcs = glob(["**/*.ts"]) + ["index.html"],
+    include_zonejs = True,
+    deps = [
+        "//modules:node_modules/@angular/build",
+        "//modules:node_modules/@angular/common",
+        "//modules:node_modules/@angular/core",
+        "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/rxjs",
+        "//modules:node_modules/tslib",
+        "//modules:node_modules/zone.js",
+    ],
+)
+
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
+    name = "app_bundle",
+    srcs = [":bundles"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $</main.js $@",
+)
+
+http_server(
+    name = "devserver",
+    srcs = ["index.html"],
+    deps = [
+        ":app_bundle",
+        "//modules:node_modules/zone.js",
+    ],
+)

@@ -1,0 +1,28 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "launcher",
+    srcs = [
+        "index.ts",
+        "launcher.ts",
+    ],
+    deps = [
+        "//:node_modules/@types/node",
+        "//tools/saucelabs-daemon:saucelabs-daemon_rjs",
+    ],
+)
+
+# We need a commonjs version of the launcher that can be required from the
+# root karma-js.conf.js.
+esbuild(
+    name = "launcher_cjs",
+    entry_point = "index.ts",
+    format = "cjs",
+    metafile = False,
+    output = "index.cjs",
+    platform = "node",
+    deps = [":launcher_rjs"],
+)

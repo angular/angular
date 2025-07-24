@@ -1,0 +1,100 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+// Dark/Light mode switcher & social media icon buttons
+// ul
+.adev-mini-menu {
+  padding: 0;
+  color: var(--primary-contrast);
+  background-color: var(--page-background);
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  z-index: var(--z-index-mini-menu);
+  box-shadow: 10px 4px 40px 0 rgba(0, 0, 0, 0.075);
+
+  @include mq.for-tablet {
+    top: 75px;
+    left: 5px;
+  }
+
+  li {
+    list-style: none;
+
+    // themes and versions
+    button {
+      padding: 1rem;
+      min-width: 75px;
+      min-height: 75px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      docs-icon {
+        font-size: 1.5rem;
+        color: var(--quaternary-contrast);
+        transition: color 0.3s ease;
+      }
+
+      &:hover {
+        background-color: var(--senary-contrast);
+        span,
+        docs-icon {
+          color: var(--primary-contrast);
+        }
+      }
+    }
+
+    // social links
+    a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      min-width: 50px;
+      svg {
+        fill: var(--quaternary-contrast);
+        transition: fill 0.3s ease;
+      }
+
+      &:hover {
+        background-color: var(--senary-contrast);
+        svg {
+          fill: var(--primary-contrast);
+        }
+      }
+    }
+
+    span {
+      color: var(--quaternary-contrast);
+      transition: color 0.3s ease;
+    }
+  }
+
+  &-open {
+    display: block;
+  }
+}
+
+.adev-version-picker {
+  overflow-y: auto;
+  max-height: 90vh;
+  top: 30px;
+  left: 10px;
+  position: absolute;
+  bottom: auto;
+
+  li {
+    padding-inline: 0;
+  }
+
+  li a {
+    line-height: 1em;
+  }
+
+  @include mq.for-tablet {
+    top: 30px;
+    left: auto;
+    bottom: auto;
+  }
+}

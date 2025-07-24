@@ -1,0 +1,58 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "directive_forest_component_styles",
+    src = "directive-forest.component.scss",
+)
+
+ng_project(
+    name = "directive-forest",
+    srcs = [
+        "directive-forest.component.ts",
+    ],
+    angular_assets = [
+        "directive-forest.component.html",
+        ":directive_forest_component_styles",
+    ],
+    deps = [
+        ":directive_forest_utils_rjs",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing:diffing_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs:breadcrumbs_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter:directive-forest-filter-fn-generator_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter:filter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/tree-node:tree-node_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update:tab-update_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "directive_forest_utils",
+    srcs = ["directive-forest-utils.ts"],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "directive_forest_utils_test",
+    srcs = ["directive-forest-utils.spec.ts"],
+    deps = [
+        ":directive_forest_utils_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":directive_forest_utils_test_rjs",
+    ],
+)

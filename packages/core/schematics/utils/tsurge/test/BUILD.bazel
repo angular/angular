@@ -1,0 +1,38 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "migration_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli/src/ngtsc/annotations:annotations_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/imports:imports_rjs",
+        "//packages/compiler-cli/src/ngtsc/metadata:metadata_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.spec.ts"],
+    ),
+    deps = [
+        ":migration_lib_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [":test_lib_rjs"],
+)

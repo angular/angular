@@ -1,0 +1,26 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "ml_parser_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler/test/ml_parser/util:util_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "ml_parser",
+    data = [
+        ":ml_parser_lib",
+    ],
+)
+
+ng_web_test_suite(
+    name = "ml_parser_web",
+    deps = [
+        ":ml_parser_lib_rjs",
+    ],
+)

@@ -1,0 +1,74 @@
+@use '../../../../../styles/typography';
+
+:host {
+  width: 100%;
+  display: block;
+  overflow: auto;
+
+  mat-tree {
+    display: table;
+  }
+
+  ::ng-deep {
+    .mat-tree-node,
+    .mat-nested-tree-node {
+      @extend %monospaced;
+    }
+
+    .mat-tree-node {
+      min-height: 20px !important;
+      cursor: default;
+
+      .mat-icon {
+        font-size: 11px;
+        width: 8px;
+        height: 16px;
+        position: relative;
+        top: 6px;
+      }
+    }
+  }
+}
+
+.name {
+  margin-left: -9px;
+}
+
+.non-expandable {
+  margin-left: 18px;
+}
+
+.show-signal-btn {
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: var(--quinary-contrast);
+  color: var(--primary-contrast);
+  vertical-align: text-bottom;
+  padding: 0;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--dynamic-blue-02);
+    color: var(--septenary-contrast);
+  }
+
+  mat-icon {
+    top: 2px;
+  }
+}
+
+.property-list {
+  margin: 5px 5px 5px 15px;
+  mat-tree-node {
+    .name {
+      color: var(--color-tree-node-element-name);
+    }
+  }
+}
+
+.property-list mat-tree-node.disabled .name,
+.disabled {
+  color: var(--secondary-contrast);
+}

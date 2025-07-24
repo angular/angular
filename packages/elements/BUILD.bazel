@@ -1,0 +1,74 @@
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "elements",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    package = "@angular/elements",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+    ],
+    deps = [
+        ":elements_rjs",
+    ],
+)
+
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
+)
+
+api_golden_test_npm_package(
+    name = "elements_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/elements",
+    npm_package = "packages/elements/npm_package",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "elements_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/elements",
+)

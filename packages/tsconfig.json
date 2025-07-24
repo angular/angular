@@ -1,0 +1,58 @@
+{
+  "compilerOptions": {
+    // Setting the "baseUrl" to a different directory than "packages/" because otherwise
+    // packages like the native "http" module are resolved to the Angular "http" package.
+    "baseUrl": "..",
+    "declaration": true,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "esnext",
+    "target": "es2020",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "strictPropertyInitialization": true,
+    "outDir": "../dist/all/@angular",
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "selenium-webdriver": ["./node_modules/@types/selenium-webdriver/index.d.ts"],
+      "rxjs/*": ["./node_modules/rxjs/*"],
+      "@angular/*": ["./packages/*"],
+      "angular-in-memory-web-api": ["./packages/misc/angular-in-memory-web-api/index.ts"]
+    },
+    "rootDir": ".",
+    "inlineSourceMap": true,
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "types": ["angular"]
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "typeCheckHostBindings": true
+  },
+  "exclude": [
+    "common/locales",
+    "compiler-cli/integrationtest",
+    "compiler-cli/test/compliance",
+    "core/schematics",
+    "elements/schematics",
+    // Do not build the example package because there are no legacy tests that need to be
+    // built. Additionally the examples are not made compatible with the "strict" option.
+    "examples/**",
+    // Http doesn't need to built since it is no longer maintained and
+    // will be removed eventually. See: FW-1392.
+    "http/**",
+    "language-service/ivy/test/legacy/project",
+    "platform-server/integrationtest"
+  ]
+}

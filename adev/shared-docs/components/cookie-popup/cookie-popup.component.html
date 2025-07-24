@@ -1,0 +1,22 @@
+@if (!hasAccepted()) {
+<div class="docs-cookies-popup docs-invert-mode">
+  <p>This site uses cookies from Google to deliver its services and to analyze traffic.</p>
+
+  <div>
+    <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">
+      <button class="docs-primary-btn" [attr.text]="'Learn more'" aria-label="Learn More">
+        Learn more
+      </button>
+    </a>
+    <button
+      type="button"
+      (click)="accept()"
+      class="docs-primary-btn"
+      [attr.text]="'Ok, Got it'"
+      aria-label="Ok, Got it"
+    >
+      Ok, Got it
+    </button>
+  </div>
+</div>
+}

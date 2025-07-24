@@ -1,0 +1,139 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("@npm//@bazel/concatjs:index.bzl", rules_node_js_ts_config = "ts_config")
+load("//:packages.bzl", "DOCS_ENTRYPOINTS")
+load("//tools:defaults2.bzl", "ts_config", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig-build.json",
+    "tsconfig.json",
+])
+
+copy_to_bin(
+    name = "package_json",
+    srcs = ["package.json"],
+)
+
+ts_project(
+    name = "goog_types",
+    srcs = ["goog.d.ts"],
+)
+
+ts_project(
+    name = "types",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["goog.d.ts"],
+    ),
+    deps = [
+        ":goog_types_rjs",
+        "//:node_modules/@types/hammerjs",
+        "//:node_modules/tslib",
+        "//:node_modules/zone.js",
+    ],
+)
+
+rules_node_js_ts_config(
+    name = "tsec_config",
+    src = "tsconfig-tsec-base.json",
+    deps = [
+        ":tsconfig-build.json",
+        ":tsec-exemption.json",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig-build.json",
+    deps = [
+        "//:node_modules/tslib",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+    ],
+)
+
+exports_files([
+    "license-banner.txt",
+    "README.md",
+    "examples",
+])
+
+# All docgen targets for our doc site. Add package entrypoints to DOCS_ENTRYPOINTS in `packages.bzl`.
+filegroup(
+    name = "files_for_docgen",
+    srcs = ["//packages/%s:files_for_docgen" % entrypoint for entrypoint in DOCS_ENTRYPOINTS],
+)
+
+# This target captures common dependencies needed for all `generate_api_docs` targets
+# throughout Angular's public API surface.
+filegroup(
+    name = "common_files_and_deps_for_docs",
+    srcs = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages:types",
+        "//packages/common:files_for_docgen",
+        "//packages/common/http:files_for_docgen",
+        "//packages/core:files_for_docgen",
+        "//packages/core/primitives/signals:files_for_docgen",
+        "//packages/core/src/compiler:files_for_docgen",
+        "//packages/core/src/di/interface:files_for_docgen",
+        "//packages/core/src/interface:files_for_docgen",
+        "//packages/core/src/reflection:files_for_docgen",
+        "//packages/core/src/util:files_for_docgen",
+        "//packages/examples:files_for_docgen",
+        "//packages/platform-browser:files_for_docgen",
+        "//packages/platform-browser-dynamic:files_for_docgen",
+    ],
+)
+
+filegroup(
+    name = "docs_extracted_apis",
+    srcs = [
+        "//packages/animations:animations_docs_extraction",
+        "//packages/animations/browser:animations_browser_docs_extraction",
+        "//packages/animations/browser/testing:animations_browser_testing_docs_extraction",
+        "//packages/common:common_docs_extraction",
+        "//packages/common/http:http_docs_extraction",
+        "//packages/common/http/testing:http_testing_docs_extraction",
+        "//packages/common/testing:common_testing_docs_extraction",
+        "//packages/common/upgrade:common_upgrade_docs_extraction",
+        "//packages/core:core_docs_extraction",
+        "//packages/core/global:core_global_docs_extraction",
+        "//packages/core/rxjs-interop:core_rxjs-interop_docs_extraction",
+        "//packages/core/testing:core_testing_docs_extraction",
+        "//packages/elements:elements_docs_extraction",
+        "//packages/forms:forms_docs_extraction",
+        "//packages/localize:localize_docs_extraction",
+        "//packages/localize/src/localize:localize_init_docs_extraction",
+        "//packages/platform-browser:platform-browser_docs_extraction",
+        "//packages/platform-browser-dynamic:platform-browser_dynamic_docs_extraction",
+        "//packages/platform-browser-dynamic/testing:platform-browser_dynamic_testing_docs_extraction",
+        "//packages/platform-browser/animations:platform-browser_animations_docs_extraction",
+        "//packages/platform-browser/animations/async:platform-browser_animations_async_docs_extraction",
+        "//packages/platform-browser/testing:platform-browser_testing_docs_extraction",
+        "//packages/platform-server:platform-server_docs_extraction",
+        "//packages/platform-server/testing:platform-server_testing_docs_extraction",
+        "//packages/router:router_docs_extraction",
+        "//packages/router/testing:router_testing_docs_extraction",
+        "//packages/router/upgrade:router_upgrade_docs_extraction",
+        "//packages/service-worker:service-worker_docs_extraction",
+        "//packages/ssr/docs:ssr_docs_extraction",
+        "//packages/ssr/docs:ssr_node_docs_extraction",
+        "//packages/upgrade:upgrade_docs_extraction",
+        "//packages/upgrade/static:upgrade_static_docs_extraction",
+        "//packages/upgrade/static/testing:upgrade_static_testing_docs_extraction",
+        "//tools/manual_api_docs/blocks",
+        "//tools/manual_api_docs/elements",
+    ],
+    visibility = ["//visibility:public"],
+)

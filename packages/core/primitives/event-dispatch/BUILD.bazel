@@ -1,0 +1,49 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "event-dispatch",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    module_name = "@angular/core/primitives/event-dispatch",
+    deps = [
+        "//packages/core/src/util:util_rjs",  # Implicit dependency on ngDevMode
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "event-dispatch",
+    tsconfig = "//packages:tsec_config",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+esbuild(
+    name = "contract_bundle_min",
+    config = {
+        "resolveExtensions": [
+            ".mjs",
+            ".js",
+        ],
+        "legalComments": "none",
+    },
+    entry_point = ":contract_binary.js",
+    format = "iife",
+    minify = True,
+    sourcemap = "external",
+    deps = [":event-dispatch_rjs"],
+)

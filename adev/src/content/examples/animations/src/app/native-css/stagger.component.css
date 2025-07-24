@@ -1,0 +1,16 @@
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.items .item {
+  transition-property: opacity, transform;
+  transition-duration: 500ms;
+  transition-delay: calc(200ms * var(--index));
+
+  @starting-style {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}

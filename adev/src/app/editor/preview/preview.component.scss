@@ -1,0 +1,50 @@
+:host {
+  display: block;
+
+  .docs-dark-mode & {
+    .adev-embedded-editor-preview-container {
+      background: var(--gray-100);
+    }
+  }
+
+  // account for tabs height
+  height: calc(100% - 50px);
+  // If preview has error, make it scrollable
+  &:has(.adev-preview-error) {
+    .adev-embedded-editor-preview-container {
+      overflow-y: auto;
+    }
+  }
+}
+
+.adev-embedded-editor-preview-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  color: black;
+  background: white;
+  transition: background 0.3s ease;
+  box-sizing: border-box;
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .adev-embedded-editor-preview-loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    position: absolute;
+    inset: 0;
+    margin: auto;
+
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+}

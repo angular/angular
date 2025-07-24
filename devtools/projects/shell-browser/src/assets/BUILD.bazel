@@ -1,0 +1,13 @@
+package(default_visibility = ["//:__subpackages__"])
+
+filegroup(
+    name = "assets",
+    srcs = glob([
+        "*.svg",
+        "**/*.png",
+        "*.css",
+    ]) + [
+        "//third_party/fonts.google.com/material-symbols-outlined",
+        "//third_party/fonts.google.com/material-symbols-outlined:LICENSE",
+    ],
+)

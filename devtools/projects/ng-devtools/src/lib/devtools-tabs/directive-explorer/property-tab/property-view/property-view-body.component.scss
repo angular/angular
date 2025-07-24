@@ -1,0 +1,54 @@
+@use '../../../../../styles/typography';
+
+:host {
+  ng-docs-ref-button {
+    margin-left: 0.125rem;
+  }
+
+  /* FRAGILE */
+  ::ng-deep {
+    mat-expansion-panel {
+      border-radius: unset !important;
+    }
+
+    .mat-expansion-panel-body {
+      padding: 0;
+    }
+
+    .mat-expansion-panel-spacing {
+      margin: 0;
+    }
+
+    .mat-expansion-panel-header {
+      padding: 0 15px;
+
+      .documentation {
+        display: flex;
+        align-self: center;
+        text-decoration: none;
+      }
+
+      .docs-link {
+        height: inherit;
+        width: fit-content;
+        font-size: initial;
+        padding-left: 0.1rem;
+
+        &:active {
+          color: var(--blue-02);
+        }
+      }
+    }
+
+    .mat-expansion-panel-header-title {
+      @extend %body-medium-01;
+    }
+
+    .mat-expansion-indicator {
+      &::after {
+        padding: 2.5px;
+        margin-bottom: 4.5px;
+      }
+    }
+  }
+}

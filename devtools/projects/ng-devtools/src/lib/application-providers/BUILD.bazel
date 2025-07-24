@@ -1,0 +1,11 @@
+load("//devtools/tools:defaults.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "window",
+    srcs = ["window_provider.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)

@@ -1,0 +1,158 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@npm2//:rollup/package_json.bzl", rollup = "bin")
+load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "ts_config")
+
+exports_files([
+    "tsconfig.json",
+    "migrations.json",
+    "collection.json",
+])
+
+js_library(
+    name = "schematics_jsons",
+    srcs = [
+        "collection.json",
+        "migrations.json",
+        "tsconfig.json",
+    ],
+    visibility = ["//packages/core/schematics:__subpackages__"],
+)
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    visibility = ["//packages/core/schematics:__subpackages__"],
+    deps = [
+        "//:node_modules/@types/node",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    visibility = ["//packages/core/schematics:__subpackages__"],
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+    ],
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = [
+        "collection.json",
+        "migrations.json",
+    ],
+    validate = False,
+    visibility = ["//packages/core:__pkg__"],
+    deps = [
+        ":bundles",
+        "//packages/core/schematics/migrations/control-flow-migration:static_files",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
+        "//packages/core/schematics/ng-generate/inject-migration:static_files",
+        "//packages/core/schematics/ng-generate/output-migration:static_files",
+        "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
+        "//packages/core/schematics/ng-generate/self-closing-tags-migration:static_files",
+        "//packages/core/schematics/ng-generate/signal-input-migration:static_files",
+        "//packages/core/schematics/ng-generate/signal-queries-migration:static_files",
+        "//packages/core/schematics/ng-generate/signals:static_files",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
+    ],
+)
+
+bundle_entrypoints = [
+    [
+        "inject-migration",
+        "packages/core/schematics/ng-generate/inject-migration/index.js",
+    ],
+    [
+        "route-lazy-loading",
+        "packages/core/schematics/ng-generate/route-lazy-loading/index.js",
+    ],
+    [
+        "standalone-migration",
+        "packages/core/schematics/ng-generate/standalone-migration/index.js",
+    ],
+    [
+        "cleanup-unused-imports",
+        "packages/core/schematics/ng-generate/cleanup-unused-imports/index.js",
+    ],
+    [
+        "signals",
+        "packages/core/schematics/ng-generate/signals/index.js",
+    ],
+    [
+        "signal-input-migration",
+        "packages/core/schematics/ng-generate/signal-input-migration/index.js",
+    ],
+    [
+        "signal-queries-migration",
+        "packages/core/schematics/ng-generate/signal-queries-migration/index.js",
+    ],
+    [
+        "output-migration",
+        "packages/core/schematics/ng-generate/output-migration/index.js",
+    ],
+    [
+        "self-closing-tags-migration",
+        "packages/core/schematics/ng-generate/self-closing-tags-migration/index.js",
+    ],
+    [
+        "inject-flags",
+        "packages/core/schematics/migrations/inject-flags/index.js",
+    ],
+    [
+        "test-bed-get",
+        "packages/core/schematics/migrations/test-bed-get/index.js",
+    ],
+    [
+        "document-core",
+        "packages/core/schematics/migrations/document-core/index.js",
+    ],
+    [
+        "control-flow-migration",
+        "packages/core/schematics/migrations/control-flow-migration/index.js",
+    ],
+]
+
+rollup.rollup(
+    name = "bundles",
+    srcs = [
+        "rollup.config.js",
+        "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/@rollup/plugin-node-resolve",
+        "//:node_modules/magic-string",
+        "//:node_modules/semver",
+        "//packages/core/schematics:tsconfig_build",
+        "//packages/core/schematics/migrations/control-flow-migration:control-flow-migration_rjs",
+        "//packages/core/schematics/migrations/document-core:document-core_rjs",
+        "//packages/core/schematics/migrations/inject-flags:inject-flags_rjs",
+        "//packages/core/schematics/migrations/test-bed-get:test-bed-get_rjs",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports:cleanup-unused-imports_rjs",
+        "//packages/core/schematics/ng-generate/inject-migration:inject-migration_rjs",
+        "//packages/core/schematics/ng-generate/output-migration:output-migration_rjs",
+        "//packages/core/schematics/ng-generate/route-lazy-loading:route-lazy-loading_rjs",
+        "//packages/core/schematics/ng-generate/self-closing-tags-migration:self-closing-tags-migration_rjs",
+        "//packages/core/schematics/ng-generate/signal-input-migration:signal-input-migration_rjs",
+        "//packages/core/schematics/ng-generate/signal-queries-migration:signal-queries-migration_rjs",
+        "//packages/core/schematics/ng-generate/signals:signals_rjs",
+        "//packages/core/schematics/ng-generate/standalone-migration:standalone-migration_rjs",
+        "//tools/bazel/rollup:path-plugin",
+    ],
+    args = [
+        "--format=cjs",
+        "--config=$(rootpath rollup.config.js)",
+        "--dir=packages/core/schematics/bundles",
+        "--no-sourcemap",
+    ] + ["--input=%s=%s" % (name, path) for [
+        name,
+        path,
+    ] in bundle_entrypoints],
+    out_dirs = [
+        "bundles",
+    ],
+    visibility = [
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)

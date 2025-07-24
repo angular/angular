@@ -1,0 +1,191 @@
+@use 'sass:color';
+@use 'sass:map';
+@use './theme' as theme;
+
+/* A map with all available solid colors (excl. Special). Available as CSS vars as well. */
+/* prettier-ignore */
+$_colors: (
+  /* Reds */
+  red-01: oklch(40% 0.1 26),
+  red-02: oklch(49.3% 0.2 26),
+  red-03: oklch(55% 0.2 26),
+  red-04: oklch(63% 0.2 26),
+  red-05: oklch(68.8% 0.2 26),
+  red-06: oklch(86% 0.06 15),
+
+  /* Greens */
+  green-01: oklch(58% 0.13 145),
+  green-02: oklch(65% 0.13 145),
+  green-03: oklch(83% 0.13 145),
+
+  /* Blues */
+  blue-01: oklch(36% 0.1 258),
+  blue-02: oklch(57% 0.2 258),
+  blue-03: oklch(72% 0.2 258),
+  blue-04: oklch(83% 0.2 258),
+  blue-05: oklch(91% 0.04 258),
+  blue-06: oklch(96% 0.01 258),
+
+  /* Purples */
+  purple-01: oklch(47.5% 0.26 295),
+  purple-02: oklch(57.9% 0.26 295),
+  purple-03: oklch(76% 0.15 305),
+
+  /* Yellows */
+  yellow-01: oklch(70% 0.14 81),
+  yellow-02: oklch(83% 0.14 81),
+
+  /* Oranges */
+  orange-01: oklch(69% 0.17 50),
+  orange-02: oklch(79% 0.17 50),
+
+  /* Grayscale */
+  gray-1000: oklch(16.93% 0 0),
+  gray-900: oklch(19.37% 0 0),
+  gray-800: oklch(27.68% 0 0),
+  gray-700: oklch(36.98% 0 0),
+  gray-600: oklch(47% 0 0),
+  gray-500: oklch(54.84% 0 0),
+  gray-400: oklch(70.9% 0 0),
+  gray-300: oklch(84.01% 0 0),
+  gray-200: oklch(91.75% 0 0),
+  gray-100: oklch(97.12% 0 0),
+  gray-50: oklch(98.81% 0 0),
+
+  /* Transparent */
+  transparent-01: oklch(0% 0 0 / 0.8),
+  transparent-02: oklch(0% 0 0 / 0.35),
+  transparent-03: oklch(0% 0 0 / 0.2),
+  transparent-04: oklch(0% 0 0 / 0.05),
+  transparent-05: oklch(0% 0 0 / 0),
+);
+
+@mixin _light-colors {
+  /* Dynamic general purpose colors */
+  --full-contrast: black;
+
+  --primary-contrast: var(--gray-900);
+  --secondary-contrast: var(--gray-800);
+  --tertiary-contrast: var(--gray-700);
+  --quaternary-contrast: var(--gray-500);
+  --quinary-contrast: var(--gray-300);
+  --senary-contrast: var(--gray-200);
+  --septenary-contrast: var(--gray-100);
+  --octonary-contrast: var(--gray-50);
+  --nonary-contrast: white;
+
+  --dynamic-red-01: var(--red-03);
+  --dynamic-red-02: var(--red-06);
+  --dynamic-green-01: var(--green-01);
+  --dynamic-green-02: var(--green-03);
+  --dynamic-blue-01: var(--blue-05);
+  --dynamic-blue-02: var(--blue-02);
+  --dynamic-purple-01: var(--purple-01);
+  --dynamic-yellow-01: var(--yellow-01);
+  --dynamic-orange-01: var(--orange-01);
+
+  --dynamic-transparent-01: var(--transparent-04);
+  --dynamic-transparent-02: var(--transparent-02);
+
+  /* Main colors – general UI colors like background and text color */
+  --color-background: white;
+  --color-foreground: var(--blue-06);
+  --color-text: black;
+  --color-separator: var(--blue-05);
+
+  /* Special colors – usually a single-use colors meant for specific elements */
+  --color-tree-node-element-name: #830042;
+  --color-tree-node-dir-name: #953b13;
+  --color-tree-node-ng-element: #0c3a96;
+  --color-tree-node-console-ref: #146129;
+  --color-tree-node-hovered: #f2f2f2;
+  --color-tree-node-highlighted: #cddffd;
+  --color-tree-node-matched: #f3ce49;
+
+  --color-property-list-name: #71a2f7;
+}
+
+@mixin _dark-colors {
+  /* Dynamic general purpose colors */
+  --full-contrast: white;
+
+  --primary-contrast: var(--gray-50);
+  --secondary-contrast: var(--gray-300);
+  --tertiary-contrast: var(--gray-300);
+  --quaternary-contrast: var(--gray-400);
+  --quinary-contrast: var(--gray-500);
+  --senary-contrast: var(--gray-700);
+  --septenary-contrast: var(--gray-800);
+  --octonary-contrast: var(--gray-900);
+  --nonary-contrast: black;
+
+  --dynamic-red-01: var(--red-05);
+  --dynamic-red-02: var(--red-01);
+  --dynamic-green-01: var(--green-03);
+  --dynamic-green-02: var(--green-01);
+  --dynamic-blue-01: var(--blue-01);
+  --dynamic-blue-02: var(--blue-03);
+  --dynamic-purple-01: var(--purple-03);
+  --dynamic-yellow-01: var(--yellow-02);
+  --dynamic-orange-01: var(--orange-02);
+
+  --dynamic-transparent-01: var(--transparent-03);
+  --dynamic-transparent-02: var(--transparent-01);
+
+  /* Main colors – general UI colors like background and text color */
+  --color-background: var(--gray-800);
+  --color-foreground: var(--gray-700);
+  --color-text: white;
+  --color-separator: var(--gray-600);
+
+  /* Special colors – usually a single-use colors meant for specific elements */
+  --color-tree-node-element-name: #71a2f7;
+  --color-tree-node-non-element-name: #71f7b6;
+  --color-tree-node-dir-name: #9ec0f9;
+  --color-tree-node-ng-element: #fe824f;
+  --color-tree-node-console-ref: #a1a1a1;
+  --color-tree-node-hovered: #393939;
+  --color-tree-node-highlighted: #00416c;
+  --color-tree-node-matched: #906921;
+
+  --color-property-list-name: #0c3a96;
+}
+
+/* Utilities */
+
+@function convert-to-rgb($map) {
+  $rgb-map: ();
+
+  @each $name, $color in $map {
+    $rgb-map: map.merge(
+      $rgb-map,
+      (
+        $name: color.to-space($color, rgb),
+      )
+    );
+  }
+
+  @return $rgb-map;
+}
+
+@mixin convert-color-map-to-vars($colors) {
+  @each $name, $color in $colors {
+    --#{$name}: #{$color};
+  }
+}
+
+/* Main */
+
+/* Since Oklch global browser support is ~93%, we are converting colors to RGB. */
+$colors: convert-to-rgb($_colors); /* Main color map */
+
+@mixin root-colors {
+  :root {
+    @include convert-color-map-to-vars($colors);
+    @include _light-colors();
+
+    &.#{theme.$dark-theme-class} {
+      @include _dark-colors();
+    }
+  }
+}

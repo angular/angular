@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node10",
+    "experimentalDecorators": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@angular/core": ["../../../../../index.ts"],
+      "@angular/platform-browser": ["../../../../../../platform-browser/index.ts"]
+    }
+  },
+  "angularCompilerOptions": {},
+  "include": ["**/*.ts"]
+}

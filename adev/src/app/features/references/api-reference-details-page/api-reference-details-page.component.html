@@ -1,0 +1,9 @@
+@if (docContent(); as docContent) {
+  <docs-viewer
+    [docContent]="docContent.contents"
+    [hasToc]="true"
+    (contentLoaded)="onContentLoaded()"
+  />
+}
+
+<div id="jump-msg" class="cdk-visually-hidden">Jump to details</div>

@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "localize",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages/localize/src/utils:utils_rjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+)
+
+generate_api_docs(
+    name = "localize_init_docs",
+    srcs = [
+        ":files_for_docgen",
+    ],
+    entry_point = ":doc_index.ts",
+    module_name = "@angular/localize/init",
+)

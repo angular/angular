@@ -1,0 +1,339 @@
+load("//packages/zone.js/test:karma_test.bzl", "karma_test")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project", "zone_compatible_jasmine_test")
+
+package(default_visibility = ["//:__subpackages__"])
+
+exports_files([
+    "assets/sample.json",
+    "assets/worker.js",
+    "assets/import.html",
+])
+
+ts_project(
+    name = "common_spec_env",
+    testonly = True,
+    srcs = [
+        "test-env-setup-jasmine.ts",
+        "test_fake_polyfill.ts",
+        "wtf_mock.ts",
+    ],
+    deps = [
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+)
+
+ts_project(
+    name = "common_spec_srcs",
+    testonly = True,
+    srcs = glob(
+        [
+            "common/*.ts",
+            "zone-spec/*.ts",
+            "rxjs/*.ts",
+        ],
+        exclude = [
+            "common/Error.spec.ts",
+            "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
+        ],
+    ),
+    deps = [
+        ":common_spec_util_rjs",
+        "//:node_modules/rxjs",
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+)
+
+ts_project(
+    name = "common_spec_util",
+    testonly = True,
+    srcs = ["test-util.ts"],
+    deps = [
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+)
+
+ts_project(
+    name = "error_spec_srcs",
+    testonly = True,
+    srcs = [
+        "common/Error.spec.ts",
+    ],
+    deps = [
+        ":common_spec_util_rjs",
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+)
+
+ts_project(
+    name = "test_node_lib",
+    testonly = True,
+    srcs = glob(["node/*.ts"]),
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/@types/shelljs",
+        "//:node_modules/@types/systemjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/shelljs",
+        "//:node_modules/systemjs",
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+)
+
+ts_project(
+    name = "node_entry_point",
+    testonly = True,
+    srcs = [
+        "node-env-setup.ts",
+        "node_entry_point.init.ts",
+    ],
+    deps = [
+        ":common_spec_env_rjs",
+        "//:node_modules/@types/shelljs",
+        "//:node_modules/@types/systemjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/shelljs",
+        "//:node_modules/systemjs",
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+)
+
+ts_project(
+    name = "bluebird_spec",
+    testonly = True,
+    srcs = [
+        "extra/bluebird.spec.ts",
+    ],
+    deps = [
+        ":common_spec_env_rjs",
+        "//:node_modules/bluebird",
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+)
+
+ts_project(
+    name = "node_bluebird_entry_point",
+    testonly = True,
+    srcs = ["node_bluebird_entry_point.init.ts"],
+    deps = [
+        ":common_spec_env_rjs",
+        "//:node_modules/bluebird",
+        "//packages/zone.js/lib:lib_rjs",
+        "//packages/zone.js/lib:zone_d_ts_rjs",
+    ],
+)
+
+ts_project(
+    name = "node_error_disable_policy_entry_point",
+    testonly = True,
+    srcs = [
+        "node_error_disable_policy.ts",
+        "node_error_disable_policy_entry_point.init.ts",
+    ],
+    deps = [
+        ":node_error_entry_point_rjs",
+    ],
+)
+
+ts_project(
+    name = "node_error_entry_point",
+    testonly = True,
+    srcs = ["node_error_entry_point.init.ts"],
+    deps = [
+        ":common_spec_env_rjs",
+        "//packages/zone.js/lib:lib_rjs",
+        "//packages/zone.js/lib:zone_d_ts_rjs",
+    ],
+)
+
+ts_project(
+    name = "node_error_lazy_policy_entry_point",
+    testonly = True,
+    srcs = [
+        "node_error_lazy_policy.ts",
+        "node_error_lazy_policy_entry_point.init.ts",
+    ],
+    deps = [
+        ":node_error_entry_point_rjs",
+    ],
+)
+
+zone_compatible_jasmine_test(
+    name = "test_node",
+    bootstrap = [
+        ":node_entry_point_rjs",
+    ],
+    data = [
+        ":test_node_lib_rjs",
+    ],
+)
+
+zone_compatible_jasmine_test(
+    name = "test_node_bluebird",
+    bootstrap = [
+        ":node_bluebird_entry_point_rjs",
+    ],
+    data = [
+        ":bluebird_spec_rjs",
+    ],
+)
+
+zone_compatible_jasmine_test(
+    name = "test_node_error_disable_policy",
+    bootstrap = [
+        ":node_error_disable_policy_entry_point_rjs",
+    ],
+    data = [
+        ":error_spec_srcs_rjs",
+    ],
+)
+
+zone_compatible_jasmine_test(
+    name = "test_node_error_lazy_policy",
+    bootstrap = [
+        ":node_error_lazy_policy_entry_point_rjs",
+    ],
+    data = [
+        ":error_spec_srcs_rjs",
+    ],
+)
+
+ts_project(
+    name = "npm_package_spec_lib",
+    testonly = True,
+    srcs = ["npm_package/npm_package.spec.ts"],
+    deps = [
+        "//:node_modules/@bazel/runfiles",
+        "//:node_modules/@types/shelljs",
+    ],
+)
+
+jasmine_test(
+    name = "test_npm_package",
+    data = [
+        ":npm_package_spec_lib_rjs",
+        "//:node_modules/shelljs",
+        "//packages/zone.js:npm_package",
+    ],
+)
+
+env_srcs = [
+    "browser-env-setup.ts",
+    "browser_symbol_setup.ts",
+]
+
+env_deps = [
+    ":common_spec_env_rjs",
+    ":common_spec_srcs_rjs",
+    ":common_spec_util_rjs",
+    ":error_spec_srcs_rjs",
+    "//packages/zone.js/lib:lib_rjs",
+    "//:node_modules/@types/shelljs",
+    "//:node_modules/@types/systemjs",
+    "//:node_modules/rxjs",
+    "//:node_modules/shelljs",
+    "//:node_modules/systemjs",
+]
+
+env_entry_point = ":browser-env-setup.ts"
+
+test_srcs = glob(
+    ["browser/*.ts"],
+    exclude = [
+        "browser/shadydom.spec.ts",
+        "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
+    ],
+) + [
+    "extra/cordova.spec.ts",
+    "mocha-patch.spec.ts",
+    "jasmine-patch.spec.ts",
+    "common_tests.ts",
+    "browser_entry_point.ts",
+]
+
+test_deps = [
+    ":common_spec_env_rjs",
+    ":common_spec_srcs_rjs",
+    ":common_spec_util_rjs",
+    ":error_spec_srcs_rjs",
+    "//packages/zone.js/lib:lib_rjs",
+    "//:node_modules/@types/shelljs",
+    "//:node_modules/@types/systemjs",
+    "//:node_modules/rxjs",
+    "//:node_modules/shelljs",
+    "//:node_modules/systemjs",
+]
+
+test_entry_point = ":browser_entry_point.ts"
+
+karma_tests = {
+    "browser_test": [
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
+    ],
+    "browser_green_test": [
+        "//packages/zone.js/fesm2015:zone.js",
+        "//packages/zone.js/fesm2015:zone-testing.js",
+    ],
+    "browser_legacy_test": [
+        "//packages/zone.js/bundles:zone-legacy.umd.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
+    ],
+}
+
+karma_test(
+    name = "browser_test",
+    bootstraps = karma_tests,
+    ci = True,
+    env_deps = env_deps,
+    env_entry_point = env_entry_point,
+    env_srcs = env_srcs,
+    test_deps = test_deps,
+    test_entry_point = test_entry_point,
+    test_srcs = test_srcs,
+)
+
+karma_test(
+    name = "browser_shadydom",
+    bootstraps = {"browser_shadydom": [
+        "//packages/zone.js/bundles:zone.umd.min.js",
+        "//packages/zone.js/bundles:zone-testing.umd.min.js",
+        "//packages/zone.js/bundles:webapis-shadydom.umd.js",
+    ]},
+    ci = False,
+    env_deps = [
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+    env_entry_point = ":browser_shadydom_setup.ts",
+    env_srcs = ["browser_shadydom_setup.ts"],
+    test_deps = [
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+    test_entry_point = ":browser_shadydom_entry_point.ts",
+    test_srcs = [
+        "browser/shadydom.spec.ts",
+        "browser_shadydom_entry_point.ts",
+    ],
+)
+
+karma_test(
+    name = "browser_disable_wrap_uncaught_promise_rejection",
+    bootstraps = {"browser_disable_wrap_uncaught_promise_rejection": [
+        "//packages/zone.js/bundles:zone.umd.min.js",
+        "//packages/zone.js/bundles:zone-testing.umd.min.js",
+    ]},
+    ci = False,
+    env_deps = [
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+    env_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_setup.ts",
+    env_srcs = ["browser_disable_wrap_uncaught_promise_rejection_setup.ts"],
+    test_deps = [
+        "//packages/zone.js/lib:lib_rjs",
+    ],
+    test_entry_point = ":browser_disable_wrap_uncaught_promise_rejection_entry_point.ts",
+    test_srcs = [
+        "browser_disable_wrap_uncaught_promise_rejection_entry_point.ts",
+        "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
+    ],
+)

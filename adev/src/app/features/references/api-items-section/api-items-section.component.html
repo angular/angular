@@ -1,0 +1,42 @@
+<header class="adev-api-items-section-header">
+  <h3 [id]="group().id">
+    <a
+      routerLink="/api"
+      [fragment]="group().id"
+      queryParamsHandling="preserve"
+      class="adev-api-anchor"
+      tabindex="-1"
+    >
+      {{group().title}}
+    </a>
+  </h3>
+</header>
+
+<ul class="adev-api-items-section-grid">
+  @for (apiItem of group().items; track apiItem.url) {
+    <li [class.adev-api-items-section-item-deprecated]="apiItem.deprecated">
+      <a
+        [routerLink]="'/' + apiItem.url"
+        class="adev-api-items-section-item"
+        [attr.aria-describedby]="apiItem.deprecated ? 'deprecated-description' : null"
+      >
+        <docs-api-item-label
+          [type]="apiItem.itemType"
+          mode="short"
+          class="docs-api-item-label"
+          aria-hidden="true"
+        />
+        <span class="adev-item-title" [attr.title]="apiItem.title">{{ apiItem.title }}</span>
+      </a>
+      @if (apiItem.deprecated) {
+        <span class="adev-item-attribute" matTooltip="Deprecated"> &lt;!&gt; </span>
+      }
+      @if(apiItem.experimental) {
+        <span class="adev-item-attribute" matTooltip="Experimental"> 🧪 </span>
+      }
+      @if(apiItem.developerPreview) {
+        <span class="adev-item-attribute" matTooltip="Developer Preview"> 🚧 </span>
+      }
+    </li>
+  }
+</ul>

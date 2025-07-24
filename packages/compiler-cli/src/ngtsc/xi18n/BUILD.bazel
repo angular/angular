@@ -1,0 +1,15 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "xi18n",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+    ],
+)

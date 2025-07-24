@@ -1,0 +1,56 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project", "sass_binary", "ts_project", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_project(
+    name = "navigation-list",
+    srcs = [
+        "navigation-list.component.ts",
+    ],
+    assets = [
+        ":navigation-list.component.css",
+        "navigation-list.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/material",
+        "//adev:node_modules/@angular/router",
+        "//adev/shared-docs/components/icon:icon_rjs",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/pipes:pipes_rjs",
+        "//adev/shared-docs/services:services_rjs",
+    ],
+)
+
+sass_binary(
+    name = "style",
+    src = "navigation-list.component.scss",
+    deps = [
+        "//adev/shared-docs/styles",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":navigation-list_rjs",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
+        "//adev:node_modules/@angular/router",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/services:services_rjs",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib_rjs"],
+)

@@ -1,0 +1,17 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+ts_project(
+    name = "text_attribute_not_binding",
+    srcs = ["index.ts"],
+    visibility = [
+        "//packages/compiler-cli/src/ngtsc:__subpackages__",
+        "//packages/compiler-cli/test/ngtsc:__pkg__",
+    ],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api:api_rjs",
+    ],
+)

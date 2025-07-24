@@ -1,0 +1,68 @@
+load("//adev/shared-docs:defaults.bzl", "ng_package", "ng_project", "ts_config")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":tsconfig_build",
+        "//adev:node_modules/@types/jasmine",
+    ],
+)
+
+ng_project(
+    name = "docs",
+    srcs = [
+        "index.ts",
+    ],
+    deps = [
+        "//adev/shared-docs/components:components_rjs",
+        "//adev/shared-docs/directives:directives_rjs",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/pipes:pipes_rjs",
+        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/services:services_rjs",
+        "//adev/shared-docs/testing:testing_rjs",
+        "//adev/shared-docs/utils:utils_rjs",
+    ],
+)
+
+ng_package(
+    name = "pkg",
+    srcs = [
+        "package.json",
+        "//adev/shared-docs/icons",
+        "//adev/shared-docs/pipeline:BUILD.bazel",
+        "//adev/shared-docs/pipeline:_guides.bzl",
+        "//adev/shared-docs/pipeline:_playground.bzl",
+        "//adev/shared-docs/pipeline:_stackblitz.bzl",
+        "//adev/shared-docs/pipeline:_tutorial.bzl",
+        "//adev/shared-docs/pipeline/examples/stackblitz:stackblitz.mjs",
+        "//adev/shared-docs/pipeline/examples/template:files",
+        "//adev/shared-docs/pipeline/guides:guides.mjs",
+        "//adev/shared-docs/pipeline/guides:guides-no-mermaid.mjs",
+        "//adev/shared-docs/pipeline/tutorials:playground.mjs",
+        "//adev/shared-docs/pipeline/tutorials:tutorial.mjs",
+        "//adev/shared-docs/pipeline/tutorials/common:files",
+        "//adev/shared-docs/styles",
+    ],
+    package = "@angular/docs",
+    visibility = [
+        "//adev/shared-docs:__pkg__",
+    ],
+    deps = [
+        ":docs_rjs",
+    ],
+)

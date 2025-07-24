@@ -1,0 +1,18 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+ts_project(
+    name = "template_semantics",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck:typecheck_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/template_semantics/api:api_rjs",
+    ],
+)

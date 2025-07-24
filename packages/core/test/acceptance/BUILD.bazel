@@ -1,0 +1,73 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite", "ts_project")
+
+package(default_visibility = ["//visibility:private"])
+
+SPEC_FILES_WITH_FORWARD_REFS = [
+    "di_forward_ref_spec.ts",
+]
+
+ts_project(
+    name = "acceptance_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = SPEC_FILES_WITH_FORWARD_REFS,
+    ),
+    # Visible to //:saucelabs_unit_tests
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/locales:locales_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
+        "//packages/core/src/util:util_rjs",
+        "//packages/core/test/render3:matchers_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/localize:localize_rjs",
+        "//packages/localize/init:init_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/private/testing:testing_rjs",
+        "//packages/router:router_rjs",
+    ],
+)
+
+# Note: The `forward_ref` example tests are built through this `ng_project` sub-target.
+# This is done so that DI decorator/type metadata is processed manually by the compiler
+# ahead of time. We cannot rely on the official TypeScript decorator downlevel emit (for JIT),
+# as the output is not compatible with `forwardRef` and ES2015+. More details here:
+# https://github.com/angular/angular/commit/323651bd38909b0f4226bcb6c8f5abafa91cf9d9.
+# https://github.com/microsoft/TypeScript/issues/27519.
+ng_project(
+    name = "forward_ref_test_lib",
+    testonly = True,
+    srcs = SPEC_FILES_WITH_FORWARD_REFS,
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "acceptance",
+    data = [
+        ":acceptance_lib_rjs",
+        ":forward_ref_test_lib_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "acceptance_web",
+    deps = [
+        ":acceptance_lib_rjs",
+        ":forward_ref_test_lib_rjs",
+    ],
+)

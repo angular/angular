@@ -1,0 +1,41 @@
+{
+  "name": "hydration",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --configuration production",
+    "postinstall": "node ./copy-event-dispatch-contract.mjs",
+    "pretest": "ng version",
+    "test": "yarn e2e",
+    "lint": "ng lint",
+    "e2e": "ng e2e --configuration=production"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "@angular/ssr": "file:../../node_modules/@angular/ssr",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "file:../../node_modules/tslib",
+    "zone.js": "file:../../node_modules/zone.js"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/build": "file:../../node_modules/@angular/build",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/node": "file:../../node_modules/@types/node",
+    "jasmine-core": "3.5.0",
+    "jasmine-spec-reporter": "4.2.1",
+    "protractor": "file:../../node_modules/protractor",
+    "ts-node": "8.3.0",
+    "typescript": "file:../../node_modules/typescript"
+  }
+}

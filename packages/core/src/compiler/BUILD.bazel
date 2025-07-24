@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = [
+    "//packages:__pkg__",
+    "//packages/compiler/test:__pkg__",
+    "//packages/core:__subpackages__",
+    "//tools/public_api_guard:__pkg__",
+])
+
+ts_project(
+    name = "compiler",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core/src/util:util_rjs",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "compiler",
+    tsconfig = "//packages:tsec_config",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+    ]),
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,7 @@
+load("//adev/shared-docs:index.bzl", "generate_previews")
+
+generate_previews(
+    name = "previews",
+    example_srcs = "//adev/src/content/examples:embeddable",
+    visibility = ["//visibility:public"],
+)

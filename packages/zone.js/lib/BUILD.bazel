@@ -1,0 +1,36 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(glob([
+    "**/*",
+]))
+
+ts_project(
+    name = "zone_d_ts",
+    srcs = [
+        "zone.api.extensions.ts",
+        "zone.configurations.api.ts",
+        "zone.ts",
+        "zone-impl.ts",
+    ],
+)
+
+ts_project(
+    name = "lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "zone.ts",
+            "zone-impl.ts",
+            "zone.api.extensions.ts",
+            "zone.configurations.api.ts",
+        ],
+    ),
+    deps = [
+        ":zone_d_ts_rjs",
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+        "//:node_modules/rxjs",
+    ],
+)

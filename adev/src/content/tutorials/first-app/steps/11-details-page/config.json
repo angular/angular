@@ -1,0 +1,11 @@
+{
+  "title": "Customize the details page",
+  "type": "local",
+  "answerSrc": "../12-forms/src",
+  "answerRootDir": "../12-forms/",
+  "openFiles": [
+    "src/app/housing-location/housing-location.ts",
+    "src/app/details/details.ts",
+    "src/app/app.ts"
+  ]
+}

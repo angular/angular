@@ -1,0 +1,45 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should handle namespaces inside i18n blocks",
+      "inputFiles": [
+        "foreign_object.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "foreign_object.js",
+              "expected": "foreign_object.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle namespaces on i18n block containers",
+      "inputFiles": [
+        "namespaced_div.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "namespaced_div.js",
+              "expected": "namespaced_div.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    }
+  ]
+}

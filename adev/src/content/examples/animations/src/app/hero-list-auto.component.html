@@ -1,0 +1,11 @@
+<ul class="heroes">
+  @for (hero of heroes(); track hero) {
+    <li
+      [@shrinkOut]="'in'">
+      <button class="inner" type="button" (click)="removeHero(hero.id)">
+        <span class="badge">{{ hero.id }}</span>
+        <span class="name">{{ hero.name }}</span>
+      </button>
+    </li>
+  }
+</ul>

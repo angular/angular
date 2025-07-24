@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularStandaloneMigration",
+  "title": "Angular Standalone Migration Schema",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "description": "Operation that should be performed by the migrator",
+      "type": "string",
+      "enum": ["convert-to-standalone", "prune-ng-modules", "standalone-bootstrap"],
+      "default": "convert-to-standalone",
+      "x-prompt": {
+        "message": "Choose the type of migration:",
+        "type": "list",
+        "items": [
+          {
+            "value": "convert-to-standalone",
+            "label": "Convert all components, directives and pipes to standalone"
+          },
+          {
+            "value": "prune-ng-modules",
+            "label": "Remove unnecessary NgModule classes"
+          },
+          {
+            "value": "standalone-bootstrap",
+            "label": "Bootstrap the application using standalone APIs"
+          }
+        ]
+      }
+    },
+    "path": {
+      "type": "string",
+      "description": "Path relative to the project root which should be migrated",
+      "x-prompt": "Which path in your project should be migrated?",
+      "default": "./"
+    }
+  }
+}

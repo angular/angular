@@ -1,0 +1,13 @@
+// Icon styles, primarily for docs
+
+@mixin docs-icon {
+  .docs-icon {
+    color: var(--quinary-contrast);
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+  }
+
+  .docs-icon-small {
+    font-size: 1rem;
+  }
+}

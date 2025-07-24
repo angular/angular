@@ -1,0 +1,38 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "ngtsc_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//:node_modules/esbuild",
+        "//:node_modules/source-map",
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/docs:docs_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/indexer:indexer_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/invalid_banana_in_box:invalid_banana_in_box_rjs",
+        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
+        "//packages/compiler-cli/test:test_utils_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "ngtsc",
+    timeout = "long",
+    data = [
+        ":ngtsc_lib_rjs",
+        "//:node_modules/yargs",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
+        "//packages/core:npm_package",
+    ],
+    shard_count = 4,
+)

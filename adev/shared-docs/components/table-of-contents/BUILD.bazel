@@ -1,0 +1,55 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project", "sass_binary", "ts_project", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_project(
+    name = "table-of-contents",
+    srcs = [
+        "table-of-contents.component.ts",
+    ],
+    assets = [
+        ":table-of-contents.component.css",
+        "table-of-contents.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/viewers:__pkg__",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
+        "//adev/shared-docs/components/icon:icon_rjs",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/services:services_rjs",
+    ],
+)
+
+sass_binary(
+    name = "style",
+    src = "table-of-contents.component.scss",
+    deps = [
+        "//adev/shared-docs/styles",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":table-of-contents_rjs",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/services:services_rjs",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib_rjs"],
+)

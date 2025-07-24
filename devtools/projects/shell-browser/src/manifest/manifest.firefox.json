@@ -1,0 +1,54 @@
+{
+  "manifest_version": 2,
+  "short_name": "Angular DevTools",
+  "name": "Angular DevTools",
+  "description": "Angular DevTools extends Firefox DevTools adding Angular specific debugging and profiling capabilities.",
+  "version": "1.0.40",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "browser_action": {
+    "default_popup": "popups/not-angular.html"
+  },
+  "devtools_page": "devtools.html",
+  "web_accessible_resources": [
+    "app/backend_bundle.js",
+    "devtools.html"
+  ],
+  "background": {
+    "scripts": [
+      "app/background_bundle.js"
+    ]
+  },
+  "permissions": [
+    "activeTab",
+    "http://*/*",
+    "https://*/*",
+    "file:///*"
+  ],
+  "content_scripts": [
+    {
+    "matches": [
+      "<all_urls>"
+    ],
+    "js": [
+      "app/ng_validate_bundle.js"
+    ],
+    "run_at": "document_idle",
+    "all_frames": true
+  },
+  {
+    "matches": [
+      "<all_urls>"
+    ],
+    "js": [
+      "app/content_script_bundle.js"
+    ],
+    "run_at": "document_idle",
+    "all_frames": true
+  }
+ ]
+}

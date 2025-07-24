@@ -1,0 +1,128 @@
+<!-- Code Editor Tabs -->
+<div class="docs-code-editor-tabs">
+  <div class="adev-tabs-and-plus">
+    <mat-tab-group animationDuration="0ms" mat-stretch-tabs="false">
+      <!--
+        Hint: we would like to keep only one instance of #codeEditorWrapper,
+        that's why we're not placing this element as content of mat-tab, just to
+        not call another time init method from CodeMirrorEditor service.
+      -->
+      @for (file of files(); track file) {
+        <mat-tab #tab>
+          <ng-template mat-tab-label>
+            @if (tab.isActive && isRenamingFile()) {
+              <form
+                (submit)="renameFile($event, file.filename)"
+                (docsClickOutside)="closeRenameFile()"
+              >
+                <input
+                  name="rename-file"
+                  class="adev-rename-file-input"
+                  #renameFileInput
+                  (keydown)="$event.stopPropagation()"
+                />
+              </form>
+            } @else if (restrictedMode()) {
+              {{ file.filename.replace('src/app/', '') }}
+            } @else {
+              {{ file.filename.replace('src/', '') }}
+            }
+
+            @if (tab.isActive && canRenameFile(file.filename)) {
+              <button
+                class="docs-rename-file"
+                aria-label="rename file"
+                matTooltip="Rename file"
+                matTooltipPosition="above"
+                (click)="onRenameButtonClick()"
+              >
+                <docs-icon>edit</docs-icon>
+              </button>
+            }
+            @if (tab.isActive && canDeleteFile(file.filename)) {
+              <button
+                class="docs-delete-file"
+                aria-label="Delete file"
+                matTooltip="Delete file"
+                matTooltipPosition="above"
+                (click)="deleteFile(file.filename)"
+              >
+                <docs-icon>delete</docs-icon>
+              </button>
+            }
+          </ng-template>
+        </mat-tab>
+      }
+      @if (isCreatingFile()) {
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <form (submit)="createFile($event)">
+              <input
+                name="new-file"
+                class="adev-new-file-input"
+                #createFileInput
+                (keydown)="$event.stopPropagation()"
+              />
+            </form>
+          </ng-template>
+        </mat-tab>
+      }
+    </mat-tab-group>
+
+    @if (canCreateFile()) {
+      <button
+        class="adev-add-file"
+        (click)="onAddButtonClick()"
+        aria-label="Add a new file"
+        matTooltip="Add a new file"
+        matTooltipPosition="above"
+      >
+        <docs-icon>add</docs-icon>
+      </button>
+    }
+  </div>
+
+  <button
+    class="adev-editor-download-button"
+    type="button"
+    aria-label="Open current code in editor in an online editor"
+    [cdkMenuTriggerFor]="launcherMenu"
+  >
+    <docs-icon>launch</docs-icon>
+  </button>
+  <!-- launcher dropdown window -->
+  <ng-template #launcherMenu>
+    <div class="adev-editor-dropdown" cdkMenu>
+      <button cdkMenuItem (click)="openCurrentSolutionInIDX()">
+        <span>Open in IDX </span>
+        <img class="icon" src="assets/images/tutorials/common/idx_logo.svg" height="32" />
+      </button>
+      <button cdkMenuItem (click)="openCurrentCodeInStackBlitz()">Open in StackBlitz</button>
+    </div>
+  </ng-template>
+  <button
+    class="adev-editor-download-button"
+    type="button"
+    (click)="downloadCurrentCodeEditorState()"
+    aria-label="Download current source code"
+    matTooltip="Download current source code"
+    matTooltipPosition="above"
+  >
+    <docs-icon>download</docs-icon>
+  </button>
+</div>
+<!-- Code Editor -->
+<div #codeEditorWrapper class="adev-code-editor-wrapper"></div>
+
+@if (displayErrorsBox()) {
+  <div class="adev-inline-errors-box">
+    <button type="button" (click)="closeErrorsBox()">
+      <docs-icon class="docs-icon_high-contrast">close</docs-icon>
+    </button>
+    <ul>
+      @for (error of errors(); track error) {
+        <li>(line: {{ error.lineNumber }}:{{ error.characterPosition }}) {{ error.message }}</li>
+      }
+    </ul>
+  </div>
+}

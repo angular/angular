@@ -1,0 +1,42 @@
+:host {
+  height: 100%;
+
+  ::ng-deep {
+    as-split-area {
+      overflow-y: hidden;
+    }
+
+    .as-split-gutter-icon {
+      display: none;
+    }
+  }
+}
+
+.forest-breadcrumbs {
+  display: flex;
+  flex-direction: column;
+
+  ng-breadcrumbs {
+    border-top: 1px solid var(--color-separator);
+  }
+}
+
+.prop-split {
+  display: flex;
+  flex-direction: column;
+}
+
+.property-tab-wrapper {
+  flex: 1;
+  overflow: auto;
+  width: 100%;
+
+  .no-selected-element {
+    text-align: center;
+    padding: 1rem;
+  }
+}
+
+.hydration {
+  padding: 4px 8px;
+}

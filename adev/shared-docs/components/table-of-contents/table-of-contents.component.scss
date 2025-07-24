@@ -1,0 +1,99 @@
+@use '../../styles/media-queries' as mq;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  right: 1rem;
+  top: 0;
+  height: fit-content;
+  width: 14rem;
+  padding-right: 2rem;
+  max-height: 100vh;
+  overflow-y: scroll;
+  box-sizing: border-box;
+
+  aside {
+    margin-bottom: 2rem;
+  }
+
+  & :has(ul li:only-child) {
+    // Hide the entire TOC is there's only one item
+    display: none;
+  }
+
+  @include mq.for-large-desktop-down {
+    position: relative;
+    right: 0;
+    max-height: min-content;
+    width: 100%;
+  }
+
+  .docs-title {
+    font-size: 1.25rem;
+    margin-block-start: var(--layout-padding);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--septenary-contrast);
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--quinary-contrast);
+  }
+
+  .docs-faceted-list-item {
+    font-size: 0.875rem;
+
+    a {
+      display: block; // to prevent overflow from the li parent
+      padding: 0.5rem 0.5rem 0.5rem 1rem;
+      font-weight: 500;
+    }
+
+    &.docs-toc-item-h3 a {
+      padding-inline-start: 2rem;
+    }
+  }
+}
+
+button {
+  background: transparent;
+  border: none;
+  font-size: 0.875rem;
+  font-family: var(--inter-font);
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+  color: var(--tertiary-contrast);
+  transition: color 0.3s ease;
+  cursor: pointer;
+
+  docs-icon {
+    margin-inline-end: 0.35rem;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    docs-icon {
+      opacity: 1;
+    }
+  }
+
+  @include mq.for-large-desktop-down {
+    display: none;
+  }
+}

@@ -1,0 +1,76 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+:host {
+  width: 100%;
+  position: relative;
+
+  // While editor is loading, display an svg of the editor
+  .docs-dark-mode & {
+    .adev-editor-scroll-container img {
+      content: url('../../../assets/images/editor-dark-horizontal.svg');
+      @include mq.for-tablet-down {
+        content: url('../../../assets/images/editor-dark-vertical.svg');
+      }
+    }
+  }
+  .docs-light-mode & {
+    .adev-editor-scroll-container img {
+      content: url('../../../assets/images/editor-light-horizontal.svg');
+      @include mq.for-tablet-down {
+        content: url('../../../assets/images/editor-light-vertical.svg');
+      }
+    }
+  }
+
+  .spacer {
+    height: 100vh;
+  }
+
+  .adev-editor-scroll-container {
+    position: relative;
+    height: 300vh;
+    background-color: var(--page-background);
+
+    .adev-code-editor {
+      background-color: var(--page-background);
+      padding-bottom: 60px;
+      position: sticky;
+      top: calc((100vh - (100vh - 110px)) / 2);
+
+      @include mq.for-tablet {
+        top: calc(((100vh - (100vh - 110px)) / 2) + 36px);
+      }
+      @include mq.for-phone-only {
+        top: calc(((100vh - (100vh - 110px)) / 2) + 25px);
+      }
+
+      // stylelint-disable-next-line
+      ::ng-deep {
+        embedded-editor {
+          margin: 0 auto;
+          display: flex;
+          width: 75vw;
+          height: calc(100vh - 110px);
+
+          @include mq.for-phone-only {
+            width: 95vw;
+          }
+
+          .adev-editor-container {
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    img {
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: auto;
+      min-height: 60vh;
+      width: 75vw;
+    }
+  }
+}

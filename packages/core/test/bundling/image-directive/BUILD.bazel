@@ -1,0 +1,83 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "http_server")
+load("//tools:defaults2.bzl", "ng_project", "protractor_web_test_suite", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "image-directive",
+    srcs = [
+        "e2e/basic/basic.ts",
+        "e2e/fill-mode/fill-mode.ts",
+        "e2e/image-distortion/image-distortion.ts",
+        "e2e/image-perf-warnings-lazy/image-perf-warnings-lazy.ts",
+        "e2e/image-perf-warnings-oversized/image-perf-warnings-oversized.ts",
+        "e2e/image-perf-warnings-oversized/svg-no-perf-oversized-warnings.ts",
+        "e2e/lcp-check/lcp-check.ts",
+        "e2e/oversized-image/oversized-image.ts",
+        "e2e/preconnect-check/preconnect-check.ts",
+        "index.ts",
+        "playground.ts",
+    ],
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/router:router_rjs",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    config = {
+        "resolveExtensions": [".js"],
+    },
+    entry_point = ":index.ts",
+    tsconfig = "//packages/core:tsconfig_build",
+    deps = [
+        ":image-directive_rjs",
+        "//packages/core:tsconfig_build",
+    ],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "e2e/a.png",
+        "e2e/b.png",
+        "e2e/logo-1500w.jpg",
+        "e2e/logo-1500w.svg",
+        "e2e/logo-500w.jpg",
+        "e2e/white-607x3.png",
+        "index.html",
+    ],
+    deps = [
+        ":bundle",
+        "//:node_modules/zone.js",
+    ],
+)
+
+ts_project(
+    name = "img_dir_e2e_tests_lib",
+    testonly = True,
+    srcs = ["e2e/browser-logs-util.ts"] + glob([
+        "e2e/**/*.e2e-spec.ts",
+    ]),
+    tsconfig = ":e2e/tsconfig-e2e.json",
+    deps = [
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/@types/node",
+        "//:node_modules/@types/selenium-webdriver",
+        "//:node_modules/protractor",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    server = ":devserver",
+    deps = [
+        ":img_dir_e2e_tests_lib_rjs",
+    ],
+)

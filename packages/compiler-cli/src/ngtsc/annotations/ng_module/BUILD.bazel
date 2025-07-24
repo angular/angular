@@ -1,0 +1,28 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "ng_module",
+    srcs = ["index.ts"] + glob([
+        "src/**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/annotations/common:common_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/imports:imports_rjs",
+        "//packages/compiler-cli/src/ngtsc/incremental:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/incremental/semantic_graph:semantic_graph_rjs",
+        "//packages/compiler-cli/src/ngtsc/metadata:metadata_rjs",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator:partial_evaluator_rjs",
+        "//packages/compiler-cli/src/ngtsc/perf:perf_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/compiler-cli/src/ngtsc/scope:scope_rjs",
+        "//packages/compiler-cli/src/ngtsc/shims:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/transform:transform_rjs",
+        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
+    ],
+)

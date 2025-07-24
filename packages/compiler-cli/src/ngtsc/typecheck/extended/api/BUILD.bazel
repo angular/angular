@@ -1,0 +1,16 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+ts_project(
+    name = "api",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
+    ],
+)

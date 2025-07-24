@@ -1,0 +1,28 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "api",
+    srcs = ["api.ts"],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+    ],
+)
+
+ts_project(
+    name = "shims",
+    srcs = ["index.ts"] + glob([
+        "src/**/*.ts",
+    ]),
+    deps = [
+        ":api_rjs",
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/imports:imports_rjs",
+        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
+    ],
+)

@@ -1,0 +1,33 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "ng-debug-api",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:core-enums_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:get-roots_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "ng-debug-api_test_lib",
+    srcs = ["ng-debug-api.spec.ts"],
+    deps = [
+        ":ng-debug-api_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/jasmine",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:core-enums_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "ng-debug-api_test",
+    deps = [":ng-debug-api_test_lib_rjs"],
+)

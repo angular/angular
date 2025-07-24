@@ -1,0 +1,29 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+
+# All example files.
+filegroup(
+    name = "examples",
+    srcs = glob(["**"]),
+    visibility = ["//visibility:public"],
+)
+
+# Example files that can be embedded as preview components.
+copy_to_bin(
+    name = "embeddable",
+    srcs = glob(
+        ["**/app/**"],
+        exclude = [
+            "testing/**",  # Can't embed test code
+            "i18n/**",  # @angular/localize/init not available in docs app
+            "elements/**",  # @angular/elements not available in docs app
+            "service-worker-getting-started/**",  # @angular/service-worker not available in docs app
+            # TODO: The following examples have broken code that does not compile, fix them and remove them from this list.
+            "ssr/**",
+            "resolution-modifiers/**",
+            "reactive-forms/**",
+            "form-validation/**",
+            "dependency-injection/**",
+        ],
+    ),
+    visibility = ["//visibility:public"],
+)

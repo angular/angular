@@ -1,0 +1,35 @@
+@if (controlsLoaded()) {
+  <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" [multi]="true">
+    @let deps = dependencies();
+    @if (deps && deps.length > 0) {
+      <div class="mat-accordion-content">
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
+            <mat-panel-title>
+              Injected Services
+              <ng-docs-ref-button docs="dependency-injection" />
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-injected-services [controller]="controller()" />
+        </mat-expansion-panel>
+      </div>
+    }
+    @for (panel of panels(); track $index) {
+      <div class="mat-accordion-content" [id]="panel.title()" cdkDrag>
+        @if (panel.controls().dataSource.data.length > 0) {
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
+              <mat-panel-title>{{ panel.title() }}</mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-property-view-tree
+              [dataSource]="panel.controls().dataSource"
+              [treeControl]="panel.controls().treeControl"
+              (updateValue)="updateValue($event)"
+              (inspect)="handleInspect($event)"
+            />
+          </mat-expansion-panel>
+        }
+      </div>
+    }
+  </mat-accordion>
+}

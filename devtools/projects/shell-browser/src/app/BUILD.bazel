@@ -1,0 +1,285 @@
+load("//devtools/tools:defaults.bzl", "esbuild", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "app_component_styles",
+    src = "app.component.scss",
+)
+
+ng_project(
+    name = "app",
+    srcs = [
+        "app.component.ts",
+        "app.config.ts",
+    ],
+    angular_assets = [
+        "app.component.html",
+        ":app_component_styles",
+    ],
+    deps = [
+        ":chrome_application_environment_rjs",
+        ":chrome_application_operations_rjs",
+        ":chrome_message_bus_rjs",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@angular/platform-browser",
+        "//:node_modules/@types/chrome",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
+        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/shell-browser/src/app:backend_rjs",
+        "//devtools/projects/shell-browser/src/app:background_rjs",
+    ],
+)
+
+ts_project(
+    name = "ng_validate",
+    srcs = [
+        "ng-validate.ts",
+    ],
+    deps = [
+        "//:node_modules/@types/chrome",
+    ],
+)
+
+ts_project(
+    name = "chrome_window_extensions",
+    srcs = [
+        "chrome-window-extensions.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/protocol",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "chrome_application_environment",
+    srcs = [
+        "chrome-application-environment.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
+        "//devtools/projects/shell-browser/src/environments:environment_rjs",
+    ],
+)
+
+ts_project(
+    name = "chrome_application_operations",
+    srcs = [
+        "chrome-application-operations.ts",
+    ],
+    deps = [
+        ":chrome_application_environment_rjs",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "same_page_message_bus",
+    srcs = [
+        "same-page-message-bus.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "chrome_message_bus",
+    srcs = [
+        "chrome-message-bus.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "background",
+    srcs = [
+        "background.ts",
+    ],
+    deps = [
+        ":detect_angular_for_extension_icon_rjs",
+        ":tab_manager_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "tab_manager",
+    srcs = [
+        "tab_manager.ts",
+    ],
+    deps = [
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "tab_manager_test",
+    deps = [
+        ":tab_manager_test_lib_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "tab_manager_test_lib",
+    srcs = [
+        "tab_manager_spec.ts",
+    ],
+    deps = [
+        ":tab_manager_rjs",
+        "//:node_modules/@types/chrome",
+    ],
+)
+
+ts_project(
+    name = "backend",
+    srcs = [
+        "backend.ts",
+    ],
+    deps = [
+        ":chrome_window_extensions_rjs",
+        ":same_page_message_bus_rjs",
+        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
+    ],
+)
+
+ts_project(
+    name = "content_script",
+    srcs = [
+        "content-script.ts",
+    ],
+    deps = [
+        ":chrome_message_bus_rjs",
+        ":same_page_message_bus_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "detect_angular_for_extension_icon",
+    srcs = [
+        "detect-angular-for-extension-icon.ts",
+    ],
+    deps = [
+        ":same_page_message_bus_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/shared-utils:shared-utils_rjs",
+    ],
+)
+
+esbuild(
+    name = "detect_angular_for_extension_icon_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "detect-angular-for-extension-icon.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":detect_angular_for_extension_icon_rjs",
+    ],
+)
+
+esbuild(
+    name = "backend_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "backend.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":backend_rjs",
+    ],
+)
+
+esbuild(
+    name = "ng_validate_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "ng-validate.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":ng_validate_rjs",
+    ],
+)
+
+esbuild(
+    name = "background_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "background.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":background_rjs",
+    ],
+)
+
+esbuild(
+    name = "content_script_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "content-script.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":content_script_rjs",
+    ],
+)

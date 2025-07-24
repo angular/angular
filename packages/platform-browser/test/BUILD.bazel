@@ -1,0 +1,63 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+
+copy_to_bin(
+    name = "static_assets",
+    srcs = [
+        "browser/static_assets/200.html",
+        "static_assets/test.html",
+    ],
+    visibility = [
+        "//packages/platform-browser-dynamic/test:__subpackages__",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages:types_rjs",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/common/http/testing:testing_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+js_library(
+    name = "zone_event_unpatched_init_lib",
+    srcs = ["dom/events/zone_event_unpatched.init.mjs"],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test_web",
+    bootstrap = [
+        ":zone_event_unpatched_init_lib",
+    ],
+    data = [
+        ":static_assets",
+    ],
+    deps = [
+        ":test_lib_rjs",
+    ],
+)

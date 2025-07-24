@@ -1,0 +1,107 @@
+{
+  "$schema": "../node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": ".",
+  "projects": {
+    "angular-dev": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "standalone": true,
+          "changeDetection": "OnPush"
+        }
+      },
+      "root": ".",
+      "sourceRoot": "src",
+      "prefix": "adev",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "externalDependencies": ["path"],
+            "outputMode": "static",
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "server": "src/main.server.ts",
+            "polyfills": [],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/robots.txt",
+              "src/assets",
+              "src/context",
+              "src/llms.txt"
+            ],
+            "styles": ["@angular/docs/styles/global-styles.scss", "./src/local-styles.scss"],
+            "scripts": [],
+            "webWorkerTsConfig": "tsconfig.worker.json",
+            "optimization": {
+              "fonts": {
+                "inline": false
+              }
+            }
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "angular-dev:build:production"
+            },
+            "development": {
+              "buildTarget": "angular-dev:build:development"
+            }
+          },
+          "defaultConfiguration": "development",
+          "options": {
+            "buildTarget": "web-ui:build",
+            "headers": {
+              "Cross-Origin-Opener-Policy": "same-origin",
+              "Cross-Origin-Embedder-Policy": "require-corp"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "angular-dev:build"
+          }
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "include": ["src/app"],
+            "karmaConfig": "karma.conf.js",
+            "main": "test-main.ts",
+            "inlineStyleLanguage": "scss",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["@angular/docs/styles/global-styles.scss"],
+            "scripts": [],
+            "webWorkerTsConfig": "tsconfig.worker.json"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "dca119a9-da31-47f7-a6cb-b60541037021",
+    "cache": {
+      "enabled": false
+    }
+  }
+}

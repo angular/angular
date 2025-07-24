@@ -1,0 +1,77 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should handle nullish coalescing inside interpolations",
+      "inputFiles": ["nullish_coalescing_interpolation.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nullish_coalescing_interpolation_template.js",
+              "generated": "nullish_coalescing_interpolation.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle nullish coalescing inside property bindings",
+      "inputFiles": ["nullish_coalescing_property.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nullish_coalescing_property_template.js",
+              "generated": "nullish_coalescing_property.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle nullish coalescing inside host bindings",
+      "inputFiles": ["nullish_coalescing_host.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nullish_coalescing_host_bindings.js",
+              "generated": "nullish_coalescing_host.js"
+            }
+          ],
+          "failureMessage": "Incorrect host bindings"
+        }
+      ]
+    },
+    {
+      "description": "should preserve required parentheses for nullish coalescing",
+      "inputFiles": ["nullish_coalescing_parens.ts"],
+      "compilerOptions": {
+        "target": "es2020"
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nullish_coalescing_parens_template.js",
+              "generated": "nullish_coalescing_parens.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

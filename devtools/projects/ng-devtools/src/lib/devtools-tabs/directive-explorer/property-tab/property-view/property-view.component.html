@@ -1,0 +1,12 @@
+<ng-property-view-header
+  [directive]="directive().name"
+  (viewSource)="viewSource.emit()"
+></ng-property-view-header>
+<ng-property-view-body
+  [controller]="controller()!"
+  [directiveInputControls]="directiveInputControls()!"
+  [directivePropControls]="directivePropControls()!"
+  [directiveOutputControls]="directiveOutputControls()!"
+  [directiveStateControls]="directiveStateControls()!"
+  (inspect)="inspect.emit($event)"
+></ng-property-view-body>

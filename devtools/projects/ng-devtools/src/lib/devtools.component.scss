@@ -1,0 +1,87 @@
+@use '../styles/typography';
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0px var(--dynamic-red-02);
+  }
+  100% {
+    box-shadow: 0 0 0 35px var(--dynamic-transparent-01);
+  }
+}
+
+:host {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.devtools-wrapper {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.noselect {
+  user-select: none;
+}
+
+.initializing {
+  margin: auto;
+  width: 125px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+
+  .loading {
+    border-radius: 50%;
+    width: 125px;
+    height: 125px;
+    float: left;
+    text-align: center;
+    animation: pulse 1s infinite;
+  }
+}
+
+.text-message {
+  @extend %heading-500;
+  text-align: center;
+  cursor: help;
+
+  .info-icon {
+    display: inline-block;
+    font-size: 0.8em;
+    border-radius: 50%;
+    border: solid 2px var(--primary-contrast);
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    font-weight: bold;
+    text-align: center;
+  }
+}
+
+.ng-dev-mode-causes {
+  @extend %body-medium-01;
+  padding: 1rem;
+  width: 80%;
+  margin: auto;
+  border: 1px solid var(--quinary-contrast);
+  border-radius: 16px;
+
+  code {
+    padding: 2px;
+    color: var(--dynamic-green-01);
+    background: var(--senary-contrast);
+    border-radius: 5px;
+  }
+
+  li {
+    margin-bottom: 1rem;
+  }
+}
+
+::ng-deep {
+  .as-split-gutter-icon {
+    display: none;
+  }
+}

@@ -1,0 +1,139 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+$ver-dropdown-width: 200px;
+
+:host {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  padding: var(--layout-padding) 0px;
+  container: update-guide-page / inline-size;
+
+  .docs-viewer {
+    padding-inline: var(--layout-padding);
+
+    //applying styles when TOC position got translated to the top right
+    @include mq.for-large-desktop-up {
+      // take the available space except a reserved area for TOC
+      margin-left: -16rem;
+      width: calc(100% - 16rem);
+      box-sizing: border-box;
+    }
+
+    .page-header {
+      margin-top: 0px;
+    }
+  }
+}
+
+.page {
+  max-width: var(--page-width);
+
+  & > * {
+    @include mq.for-extra-large-desktop-up {
+      padding-inline: 0px;
+    }
+  }
+
+  @include mq.for-tablet-landscape-down {
+    width: 100%;
+  }
+}
+
+h3,
+h4 {
+  margin-block-start: 2em;
+}
+
+.wizard {
+  padding-inline: 1rem;
+
+  .show-button {
+    display: block;
+    margin-block-start: 2rem;
+  }
+}
+
+.adev-version-selector {
+  display: flex;
+  gap: 1rem;
+}
+
+.adev-template-dropdown {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 0;
+  transform: translateY(-0.7rem);
+  max-height: 200px;
+  overflow-y: auto;
+  width: $ver-dropdown-width;
+  box-sizing: border-box;
+  background: var(--page-background);
+
+  li {
+    list-style: none;
+    box-sizing: border-box;
+
+    button {
+      background: var(--page-background);
+      font-size: 0.875rem;
+      width: 100%;
+      text-align: left;
+      padding-block: 0.5rem;
+      color: var(--quaternary-contrast);
+      transition:
+        color 0.3s ease,
+        background 0.3s ease;
+      font-weight: 400;
+
+      &:hover {
+        background: var(--senary-contrast);
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}
+
+.adev-template-select {
+  margin-block-end: 0.5rem;
+
+  // cdk select button
+  button {
+    font-size: 0.875rem;
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    width: $ver-dropdown-width;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 0.5rem;
+    font-weight: 400;
+    transition: border 0.3s ease;
+
+    span {
+      color: var(--primary-contrast);
+      transition: color 0.3s ease;
+      margin-inline-start: 0.1rem;
+    }
+
+    docs-icon {
+      font-size: 1.3rem;
+      color: var(--quaternary-contrast);
+      transition: color 0.3s ease;
+    }
+  }
+}
+
+.adev-recommentation-item {
+  display: flex;
+  align-items: center;
+
+  > div {
+    margin-inline-start: 2rem;
+  }
+
+  // Code blocks are generable from the markdown, we need to opt-out of the scoping
+  ::ng-deep code {
+    cursor: pointer;
+  }
+}

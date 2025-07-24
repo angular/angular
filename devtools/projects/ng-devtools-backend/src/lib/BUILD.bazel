@@ -1,0 +1,190 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "lib",
+    srcs = ["index.ts"],
+    deps = [
+        ":client_event_subscribers_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-inspector:component-inspector_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:directive-forest_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks:hooks_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api:ng-debug-api_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer:state-serializer_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "highlighter_test",
+    deps = [
+        ":highlighter_test_lib_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "highlighter_test_lib",
+    srcs = [
+        "highlighter.spec.ts",
+    ],
+    deps = [
+        ":highlighter_rjs",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ts_project(
+    name = "highlighter",
+    srcs = ["highlighter.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api:ng-debug-api_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "interfaces",
+    srcs = ["interfaces.ts"],
+    deps = [
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "property_mutation",
+    srcs = ["property-mutation.ts"],
+    deps = [
+        ":utils_rjs",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ts_test_library(
+    name = "property_mutation_test_lib",
+    srcs = ["property-mutation.spec.ts"],
+    deps = [
+        ":property_mutation_rjs",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ng_web_test_suite(
+    name = "property_mutation_test",
+    deps = [":property_mutation_test_lib_rjs"],
+)
+
+ng_web_test_suite(
+    name = "router_tree_test",
+    deps = [
+        ":router_tree_test_lib_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "router_tree_test_lib",
+    srcs = [
+        "router-tree.spec.ts",
+    ],
+    deps = [
+        ":router_tree_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "router_tree",
+    srcs = ["router-tree.ts"],
+    deps = [
+        "//:node_modules/@angular/router",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_project(
+    name = "set_console_reference",
+    srcs = ["set-console-reference.ts"],
+    deps = [
+        ":interfaces_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/shared-utils:shared-utils_rjs",
+    ],
+)
+
+ts_project(
+    name = "utils",
+    srcs = [
+        "serialization-utils.ts",
+        "utils.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api:ng-debug-api_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "utils_test",
+    deps = [
+        ":utils_test_lib_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "utils_test_lib",
+    srcs = [
+        "serialization-utils.spec.ts",
+    ],
+    deps = [
+        ":utils_rjs",
+    ],
+)
+
+ts_project(
+    name = "version",
+    srcs = ["version.ts"],
+)
+
+ng_web_test_suite(
+    name = "client_event_subscribers_test",
+    deps = [
+        ":client_event_subscribers_test_lib_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "client_event_subscribers_test_lib",
+    srcs = [
+        "client-event-subscribers.spec.ts",
+    ],
+    deps = [
+        ":client_event_subscribers_rjs",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks:hooks_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/shared-utils:shared-utils_rjs",
+    ],
+)
+
+ts_project(
+    name = "client_event_subscribers",
+    srcs = ["client-event-subscribers.ts"],
+    deps = [
+        ":highlighter_rjs",
+        ":interfaces_rjs",
+        ":router_tree_rjs",
+        ":set_console_reference_rjs",
+        ":utils_rjs",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-inspector:component-inspector_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks:hooks_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api:ng-debug-api_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer:state-serializer_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/shared-utils:shared-utils_rjs",
+    ],
+)

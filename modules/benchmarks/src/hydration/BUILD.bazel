@@ -1,0 +1,40 @@
+load("//tools:defaults2.bzl", "ng_project", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "shared_lib",
+    srcs = [
+        "init.ts",
+        "table.ts",
+        "util.ts",
+    ],
+    tsconfig = "//modules/benchmarks:tsconfig_build",
+    deps = [
+        "//modules/benchmarks/src:util_lib_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+    ],
+)
+
+ts_project(
+    name = "perf_tests_lib",
+    testonly = 1,
+    srcs = ["hydration.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//modules:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
+    ],
+)
+
+ts_project(
+    name = "e2e_tests_lib",
+    testonly = 1,
+    srcs = ["hydration.e2e-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//modules:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
+    ],
+)

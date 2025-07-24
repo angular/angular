@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig-test.json",
+  "compilerOptions": {
+    "strict": true
+  }
+}

@@ -1,0 +1,41 @@
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_project(
+    name = "static",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/upgrade:upgrade_rjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "upgrade_static_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/upgrade:files_for_docgen",
+        "//packages/upgrade/src/common:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/upgrade/static",
+)

@@ -1,0 +1,93 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+UTILS = [
+    "linker/source_map_util.ts",
+]
+
+ts_project(
+    name = "test_utils",
+    testonly = True,
+    srcs = UTILS,
+    deps = [
+        "//:node_modules/source-map",
+        "//packages/compiler:compiler_rjs",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = UTILS + [
+            "**/*_node_only_spec.ts",
+        ],
+    ),
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        ":test_utils_rjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/locales:locales_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/rxjs-interop:rxjs-interop_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
+        "//packages/core/src/interface:interface_rjs",
+        "//packages/core/src/reflection:reflection_rjs",
+        "//packages/core/src/util:util_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/localize/init:init_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/private/testing:testing_rjs",
+        "//packages/router:router_rjs",
+        "//packages/router/testing:testing_rjs",
+    ],
+)
+
+ts_project(
+    name = "test_node_only_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*_node_only_spec.ts"],
+        exclude = UTILS,
+    ),
+    deps = [
+        ":test_lib_rjs",
+        ":test_utils_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/src/compiler:compiler_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/platform-server/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+        ":test_node_only_lib_rjs",
+    ],
+    shard_count = 4,
+)
+
+ng_web_test_suite(
+    name = "test_web",
+    external = ["@angular/platform-server"],
+    deps = [
+        ":test_lib_rjs",
+    ],
+)

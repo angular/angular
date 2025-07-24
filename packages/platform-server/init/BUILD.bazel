@@ -1,0 +1,50 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@devinfra//bazel/esbuild:index.bzl", "esbuild")
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "init",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = ["src/bundled-domino.d.ts"],
+    ),
+    deps = [
+        ":bundled_domino_lib",
+    ],
+)
+
+esbuild(
+    name = "bundled_domino",
+    entry_point = "@npm//:node_modules/domino/lib/index.js",
+    format = "esm",
+    output = "src/bundled-domino.mjs",
+    deps = ["@npm//domino"],
+)
+
+js_library(
+    name = "bundled_domino_lib",
+    srcs = [
+        "src/bundled-domino.d.ts",
+        ":bundled_domino",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "init",
+    tsconfig = "//packages:tsec_config",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)

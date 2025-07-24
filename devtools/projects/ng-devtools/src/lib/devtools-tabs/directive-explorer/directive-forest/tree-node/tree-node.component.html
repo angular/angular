@@ -1,0 +1,83 @@
+@let hydration = node().hydration;
+
+<div class="tree-node-info">
+  @if (node().expandable) {
+    <!-- We stop propagration on dblClick to prevent to show the element panel -->
+    <button
+      [style.left]="PADDING_LEFT_STEP * node().level + 'px'"
+      (click)="treeControl().toggle(node())"
+      (dblclick)="$event.stopPropagation()"
+      [attr.aria-label]="'Toggle ' + node().name"
+    >
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{ treeControl().isExpanded(node()) ? 'expand_more' : 'chevron_right' }}
+      </mat-icon>
+    </button>
+  }
+
+  <!-- The HTML should match directive-forest-utils/getFullNodeName output. -->
+  <div class="node-name" #nodeName>
+    <span
+      class="element-name"
+      [class.non-element]="!node().original.hasNativeElement"
+      [class.angular-element]="isElement()"
+      >{{ node().name }}</span
+    >
+    @if (node().directives) {
+      <span class="dir-names">{{ directivesArrayString() }}</span>
+    }
+  </div>
+
+  @if (node().onPush) {
+    <span class="on-push">OnPush</span>
+  }
+
+  @let defer = node().defer;
+
+  @if (!defer && (!hydration || hydration.status !== 'dehydrated')) {
+    <!-- Shown/hidden via CSS -->
+    <span class="console-reference"> == $ng0 </span>
+  }
+
+  @if (defer && defer.currentBlock) {
+    <span class="on-push">(&#64;{{defer.currentBlock}})</span>
+  }
+
+  @switch (hydration?.status) {
+    @case ('hydrated') {
+      <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
+    }
+    @case ('dehydrated') {
+      <mat-icon matTooltip="Dehydrated" class="hydration skipped">pending</mat-icon>
+    }
+
+    @case ('skipped') {
+      <mat-icon matTooltip="Hydration skipped" class="hydration skipped">
+        invert_colors_off
+      </mat-icon>
+    }
+    @case ('mismatched') {
+      <mat-icon matTooltip="Hydration mismatch" class="hydration mismatched">
+        error_outline
+      </mat-icon>
+    }
+  }
+</div>
+
+@if (
+  treeControl().isExpanded(node()) &&
+  hydration &&
+  hydration.status === 'mismatched' &&
+  (hydration.expectedNodeDetails || hydration.actualNodeDetails)
+) {
+  <div class="hydration-error">
+    @if (hydration.expectedNodeDetails) {
+      <div>Expected DOM:</div>
+      <pre>{{hydration.expectedNodeDetails}}</pre>
+    }
+    @if (hydration.actualNodeDetails) {
+      <div>Actual DOM:</div>
+      <pre>{{hydration.actualNodeDetails}}</pre>
+    }
+  </div>
+}

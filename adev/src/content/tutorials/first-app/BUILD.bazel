@@ -1,0 +1,31 @@
+load("//adev/shared-docs:index.bzl", "generate_guides", "generate_tutorial")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+generate_guides(
+    name = "first-app-guides",
+    srcs = glob(
+        [
+            "**/*.md",
+        ],
+        exclude = [
+            "**/node_modules/**/*.md",
+        ],
+    ),
+    data = [
+        ":files",
+    ],
+)
+
+filegroup(
+    name = "files",
+    srcs = glob(
+        ["**/*"],
+        exclude = ["**/*.md"],
+    ),
+)
+
+generate_tutorial(
+    name = "first-app",
+    tutorial_srcs = ":files",
+)

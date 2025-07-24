@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "short_name": "Angular DevTools",
+  "name": "Angular DevTools",
+  "description": "Angular DevTools extends Chrome DevTools adding Angular specific debugging and profiling capabilities.",
+  "version": "1.0.40",
+  "minimum_chrome_version": "102",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlm3JzpfmggVNDXe1uSVKq1btwWec4pOYefbB36CYj41bqUyw3xQqiAOCIlSAhl5GkQA/9PTixCNd14ix6RbI2yV8OeNt6oc0ca5BmEdGVj27lu32CgH5KbOc+AhyOAikoMq4IlgaWvqglZiyzd9KnL1wO/DqLDsZS0PV9oRwZk/8Eno2giZ1El4YQ5cNZ125JJR5z9KYAvxUs6bnDXAM71gW5sJwoUdgXQZhEIT18uSz0p2RiC0Ajjh4kx9c5Ll9naByXd3g5hjS8Ro5WbENRhxZtx1eEcgwC79l0pbJjI71i0QjbfLZn6syfHGMWsLyMc/ucv6d86tCPO8J1mU8iQIDAQAB",
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "action": {
+    "default_popup": "popups/not-angular.html",
+    "default_icon": {
+      "16": "assets/icon-bw16.png",
+      "48": "assets/icon-bw48.png",
+      "128": "assets/icon-bw128.png"
+    }
+  },
+  "devtools_page": "devtools.html",
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "app/backend_bundle.js",
+        "app/detect_angular_for_extension_icon_bundle.js"
+      ],
+      "matches": ["<all_urls>"],
+      "extension_ids": []
+    }
+  ],
+  "background": {
+    "service_worker": "app/background_bundle.js"
+  },
+  "permissions": [
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "app/ng_validate_bundle.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "app/content_script_bundle.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}

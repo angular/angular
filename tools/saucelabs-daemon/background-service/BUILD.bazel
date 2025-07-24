@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "nodejs_binary")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "background-service_lib",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//:browser-providers",
+        "//:node_modules/@types/node",
+        "//:node_modules/@types/selenium-webdriver4",
+        "//:node_modules/chalk",
+        "//:node_modules/selenium-webdriver4",
+        "//tools/saucelabs-daemon:saucelabs-daemon_rjs",
+    ],
+)
+
+nodejs_binary(
+    name = "background-service",
+    data = [
+        ":background-service_lib",
+        "//:sauce_connect",
+    ],
+    entry_point = ":cli.js",
+    templated_args = [
+        "$(rootpath //:sauce_connect)",
+    ],
+)

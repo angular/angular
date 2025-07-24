@@ -1,0 +1,79 @@
+{
+  "name": "@angular/compiler-cli",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the compiler CLI for Node.js",
+  "typings": "index.d.ts",
+  "bin": {
+    "ngc": "./bundles/src/bin/ngc.js",
+    "ng-xi18n": "./bundles/src/bin/ng_xi18n.js"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./bundles/index.js"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    },
+    "./linker": {
+      "types": "./linker/index.d.ts",
+      "default": "./bundles/linker/index.js"
+    },
+    "./linker/babel": {
+      "types": "./linker/babel/index.d.ts",
+      "default": "./bundles/linker/babel/index.js"
+    },
+    "./private/localize": {
+      "types": "./private/localize.d.ts",
+      "default": "./bundles/private/localize.js"
+    },
+    "./private/migrations": {
+      "types": "./private/migrations.d.ts",
+      "default": "./bundles/private/migrations.js"
+    },
+    "./private/tooling": {
+      "types": "./private/tooling.d.ts",
+      "default": "./bundles/private/tooling.js"
+    }
+  },
+  "dependencies": {
+    "@babel/core": "7.28.0",
+    "@jridgewell/sourcemap-codec": "^1.4.14",
+    "reflect-metadata": "^0.2.0",
+    "chokidar": "^4.0.0",
+    "convert-source-map": "^1.5.1",
+    "semver": "^7.0.0",
+    "tslib": "^2.3.0",
+    "yargs": "^18.0.0"
+  },
+  "peerDependencies": {
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "typescript": ">=5.8 <6.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/compiler-cli"
+  },
+  "keywords": [
+    "angular",
+    "compiler"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "homepage": "https://github.com/angular/angular/tree/main/packages/compiler-cli",
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  }
+}

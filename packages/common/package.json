@@ -1,0 +1,39 @@
+{
+  "name": "@angular/common",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - commonly needed directives and services",
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+  },
+  "locales": "locales",
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "exports": {
+    "./locales/global/*": {
+      "default": "./locales/global/*.js"
+    },
+    "./locales/*": {
+      "types": "./locales/*.d.ts",
+      "default": "./locales/*.js"
+    }
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "rxjs": "^6.5.3 || ^7.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/common"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": [
+    "**/global/*.js",
+    "**/closure-locale.*"
+  ]
+}

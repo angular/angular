@@ -1,0 +1,18 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "util",
+    srcs = glob([
+        "src/**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+        "//packages:types_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/incremental:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+    ],
+)

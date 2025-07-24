@@ -1,0 +1,74 @@
+load("//adev/shared-docs:defaults.bzl", "esbuild", "js_binary", "ts_project")
+
+package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
+
+esbuild(
+    name = "bin",
+    entry_point = ":index.mts",
+    format = "esm",
+    output = "bin.mjs",
+    platform = "node",
+    target = "es2022",
+    deps = [
+        ":render_api_to_html_lib_rjs",
+    ],
+)
+
+ts_project(
+    name = "render_api_to_html_lib",
+    srcs = glob(
+        [
+            "**/*.mts",
+            "**/*.tsx",
+            "shiki.d.ts",
+        ],
+        exclude = [
+            "entities.mts",
+        ],
+    ),
+    enable_runtime_rnjs_interop = True,
+    deps = [
+        ":entities_rjs",
+        "//adev:node_modules/@bazel/runfiles",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/html-entities",
+        "//adev:node_modules/marked",
+        "//adev:node_modules/preact",
+        "//adev:node_modules/preact-render-to-string",
+        "//adev:node_modules/prettier",
+        "//adev:node_modules/shiki",
+    ],
+)
+
+ts_project(
+    name = "entities",
+    srcs = [
+        "entities.mts",
+    ],
+    visibility = [
+        "//adev/shared-docs/pipeline/api-gen/rendering:__pkg__",
+        "//docs/pipeline/guides:__pkg__",
+    ],
+)
+
+# Action binary for the api_gen bazel rule.
+js_binary(
+    name = "render_api_to_html",
+    data = [
+        ":render_api_to_html_lib",
+    ],
+    entry_point = "bin.mjs",
+    # Do not use the NodeJS linker because:
+    #  - it's brittle and causes race conditions on Windows.
+    #  - it requires additional work to setup the runtime linker.
+    fixed_args = [
+        "--node_options=--preserve-symlinks-main",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# Expose the sources in the dev-infra NPM package.
+filegroup(
+    name = "files",
+    srcs = glob(["**/*"]),
+)

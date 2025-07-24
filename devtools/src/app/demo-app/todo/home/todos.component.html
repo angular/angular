@@ -1,0 +1,45 @@
+<a [routerLink]="">Home</a>
+<a [routerLink]="">Home</a>
+<a [routerLink]="">Home</a>
+<p>{{ 'Sample text processed by a pipe' | sample }}</p>
+<section class="todoapp">
+  <header class="header">
+    <h1 id="demo-app-title">{{title}}</h1>
+    <input
+      (keydown.enter)="addTodo(input)"
+      #input
+      class="new-todo"
+      placeholder="What needs to be done?"
+      autofocus
+    />
+  </header>
+  <section class="main">
+    <input id="toggle-all" class="toggle-all" type="checkbox" />
+    <label for="toggle-all">Mark all as complete</label>
+    <!--  {{slowBinding}}-->
+    <ul class="todo-list">
+      <!-- These are here just to show the structure of the list items -->
+      <!-- List items should get the class `editing` when editing and `completed` when marked as completed -->
+      @for (todo of todos | todosFilter: filterValue; track $index) {
+        <app-todo
+          appTooltip
+          [todo]="todo"
+          (delete)="onDelete($event)"
+          (update)="onChange($event)"
+        />
+      }
+    </ul>
+  </section>
+  <!-- This footer should hidden by default and shown when there are todos -->
+  <footer class="footer">
+    <!-- This should be `0 items left` by default -->
+    <span class="todo-count"
+      ><strong>{{ itemsLeft }}</strong> item left</span
+    >
+    <!-- Remove this if you don't implement routing -->
+    <!-- Hidden if no completed items are left ↓ -->
+    <button class="clear-completed" (click)="clearCompleted()">Clear completed</button>
+  </footer>
+</section>
+
+<recursive-component />

@@ -1,0 +1,45 @@
+{
+  "name": "@angular/core",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the core framework",
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+  },
+  "exports": {
+    "./schematics/*": {
+      "default": "./schematics/*.js"
+    },
+    "./event-dispatch-contract.min.js": {
+      "default": "./event-dispatch-contract.min.js"
+    }
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "rxjs": "^6.5.3 || ^7.4.0",
+    "zone.js": "~0.15.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular/compiler": {
+      "optional": true
+    },
+    "zone.js": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/core"
+  },
+  "ng-update": {
+    "migrations": "./schematics/migrations.json",
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "schematics": "./schematics/collection.json",
+  "sideEffects": false
+}

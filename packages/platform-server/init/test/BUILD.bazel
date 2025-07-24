@@ -1,0 +1,18 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/platform-server/init:bundled_domino_lib",
+        "//packages/platform-server/init:init_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)

@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_project(
+    name = "testing",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/core:core_rjs",
+        "//packages/platform-browser-dynamic:platform-browser-dynamic_rjs",
+        "//packages/platform-browser-dynamic/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "platform-server_testing_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/platform-server/testing",
+)

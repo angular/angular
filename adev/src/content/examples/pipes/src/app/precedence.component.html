@@ -1,0 +1,41 @@
+<!-- #docregion -->
+<!-- #docregion precedence -->
+<p>
+  In most cases, you'll wrap the entire ternary expression in parentheses before passing the result to a pipe.
+</p>
+
+<p>
+  Example: <code>(isLeft ? 'left' : 'right') | uppercase</code>
+  <b>
+    {{ (isLeft ? 'left' : 'right') | uppercase }}
+  </b>
+</p>
+<button type="button" (click)="toggleDirection()">Toggle 'isLeft'</button>
+
+
+<p>Without parentheses, only the second value is uppercased.</p>
+
+<p>Example: <code>isGood ? 'good' : 'bad' | uppercase</code>
+  <b>
+    {{ isGood ? 'good' : 'bad' | uppercase }}
+  </b>
+</p>
+
+<p>Same as: <code>isGood ? 'good' : ('bad' | uppercase)</code>
+  <b>
+    {{ isGood ? 'good' : ('bad' | uppercase) }}
+  </b>
+</p>
+<button type="button" (click)="toggleGood()">Toggle 'isGood'</button>
+
+
+<p>If only one of the values should be passed to a pipe,
+  be explicit and surround that value with parentheses.</p>
+
+<p>Example: <code>isUpper ? ('upper' | uppercase) : 'lower'</code>
+  <b>
+    {{ isUpper ? ('upper' | uppercase) : 'lower' }}
+  </b>
+</p>
+<button type="button" (click)="toggleCase()">Toggle 'isUpper'</button>
+<!-- #enddocregion precedence -->

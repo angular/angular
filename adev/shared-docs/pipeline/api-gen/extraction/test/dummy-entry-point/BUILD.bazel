@@ -1,0 +1,6 @@
+package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
+
+filegroup(
+    name = "dummy_package",
+    srcs = ["index.mts"],
+)

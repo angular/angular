@@ -1,0 +1,125 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should create style instructions on the element",
+      "inputFiles": [
+        "style_binding.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "style_binding.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should correctly count the total slots required when style/class bindings include interpolation",
+      "inputFiles": [
+        "binding_slots.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "binding_slots.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should place initial, multi, singular and application followed by attribute style instructions in the template code in that order",
+      "inputFiles": [
+        "binding_slots_interpolations.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "binding_slots_interpolations.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should assign a sanitizer instance to the element style allocation instruction if any url-based properties are detected",
+      "inputFiles": [
+        "style_ordering.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "style_ordering.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support [style.foo.suffix] style bindings with a suffix",
+      "inputFiles": [
+        "style_binding_suffixed.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "style_binding_suffixed.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not create instructions for empty style bindings",
+      "inputFiles": [
+        "empty_style_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "empty_style_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support style bindings with a colon at the start of the applied style",
+      "inputFiles": [
+        "colon_style.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "colon_style.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle duplicate style bindings",
+      "inputFiles": [
+        "duplicate_style_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should not mangle css custom property names",
+      "inputFiles": [
+        "css_custom_properties.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

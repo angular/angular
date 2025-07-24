@@ -1,0 +1,35 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "component-data-source",
+    srcs = ["index.ts"],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@types",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing:diffing_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "component_data_source_test",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":component-data-source_rjs",
+        "//:node_modules/@angular/cdk",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":component_data_source_test_rjs",
+    ],
+)

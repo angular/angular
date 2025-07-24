@@ -1,0 +1,30 @@
+load("//tools:defaults.bzl", "nodejs_binary")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+BIN_ENTRYPOINTS = [
+    "get-base-currencies-file",
+    "get-base-locale-file",
+    "get-closure-locale-file",
+    "write-locale-files-to-dist",
+]
+
+ts_project(
+    name = "bin",
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages/common/locales/generate-locales-tool:generate-locales-tool_rjs",
+    ],
+)
+
+[nodejs_binary(
+    name = entrypoint,
+    data = [
+        ":bin",
+        "@cldr_json_data//:all_json",
+        "@cldr_xml_data//:all_xml",
+    ],
+    entry_point = ":%s.js" % entrypoint,
+) for entrypoint in BIN_ENTRYPOINTS]

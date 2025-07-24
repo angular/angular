@@ -1,0 +1,29 @@
+load("//tools:defaults2.bzl", "ts_project", "zoneless_jasmine_test", "zoneless_web_test_suite")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//packages/core/primitives/dom-navigation/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib_rjs",
+    ],
+)

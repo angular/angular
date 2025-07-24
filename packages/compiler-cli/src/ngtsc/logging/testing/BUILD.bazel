@@ -1,0 +1,13 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "testing",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
+    ],
+)

@@ -1,0 +1,45 @@
+# Hydration Unsupported Projection of DOM Nodes
+
+This error means that during the server-side serialization process, Angular encountered nodes that were created outside of Angular's context (i.e. using native DOM APIs) and found those nodes were provided as projectable nodes. They were likely provided using `ViewContainerRef.createComponent` or `createComponent` APIs. Angular hydration does not support this use case.
+
+More information about hydration can be found in [this guide](guide/hydration).
+
+The following examples will trigger the error.
+
+```typescript
+@Component({
+  selector: 'dynamic',
+  template: `
+  <ng-content />
+`,
+})
+class DynamicComponent {
+}
+
+@Component({
+  selector: 'app',
+  template: `<div #target></div>`,
+})
+class SimpleComponent {
+  @ViewChild('target', {read: ViewContainerRef}) vcr!: ViewContainerRef;
+  envInjector = inject(EnvironmentInjector);
+
+  ngAfterViewInit() {
+    const div = document.createElement('div');
+    const p = document.createElement('p');
+    // In this test we create DOM nodes outside of Angular context
+    // (i.e. not using Angular APIs) and try to content-project them.
+    // This is an unsupported pattern and an exception will be thrown.
+    const compRef = createComponent(DynamicComponent, {
+      environmentInjector: this.envInjector,
+      projectableNodes: [[div, p]]
+    });
+  }
+}
+```
+
+## Debugging the error
+
+The error message in the developer console should contain information on a specific part of the application's DOM structure that is causing the problem. Review that part of the application for hydration-related errors, such as direct DOM manipulation using native APIs.
+
+You can add the `ngSkipHydration` attribute to your component host node as a possible workaround.

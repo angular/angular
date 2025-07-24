@@ -1,0 +1,33 @@
+{
+  "name": "@angular/language-service",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - language services",
+  "main": "./index.js",
+  "typings": "./index.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    },
+    "./api": {
+      "types": "./api.d.ts",
+      "default": "./api_bundle.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/language-service"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  }
+}

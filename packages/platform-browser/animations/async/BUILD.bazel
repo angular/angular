@@ -1,0 +1,48 @@
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//tools:defaults.bzl", "tsec_test")
+load("//tools:defaults2.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_project(
+    name = "async",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "async",
+    tsconfig = "//packages:tsec_config",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "platform-browser_animations_async_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/platform-browser/animations/async",
+)

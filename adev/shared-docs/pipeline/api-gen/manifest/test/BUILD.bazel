@@ -1,0 +1,41 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
+load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
+load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
+
+generate_api_manifest(
+    name = "test",
+    srcs = [
+        ":another_extraction",
+        "//adev/shared-docs/pipeline/api-gen/extraction/test",
+    ],
+)
+
+extract_api_to_json(
+    name = "another_extraction",
+    srcs = ["another-fake-source.mts"],
+    entry_point = "another-fake-source.mts",
+    module_name = "@angular/router",
+    output_name = "api.json",
+    private_modules = [""],
+    repo = "angular/angular",
+)
+
+ts_project(
+    name = "unit_test_lib",
+    testonly = True,
+    srcs = [
+        "manifest.spec.mts",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/compiler-cli",
+        "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib_rjs",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "unit_tests",
+    data = [
+        ":unit_test_lib_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
+    ],
+)

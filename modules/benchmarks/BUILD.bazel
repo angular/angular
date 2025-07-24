@@ -1,0 +1,17 @@
+load("//tools:defaults2.bzl", "ts_config")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig-build.json",
+)
+
+ts_config(
+    name = "tsconfig_e2e",
+    src = "tsconfig-e2e.json",
+    deps = [
+        "//modules:node_modules/@types/jasmine",
+        "//modules:node_modules/@types/node",
+    ],
+)

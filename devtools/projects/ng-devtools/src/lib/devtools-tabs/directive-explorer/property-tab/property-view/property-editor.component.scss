@@ -1,0 +1,23 @@
+@use '../../../../../styles/typography';
+
+.editor {
+  cursor: text;
+  border: none;
+  outline: none;
+  min-width: 100px;
+  white-space: pre;
+  width: fit-content;
+}
+
+.editor-input {
+  box-shadow: 0 0 0 1px var(--dynamic-transparent-01);
+}
+
+input {
+  @extend %monospaced;
+  line-height: 1rem;
+  letter-spacing: normal;
+  width: fit-content;
+  border: none;
+  outline: none;
+}

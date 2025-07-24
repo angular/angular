@@ -1,0 +1,25 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "visualizer-controls_styles",
+    src = "visualizer-controls.component.scss",
+)
+
+ng_project(
+    name = "visualizer-controls",
+    srcs = [
+        "visualizer-controls.component.ts",
+    ],
+    angular_assets = [
+        "visualizer-controls.component.html",
+        ":visualizer-controls_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)

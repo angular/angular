@@ -1,0 +1,52 @@
+/**
+ * Root tsconfig file for use building all Angular packages. Note there is no rootDir
+ * and therefore any tsconfig in the package directory will need to define its own
+ * rootDir.
+ */
+{
+  "compilerOptions": {
+    "declaration": true,
+    "stripInternal": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "strictPropertyInitialization": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "es2022",
+    "lib": ["es2020", "es2022", "dom", "dom.iterable"],
+    "skipLibCheck": true,
+    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
+    "types": [],
+    "experimentalDecorators": true,
+    // This is needed due to https://github.com/Microsoft/TypeScript/issues/17516.
+    // As tsickle will lower decorators before TS, this is not a problem for our build.
+    "emitDecoratorMetadata": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "importHelpers": true,
+    "paths": {
+      "angular-in-memory-web-api": ["./misc/angular-in-memory-web-api/index"],
+      "@angular/*": ["./*/index"],
+      "@angular/common/locales/*": ["./common/locales/*"],
+      "@angular/compiler-cli": ["./compiler-cli"],
+      "@angular/compiler-cli/*": ["./compiler-cli/*"],
+      "@angular/compiler-cli/src/ngtsc/reflection":  ["./compiler-cli/src/ngtsc/reflection/index"],
+      "@angular/compiler-cli/src/ngtsc/metadata":  ["./compiler-cli/src/ngtsc/metadata/index"],
+      "@angular/compiler-cli/private/migrations":  ["./compiler-cli/private/migrations"],
+      "@angular/core/schematics/utils/tsurge/*": ["./core/schematics/utils/tsurge/*"]
+    }
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "typeCheckHostBindings": true
+  }
+}

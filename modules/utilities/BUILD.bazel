@@ -1,0 +1,21 @@
+load("//tools:defaults2.bzl", "ts_config", "ts_project")
+
+package(default_visibility = ["//modules:__subpackages__"])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+)
+
+ts_project(
+    name = "utilities",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//modules/utilities:tsconfig_build",
+    deps = [
+        "//modules:node_modules/@angular/benchpress",
+        "//modules:node_modules/@types/node",
+        "//modules:node_modules/@types/selenium-webdriver",
+        "//modules:node_modules/protractor",
+        "//modules:node_modules/selenium-webdriver",
+    ],
+)

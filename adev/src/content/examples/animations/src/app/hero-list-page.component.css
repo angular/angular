@@ -1,0 +1,80 @@
+.heroes {
+  margin: 0 0 2em 0;
+  list-style-type: none;
+  padding: 0;
+  width: 15em;
+}
+
+.heroes li {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.heroes .inner {
+  flex: 1;
+  background-color: #EEE;
+  margin: .5em;
+  padding: 0;
+  border-radius: 4px;
+  display: flex;
+  align-items: stretch;
+}
+
+.heroes button.inner {
+  cursor: pointer;
+  font-size: inherit;
+}
+
+.heroes button.inner:hover {
+  color: #2c3a41;
+  background-color: #e6e6e6;
+  left: .1em;
+}
+
+.heroes button.inner:active {
+  background-color: #525252;
+  color: #fafafa;
+}
+
+.heroes button.inner.selected {
+  background-color: black;
+  color: white;
+}
+
+.heroes button.inner.selected:hover {
+  background-color: #505050;
+  color: white;
+}
+
+.heroes button.inner.selected:active {
+  background-color: black;
+  color: white;
+}
+
+.heroes .badge {
+  display: inline-block;
+  font-size: small;
+  color: white;
+  padding: 0.8em 0.7em 0 0.7em;
+  background-color: #405061;
+  line-height: 1em;
+  margin-right: .8em;
+  border-radius: 4px 0 0 4px;
+}
+
+.heroes .name {
+  min-width: max-content;
+  padding: 0.5rem 0;
+}
+
+label {
+  display: block;
+  padding-bottom: .5rem;
+}
+
+input {
+  font-size: 100%;
+  margin-bottom: 1rem;
+}

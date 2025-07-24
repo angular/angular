@@ -1,0 +1,27 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["suffix_not_supported_spec.ts"],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended:extended_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported:suffix_not_supported_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/testing:testing_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+        "//packages/core:npm_package",
+    ],
+)

@@ -1,0 +1,38 @@
+load("//integration/ng-modules-importability:index.bzl", "module_test")
+load("//tools:defaults2.bzl", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.mts"]),
+    data = [
+        "//packages:package_json",
+    ],
+    tsconfig = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+        "//integration:node_modules/@angular/compiler-cli",
+    ],
+)
+
+module_test(
+    name = "test",
+    npm_packages = {
+        "//packages/animations:npm_package": "packages/animations/npm_package",
+        "//packages/common:npm_package": "packages/common/npm_package",
+        "//packages/core:npm_package": "packages/core/npm_package",
+        "//packages/elements:npm_package": "packages/elements/npm_package",
+        "//packages/forms:npm_package": "packages/forms/npm_package",
+        "//packages/localize:npm_package": "packages/localize/npm_package",
+        "//packages/platform-browser:npm_package": "packages/platform-browser/npm_package",
+        "//packages/router:npm_package": "packages/router/npm_package",
+        "//packages/service-worker:npm_package": "packages/service-worker/npm_package",
+        "//packages/upgrade:npm_package": "packages/upgrade/npm_package",
+    },
+    shard_count = 4,
+    skipped_entry_points = [
+        # Core does not expose any modules and just needs to be made available.
+        "@angular/core",
+    ],
+)

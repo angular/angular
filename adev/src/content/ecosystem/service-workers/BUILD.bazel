@@ -1,0 +1,12 @@
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "service-workers",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/content/examples",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)

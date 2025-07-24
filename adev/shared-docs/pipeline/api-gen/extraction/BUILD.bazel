@@ -1,0 +1,37 @@
+load("//adev/shared-docs:defaults.bzl", "js_binary", "ts_project")
+
+package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
+
+ts_project(
+    name = "extract_api_to_json_lib",
+    srcs = glob(
+        ["**/*.mts"],
+        exclude = [
+            "**/*.spec.mts",
+        ],
+    ),
+    deps = [
+        # TODO(rules_js): Explore how this could work alternatively at runtime with the module names.
+        "//adev/shared-docs/pipeline/api-gen:node_modules/@angular/compiler-cli",
+        "//adev/shared-docs/pipeline/api-gen:node_modules/@angular/compiler",
+        "//adev:node_modules/@bazel/runfiles",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/typescript",
+    ],
+)
+
+# Action binary for the api_gen bazel rule.
+js_binary(
+    name = "extract_api_to_json",
+    data = [
+        ":extract_api_to_json_lib_rjs",
+    ],
+    entry_point = ":index.mjs",
+    visibility = ["//visibility:public"],
+)
+
+# Expose the sources in the dev-infra NPM package.
+filegroup(
+    name = "files",
+    srcs = glob(["**/*"]),
+)

@@ -1,0 +1,198 @@
+{
+  "name": "new",
+  "command": "ng new [name]",
+  "shortDescription": "Creates a new Angular workspace.",
+  "longDescriptionRelativePath": "@angular/cli/src/commands/new/long-description.md",
+  "longDescription": "Creates and initializes a new Angular application that is the default project for a new workspace.\n\nProvides interactive prompts for optional configuration, such as adding routing support.\nAll prompts can safely be allowed to default.\n\n- The new workspace folder is given the specified project name, and contains configuration files at the top level.\n\n- By default, the files for a new initial application (with the same name as the workspace) are placed in the `src/` subfolder.\n- The new application's configuration appears in the `projects` section of the `angular.json` workspace configuration file, under its project name.\n\n- Subsequent applications that you generate in the workspace reside in the `projects/` subfolder.\n\nIf you plan to have multiple applications in the workspace, you can create an empty workspace by using the `--no-create-application` option.\nYou can then use `ng generate application` to create an initial application.\nThis allows a workspace name different from the initial app name, and ensures that all applications reside in the `/projects` subfolder, matching the structure of the configuration file.\n",
+  "aliases": [
+    "n"
+  ],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "collection",
+      "type": "string",
+      "aliases": [
+        "c"
+      ],
+      "description": "A collection of schematics to use in generating the initial application."
+    },
+    {
+      "name": "commit",
+      "type": "boolean",
+      "default": true,
+      "description": "Configure the initial Git commit for the new repository."
+    },
+    {
+      "name": "create-application",
+      "type": "boolean",
+      "default": true,
+      "description": "Create a new initial application project in the new workspace. When false, creates an empty workspace with no initial application. You can then use the `ng generate application` command to create applications in the `projects` directory."
+    },
+    {
+      "name": "defaults",
+      "type": "boolean",
+      "default": false,
+      "description": "Disable interactive input prompts for options with a default."
+    },
+    {
+      "name": "directory",
+      "type": "string",
+      "description": "The directory where the new workspace and project should be created. If not specified, the workspace will be created in the current directory."
+    },
+    {
+      "name": "dry-run",
+      "type": "boolean",
+      "aliases": [
+        "d"
+      ],
+      "default": false,
+      "description": "Run through and reports activity without writing out results."
+    },
+    {
+      "name": "force",
+      "type": "boolean",
+      "default": false,
+      "description": "Force overwriting of existing files."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "inline-style",
+      "type": "boolean",
+      "aliases": [
+        "s"
+      ],
+      "description": "Include the styles for the initial application's root component directly within the `app.component.ts` file. By default, a separate stylesheet file (e.g., `app.component.css`) is created."
+    },
+    {
+      "name": "inline-template",
+      "type": "boolean",
+      "aliases": [
+        "t"
+      ],
+      "description": "Include the HTML template for the initial application's root component directly within the `app.component.ts` file. By default, a separate template file (e.g., `app.component.html`) is created."
+    },
+    {
+      "name": "interactive",
+      "type": "boolean",
+      "default": true,
+      "description": "Enable interactive input prompts."
+    },
+    {
+      "name": "minimal",
+      "type": "boolean",
+      "default": false,
+      "description": "Generate a minimal Angular workspace without any testing frameworks. This is intended for learning purposes and simple experimentation, not for production applications."
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "description": "The name for the new workspace and the initial project. This name will be used for the root directory and various identifiers throughout the project.",
+      "positional": 0
+    },
+    {
+      "name": "new-project-root",
+      "type": "string",
+      "default": "projects",
+      "description": "The path where new projects will be created within the workspace, relative to the workspace root. By default, new projects are created in the `projects` directory."
+    },
+    {
+      "name": "package-manager",
+      "type": "string",
+      "enum": [
+        "npm",
+        "yarn",
+        "pnpm",
+        "cnpm",
+        "bun"
+      ],
+      "description": "The package manager used to install dependencies."
+    },
+    {
+      "name": "prefix",
+      "type": "string",
+      "aliases": [
+        "p"
+      ],
+      "default": "app",
+      "description": "The prefix to apply to generated selectors for the initial project. For example, if the prefix is `my-app` and you generate a component named `my-component`, the selector will be `my-app-my-component`."
+    },
+    {
+      "name": "routing",
+      "type": "boolean",
+      "description": "Enable routing in the initial application project. This sets up the necessary files and modules for managing navigation between different views in your application."
+    },
+    {
+      "name": "skip-git",
+      "type": "boolean",
+      "aliases": [
+        "g"
+      ],
+      "default": false,
+      "description": "Do not initialize a Git repository in the new workspace. By default, a Git repository is initialized to help you track changes to your project."
+    },
+    {
+      "name": "skip-install",
+      "type": "boolean",
+      "default": false,
+      "description": "Skip the automatic installation of packages. You will need to manually install the dependencies later."
+    },
+    {
+      "name": "skip-tests",
+      "type": "boolean",
+      "aliases": [
+        "S"
+      ],
+      "default": false,
+      "description": "Skip the generation of unit test files `spec.ts`."
+    },
+    {
+      "name": "ssr",
+      "type": "boolean",
+      "description": "Configure the initial application for Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering)."
+    },
+    {
+      "name": "standalone",
+      "type": "boolean",
+      "default": true,
+      "description": "Creates an application based upon the standalone API, without NgModules."
+    },
+    {
+      "name": "strict",
+      "type": "boolean",
+      "default": true,
+      "description": "Enable stricter type checking and stricter bundle budgets settings. This setting helps improve maintainability and catch bugs ahead of time. For more information, see https://angular.dev/tools/cli/template-typecheck#strict-mode"
+    },
+    {
+      "name": "style",
+      "type": "string",
+      "enum": [
+        "css",
+        "scss",
+        "sass",
+        "less"
+      ],
+      "description": "The type of stylesheet files to be created for components in the initial project."
+    },
+    {
+      "name": "view-encapsulation",
+      "type": "string",
+      "enum": [
+        "Emulated",
+        "None",
+        "ShadowDom"
+      ],
+      "description": "Sets the view encapsulation mode for components in the initial project. This determines how component styles are scoped and applied. Options include: `Emulated` (default, styles are scoped to the component), `None` (styles are global), and `ShadowDom` (styles are encapsulated using Shadow DOM)."
+    },
+    {
+      "name": "zoneless",
+      "type": "boolean",
+      "default": false,
+      "description": "Create an initial application that does not utilize `zone.js`."
+    }
+  ]
+}

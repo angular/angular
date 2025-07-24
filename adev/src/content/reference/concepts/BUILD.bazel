@@ -1,0 +1,9 @@
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "concepts",
+    srcs = glob([
+        "*.md",
+    ]),
+    visibility = ["//adev:__subpackages__"],
+)

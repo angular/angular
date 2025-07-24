@@ -1,0 +1,81 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@npm2//:defs.bzl", "npm_link_all_packages")
+load("//:yarn.bzl", "YARN_PATH")
+load("//tools:defaults.bzl", "nodejs_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "LICENSE",
+    "karma-js.conf.js",
+    "browser-providers.conf.js",
+    YARN_PATH,
+    "package.json",
+    "angular.json",
+])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+filegroup(
+    # filegroup is needed so that this package.json file can be a dep
+    # in a js_library target, which doesn't allow source file deps
+    name = "package_json",
+    srcs = ["package.json"],
+)
+
+alias(
+    name = "tsconfig.json",
+    actual = "//packages:tsconfig-build.json",
+)
+
+js_library(
+    name = "browser-providers",
+    srcs = [
+        "browser-providers.conf.d.ts",
+        "browser-providers.conf.js",
+    ],
+)
+
+copy_to_bin(
+    name = "angularjs_scripts",
+    srcs = [
+        # We also declare the unminified AngularJS files since these can be used for
+        # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
+        "//:node_modules/angular-1.5",
+        "//:node_modules/angular-1.6",
+        "//:node_modules/angular-1.7",
+        "//:node_modules/angular-mocks-1.5",
+        "//:node_modules/angular-mocks-1.6",
+        "//:node_modules/angular-mocks-1.7",
+        "//:node_modules/angular-mocks-1.8",
+        "//:node_modules/angular-1.8",
+    ],
+)
+
+# Detect if the build is running under --stamp
+config_setting(
+    name = "stamp",
+    values = {"stamp": "true"},
+)
+
+nodejs_binary(
+    name = "yarn_vendored",
+    data = [".yarn/releases/yarn-1.22.22.cjs"],
+    entry_point = ".yarn/releases/yarn-1.22.22.cjs",
+    visibility = [
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+    ],
+)
+
+alias(
+    name = "sauce_connect",
+    actual = select({
+        "@devinfra//bazel/constraints:linux_x64": "@sauce_connect_linux_amd64//:bin/sc",
+        "@devinfra//bazel/constraints:macos_x64": "@sauce_connect_mac//:bin/sc",
+        "@devinfra//bazel/constraints:macos_arm64": "@sauce_connect_mac//:bin/sc",
+    }),
+)

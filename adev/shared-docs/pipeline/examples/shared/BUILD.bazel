@@ -1,0 +1,16 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "shared",
+    srcs = glob(
+        [
+            "*.mts",
+        ],
+    ),
+    enable_runtime_rnjs_interop = True,
+    deps = [
+        "//adev:node_modules/@types/node",
+    ],
+)

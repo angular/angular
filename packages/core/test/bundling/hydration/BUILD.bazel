@@ -1,0 +1,49 @@
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
+
+package(default_visibility = ["//visibility:public"])
+
+optimize_angular_app(
+    name = "bundles",
+    srcs = [
+        "main.ts",
+    ],
+    env = {
+        "NG_BUILD_MANGLE": "0",
+    },
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//packages/core/test/bundling:node_modules/@angular/build",
+        "//packages/core/test/bundling:node_modules/@angular/common",
+        "//packages/core/test/bundling:node_modules/@angular/core",
+        "//packages/core/test/bundling:node_modules/@angular/platform-browser",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*_spec.ts"]),
+    deps = [
+        "//:node_modules/@bazel/runfiles",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":bundles",
+        ":test_lib_rjs",
+    ],
+)
+
+js_expected_symbol_test(
+    name = "symbol_test",
+    bundles_dir = ":bundles",
+    golden = ":bundle.golden_symbols.json",
+)

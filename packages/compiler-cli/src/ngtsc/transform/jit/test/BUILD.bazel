@@ -1,0 +1,26 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = [
+        "downlevel_decorators_transform_spec.ts",
+        "initializer_api_transforms_spec.ts",
+        "signal_queries_metadata_transform_spec.ts",
+    ],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler-cli/src/ngtsc/imports:imports_rjs",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator:partial_evaluator_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/compiler-cli/src/ngtsc/transform/jit:jit_rjs",
+        "//packages/compiler-cli/test:test_utils_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)

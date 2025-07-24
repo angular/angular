@@ -1,0 +1,58 @@
+load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
+load("//tools:defaults2.bzl", "ng_package", "npm_package", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+rules_js_tsconfig(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_project(
+    name = "benchpress",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//packages:types_rjs",
+        "//packages/core:core_rjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "README.md",
+        "package.json",
+    ],
+    externals = [
+        "@angular/core",
+        "reflect-metadata",
+    ],
+    package = "@angular/benchpress",
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+    ],
+    deps = [
+        ":benchpress_rjs",
+    ],
+)
+
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
+)

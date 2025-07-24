@@ -1,0 +1,33 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "shared-utils",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "src/test.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ts_test_library(
+    name = "shared_utils_test",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":shared-utils_rjs",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":shared_utils_test_rjs",
+    ],
+)

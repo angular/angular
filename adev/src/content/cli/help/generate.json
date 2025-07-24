@@ -1,0 +1,1001 @@
+{
+  "name": "generate",
+  "command": "ng generate <schematic>",
+  "shortDescription": "Generates and/or modifies files based on a schematic.",
+  "aliases": [
+    "g"
+  ],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "defaults",
+      "type": "boolean",
+      "default": false,
+      "description": "Disable interactive input prompts for options with a default."
+    },
+    {
+      "name": "dry-run",
+      "type": "boolean",
+      "aliases": [
+        "d"
+      ],
+      "default": false,
+      "description": "Run through and reports activity without writing out results."
+    },
+    {
+      "name": "force",
+      "type": "boolean",
+      "default": false,
+      "description": "Force overwriting of existing files."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "interactive",
+      "type": "boolean",
+      "default": true,
+      "description": "Enable interactive input prompts."
+    },
+    {
+      "name": "schematic",
+      "type": "string",
+      "description": "The [collection:schematic] to run.",
+      "positional": 0
+    }
+  ],
+  "subcommands": [
+    {
+      "name": "app-shell",
+      "command": "app-shell",
+      "shortDescription": "Configures your project to generate an app-shell during build time.",
+      "options": [
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the app-shell should be generated."
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "application",
+      "command": "application [name]",
+      "shortDescription": "Generates a new Angular application within your workspace. This schematic sets up the foundational structure of your project, including the root component, module, and configuration files. You can customize various aspects of the application, such as routing, styling, and testing.",
+      "options": [
+        {
+          "name": "inline-style",
+          "type": "boolean",
+          "aliases": [
+            "s"
+          ],
+          "description": "Include the styles for the root component directly within the `app.component.ts` file. Only CSS styles can be included inline. By default, a separate stylesheet file (e.g., `app.component.css`) is created."
+        },
+        {
+          "name": "inline-template",
+          "type": "boolean",
+          "aliases": [
+            "t"
+          ],
+          "description": "Include the HTML template for the root component directly within the `app.component.ts` file. By default, a separate template file (e.g., `app.component.html`) is created."
+        },
+        {
+          "name": "minimal",
+          "type": "boolean",
+          "default": false,
+          "description": "Generate a minimal project without any testing frameworks. This is intended for learning purposes and simple experimentation, not for production applications."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new application. This name will be used for the project directory and various identifiers throughout the application's code.",
+          "positional": 0
+        },
+        {
+          "name": "prefix",
+          "type": "string",
+          "aliases": [
+            "p"
+          ],
+          "default": "app",
+          "description": "A prefix to be added to the selectors of components generated within this application. For example, if the prefix is `my-app` and you generate a component named `my-component`, the selector will be `my-app-my-component`."
+        },
+        {
+          "name": "project-root",
+          "type": "string",
+          "description": "The directory where the new application's files will be created, relative to the workspace root. If not specified, the application will be created in a subfolder within the `projects` directory, using the application's name."
+        },
+        {
+          "name": "routing",
+          "type": "boolean",
+          "default": true,
+          "description": "Generate an application with routing already configured. This sets up the necessary files and modules for managing navigation between different views in your application."
+        },
+        {
+          "name": "skip-install",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the automatic installation of packages. You will need to manually install the dependencies later."
+        },
+        {
+          "name": "skip-package-json",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not add dependencies to the `package.json` file."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "aliases": [
+            "S"
+          ],
+          "default": false,
+          "description": "Skip the generation of a unit test files `spec.ts`."
+        },
+        {
+          "name": "ssr",
+          "type": "boolean",
+          "default": false,
+          "description": "Configure the application for Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering)."
+        },
+        {
+          "name": "standalone",
+          "type": "boolean",
+          "default": true,
+          "description": "Create an application that utilizes the standalone API, eliminating the need for NgModules. This can simplify the structure of your application."
+        },
+        {
+          "name": "strict",
+          "type": "boolean",
+          "default": true,
+          "description": "Enable stricter bundle budget settings for the application. This helps to keep your application's bundle size small and improve performance. For more information, see https://angular.dev/tools/cli/template-typecheck#strict-mode"
+        },
+        {
+          "name": "style",
+          "type": "string",
+          "default": "css",
+          "enum": [
+            "css",
+            "scss",
+            "sass",
+            "less"
+          ],
+          "description": "The type of stylesheet files to be created for components in the application."
+        },
+        {
+          "name": "view-encapsulation",
+          "type": "string",
+          "enum": [
+            "Emulated",
+            "None",
+            "ShadowDom"
+          ],
+          "description": "Sets the view encapsulation mode for the application's components. This determines how component styles are scoped and applied."
+        },
+        {
+          "name": "zoneless",
+          "type": "boolean",
+          "default": false,
+          "description": "Generate an application that does not use `zone.js`."
+        }
+      ],
+      "aliases": [
+        "app"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "class",
+      "command": "class [name]",
+      "shortDescription": "Creates a new class in your project. Classes are the fundamental building blocks for object-oriented programming in TypeScript. They provide a blueprint for creating objects with properties and methods. This schematic helps you generate a new class with the basic structure and optional test files.",
+      "options": [
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new class. This will be used to create the class file (e.g., `my-class.ts`) and, if enabled, the corresponding test file `my-class.spec.ts`.",
+          "positional": 0
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the class should be added. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the generation of a unit test file `spec.ts` for the new class."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "Adds a custom type to the filename, allowing you to create more descriptive class names. For example, if you set the type to `helper`, the filename will be `my-class.helper.ts`."
+        }
+      ],
+      "aliases": [
+        "cl"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "component",
+      "command": "component [name]",
+      "shortDescription": "Creates a new Angular component. Components are the basic building blocks of Angular applications. Each component consists of a TypeScript class, an HTML template, and an optional CSS stylesheet. Use this schematic to generate a new component in your project.",
+      "options": [
+        {
+          "name": "change-detection",
+          "type": "string",
+          "aliases": [
+            "c"
+          ],
+          "default": "Default",
+          "enum": [
+            "Default",
+            "OnPush"
+          ],
+          "description": "Configures the change detection strategy for the component."
+        },
+        {
+          "name": "display-block",
+          "type": "boolean",
+          "aliases": [
+            "b"
+          ],
+          "default": false,
+          "description": "Adds `:host { display: block; }` to the component's stylesheet, ensuring the component renders as a block-level element. This is useful for layout purposes."
+        },
+        {
+          "name": "export",
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically export the component from the specified NgModule, making it accessible to other modules in the application."
+        },
+        {
+          "name": "export-default",
+          "type": "boolean",
+          "default": false,
+          "description": "Use a default export for the component in its TypeScript file instead of a named export."
+        },
+        {
+          "name": "flat",
+          "type": "boolean",
+          "default": false,
+          "description": "Create the component files directly in the project's `src/app` directory instead of creating a new folder for them."
+        },
+        {
+          "name": "inline-style",
+          "type": "boolean",
+          "aliases": [
+            "s"
+          ],
+          "default": false,
+          "description": "Include the component's styles directly in the `component.ts` file. By default, a separate stylesheet file (e.g., `my-component.css`) is created."
+        },
+        {
+          "name": "inline-template",
+          "type": "boolean",
+          "aliases": [
+            "t"
+          ],
+          "default": false,
+          "description": "Include the component's HTML template directly in the `component.ts` file. By default, a separate template file (e.g., `my-component.html`) is created."
+        },
+        {
+          "name": "module",
+          "type": "string",
+          "aliases": [
+            "m"
+          ],
+          "description": "Specify the NgModule where the component should be declared. If not provided, the CLI will attempt to find the closest NgModule in the component's path."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new component. This will be used to create the component's class, template, and stylesheet files. For example, if you provide `my-component`, the files will be named `my-component.ts`, `my-component.html`, and `my-component.css`.",
+          "positional": 0
+        },
+        {
+          "name": "ng-html",
+          "type": "boolean",
+          "default": false,
+          "description": "Generate component template files with an '.ng.html' file extension instead of '.html'."
+        },
+        {
+          "name": "prefix",
+          "type": "string",
+          "aliases": [
+            "p"
+          ],
+          "description": "A prefix to be added to the component's selector. For example, if the prefix is `app` and the component name is `my-component`, the selector will be `app-my-component`."
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the component should be added. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "selector",
+          "type": "string",
+          "description": "The HTML selector to use for this component. If not provided, a selector will be generated based on the component name (e.g., `app-my-component`)."
+        },
+        {
+          "name": "skip-import",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not automatically import the new component into its closest NgModule."
+        },
+        {
+          "name": "skip-selector",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the generation of an HTML selector for the component."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the generation of unit test files `spec.ts`."
+        },
+        {
+          "name": "standalone",
+          "type": "boolean",
+          "default": true,
+          "description": "Generate a standalone component. Standalone components are self-contained and don't need to be declared in an NgModule. They can be used independently or imported directly into other standalone components."
+        },
+        {
+          "name": "style",
+          "type": "string",
+          "default": "css",
+          "enum": [
+            "css",
+            "scss",
+            "sass",
+            "less",
+            "none"
+          ],
+          "description": "Specify the type of stylesheet to be created for the component, or `none` to skip creating a stylesheet."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "Append a custom type to the component's filename. For example, if you set the type to `container`, the file will be named `my-component.container.ts`."
+        },
+        {
+          "name": "view-encapsulation",
+          "type": "string",
+          "aliases": [
+            "v"
+          ],
+          "enum": [
+            "Emulated",
+            "None",
+            "ShadowDom"
+          ],
+          "description": "Sets the view encapsulation mode for the component. This determines how the component's styles are scoped and applied."
+        }
+      ],
+      "aliases": [
+        "c"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "config",
+      "command": "config [type]",
+      "shortDescription": "Generates configuration files for your project. These files control various aspects of your project's build process, testing, and browser compatibility. This schematic helps you create or update essential configuration files with ease.",
+      "options": [
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the configuration file should be created or updated."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "enum": [
+            "karma",
+            "browserslist"
+          ],
+          "description": "Specifies the type of configuration file to generate.",
+          "positional": 0
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "directive",
+      "command": "directive [name]",
+      "shortDescription": "Creates a new directive in your project. Directives are used to extend the behavior or appearance of HTML elements and components. They allow you to manipulate the DOM, add custom attributes, and respond to events. This schematic generates the necessary files and boilerplate code for a new directive.",
+      "options": [
+        {
+          "name": "export",
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically export the directive from the specified NgModule, making it accessible to other modules in the application."
+        },
+        {
+          "name": "flat",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates the new directive files at the top level of the current project. If set to false, a new folder with the directive's name will be created to contain the files."
+        },
+        {
+          "name": "module",
+          "type": "string",
+          "aliases": [
+            "m"
+          ],
+          "description": "Specify the NgModule where the directive should be declared. If not provided, the CLI will attempt to find the closest NgModule in the directive's path."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new directive. This will be used to create the directive's class and spec files (e.g., `my-directive.directive.ts` and `my-directive.directive.spec.ts`).",
+          "positional": 0
+        },
+        {
+          "name": "prefix",
+          "type": "string",
+          "aliases": [
+            "p"
+          ],
+          "description": "A prefix to be added to the directive's selector. For example, if the prefix is `app` and the directive name is `highlight`, the selector will be `appHighlight`."
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the directive should be added. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "selector",
+          "type": "string",
+          "description": "The HTML selector to use for this directive. If not provided, a selector will be generated based on the directive's name (e.g., `appHighlight`)."
+        },
+        {
+          "name": "skip-import",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not automatically import the new directive into its closest NgModule."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the generation of a unit test file `spec.ts` for the new directive."
+        },
+        {
+          "name": "standalone",
+          "type": "boolean",
+          "default": true,
+          "description": "Generate a standalone directive. Standalone directives are self-contained and don't need to be declared in an NgModule. They can be used independently or imported directly into other standalone components or directives."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "Append a custom type to the directive's filename. For example, if you set the type to `directive`, the file will be named `example.directive.ts`."
+        }
+      ],
+      "aliases": [
+        "d"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "enum",
+      "command": "enum [name]",
+      "shortDescription": "Creates a new enum in your project. Enums (enumerations) are a way to define a set of named constants, making your code more readable and maintainable. This schematic generates a new enum with the specified name and type.",
+      "options": [
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new enum. This will be used to create the enum file (e.g., `my-enum.enum.ts`).",
+          "positional": 0
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the enum should be created. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "Adds a custom type to the filename, allowing you to create more descriptive enum names. For example, if you set the type to `status`, the filename will be `my-enum.status.ts`."
+        }
+      ],
+      "aliases": [
+        "e"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "environments",
+      "command": "environments",
+      "shortDescription": "Generates and configures environment files for your project. Environment files allow you to define different settings and configurations for various environments, such as development, testing, and production. This schematic helps you create and manage these files, making it easier to customize your application's behavior for each environment.",
+      "options": [
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the environment files should be created or updated."
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "guard",
+      "command": "guard [name]",
+      "shortDescription": "Creates a new route guard in your project. Route guards are used to control access to parts of your application by checking certain conditions before a route is activated. This schematic generates a new guard with the specified name, type, and options.",
+      "options": [
+        {
+          "name": "flat",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates the new guard files at the top level of the current project. If set to false, a new folder with the guard's name will be created to contain the files."
+        },
+        {
+          "name": "functional",
+          "type": "boolean",
+          "default": true,
+          "description": "Generate the guard as a function instead of a class. Functional guards can be simpler for basic scenarios."
+        },
+        {
+          "name": "implements",
+          "type": "array",
+          "aliases": [
+            "guardType"
+          ],
+          "description": "Specifies the type(s) of guard to create. You can choose one or more of the following: `CanActivate` (controls access to a route), `CanActivateChild` (controls access to child routes), `CanDeactivate` (asks for confirmation before leaving a route), `CanMatch` (determines if a route can be matched)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new route guard. This will be used to create the guard's class and spec files (e.g., `my-guard.guard.ts` and `my-guard.guard.spec.ts`).",
+          "positional": 0
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the guard should be created. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the generation of a unit test file `spec.ts` for the new guard."
+        },
+        {
+          "name": "type-separator",
+          "type": "string",
+          "default": "-",
+          "enum": [
+            "-",
+            "."
+          ],
+          "description": "The separator character to use before the type within the generated file's name. For example, if you set the option to `.`, the file will be named `example.guard.ts`."
+        }
+      ],
+      "aliases": [
+        "g"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "interceptor",
+      "command": "interceptor [name]",
+      "shortDescription": "Creates a new interceptor in your project. Interceptors are used to intercept and modify HTTP requests and responses before they reach their destination. This allows you to perform tasks like adding authentication headers, handling errors, or logging requests. This schematic generates the necessary files and boilerplate code for a new interceptor.",
+      "options": [
+        {
+          "name": "flat",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates the new interceptor files at the top level of the current project. If set to false, a new folder with the interceptor's name will be created to contain the files."
+        },
+        {
+          "name": "functional",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates the interceptor as a function `HttpInterceptorFn` instead of a class. Functional interceptors can be simpler for basic scenarios."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new interceptor. This will be used to create the interceptor's class and spec files (e.g., `my-interceptor.interceptor.ts` and `my-interceptor.interceptor.spec.ts`).",
+          "positional": 0
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the interceptor should be created. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the generation of a unit test file `spec.ts` for the new interceptor."
+        },
+        {
+          "name": "type-separator",
+          "type": "string",
+          "default": "-",
+          "enum": [
+            "-",
+            "."
+          ],
+          "description": "The separator character to use before the type within the generated file's name. For example, if you set the option to `.`, the file will be named `example.interceptor.ts`."
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "interface",
+      "command": "interface [name] [type]",
+      "shortDescription": "Creates a new interface in your project. Interfaces define the structure of objects in TypeScript, ensuring type safety and code clarity. This schematic generates a new interface with the specified name and type.",
+      "options": [
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new interface. This will be used to create the interface file (e.g., `my-interface.interface.ts`).",
+          "positional": 0
+        },
+        {
+          "name": "prefix",
+          "type": "string",
+          "description": "A prefix to be added to the interface name. This is typically not used for interfaces, as they don't have selectors like components or directives."
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the interface should be created. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "Adds a custom type to the filename, allowing you to create more descriptive interface names. For example, if you set the type to `data`, the filename will be `my-interface.data.ts`.",
+          "positional": 1
+        }
+      ],
+      "aliases": [
+        "i"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "library",
+      "command": "library [name]",
+      "shortDescription": "Creates a new library project in your Angular workspace. Libraries are reusable collections of components, services, and other Angular artifacts that can be shared across multiple applications. This schematic simplifies the process of generating a new library with the necessary files and configurations.",
+      "options": [
+        {
+          "name": "entry-file",
+          "type": "string",
+          "default": "public-api",
+          "description": "The path to the library's public API file, relative to the workspace root. This file defines what parts of the library are accessible to applications that import it."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new library. This name will be used for the project directory and various identifiers within the library's code.",
+          "positional": 0
+        },
+        {
+          "name": "prefix",
+          "type": "string",
+          "aliases": [
+            "p"
+          ],
+          "default": "lib",
+          "description": "A prefix to be added to the selectors of components generated within this library. For example, if the prefix is `my-lib` and you generate a component named `my-component`, the selector will be `my-lib-my-component`."
+        },
+        {
+          "name": "project-root",
+          "type": "string",
+          "description": "The root directory for the new library, relative to the workspace root. If not specified, the library will be created in a subfolder within the `projects` directory, using the library's name."
+        },
+        {
+          "name": "skip-install",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the automatic installation of packages. You will need to manually install the dependencies later."
+        },
+        {
+          "name": "skip-package-json",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not automatically add dependencies to the `package.json` file."
+        },
+        {
+          "name": "skip-ts-config",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not update the workspace `tsconfig.json` file to add a path mapping for the new library. The path mapping is needed to use the library in an application, but can be disabled here to simplify development."
+        },
+        {
+          "name": "standalone",
+          "type": "boolean",
+          "default": true,
+          "description": "Create a library that utilizes the standalone API, eliminating the need for NgModules. This can simplify the structure of your library and its usage in applications."
+        }
+      ],
+      "aliases": [
+        "lib"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "module",
+      "command": "module [name]",
+      "shortDescription": "Creates a new, generic NgModule definition in the given project.",
+      "options": [
+        {
+          "name": "flat",
+          "type": "boolean",
+          "default": false,
+          "description": "Create the new files at the top level of the current project root. "
+        },
+        {
+          "name": "module",
+          "type": "string",
+          "aliases": [
+            "m"
+          ],
+          "description": "The declaring NgModule."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name of the NgModule.",
+          "positional": 0
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project."
+        },
+        {
+          "name": "route",
+          "type": "string",
+          "description": "The route path for a lazy-loaded module. When supplied, creates a component in the new module, and adds the route to that component in the `Routes` array declared in the module provided in the `--module` option."
+        },
+        {
+          "name": "routing",
+          "type": "boolean",
+          "default": false,
+          "description": "Create a routing module."
+        },
+        {
+          "name": "routing-scope",
+          "type": "string",
+          "default": "Child",
+          "enum": [
+            "Child",
+            "Root"
+          ],
+          "description": "The scope for the new routing module."
+        },
+        {
+          "name": "type-separator",
+          "type": "string",
+          "default": "-",
+          "enum": [
+            "-",
+            "."
+          ],
+          "description": "The separator character to use before the type within the generated file's name. For example, if you set the option to `.`, the file will be named `example.module.ts`."
+        }
+      ],
+      "aliases": [
+        "m"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "pipe",
+      "command": "pipe [name]",
+      "shortDescription": "Creates a new pipe in your project. Pipes are used to transform data for display in templates. They take input values and apply a specific transformation, such as formatting dates, currency, or filtering arrays. This schematic generates the necessary files and boilerplate code for a new pipe.",
+      "options": [
+        {
+          "name": "export",
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically export the pipe from the specified NgModule, making it accessible to other modules in the application."
+        },
+        {
+          "name": "flat",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates the new pipe files at the top level of the current project. If set to false, a new folder with the pipe's name will be created to contain the files."
+        },
+        {
+          "name": "module",
+          "type": "string",
+          "aliases": [
+            "m"
+          ],
+          "description": "Specify the NgModule where the pipe should be declared. If not provided, the CLI will attempt to find the closest NgModule in the pipe's path."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new pipe. This will be used to create the pipe's class and spec files (e.g., `my-pipe.pipe.ts` and `my-pipe.pipe.spec.ts`).",
+          "positional": 0
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the pipe should be created. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "skip-import",
+          "type": "boolean",
+          "default": false,
+          "description": "Do not automatically import the new pipe into its closest NgModule."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Prevent the generation of a unit test file `spec.ts` for the new pipe."
+        },
+        {
+          "name": "standalone",
+          "type": "boolean",
+          "default": true,
+          "description": "Generate a standalone pipe. Standalone pipes are self-contained and don't need to be declared in an NgModule. They can be used independently or imported directly into other standalone components, directives, or pipes."
+        },
+        {
+          "name": "type-separator",
+          "type": "string",
+          "default": "-",
+          "enum": [
+            "-",
+            "."
+          ],
+          "description": "The separator character to use before the type within the generated file's name. For example, if you set the option to `.`, the file will be named `example.pipe.ts`."
+        }
+      ],
+      "aliases": [
+        "p"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "resolver",
+      "command": "resolver [name]",
+      "shortDescription": "Creates a new resolver in your project. Resolvers are used to pre-fetch data before a route is activated, ensuring that the necessary data is available before the component is displayed. This can improve the user experience by preventing delays and loading states. This schematic generates a new resolver with the specified name and options.",
+      "options": [
+        {
+          "name": "flat",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates the new resolver files at the top level of the current project. If set to false, a new folder with the resolver's name will be created to contain the files."
+        },
+        {
+          "name": "functional",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates the resolver as a function `ResolveFn` instead of a class. Functional resolvers can be simpler for basic scenarios."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new resolver. This will be used to create the resolver's class and spec files (e.g., `my-resolver.resolver.ts` and `my-resolver.resolver.spec.ts`).",
+          "positional": 0
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the resolver should be created. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the generation of a unit test file `spec.ts` for the new resolver."
+        },
+        {
+          "name": "type-separator",
+          "type": "string",
+          "default": "-",
+          "enum": [
+            "-",
+            "."
+          ],
+          "description": "The separator character to use before the type within the generated file's name. For example, if you set the option to `.`, the file will be named `example.resolver.ts`."
+        }
+      ],
+      "aliases": [
+        "r"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "service",
+      "command": "service [name]",
+      "shortDescription": "Creates a new service in your project. Services are used to encapsulate reusable logic, such as data access, API calls, or utility functions. This schematic simplifies the process of generating a new service with the necessary files and boilerplate code.",
+      "options": [
+        {
+          "name": "flat",
+          "type": "boolean",
+          "default": true,
+          "description": "Creates files at the top level of the project or the given path. If set to false, a new folder with the service's name will be created to contain the files."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new service. This will be used to create the service's class and spec files (e.g., `my-service.service.ts` and `my-service.service.spec.ts`).",
+          "positional": 0
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the service should be added. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "skip-tests",
+          "type": "boolean",
+          "default": false,
+          "description": "Skip the generation of a unit test file `spec.ts` for the service."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "Append a custom type to the service's filename. For example, if you set the type to `service`, the file will be named `my-service.service.ts`."
+        }
+      ],
+      "aliases": [
+        "s"
+      ],
+      "deprecated": false
+    },
+    {
+      "name": "service-worker",
+      "command": "service-worker",
+      "shortDescription": "Adds a service worker to your project. Service workers enable your application to work offline or on low-quality networks by caching assets and intercepting network requests. This schematic configures your project to use a service worker.",
+      "options": [
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project to add the service worker to. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "target",
+          "type": "string",
+          "default": "build",
+          "description": "The build target to apply the service worker to. This is typically `build`, indicating that the service worker should be generated during the standard build process."
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "web-worker",
+      "command": "web-worker [name]",
+      "shortDescription": "Creates a new web worker in your project. Web workers allow you to run JavaScript code in the background, improving the performance and responsiveness of your application by offloading computationally intensive tasks. This schematic generates the necessary files for a new web worker and provides an optional code snippet to demonstrate its usage.",
+      "options": [
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name for the new web worker. This will be used to create the worker file (e.g., `my-worker.worker.ts`).",
+          "positional": 0
+        },
+        {
+          "name": "project",
+          "type": "string",
+          "description": "The name of the project where the web worker should be created. If not specified, the CLI will determine the project from the current directory."
+        },
+        {
+          "name": "snippet",
+          "type": "boolean",
+          "default": true,
+          "description": "Generate a code snippet that demonstrates how to create and use the new web worker."
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    }
+  ]
+}

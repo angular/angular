@@ -1,0 +1,143 @@
+@use '../../../styles/links' as links;
+@use '../../../styles/anchor' as anchor;
+@use '../../../styles/media-queries' as mq;
+
+:host {
+  --translate-y: clamp(5px, 0.25em, 7px);
+}
+
+.docs-viewer {
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+  box-sizing: border-box;
+  padding-inline: var(--layout-padding);
+
+  @include mq.for-large-desktop-down {
+    container: docs-content / inline-size;
+  }
+
+  @include mq.for-extra-large-desktop-up {
+    max-width: var(--page-width);
+  }
+
+
+  //applying styles when TOC position got translated to the top right 
+  @include mq.for-large-desktop-up {
+    // take the available space except a reserved area for TOC
+    margin-left: -16rem;
+    width: calc(100% - 16rem);
+  }
+
+  // restrict the content to be fluid until it reaches that width
+  // $screen-xl is the breakpoint where Main content stop being fluid and made fixed
+
+  >*:not(docs-table-of-contents) {
+    max-width: calc(mq.$screen-xxl - var(--secondary-nav-width) - var(--primary-nav-width) - var(--layout-padding)*2)
+  }
+
+  pre {
+    margin-block: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    .docs-anchor {
+      margin-block-start: 0.75rem;
+      display: inline-block;
+      color: inherit;
+
+      @include anchor.docs-anchor();
+    }
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-block-end: 0;
+  }
+
+  h2 {
+    font-size: 2rem;
+    margin-block-end: 0.5rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    margin-block-end: 0.5rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    margin-block-end: 0.5rem;
+  }
+
+  h5 {
+    font-size: 1rem;
+    margin-block-end: 0;
+  }
+
+  h6 {
+    font-size: 0.875rem;
+    margin-block-end: 0;
+  }
+
+  > :last-child {
+    margin-block-end: 0;
+  }
+
+  a:not(.docs-github-links):not(.docs-card):not(.docs-pill):not(.docs-example-github-link) {
+
+    &[href^='http:'],
+    &[href^='https:'] {
+      @include links.external-link-with-icon();
+    }
+  }
+
+  &-scroll-margin-large {
+
+    h2,
+    h3 {
+      scroll-margin: 5em;
+    }
+  }
+}
+
+.docs-header {
+  margin-block-end: 1rem;
+
+  &>p:first-child {
+    color: var(--quaternary-contrast);
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+.docs-page-title {
+  display: flex;
+  justify-content: space-between;
+
+  h1 {
+    margin-block: 0;
+    font-size: 2.25rem;
+  }
+
+  a {
+    color: var(--primary-contrast);
+    height: fit-content;
+
+    docs-icon {
+      color: var(--gray-400);
+      transition: color 0.3s ease;
+    }
+
+    &:hover {
+      docs-icon {
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}

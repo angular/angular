@@ -1,0 +1,66 @@
+@if (!diDebugAPIsAvailable()) {
+  <p class="not-supported">
+    This feature is only available on version 17.0.0 or higher of Angular.
+  </p>
+} @else {
+  <div class="wrapper">
+    <div class="options">
+      <div class="option">
+        <input
+          id="hide-injectors-no-providers"
+          type="checkbox"
+          (change)="toggleHideInjectorsWithNoProviders()"
+        />
+        <label for="hide-injectors-no-providers">Hide injectors with no providers</label>
+      </div>
+      <div class="option">
+        <input id="hide-fw-injectors" type="checkbox" (change)="toggleHideAngularInjectors()" />
+        <label for="hide-fw-injectors">Hide framework injectors</label>
+      </div>
+    </div>
+    <as-split class="trees" unit="percent" direction="horizontal" [gutterSize]="9">
+      <as-split-area size="60">
+        <as-split
+          [ngResponsiveSplit]="responsiveSplitConfig"
+          (directionChange)="onResponsiveSplitDirChange($event)"
+          unit="percent"
+          [gutterSize]="9"
+        >
+          <as-split-area [size]="envHierarchySize()">
+            <div class="injector-hierarchy">
+              <h2>
+                <span>Environment Hierarchy</span>
+                <ng-docs-ref-button docs="injector-hierarchies" />
+              </h2>
+              <section class="injector-graph">
+                <ng-tree-visualizer-host
+                  #environmentTree
+                  a11yTitle="Environment hierarchy visualization"
+                />
+              </section>
+            </div>
+          </as-split-area>
+          <as-split-area [size]="elHierarchySize()">
+            <div class="injector-hierarchy">
+              <h2>
+                <span>Element Hierarchy</span>
+                <ng-docs-ref-button docs="injector-hierarchies" />
+              </h2>
+              <section class="injector-graph">
+                <ng-tree-visualizer-host #elementTree a11yTitle="Element hierarchy visualization" />
+              </section>
+            </div>
+          </as-split-area>
+        </as-split>
+      </as-split-area>
+      @if (selectedNode() && providers().length > 0) {
+        <as-split-area size="40" [minSize]="25">
+          <ng-injector-providers
+            [injector]="selectedNode()!.data.injector"
+            [providers]="providers()"
+          />
+        </as-split-area>
+      }
+    </as-split>
+  </div>
+}

@@ -1,0 +1,403 @@
+@use 'sass:math';
+@use '@angular/docs/styles/media-queries' as mq;
+
+/*
+ * Global transition.
+ *
+ * Scrolling via mouse scroll wheel will result in a non-continuous scrollY,
+ * unlike a touchpad, which in turn results in "gaps" in the animation calculations.
+ * Therefore, in order to keep things smooth, we are systematically adding CSS
+ * transitions to the CSS properties that else look jagged when scrolling.
+ */
+$transition: 200ms linear;
+
+:host {
+  display: block;
+  position: relative;
+
+  .animation {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+
+    .layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      h2 {
+        font-size: 4vw;
+        font-weight: 600;
+        white-space: nowrap;
+        margin-top: 0;
+        margin-bottom: 0.5em;
+        z-index: 1;
+
+        @include mq.for-tablet-landscape-down {
+          & {
+            font-size: 2rem;
+          }
+        }
+      }
+
+      p {
+        font-weight: 400;
+        color: var(--quaternary-contrast);
+        font-size: clamp(1rem, 1vw, 2rem);
+        line-height: 1.5;
+        width: clamp(345px, 50%, 600px);
+        margin: 0 auto;
+      }
+
+      h2,
+      p {
+        background-color: var(--page-background);
+        box-shadow: 0 0 20px 20px var(--page-background);
+
+        @include mq.for-desktop-down {
+          box-shadow: 0 0 10px 10px var(--page-background);
+        }
+      }
+    }
+
+    .banners-layer {
+      z-index: 10;
+
+      .adev-banner-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        position: absolute;
+        transition:
+          background 0.3s ease,
+          border 0.3s ease,
+          transform $transition;
+        top: var(--layout-padding);
+        left: calc(var(--layout-padding) + var(--primary-nav-width));
+
+        @include mq.for-tablet-landscape-down {
+          top: 6rem;
+          left: var(--layout-padding);
+          /* Assuming the container width is identical to the viewport width (mobile device). */
+          max-width: calc(100% - var(--layout-padding) * 2);
+        }
+
+        @include mq.for-phone-only {
+          & {
+            top: 5rem;
+          }
+        }
+      }
+
+      .adev-banner {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        border: 1px solid var(--senary-contrast);
+        background: var(--page-background);
+        border-radius: 0.25rem;
+        padding: 10px;
+        max-width: 100%;
+        width: fit-content;
+        box-sizing: border-box;
+
+        h1,
+        p {
+          display: inline;
+          font-size: 0.875rem;
+          margin: 0;
+          background-image: var(--red-to-pink-to-purple-horizontal-gradient);
+          background-clip: text;
+          color: transparent;
+          width: fit-content;
+          font-weight: 500;
+          box-shadow: none;
+          position: relative;
+
+          &.adev-banner-cta {
+            color: var(--tertiary-contrast);
+
+            &::after {
+              content: '';
+              position: absolute;
+              width: 100%;
+              transform: scaleX(0);
+              height: 1px;
+              bottom: -2px;
+              left: 0;
+              background: var(--red-to-pink-to-purple-horizontal-gradient);
+              transform-origin: bottom right;
+              transition: transform 0.3s ease;
+            }
+          }
+        }
+
+        &:hover {
+          .adev-banner-cta {
+            &::after {
+              transform: scaleX(1);
+              transform-origin: bottom left;
+            }
+          }
+        }
+      }
+
+      .learn-angular {
+        position: absolute;
+        left: 50%;
+        bottom: 5%;
+        transform: translateX(-50%);
+        transition: opacity $transition;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 50px;
+
+        button {
+          font-size: 1rem;
+          padding: 1rem 1.75rem;
+
+          &::after {
+            font-size: 1rem;
+          }
+        }
+
+        .adev-arrow {
+          transform: rotate(45deg);
+          border: solid var(--primary-contrast);
+          border-width: 0 2px 2px 0;
+          display: inline-block;
+          padding: 7px;
+        }
+      }
+    }
+
+    .logo-layer {
+      user-select: none;
+      pointer-events: none;
+
+      .svg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        fill-rule: evenodd;
+        clip-rule: evenodd;
+        stroke-linejoin: round;
+        stroke-miterlimit: 2;
+      }
+
+      .wrapper {
+        transform: scale(0.55);
+        transform-origin: 50% 50%;
+
+        @include mq.for-tablet-down {
+          & {
+            transform: scale(0.8);
+          }
+        }
+
+        @include mq.for-extra-large-desktop-up {
+          & {
+            transform: scale(0.5);
+          }
+        }
+
+        .logo {
+          transition: transform $transition;
+
+          .shield {
+            /* `transform-origin` values are calculated based on the 1280x400 SVG view box */
+
+            &,
+            .shield-middle {
+              transform-origin: 177px 200px;
+              transition: transform $transition;
+            }
+
+            .shield-bottom-a-arc {
+              transform-origin: 0 302px;
+              transition: transform $transition;
+            }
+
+            .shield-bottom-extension {
+              transform-origin: 177px 340px;
+              transition: transform $transition;
+              transform: scale(0);
+            }
+          }
+
+          .letter {
+            transition: opacity $transition;
+          }
+        }
+      }
+    }
+
+    .uwu-layer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition:
+        transform $transition,
+        opacity $transition;
+
+      img {
+        user-select: none;
+        width: max(calc(700 * min(100vw, 2560px) / 1470), 350px);
+        height: auto;
+      }
+    }
+
+    .works-at-any-scale-layer,
+    .loved-by-millions-layer,
+    .build-for-everyone-layer {
+      user-select: none;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      z-index: 1;
+      transition:
+        transform $transition,
+        opacity $transition;
+    }
+
+    .works-at-any-scale-layer {
+      transform: scale(0);
+    }
+
+    .loved-by-millions-layer,
+    .build-for-everyone-layer {
+      transform: scale(0.75);
+    }
+
+    .build-for-everyone-layer {
+      .title {
+        color: transparent;
+        display: inline-block;
+        background: linear-gradient(110deg, #f31a5b 0, #8737e9 50%, #3a373f 0%);
+        background-size: 205% 100%;
+        background-clip: text;
+        background-size: 205% 100%;
+        background-position-x: 100%;
+        transition: background-position-x $transition;
+      }
+    }
+
+    .meteor-field-layer {
+      overflow: hidden;
+
+      .field {
+        --math-pi: #{math.$pi}rad;
+
+        position: absolute;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: var(--meteor-gap);
+        display: none;
+        transform: scale(1.42);
+        top: 0;
+        left: 0;
+        transform-origin: 50% 50%;
+        transition:
+          opacity $transition,
+          transform $transition;
+
+        .meteor {
+          position: relative;
+          width: var(--meteor-width);
+          height: var(--meteor-height);
+          opacity: 0;
+          transform: translate(200%, 200%) scale(0.3);
+          transition:
+            opacity $transition,
+            transform $transition;
+
+          &::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: var(--meteor-tail-length);
+            border-radius: 2px;
+            transform-origin: top center;
+            transform: rotate(var(--meteor-tilt-angle));
+            top: 0;
+            left: 0;
+          }
+
+          @mixin meteor-gradient($startColor, $endColor) {
+            background: linear-gradient(
+              calc(var(--math-pi) + var(--meteor-tilt-angle)),
+              $startColor 0,
+              $endColor 66%,
+              transparent 100%
+            );
+          }
+
+          &.type-1::after {
+            @include meteor-gradient(rgb(228, 49, 85), rgb(219, 64, 219));
+          }
+
+          &.type-2::after {
+            @include meteor-gradient(rgb(152, 56, 226), rgb(217, 18, 167));
+          }
+
+          &.type-3::after {
+            @include meteor-gradient(rgb(214, 53, 150), rgb(229, 91, 229));
+          }
+        }
+      }
+    }
+
+    &.reduced-motion {
+      position: relative;
+
+      .banners-layer {
+        height: 100vh;
+
+        @include mq.for-phone-only {
+          .adev-banner {
+            top: 6rem;
+          }
+        }
+
+        @include mq.for-tablet-landscape-up {
+          .adev-banner {
+            left: var(--layout-padding);
+          }
+        }
+      }
+
+      .logo-layer {
+        position: relative;
+        height: 100vh;
+
+        @include mq.for-tablet-landscape-down {
+          margin-top: -75px;
+        }
+      }
+
+      .works-at-any-scale-layer,
+      .loved-by-millions-layer,
+      .build-for-everyone-layer {
+        position: relative;
+        height: 120vh;
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .build-for-everyone-layer > .title {
+        background-position-x: 0;
+      }
+    }
+  }
+}

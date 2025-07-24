@@ -1,0 +1,44 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/forms:forms_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test_web",
+    tags = [
+        # disabled on 2020-04-14 due to failure on saucelabs monitor job
+        # https://app.circleci.com/pipelines/github/angular/angular/13320/workflows/9ca3527a-d448-4a64-880a-fb4de9d1fece/jobs/680645
+        # ```
+        # IE 11.0.0 (Windows 8.1.0.0) template-driven forms integration tests basic functionality should report properties which are written outside of template bindings FAILED
+        #   InvalidStateError: InvalidStateError
+        # ```
+        "fixme-saucelabs",
+    ],
+    deps = [
+        ":test_lib_rjs",
+    ],
+)

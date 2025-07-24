@@ -1,0 +1,99 @@
+@mixin docs-decorative-header() {
+  .docs-decorative-header-container {
+    container: header / inline-size;
+  }
+
+  .docs-decorative-header {
+    border-radius: 0.625rem;
+    background: var(--septenary-contrast);
+    overflow: hidden;
+    display: flex;
+    position: relative;
+    transition: background 0.3s ease;
+
+    @container header (max-width: 550px) {
+      flex-direction: column-reverse;
+    }
+
+    .docs-header-content {
+      box-sizing: border-box;
+      padding: 1.5rem;
+      padding-inline-end: 0;
+      flex-grow: 1;
+
+      @container header (max-width: 550px) {
+        width: 100%;
+        padding-block-end: 1.5rem;
+      }
+
+      h1,
+      p,
+      span {
+        color: var(--primary-contrast);
+        transition: color 0.3s ease;
+      }
+
+      a {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        z-index: 20;
+        i {
+          color: var(--quaternary-contrast);
+        }
+
+        &:hover {
+          i {
+            color: var(--primary-contrast);
+          }
+        }
+      }
+
+      docs-breadcrumb {
+        padding-block-end: 1rem;
+      }
+
+      .docs-breadcrumb {
+        font-size: 0.875rem;
+        span {
+          color: var(--primary-contrast) !important;
+        }
+      }
+    }
+
+    svg {
+      margin: 0;
+      margin-block: auto;
+      padding-inline: 1rem 3.5rem;
+      padding-block: 2rem;
+      min-width: 150px;
+      max-width: 250px;
+      max-height: 125px;
+      z-index: 0;
+
+      &.docs-what-is-angular-svg {
+        max-height: 125px;
+        min-width: 175px;
+        padding-block-end: 0.5rem;
+      }
+
+      &.docs-directives-svg {
+        max-height: 150px;
+      }
+
+      &.docs-roadmap-svg {
+        padding-block-end: 0.5rem;
+      }
+
+      @container header (max-width: 550px) {
+        padding: 2rem;
+        padding-block-end: 0;
+        padding-inline-start: 1.5rem;
+        width: fit-content;
+        min-width: auto;
+        max-width: 80%;
+        max-height: 125px;
+      }
+    }
+  }
+}

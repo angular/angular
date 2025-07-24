@@ -1,0 +1,49 @@
+<!-- #docplaster -->
+<!-- #docregion formgroup -->
+<form [formGroup]="profileForm">
+  <label for="first-name">First Name: </label>
+  <input id="first-name" type="text" formControlName="firstName" />
+
+  <label for="last-name">Last Name: </label>
+  <input id="last-name" type="text" formControlName="lastName" />
+
+  <!-- #enddocregion formgroup -->
+  <!-- #docregion formgroupname -->
+  <div formGroupName="address">
+    <h2>Address</h2>
+
+    <label for="street">Street: </label>
+    <input id="street" type="text" formControlName="street" />
+
+    <label for="city">City: </label>
+    <input id="city" type="text" formControlName="city" />
+
+    <label for="state">State: </label>
+    <input id="state" type="text" formControlName="state" />
+
+    <label for="zip">Zip Code: </label>
+    <input id="zip" type="text" formControlName="zip" />
+  </div>
+  <!-- #enddocregion formgroupname -->
+
+  <div formArrayName="aliases">
+    <h2>Aliases</h2>
+    <button type="button" (click)="addAlias()">+ Add another alias</button>
+
+    @for(alias of aliases.controls; track $index; let i = $index) {
+    <div>
+      <!-- The repeated alias template -->
+      <label for="alias-{{ i }}">Alias: </label>
+      <input id="alias-{{ i }}" type="text" [formControlName]="i" />
+    </div>
+    }
+  </div>
+  <!-- #docregion formgroup -->
+</form>
+<!-- #enddocregion formgroup -->
+
+<p>Form Value: {{ profileForm.value | json }}</p>
+
+<!-- #docregion patch-value -->
+<button type="button" (click)="updateProfile()">Update Profile</button>
+<!-- #enddocregion patch-value -->

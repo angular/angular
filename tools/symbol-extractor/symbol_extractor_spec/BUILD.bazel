@@ -1,0 +1,18 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "es2015_class_output",
+    srcs = ["es2015_class_output.ts"],
+    tsconfig = "tsconfig.json",
+)
+
+copy_to_bin(
+    name = "fixtures",
+    srcs = glob([
+        "**/*.js",
+        "**/*.json",
+    ]),
+)

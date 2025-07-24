@@ -1,0 +1,29 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "fake_async_lib",
+    testonly = True,
+    srcs = [
+        "example_spec.ts",
+        "fake_async.ts",
+    ],
+    deps = [
+        "//packages/core/testing:testing_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":fake_async_lib_rjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)

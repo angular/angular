@@ -1,0 +1,30 @@
+{
+  "name": "angular-integration",
+  "description": "Assert that users with module: nodenext in their tsconfig can import our packages",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/elements": "file:../../dist/packages-dist/elements",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/localize": "file:../../dist/packages-dist/localize",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
+    "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "rxjs": "file:../../node_modules/rxjs",
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../node_modules/zone.js"
+  },
+  "scripts": {
+    "test": "tsc"
+  }
+}

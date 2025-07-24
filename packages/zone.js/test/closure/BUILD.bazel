@@ -1,0 +1,8 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+ts_project(
+    name = "closure",
+    testonly = True,
+    srcs = ["zone.closure.ts"],
+    deps = ["//packages/zone.js/lib:zone_d_ts_rjs"],
+)

@@ -1,0 +1,42 @@
+load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
+load("//tools:defaults2.bzl", "esbuild_checked_in", "ts_project")
+
+package(default_visibility = ["//.github/actions/deploy-docs-site:__subpackages__"])
+
+exports_files([
+    "tsconfig.json",
+])
+
+esbuild_checked_in(
+    name = "main",
+    config = "esbuild.conf.js",
+    entry_point = ":lib/main.mts",
+    external = [
+        "undici",
+    ],
+    metafile = False,
+    platform = "node",
+    target = "node20",
+    deps = [
+        ":lib_rjs",
+    ],
+)
+
+rules_js_tsconfig(
+    name = "tsconfig",
+    src = "tsconfig.json",
+)
+
+ts_project(
+    name = "lib",
+    srcs = glob(["lib/*.mts"]),
+    tsconfig = ":tsconfig",
+    deps = [
+        "//:node_modules/@actions/core",
+        "//:node_modules/@actions/github",
+        "//:node_modules/@angular/ng-dev",
+        "//:node_modules/@types/node",
+        "//:node_modules/@types/tmp",
+        "//:node_modules/tmp",
+    ],
+)

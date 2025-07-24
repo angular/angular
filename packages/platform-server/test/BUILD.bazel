@@ -1,0 +1,82 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
+
+ts_project(
+    name = "dom_utils",
+    testonly = True,
+    srcs = [
+        "dom_utils.ts",
+        "hydration_utils.ts",
+    ],
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-server:platform-server_rjs",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.ts"],
+        exclude = [
+            "event_replay_spec.ts",
+            "hydration_utils.ts",
+            "dom_utils.ts",
+        ],
+    ),
+    deps = [
+        ":dom_utils_rjs",
+        "//:node_modules/rxjs",
+        "//packages:types_rjs",
+        "//packages/animations:animations_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/common/http/testing:testing_rjs",
+        "//packages/common/testing:testing_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/localize:localize_rjs",
+        "//packages/localize/init:init_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/private/testing:testing_rjs",
+        "//packages/router:router_rjs",
+    ],
+)
+
+ts_project(
+    name = "event_replay_test_lib",
+    testonly = True,
+    srcs = ["event_replay_spec.ts"],
+    deps = [
+        ":dom_utils_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+        "//packages/core/primitives/event-dispatch:contract_bundle_min",
+    ],
+)
+
+angular_jasmine_test(
+    name = "event_replay_test",
+    data = [
+        ":event_replay_test_lib_rjs",
+        "//packages/core/primitives/event-dispatch:contract_bundle_min",
+    ],
+)

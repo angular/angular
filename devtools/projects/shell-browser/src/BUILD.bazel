@@ -1,0 +1,165 @@
+load("//devtools/tools:defaults.bzl", "copy_to_directory", "esbuild", "ng_project", "pkg_web", "sass_binary", "string_flag", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "shell_common_styles",
+    src = "styles.scss",
+    include_paths = ["external/npm/node_modules"],
+    sourcemap = False,
+    deps = ["//devtools/projects/ng-devtools/src/styles:global"],
+)
+
+copy_to_directory(
+    name = "browser_specific_styles",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/styles:chrome",
+        "//devtools/projects/ng-devtools/src/styles:firefox",
+    ],
+    out = "styles",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/styles": "",
+    },
+)
+
+copy_to_directory(
+    name = "assets",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/assets",
+    ],
+    out = "assets",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/assets": "",
+    },
+)
+
+ts_project(
+    name = "devtools",
+    srcs = [
+        "devtools.ts",
+    ],
+    deps = [
+        "//:node_modules/@types/chrome",
+    ],
+)
+
+ng_project(
+    name = "src",
+    srcs = [
+        "main.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
+        "//devtools/projects/shell-browser/src/app:app_rjs",
+        "//devtools/projects/shell-browser/src/environments:environment_rjs",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    srcs = [
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_esm_prod_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-esm-prod.config.mjs",
+    entry_points = [":main.ts"],
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    # todo(aleksanderbodurri): here we target es2020 explicitly.
+    # We do this because of a bug caused by https://github.com/evanw/esbuild/issues/2950 and an Angular v16 change
+    # to how angular static properties are attached to class constructors.
+    # Targeting esnext or es2022 will cause the static initializer blocks that attach these static properties on class
+    # constructors to reference a class constructor variable that they do not have access to.
+    target = "es2020",
+    deps = [
+        ":src_rjs",
+        "//:node_modules/@angular/cdk",
+    ],
+)
+
+esbuild(
+    name = "devtools_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_esm_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
+    entry_point = "devtools.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    # todo(aleksanderbodurri): here we target es2020 explicitly.
+    # We do this because of a bug caused by https://github.com/evanw/esbuild/issues/2950 and an Angular v16 change
+    # to how angular static properties are attached to class constructors.
+    # Targeting esnext or es2022 will cause the static initializer blocks that attach these static properties on class
+    # constructors to reference a class constructor variable that they do not have access to.
+    target = "es2020",
+    deps = [":devtools_rjs"],
+)
+
+exports_files(["index.html"])
+
+filegroup(
+    name = "prod_app_static_files",
+    srcs = [
+        ":assets",
+        ":browser_specific_styles",
+        ":index.html",
+        ":shell_common_styles",
+    ],
+)
+
+string_flag(
+    name = "flag_browser",
+    build_setting_default = "chrome",
+    values = [
+        "chrome",
+        "firefox",
+    ],
+)
+
+config_setting(
+    name = "browser_chrome",
+    flag_values = {":flag_browser": "chrome"},
+)
+
+config_setting(
+    name = "browser_firefox",
+    flag_values = {":flag_browser": "firefox"},
+)
+
+genrule(
+    name = "copy_manifest",
+    srcs = select({
+        ":browser_chrome": ["//devtools/projects/shell-browser/src/manifest:manifest.chrome.json"],
+        ":browser_firefox": ["//devtools/projects/shell-browser/src/manifest:manifest.firefox.json"],
+    }),
+    outs = ["manifest.json"],
+    cmd = "cp $< $@",
+)
+
+pkg_web(
+    name = "prodapp",
+    srcs = [
+        ":bundle",
+        ":copy_manifest",
+        ":devtools_bundle",
+        ":prod_app_static_files",
+        "//devtools/projects/shell-browser/src:devtools.html",
+        "//devtools/projects/shell-browser/src/app:backend_bundle",
+        "//devtools/projects/shell-browser/src/app:background_bundle",
+        "//devtools/projects/shell-browser/src/app:content_script_bundle",
+        "//devtools/projects/shell-browser/src/app:detect_angular_for_extension_icon_bundle",
+        "//devtools/projects/shell-browser/src/app:ng_validate_bundle",
+        "//devtools/projects/shell-browser/src/assets",
+        "//devtools/projects/shell-browser/src/popups",
+    ],
+    additional_root_paths = [
+        "projects/ng-devtools/src/lib",
+    ],
+)

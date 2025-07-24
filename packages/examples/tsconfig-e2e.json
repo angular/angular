@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig-test.json",
+  "compilerOptions": {
+    "types": ["node", "jasminewd2"]
+  }
+}

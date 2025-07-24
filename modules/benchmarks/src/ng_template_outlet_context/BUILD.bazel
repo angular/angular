@@ -1,0 +1,14 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "perf_lib",
+    testonly = True,
+    srcs = ["ng_template_outlet_context.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//modules:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
+    ],
+)

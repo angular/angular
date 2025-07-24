@@ -1,0 +1,30 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package_group(
+    name = "users",
+    packages = [
+        "//packages/core/schematics/...",
+        "//packages/language-service/src/refactorings/...",
+    ],
+)
+
+ts_project(
+    name = "tsurge",
+    srcs = glob(["**/*.ts"]),
+    visibility = [":users"],
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/chalk",
+        "//:node_modules/diff",
+        "//:node_modules/magic-string",
+        "//:node_modules/typescript",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:core_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/shims:shims_rjs",
+        "//packages/compiler-cli/src/ngtsc/translator:translator_rjs",
+        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
+    ],
+)

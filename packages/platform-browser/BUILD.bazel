@@ -1,0 +1,102 @@
+load("//tools:defaults.bzl", "generate_api_docs", "tsec_test")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "platform-browser",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@types/hammerjs",
+        "//packages:goog_types_rjs",
+        "//packages:types_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/core:core_rjs",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "platform-browser",
+    tsconfig = "//packages:tsec_config",
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+    ],
+    package = "@angular/platform-browser",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+    ],
+    deps = [
+        ":platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/animations/async:async_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+    ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making this package usable in `core/test/bundling`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
+)
+
+api_golden_test_npm_package(
+    name = "platform-browser_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/platform-browser",
+    npm_package = "packages/platform-browser/npm_package",
+)
+
+api_golden_test(
+    name = "platform-browser_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/platform-browser:platform-browser_rjs",
+    ],
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/platform-browser/errors.api.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "platform-browser_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/platform-browser",
+)

@@ -1,0 +1,49 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project", "sass_binary", "ts_project", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:private"])
+
+sass_binary(
+    name = "styles",
+    src = "search-history.component.scss",
+)
+
+ng_project(
+    name = "search-history",
+    srcs = [
+        "search-history.component.ts",
+    ],
+    assets = [
+        "search-history.component.html",
+        ":styles",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/search-dialog:__pkg__",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
+        "//adev/shared-docs/directives:directives_rjs",
+        "//adev/shared-docs/pipes:pipes_rjs",
+        "//adev/shared-docs/services:services_rjs",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["search-history.component.spec.ts"],
+    deps = [
+        ":search-history_rjs",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
+        "//adev/shared-docs/services:services_rjs",
+        "//adev/shared-docs/testing:testing_rjs",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib_rjs"],
+)

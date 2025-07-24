@@ -1,0 +1,118 @@
+<ng-template #navigationList let-navigationItems>
+  <ul
+    class="docs-navigation-list docs-faceted-list"
+    [class.docs-navigation-list-dropdown]="isDropdownView()"
+  >
+    @for (item of navigationItems; track $index) {
+      <li class="docs-faceted-list-item">
+        @if (item.path) {
+          @if (item.isExternal) {
+            <a
+              [href]="item.path"
+              target="_blank"
+              [matTooltip]="item.label"
+              [matTooltipDisabled]="item.label.length < 27"
+              matTooltipPosition="after"
+              [attr.aria-label]="item.label"
+              [matTooltipClass]="'API-tooltip'"
+            >
+              <span
+                [class.docs-external-link]="item.isExternal"
+                class="docs-faceted-list-item-text"
+              >
+                {{ item.label }}
+                <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
+              </span>
+
+              @if (item.children && item.level! > 1 && !item.isExpanded) {
+                <docs-icon>chevron_right</docs-icon>
+              }
+            </a>
+          } @else {
+            <a
+              [routerLink]="'/' + item.path"
+              routerLinkActive="docs-faceted-list-item-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="emitClickOnLink()"
+              [matTooltip]="item.label"
+              [matTooltipDisabled]="item.label.length < 27"
+              matTooltipPosition="after"
+              [attr.aria-label]="item.label"
+              [matTooltipClass]="'API-tooltip'"
+            >
+              <span class="docs-faceted-list-item-text">
+                {{item.label}}
+                <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
+              </span>
+
+              @if (item.children && !item.isExpanded) {
+                <docs-icon>chevron_right</docs-icon>
+              }
+            </a>
+          }
+        } @else {
+          <!-- Nav Section Header -->
+          @if (item.level !== collapsableLevel() && item.level !== expandableLevel()) {
+            <div
+              class="docs-secondary-nav-header"
+              [matTooltip]="item.label"
+              [matTooltipDisabled]="item.label.length < 27"
+              matTooltipPosition="after"
+              [attr.aria-label]="item.label"
+              [matTooltipClass]="'API-tooltip'"
+            >
+              <span class="docs-faceted-list-item-text">
+                {{item.label}}
+                <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
+              </span>
+            </div>
+          }
+
+          <!-- Nav Button Expand/Collapse -->
+          @if (
+            (item.children && item.level === expandableLevel()) || item.level === collapsableLevel()
+          ) {
+            <button
+              type="button"
+              (click)="toggle(item)"
+              [attr.aria-label]="(item.isExpanded ? 'Collapse' : 'Expand') + ' ' + item.label"
+              [attr.aria-expanded]="item.isExpanded"
+              class="docs-secondary-nav-button"
+              [class.docs-faceted-list-item-active]="item | isActiveNavigationItem: activeItem()"
+              [class.docs-expanded-button]="item.children && item.level == collapsableLevel()"
+              [class.docs-not-expanded-button]="item.children && item.level === expandableLevel()"
+              [class.docs-nav-item-has-icon]="
+              item.children && item.level === expandableLevel() && !item.isExpanded"
+              [matTooltip]="item.label"
+              [matTooltipDisabled]="item.label.length < 27"
+              matTooltipPosition="after"
+              [attr.aria-label]="item.label"
+              [matTooltipClass]="'API-tooltip'"
+            >
+              @if (item.children && item.level === collapsableLevel()) {
+                <docs-icon>arrow_back</docs-icon>
+              }
+              <span class="docs-faceted-list-item-text">
+                {{ item.label }}
+                <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
+              </span>
+            </button>
+          }
+        }
+        @if (displayItemsToLevel() > item.level && item.children?.length > 0) {
+          <ng-container *ngTemplateOutlet="navigationList; context: {$implicit: item.children}" />
+        }
+      </li>
+    }
+  </ul>
+</ng-template>
+
+<ng-container *ngTemplateOutlet="navigationList; context: {$implicit: navigationItems()}" />
+
+<ng-template let-item #itemStatus>
+  @if (item.status === 'new') {
+    <span class="tag docs-new-item">New</span>
+  } @else if (item.status === 'updated') {
+    <span class="tag docs-updated-item">Updated</span>
+  }
+</ng-template>

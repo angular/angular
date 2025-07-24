@@ -1,0 +1,27 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "essentials",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/assets/images:components.svg",
+        "//adev/src/assets/images:dependency_injection.svg",
+        "//adev/src/assets/images:directives.svg",
+        "//adev/src/assets/images:overview.svg",
+        "//adev/src/assets/images:roadmap.svg",
+        "//adev/src/assets/images:signals.svg",
+        "//adev/src/assets/images:templates.svg",
+        "//adev/src/assets/images:what_is_angular.svg",
+    ],
+    mermaid_blocks = True,
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
+    visibility = ["//adev:__subpackages__"],
+)

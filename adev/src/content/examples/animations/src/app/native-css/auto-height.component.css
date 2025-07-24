@@ -1,0 +1,27 @@
+.container {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 1s;
+}
+
+.container.open {
+  grid-template-rows: 1fr;
+}
+
+.container .content {
+  min-height: 0;
+  transition: visibility 1s;
+  padding: 0 20px;
+  visibility: hidden;
+  margin-top: 1em;
+  font-weight: bold;
+  font-size: 20px;
+  background-color: blue;
+  color: #ebebeb;
+  overflow: hidden;
+}
+
+.container.open .content {
+  visibility: visible;
+}

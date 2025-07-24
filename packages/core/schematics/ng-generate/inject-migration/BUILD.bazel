@@ -1,0 +1,25 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+copy_to_bin(
+    name = "static_files",
+    srcs = ["schema.json"],
+)
+
+ts_project(
+    name = "inject-migration",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
+        "//packages/core/schematics/utils:utils_rjs",
+        "//packages/core/schematics/utils/tsurge/helpers/ast:ast_rjs",
+    ],
+)

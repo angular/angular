@@ -1,0 +1,501 @@
+<!-- Primary Nav -->
+<div
+  [attr.id]="PRIMARY_NAV_ID"
+  class="wrapper"
+  (docsClickOutside)="closeMobileNav()"
+  [docsClickOutsideIgnore]="[SECONDARY_NAV_ID]"
+>
+  <!-- Mobile nav bar -->
+  <div class="adev-mobile-nav-bar">
+    <!-- Logo icon -->
+    <button
+      type="button"
+      class="adev-mobile-nav-button"
+      aria-label="Toggle mobile navigation"
+      (click)="openMobileNav($event)"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 223 236" width="32">
+        <g clip-path="url(#2a)">
+          <path
+            fill="url(#2b)"
+            d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+          />
+          <path
+            fill="url(#2c)"
+            d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+          />
+        </g>
+        <defs>
+          <linearGradient
+            id="2b"
+            x1="49.009"
+            x2="225.829"
+            y1="213.75"
+            y2="129.722"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#E40035" />
+            <stop offset=".24" stop-color="#F60A48" />
+            <stop offset=".352" stop-color="#F20755" />
+            <stop offset=".494" stop-color="#DC087D" />
+            <stop offset=".745" stop-color="#9717E7" />
+            <stop offset="1" stop-color="#6C00F5" />
+          </linearGradient>
+          <linearGradient
+            id="2c"
+            x1="41.025"
+            x2="156.741"
+            y1="28.344"
+            y2="160.344"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#FF31D9" />
+            <stop offset="1" stop-color="#FF5BE1" stop-opacity="0" />
+          </linearGradient>
+          <clipPath id="2a"><path fill="#fff" d="M0 0h223v236H0z" /></clipPath>
+        </defs>
+      </svg>
+      <docs-icon role="presentation">menu</docs-icon>
+    </button>
+  </div>
+
+  <nav
+    class="adev-nav-primary docs-scroll-hide"
+    [class.adev-nav-primary--open]="isMobileNavigationOpened()"
+    [class.adev-nav-primary--rc]="currentDocsVersionMode === 'rc'"
+    [class.adev-nav-primary--next]="currentDocsVersionMode === 'next'"
+    [class.adev-nav-primary--deprecated]="currentDocsVersionMode === 'deprecated'"
+  >
+    <button
+      type="button"
+      class="adev-close-nav"
+      (click)="closeMobileNav()"
+      aria-label="Close navigation"
+    >
+      <docs-icon role="presentation">close</docs-icon>
+    </button>
+    <!-- Top section of primary nav -->
+    <ul class="adev-nav__top">
+      <!-- Home / Angular logo -->
+      <li
+        class="adev-nav-item adev-nav-item--logo"
+        [class.adev-nav-item--active]="activeRouteItem() === HOME_ROUTE"
+      >
+        <a aria-label="Angular homepage" routerLink="/">
+          <!-- Logo Symbol -->
+          @if(!isUwu) {
+          <svg class="angular-logo" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 223 236" width="32">
+            <g clip-path="url(#a)">
+              <path
+                fill="url(#b)"
+                d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+              />
+              <path
+                fill="url(#c)"
+                d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+              />
+            </g>
+            <defs>
+              <linearGradient
+                id="b"
+                x1="49.009"
+                x2="225.829"
+                y1="213.75"
+                y2="129.722"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#E40035" />
+                <stop offset=".24" stop-color="#F60A48" />
+                <stop offset=".352" stop-color="#F20755" />
+                <stop offset=".494" stop-color="#DC087D" />
+                <stop offset=".745" stop-color="#9717E7" />
+                <stop offset="1" stop-color="#6C00F5" />
+              </linearGradient>
+              <linearGradient
+                id="c"
+                x1="41.025"
+                x2="156.741"
+                y1="28.344"
+                y2="160.344"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#FF31D9" />
+                <stop offset="1" stop-color="#FF5BE1" stop-opacity="0" />
+              </linearGradient>
+              <clipPath id="a">
+                <path fill="#fff" d="M0 0h223v236H0z" />
+              </clipPath>
+            </defs>
+          </svg>
+        } @else {
+          <img
+            src="assets/images/uwu.png"
+            style="width: auto; margin: 0"
+            class="uwu-logo"
+            alt="Angular logo"
+            height="34"/>
+        }
+        </a>
+
+        <!-- Version picker for v18+ -->
+        <div class="adev-nav-item">
+          <button
+            type="button"
+            aria-label="Select Angular version"
+            role="menu"
+            class="adev-version-button"
+            [class.adev-mini-menu-open]="openedMenu === 'version-picker'"
+            [cdkMenuTriggerFor]="docsVersionMiniMenu"
+            [cdkMenuPosition]="miniMenuPositions"
+            (cdkMenuClosed)="closeMenu()"
+            (click)="openVersionMenu($event)"
+          >
+            {{ currentDocsVersion().displayName }}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="15"
+              viewBox="0 -960 960 960"
+              width="15"
+              fill="inherit"
+            >
+              <path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z" />
+            </svg>
+          </button>
+
+          <ng-template #docsVersionMiniMenu>
+            <ul class="adev-mini-menu adev-version-picker" cdkMenu>
+              @for (item of versions(); track item) {
+              <li>
+                <a
+                  type="button"
+                  cdkMenuItem
+                  [href]="item.url"
+                  [attr.aria-label]="item.displayName"
+                >
+                  <span>{{ item.displayName }}</span>
+              </a>
+              </li>
+              }
+            </ul>
+          </ng-template>
+        </div>
+      </li>
+
+      <!-- Search -->
+      <li class="adev-nav-item">
+        <button
+          class="adev-nav-button"
+          type="button"
+          (click)="toggleSearchDialog($event)"
+          title="Search docs"
+        >
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="inherit"
+          >
+            <path
+              d="M14.583 15.48 9.104 10a4.591 4.591 0 0 1-1.458.844 5.156 5.156 0 0 1-1.771.302c-1.5 0-2.77-.52-3.813-1.563C1.022 8.542.5 7.285.5 5.813c0-1.473.52-2.73 1.563-3.771C3.103 1 4.367.479 5.854.479 7.326.48 8.58 1 9.614 2.042c1.035 1.041 1.553 2.298 1.553 3.77 0 .598-.098 1.174-.292 1.73A5.287 5.287 0 0 1 10 9.104l5.5 5.459-.917.916ZM5.854 9.895c1.125 0 2.083-.4 2.875-1.198a3.95 3.95 0 0 0 1.188-2.885 3.95 3.95 0 0 0-1.188-2.886C7.938 2.13 6.98 1.73 5.854 1.73c-1.139 0-2.107.4-2.906 1.198-.799.799-1.198 1.76-1.198 2.886 0 1.125.4 2.086 1.198 2.885.799.799 1.767 1.198 2.906 1.198Z"
+            />
+          </svg>
+          <span
+            class="adev-nav-item__label adev-search-desktop"
+            [attr.aria-label]="'Open search dialog with ' + searchTitle"
+          >
+            <kbd>{{ searchLabel }}</kbd>
+            <kbd>K</kbd>
+          </span>
+        </button>
+      </li>
+
+      <!-- Docs -->
+      <li class="adev-nav-item" [class.adev-nav-item--active]="activeRouteItem() === DOCS_ROUTE">
+        <a [routerLink]="DOCS_ROUTE">
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="18"
+            fill="inherit"
+          >
+            <path
+              d="M3.645 13.792h6.708v-1.25H3.645v1.25Zm0-3.542h6.708V9H3.645v1.25Zm-2.063 7.083a1.2 1.2 0 0 1-.875-.375 1.2 1.2 0 0 1-.375-.875V1.917a1.2 1.2 0 0 1 .375-.875 1.2 1.2 0 0 1 .875-.375h7.52l4.563 4.562v10.854a1.2 1.2 0 0 1-.375.875 1.2 1.2 0 0 1-.875.375H1.582ZM8.478 5.792V1.917H1.582v14.166h10.833V5.792H8.478Z"
+            />
+          </svg>
+          <span class="adev-nav-item__label">Docs</span>
+        </a>
+      </li>
+
+      <!-- Tutorials -->
+      <li
+        class="adev-nav-item"
+        [class.adev-nav-item--active]="activeRouteItem() === TUTORIALS_ROUTE"
+      >
+        <a [routerLink]="TUTORIALS_ROUTE">
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="10"
+            fill="inherit"
+          >
+            <path
+              d="m5.668 10-5-5 5-5 1.187 1.188L3.022 5.02l3.813 3.812L5.668 10Zm6.667 0-1.188-1.188L14.98 4.98l-3.812-3.812L12.335 0l5 5-5 5Z"
+            />
+          </svg>
+          <span class="adev-nav-item__label">Tutorials</span>
+        </a>
+      </li>
+
+      <!-- Playground -->
+      <li
+        class="adev-nav-item"
+        [class.adev-nav-item--active]="activeRouteItem() === PLAYGROUND_ROUTE"
+      >
+        <a [routerLink]="PLAYGROUND_ROUTE">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+            <path
+              d="M450.001-611.691v-32.386q-39.385-9.923-64.692-41.897-25.308-31.975-25.308-74.025 0-49.922 35.038-84.96 35.039-35.038 84.961-35.038t84.961 35.038q35.038 35.038 35.038 84.96 0 42.05-25.308 74.025-25.307 31.974-64.692 41.897v32.386l273.846 157.538q17.173 9.912 26.663 26.582 9.491 16.671 9.491 36.495v62.152q0 19.824-9.491 36.495-9.49 16.67-26.663 26.582L516.154-111.771q-17.203 9.846-36.217 9.846t-36.091-9.846L176.155-265.847q-17.173-9.912-26.663-26.582-9.491-16.671-9.491-36.495v-62.152q0-19.824 9.491-36.495 9.49-16.67 26.663-26.582l273.846-157.538Zm-6.155 364.537L200-387.461v58.537q0 3.078 1.539 5.962 1.538 2.885 4.615 4.808l267.692 154.692q3.077 1.923 6.154 1.923t6.154-1.923l267.692-154.692q3.077-1.923 4.615-4.808 1.539-2.884 1.539-5.962v-58.537L516.154-247.154q-17.203 9.847-36.217 9.847t-36.091-9.847Zm6.155-162.847V-542.77L250.46-427.691l223.386 128.846q3.077 1.924 6.154 1.924t6.154-1.924l223.001-128.846L509.999-542.77v132.769h-59.998ZM480-699.999q25 0 42.5-17.5t17.5-42.5q0-25-17.5-42.5t-42.5-17.5q-25 0-42.5 17.5t-17.5 42.5q0 25 17.5 42.5t42.5 17.5Zm-2.308 538.46Z"
+            />
+          </svg>
+          <span class="adev-nav-item__label">Playground</span>
+        </a>
+      </li>
+
+      <!-- API Ref -->
+      <li
+        class="adev-nav-item"
+        [class.adev-nav-item--active]="activeRouteItem() === REFERENCE_ROUTE"
+      >
+        <a [routerLink]="REFERENCE_ROUTE">
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="18"
+            fill="inherit"
+          >
+            <path
+              d="M3.645 13.792h6.708v-1.25H3.645v1.25Zm0-3.542h6.708V9H3.645v1.25Zm-2.063 7.083a1.2 1.2 0 0 1-.875-.375 1.2 1.2 0 0 1-.375-.875V1.917a1.2 1.2 0 0 1 .375-.875 1.2 1.2 0 0 1 .875-.375h7.52l4.563 4.562v10.854a1.2 1.2 0 0 1-.375.875 1.2 1.2 0 0 1-.875.375H1.582ZM8.478 5.792V1.917H1.582v14.166h10.833V5.792H8.478Z"
+            />
+          </svg>
+          <span class="adev-nav-item__label">Reference</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Bottom section of primary nav -->
+    <div class="adev-nav__bottom">
+      <!-- Social Icons Dots -->
+      <div class="adev-nav-item" [class.adev-nav-item--active]="openedMenu === 'social'">
+        <button
+          type="button"
+          [cdkMenuTriggerFor]="socialMiniMenu"
+          [cdkMenuPosition]="miniMenuPositions"
+          aria-label="Open social media links"
+          (cdkMenuClosed)="closeMenu()"
+          (cdkMenuOpened)="openMenu('social')"
+        >
+          <docs-icon role="presentation">more_horiz</docs-icon>
+        </button>
+
+        <ng-template #socialMiniMenu>
+          <ul class="adev-mini-menu" cdkMenu>
+            <li>
+              <a
+                [href]="YOUTUBE"
+                cdkMenuItem
+                title="Angular YouTube channel"
+                target="_blank"
+                rel="noopener"
+              >
+                <!-- Youtube Icon -->
+                <svg
+                  width="20"
+                  height="15"
+                  viewBox="0 0 20 15"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18.7556 2.94783C18.5803 1.98018 17.745 1.27549 16.7756 1.05549C15.325 0.747832 12.6403 0.527832 9.73563 0.527832C6.83266 0.527832 4.105 0.747832 2.65266 1.05549C1.685 1.27549 0.847969 1.93549 0.672656 2.94783C0.495625 4.04783 0.320312 5.58783 0.320312 7.56783C0.320312 9.54783 0.495625 11.0878 0.715625 12.1878C0.892656 13.1555 1.72797 13.8602 2.69563 14.0802C4.23563 14.3878 6.87563 14.6078 9.78031 14.6078C12.685 14.6078 15.325 14.3878 16.865 14.0802C17.8327 13.8602 18.668 13.2002 18.845 12.1878C19.0203 11.0878 19.2403 9.50314 19.285 7.56783C19.1956 5.58783 18.9756 4.04783 18.7556 2.94783ZM7.36031 10.6478V4.48783L12.728 7.56783L7.36031 10.6478Z"
+                  />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                [href]="X"
+                cdkMenuItem
+                title="Angular X (formerly Twitter) profile"
+                target="_blank"
+                rel="noopener"
+              >
+                <!-- X Icon -->
+                <svg
+                  width="17"
+                  height="16"
+                  viewBox="0 0 17 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0.04145 0.04432l6.56351 8.77603L0 15.95564h1.48651l5.78263-6.24705 4.6722 6.24705h5.05865l-6.9328-9.26967L16.21504.04432h-1.48651l-5.32552 5.75341L5.1001.04432H.04145Zm2.18602 1.09497h2.32396l10.26221 13.72122h-2.32396L2.22747 1.13928Z"
+                  />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                [href]="BLUESKY"
+                cdkMenuItem
+                title="Angular Bluesky profile"
+                target="_blank"
+                rel="noopener"
+              >
+                <!-- Bluesky Icon -->
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+			<path
+				d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.697-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948Z"></path>
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a
+                [href]="MEDIUM"
+                cdkMenuItem
+                title="Angular Medium blog"
+                target="_blank"
+                rel="noopener"
+              >
+                <!-- Medium Icon -->
+                <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M7 6A7 7 0 107 20 7 7 0 107 6zM18 6.5A3 6.5 0 1018 19.5 3 6.5 0 1018 6.5zM23 8A1 5 0 1023 18 1 5 0 1023 8z"
+                  ></path>
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a [href]="GITHUB" cdkMenuItem title="Angular Github" target="_blank" rel="noopener">
+                <!-- Github Icon -->
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M7.59948 19.0428C7.59948 18.8069 7.59118 18.182 7.58656 17.3526C4.89071 17.9526 4.32164 16.0201 4.32164 16.0201C3.88087 14.8718 3.24533 14.5663 3.24533 14.5663C2.36518 13.9492 3.31179 13.9621 3.31179 13.9621C4.28471 14.0323 4.79656 14.9868 4.79656 14.9868C5.66102 16.5052 7.06456 16.0672 7.61748 15.8125C7.70564 15.17 7.95579 14.732 8.23271 14.4837C6.08056 14.2331 3.81764 13.3801 3.81764 9.57199C3.81764 8.48737 4.19564 7.6003 4.81548 6.90522C4.71625 6.65414 4.38302 5.64384 4.91056 4.27537C4.91056 4.27537 5.72471 4.00814 7.57594 5.29399C8.34856 5.07384 9.17795 4.96307 10.0027 4.95937C10.8256 4.96307 11.6546 5.07384 12.429 5.29399C14.2793 4.00814 15.0921 4.27537 15.0921 4.27537C15.621 5.64337 15.2883 6.65368 15.1881 6.90522C15.8093 7.6003 16.1841 8.48737 16.1841 9.57199C16.1841 13.3898 13.9179 14.2298 11.7589 14.4758C12.1073 14.7828 12.4166 15.3892 12.4166 16.3165C12.4166 17.6452 12.4041 18.7174 12.4041 19.0428C12.4041 19.3091 12.579 19.6178 13.071 19.5205C16.9193 18.2041 19.6936 14.4814 19.6936 10.0926C19.6936 4.60353 15.3538 0.154297 10.0009 0.154297C4.64887 0.154297 0.309021 4.60353 0.309021 10.0926C0.309483 14.4828 3.08656 18.2078 6.9381 19.5218C7.42225 19.6128 7.59948 19.3058 7.59948 19.0428Z"
+                  />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a [href]="DISCORD" cdkMenuItem title="Angular Discord" target="_blank" rel="noopener">
+                <!-- Discord Icon -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 127.14 96.36"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    >
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,110.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"
+                    />
+                  </svg>
+              </a>
+            </li>
+          </ul>
+        </ng-template>
+      </div>
+      <!-- TODO: Refactor this and make it better. Accessible, animated, etc. -->
+      <div class="adev-nav-item" [class.adev-nav-item--active]="openedMenu === 'theme-picker'">
+        <button
+          type="button"
+          [cdkMenuTriggerFor]="themeMiniMenu"
+          [cdkMenuPosition]="miniMenuPositions"
+          aria-label="Open theme picker"
+          (cdkMenuClosed)="closeMenu()"
+          (cdkMenuOpened)="openMenu('theme-picker')"
+        >
+          <docs-icon role="presentation">
+            @switch (theme()) { @case ('light') {
+            {{ 'light_mode' }}
+            } @case ('dark') {
+            {{ 'dark_mode' }}
+            } @case ('auto') {
+            {{ 'routine' }}
+            } }
+          </docs-icon>
+        </button>
+
+        <ng-template #themeMiniMenu>
+          <ul class="adev-mini-menu" cdkMenu>
+            <li>
+              <button
+                type="button"
+                cdkMenuItem
+                (click)="setTheme('auto')"
+                aria-label="Set default system theme"
+              >
+                <docs-icon class="docs-icon_high-contrast">routine</docs-icon>
+                <span>System</span>
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                cdkMenuItem
+                (click)="setTheme('dark')"
+                aria-label="Set dark theme"
+              >
+                <docs-icon class="docs-icon_high-contrast">dark_mode</docs-icon>
+                <span>Dark</span>
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                cdkMenuItem
+                (click)="setTheme('light')"
+                aria-label="Set light theme"
+              >
+                <docs-icon class="docs-icon_high-contrast">light_mode</docs-icon>
+                <span>Light</span>
+              </button>
+            </li>
+          </ul>
+        </ng-template>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Tablet: Second horizontal nav layer which opens the secondary nav -->
+  @if (activeRouteItem() === DOCS_ROUTE || activeRouteItem() === REFERENCE_ROUTE) {
+  <div class="adev-secondary-tablet-bar">
+    <button type="button" (click)="openMobileNav($event)">
+      <docs-icon class="docs-icon_high-contrast">menu</docs-icon>
+      @if (activeRouteItem() === DOCS_ROUTE) {
+      <span>Docs</span>
+      } @if (activeRouteItem() === REFERENCE_ROUTE) {
+      <span>API</span>
+      }
+    </button>
+  </div>
+  }
+</div>

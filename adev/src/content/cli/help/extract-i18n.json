@@ -1,0 +1,76 @@
+{
+  "name": "extract-i18n",
+  "command": "ng extract-i18n [project]",
+  "shortDescription": "Extracts i18n messages from source code.",
+  "aliases": [],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "build-target",
+      "type": "string",
+      "description": "A builder target to extract i18n messages in the format of `project:target[:configuration]`. You can also pass in more than one configuration name as a comma-separated list. Example: `project:target:production,staging`."
+    },
+    {
+      "name": "configuration",
+      "type": "string",
+      "aliases": [
+        "c"
+      ],
+      "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.dev/reference/configs/workspace-config#alternate-build-configurations."
+    },
+    {
+      "name": "format",
+      "type": "string",
+      "default": "xlf",
+      "enum": [
+        "xmb",
+        "xlf",
+        "xlif",
+        "xliff",
+        "xlf2",
+        "xliff2",
+        "json",
+        "arb",
+        "legacy-migrate"
+      ],
+      "description": "Output format for the generated file."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "i18n-duplicate-translation",
+      "type": "string",
+      "enum": [
+        "error",
+        "warning",
+        "ignore"
+      ],
+      "description": "How to handle duplicate translations."
+    },
+    {
+      "name": "out-file",
+      "type": "string",
+      "description": "Name of the file to output."
+    },
+    {
+      "name": "output-path",
+      "type": "string",
+      "description": "Path where output will be placed."
+    },
+    {
+      "name": "progress",
+      "type": "boolean",
+      "default": true,
+      "description": "Log progress to the console."
+    },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "The name of the project to build. Can be an application or a library.",
+      "positional": 0
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
+load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
+
+package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
+
+extract_api_to_json(
+    name = "test",
+    srcs = [
+        "fake-source.mts",
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:dummy_package",
+    ],
+    entry_point = "fake-source.mts",
+    import_map = {
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.mts": "@angular/dummy-package",
+    },
+    module_name = "@angular/core",
+    output_name = "api.json",
+    private_modules = [""],
+    repo = "angular/angular",
+)
+
+extract_api_to_json(
+    name = "test_with_extra_entries",
+    srcs = [
+        "fake-source.mts",
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:dummy_package",
+    ],
+    entry_point = "fake-source.mts",
+    extra_entries = [
+        "extra.json",
+    ],
+    import_map = {
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.mts": "@angular/dummy-package",
+    },
+    module_name = "@angular/core",
+    output_name = "extra_api.json",
+    private_modules = [""],
+    repo = "angular/angular",
+)
+
+filegroup(
+    name = "source_files",
+    srcs = ["fake-source.mts"],
+)
+
+ts_project(
+    name = "unit_test_lib",
+    testonly = True,
+    srcs =
+        glob(["*.spec.mts"]) + [
+            "fake-examples.mts",
+        ],
+    deps = [
+        "//adev:node_modules/@angular/compiler-cli",
+        "//adev:node_modules/@types/node",
+        "//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json_lib_rjs",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "unit_tests",
+    data = [":unit_test_lib_rjs"],
+)

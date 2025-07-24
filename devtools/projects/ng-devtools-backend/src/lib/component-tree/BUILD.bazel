@@ -1,0 +1,46 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "get-roots",
+    srcs = ["get-roots.ts"],
+)
+
+ts_project(
+    name = "core-enums",
+    srcs = ["core-enums.ts"],
+)
+
+ts_project(
+    name = "component-tree",
+    srcs = ["component-tree.ts"],
+    deps = [
+        ":core-enums_rjs",
+        ":get-roots_rjs",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:property_mutation_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:directive-forest_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api:ng-debug-api_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer:state-serializer_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = glob(["*.spec.ts"]),
+    deps = [
+        ":component-tree_rjs",
+        ":get-roots_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/jasmine",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [":test_lib_rjs"],
+)

@@ -1,0 +1,24 @@
+load("//tools:defaults2.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "package.json",
+    "schema.json",
+])
+
+filegroup(
+    name = "sources",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+)
+
+ng_project(
+    name = "config",
+    srcs = [":sources"],
+    deps = [
+        "//packages/core:core_rjs",
+    ],
+)

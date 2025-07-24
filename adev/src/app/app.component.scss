@@ -1,0 +1,123 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+:host {
+  margin-inline: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  min-height: 100vh;
+
+  // Display top level banner below the navigation.
+  docs-top-level-banner {
+    @include mq.for-tablet {
+      top: 4.6875rem;
+    }
+
+    @include mq.for-phone-only {
+      top: 3.75rem;
+      transform: translateY(0);
+      transition: transform 0.3s ease-out 0.6s;
+    }
+
+    // show it under the navbar.
+    @include mq.for-tablet-landscape-down {
+      z-index: calc(var(--z-index-nav) - 1);
+    }
+  }
+
+  // Case: If secondary navigation exists, display banner below secondary navigation for tablets.
+  &:has(adev-secondary-navigation) {
+    docs-top-level-banner {
+      @include mq.for-tablet {
+        top: 8.125rem;
+      }
+    }
+  }
+
+  // Case: If primary navigation is opened, display banner at the top of the page.
+  &:has(.adev-nav-primary--open) {
+    docs-top-level-banner {
+      @include mq.for-phone-only {
+        transform: translateY(-3.75rem);
+        transition: transform 0.3s ease-in;
+      }
+    }
+  }
+
+  @include mq.for-tablet-landscape-down {
+    flex-direction: column;
+  }
+  // If navs are open, render a blurry background over content
+  &:has(.docs-nav-secondary--open),
+  &:has(.adev-nav-primary--open) {
+    .docs-app-main-content {
+      &::after {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+  }
+
+  &:has(.adev-home) {
+    .adev-nav {
+      width: 0;
+      height: 0;
+    }
+
+    @include mq.for-tablet-landscape-up {
+      footer {
+        margin-left: var(--primary-nav-width);
+      }
+    }
+  }
+}
+
+.adev-skip {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1000;
+  background: var(--primary-contrast);
+  color: var(--page-background);
+  border: 1px solid var(--vivid-pink);
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  transform: translateY(-150%);
+  transition: transform 0.3s ease-out;
+  &:focus {
+    transform: translateY(0);
+  }
+}
+
+.docs-app-main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 2560px;
+
+  // If navs are open, render a blurry background over content
+  ::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(2px);
+    background-color: color-mix(in srgb, var(--gray-1000) 5%, transparent);
+    z-index: 50;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  @include mq.for-tablet {
+    width: 100%;
+  }
+}
+
+footer {
+  margin-top: auto;
+}

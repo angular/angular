@@ -1,0 +1,27 @@
+<div class="search-icon">
+  <mat-icon color="primary">search</mat-icon>
+</div>
+<input
+  (input)="emitFilter($event)"
+  (keydown.enter)="emitNextMatched()"
+  (keydown.shift.enter)="emitPrevMatched()"
+  class="filter-input"
+  placeholder="Search components"
+/>
+@if (matchesCount()) {
+  <div class="matches-count">
+    @if (currentMatch(); as currentMatch) {
+      {{ currentMatch }} of {{ matchesCount() }}
+    } @else {
+      {{ matchesCount() === 1 ? "1 match" : `${matchesCount()} matches` }}
+    }
+  </div>
+  <div class="up-down-buttons">
+    <button (click)="emitPrevMatched()" matTooltip="Previous match" aria-label="Previous match">
+      <mat-icon class="mat-icon-rtl-mirror"> expand_less </mat-icon>
+    </button>
+    <button (click)="emitNextMatched()" matTooltip="Next match" aria-label="Next match">
+      <mat-icon class=""> expand_more </mat-icon>
+    </button>
+  </div>
+}

@@ -1,0 +1,13 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "environment",
+    srcs = [
+        "environment.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools",
+    ],
+)

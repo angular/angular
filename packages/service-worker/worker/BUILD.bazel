@@ -1,0 +1,37 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "worker",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = [
+            "main.ts",
+        ],
+    ),
+)
+
+ts_project(
+    name = "main",
+    srcs = ["main.ts"],
+    deps = [":worker_rjs"],
+)
+
+esbuild(
+    name = "ngsw_worker",
+    entry_point = ":main.ts",
+    format = "iife",
+    platform = "browser",
+    # All the browsers supported by Angular support `ES2017`, so we can ship the worker bundle with
+    # target of `ES2017`. Technically even ES2020 can work since the worker does not use any of the
+    # features that are unavailable in some supported browsers. This is risky though, so we keep ES2017.
+    target = "es2017",
+    deps = [
+        ":main_rjs",
+    ],
+)

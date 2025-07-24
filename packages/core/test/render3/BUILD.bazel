@@ -1,0 +1,90 @@
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "render3_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*_perf.ts",
+            "domino.d.ts",
+            "load_domino.ts",
+            "is_shape_of.ts",
+            "jit_spec.ts",
+            "matchers.ts",
+        ],
+    ),
+    deps = [
+        ":matchers_rjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/common:common_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/rxjs-interop:rxjs-interop_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
+        "//packages/core/src/interface:interface_rjs",
+        "//packages/core/src/util:util_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
+    ],
+)
+
+ts_project(
+    name = "matchers",
+    testonly = True,
+    srcs = [
+        "is_shape_of.ts",
+        "matchers.ts",
+    ],
+    deps = [
+        "//packages/core:core_rjs",
+    ],
+)
+
+ts_project(
+    name = "domino",
+    testonly = True,
+    srcs = [
+        "load_domino.ts",
+    ],
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/platform-server:bundled_domino_lib",
+        "//packages/platform-server:platform-server_rjs",
+    ],
+)
+
+ts_project(
+    name = "render3_node_lib",
+    testonly = True,
+    srcs = [],
+    deps = [
+        ":domino_rjs",
+        ":render3_lib_rjs",
+    ],
+)
+
+angular_jasmine_test(
+    name = "render3",
+    data = [
+        ":render3_node_lib_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "render3_web",
+    deps = [
+        ":render3_lib_rjs",
+    ],
+)

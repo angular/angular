@@ -1,0 +1,84 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should capture signal based input flag in directive definition",
+      "inputFiles": ["input_directive_definition.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "input_directive_definition.js",
+              "generated": "input_directive_definition.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    },
+    {
+      "description": "should capture signal based input flag in component definition",
+      "inputFiles": ["input_component_definition.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "input_component_definition.js",
+              "generated": "input_component_definition.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    },
+    {
+      "description": "should handle a mix of zone and signal inputs",
+      "inputFiles": ["mixed_input_types.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "mixed_input_types.js",
+              "generated": "mixed_input_types.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "linked compile"
+      ]
+    },
+    {
+      "description": "should not capture the transform function in the compiled JS for signal inputs",
+      "inputFiles": ["transform_not_captured.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "transform_not_captured.js",
+              "generated": "transform_not_captured.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    },
+    {
+      "description": "should support complex transform functions (unlike the requirements with @Input)",
+      "inputFiles": ["complex_transform_functions.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "complex_transform_functions.js",
+              "generated": "complex_transform_functions.js"
+            }
+          ],
+          "failureMessage": "Incorrect definition"
+        }
+      ]
+    }
+  ]
+}

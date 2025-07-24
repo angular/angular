@@ -1,0 +1,7 @@
+{
+  "title": "Add property binding to components",
+  "type": "editor",
+  "answerSrc": "../07-dynamic-template-values/src",
+  "answerRootDir": "../07-dynamic-template-values",
+  "openFiles": ["src/app/home/home.ts"]
+}

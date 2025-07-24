@@ -1,0 +1,31 @@
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
+        "//packages/language-service/src:src_rjs",
+        "//packages/language-service/src/utils:utils_rjs",
+        "//packages/language-service/testing:testing_rjs",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib_rjs",
+        "//:node_modules/rxjs",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
+        "//packages/core:npm_package",
+    ],
+    shard_count = 8,
+)

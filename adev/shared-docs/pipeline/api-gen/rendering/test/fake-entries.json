@@ -1,0 +1,1289 @@
+{
+  "moduleName": "@angular/core",
+  "entries": [
+    {
+      "name": "NgTemplateOutlet",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "ngTemplateOutletContext",
+          "type": "C",
+          "memberType": "property",
+          "memberTags": ["input"],
+          "description": "A context object to attach to the {@link EmbeddedViewRef}. This should be an\nobject, the object's keys will be available for binding by the local template `let`\ndeclarations.\nUsing the key `$implicit` in the context object will set its value as default.",
+          "jsdocTags": [],
+          "inputAlias": "ngTemplateOutletContext",
+          "isRequiredInput": false
+        },
+        {
+          "name": "ngTemplateOutlet",
+          "type": "TemplateRef<C>",
+          "memberType": "property",
+          "memberTags": ["input"],
+          "description": "A string defining the template reference and optionally the context object for the template.",
+          "jsdocTags": [],
+          "inputAlias": "ngTemplateOutlet",
+          "isRequiredInput": false
+        },
+        {
+          "name": "ngTemplateOutletInjector",
+          "type": "Injector",
+          "memberType": "property",
+          "memberTags": ["input"],
+          "description": "Injector to be used within the embedded view.",
+          "jsdocTags": [],
+          "inputAlias": "ngTemplateOutletInjector",
+          "isRequiredInput": false
+        },
+        {
+          "name": "ngOnChanges",
+          "signatures": [
+            {
+              "name": "ngOnChanges",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "changes",
+                  "description": "",
+                  "type": "SimpleChanges",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "changes",
+                "description": "",
+                "type": "SimpleChanges",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnChanges",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [{"name": "C", "default": "unknown"}],
+      "description": "",
+      "jsdocTags": [
+        {"name": "ngModule", "comment": "CommonModule"},
+        {
+          "name": "description",
+          "comment": "Inserts an embedded view from a prepared `TemplateRef`.\n\nYou can attach a context object to the `EmbeddedViewRef` by setting `[ngTemplateOutletContext]`.\n`[ngTemplateOutletContext]` should be an object, the object's keys will be available for binding\nby the local template `let` declarations."
+        },
+        {
+          "name": "usageNotes",
+          "comment": "```\n<ng-container *ngTemplateOutlet=\"templateRefExp; context: contextExp\"></ng-container>\n```\n\nUsing the key `$implicit` in the context object will set its value as default.\n\n### Example\n\n{@example common/ngTemplateOutlet/ts/module.ts region='NgTemplateOutlet'}"
+        },
+        {"name": "publicApi", "comment": ""}
+      ],
+      "rawComment": "/**\n * @ngModule CommonModule\n *\n * @description\n *\n * Inserts an embedded view from a prepared `TemplateRef`.\n *\n * You can attach a context object to the `EmbeddedViewRef` by setting `[ngTemplateOutletContext]`.\n * `[ngTemplateOutletContext]` should be an object, the object's keys will be available for binding\n * by the local template `let` declarations.\n *\n * @usageNotes\n * ```\n * <ng-container *ngTemplateOutlet=\"templateRefExp; context: contextExp\"></ng-container>\n * ```\n *\n * Using the key `$implicit` in the context object will set its value as default.\n *\n * ### Example\n *\n * {@example common/ngTemplateOutlet/ts/module.ts region='NgTemplateOutlet'}\n *\n * @publicApi\n */",
+      "implements": ["OnChanges"],
+      "isStandalone": true,
+      "selector": "[ngTemplateOutlet]",
+      "exportAs": [],
+      "source": {
+        "filePath": "/packages/common/src/directives/ng_template_outlet.ts",
+        "startLine": 45,
+        "endLine": 126
+      }
+    },
+    {
+      "name": "ViewRef",
+      "isAbstract": true,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "destroy",
+          "signatures": [
+            {
+              "name": "destroy",
+              "entryType": "function",
+              "description": "Destroys this view and all of the data structures associated with it.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * Destroys this view and all of the data structures associated with it.\n   */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "destroy",
+            "description": "Destroys this view and all of the data structures associated with it.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Destroys this view and all of the data structures associated with it.\n   */"
+          },
+          "entryType": "function",
+          "description": "Destroys this view and all of the data structures associated with it.",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Destroys this view and all of the data structures associated with it.\n   */",
+          "memberType": "method",
+          "memberTags": ["abstract"]
+        },
+        {
+          "name": "destroyed",
+          "type": "boolean",
+          "memberType": "getter",
+          "memberTags": ["abstract"],
+          "description": "Reports whether this view has been destroyed.",
+          "jsdocTags": [
+            {
+              "name": "returns",
+              "comment": "True after the `destroy()` method has been called, false otherwise."
+            }
+          ]
+        },
+        {
+          "name": "onDestroy",
+          "signatures": [
+            {
+              "name": "onDestroy",
+              "entryType": "function",
+              "description": "A lifecycle hook that provides additional developer-defined cleanup\nfunctionality for views.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "A handler function that cleans up developer-defined data\nassociated with a view. Called when the `destroy()` method is invoked."
+                }
+              ],
+              "params": [
+                {
+                  "name": "callback",
+                  "description": "A handler function that cleans up developer-defined data\nassociated with a view. Called when the `destroy()` method is invoked.",
+                  "type": "Function",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * A lifecycle hook that provides additional developer-defined cleanup\n   * functionality for views.\n   * @param callback A handler function that cleans up developer-defined data\n   * associated with a view. Called when the `destroy()` method is invoked.\n   */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "callback",
+                "description": "A handler function that cleans up developer-defined data\nassociated with a view. Called when the `destroy()` method is invoked.",
+                "type": "Function",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "onDestroy",
+            "description": "A lifecycle hook that provides additional developer-defined cleanup\nfunctionality for views.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "A handler function that cleans up developer-defined data\nassociated with a view. Called when the `destroy()` method is invoked."
+              }
+            ],
+            "rawComment": "/**\n   * A lifecycle hook that provides additional developer-defined cleanup\n   * functionality for views.\n   * @param callback A handler function that cleans up developer-defined data\n   * associated with a view. Called when the `destroy()` method is invoked.\n   */"
+          },
+          "entryType": "function",
+          "description": "A lifecycle hook that provides additional developer-defined cleanup\nfunctionality for views.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "A handler function that cleans up developer-defined data\nassociated with a view. Called when the `destroy()` method is invoked."
+            }
+          ],
+          "rawComment": "/**\n   * A lifecycle hook that provides additional developer-defined cleanup\n   * functionality for views.\n   * @param callback A handler function that cleans up developer-defined data\n   * associated with a view. Called when the `destroy()` method is invoked.\n   */",
+          "memberType": "method",
+          "memberTags": ["abstract"]
+        },
+        {
+          "name": "markForCheck",
+          "signatures": [
+            {
+              "name": "markForCheck",
+              "entryType": "function",
+              "description": "When a view uses the {@link ChangeDetectionStrategy#OnPush} (checkOnce)\nchange detection strategy, explicitly marks the view as changed so that\nit can be checked again.\n\nComponents are normally marked as dirty (in need of rerendering) when inputs\nhave changed or events have fired in the view. Call this method to ensure that\na component is checked even if these triggers have not occurred.\n\n<!-- TODO: Add a link to a chapter on OnPush components -->",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * When a view uses the {@link ChangeDetectionStrategy#OnPush} (checkOnce)\n   * change detection strategy, explicitly marks the view as changed so that\n   * it can be checked again.\n   *\n   * Components are normally marked as dirty (in need of rerendering) when inputs\n   * have changed or events have fired in the view. Call this method to ensure that\n   * a component is checked even if these triggers have not occurred.\n   *\n   * <!-- TODO: Add a link to a chapter on OnPush components -->\n   *\n   */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "markForCheck",
+            "description": "When a view uses the {@link ChangeDetectionStrategy#OnPush} (checkOnce)\nchange detection strategy, explicitly marks the view as changed so that\nit can be checked again.\n\nComponents are normally marked as dirty (in need of rerendering) when inputs\nhave changed or events have fired in the view. Call this method to ensure that\na component is checked even if these triggers have not occurred.\n\n<!-- TODO: Add a link to a chapter on OnPush components -->",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * When a view uses the {@link ChangeDetectionStrategy#OnPush} (checkOnce)\n   * change detection strategy, explicitly marks the view as changed so that\n   * it can be checked again.\n   *\n   * Components are normally marked as dirty (in need of rerendering) when inputs\n   * have changed or events have fired in the view. Call this method to ensure that\n   * a component is checked even if these triggers have not occurred.\n   *\n   * <!-- TODO: Add a link to a chapter on OnPush components -->\n   *\n   */"
+          },
+          "entryType": "function",
+          "description": "When a view uses the {@link ChangeDetectionStrategy#OnPush} (checkOnce)\nchange detection strategy, explicitly marks the view as changed so that\nit can be checked again.\n\nComponents are normally marked as dirty (in need of rerendering) when inputs\nhave changed or events have fired in the view. Call this method to ensure that\na component is checked even if these triggers have not occurred.\n\n<!-- TODO: Add a link to a chapter on OnPush components -->",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * When a view uses the {@link ChangeDetectionStrategy#OnPush} (checkOnce)\n   * change detection strategy, explicitly marks the view as changed so that\n   * it can be checked again.\n   *\n   * Components are normally marked as dirty (in need of rerendering) when inputs\n   * have changed or events have fired in the view. Call this method to ensure that\n   * a component is checked even if these triggers have not occurred.\n   *\n   * <!-- TODO: Add a link to a chapter on OnPush components -->\n   *\n   */",
+          "memberType": "method",
+          "memberTags": ["abstract", "override"]
+        },
+        {
+          "name": "detach",
+          "signatures": [
+            {
+              "name": "detach",
+              "entryType": "function",
+              "description": "Detaches this view from the change-detection tree.\nA detached view is  not checked until it is reattached.\nUse in combination with `detectChanges()` to implement local change detection checks.\n\nDetached views are not checked during change detection runs until they are\nre-attached, even if they are marked as dirty.\n\n<!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n<!-- TODO: Add a live demo once ref.detectChanges is merged into master -->",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * Detaches this view from the change-detection tree.\n   * A detached view is  not checked until it is reattached.\n   * Use in combination with `detectChanges()` to implement local change detection checks.\n   *\n   * Detached views are not checked during change detection runs until they are\n   * re-attached, even if they are marked as dirty.\n   *\n   * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n   * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->\n   *\n   */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "detach",
+            "description": "Detaches this view from the change-detection tree.\nA detached view is  not checked until it is reattached.\nUse in combination with `detectChanges()` to implement local change detection checks.\n\nDetached views are not checked during change detection runs until they are\nre-attached, even if they are marked as dirty.\n\n<!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n<!-- TODO: Add a live demo once ref.detectChanges is merged into master -->",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Detaches this view from the change-detection tree.\n   * A detached view is  not checked until it is reattached.\n   * Use in combination with `detectChanges()` to implement local change detection checks.\n   *\n   * Detached views are not checked during change detection runs until they are\n   * re-attached, even if they are marked as dirty.\n   *\n   * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n   * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->\n   *\n   */"
+          },
+          "entryType": "function",
+          "description": "Detaches this view from the change-detection tree.\nA detached view is  not checked until it is reattached.\nUse in combination with `detectChanges()` to implement local change detection checks.\n\nDetached views are not checked during change detection runs until they are\nre-attached, even if they are marked as dirty.\n\n<!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n<!-- TODO: Add a live demo once ref.detectChanges is merged into master -->",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Detaches this view from the change-detection tree.\n   * A detached view is  not checked until it is reattached.\n   * Use in combination with `detectChanges()` to implement local change detection checks.\n   *\n   * Detached views are not checked during change detection runs until they are\n   * re-attached, even if they are marked as dirty.\n   *\n   * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n   * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->\n   *\n   */",
+          "memberType": "method",
+          "memberTags": ["abstract", "override"]
+        },
+        {
+          "name": "detectChanges",
+          "signatures": [
+            {
+              "name": "detectChanges",
+              "entryType": "function",
+              "description": "Checks this view and its children. Use in combination with {@link ChangeDetectorRef#detach}\nto implement local change detection checks.\n\n<!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n<!-- TODO: Add a live demo once ref.detectChanges is merged into master -->",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * Checks this view and its children. Use in combination with {@link ChangeDetectorRef#detach}\n   * to implement local change detection checks.\n   *\n   * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n   * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->\n   *\n   */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "detectChanges",
+            "description": "Checks this view and its children. Use in combination with {@link ChangeDetectorRef#detach}\nto implement local change detection checks.\n\n<!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n<!-- TODO: Add a live demo once ref.detectChanges is merged into master -->",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Checks this view and its children. Use in combination with {@link ChangeDetectorRef#detach}\n   * to implement local change detection checks.\n   *\n   * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n   * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->\n   *\n   */"
+          },
+          "entryType": "function",
+          "description": "Checks this view and its children. Use in combination with {@link ChangeDetectorRef#detach}\nto implement local change detection checks.\n\n<!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n<!-- TODO: Add a live demo once ref.detectChanges is merged into master -->",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Checks this view and its children. Use in combination with {@link ChangeDetectorRef#detach}\n   * to implement local change detection checks.\n   *\n   * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n   * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->\n   *\n   */",
+          "memberType": "method",
+          "memberTags": ["abstract", "override"]
+        },
+        {
+          "name": "checkNoChanges",
+          "signatures": [
+            {
+              "name": "checkNoChanges",
+              "entryType": "function",
+              "description": "Checks the change detector and its children, and throws if any changes are detected.\n\nUse in development mode to verify that running change detection doesn't introduce\nother changes. Calling it in production mode is a noop.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "deprecated",
+                  "comment": "This is a test-only API that does not have a place in production interface.\n`checkNoChanges` is already part of an `ApplicationRef` tick when the app is running in dev\nmode. For more granular `checkNoChanges` validation, use `ComponentFixture`."
+                }
+              ],
+              "params": [],
+              "rawComment": "/**\n   * Checks the change detector and its children, and throws if any changes are detected.\n   *\n   * Use in development mode to verify that running change detection doesn't introduce\n   * other changes. Calling it in production mode is a noop.\n   *\n   * @deprecated This is a test-only API that does not have a place in production interface.\n   * `checkNoChanges` is already part of an `ApplicationRef` tick when the app is running in dev\n   * mode. For more granular `checkNoChanges` validation, use `ComponentFixture`.\n   */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "checkNoChanges",
+            "description": "Checks the change detector and its children, and throws if any changes are detected.\n\nUse in development mode to verify that running change detection doesn't introduce\nother changes. Calling it in production mode is a noop.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "deprecated",
+                "comment": "This is a test-only API that does not have a place in production interface.\n`checkNoChanges` is already part of an `ApplicationRef` tick when the app is running in dev\nmode. For more granular `checkNoChanges` validation, use `ComponentFixture`."
+              }
+            ],
+            "rawComment": "/**\n   * Checks the change detector and its children, and throws if any changes are detected.\n   *\n   * Use in development mode to verify that running change detection doesn't introduce\n   * other changes. Calling it in production mode is a noop.\n   *\n   * @deprecated This is a test-only API that does not have a place in production interface.\n   * `checkNoChanges` is already part of an `ApplicationRef` tick when the app is running in dev\n   * mode. For more granular `checkNoChanges` validation, use `ComponentFixture`.\n   */"
+          },
+          "entryType": "function",
+          "description": "Checks the change detector and its children, and throws if any changes are detected.\n\nUse in development mode to verify that running change detection doesn't introduce\nother changes. Calling it in production mode is a noop.",
+          "jsdocTags": [
+            {
+              "name": "deprecated",
+              "comment": "This is a test-only API that does not have a place in production interface.\n`checkNoChanges` is already part of an `ApplicationRef` tick when the app is running in dev\nmode. For more granular `checkNoChanges` validation, use `ComponentFixture`."
+            }
+          ],
+          "rawComment": "/**\n   * Checks the change detector and its children, and throws if any changes are detected.\n   *\n   * Use in development mode to verify that running change detection doesn't introduce\n   * other changes. Calling it in production mode is a noop.\n   *\n   * @deprecated This is a test-only API that does not have a place in production interface.\n   * `checkNoChanges` is already part of an `ApplicationRef` tick when the app is running in dev\n   * mode. For more granular `checkNoChanges` validation, use `ComponentFixture`.\n   */",
+          "memberType": "method",
+          "memberTags": ["abstract", "override"]
+        },
+        {
+          "name": "reattach",
+          "signatures": [
+            {
+              "name": "reattach",
+              "entryType": "function",
+              "description": "Re-attaches the previously detached view to the change detection tree.\nViews are attached to the tree by default.\n\n<!-- TODO: Add a link to a chapter on detach/reattach/local digest -->",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * Re-attaches the previously detached view to the change detection tree.\n   * Views are attached to the tree by default.\n   *\n   * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n   *\n   */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "reattach",
+            "description": "Re-attaches the previously detached view to the change detection tree.\nViews are attached to the tree by default.\n\n<!-- TODO: Add a link to a chapter on detach/reattach/local digest -->",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Re-attaches the previously detached view to the change detection tree.\n   * Views are attached to the tree by default.\n   *\n   * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n   *\n   */"
+          },
+          "entryType": "function",
+          "description": "Re-attaches the previously detached view to the change detection tree.\nViews are attached to the tree by default.\n\n<!-- TODO: Add a link to a chapter on detach/reattach/local digest -->",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Re-attaches the previously detached view to the change detection tree.\n   * Views are attached to the tree by default.\n   *\n   * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->\n   *\n   */",
+          "memberType": "method",
+          "memberTags": ["abstract", "override"]
+        }
+      ],
+      "generics": [],
+      "description": "Represents an Angular view.",
+      "jsdocTags": [
+        {
+          "name": "see",
+          "comment": "[Change detection usage](/api/core/ChangeDetectorRef?tab=usage-notes)"
+        },
+        {"name": "publicApi", "comment": ""}
+      ],
+      "rawComment": "/**\n * Represents an Angular view.\n *\n * @see [Change detection usage](/api/core/ChangeDetectorRef?tab=usage-notes)\n *\n * @publicApi\n */",
+      "extends": "ChangeDetectorRef",
+      "implements": [],
+      "source": {
+        "filePath": "/packages/core/src/linker/view_ref.ts",
+        "startLine": 18,
+        "endLine": 37
+      }
+    },
+    {
+      "name": "afterNextRender",
+      "signatures": [
+        {
+          "name": "afterNextRender",
+          "entryType": "function",
+          "description": "Register callbacks to be invoked the next time the application finishes rendering, during the\nspecified phases. The available phases are:\n- `earlyRead`\n  Use this phase to **read** from the DOM before a subsequent `write` callback, for example to\n  perform custom layout that the browser doesn't natively support. Prefer the `read` phase if\n  reading can wait until after the write phase. **Never** write to the DOM in this phase.\n- `write`\n   Use this phase to **write** to the DOM. **Never** read from the DOM in this phase.\n- `mixedReadWrite`\n   Use this phase to read from and write to the DOM simultaneously. **Never** use this phase if\n   it is possible to divide the work among the other phases instead.\n- `read`\n   Use this phase to **read** from the DOM. **Never** write to the DOM in this phase.\n\n<div class=\"docs-alert docs-alert-critical\">\n\nYou should prefer using the `read` and `write` phases over the `earlyRead` and `mixedReadWrite`\nphases when possible, to avoid performance degradation.\n\n</div>\n\nNote that:\n- Callbacks run in the following phase order *once, after the next render*:\n  1. `earlyRead`\n  2. `write`\n  3. `mixedReadWrite`\n  4. `read`\n- Callbacks in the same phase run in the order they are registered.\n- Callbacks run on browser platforms only, they will not run on the server.\n\nThe first phase callback to run as part of this spec will receive no parameters. Each\nsubsequent phase callback in this spec will receive the return value of the previously run\nphase callback as a parameter. This can be used to coordinate work across multiple phases.\n\nAngular is unable to verify or enforce that phases are used correctly, and instead\nrelies on each developer to follow the guidelines documented for each value and\ncarefully choose the appropriate one, refactoring their code if necessary. By doing\nso, Angular is better able to minimize the performance degradation associated with\nmanual DOM access, ensuring the best experience for the end users of your application\nor library.\n\n<div class=\"docs-alert docs-alert-important\">\n\nComponents are not guaranteed to be [hydrated](guide/hydration) before the callback runs.\nYou must use caution when directly reading or writing the DOM and layout.\n\n</div>",
+          "generics": [
+            {"name": "E", "default": "never"},
+            {"name": "W", "default": "never"},
+            {"name": "M", "default": "never"}
+          ],
+          "isNewType": false,
+          "jsdocTags": [
+            {"name": "param", "comment": "The callback functions to register"},
+            {"name": "param", "comment": "Options to control the behavior of the callback"},
+            {
+              "name": "usageNotes",
+              "comment": "Use `afterNextRender` to read or write the DOM once,\nfor example to initialize a non-Angular library.\n\n### Example\n```angular-ts\n@Component({\n  selector: 'my-chart-cmp',\n  template: `<div #chart>{{ ... }}</div>`,\n})\nexport class MyChartCmp {\n  @ViewChild('chart') chartRef: ElementRef;\n  chart: MyChart|null;\n\n  constructor() {\n    afterNextRender({\n      write: () => {\n        this.chart = new MyChart(this.chartRef.nativeElement);\n      }\n    });\n  }\n}\n```"
+            },
+            {"name": "developerPreview", "comment": ""}
+          ],
+          "params": [
+            {
+              "name": "spec",
+              "description": "The callback functions to register",
+              "type": "{ earlyRead?: (() => E) | undefined; write?: ((...args: [E] extends [never] ? [] : [E]) => W) | undefined; mixedReadWrite?: ((...args: [W] extends [never] ? [E] extends [never] ? [] : [E] : [W]) => M) | undefined; read?: ((...args: [M] extends [never] ? [W] extends [never] ? [E] extends [never] ? [] : [E] : [W] : [M]) => void) | undefined; }",
+              "isOptional": false,
+              "isRestParam": false
+            },
+            {
+              "name": "options",
+              "description": "Options to control the behavior of the callback",
+              "type": "Omit<AfterRenderOptions, \"phase\"> | undefined",
+              "isOptional": true,
+              "isRestParam": false
+            }
+          ],
+          "rawComment": "/**\n * Register callbacks to be invoked the next time the application finishes rendering, during the\n * specified phases. The available phases are:\n * - `earlyRead`\n *   Use this phase to **read** from the DOM before a subsequent `write` callback, for example to\n *   perform custom layout that the browser doesn't natively support. Prefer the `read` phase if\n *   reading can wait until after the write phase. **Never** write to the DOM in this phase.\n * - `write`\n *    Use this phase to **write** to the DOM. **Never** read from the DOM in this phase.\n * - `mixedReadWrite`\n *    Use this phase to read from and write to the DOM simultaneously. **Never** use this phase if\n *    it is possible to divide the work among the other phases instead.\n * - `read`\n *    Use this phase to **read** from the DOM. **Never** write to the DOM in this phase.\n *\n * <div class=\"docs-alert docs-alert-critical\">\n *\n * You should prefer using the `read` and `write` phases over the `earlyRead` and `mixedReadWrite`\n * phases when possible, to avoid performance degradation.\n *\n * </div>\n *\n * Note that:\n * - Callbacks run in the following phase order *once, after the next render*:\n *   1. `earlyRead`\n *   2. `write`\n *   3. `mixedReadWrite`\n *   4. `read`\n * - Callbacks in the same phase run in the order they are registered.\n * - Callbacks run on browser platforms only, they will not run on the server.\n *\n * The first phase callback to run as part of this spec will receive no parameters. Each\n * subsequent phase callback in this spec will receive the return value of the previously run\n * phase callback as a parameter. This can be used to coordinate work across multiple phases.\n *\n * Angular is unable to verify or enforce that phases are used correctly, and instead\n * relies on each developer to follow the guidelines documented for each value and\n * carefully choose the appropriate one, refactoring their code if necessary. By doing\n * so, Angular is better able to minimize the performance degradation associated with\n * manual DOM access, ensuring the best experience for the end users of your application\n * or library.\n *\n * <div class=\"docs-alert docs-alert-important\">\n *\n * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.\n * You must use caution when directly reading or writing the DOM and layout.\n *\n * </div>\n *\n * @param spec The callback functions to register\n * @param options Options to control the behavior of the callback\n *\n * @usageNotes\n *\n * Use `afterNextRender` to read or write the DOM once,\n * for example to initialize a non-Angular library.\n *\n * ### Example\n * ```angular-ts\n * @Component({\n *   selector: 'my-chart-cmp',\n *   template: `<div #chart>{{ ... }}</div>`,\n * })\n * export class MyChartCmp {\n *   @ViewChild('chart') chartRef: ElementRef;\n *   chart: MyChart|null;\n *\n *   constructor() {\n *     afterNextRender({\n *       write: () => {\n *         this.chart = new MyChart(this.chartRef.nativeElement);\n *       }\n *     });\n *   }\n * }\n * ```\n *\n * @developerPreview\n */",
+          "returnType": "AfterRenderRef"
+        },
+        {
+          "name": "afterNextRender",
+          "entryType": "function",
+          "description": "Register a callback to be invoked the next time the application finishes rendering, during the\n`mixedReadWrite` phase.\n\n<div class=\"docs-alert docs-alert-critical\">\n\nYou should prefer specifying an explicit phase for the callback instead, or you risk significant\nperformance degradation.\n\n</div>\n\nNote that the callback will run\n- in the order it was registered\n- on browser platforms only\n- during the `mixedReadWrite` phase\n\n<div class=\"docs-alert docs-alert-important\">\n\nComponents are not guaranteed to be [hydrated](guide/hydration) before the callback runs.\nYou must use caution when directly reading or writing the DOM and layout.\n\n</div>",
+          "generics": [],
+          "isNewType": false,
+          "jsdocTags": [
+            {"name": "param", "comment": "A callback function to register"},
+            {"name": "param", "comment": "Options to control the behavior of the callback"},
+            {
+              "name": "usageNotes",
+              "comment": "Use `afterNextRender` to read or write the DOM once,\nfor example to initialize a non-Angular library.\n\n### Example\n```angular-ts\n@Component({\n  selector: 'my-chart-cmp',\n  template: `<div #chart>{{ ... }}</div>`,\n})\nexport class MyChartCmp {\n  @ViewChild('chart') chartRef: ElementRef;\n  chart: MyChart|null;\n\n  constructor() {\n    afterNextRender({\n      write: () => {\n        this.chart = new MyChart(this.chartRef.nativeElement);\n      }\n    });\n  }\n}\n```"
+            },
+            {"name": "publicApi", "comment": "20.0"}
+          ],
+          "params": [
+            {
+              "name": "callback",
+              "description": "A callback function to register",
+              "type": "VoidFunction",
+              "isOptional": false,
+              "isRestParam": false
+            },
+            {
+              "name": "options",
+              "description": "Options to control the behavior of the callback",
+              "type": "AfterRenderOptions | undefined",
+              "isOptional": true,
+              "isRestParam": false
+            }
+          ],
+          "rawComment": "/**\n * Register a callback to be invoked the next time the application finishes rendering, during the\n * `mixedReadWrite` phase.\n *\n * <div class=\"docs-alert docs-alert-critical\">\n *\n * You should prefer specifying an explicit phase for the callback instead, or you risk significant\n * performance degradation.\n *\n * </div>\n *\n * Note that the callback will run\n * - in the order it was registered\n * - on browser platforms only\n * - during the `mixedReadWrite` phase\n *\n * <div class=\"docs-alert docs-alert-important\">\n *\n * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.\n * You must use caution when directly reading or writing the DOM and layout.\n *\n * </div>\n *\n * @param callback A callback function to register\n * @param options Options to control the behavior of the callback\n *\n * @usageNotes\n *\n * Use `afterNextRender` to read or write the DOM once,\n * for example to initialize a non-Angular library.\n *\n * ### Example\n * ```angular-ts\n * @Component({\n *   selector: 'my-chart-cmp',\n *   template: `<div #chart>{{ ... }}</div>`,\n * })\n * export class MyChartCmp {\n *   @ViewChild('chart') chartRef: ElementRef;\n *   chart: MyChart|null;\n *\n *   constructor() {\n *     afterNextRender({\n *       write: () => {\n *         this.chart = new MyChart(this.chartRef.nativeElement);\n *       }\n *     });\n *   }\n * }\n * ```\n *\n * @publicApi 20.0\n */",
+          "returnType": "AfterRenderRef"
+        }
+      ],
+      "implementation": {
+        "params": [
+          {
+            "name": "callbackOrSpec",
+            "description": "",
+            "type": "VoidFunction | { earlyRead?: (() => unknown) | undefined; write?: ((r?: unknown) => unknown) | undefined; mixedReadWrite?: ((r?: unknown) => unknown) | undefined; read?: ((r?: unknown) => void) | undefined; }",
+            "isOptional": false,
+            "isRestParam": false
+          },
+          {
+            "name": "options",
+            "description": "",
+            "type": "AfterRenderOptions | undefined",
+            "isOptional": true,
+            "isRestParam": false
+          }
+        ],
+        "isNewType": false,
+        "returnType": "AfterRenderRef",
+        "generics": [],
+        "name": "afterNextRender",
+        "description": "",
+        "entryType": "function",
+        "jsdocTags": [],
+        "rawComment": ""
+      },
+      "entryType": "function",
+      "description": "",
+      "jsdocTags": [],
+      "rawComment": "",
+      "source": {
+        "filePath": "/packages/core/src/render3/after_render/hooks.ts",
+        "startLine": 310,
+        "endLine": 318
+      }
+    },
+    {
+      "name": "provideClientHydration",
+      "signatures": [
+        {
+          "name": "provideClientHydration",
+          "entryType": "function",
+          "description": "Sets up providers necessary to enable hydration functionality for the application.\n\nBy default, the function enables the recommended set of features for the optimal\nperformance for most of the applications. It includes the following features:\n\n* Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\ntransferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n[here](guide/ssr#caching-data-when-using-httpclient).\n\nThese functions allow you to disable some of the default features or enable new ones:\n\n* {@link withNoHttpTransferCache} to disable HTTP transfer cache\n* {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n* {@link withI18nSupport} to enable hydration support for i18n blocks\n* {@link withEventReplay} to enable support for replaying user events",
+          "generics": [],
+          "isNewType": false,
+          "jsdocTags": [
+            {
+              "name": "usageNotes",
+              "comment": "Basic example of how you can enable hydration in your application when\n`bootstrapApplication` function is used:\n```\nbootstrapApplication(AppComponent, {\n  providers: [provideClientHydration()]\n});\n```\n\nAlternatively if you are using NgModules, you would add `provideClientHydration`\nto your root app module's provider list.\n```\n@NgModule({\n  declarations: [RootCmp],\n  bootstrap: [RootCmp],\n  providers: [provideClientHydration()],\n})\nexport class AppModule {}\n```"
+            },
+            {"name": "see", "comment": "{@link withNoHttpTransferCache}"},
+            {"name": "see", "comment": "{@link withHttpTransferCacheOptions}"},
+            {"name": "see", "comment": "{@link withI18nSupport}"},
+            {"name": "see", "comment": "{@link withEventReplay}"},
+            {
+              "name": "param",
+              "comment": "Optional features to configure additional router behaviors."
+            },
+            {"name": "returns", "comment": "A set of providers to enable hydration."},
+            {"name": "publicApi", "comment": ""}
+          ],
+          "params": [
+            {
+              "name": "features",
+              "description": "Optional features to configure additional router behaviors.",
+              "type": "HydrationFeature<HydrationFeatureKind>[]",
+              "isOptional": false,
+              "isRestParam": true
+            }
+          ],
+          "rawComment": "/**\n * Sets up providers necessary to enable hydration functionality for the application.\n *\n * By default, the function enables the recommended set of features for the optimal\n * performance for most of the applications. It includes the following features:\n *\n * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\n * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n * [here](guide/ssr#caching-data-when-using-httpclient).\n *\n * These functions allow you to disable some of the default features or enable new ones:\n *\n * * {@link withNoHttpTransferCache} to disable HTTP transfer cache\n * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n * * {@link withI18nSupport} to enable hydration support for i18n blocks\n * * {@link withEventReplay} to enable support for replaying user events\n *\n * @usageNotes\n *\n * Basic example of how you can enable hydration in your application when\n * `bootstrapApplication` function is used:\n * ```\n * bootstrapApplication(AppComponent, {\n *   providers: [provideClientHydration()]\n * });\n * ```\n *\n * Alternatively if you are using NgModules, you would add `provideClientHydration`\n * to your root app module's provider list.\n * ```\n * @NgModule({\n *   declarations: [RootCmp],\n *   bootstrap: [RootCmp],\n *   providers: [provideClientHydration()],\n * })\n * export class AppModule {}\n * ```\n *\n * @see {@link withNoHttpTransferCache}\n * @see {@link withHttpTransferCacheOptions}\n * @see {@link withI18nSupport}\n * @see {@link withEventReplay}\n *\n * @param features Optional features to configure additional router behaviors.\n * @returns A set of providers to enable hydration.\n *\n * @publicApi\n */",
+          "returnType": "EnvironmentProviders"
+        }
+      ],
+      "implementation": {
+        "params": [
+          {
+            "name": "features",
+            "description": "Optional features to configure additional router behaviors.",
+            "type": "HydrationFeature<HydrationFeatureKind>[]",
+            "isOptional": false,
+            "isRestParam": true
+          }
+        ],
+        "isNewType": false,
+        "returnType": "EnvironmentProviders",
+        "returnDescription": "A set of providers to enable hydration.",
+        "generics": [],
+        "name": "provideClientHydration",
+        "description": "Sets up providers necessary to enable hydration functionality for the application.\n\nBy default, the function enables the recommended set of features for the optimal\nperformance for most of the applications. It includes the following features:\n\n* Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\ntransferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n[here](guide/ssr#caching-data-when-using-httpclient).\n\nThese functions allow you to disable some of the default features or enable new ones:\n\n* {@link withNoHttpTransferCache} to disable HTTP transfer cache\n* {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n* {@link withI18nSupport} to enable hydration support for i18n blocks\n* {@link withEventReplay} to enable support for replaying user events",
+        "entryType": "function",
+        "jsdocTags": [
+          {
+            "name": "usageNotes",
+            "comment": "Basic example of how you can enable hydration in your application when\n`bootstrapApplication` function is used:\n```\nbootstrapApplication(AppComponent, {\n  providers: [provideClientHydration()]\n});\n```\n\nAlternatively if you are using NgModules, you would add `provideClientHydration`\nto your root app module's provider list.\n```\n@NgModule({\n  declarations: [RootCmp],\n  bootstrap: [RootCmp],\n  providers: [provideClientHydration()],\n})\nexport class AppModule {}\n```"
+          },
+          {"name": "see", "comment": "{@link withNoHttpTransferCache}"},
+          {"name": "see", "comment": "{@link withHttpTransferCacheOptions}"},
+          {"name": "see", "comment": "{@link withI18nSupport}"},
+          {"name": "see", "comment": "{@link withEventReplay}"},
+          {
+            "name": "param",
+            "comment": "Optional features to configure additional router behaviors."
+          },
+          {"name": "returns", "comment": "A set of providers to enable hydration."},
+          {"name": "publicApi", "comment": ""}
+        ],
+        "rawComment": "/**\n * Sets up providers necessary to enable hydration functionality for the application.\n *\n * By default, the function enables the recommended set of features for the optimal\n * performance for most of the applications. It includes the following features:\n *\n * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\n * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n * [here](guide/ssr#caching-data-when-using-httpclient).\n *\n * These functions allow you to disable some of the default features or enable new ones:\n *\n * * {@link withNoHttpTransferCache} to disable HTTP transfer cache\n * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n * * {@link withI18nSupport} to enable hydration support for i18n blocks\n * * {@link withEventReplay} to enable support for replaying user events\n *\n * @usageNotes\n *\n * Basic example of how you can enable hydration in your application when\n * `bootstrapApplication` function is used:\n * ```\n * bootstrapApplication(AppComponent, {\n *   providers: [provideClientHydration()]\n * });\n * ```\n *\n * Alternatively if you are using NgModules, you would add `provideClientHydration`\n * to your root app module's provider list.\n * ```\n * @NgModule({\n *   declarations: [RootCmp],\n *   bootstrap: [RootCmp],\n *   providers: [provideClientHydration()],\n * })\n * export class AppModule {}\n * ```\n *\n * @see {@link withNoHttpTransferCache}\n * @see {@link withHttpTransferCacheOptions}\n * @see {@link withI18nSupport}\n * @see {@link withEventReplay}\n *\n * @param features Optional features to configure additional router behaviors.\n * @returns A set of providers to enable hydration.\n *\n * @publicApi\n */"
+      },
+      "entryType": "function",
+      "description": "Sets up providers necessary to enable hydration functionality for the application.\n\nBy default, the function enables the recommended set of features for the optimal\nperformance for most of the applications. It includes the following features:\n\n* Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n* [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\ntransferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n[here](guide/ssr#caching-data-when-using-httpclient).\n\nThese functions allow you to disable some of the default features or enable new ones:\n\n* {@link withNoHttpTransferCache} to disable HTTP transfer cache\n* {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n* {@link withI18nSupport} to enable hydration support for i18n blocks\n* {@link withEventReplay} to enable support for replaying user events",
+      "jsdocTags": [
+        {
+          "name": "usageNotes",
+          "comment": "Basic example of how you can enable hydration in your application when\n`bootstrapApplication` function is used:\n```\nbootstrapApplication(AppComponent, {\n  providers: [provideClientHydration()]\n});\n```\n\nAlternatively if you are using NgModules, you would add `provideClientHydration`\nto your root app module's provider list.\n```\n@NgModule({\n  declarations: [RootCmp],\n  bootstrap: [RootCmp],\n  providers: [provideClientHydration()],\n})\nexport class AppModule {}\n```"
+        },
+        {"name": "see", "comment": "{@link withNoHttpTransferCache}"},
+        {"name": "see", "comment": "{@link withHttpTransferCacheOptions}"},
+        {"name": "see", "comment": "{@link withI18nSupport}"},
+        {"name": "see", "comment": "{@link withEventReplay}"},
+        {"name": "param", "comment": "Optional features to configure additional router behaviors."},
+        {"name": "returns", "comment": "A set of providers to enable hydration."},
+        {"name": "publicApi", "comment": ""}
+      ],
+      "rawComment": "/**\n * Sets up providers necessary to enable hydration functionality for the application.\n *\n * By default, the function enables the recommended set of features for the optimal\n * performance for most of the applications. It includes the following features:\n *\n * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).\n * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and\n * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching\n * [here](guide/ssr#caching-data-when-using-httpclient).\n *\n * These functions allow you to disable some of the default features or enable new ones:\n *\n * * {@link withNoHttpTransferCache} to disable HTTP transfer cache\n * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options\n * * {@link withI18nSupport} to enable hydration support for i18n blocks\n * * {@link withEventReplay} to enable support for replaying user events\n *\n * @usageNotes\n *\n * Basic example of how you can enable hydration in your application when\n * `bootstrapApplication` function is used:\n * ```\n * bootstrapApplication(AppComponent, {\n *   providers: [provideClientHydration()]\n * });\n * ```\n *\n * Alternatively if you are using NgModules, you would add `provideClientHydration`\n * to your root app module's provider list.\n * ```\n * @NgModule({\n *   declarations: [RootCmp],\n *   bootstrap: [RootCmp],\n *   providers: [provideClientHydration()],\n * })\n * export class AppModule {}\n * ```\n *\n * @see {@link withNoHttpTransferCache}\n * @see {@link withHttpTransferCacheOptions}\n * @see {@link withI18nSupport}\n * @see {@link withEventReplay}\n *\n * @param features Optional features to configure additional router behaviors.\n * @returns A set of providers to enable hydration.\n *\n * @publicApi\n */",
+      "source": {
+        "filePath": "/packages/platform-browser/src/hydration.ts",
+        "startLine": 201,
+        "endLine": 238
+      }
+    },
+    {
+      "name": "AfterRenderOptions",
+      "isAbstract": false,
+      "entryType": "interface",
+      "members": [
+        {
+          "name": "injector",
+          "type": "Injector",
+          "memberType": "property",
+          "memberTags": ["optional"],
+          "description": "The `Injector` to use during creation.\n\nIf this is not provided, the current injection context will be used instead (via `inject`).",
+          "jsdocTags": []
+        },
+        {
+          "name": "phase",
+          "type": "AfterRenderPhase",
+          "memberType": "property",
+          "memberTags": ["optional"],
+          "description": "The phase the callback should be invoked in.\n\n<div class=\"alert is-critical\">\n\nDefaults to `AfterRenderPhase.MixedReadWrite`. You should choose a more specific\nphase instead. See `AfterRenderPhase` for more information.\n\n</div>",
+          "jsdocTags": [
+            {
+              "name": "deprecated",
+              "comment": "Specify the phase for your callback to run in by passing a spec-object as the first\nparameter to `afterRender` or `afterNextRender` instead of a function."
+            }
+          ]
+        }
+      ],
+      "generics": [],
+      "description": "Options passed to `afterRender` and `afterNextRender`.",
+      "jsdocTags": [{"name": "developerPreview", "comment": ""}],
+      "rawComment": "/**\n * Options passed to `afterRender` and `afterNextRender`.\n *\n * @developerPreview\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/packages/core/src/render3/after_render_hooks.ts",
+        "startLine": 103,
+        "endLine": 125
+      }
+    },
+    {
+      "name": "linkedSignal",
+      "signatures": [
+        {
+          "name": "linkedSignal",
+          "entryType": "function",
+          "description": "Creates a writable signals whose value is initialized and reset by the linked, reactive computation.",
+          "generics": [{"name": "D"}],
+          "isNewType": false,
+          "jsdocTags": [{"name": "developerPreview", "comment": ""}],
+          "params": [
+            {
+              "name": "computation",
+              "description": "",
+              "type": "() => D",
+              "isOptional": false,
+              "isRestParam": false
+            },
+            {
+              "name": "options",
+              "description": "",
+              "type": "{ equal?: ValueEqualityFn<NoInfer<D>> | undefined; } | undefined",
+              "isOptional": true,
+              "isRestParam": false
+            }
+          ],
+          "rawComment": "/**\n * Creates a writable signals whose value is initialized and reset by the linked, reactive computation.\n *\n * @developerPreview\n */",
+          "returnType": "WritableSignal<D>"
+        },
+        {
+          "name": "linkedSignal",
+          "entryType": "function",
+          "description": "Creates a writable signals whose value is initialized and reset by the linked, reactive computation.\nThis is an advanced API form where the computation has access to the previous value of the signal and the computation result.",
+          "generics": [{"name": "S"}, {"name": "D"}],
+          "isNewType": false,
+          "jsdocTags": [{"name": "developerPreview", "comment": ""}],
+          "params": [
+            {
+              "name": "options",
+              "description": "",
+              "type": "{ source: () => S; computation: (source: NoInfer<S>, previous?: { source: NoInfer<S>; value: NoInfer<D>; } | undefined) => D; equal?: ValueEqualityFn<NoInfer<D>> | undefined; }",
+              "isOptional": false,
+              "isRestParam": false
+            }
+          ],
+          "rawComment": "/**\n * Creates a writable signals whose value is initialized and reset by the linked, reactive computation.\n * This is an advanced API form where the computation has access to the previous value of the signal and the computation result.\n *\n * @developerPreview\n */",
+          "returnType": "WritableSignal<D>"
+        }
+      ],
+      "implementation": {
+        "params": [
+          {
+            "name": "optionsOrComputation",
+            "description": "",
+            "type": "{ source: () => S; computation: ComputationFn<S, D>; equal?: ValueEqualityFn<D> | undefined; } | (() => D)",
+            "isOptional": false,
+            "isRestParam": false
+          },
+          {
+            "name": "options",
+            "description": "",
+            "type": "{ equal?: ValueEqualityFn<D> | undefined; } | undefined",
+            "isOptional": true,
+            "isRestParam": false
+          }
+        ],
+        "isNewType": false,
+        "returnType": "WritableSignal<D>",
+        "generics": [{"name": "S"}, {"name": "D"}],
+        "name": "linkedSignal",
+        "description": "",
+        "entryType": "function",
+        "jsdocTags": [],
+        "rawComment": ""
+      },
+      "entryType": "function",
+      "description": "",
+      "jsdocTags": [],
+      "rawComment": "",
+      "source": {
+        "filePath": "/packages/core/src/render3/reactivity/linked_signal.ts",
+        "startLine": 112,
+        "endLine": 115
+      }
+    },
+    {
+      "name": "HttpRequest",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "constructor",
+          "signatures": [
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "\"GET\" | \"HEAD\"",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "\"DELETE\" | \"JSONP\" | \"OPTIONS\"",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "\"POST\"",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "body",
+                  "description": "",
+                  "type": "T | null",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "\"PUT\" | \"PATCH\"",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "body",
+                  "description": "",
+                  "type": "T | null",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "body",
+                  "description": "",
+                  "type": "T | null",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "init",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            },
+            {
+              "name": "constructor",
+              "params": [
+                {
+                  "name": "method",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "type": "string",
+                  "isOptional": false,
+                  "isRestParam": false
+                },
+                {
+                  "name": "third",
+                  "description": "",
+                  "type": "T | { headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | null | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                },
+                {
+                  "name": "fourth",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "returnType": "foobar",
+              "description": "",
+              "entryType": "function",
+              "jsdocTags": [],
+              "rawComment": "",
+              "generics": [],
+              "isNewType": false
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "method",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "url",
+                "description": "",
+                "type": "string",
+                "isOptional": false,
+                "isRestParam": false
+              },
+              {
+                "name": "third",
+                "description": "",
+                "type": "T | { headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | null | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              },
+              {
+                "name": "fourth",
+                "description": "",
+                "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; } | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "HttpRequest<T>",
+            "generics": [],
+            "name": "constructor",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "body",
+          "type": "T | null",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "The request body, or `null` if one isn't set.\n\nBodies are not enforced to be immutable, as they can include a reference to any\nuser-defined data type. However, interceptors should take care to preserve\nidempotence by treating them as such.",
+          "jsdocTags": []
+        },
+        {
+          "name": "headers",
+          "type": "HttpHeaders",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Outgoing headers for this request.",
+          "jsdocTags": []
+        },
+        {
+          "name": "context",
+          "type": "HttpContext",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Shared and mutable context that can be used by interceptors",
+          "jsdocTags": []
+        },
+        {
+          "name": "reportProgress",
+          "type": "boolean",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Whether this request should be made in a way that exposes progress events.\n\nProgress events are expensive (change detection runs on each event) and so\nthey should only be requested if the consumer intends to monitor them.\n\nNote: The `FetchBackend` doesn't support progress report on uploads.",
+          "jsdocTags": []
+        },
+        {
+          "name": "withCredentials",
+          "type": "boolean",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Whether this request should be sent with outgoing credentials (cookies).",
+          "jsdocTags": []
+        },
+        {
+          "name": "responseType",
+          "type": "\"arraybuffer\" | \"blob\" | \"text\" | \"json\"",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "The expected response type of the server.\n\nThis is used to parse the response appropriately before returning it to\nthe requestee.",
+          "jsdocTags": []
+        },
+        {
+          "name": "method",
+          "type": "string",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "The outgoing HTTP request method.",
+          "jsdocTags": []
+        },
+        {
+          "name": "params",
+          "type": "HttpParams",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "Outgoing URL parameters.\n\nTo pass a string representation of HTTP parameters in the URL-query-string format,\nthe `HttpParamsOptions`' `fromString` may be used. For example:\n\n```ts\nnew HttpParams({fromString: 'angular=awesome'})\n```",
+          "jsdocTags": []
+        },
+        {
+          "name": "urlWithParams",
+          "type": "string",
+          "memberType": "property",
+          "memberTags": ["readonly"],
+          "description": "The outgoing URL with all URL parameters set.",
+          "jsdocTags": []
+        },
+        {
+          "name": "transferCache",
+          "type": "boolean | { includeHeaders?: string[] | undefined; } | undefined",
+          "memberType": "property",
+          "memberTags": ["readonly", "optional"],
+          "description": "The HttpTransferCache option for the request",
+          "jsdocTags": []
+        },
+        {
+          "name": "serializeBody",
+          "signatures": [
+            {
+              "name": "serializeBody",
+              "entryType": "function",
+              "description": "Transform the free-form body into a serialized format suitable for\ntransmission to the server.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * Transform the free-form body into a serialized format suitable for\n   * transmission to the server.\n   */",
+              "returnType": "string | ArrayBuffer | Blob | FormData | URLSearchParams | null"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "string | ArrayBuffer | Blob | FormData | URLSearchParams | null",
+            "generics": [],
+            "name": "serializeBody",
+            "description": "Transform the free-form body into a serialized format suitable for\ntransmission to the server.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Transform the free-form body into a serialized format suitable for\n   * transmission to the server.\n   */"
+          },
+          "entryType": "function",
+          "description": "Transform the free-form body into a serialized format suitable for\ntransmission to the server.",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Transform the free-form body into a serialized format suitable for\n   * transmission to the server.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "detectContentTypeHeader",
+          "signatures": [
+            {
+              "name": "detectContentTypeHeader",
+              "entryType": "function",
+              "description": "Examine the body and attempt to infer an appropriate MIME type\nfor it.\n\nIf no such type can be inferred, this method will return `null`.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/**\n   * Examine the body and attempt to infer an appropriate MIME type\n   * for it.\n   *\n   * If no such type can be inferred, this method will return `null`.\n   */",
+              "returnType": "string | null"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "string | null",
+            "generics": [],
+            "name": "detectContentTypeHeader",
+            "description": "Examine the body and attempt to infer an appropriate MIME type\nfor it.\n\nIf no such type can be inferred, this method will return `null`.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/**\n   * Examine the body and attempt to infer an appropriate MIME type\n   * for it.\n   *\n   * If no such type can be inferred, this method will return `null`.\n   */"
+          },
+          "entryType": "function",
+          "description": "Examine the body and attempt to infer an appropriate MIME type\nfor it.\n\nIf no such type can be inferred, this method will return `null`.",
+          "jsdocTags": [],
+          "rawComment": "/**\n   * Examine the body and attempt to infer an appropriate MIME type\n   * for it.\n   *\n   * If no such type can be inferred, this method will return `null`.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "clone",
+          "signatures": [
+            {
+              "name": "clone",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "HttpRequest<T>"
+            },
+            {
+              "name": "clone",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "update",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; body?: T | null | undefined; method?: string | undefined; url?: string | undefined; setHeaders?: { [name: string]: string | string[]; } | undefined; setParams?: { [param: string]: string; } | undefined; }",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "HttpRequest<T>"
+            },
+            {
+              "name": "clone",
+              "entryType": "function",
+              "description": "",
+              "generics": [{"name": "V"}],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "update",
+                  "description": "",
+                  "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; body?: V | null | undefined; method?: string | undefined; url?: string | undefined; setHeaders?: { [name: string]: string | string[]; } | undefined; setParams?: { [param: string]: string; } | undefined; }",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "HttpRequest<V>"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "update",
+                "description": "",
+                "type": "{ headers?: HttpHeaders | undefined; context?: HttpContext | undefined; reportProgress?: boolean | undefined; params?: HttpParams | undefined; responseType?: \"arraybuffer\" | \"blob\" | \"text\" | \"json\" | undefined; withCredentials?: boolean | undefined; transferCache?: boolean | { includeHeaders?: string[] | undefined; } | undefined; body?: any; method?: string | undefined; url?: string | undefined; setHeaders?: { [name: string]: string | string[]; } | undefined; setParams?: { [param: string]: string; } | undefined; }",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "HttpRequest<any>",
+            "generics": [],
+            "name": "clone",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [{"name": "T"}],
+      "description": "An outgoing HTTP request with an optional typed body.\n\n`HttpRequest` represents an outgoing request, including URL, method,\nheaders, body, and other request configuration options. Instances should be\nassumed to be immutable. To modify a `HttpRequest`, the `clone`\nmethod should be used.",
+      "jsdocTags": [{"name": "publicApi", "comment": ""}],
+      "rawComment": "/**\n * An outgoing HTTP request with an optional typed body.\n *\n * `HttpRequest` represents an outgoing request, including URL, method,\n * headers, body, and other request configuration options. Instances should be\n * assumed to be immutable. To modify a `HttpRequest`, the `clone`\n * method should be used.\n *\n * @publicApi\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/packages/common/http/src/request.ts",
+        "startLine": 131,
+        "endLine": 578
+      }
+    }
+  ],
+  "symbols": [
+    ["AfterRenderPhase", "core"],
+    ["afterRender", "core"],
+    ["EmbeddedViewRef", "core"],
+    ["ChangeDetectionStrategy", "core"],
+    ["ChangeDetectorRef", "core"],
+    ["withNoHttpTransferCache", "platform-browser"],
+    ["withHttpTransferCacheOptions", "platform-browser"],
+    ["withI18nSupport", "platform-browser"],
+    ["withEventReplay", "platform-browser"]
+  ]
+}

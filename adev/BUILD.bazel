@@ -1,0 +1,161 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@npm2//:defs.bzl", "npm_link_all_packages")
+load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
+load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
+load("@rules_angular//src/architect:ng_test.bzl", "ng_test")
+
+package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+exports_files([
+    "tsconfig.json",
+])
+
+APPLICATION_FILES = [
+    "//adev/src/context:llms_full",
+    "//adev/src/assets/images",
+    "//adev/src/assets/others",
+    "//adev/src/assets/previews",
+    "//adev/src/assets:tutorials",
+    "//adev/src/assets/icons",
+    "//adev/src/assets:api",
+    "//adev/src/assets:content",
+    "//adev/src/assets:context",
+    "//adev/src/content/examples:embeddable",
+] + glob(
+    ["src/**/*"],
+    exclude = ["src/**/*.spec.ts"],
+)
+
+APPLICATION_DEPS = [
+    "//adev:node_modules/@angular-devkit/build-angular",
+    "//adev:node_modules/@codemirror/autocomplete",
+    "//adev:node_modules/@codemirror/commands",
+    "//adev:node_modules/@codemirror/lang-angular",
+    "//adev:node_modules/@codemirror/lang-css",
+    "//adev:node_modules/@codemirror/lang-html",
+    "//adev:node_modules/@codemirror/lang-javascript",
+    "//adev:node_modules/@codemirror/lang-sass",
+    "//adev:node_modules/@codemirror/language",
+    "//adev:node_modules/@codemirror/lint",
+    "//adev:node_modules/@codemirror/search",
+    "//adev:node_modules/@codemirror/state",
+    "//adev:node_modules/@codemirror/view",
+    "//adev:node_modules/@lezer/common",
+    "//adev:node_modules/@lezer/highlight",
+    "//adev:node_modules/@lezer/javascript",
+    "//adev:node_modules/@stackblitz/sdk",
+    "//adev:node_modules/@typescript/vfs",
+    "//adev:node_modules/@webcontainer/api",
+    "//adev:node_modules/@xterm/addon-fit",
+    "//adev:node_modules/@xterm/xterm",
+    "//adev:node_modules/algoliasearch",
+    "//adev:node_modules/angular-split",
+    "//adev:node_modules/fflate",
+    "//adev:node_modules/marked",
+    "//adev:node_modules/ngx-progressbar",
+    "//adev:node_modules/open-in-idx",
+    "//adev:node_modules/typescript",
+    "//adev:node_modules/xhr2",
+    "//adev:node_modules/@types/node",
+    "//adev:node_modules/@types/dom-navigation",
+
+    # Deep imports
+    "//adev:node_modules/@algolia/client-common",
+    "//adev:node_modules/@algolia/requester-browser-xhr",
+    "//adev:node_modules/@algolia/requester-node-http",
+    "//adev:node_modules/@lezer/css",
+    "//adev:node_modules/@lezer/html",
+    "//adev:node_modules/@lezer/lr",
+    "//adev:node_modules/@lezer/sass",
+    "//adev:node_modules/@marijn/find-cluster-break",
+    "//adev:node_modules/crelt",
+    "//adev:node_modules/style-mod",
+    "//adev:node_modules/w3c-keyname",
+]
+
+TEST_FILES = APPLICATION_FILES + [
+    "karma.conf.js",
+    "test-main.ts",
+] + glob(["src/**/*.spec.ts"])
+
+TEST_DEPS = [
+    dep
+    for dep in APPLICATION_DEPS
+    if dep != "//adev:node_modules/@types/node"
+] + [
+    "@rules_browsers//src/browsers/chromium",
+    "@rules_browsers//src/browsers/firefox",
+    "//adev/tools:windows-chromium-path",
+]
+
+ng_config(name = "ng_config")
+
+bool_flag(
+    name = "full_build_adev",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "prod_build",
+    flag_values = {
+        ":full_build_adev": "true",
+    },
+)
+
+config_setting(
+    name = "dev_build",
+    flag_values = {
+        ":full_build_adev": "false",
+    },
+)
+
+config_based_architect_env = select({
+    ":dev_build": {
+        "NG_BUILD_PARTIAL_SSR": "1",
+    },
+    ":prod_build": {
+        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    },
+})
+
+config_based_architect_flags = select({
+    ":dev_build": [
+        "--configuration",
+        "development",
+    ],
+    ":prod_build": [
+        "--configuration",
+        "production",
+    ],
+})
+
+ng_application(
+    name = "build",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = config_based_architect_flags,
+    env = config_based_architect_env,
+    ng_config = ":ng_config",
+    node_modules = "//adev:node_modules",
+    project_name = "angular-dev",
+)
+
+ng_test(
+    name = "test",
+    srcs = TEST_FILES + TEST_DEPS,
+    env = {
+        # Move one level up because we are in `//adev`
+        "CHROME_BIN": "../" + "$(CHROME-HEADLESS-SHELL)",
+        "CHROMEDRIVER_BIN": "../" + "$(CHROMEDRIVER)",
+    },
+    ng_config = ":ng_config",
+    node_modules = "//adev:node_modules",
+    project_name = "angular-dev",
+    toolchains = [
+        "@rules_browsers//src/browsers/chromium:toolchain_alias",
+        "@rules_browsers//src/browsers/firefox:toolchain_alias",
+    ],
+)
