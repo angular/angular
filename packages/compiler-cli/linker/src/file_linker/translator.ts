@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import * as o from '@angular/compiler';
-
 import {
-  AstFactory,
-  Context,
   ExpressionTranslatorVisitor,
-  ImportGenerator,
   TranslatorOptions,
-} from '../../../src/ngtsc/translator';
+} from '../../../src/ngtsc/translator/src/translator';
+import {Context} from '../../../src/ngtsc/translator/src/context';
+import {ImportGenerator} from '../../../src/ngtsc/translator/src/api/import_generator';
+import {AstFactory} from '../../../src/ngtsc/translator/src/api/ast_factory';
 
 /**
  * Generic translator helper class, which exposes methods for translating expressions and

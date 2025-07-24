@@ -19,9 +19,19 @@ export class IdentityPipe {
     {{ void 'test' }}
     {{ (-1) ** 3 }}
     {{ 'bar' in foo }}
+    <button (click)="number += 1"></button>
+    <button (click)="number -= 1"></button>
+    <button (click)="number *= 1"></button>
+    <button (click)="number /= 1"></button>
+    <button (click)="number %= 1"></button>
+    <button (click)="number **= 1"></button>
+    <button (click)="number &&= 1"></button>
+    <button (click)="number ||= 1"></button>
+    <button (click)="number ??= 1"></button>
   `,
   imports: [IdentityPipe],
 })
 export class MyApp {
   foo: {bar?: string} = {bar: 'baz'};
+  number = 1;
 }

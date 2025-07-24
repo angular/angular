@@ -1,58 +1,90 @@
 @use '../../../../styles/typography';
 
-h2 {
-  @extend %heading-400;
-}
-
-.select {
-  cursor: pointer;
-}
-
 :host {
-  display: block;
-  padding: 16px;
-}
-
-.filter {
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: start;
+  height: 100%;
 
-  mat-form-field {
-    &.token-search {
+  h2,
+  .filter,
+  .no-providers-label,
+  table {
+    padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  h2 {
+    @extend %heading-400;
+    margin-top: 0;
+    padding-bottom: 0;
+  }
+
+  .filter {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    padding-block: 0;
+
+    label,
+    select,
+    input {
+      display: block;
+      width: 100%;
+    }
+
+    label {
+      padding-left: 0.75rem;
+      margin-bottom: 0.25rem;
+      color: var(--quaternary-contrast);
+    }
+
+    .token-filter {
+      position: relative;
       flex: 1;
+
+      input {
+        padding-right: 2rem;
+      }
+
+      .clear-filter {
+        position: absolute;
+        right: 0.75rem;
+        bottom: 0.15rem;
+
+        mat-icon {
+          $icon-size: 16px;
+          font-size: $icon-size;
+          width: $icon-size;
+          height: $icon-size;
+        }
+      }
     }
 
-    &.type-filter {
-      width: 10rem;
+    .type-filter {
+      width: 9rem;
     }
   }
-}
 
-table {
-  width: 100%;
-  --mat-table-row-item-label-text-size: 0.8rem;
-  --mat-table-header-container-height: 42px;
-  --mat-table-row-item-container-height: 42px;
-
-  td {
-    @extend %body-01;
+  .no-providers-label {
+    padding-block: 0.5rem;
+    text-align: center;
   }
-}
 
-.column-title {
-  @extend %body-bold-01;
-  margin: 0;
-}
+  table {
+    padding-top: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    display: block;
+    flex: 1;
 
-.token-cell {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-  max-width: 0;
-}
-
-.no-providers-label {
-  padding: 0.5rem 0;
-  text-align: center;
+    .token-cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      max-width: 0;
+    }
+  }
 }

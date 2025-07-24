@@ -12,7 +12,8 @@ import {AbsoluteFsPath, PathSegment, PathString} from '../../src/types';
 
 import {MockFileSystem} from './mock_file_system';
 
-const isWindows = os.platform() === 'win32';
+// Note: `os` may be `{}` when executing in the browser in 1P.
+const isWindows = os.platform?.() === 'win32';
 
 export class MockFileSystemNative extends MockFileSystem {
   constructor(cwd: AbsoluteFsPath = '/' as AbsoluteFsPath) {

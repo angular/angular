@@ -8,14 +8,12 @@
 
 import {readFile} from 'fs/promises';
 import {parseMarkdown} from '../../../guides/parse.mjs';
-import {runfiles} from '@bazel/runfiles';
+import {resolve} from 'node:path';
 
 describe('markdown to html', () => {
   let parsedMarkdown: string;
   beforeAll(async () => {
-    const markdownContent = await readFile(runfiles.resolvePackageRelative('table/table.md'), {
-      encoding: 'utf-8',
-    });
+    const markdownContent = await readFile(resolve('./table.md'), {encoding: 'utf-8'});
     parsedMarkdown = await parseMarkdown(markdownContent, {});
   });
 

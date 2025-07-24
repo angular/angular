@@ -12,7 +12,7 @@ import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {CssSelector} from '../../directive_matching';
 import {ShadowCss} from '../../shadow_css';
-import {CompilationJobKind} from '../../template/pipeline/src/compilation';
+import {CompilationJobKind, TemplateCompilationMode} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
 import {BindingParser} from '../../template_parser/binding_parser';
@@ -32,10 +32,12 @@ import {getTemplateSourceLocationsEnabled} from './config';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {makeBindingParser} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
+import {analyzeTemplateForAnimations} from '../../template_parser/animation_analyzer';
 
 const COMPONENT_VARIABLE = '%COMP%';
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+const ANIMATE_LEAVE = `animate.leave`;
 
 function baseDirectiveFields(
   meta: R3DirectiveMetadata,
@@ -102,6 +104,16 @@ function baseDirectiveFields(
   return definitionMap;
 }
 
+function hasAnimationHostBinding(
+  meta: R3DirectiveMetadata | R3ComponentMetadata<R3TemplateDependency>,
+): boolean {
+  return (
+    meta.host.attributes[ANIMATE_LEAVE] !== undefined ||
+    meta.host.properties[ANIMATE_LEAVE] !== undefined ||
+    meta.host.listeners[ANIMATE_LEAVE] !== undefined
+  );
+}
+
 /**
  * Add features to the definition map.
  */
@@ -146,6 +158,13 @@ function addFeatures(
       o.importExpr(R3.ExternalStylesFeature).callFn([o.literalArr(externalStyleNodes)]),
     );
   }
+  const template = (meta as R3ComponentMetadata<R3TemplateDependency>).template;
+  if (hasAnimationHostBinding(meta) || (template && template.nodes.length > 0)) {
+    if (hasAnimationHostBinding(meta) || analyzeTemplateForAnimations(template.nodes)) {
+      features.push(o.importExpr(R3.AnimationsFeature).callFn([]));
+    }
+  }
+
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
@@ -217,11 +236,17 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn = o.variable(fnName);
   }
 
+  const compilationMode =
+    meta.isStandalone && !meta.hasDirectiveDependencies
+      ? TemplateCompilationMode.DomOnly
+      : TemplateCompilationMode.Full;
+
   // First the template is ingested into IR:
   const tpl = ingestComponent(
     meta.name,
     meta.template.nodes,
     constantPool,
+    compilationMode,
     meta.relativeContextFilePath,
     meta.i18nUseExternalIds,
     meta.defer,

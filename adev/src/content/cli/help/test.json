@@ -45,11 +45,6 @@
       "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
     },
     {
-      "name": "define",
-      "type": "string",
-      "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
-    },
-    {
       "name": "exclude",
       "type": "array",
       "description": "Globs of files to exclude, relative to the project root."
@@ -137,7 +132,8 @@
     {
       "name": "watch",
       "type": "boolean",
-      "description": "Run build when files change."
+      "default": true,
+      "description": "Re-run tests when source files change."
     },
     {
       "name": "web-worker-ts-config",

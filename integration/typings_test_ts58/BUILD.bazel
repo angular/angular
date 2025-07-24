@@ -4,6 +4,6 @@ ng_integration_test(
     name = "test",
     # Special case for `typings_test_ts58` test as we want to pin
     # `typescript` at version 5.8.x for that test and not link to the
-    # root @npm//typescript package.
+    # root typescript package.
     pinned_npm_packages = ["typescript"],
 )

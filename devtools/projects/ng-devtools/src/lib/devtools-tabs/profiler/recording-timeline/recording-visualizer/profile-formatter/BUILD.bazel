@@ -1,0 +1,11 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "profile-formatter",
+    srcs = ["profile-formatter.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer:recording-visualizer-types_rjs",
+    ],
+)

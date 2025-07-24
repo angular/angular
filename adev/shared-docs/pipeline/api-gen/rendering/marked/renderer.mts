@@ -22,9 +22,7 @@ export const renderer: Partial<Renderer> = {
 
     return `
       <div class="docs-code" role="group">
-        <pre class="docs-mini-scroll-track">
-          ${highlightResult}
-        </pre>
+        ${highlightResult}
       </div>
     `;
   },

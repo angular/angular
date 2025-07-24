@@ -71,9 +71,9 @@ export const getTooltipExtension = (
             // the tooltip might render with its initial scroll position on the bottom
             mount: (_) => forceTooltipScrollTop(),
             positioned: (_) => forceTooltipScrollTop(),
-            resize: false,
           };
         },
+        above: true, // always show the tooltip above the cursor
       };
     },
     {

@@ -1,0 +1,58 @@
+@use '@angular/material' as mat;
+@use './typography' as tg;
+
+/* Defines all Material component overrides specific to Angular DevTools */
+/* If you must resort to direct Mat class changes, please use a "FRAGILE" comment on top. */
+@mixin mat-cmp-overrides {
+  @include mat.expansion-overrides(
+    (
+      container-background-color: transparent,
+    )
+  );
+
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: transparent,
+    )
+  );
+
+  @include mat.tree-overrides(
+    (
+      container-background-color: transparent,
+    )
+  );
+
+  @include mat.table-overrides(
+    (
+      background-color: transparent,
+    )
+  );
+
+  @include mat.menu-overrides(
+    (
+      item-icon-size: 16px,
+      item-label-text-font: tg.$font-family,
+      item-label-text-size: tg.$font-size,
+      item-label-text-line-height: 0.875rem,
+    )
+  );
+
+  /* FRAGILE */
+  .mat-mdc-menu-item {
+    min-height: 32px;
+  }
+
+  /* FRAGILE */
+  label.mat-mdc-menu-item > .mat-mdc-menu-item-text {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+  }
+
+  /* FRAGILE */
+  mat-slide-toggle .mdc-switch__ripple {
+    width: 25px;
+    height: 25px;
+  }
+}

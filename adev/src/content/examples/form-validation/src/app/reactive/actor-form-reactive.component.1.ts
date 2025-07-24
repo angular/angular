@@ -17,7 +17,7 @@ export class HeroFormReactiveComponent {
 
   // #docregion form-group
   // #docregion custom-validator
-  actorForm: FormGroup = new FormGroup({
+  actorForm = new FormGroup({
     name: new FormControl(this.actor.name, [
       Validators.required,
       Validators.minLength(4),

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {AnimationRemovalRegistry, ElementRegistry} from '../animation';
 import {InternalInjectFlags} from '../di/interface/injector';
 import {
   assertDefined,
@@ -840,4 +841,21 @@ export function wasLastNodeCreated(): boolean {
  */
 export function lastNodeWasCreated(flag: boolean): void {
   _wasLastNodeCreated = flag;
+}
+
+/**
+ * We create an object here because it's possible the DOM Renderer is created
+ * before the animation removal registry is defined. The object allows us to
+ * update the instance once the registry is created.
+ */
+let registry: AnimationRemovalRegistry = {elements: undefined};
+
+export function setAnimationElementRemovalRegistry(value: ElementRegistry) {
+  if (registry.elements === undefined) {
+    registry.elements = value;
+  }
+}
+
+export function getAnimationElementRemovalRegistry(): AnimationRemovalRegistry {
+  return registry;
 }

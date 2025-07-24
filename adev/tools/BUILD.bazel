@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 
 package(default_visibility = [
     "//adev:__subpackages__",

@@ -101,8 +101,6 @@ class DtsTransformer {
     const visitor: ts.Visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
       if (ts.isClassDeclaration(node)) {
         return this.transformClassDeclaration(node, transforms, imports);
-      } else if (ts.isFunctionDeclaration(node)) {
-        return this.transformFunctionDeclaration(node, transforms, imports);
       } else {
         // Otherwise return node as is.
         return ts.visitEachChild(node, visitor, this.ctx);
@@ -121,35 +119,13 @@ class DtsTransformer {
     transforms: DtsTransform[],
     imports: ImportManager,
   ): ts.ClassDeclaration {
-    let elements: ts.ClassElement[] | ReadonlyArray<ts.ClassElement> = clazz.members;
-    let elementsChanged = false;
-
-    for (const transform of transforms) {
-      if (transform.transformClassElement !== undefined) {
-        for (let i = 0; i < elements.length; i++) {
-          const res = transform.transformClassElement(elements[i], imports);
-          if (res !== elements[i]) {
-            if (!elementsChanged) {
-              elements = [...elements];
-              elementsChanged = true;
-            }
-            (elements as ts.ClassElement[])[i] = res;
-          }
-        }
-      }
-    }
-
     let newClazz: ts.ClassDeclaration = clazz;
 
     for (const transform of transforms) {
       if (transform.transformClass !== undefined) {
-        // If no DtsTransform has changed the class yet, then the (possibly mutated) elements have
-        // not yet been incorporated. Otherwise, `newClazz.members` holds the latest class members.
-        const inputMembers = clazz === newClazz ? elements : newClazz.members;
-
         newClazz = transform.transformClass(
           newClazz,
-          inputMembers,
+          newClazz.members,
           this.reflector,
           this.refEmitter,
           imports,
@@ -157,36 +133,7 @@ class DtsTransformer {
       }
     }
 
-    // If some elements have been transformed but the class itself has not been transformed, create
-    // an updated class declaration with the updated elements.
-    if (elementsChanged && clazz === newClazz) {
-      newClazz = ts.factory.updateClassDeclaration(
-        /* node */ clazz,
-        /* modifiers */ clazz.modifiers,
-        /* name */ clazz.name,
-        /* typeParameters */ clazz.typeParameters,
-        /* heritageClauses */ clazz.heritageClauses,
-        /* members */ elements,
-      );
-    }
-
     return newClazz;
-  }
-
-  private transformFunctionDeclaration(
-    declaration: ts.FunctionDeclaration,
-    transforms: DtsTransform[],
-    imports: ImportManager,
-  ): ts.FunctionDeclaration {
-    let newDecl = declaration;
-
-    for (const transform of transforms) {
-      if (transform.transformFunctionDeclaration !== undefined) {
-        newDecl = transform.transformFunctionDeclaration(newDecl, imports);
-      }
-    }
-
-    return newDecl;
   }
 }
 

@@ -200,8 +200,8 @@ node packages/compiler-cli/test/compliance/update_all_goldens.js
 
 ## Debugging test-cases
 
-The full and linked compliance tests are basically `jasmine_node_test` rules. As such, they can be
-debugged just like any other `jasmine_node_test`.  The standard approach is to add `--config=debug`
+The full and linked compliance tests are basically `jasmine_test` rules. As such, they can be
+debugged just like any other `jasmine_test`.  The standard approach is to add `--config=debug`
 to the Bazel test command.
 
 For example:

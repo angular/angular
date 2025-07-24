@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatToolbar} from '@angular/material/toolbar';
@@ -18,6 +18,7 @@ import {FrameManager} from '../../../../application-services/frame_manager';
   templateUrl: './property-view-header.component.html',
   styleUrls: ['./property-view-header.component.scss'],
   imports: [MatToolbar, MatTooltip, MatIcon],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewHeaderComponent {
   readonly directive = input.required<string>();
@@ -31,6 +32,12 @@ export class PropertyViewHeaderComponent {
     const frameHasUniqueUrl = this.frameManager.activeFrameHasUniqueUrl();
     return (this.platform.FIREFOX && !isTopLevelFrame) || !frameHasUniqueUrl;
   });
+
+  protected readonly viewSourceTooltip = computed(() =>
+    this.disableViewSourceButton()
+      ? 'Inspecting source is not supported in Firefox when the inspected frame is not the top-level frame.'
+      : 'Open Source',
+  );
 
   // output that emits directive
   handleViewSource(event: MouseEvent): void {

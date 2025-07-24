@@ -148,7 +148,7 @@ export enum ParseErrorLevel {
   ERROR,
 }
 
-export class ParseError {
+export class ParseError extends Error {
   constructor(
     /** Location of the error. */
     readonly span: ParseSourceSpan,
@@ -161,7 +161,14 @@ export class ParseError {
      * couldn't be parsed. Not guaranteed to be defined, but can be used to provide more context.
      */
     readonly relatedError?: unknown,
-  ) {}
+  ) {
+    super(msg);
+
+    // Extending `Error` ends up breaking some internal tests. This appears to be a known issue
+    // when extending errors in TS and the workaround is to explicitly set the prototype.
+    // https://stackoverflow.com/questions/41102060/typescript-extending-error-class
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
 
   contextualMessage(): string {
     const ctx = this.span.start.getContext(100, 3);
@@ -170,7 +177,7 @@ export class ParseError {
       : this.msg;
   }
 
-  toString(): string {
+  override toString(): string {
     const details = this.span.details ? `, ${this.span.details}` : '';
     return `${this.contextualMessage()}: ${this.span.start}${details}`;
   }

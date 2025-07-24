@@ -19,8 +19,8 @@ import {
   nonIgnorableFieldIncompatibilities,
   SignalInputMigration,
 } from '@angular/core/schematics/migrations/signal-migration/src';
-import {getProgramInfoFromBaseInfo} from '@angular/core/schematics/utils/tsurge';
 import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
+import {getProgramInfoFromBaseInfo} from '@angular/core/schematics/utils/tsurge';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 
 export async function applySignalInputRefactoring(

@@ -1,3 +1,5 @@
+@use '../../styles/media-queries' as mq;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -20,7 +22,7 @@
     display: none;
   }
 
-  @media only screen and (max-width: 1430px) {
+  @include mq.for-large-desktop-down {
     position: relative;
     right: 0;
     max-height: min-content;
@@ -91,7 +93,7 @@ button {
     }
   }
 
-  @media only screen and (max-width: 1430px) {
+  @include mq.for-large-desktop-down {
     display: none;
   }
 }

@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {HousingLocation} from '../housing-location/housing-location';
+
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, HousingLocation],
+  imports: [HousingLocation],
   template: `
     <section>
       <form>

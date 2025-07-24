@@ -25,6 +25,9 @@ def _render_api_to_html(ctx):
         executable = ctx.executable._render_api_to_html,
         outputs = outputs,
         arguments = [args],
+        env = {
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     # The return value describes what the rule is producing. In this case we need to specify

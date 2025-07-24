@@ -1,3 +1,4 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//tools:defaults2.bzl", "ts_project")
 
 package(
@@ -7,7 +8,7 @@ package(
     ],
 )
 
-filegroup(
+copy_to_bin(
     name = "static_files",
     srcs = ["schema.json"],
 )
@@ -15,13 +16,11 @@ filegroup(
 ts_project(
     name = "standalone-migration",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/private",
-        "//packages/core/schematics/utils",
-    ],
     deps = [
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli/private:private_rjs",
+        "//packages/core/schematics/utils:utils_rjs",
     ],
 )

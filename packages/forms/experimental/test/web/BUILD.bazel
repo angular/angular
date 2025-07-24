@@ -1,28 +1,27 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+load("//tools:defaults2.bzl", "ng_web_test_suite", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/forms",
-        "//packages/forms/experimental",
-        "//packages/platform-browser",
-        "//packages/platform-browser/testing",
-        "//packages/private/testing",
-        "@npm//zod",
+        "//:node_modules/zod",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/forms:forms_rjs",
+        "//packages/forms/experimental:experimental_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
 # To run this:
 # yarn bazel test //packages/forms/experimental/test/web:test
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
-    browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )

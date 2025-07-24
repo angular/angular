@@ -1,0 +1,107 @@
+:host {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  display: block;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: white;
+
+    ::ng-deep {
+      .node-label {
+        box-sizing: border-box;
+        contain: paint;
+        width: 70px;
+        height: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        word-wrap: break-word;
+        border-radius: 8px;
+        background-color: var(--red-03);
+        cursor: pointer;
+        transition: border-width 0.25s ease-in-out;
+        border: 0px solid black;
+        &.animating {
+          border-width: 5px;
+        }
+        .header {
+          width: 85%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          padding: 7.5%;
+          background-color: var(--red-06);
+        }
+        .body {
+          flex: 1;
+        }
+      }
+      .selected rect {
+        stroke: var(--dynamic-blue-02);
+        stroke-width: 3px;
+        ry: 8px;
+        rx: 8px;
+      }
+
+      .kind-signal {
+        background-color: var(--blue-02);
+        .header {
+          background-color: var(--blue-01);
+        }
+      }
+      .kind-computed {
+        background-color: var(--green-02);
+        .header {
+          background-color: var(--green-01);
+        }
+      }
+      .kind-effect {
+        background-color: var(--transparent-04);
+        .header {
+          background-color: var(--color-tree-node-highlighted);
+        }
+      }
+      .kind-template {
+        background-color: var(--gray-400);
+        .header {
+          background-color: var(--gray-700);
+        }
+      }
+    }
+  }
+
+  ng-signals-details {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .no-signals {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+
+    mat-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+    }
+  }
+}

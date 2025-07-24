@@ -26,13 +26,13 @@ import {
   R3QueryMetadata,
 } from '@angular/compiler';
 
-import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {extractForwardRef, getDefaultStandaloneValue, wrapReference} from './util';
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/src/types';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.

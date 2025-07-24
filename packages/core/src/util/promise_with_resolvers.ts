@@ -10,13 +10,13 @@
  * TODO(incremental-hydration): Remove this file entirely once PromiseWithResolvers lands in stable
  * node / TS.
  */
-interface PromiseWithResolvers<T> {
+export interface PromiseWithResolvers<T> {
   promise: Promise<T>;
   resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason?: any) => void;
 }
 
-interface PromiseConstructor {
+export interface PromiseConstructor {
   /**
    * Creates a new Promise and returns it in an object, along with its resolve and reject functions.
    * @returns An object with the properties `promise`, `resolve`, and `reject`.

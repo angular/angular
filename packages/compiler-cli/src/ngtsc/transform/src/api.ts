@@ -288,11 +288,6 @@ export interface ResolveResult<R> {
 }
 
 export interface DtsTransform {
-  transformClassElement?(element: ts.ClassElement, imports: ImportManager): ts.ClassElement;
-  transformFunctionDeclaration?(
-    element: ts.FunctionDeclaration,
-    imports: ImportManager,
-  ): ts.FunctionDeclaration;
   transformClass?(
     clazz: ts.ClassDeclaration,
     elements: ReadonlyArray<ts.ClassElement>,

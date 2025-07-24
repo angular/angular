@@ -7,7 +7,7 @@
  */
 
 import {ApplicationOperations} from '../projects/ng-devtools';
-import {DirectivePosition, ElementPosition} from '../projects/protocol';
+import {DirectivePosition, ElementPosition, SignalNodePosition} from '../projects/protocol';
 
 export class DemoApplicationOperations extends ApplicationOperations {
   override viewSource(position: ElementPosition): void {
@@ -21,5 +21,15 @@ export class DemoApplicationOperations extends ApplicationOperations {
   override inspect(directivePosition: DirectivePosition, keyPath: string[]): void {
     console.warn('inspect() is not implemented because the demo app runs in an Iframe');
     return;
+  }
+  override inspectSignal(position: SignalNodePosition): void {
+    console.warn('inspectSignal() is not implemented because the demo app runs in an Iframe');
+    return;
+  }
+  override viewSourceFromRouter(name: string, type: string): void {
+    console.warn(
+      'viewSourceFromRouter() is not implemented because the demo app runs in an Iframe',
+    );
+    throw new Error('Not implemented in demo app.');
   }
 }

@@ -47,6 +47,19 @@ export function specializeBindings(job: CompilationJob): void {
             ir.OpList.remove<ir.UpdateOp>(op);
             const target = lookupElement(elements, op.target);
             target.nonBindable = true;
+          } else if (op.name.startsWith('animate.')) {
+            ir.OpList.replace<ir.UpdateOp>(
+              op,
+              ir.createAnimationBindingOp(
+                op.name,
+                op.target,
+                op.name === 'animate.enter' ? ir.AnimationKind.ENTER : ir.AnimationKind.LEAVE,
+                op.expression,
+                op.securityContext,
+                op.sourceSpan,
+                ir.AnimationBindingKind.STRING,
+              ),
+            );
           } else {
             const [namespace, name] = splitNsName(op.name);
             ir.OpList.replace<ir.UpdateOp>(
@@ -66,15 +79,29 @@ export function specializeBindings(job: CompilationJob): void {
             );
           }
           break;
-        case ir.BindingKind.Property:
         case ir.BindingKind.Animation:
+          ir.OpList.replace<ir.UpdateOp>(
+            op,
+            ir.createAnimationBindingOp(
+              op.name,
+              op.target,
+              op.name === 'animate.enter' ? ir.AnimationKind.ENTER : ir.AnimationKind.LEAVE,
+              op.expression,
+              op.securityContext,
+              op.sourceSpan,
+              ir.AnimationBindingKind.VALUE,
+            ),
+          );
+          break;
+        case ir.BindingKind.Property:
+        case ir.BindingKind.LegacyAnimation:
           if (job.kind === CompilationJobKind.Host) {
             ir.OpList.replace<ir.UpdateOp>(
               op,
               ir.createDomPropertyOp(
                 op.name,
                 op.expression,
-                op.bindingKind === ir.BindingKind.Animation,
+                op.bindingKind,
                 op.i18nContext,
                 op.securityContext,
                 op.sourceSpan,
@@ -87,7 +114,7 @@ export function specializeBindings(job: CompilationJob): void {
                 op.target,
                 op.name,
                 op.expression,
-                op.bindingKind === ir.BindingKind.Animation,
+                op.bindingKind,
                 op.securityContext,
                 op.isStructuralTemplateAttribute,
                 op.templateKind,

@@ -14,7 +14,7 @@ Angular's SemVer, release schedule, and deprecation policy applies to these npm 
 - `@angular/service-worker`
 - `@angular/upgrade`
 
-The `@angular/compiler` package is explicitly excluded from this list. The compiler is a generally
+The `@angular/compiler` package is explicitly excluded from this list. The compiler is generally
 considered private/internal API and may change at any time. Only very specific use-cases, such as
 linters or IDE integration, require direct access to the compiler API. If you are
 working on this kind of integration, please reach out to us first.

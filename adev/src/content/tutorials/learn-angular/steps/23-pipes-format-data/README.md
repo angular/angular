@@ -26,8 +26,8 @@ In `app.ts`, update the template to include parameter for the `decimal` pipe.
 
 <docs-code language="ts" highlight="[3]">
 template: `
-    ...
-    <li>Number with "decimal" {{ num | number:"3.2-2" }}</li>
+  ...
+  <li>Number with "decimal" {{ num | number:"3.2-2" }}</li>
 `
 </docs-code>
 
@@ -41,8 +41,8 @@ Now, update the template to use the `date` pipe.
 
 <docs-code language="ts" highlight="[3]">
 template: `
-    ...
-    <li>Date with "date" {{ birthday | date: 'medium' }}</li>
+  ...
+  <li>Date with "date" {{ birthday | date: 'medium' }}</li>
 `
 </docs-code>
 
@@ -56,8 +56,8 @@ For your last task, update the template to use the `currency` pipe.
 
 <docs-code language="ts" highlight="[3]">
 template: `
-    ...
-    <li>Currency with "currency" {{ cost | currency }}</li>
+  ...
+  <li>Currency with "currency" {{ cost | currency }}</li>
 `
 </docs-code>
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {runBenchmark} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {runBenchmark} from '../../../utilities/index';
 import {$, browser} from 'protractor';
 
 describe('class bindings perf', () => {

@@ -1,5 +1,3 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
-
 def _generate_previews_impl(ctx):
     """Implementation of the previews generator rule"""
 
@@ -9,8 +7,10 @@ def _generate_previews_impl(ctx):
     # Set the arguments for the actions inputs and out put location.
     args = ctx.actions.args()
 
-    # Path to the examples for which previews are being generated.
-    args.add(ctx.attr.example_srcs.label.package)
+    # Path to the examples for which previews are being generated. Because examples are
+    # generated files, we need to look in the bin_dir subpath for them instead of the
+    # execPath
+    args.add("{}/{}".format(ctx.bin_dir.path, ctx.attr.example_srcs.label.package))
 
     # Path to the preview map template.
     args.add(ctx.file._template_src)
@@ -20,12 +20,14 @@ def _generate_previews_impl(ctx):
 
     ctx.runfiles(files = ctx.files._template_src)
 
-    run_node(
-        ctx = ctx,
+    ctx.actions.run(
         inputs = depset(ctx.files.example_srcs + ctx.files._template_src),
-        executable = "_generate_previews",
+        executable = ctx.executable._generate_previews,
         outputs = [ts_output],
         arguments = [args],
+        env = {
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     # The return value describes what the rule is producing. In this case we need to specify

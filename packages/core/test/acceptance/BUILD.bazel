@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -14,34 +13,30 @@ ts_project(
         ["**/*.ts"],
         exclude = SPEC_FILES_WITH_FORWARD_REFS,
     ),
-    interop_deps = [
-        "//packages/animations",
-        "//packages/animations/browser",
-        "//packages/animations/browser/testing",
-        "//packages/common",
-        "//packages/common/locales",
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/primitives/signals",
-        "//packages/core/src/di/interface",
-        "//packages/core/src/util",
-        "//packages/core/test/render3:matchers",
-        "//packages/core/testing",
-        "//packages/localize",
-        "//packages/localize/init",
-        "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
-        "//packages/platform-browser/animations",
-        "//packages/platform-browser/testing",
-        "//packages/platform-server",
-        "//packages/private/testing",
-        "//packages/router",
-        "//packages/zone.js/lib:zone_d_ts",
-    ],
     # Visible to //:saucelabs_unit_tests
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/locales:locales_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
+        "//packages/core/src/util:util_rjs",
+        "//packages/core/test/render3:matchers_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/localize:localize_rjs",
+        "//packages/localize/init:init_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/private/testing:testing_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
@@ -55,27 +50,24 @@ ng_project(
     name = "forward_ref_test_lib",
     testonly = True,
     srcs = SPEC_FILES_WITH_FORWARD_REFS,
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/testing",
-    ],
-)
-
-jasmine_node_test(
-    name = "acceptance",
-    bootstrap = ["//tools/testing:node"],
     deps = [
-        ":acceptance_lib",
-        ":forward_ref_test_lib",
-        "//packages/zone.js/lib:zone_d_ts",
-        "@npm//source-map",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )
 
-karma_web_test_suite(
+angular_jasmine_test(
+    name = "acceptance",
+    data = [
+        ":acceptance_lib_rjs",
+        ":forward_ref_test_lib_rjs",
+    ],
+)
+
+ng_web_test_suite(
     name = "acceptance_web",
     deps = [
-        ":acceptance_lib",
-        ":forward_ref_test_lib",
+        ":acceptance_lib_rjs",
+        ":forward_ref_test_lib_rjs",
     ],
 )

@@ -46,7 +46,7 @@ export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resol
  */
 export interface Resource<T> {
   /**
-   * The current value of the `Resource`, or `undefined` if there is no current value.
+   * The current value of the `Resource`, or throws an error if the resource is in an error state.
    */
   readonly value: Signal<T>;
 
@@ -59,7 +59,7 @@ export interface Resource<T> {
   /**
    * When in the `error` state, this returns the last known error from the `Resource`.
    */
-  readonly error: Signal<unknown>;
+  readonly error: Signal<Error | undefined>;
 
   /**
    * Whether this resource is loading a new value (or reloading the existing one).
@@ -72,16 +72,6 @@ export interface Resource<T> {
    * This function is reactive.
    */
   hasValue(): this is Resource<Exclude<T, undefined>>;
-
-  /**
-   * Instructs the resource to re-load any asynchronous dependency it may have.
-   *
-   * Note that the resource will not enter its reloading state until the actual backend request is
-   * made.
-   *
-   * @returns true if a reload was initiated, false if a reload was unnecessary or unsupported
-   */
-  reload(): boolean;
 }
 
 /**
@@ -105,6 +95,16 @@ export interface WritableResource<T> extends Resource<T> {
    */
   update(updater: (value: T) => T): void;
   asReadonly(): Resource<T>;
+
+  /**
+   * Instructs the resource to re-load any asynchronous dependency it may have.
+   *
+   * Note that the resource will not enter its reloading state until the actual backend request is
+   * made.
+   *
+   * @returns true if a reload was initiated, false if a reload was unnecessary or unsupported
+   */
+  reload(): boolean;
 }
 
 /**
@@ -167,7 +167,7 @@ export interface BaseResourceOptions<T, R> {
 
   /**
    * The value which will be returned from the resource when a server value is unavailable, such as
-   * when the resource is still loading, or in an error state.
+   * when the resource is still loading.
    */
   defaultValue?: NoInfer<T>;
 
@@ -225,4 +225,4 @@ export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingReso
 /**
  * @experimental
  */
-export type ResourceStreamItem<T> = {value: T} | {error: unknown};
+export type ResourceStreamItem<T> = {value: T} | {error: Error};

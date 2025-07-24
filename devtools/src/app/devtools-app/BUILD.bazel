@@ -1,5 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -18,12 +17,10 @@ ng_project(
         "devtools-app.component.html",
         ":devtools_app_component_styles",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
         "//devtools/projects/ng-devtools:ng-devtools_rjs",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
         "//devtools/projects/protocol:protocol_rjs",

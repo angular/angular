@@ -53,6 +53,19 @@ type ImportMetaExtended = ImportMeta & {
 };
 
 /**
+ * Gets the URL from which the client will fetch a new version of a component's metadata so it
+ * can be replaced during hot module reloading.
+ * @param id Unique ID for the component, generated during compile time.
+ * @param timestamp Time at which the request happened.
+ * @param base Base URL against which to resolve relative paths.
+ * @codeGenApi
+ */
+export function ɵɵgetReplaceMetadataURL(id: string, timestamp: string, base: string): string {
+  const url = `./@ng/component?c=${id}&t=${encodeURIComponent(timestamp)}`;
+  return new URL(url, base).href;
+}
+
+/**
  * Replaces the metadata of a component type and re-renders all live instances of the component.
  * @param type Class whose metadata will be replaced.
  * @param applyMetadata Callback that will apply a new set of metadata on the `type` when invoked.

@@ -7,12 +7,11 @@
  */
 
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
-  OnDestroy,
   Renderer2,
   signal,
 } from '@angular/core';
@@ -32,13 +31,13 @@ export const TUTORIALS_HOMEPAGE_DIRECTORY = 'homepage';
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class Home implements AfterViewInit, OnDestroy {
+export default class Home {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly renderer = inject(Renderer2);
   private readonly win = inject(WINDOW);
   private readonly doc = inject(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
 
-  private scrollListener?: () => void;
   protected readonly tutorialFiles = TUTORIALS_HOMEPAGE_DIRECTORY;
   protected readonly isUwu = 'uwu' in this.activatedRoute.snapshot.queryParams;
 
@@ -49,19 +48,13 @@ export default class Home implements AfterViewInit, OnDestroy {
 
   animationReady = signal<boolean>(false);
 
-  ngAfterViewInit() {
-    this.scrollListener = this.renderer.listen(this.win, 'scroll', () =>
+  constructor() {
+    const scrollListenerCleanupFn = this.renderer.listen(this.win, 'scroll', () =>
       // Keep track of the scroll progress since the home animation uses
       // different mechanics for the standard and reduced-motion animations.
       this.scrollProgress.set(this.win.scrollY / this.doc.body.scrollHeight),
     );
-  }
-
-  ngOnDestroy() {
-    // Unlisten the scroll event.
-    if (this.scrollListener) {
-      this.scrollListener();
-    }
+    this.destroyRef.onDestroy(() => scrollListenerCleanupFn());
   }
 
   onAnimationReady(ready: boolean) {

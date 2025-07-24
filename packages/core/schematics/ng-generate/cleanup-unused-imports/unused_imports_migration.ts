@@ -17,7 +17,7 @@ import {
   TsurgeFunnelMigration,
 } from '../../utils/tsurge';
 import {ErrorCode, FileSystem, ngErrorCode} from '@angular/compiler-cli';
-import {DiagnosticCategoryLabel, NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {DiagnosticCategoryLabel} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
 
@@ -283,6 +283,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
     const {fullRemovals, partialRemovals, allRemovedIdentifiers} = removalLocations;
     const {importedSymbols, identifierCounts} = usages;
     const importManager = new ImportManager();
+    const sourceText = sourceFile.getFullText();
 
     // Replace full arrays with empty ones. This allows preserves more of the user's formatting.
     fullRemovals.forEach((node) => {
@@ -299,22 +300,19 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
     });
 
     // Filter out the unused identifiers from an array.
-    partialRemovals.forEach((toRemove, node) => {
-      const newNode = ts.factory.updateArrayLiteralExpression(
-        node,
-        node.elements.filter((el) => !toRemove.has(el)),
-      );
+    partialRemovals.forEach((toRemove, parent) => {
+      toRemove.forEach((node) => {
+        replacements.push(
+          new Replacement(
+            projectFile(sourceFile, info),
+            getArrayElementRemovalUpdate(node, sourceText),
+          ),
+        );
+      });
 
-      replacements.push(
-        new Replacement(
-          projectFile(sourceFile, info),
-          new TextUpdate({
-            position: node.getStart(),
-            end: node.getEnd(),
-            toInsert: this.printer.printNode(ts.EmitHint.Unspecified, newNode, sourceFile),
-          }),
-        ),
-      );
+      stripTrailingSameLineCommas(parent, toRemove, sourceText)?.forEach((update) => {
+        replacements.push(new Replacement(projectFile(sourceFile, info), update));
+      });
     });
 
     // Attempt to clean up unused import declarations. Note that this isn't foolproof, because we
@@ -335,4 +333,73 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
 
     applyImportManagerChanges(importManager, replacements, [sourceFile], info);
   }
+}
+
+/** Generates a `TextUpdate` for the removal of an array element. */
+function getArrayElementRemovalUpdate(node: ts.Expression, sourceText: string): TextUpdate {
+  let position = node.getStart();
+  let end = node.getEnd();
+  let toInsert = '';
+  const whitespaceOrLineFeed = /\s/;
+
+  // Usually the way we'd remove the nodes would be to recreate the `parent` while excluding
+  // the nodes that should be removed. The problem with this is that it'll strip out comments
+  // inside the array which can have special meaning internally. We work around it by removing
+  // only the node's own offsets. This comes with another problem in that it won't remove the commas
+  // that separate array elements which in turn can look weird if left in place (e.g.
+  // `[One, Two, Three, Four]` can turn into `[One,,Four]`). To account for them, we start with the
+  // node's end offset and then expand it to include trailing commas, whitespace and line breaks.
+  for (let i = end; i < sourceText.length; i++) {
+    if (sourceText[i] === ',' || whitespaceOrLineFeed.test(sourceText[i])) {
+      end++;
+    } else {
+      break;
+    }
+  }
+
+  return new TextUpdate({position, end, toInsert});
+}
+
+/** Returns `TextUpdate`s that will remove any leftover trailing commas on the same line. */
+function stripTrailingSameLineCommas(
+  node: ts.ArrayLiteralExpression,
+  toRemove: Set<ts.Expression>,
+  sourceText: string,
+) {
+  let updates: TextUpdate[] | null = null;
+
+  for (let i = 0; i < node.elements.length; i++) {
+    // Skip over elements that are being removed already.
+    if (toRemove.has(node.elements[i])) {
+      continue;
+    }
+
+    // An element might have a trailing comma if all elements after it have been removed.
+    const mightHaveTrailingComma = node.elements.slice(i + 1).every((e) => toRemove.has(e));
+
+    if (!mightHaveTrailingComma) {
+      continue;
+    }
+
+    const position = node.elements[i].getEnd();
+    let end = position;
+
+    // If the item might have a trailing comma, start looking after it until we hit a line break.
+    for (let charIndex = position; charIndex < node.getEnd(); charIndex++) {
+      const char = sourceText[charIndex];
+
+      if (char === ',' || char === ' ') {
+        end++;
+      } else {
+        if (char !== '\n' && position !== end) {
+          updates ??= [];
+          updates.push(new TextUpdate({position, end, toInsert: ''}));
+        }
+
+        break;
+      }
+    }
+  }
+
+  return updates;
 }

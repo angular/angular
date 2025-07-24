@@ -8,12 +8,17 @@
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
   PotentialDirective,
+  PotentialDirectiveModuleSpecifierResolver,
   PotentialImportMode,
   PotentialPipe,
   TemplateTypeChecker,
+  TsCompletionEntryInfo,
 } from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 import {guessIndentationInSingleLine} from './format';
+import * as path from 'path';
+import {ClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
 
 /**
  * Return the node that most tightly encompasses the specified `position`.
@@ -213,44 +218,20 @@ export function ensureArrayWithIdentifier(
   return ts.factory.updateArrayLiteralExpression(arr, [...arr.elements, expression]);
 }
 
-export function moduleSpecifierPointsToFile(
-  tsChecker: ts.TypeChecker,
-  moduleSpecifier: ts.Expression,
-  file: ts.SourceFile,
-): boolean {
-  const specifierSymbol = tsChecker.getSymbolAtLocation(moduleSpecifier);
-  if (specifierSymbol === undefined) {
-    console.error(`Undefined symbol for module specifier ${moduleSpecifier.getText()}`);
-    return false;
-  }
-  const symbolDeclarations = specifierSymbol.declarations;
-  if (symbolDeclarations === undefined || symbolDeclarations.length === 0) {
-    console.error(`Unknown symbol declarations for module specifier ${moduleSpecifier.getText()}`);
-    return false;
-  }
-  for (const symbolDeclaration of symbolDeclarations) {
-    if (symbolDeclaration.getSourceFile().fileName === file.fileName) {
-      return true;
-    }
-  }
-  return false;
-}
-
 /**
  * Determine whether this an import of the given `propertyName` from a particular module
  * specifier already exists. If so, return the local name for that import, which might be an
  * alias.
  */
 export function hasImport(
-  tsChecker: ts.TypeChecker,
   importDeclarations: ts.ImportDeclaration[],
   propName: string,
-  origin: ts.SourceFile,
+  moduleSpecifier: string,
 ): string | null {
   return (
     importDeclarations
-      .filter((declaration) =>
-        moduleSpecifierPointsToFile(tsChecker, declaration.moduleSpecifier, origin),
+      .filter(
+        (declaration) => getStringLiteralText(declaration.moduleSpecifier) === moduleSpecifier,
       )
       .map((declaration) => importHas(declaration, propName))
       .find((prop) => prop !== null) ?? null
@@ -359,29 +340,22 @@ export function standaloneTraitOrNgModule(
  * should be used as the import name.
  */
 export function updateImportsForTypescriptFile(
-  tsChecker: ts.TypeChecker,
   file: ts.SourceFile,
   symbolName: string,
   declarationName: string,
   moduleSpecifier: string,
-  tsFileToImport: ts.SourceFile,
 ): [ts.TextChange[], string] {
   // The trait might already be imported, possibly under a different name. If so, determine the
   // local name of the imported trait.
   const allImports = findAllMatchingNodes(file, {filter: ts.isImportDeclaration});
-  const existingImportName: string | null = hasImport(
-    tsChecker,
-    allImports,
-    symbolName,
-    tsFileToImport,
-  );
+  const existingImportName: string | null = hasImport(allImports, symbolName, moduleSpecifier);
   if (existingImportName !== null) {
     return [[], existingImportName];
   }
 
   // If the trait has not already been imported, we need to insert the new import.
-  const existingImportDeclaration = allImports.find((decl) =>
-    moduleSpecifierPointsToFile(tsChecker, decl.moduleSpecifier, tsFileToImport),
+  const existingImportDeclaration = allImports.find(
+    (decl) => getStringLiteralText(decl.moduleSpecifier) === moduleSpecifier,
   );
   const importName = nonCollidingImportName(
     allImports,
@@ -682,14 +656,31 @@ export function printNode(node: ts.Node, sourceFile: ts.SourceFile): string {
  */
 export function getCodeActionToImportTheDirectiveDeclaration(
   compiler: NgCompiler,
+  component: ts.ClassDeclaration,
   importOn: ts.ClassDeclaration,
   directive: PotentialDirective | PotentialPipe,
+  tsLs: ts.LanguageService,
+  includeCompletionsForModuleExports?: boolean,
 ): ts.CodeAction[] | undefined {
   const codeActions: ts.CodeAction[] = [];
-  const currMatchSymbol = directive.tsSymbol.valueDeclaration!;
+
+  const potentialDirectiveModuleSpecifierResolver =
+    new PotentialDirectiveModuleSpecifierResolverImpl(
+      compiler,
+      directive,
+      compiler.getTemplateTypeChecker(),
+      component,
+      tsLs,
+      includeCompletionsForModuleExports,
+    );
   const potentialImports = compiler
     .getTemplateTypeChecker()
-    .getPotentialImportsFor(directive.ref, importOn, PotentialImportMode.Normal);
+    .getPotentialImportsFor(
+      directive.ref,
+      importOn,
+      PotentialImportMode.Normal,
+      potentialDirectiveModuleSpecifierResolver,
+    );
   const declarationName = directive.ref.node.name.getText();
 
   for (const potentialImport of potentialImports) {
@@ -699,12 +690,10 @@ export function getCodeActionToImportTheDirectiveDeclaration(
 
     if (potentialImport.moduleSpecifier) {
       const [importChanges, generatedImportName] = updateImportsForTypescriptFile(
-        compiler.getCurrentProgram().getTypeChecker(),
         importOn.getSourceFile(),
         potentialImport.symbolName,
         declarationName,
         potentialImport.moduleSpecifier,
-        currMatchSymbol.getSourceFile(),
       );
       importName = generatedImportName;
       fileImportChanges.push(...importChanges);
@@ -713,12 +702,10 @@ export function getCodeActionToImportTheDirectiveDeclaration(
         // Note that we pass the `importOn` file twice since we know that the potential import
         // is within the same file, because it doesn't have a `moduleSpecifier`.
         const [forwardRefImports, generatedForwardRefName] = updateImportsForTypescriptFile(
-          compiler.getCurrentProgram().getTypeChecker(),
           importOn.getSourceFile(),
           'forwardRef',
           declarationName,
           '@angular/core',
-          importOn.getSourceFile(),
         );
         fileImportChanges.push(...forwardRefImports);
         forwardRefName = generatedForwardRefName;
@@ -751,4 +738,270 @@ export function getCodeActionToImportTheDirectiveDeclaration(
   }
 
   return codeActions;
+}
+
+function getStringLiteralText(moduleSpecifier: ts.Expression): string | undefined {
+  if (ts.isStringLiteral(moduleSpecifier)) {
+    return moduleSpecifier.text;
+  }
+  return undefined;
+}
+
+/**
+ * Try to compute the module specifier after applying the paths from tsconfig or package.json export rules.
+ *
+ * Try to reuse the module specifier if the import in the `importOn` can export the `toImport` node.
+ *
+ * If a module specifier cannot be resolved, return undefined, and the Angular compiler will apply its own rules.
+ *
+ * There is one exception here. For example
+ *
+ * ```ts
+ * // app.ts
+ * @Component({
+ *     selector: 'app-foo',
+ *     template: '',
+ * })
+ * export class FooComponent {}
+ *
+ * @Component({
+ *     selector: 'app-bar',
+ *     template: '',
+ * })
+ *
+ * export class BarComponent {}
+ *
+ * ```
+ *
+ * ```ts
+ * // app.module.ts
+ * import {BarComponent} from "./app";
+ * @NgModule({
+ *     declarations: [BarComponent],
+ *     exports: [BarComponent],
+ *     imports: []
+ * })
+ * export class AppModule {}
+ * ```
+ *
+ * ```ts
+ * // test.ts
+ * // The `@/app.module` resolves to `./app.module.ts`.
+ * // The `@/app` resolves to `./app`.
+ * // It's configured in the `paths` in the tsconfig.
+ * import {AppModule} from "@/app.module";
+ *
+ * @Component({
+ *     selector: 'app-baz',
+ *     template: '<app-bar/><app-foo/>',
+ *     imports: [AppModule],
+ * })
+ * export class BazComponent {}
+ * ```
+ *
+ * When providing the code action for the `app-foo` in the `test.ts` file,
+ * the module specifier is `./app.ts`, not `@/app`. Because the TCB has imported
+ * the `./app.ts` for the `app-bar`, the tsLs will reuse the import statement
+ * in the TCB, no module specifier can be extracted, and the `@/app.module` doesn't
+ * export the `FooComponent`. So the module specifier will be generated by
+ * the Angular compiler.
+ *
+ * The developer should export the `FooComponent` in the `AppModule`.
+ *
+ */
+class PotentialDirectiveModuleSpecifierResolverImpl
+  implements PotentialDirectiveModuleSpecifierResolver
+{
+  constructor(
+    private readonly compiler: NgCompiler,
+    private readonly directive: PotentialDirective | PotentialPipe,
+    private readonly templateTypeChecker: TemplateTypeChecker,
+    private readonly component: ts.ClassDeclaration,
+    private readonly tsLS: ts.LanguageService,
+    private readonly includeCompletionsForModuleExports: boolean | undefined,
+  ) {}
+
+  resolve(toImport: Reference<ClassDeclaration>, importOn: ts.Node | null): string | undefined {
+    if (toImport.node.getSourceFile().fileName === importOn?.getSourceFile().fileName) {
+      return undefined;
+    }
+    const moduleSpecifier = getModuleSpecifierIfExists(this.compiler, importOn, toImport.node);
+
+    if (moduleSpecifier !== null) {
+      return moduleSpecifier;
+    }
+
+    return getModuleSpecifierFromImportStatement(
+      this.directive.tsCompletionEntryInfos,
+      toImport,
+      importOn,
+      this.templateTypeChecker,
+      this.component,
+      this.tsLS,
+      this.includeCompletionsForModuleExports,
+    );
+  }
+}
+
+const importRegex = /\bimport\b[\s\S]*?\bfrom\b\s*(['"`])(.*?)\1/;
+/**
+ * Get the module specifier from the code actions returned by the `ls.getCompletionEntryDetails`.
+ *
+ * If the directive needs to update the import statement, the code action will include the text
+ * like `i0.FooComponent`.
+ *
+ * If the directive needs to import a new external module, the code action will include the text
+ * like `import { FooComponent } from '@foo'`. The `@foo` will be returned by the function.
+ */
+function getModuleSpecifierFromImportStatement(
+  tsCompletionEntryInfos: TsCompletionEntryInfo[] | null,
+  toImport: Reference<ClassDeclaration>,
+  importOn: ts.Node | null,
+  templateTypeChecker: TemplateTypeChecker,
+  component: ts.ClassDeclaration,
+  tsLS: ts.LanguageService,
+  includeCompletionsForModuleExports: boolean | undefined,
+): string | undefined {
+  const tsCompletionEntryInfo = findTsCompletionEntryInfoForImport(
+    tsCompletionEntryInfos,
+    toImport,
+  );
+
+  if (tsCompletionEntryInfo === undefined) {
+    return undefined;
+  }
+
+  const tsEntryName = tsCompletionEntryInfo.tsCompletionEntrySymbolName;
+
+  const globalContext = templateTypeChecker.getGlobalTsContext(component);
+  if (globalContext === null) {
+    return undefined;
+  }
+
+  const completionListDetail = tsLS.getCompletionEntryDetails(
+    globalContext.tcbPath,
+    globalContext.positionInFile,
+    tsEntryName,
+    {},
+    undefined,
+    {
+      includeCompletionsForModuleExports,
+    },
+    tsCompletionEntryInfo.tsCompletionEntryData,
+  );
+
+  const actions = completionListDetail?.codeActions;
+  if (actions === undefined) {
+    return undefined;
+  }
+
+  const tcbDir = path.posix.dirname(globalContext.tcbPath);
+  const importOnDir = importOn ? path.posix.dirname(importOn.getSourceFile().fileName) : undefined;
+
+  for (const action of actions) {
+    for (const changes of action.changes) {
+      for (const textChange of changes.textChanges) {
+        const match = importRegex.exec(textChange.newText);
+        if (match !== null) {
+          let moduleSpecifier = match[2];
+          /**
+           * The TCB path may differ from the ng module path. If the module specifier is a relative path,
+           * it must be relative to the NG module path.
+           */
+          if (
+            moduleSpecifier.startsWith('.') &&
+            tcbDir !== importOnDir &&
+            importOnDir !== undefined
+          ) {
+            const moduleSpecifierFullPath = path.posix.resolve(tcbDir, moduleSpecifier);
+            moduleSpecifier = path.posix.relative(importOnDir, moduleSpecifierFullPath);
+            if (!moduleSpecifier.startsWith('.')) {
+              moduleSpecifier = `./${moduleSpecifier}`;
+            }
+          }
+          return moduleSpecifier;
+        }
+      }
+    }
+  }
+  return undefined;
+}
+
+function findTsCompletionEntryInfoForImport(
+  tsCompletionEntryInfos: TsCompletionEntryInfo[] | null,
+  toImport: Reference<ClassDeclaration>,
+): TsCompletionEntryInfo | undefined {
+  const toImportSymbolName = toImport.node.name?.text;
+  const toImportSymbolFileName = toImport.node.getSourceFile().fileName;
+
+  return tsCompletionEntryInfos?.find(
+    (entry) =>
+      entry.tsCompletionEntrySymbolName === toImportSymbolName &&
+      entry.tsCompletionEntrySymbolFileName === toImportSymbolFileName,
+  );
+}
+
+function moduleSpecifierPointsToSymbol(
+  tsChecker: ts.TypeChecker,
+  moduleSpecifier: ts.Expression,
+): ts.Symbol | null {
+  const specifierSymbol = tsChecker.getSymbolAtLocation(moduleSpecifier);
+  if (specifierSymbol === undefined) {
+    console.error(`Undefined symbol for module specifier ${moduleSpecifier.getText()}`);
+    return null;
+  }
+  const symbolDeclarations = specifierSymbol.declarations;
+  if (symbolDeclarations === undefined || symbolDeclarations.length === 0) {
+    console.error(`Unknown symbol declarations for module specifier ${moduleSpecifier.getText()}`);
+    return null;
+  }
+
+  if (symbolDeclarations.length > 0) {
+    const sf = symbolDeclarations[0].getSourceFile();
+    return tsChecker.getSymbolAtLocation(sf) ?? null;
+  }
+
+  return null;
+}
+
+/**
+ * Retrieve all imports from the `importOn` and check if any import can export the node specified by `toImport`.
+ * If a matching import is found, attempt to reuse it.
+ */
+function getModuleSpecifierIfExists(
+  compiler: NgCompiler,
+  importOn: ts.Node | null,
+  toImport: ClassDeclaration,
+): string | null {
+  if (importOn === null) {
+    return null;
+  }
+
+  const allImports = findAllMatchingNodes(importOn.getSourceFile(), {
+    filter: ts.isImportDeclaration,
+  });
+
+  const typeChecker = compiler.getCurrentProgram().getTypeChecker();
+
+  for (const importDecl of allImports) {
+    const importSymbol = moduleSpecifierPointsToSymbol(typeChecker, importDecl.moduleSpecifier);
+
+    if (importSymbol === null) {
+      continue;
+    }
+
+    const toImportSymbolFromModule = typeChecker.tryGetMemberInModuleExports(
+      toImport.name.getText(),
+      importSymbol,
+    );
+
+    /**
+     * Make sure these are the same node.
+     */
+    if (toImportSymbolFromModule?.declarations?.[0] === toImport) {
+      return getStringLiteralText(importDecl.moduleSpecifier) ?? null;
+    }
+  }
+
+  return null;
 }

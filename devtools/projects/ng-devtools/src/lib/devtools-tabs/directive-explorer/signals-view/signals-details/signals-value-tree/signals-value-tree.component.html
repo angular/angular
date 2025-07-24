@@ -1,0 +1,27 @@
+<mat-tree class="property-list" [dataSource]="dataSource()" [treeControl]="treeControl()">
+  <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node" matTreeNodePadding>
+    <p class="non-expandable-node">
+      @if (node.level > 0) {
+        <span class="name">{{ node.prop.name }}</span>
+      }
+      <span class="value">{{node.prop.descriptor.preview}}</span>
+    </p>
+  </mat-tree-node>
+  <mat-tree-node
+    matTreeNodePaddingIndent="14"
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePadding
+  >
+    <button class="expandable-node" (click)="toggle(node)" aria-label="Expand node">
+      <mat-icon>
+        {{ treeControl().isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+      </mat-icon>
+      @if (node.level > 0) {
+        <span class="name">{{ node.prop.name }}</span>
+      }
+      <span class="value">
+        {{ node.prop.descriptor.preview }}
+      </span>
+    </button>
+  </mat-tree-node>
+</mat-tree>

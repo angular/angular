@@ -16,6 +16,7 @@ import {Directive, ElementRef, Input, inject, output} from '@angular/core';
   },
 })
 export class ClickOutside {
+  // TODO: Understand why replacing this @Input with a signal input breaks the tests
   @Input('docsClickOutsideIgnore') public ignoredElementsIds: string[] = [];
   public readonly clickOutside = output<void>({alias: 'docsClickOutside'});
 

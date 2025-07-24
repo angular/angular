@@ -1,13 +1,13 @@
 /* eslint-disable @angular-eslint/no-host-metadata-property */
 // #docregion progressbar-component
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 /**
  * Example progressbar component.
  */
 @Component({
   selector: 'app-example-progressbar',
-  template: '<div class="bar" [style.width.%]="value"></div>',
+  template: '<div class="bar" [style.width.%]="value()"></div>',
   styleUrls: ['./progress-bar.component.css'],
   host: {
     // Sets the role for this component to "progressbar"
@@ -23,7 +23,7 @@ import {Component, Input} from '@angular/core';
 })
 export class ExampleProgressbarComponent {
   /** Current value of the progressbar. */
-  @Input() value = 0;
+  value = input(0);
 }
 
 // #enddocregion progressbar-component

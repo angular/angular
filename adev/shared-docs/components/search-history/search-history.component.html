@@ -1,0 +1,66 @@
+@let items = history.items();
+
+@if (items.recent.length) {
+  <p class="title">Recent</p>
+  <ul class="history-results recent">
+    @for (item of items.recent; track item.id; let idx = $index) {
+      <li docsSearchItem [item]="item" (mouseenter)="onMouseEnter($event, idx)">
+        <a
+          [routerLink]="'/' + item.url | relativeLink: 'pathname'"
+          [fragment]="item.url | relativeLink: 'hash'"
+          (click)="history.addItem(item)"
+        >
+          <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> history </i>
+          <span [innerHTML]="item.labelHtml"></span>
+        </a>
+
+        <button
+          type="button"
+          class="fav-btn"
+          (click)="history.makeFavorite(item)"
+          title="Make favorite"
+        >
+          <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> star </i>
+        </button>
+        <button
+          type="button"
+          class="remove-btn"
+          (click)="history.removeItem(item)"
+          title="Remove item"
+        >
+          <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> close </i>
+        </button>
+      </li>
+    }
+  </ul>
+}
+
+@if (items.favorite.length) {
+  <p class="title">Favorite</p>
+  <ul class="history-results favorite">
+    @for (item of items.favorite; track item.id; let idx = $index) {
+      <li
+        docsSearchItem
+        [item]="item"
+        (mouseenter)="onMouseEnter($event, items.recent.length + idx)"
+      >
+        <a
+          [routerLink]="'/' + item.url | relativeLink: 'pathname'"
+          [fragment]="item.url | relativeLink: 'hash'"
+        >
+          <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> star </i>
+          <span [innerHTML]="item.labelHtml"></span>
+        </a>
+
+        <button
+          type="button"
+          class="remove-btn"
+          (click)="history.removeItem(item)"
+          title="Remove item"
+        >
+          <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> close </i>
+        </button>
+      </li>
+    }
+  </ul>
+}

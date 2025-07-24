@@ -20,7 +20,7 @@ import {MonoTypeOperatorFunction, Observable} from 'rxjs';
  */
 export function pendingUntilEvent<T>(injector?: Injector): MonoTypeOperatorFunction<T> {
   if (injector === undefined) {
-    assertInInjectionContext(pendingUntilEvent);
+    ngDevMode && assertInInjectionContext(pendingUntilEvent);
     injector = inject(Injector);
   }
   const taskService = injector.get(PendingTasks);

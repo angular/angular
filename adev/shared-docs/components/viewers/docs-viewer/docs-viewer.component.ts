@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, DOCUMENT, isPlatformBrowser, Location} from '@angular/common';
+import {DOCUMENT, isPlatformBrowser, Location} from '@angular/common';
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -18,15 +18,14 @@ import {
   EnvironmentInjector,
   inject,
   Injector,
-  Input,
-  OnChanges,
   PLATFORM_ID,
-  SimpleChanges,
   Type,
   ViewContainerRef,
   ViewEncapsulation,
   PendingTasks,
   output,
+  input,
+  effect,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {TOC_SKIP_CONTENT_MARKER, NavigationState} from '../../../services/index';
@@ -51,19 +50,18 @@ export const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/main/
 
 @Component({
   selector: DOCS_VIEWER_SELECTOR,
-  imports: [CommonModule],
   template: '',
   styleUrls: ['docs-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class.docs-animate-content]': 'animateContent',
-    '[class.docs-with-TOC]': 'hasToc',
+    '[class.docs-with-TOC]': 'hasToc()',
   },
 })
-export class DocViewer implements OnChanges {
-  @Input() docContent?: string;
-  @Input() hasToc = false;
+export class DocViewer {
+  docContent = input<string | undefined>();
+  hasToc = input(false);
   readonly contentLoaded = output<void>();
 
   private readonly destroyRef = inject(DestroyRef);
@@ -84,12 +82,12 @@ export class DocViewer implements OnChanges {
 
   private countOfExamples = 0;
 
-  async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    const removeTask = this.pendingTasks.add();
-    if ('docContent' in changes) {
-      await this.renderContentsAndRunClientSetup(this.docContent!);
-    }
-    removeTask();
+  constructor() {
+    effect(async () => {
+      const removeTask = this.pendingTasks.add();
+      await this.renderContentsAndRunClientSetup(this.docContent());
+      removeTask();
+    });
   }
 
   async renderContentsAndRunClientSetup(content?: string): Promise<void> {
@@ -161,7 +159,7 @@ export class DocViewer implements OnChanges {
   }
 
   private renderTableOfContents(element: HTMLElement): void {
-    if (!this.hasToc) {
+    if (!this.hasToc()) {
       return;
     }
 

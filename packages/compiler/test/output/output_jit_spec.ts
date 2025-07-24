@@ -10,17 +10,16 @@ import {EmitterVisitorContext} from '../../src/output/abstract_emitter';
 import * as o from '../../src/output/output_ast';
 import {JitEmitterVisitor, JitEvaluator} from '../../src/output/output_jit';
 import {R3JitReflector} from '../../src/render3/r3_jit';
-import {newArray} from '../../src/util';
 
 describe('Output JIT', () => {
   describe('regression', () => {
     it('should generate unique argument names', () => {
-      const externalIds = newArray(10, 1).map(
-        (_, index) => new o.ExternalReference('@angular/core', `id_${index}_`),
-      );
-      const externalIds1 = newArray(10, 1).map(
-        (_, index) => new o.ExternalReference('@angular/core', `id_${index}_1`),
-      );
+      const externalIds = new Array(10)
+        .fill(null)
+        .map((_, index) => new o.ExternalReference('@angular/core', `id_${index}_`));
+      const externalIds1 = new Array(10)
+        .fill(null)
+        .map((_, index) => new o.ExternalReference('@angular/core', `id_${index}_1`));
       const ctx = EmitterVisitorContext.createRoot();
       const reflectorContext: {[key: string]: string} = {};
       for (const {name} of externalIds) {

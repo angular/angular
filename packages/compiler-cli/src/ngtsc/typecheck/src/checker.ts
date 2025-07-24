@@ -25,6 +25,9 @@ import {
   TmplAstTextAttribute,
   WrappedNodeExpr,
 } from '@angular/compiler';
+
+import {isDirectiveDeclaration} from './ts_util';
+
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
@@ -57,14 +60,20 @@ import {
   ComponentScope,
 } from '../../scope';
 import {isShim} from '../../shims';
-import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
+import {
+  getSourceFileOrNull,
+  getTokenAtPosition,
+  isSymbolWithValueDeclaration,
+} from '../../util/src/typescript';
 import {
   ElementSymbol,
   FullSourceMapping,
+  GetPotentialAngularMetaOptions,
   GlobalCompletion,
   NgTemplateDiagnostic,
   OptimizeFor,
   PotentialDirective,
+  PotentialDirectiveModuleSpecifierResolver,
   PotentialImport,
   PotentialImportKind,
   PotentialImportMode,
@@ -77,6 +86,7 @@ import {
   TemplateDiagnostic,
   TemplateSymbol,
   TemplateTypeChecker,
+  TsCompletionEntryInfo,
   TypeCheckableDirectiveMeta,
   TypeCheckingConfig,
 } from '../api';
@@ -95,6 +105,7 @@ import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
+import {ExpressionIdentifier, findAllMatchingNodes, hasExpressionIdentifier} from './comments';
 
 const REGISTRY = new DomElementSchemaRegistry();
 /**
@@ -142,6 +153,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   private elementTagCache = new Map<ts.ClassDeclaration, Map<string, PotentialDirective | null>>();
 
   private isComplete = false;
+  private priorResultsAdopted = false;
 
   constructor(
     private originalProgram: ts.Program,
@@ -351,6 +363,43 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     });
   }
 
+  getSuggestionDiagnosticsForFile(
+    sf: ts.SourceFile,
+    tsLs: ts.LanguageService,
+    optimizeFor: OptimizeFor,
+  ): ts.DiagnosticWithLocation[] {
+    switch (optimizeFor) {
+      case OptimizeFor.WholeProgram:
+        this.ensureAllShimsForAllFiles();
+        break;
+      case OptimizeFor.SingleFile:
+        this.ensureAllShimsForOneFile(sf);
+        break;
+    }
+
+    return this.perf.inPhase(PerfPhase.TtcSuggestionDiagnostics, () => {
+      const sfPath = absoluteFromSourceFile(sf);
+      const fileRecord = this.state.get(sfPath)!;
+
+      const diagnostics: (ts.DiagnosticWithLocation | null)[] = [];
+      const program = this.programDriver.getProgram();
+
+      if (fileRecord.hasInlines) {
+        diagnostics.push(
+          ...getDeprecatedSuggestionDiagnostics(tsLs, program, sfPath, fileRecord, this),
+        );
+      }
+
+      for (const [shimPath] of fileRecord.shimData) {
+        diagnostics.push(
+          ...getDeprecatedSuggestionDiagnostics(tsLs, program, shimPath, fileRecord, this),
+        );
+      }
+
+      return diagnostics.filter((diag): diag is ts.DiagnosticWithLocation => diag !== null);
+    });
+  }
+
   getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[] {
     this.ensureShimForComponent(component);
 
@@ -395,6 +444,46 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return diagnostics.filter(
         (diag: TemplateDiagnostic | null): diag is TemplateDiagnostic =>
           diag !== null && diag.typeCheckId === id,
+      );
+    });
+  }
+
+  getSuggestionDiagnosticsForComponent(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+  ): ts.DiagnosticWithLocation[] {
+    this.ensureShimForComponent(component);
+
+    return this.perf.inPhase(PerfPhase.TtcSuggestionDiagnostics, () => {
+      const sf = component.getSourceFile();
+      const sfPath = absoluteFromSourceFile(sf);
+      const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
+
+      const fileRecord = this.getFileData(sfPath);
+
+      if (!fileRecord.shimData.has(shimPath)) {
+        return [];
+      }
+
+      const templateId = fileRecord.sourceManager.getTypeCheckId(component);
+      const shimRecord = fileRecord.shimData.get(shimPath)!;
+
+      const diagnostics: (TemplateDiagnostic | null)[] = [];
+      const program = this.programDriver.getProgram();
+
+      if (shimRecord.hasInlines) {
+        diagnostics.push(
+          ...getDeprecatedSuggestionDiagnostics(tsLs, program, sfPath, fileRecord, this),
+        );
+      }
+
+      diagnostics.push(
+        ...getDeprecatedSuggestionDiagnostics(tsLs, program, shimPath, fileRecord, this),
+      );
+
+      return diagnostics.filter(
+        (diag: TemplateDiagnostic | null): diag is TemplateDiagnostic =>
+          diag !== null && diag.typeCheckId === templateId,
       );
     });
   }
@@ -514,30 +603,43 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return engine;
   }
 
-  private maybeAdoptPriorResultsForFile(sf: ts.SourceFile): void {
-    const sfPath = absoluteFromSourceFile(sf);
-    if (this.state.has(sfPath)) {
-      const existingResults = this.state.get(sfPath)!;
-
-      if (existingResults.isComplete) {
-        // All data for this file has already been generated, so no need to adopt anything.
-        return;
-      }
-    }
-
-    const previousResults = this.priorBuild.priorTypeCheckingResultsFor(sf);
-    if (previousResults === null || !previousResults.isComplete) {
+  private maybeAdoptPriorResults() {
+    if (this.priorResultsAdopted) {
       return;
     }
 
-    this.perf.eventCount(PerfEvent.ReuseTypeCheckFile);
-    this.state.set(sfPath, previousResults);
+    for (const sf of this.originalProgram.getSourceFiles()) {
+      if (sf.isDeclarationFile || isShim(sf)) {
+        continue;
+      }
+
+      const sfPath = absoluteFromSourceFile(sf);
+      if (this.state.has(sfPath)) {
+        const existingResults = this.state.get(sfPath)!;
+
+        if (existingResults.isComplete) {
+          // All data for this file has already been generated, so no need to adopt anything.
+          continue;
+        }
+      }
+
+      const previousResults = this.priorBuild.priorTypeCheckingResultsFor(sf);
+      if (previousResults === null || !previousResults.isComplete) {
+        continue;
+      }
+
+      this.perf.eventCount(PerfEvent.ReuseTypeCheckFile);
+      this.state.set(sfPath, previousResults);
+    }
+
+    this.priorResultsAdopted = true;
   }
 
   private ensureAllShimsForAllFiles(): void {
     if (this.isComplete) {
       return;
     }
+    this.maybeAdoptPriorResults();
 
     this.perf.inPhase(PerfPhase.TcbGeneration, () => {
       const host = new WholeProgramTypeCheckingHost(this);
@@ -547,8 +649,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         if (sf.isDeclarationFile || isShim(sf)) {
           continue;
         }
-
-        this.maybeAdoptPriorResultsForFile(sf);
 
         const sfPath = absoluteFromSourceFile(sf);
         const fileData = this.getFileData(sfPath);
@@ -567,9 +667,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   private ensureAllShimsForOneFile(sf: ts.SourceFile): void {
-    this.perf.inPhase(PerfPhase.TcbGeneration, () => {
-      this.maybeAdoptPriorResultsForFile(sf);
+    this.maybeAdoptPriorResults();
 
+    this.perf.inPhase(PerfPhase.TcbGeneration, () => {
       const sfPath = absoluteFromSourceFile(sf);
 
       const fileData = this.getFileData(sfPath);
@@ -590,12 +690,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   private ensureShimForComponent(component: ts.ClassDeclaration): void {
+    this.maybeAdoptPriorResults();
+
     const sf = component.getSourceFile();
     const sfPath = absoluteFromSourceFile(sf);
     const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
-
-    this.maybeAdoptPriorResultsForFile(sf);
-
     const fileData = this.getFileData(sfPath);
 
     if (fileData.shimData.has(shimPath)) {
@@ -712,7 +811,19 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return builder;
   }
 
-  getPotentialTemplateDirectives(component: ts.ClassDeclaration): PotentialDirective[] {
+  getGlobalTsContext(component: ts.ClassDeclaration): TcbLocation | null {
+    const engine = this.getOrCreateCompletionEngine(component);
+    if (engine === null) {
+      return null;
+    }
+    return engine.getGlobalTsContext();
+  }
+
+  getPotentialTemplateDirectives(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
+  ): PotentialDirective[] {
     const scope = this.getComponentScope(component);
 
     // Don't resolve directives for selectorless components since they're already in the file.
@@ -720,25 +831,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return [];
     }
 
-    const typeChecker = this.programDriver.getProgram().getTypeChecker();
     const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
-    if (scope !== null) {
-      const inScopeDirectives = this.getScopeData(component, scope)?.directives ?? [];
-      // First, all in scope directives can be used.
-      for (const d of inScopeDirectives) {
-        resultingDirectives.set(d.ref.node, d);
+    const directivesInScope = this.getTemplateDirectiveInScope(component);
+    const directiveInGlobal = this.getElementsInGlobal(component, tsLs, options);
+    for (const directive of [...directivesInScope, ...directiveInGlobal]) {
+      if (resultingDirectives.has(directive.ref.node)) {
+        continue;
       }
-    }
-    // Any additional directives found from the global registry can be used, but are not in scope.
-    // In the future, we can also walk other registries for .d.ts files, or traverse the
-    // import/export graph.
-    for (const directiveClass of this.localMetaReader.getKnown(MetaKind.Directive)) {
-      const directiveMeta = this.metaReader.getDirectiveMetadata(new Reference(directiveClass));
-      if (directiveMeta === null) continue;
-      if (resultingDirectives.has(directiveClass)) continue;
-      const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveMeta);
-      if (withScope === null) continue;
-      resultingDirectives.set(directiveClass, {...withScope, isInScope: false});
+      resultingDirectives.set(directive.ref.node, directive);
     }
     return Array.from(resultingDirectives.values());
   }
@@ -792,7 +892,238 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return this.metaReader.getPipeMetadata(new Reference(pipe));
   }
 
-  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, PotentialDirective | null> {
+  getTemplateDirectiveInScope(component: ts.ClassDeclaration): PotentialDirective[] {
+    const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
+
+    const scope = this.getComponentScope(component);
+
+    // Don't resolve directives for selectorless components since they're already in the file.
+    if (scope?.kind === ComponentScopeKind.Selectorless) {
+      return [];
+    }
+
+    if (scope !== null) {
+      const inScopeDirectives = this.getScopeData(component, scope)?.directives ?? [];
+      // First, all in scope directives can be used.
+      for (const d of inScopeDirectives) {
+        resultingDirectives.set(d.ref.node, d);
+      }
+    }
+
+    const typeChecker = this.programDriver.getProgram().getTypeChecker();
+    const currentComponentFileName = component.getSourceFile().fileName;
+
+    // Any additional directives found from the global registry can be used, only includes the directives includes in the current
+    // component file.
+    //
+    // This means only the inputs in the decorator are needed to be updated, no need to update the import statement.
+    for (const directiveClass of this.localMetaReader.getKnown(MetaKind.Directive)) {
+      if (directiveClass.getSourceFile().fileName !== currentComponentFileName) {
+        continue;
+      }
+      const directiveMeta = this.metaReader.getDirectiveMetadata(new Reference(directiveClass));
+      if (directiveMeta === null) continue;
+      if (resultingDirectives.has(directiveClass)) continue;
+      const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveMeta);
+      if (withScope === null) continue;
+      resultingDirectives.set(directiveClass, {...withScope, isInScope: false});
+    }
+
+    return Array.from(resultingDirectives.values());
+  }
+
+  getDirectiveScopeData(
+    component: ts.ClassDeclaration,
+    isInScope: boolean,
+    tsCompletionEntryInfo: TsCompletionEntryInfo | null,
+  ): PotentialDirective | null {
+    const typeChecker = this.programDriver.getProgram().getTypeChecker();
+    if (!isNamedClassDeclaration(component)) {
+      return null;
+    }
+
+    const directiveMeta = this.metaReader.getDirectiveMetadata(new Reference(component));
+    if (directiveMeta === null) {
+      return null;
+    }
+
+    const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveMeta);
+    if (withScope === null) {
+      return null;
+    }
+
+    return {
+      ...withScope,
+      isInScope,
+      /**
+       * The Angular LS only supports displaying one directive at a time when
+       * providing the completion item, even if it's exported by multiple modules.
+       */
+      tsCompletionEntryInfos: tsCompletionEntryInfo !== null ? [tsCompletionEntryInfo] : null,
+    };
+  }
+
+  getElementsInFileScope(component: ts.ClassDeclaration): Map<string, PotentialDirective | null> {
+    const tagMap = new Map<string, PotentialDirective | null>();
+
+    const potentialDirectives = this.getTemplateDirectiveInScope(component);
+
+    for (const directive of potentialDirectives) {
+      if (directive.selector === null) {
+        continue;
+      }
+
+      for (const selector of CssSelector.parse(directive.selector)) {
+        if (selector.element === null || tagMap.has(selector.element)) {
+          // Skip this directive if it doesn't match an element tag, or if another directive has
+          // already been included with the same element name.
+          continue;
+        }
+
+        tagMap.set(selector.element, directive);
+      }
+    }
+
+    return tagMap;
+  }
+
+  getElementsInGlobal(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
+  ): PotentialDirective[] {
+    // Add the additional directives from the global registry, which are not in scope and in different file with the current
+    // component file.
+    //
+    // This means the inputs and the import statement in the decorator are needed to be updated.
+    const tsContext = this.getGlobalTsContext(component);
+
+    if (tsContext === null) {
+      return [];
+    }
+
+    if (!options.includeExternalModule) {
+      return [];
+    }
+
+    const entries = tsLs.getCompletionsAtPosition(tsContext.tcbPath, tsContext.positionInFile, {
+      includeSymbol: true,
+      includeCompletionsForModuleExports: true,
+    })?.entries;
+
+    const typeChecker = this.programDriver.getProgram().getTypeChecker();
+    const resultingDirectives = new Map<ClassDeclaration<DeclarationNode>, PotentialDirective>();
+    const currentComponentFileName = component.getSourceFile().fileName;
+    for (const {symbol, data} of entries ?? []) {
+      const symbolFileName = symbol?.declarations?.[0]?.getSourceFile().fileName;
+      const symbolName = symbol?.name;
+      if (symbolFileName === undefined || symbolName === undefined) {
+        continue;
+      }
+
+      if (symbolFileName === currentComponentFileName) {
+        continue;
+      }
+
+      const decl = getClassDeclFromSymbol(symbol, typeChecker);
+
+      if (decl === null) {
+        continue;
+      }
+
+      const directiveDecls: {
+        meta: DirectiveMeta;
+        ref: Reference<ClassDeclaration>;
+      }[] = [];
+
+      const ref = new Reference(decl);
+      const directiveMeta = this.metaReader.getDirectiveMetadata(ref);
+
+      if (directiveMeta?.isStandalone) {
+        directiveDecls.push({
+          meta: directiveMeta,
+          ref,
+        });
+      } else {
+        const directiveDeclsForNgModule = this.getDirectiveDeclsForNgModule(ref);
+        directiveDecls.push(...directiveDeclsForNgModule);
+      }
+
+      for (const directiveDecl of directiveDecls) {
+        const cachedCompletionEntryInfos =
+          resultingDirectives.get(directiveDecl.ref.node)?.tsCompletionEntryInfos ?? [];
+
+        cachedCompletionEntryInfos.push({
+          tsCompletionEntryData: data,
+          tsCompletionEntrySymbolFileName: symbolFileName,
+          tsCompletionEntrySymbolName: symbolName,
+        });
+
+        if (resultingDirectives.has(directiveDecl.ref.node)) {
+          const directiveInfo = resultingDirectives.get(directiveDecl.ref.node)!;
+          resultingDirectives.set(directiveDecl.ref.node, {
+            ...directiveInfo,
+            tsCompletionEntryInfos: cachedCompletionEntryInfos,
+          });
+          continue;
+        }
+
+        const withScope = this.scopeDataOfDirectiveMeta(typeChecker, directiveDecl.meta);
+        if (withScope === null) {
+          continue;
+        }
+        resultingDirectives.set(directiveDecl.ref.node, {
+          ...withScope,
+          isInScope: false,
+          tsCompletionEntryInfos: cachedCompletionEntryInfos,
+        });
+      }
+    }
+    return Array.from(resultingDirectives.values());
+  }
+
+  /**
+   * If the NgModule exports a new module, we need to recursively get its directives.
+   */
+  private getDirectiveDeclsForNgModule(ref: Reference<ClassDeclaration>): {
+    meta: DirectiveMeta;
+    ref: Reference<ClassDeclaration>;
+  }[] {
+    const ngModuleMeta = this.metaReader.getNgModuleMetadata(ref);
+    if (ngModuleMeta === null) {
+      return [];
+    }
+    const directiveDecls: {
+      meta: DirectiveMeta;
+      ref: Reference<ClassDeclaration>;
+    }[] = [];
+
+    for (const moduleExports of ngModuleMeta.exports) {
+      const directiveMeta = this.metaReader.getDirectiveMetadata(moduleExports);
+      if (directiveMeta !== null) {
+        directiveDecls.push({
+          meta: directiveMeta,
+          ref: moduleExports,
+        });
+      } else {
+        const ngModuleMeta = this.metaReader.getNgModuleMetadata(moduleExports);
+        if (ngModuleMeta === null) {
+          continue;
+        }
+        // If the export is an NgModule, we need to recursively get its directives.
+        const nestedDirectiveDecls = this.getDirectiveDeclsForNgModule(moduleExports);
+        directiveDecls.push(...nestedDirectiveDecls);
+      }
+    }
+
+    return directiveDecls;
+  }
+
+  getPotentialElementTags(
+    component: ts.ClassDeclaration,
+    tsLs: ts.LanguageService,
+    options: GetPotentialAngularMetaOptions,
+  ): Map<string, PotentialDirective | null> {
     if (this.elementTagCache.has(component)) {
       return this.elementTagCache.get(component)!;
     }
@@ -803,7 +1134,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       tagMap.set(tag, null);
     }
 
-    const potentialDirectives = this.getPotentialTemplateDirectives(component);
+    const potentialDirectives = this.getPotentialTemplateDirectives(component, tsLs, options);
 
     for (const directive of potentialDirectives) {
       if (directive.selector === null) {
@@ -932,6 +1263,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     toImport: Reference<ClassDeclaration>,
     inContext: ts.Node,
     importMode: PotentialImportMode,
+    potentialDirectiveModuleSpecifierResolver?: PotentialDirectiveModuleSpecifierResolver,
   ): ReadonlyArray<PotentialImport> {
     const imports: PotentialImport[] = [];
 
@@ -941,21 +1273,54 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return imports;
     }
 
+    /**
+     * When providing completion items, the Angular Language Service only supports displaying
+     * one directive at a time. If a directive is exported by two different modules,
+     * the Language Service will select the first module. To ensure the most appropriate directive
+     * is shown, move the likely one to the top of the import list.
+     *
+     * When providing the code action for the directive. All the imports will show for the developer to choose.
+     */
+    let highestImportPriority = -1;
+
+    const collectImports = (emit: PotentialImport | null, moduleSpecifier: string | undefined) => {
+      if (emit === null) {
+        return;
+      }
+      imports.push({
+        ...emit,
+        moduleSpecifier: moduleSpecifier ?? emit.moduleSpecifier,
+      });
+      if (moduleSpecifier !== undefined && highestImportPriority === -1) {
+        highestImportPriority = imports.length - 1;
+      }
+    };
+
     if (meta.isStandalone || importMode === PotentialImportMode.ForceDirect) {
       const emitted = this.emit(PotentialImportKind.Standalone, toImport, inContext);
-      if (emitted !== null) {
-        imports.push(emitted);
-      }
+      const moduleSpecifier = potentialDirectiveModuleSpecifierResolver?.resolve(
+        toImport,
+        inContext,
+      );
+      collectImports(emitted, moduleSpecifier);
     }
 
     const exportingNgModules = this.ngModuleIndex.getNgModulesExporting(meta.ref.node);
     if (exportingNgModules !== null) {
       for (const exporter of exportingNgModules) {
         const emittedRef = this.emit(PotentialImportKind.NgModule, exporter, inContext);
-        if (emittedRef !== null) {
-          imports.push(emittedRef);
-        }
+        const moduleSpecifier = potentialDirectiveModuleSpecifierResolver?.resolve(
+          exporter,
+          inContext,
+        );
+        collectImports(emittedRef, moduleSpecifier);
       }
+    }
+
+    // move the import with module specifier from the tsLs to top in the imports array
+    if (highestImportPriority > 0) {
+      const highImport = imports.splice(highestImportPriority, 1)[0];
+      imports.unshift(highImport);
     }
 
     return imports;
@@ -1033,6 +1398,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       selector: dep.selector,
       tsSymbol,
       ngModule,
+      tsCompletionEntryInfos: null,
     };
   }
 
@@ -1048,6 +1414,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       ref: dep.ref,
       name: dep.name,
       tsSymbol,
+      tsCompletionEntryInfos: null,
     };
   }
 }
@@ -1222,4 +1589,201 @@ interface ScopeData {
   directives: PotentialDirective[];
   pipes: PotentialPipe[];
   isPoisoned: boolean;
+}
+
+function getClassDeclFromSymbol(
+  symbol: ts.Symbol | undefined,
+  checker: ts.TypeChecker,
+): ClassDeclaration | null {
+  const tsDecl = symbol?.getDeclarations();
+  if (tsDecl === undefined) {
+    return null;
+  }
+  let decl = tsDecl.length > 0 ? tsDecl[0] : undefined;
+  if (decl === undefined) {
+    return null;
+  }
+
+  if (ts.isExportAssignment(decl)) {
+    const symbol = checker.getTypeAtLocation(decl.expression).symbol;
+    return getClassDeclFromSymbol(symbol, checker);
+  }
+
+  if (ts.isExportSpecifier(decl)) {
+    const symbol = checker.getTypeAtLocation(decl).symbol;
+    return getClassDeclFromSymbol(symbol, checker);
+  }
+
+  if (isNamedClassDeclaration(decl)) {
+    return decl;
+  }
+  return null;
+}
+
+/**
+ * Returns the diagnostics that report deprecated symbols in the given TypeScript language service.
+ *
+ * There are two logins here:
+ *
+ * 1. For input properties, function calls, and so on, the diagnostics reported in the TypeScript
+ *    Language Service can be directly transformed into template diagnostics.
+ * 2. For the element tag deprecation, we need to manually connect the TCB node to the template node
+ *    and generate the template diagnostics.
+ */
+function getDeprecatedSuggestionDiagnostics(
+  tsLs: ts.LanguageService,
+  program: ts.Program,
+  path: AbsoluteFsPath,
+  fileRecord: FileTypeCheckingData,
+  templateTypeChecker: TemplateTypeChecker,
+): (TemplateDiagnostic | null)[] {
+  const sourceFile = program.getSourceFile(path);
+  if (sourceFile === undefined) {
+    return [];
+  }
+
+  const tsDiags = tsLs.getSuggestionDiagnostics(path).filter(isDeprecatedDiagnostics);
+  const commonTemplateDiags = tsDiags.map((diag) => {
+    return convertDiagnostic(diag, fileRecord.sourceManager);
+  });
+
+  const elementTagDiags = getTheElementTagDeprecatedSuggestionDiagnostics(
+    path,
+    program,
+    fileRecord,
+    tsDiags,
+
+    templateTypeChecker,
+  );
+  return [...commonTemplateDiags, ...elementTagDiags];
+}
+
+/**
+ * Connect the TCB node to the template node and generate the template diagnostics.
+ *
+ * How to generate the template diagnostics:
+ *
+ * 1. For each diagnostic, find the TCB node that is reported.
+ * 2. Build a map called `nodeToDiag` that the key is the type node and value is the diagnostic.
+ *    For example:
+ *    ```
+ *    var _t1 = null! as TestDir;
+ *                       ^^^^^^^------ This is diagnostic node that is reported by the ts.
+ *    ```
+ *    The key is the class component of TestDir.
+ * 3. Find the all directive nodes in the TCB.
+ *    For example:
+ *    In the above example, the directive node is `_t1`, get the type of `_t1` which is the
+ *    class component of `TestDir`. Check if there is a diagnostic in the `nodeToDiag` map
+ *    that matches the class component of `TestDir`.
+ *    If there is a match, it means that the diagnostic is reported for the directive node
+ * 4. Generate the template diagnostic and return the template diagnostics.
+ */
+function getTheElementTagDeprecatedSuggestionDiagnostics(
+  shimPath: AbsoluteFsPath,
+  program: ts.Program,
+  fileRecord: FileTypeCheckingData,
+  diags: TsDeprecatedDiagnostics[],
+  templateTypeChecker: TemplateTypeChecker,
+): TemplateDiagnostic[] {
+  const sourceFile = program.getSourceFile(shimPath);
+  if (sourceFile === undefined) {
+    return [];
+  }
+
+  const typeChecker = program.getTypeChecker();
+  const nodeToDiag = new Map<ts.ClassDeclaration, ts.DiagnosticWithLocation>();
+
+  for (const tsDiag of diags) {
+    const diagNode = getTokenAtPosition(sourceFile, tsDiag.start);
+    const nodeType = typeChecker.getTypeAtLocation(diagNode);
+    const nodeSymbolDeclarations = nodeType.symbol.declarations;
+    const decl =
+      nodeSymbolDeclarations !== undefined && nodeSymbolDeclarations.length > 0
+        ? nodeSymbolDeclarations[0]
+        : undefined;
+    if (decl === undefined || !ts.isClassDeclaration(decl)) {
+      continue;
+    }
+
+    const directiveForDiagnostic = templateTypeChecker.getDirectiveMetadata(decl);
+    // For now, we only report deprecations for components. This is because
+    // directive spans apply to the entire element, so it would cause the deprecation to
+    // appear as a deprecation for the element rather than whatever the selector (likely an attribute)
+    // is for the directive. Technically components have this issue as well but nearly
+    // all component selectors are element selectors.
+    if (directiveForDiagnostic === null || !directiveForDiagnostic.isComponent) {
+      continue;
+    }
+
+    nodeToDiag.set(decl, tsDiag);
+  }
+
+  const directiveNodesInTcb = findAllMatchingNodes(sourceFile, {
+    filter: isDirectiveDeclaration,
+  });
+
+  const templateDiagnostics: TemplateDiagnostic[] = [];
+  for (const directive of directiveNodesInTcb) {
+    const directiveType = typeChecker.getTypeAtLocation(directive);
+    const directiveSymbolDeclarations = directiveType.symbol.declarations;
+
+    const decl =
+      directiveSymbolDeclarations !== undefined && directiveSymbolDeclarations.length > 0
+        ? directiveSymbolDeclarations[0]
+        : undefined;
+    if (decl === undefined) {
+      continue;
+    }
+    if (!ts.isClassDeclaration(decl)) {
+      continue;
+    }
+    const diagnostic = nodeToDiag.get(decl);
+    if (diagnostic === undefined) {
+      continue;
+    }
+    const fullMapping = getSourceMapping(
+      diagnostic.file,
+      directive.getStart(),
+      fileRecord.sourceManager,
+      /**
+       * Don't set to true, the deprecated diagnostics will be ignored if this is a diagnostics request.
+       * Only the deprecated diagnostics will be reported here.
+       */
+      // For example:
+      // var _t2 /*T:DIR*/ /*87,104*/ = _ctor1({ "name": ("") /*96,103*/ }) /*D:ignore*/;
+      // At the end of the statement, there is a comment `/*D:ignore*/` which means that this diagnostic
+      // should be ignored in diagnostics request.
+      /*isDiagnosticsRequest*/ false,
+    );
+    if (fullMapping === null) {
+      continue;
+    }
+    const {sourceLocation, sourceMapping: templateSourceMapping, span} = fullMapping;
+    const templateDiagnostic = makeTemplateDiagnostic(
+      sourceLocation.id,
+      templateSourceMapping,
+      span,
+      diagnostic.category,
+      diagnostic.code,
+      diagnostic.messageText,
+      undefined,
+      diagnostic.reportsDeprecated !== undefined
+        ? {
+            reportsDeprecated: diagnostic.reportsDeprecated,
+            relatedMessages: diagnostic.relatedInformation,
+          }
+        : undefined,
+    );
+    templateDiagnostics.push(templateDiagnostic);
+  }
+
+  return templateDiagnostics;
+}
+
+type TsDeprecatedDiagnostics = Required<Pick<ts.DiagnosticWithLocation, 'reportsDeprecated'>> &
+  ts.DiagnosticWithLocation;
+
+function isDeprecatedDiagnostics(diag: ts.DiagnosticWithLocation): diag is TsDeprecatedDiagnostics {
+  return diag.reportsDeprecated !== undefined;
 }

@@ -1,11 +1,4 @@
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
-load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_project")
-load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
-load("//tools:defaults.bzl", "esbuild")
+load("//devtools/tools:defaults.bzl", "copy_to_directory", "esbuild", "ng_project", "pkg_web", "sass_binary", "string_flag", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -55,12 +48,9 @@ ng_project(
     srcs = [
         "main.ts",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools:ng-devtools_rjs",
         "//devtools/projects/shell-browser/src/app:app_rjs",
         "//devtools/projects/shell-browser/src/environments:environment_rjs",
@@ -69,7 +59,11 @@ ng_project(
 
 esbuild(
     name = "bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_esm_prod",
+    srcs = [
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_esm_prod_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-esm-prod.config.mjs",
     entry_points = [":main.ts"],
     minify = True,
     platform = "browser",
@@ -80,12 +74,20 @@ esbuild(
     # Targeting esnext or es2022 will cause the static initializer blocks that attach these static properties on class
     # constructors to reference a class constructor variable that they do not have access to.
     target = "es2020",
-    deps = LINKER_PROCESSED_FW_PACKAGES + [":src"],
+    deps = [
+        ":src_rjs",
+        "//:node_modules/@angular/cdk",
+    ],
 )
 
 esbuild(
     name = "devtools_bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_esm_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
     entry_point = "devtools.ts",
     format = "iife",
     minify = True,
@@ -97,7 +99,7 @@ esbuild(
     # Targeting esnext or es2022 will cause the static initializer blocks that attach these static properties on class
     # constructors to reference a class constructor variable that they do not have access to.
     target = "es2020",
-    deps = [":devtools"],
+    deps = [":devtools_rjs"],
 )
 
 exports_files(["index.html"])
@@ -109,7 +111,6 @@ filegroup(
         ":browser_specific_styles",
         ":index.html",
         ":shell_common_styles",
-        "//packages/zone.js/bundles:zone.umd.js",
     ],
 )
 

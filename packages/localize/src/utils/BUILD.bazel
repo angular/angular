@@ -1,8 +1,8 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "utils",
     srcs = glob(
         [
@@ -11,7 +11,7 @@ ts_library(
         ],
     ),
     deps = [
-        "//packages/compiler",
+        "//packages/compiler:compiler_rjs",
     ],
 )
 

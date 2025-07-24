@@ -11,7 +11,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnInit,
   PLATFORM_ID,
   signal,
   isDevMode,
@@ -51,7 +50,7 @@ import {HeaderService} from './core/services/header.service';
     '(window:keydown)': 'setSearchDialogVisibilityOnKeyPress($event)',
   },
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly headerService = inject(HeaderService);
@@ -62,7 +61,7 @@ export class AppComponent implements OnInit {
   displayFooter = signal(false);
   displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
-  ngOnInit(): void {
+  constructor() {
     this.closeSearchDialogOnNavigationSkipped();
     this.router.events
       .pipe(

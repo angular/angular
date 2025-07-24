@@ -7,13 +7,11 @@ ts_project(
     srcs = ["index.ts"] + glob([
         "src/*.ts",
     ]),
-    interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/shims",
-        "//packages/compiler-cli/src/ngtsc/util",
-    ],
     module_name = "@angular/compiler-cli/src/ngtsc/program_driver",
     deps = [
         "//:node_modules/typescript",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/shims:shims_rjs",
+        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
     ],
 )

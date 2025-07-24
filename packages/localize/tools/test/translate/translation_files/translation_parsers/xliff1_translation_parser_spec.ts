@@ -826,14 +826,13 @@ describe('Xliff1TranslationParser', () => {
           XLIFF,
           /Invalid element found in message/,
           [
-            `Error: Invalid element found in message.`,
-            `At /some/file.xlf@6:16:`,
-            `...`,
-            `        <source/>`,
-            `        <target>[ERROR ->]<b>msg should contain only ph tags</b></target>`,
-            `      </trans-unit>`,
-            `...`,
-            ``,
+            'Invalid element found in message. ("',
+            '      <trans-unit id="deadbeef" datatype="html">',
+            '        <source/>',
+            '        <target>[ERROR ->]<b>msg should contain only ph tags</b></target>',
+            '      </trans-unit>',
+            '    </body>',
+            '"): /some/file.xlf@6:16',
           ].join('\n'),
         );
       });
@@ -858,14 +857,13 @@ describe('Xliff1TranslationParser', () => {
           XLIFF,
           /required "id" attribute/gi,
           [
-            `Error: Missing required "id" attribute:`,
-            `At /some/file.xlf@6:16:`,
-            `...`,
-            `        <source/>`,
-            `        <target>[ERROR ->]<x/></target>`,
-            `      </trans-unit>`,
-            `...`,
-            ``,
+            'Missing required "id" attribute: ("',
+            '      <trans-unit id="deadbeef" datatype="html">',
+            '        <source/>',
+            '        <target>[ERROR ->]<x/></target>',
+            '      </trans-unit>',
+            '    </body>',
+            '"): /some/file.xlf@6:16',
           ].join('\n'),
         );
       });

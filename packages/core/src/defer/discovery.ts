@@ -9,7 +9,7 @@
 import {CONTAINER_HEADER_OFFSET} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, LView, TVIEW} from '../render3/interfaces/view';
+import {HEADER_OFFSET, HOST, LView, TVIEW} from '../render3/interfaces/view';
 
 import {DehydratedDeferBlock, TDeferBlockDetails} from './interfaces';
 import {getTDeferBlockDetails, isTDeferBlockDetails} from './utils';
@@ -46,8 +46,15 @@ export function getDeferBlocks(lView: LView, deferBlocks: DeferBlockDetails[]) {
           continue;
         }
       }
-      for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
-        getDeferBlocks(lContainer[i] as LView, deferBlocks);
+
+      // The host can be an `LView` if this is the container
+      // for a component that injects `ViewContainerRef`.
+      if (isLView(lContainer[HOST])) {
+        getDeferBlocks(lContainer[HOST], deferBlocks);
+      }
+
+      for (let j = CONTAINER_HEADER_OFFSET; j < lContainer.length; j++) {
+        getDeferBlocks(lContainer[j] as LView, deferBlocks);
       }
     } else if (isLView(lView[i])) {
       // This is a component, enter the `getDeferBlocks` recursively.

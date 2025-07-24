@@ -34,7 +34,12 @@ export function optimizeVariables(job: CompilationJob): void {
     inlineAlwaysInlineVariables(unit.update);
 
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
+      if (
+        op.kind === ir.OpKind.Listener ||
+        op.kind === ir.OpKind.Animation ||
+        op.kind === ir.OpKind.AnimationListener ||
+        op.kind === ir.OpKind.TwoWayListener
+      ) {
         inlineAlwaysInlineVariables(op.handlerOps);
       } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
         inlineAlwaysInlineVariables(op.trackByOps);
@@ -45,7 +50,12 @@ export function optimizeVariables(job: CompilationJob): void {
     optimizeVariablesInOpList(unit.update, job.compatibility);
 
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
+      if (
+        op.kind === ir.OpKind.Listener ||
+        op.kind === ir.OpKind.Animation ||
+        op.kind === ir.OpKind.AnimationListener ||
+        op.kind === ir.OpKind.TwoWayListener
+      ) {
         optimizeVariablesInOpList(op.handlerOps, job.compatibility);
       } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
         optimizeVariablesInOpList(op.trackByOps, job.compatibility);

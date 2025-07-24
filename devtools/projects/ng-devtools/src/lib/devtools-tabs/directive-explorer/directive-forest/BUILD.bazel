@@ -1,7 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,15 +16,14 @@ ng_project(
         "directive-forest.component.html",
         ":directive_forest_component_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
         ":directive_forest_utils_rjs",
         "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing:diffing_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs:breadcrumbs_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter:directive-forest-filter-fn-generator_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter:filter_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/tree-node:tree-node_rjs",
@@ -54,9 +50,9 @@ ts_test_library(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
     deps = [
-        ":directive_forest_utils_test",
+        ":directive_forest_utils_test_rjs",
     ],
 )

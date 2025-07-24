@@ -1,3 +1,5 @@
+const waitForAsync = Zone[Zone.__symbol__('asyncTest')];
+
 function assertInsideProxyZone() {
   expect(Zone.current.name).toEqual('ProxyZone');
 }
@@ -43,6 +45,18 @@ describe('test', () => {
   test.each([[]])('test.each', () => {
     assertInsideProxyZone();
   });
+
+  test.each([
+    ['1', 1],
+    ['2', 2],
+  ])(
+    'Test.each ["%s", %s]',
+    waitForAsync((p1, p2) => {
+      expect(typeof p1).toEqual('string');
+      expect(typeof p2).toEqual('number');
+      expect(p1).toEqual('' + p2);
+    }),
+  );
 });
 
 it('it', () => {

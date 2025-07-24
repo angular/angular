@@ -41,6 +41,16 @@
       "description": "Shows a help message for this command in the console."
     },
     {
+      "name": "i18n-duplicate-translation",
+      "type": "string",
+      "enum": [
+        "error",
+        "warning",
+        "ignore"
+      ],
+      "description": "How to handle duplicate translations."
+    },
+    {
       "name": "out-file",
       "type": "string",
       "description": "Name of the file to output."

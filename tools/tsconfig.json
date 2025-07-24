@@ -5,8 +5,11 @@
     "declaration": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
-    "types": ["node"]
+    "module": "esnext",
+    "moduleResolution": "node",
+    "types": ["node"],
+    "paths": {
+      "@angular/*": ["../packages/*/index"],
+    }
   }
 }

@@ -30,7 +30,9 @@ export class SlicePipeStringComponent {
 @Component({
   selector: 'slice-list-pipe',
   template: `<ul>
-    <li *ngFor="let i of collection | slice: 1 : 3">{{ i }}</li>
+    @for(i of collection | slice: 1 : 3; track $index) {
+      <li>{{ i }}</li>
+    } 
   </ul>`,
   standalone: false,
 })

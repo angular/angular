@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, isPlatformServer, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {
   APP_ID,
   CSP_NONCE,
@@ -26,6 +26,8 @@ import {
   ɵTracingService as TracingService,
   ɵTracingSnapshot as TracingSnapshot,
   Optional,
+  ɵAnimationRemovalRegistry as AnimationRemovalRegistry,
+  ɵgetAnimationElementRemovalRegistry as getAnimationElementRemovalRegistry,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -136,6 +138,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
   >();
   private readonly defaultRenderer: Renderer2;
   private readonly platformIsServer: boolean;
+  private registry: AnimationRemovalRegistry;
 
   constructor(
     private readonly eventManager: EventManager,
@@ -150,13 +153,14 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Optional()
     private readonly tracingService: TracingService<TracingSnapshot> | null = null,
   ) {
-    this.platformIsServer = isPlatformServer(platformId);
+    this.platformIsServer = typeof ngServerMode !== 'undefined' && ngServerMode;
     this.defaultRenderer = new DefaultDomRenderer2(
       eventManager,
       doc,
       ngZone,
       this.platformIsServer,
       this.tracingService,
+      (this.registry = getAnimationElementRemovalRegistry()),
     );
   }
 
@@ -165,7 +169,11 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       return this.defaultRenderer;
     }
 
-    if (this.platformIsServer && type.encapsulation === ViewEncapsulation.ShadowDom) {
+    if (
+      typeof ngServerMode !== 'undefined' &&
+      ngServerMode &&
+      type.encapsulation === ViewEncapsulation.ShadowDom
+    ) {
       // Domino does not support shadow DOM.
       type = {...type, encapsulation: ViewEncapsulation.Emulated};
     }
@@ -207,6 +215,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             platformIsServer,
             tracingService,
+            this.registry,
           );
           break;
         case ViewEncapsulation.ShadowDom:
@@ -220,6 +229,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             this.nonce,
             platformIsServer,
             tracingService,
+            this.registry,
           );
         default:
           renderer = new NoneEncapsulationDomRenderer(
@@ -231,6 +241,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             platformIsServer,
             tracingService,
+            this.registry,
           );
           break;
       }
@@ -269,6 +280,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     private readonly ngZone: NgZone,
     private readonly platformIsServer: boolean,
     private readonly tracingService: TracingService<TracingSnapshot> | null,
+    private readonly registry: AnimationRemovalRegistry,
   ) {}
 
   destroy(): void {}
@@ -313,6 +325,12 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   removeChild(_parent: any, oldChild: any): void {
+    const {elements} = this.registry;
+    if (elements && elements.has(oldChild as Element)) {
+      elements.animate(oldChild, () => oldChild.remove());
+      return;
+    }
+    // child was removed
     oldChild.remove();
   }
 
@@ -458,9 +476,10 @@ class DefaultDomRenderer2 implements Renderer2 {
 
       // Run the event handler inside the ngZone because event handlers are not patched
       // by Zone on the server. This is required only for tests.
-      const allowDefaultBehavior = this.platformIsServer
-        ? this.ngZone.runGuarded(() => eventHandler(event))
-        : eventHandler(event);
+      const allowDefaultBehavior =
+        typeof ngServerMode !== 'undefined' && ngServerMode
+          ? this.ngZone.runGuarded(() => eventHandler(event))
+          : eventHandler(event);
       if (allowDefaultBehavior === false) {
         event.preventDefault();
       }
@@ -499,8 +518,9 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     nonce: string | null,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
+    registry: AnimationRemovalRegistry,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer, tracingService);
+    super(eventManager, doc, ngZone, platformIsServer, tracingService, registry);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
     this.sharedStylesHost.addHost(this.shadowRoot);
     let styles = component.styles;
@@ -576,9 +596,10 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     ngZone: NgZone,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
+    registry: AnimationRemovalRegistry,
     compId?: string,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer, tracingService);
+    super(eventManager, doc, ngZone, platformIsServer, tracingService, registry);
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
@@ -617,6 +638,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     ngZone: NgZone,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
+    registry: AnimationRemovalRegistry,
   ) {
     const compId = appId + '-' + component.id;
     super(
@@ -628,6 +650,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       ngZone,
       platformIsServer,
       tracingService,
+      registry,
       compId,
     );
     this.contentAttr = shimContentAttribute(compId);

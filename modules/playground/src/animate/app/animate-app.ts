@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {animate, keyframes, state, style, transition, trigger} from '@angular/animations';
+import {
+  animate,
+  keyframes,
+  state,
+  style,
+  transition,
+  trigger,
+  AnimationEvent,
+} from '@angular/animations';
 import {Component} from '@angular/core';
 
 @Component({
@@ -68,7 +76,7 @@ import {Component} from '@angular/core';
 })
 export class AnimateApp {
   public items: number[] = [];
-  private _state: 'start' | 'active' | 'void' | 'default';
+  private _state!: 'start' | 'active' | 'void' | 'default';
 
   public bgStatus = 'focus';
 
@@ -86,7 +94,7 @@ export class AnimateApp {
     this.items[Math.floor(Math.random() * this.items.length)] = 99;
   }
 
-  bgStatusChanged(data: {[key: string]: string}, phase: string) {
+  bgStatusChanged(data: AnimationEvent, phase: string) {
     alert(`backgroundAnimation has ${phase} from ${data['fromState']} to ${data['toState']}`);
   }
 

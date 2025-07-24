@@ -199,7 +199,7 @@ HELPFUL: By default, signals use referential equality ([`Object.is()`](https://d
 
 Rarely, you may want to execute code which may read signals within a reactive function such as `computed` or `effect` _without_ creating a dependency.
 
-For example, suppose that when `currentUser` changes, the value of a `counter` should be logged. you could create an `effect` which reads both signals:
+For example, suppose that when `currentUser` changes, the value of a `counter` should be logged. You could create an `effect` which reads both signals:
 
 ```ts
 effect(() => {

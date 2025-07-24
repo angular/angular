@@ -9,7 +9,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import DocsComponent from './docs.component';
-import {RouterTestingModule} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
 import {DOCS_CONTENT_LOADER, WINDOW} from '@angular/docs';
 
 describe('DocsComponent', () => {
@@ -25,8 +25,9 @@ describe('DocsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DocsComponent, RouterTestingModule],
+      imports: [DocsComponent],
       providers: [
+        provideRouter([]),
         {
           provide: WINDOW,
           useValue: fakeWindow,

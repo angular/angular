@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {openBrowser, runBenchmark} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {openBrowser, runBenchmark} from '../../../utilities/index';
 import {browser} from 'protractor';
 
 export function runTreeBenchmark({

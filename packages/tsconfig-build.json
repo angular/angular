@@ -31,9 +31,15 @@
     "inlineSources": true,
     "importHelpers": true,
     "paths": {
-      "zone.js": ["./zone.js/lib/zone"],
+      "angular-in-memory-web-api": ["./misc/angular-in-memory-web-api/index"],
       "@angular/*": ["./*/index"],
-      "@angular/common/locales/*": ["./common/locales/*"]
+      "@angular/common/locales/*": ["./common/locales/*"],
+      "@angular/compiler-cli": ["./compiler-cli"],
+      "@angular/compiler-cli/*": ["./compiler-cli/*"],
+      "@angular/compiler-cli/src/ngtsc/reflection":  ["./compiler-cli/src/ngtsc/reflection/index"],
+      "@angular/compiler-cli/src/ngtsc/metadata":  ["./compiler-cli/src/ngtsc/metadata/index"],
+      "@angular/compiler-cli/private/migrations":  ["./compiler-cli/private/migrations"],
+      "@angular/core/schematics/utils/tsurge/*": ["./core/schematics/utils/tsurge/*"]
     }
   },
   "bazelOptions": {

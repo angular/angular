@@ -11,7 +11,7 @@ import {Animation} from './animation';
 import {AnimationLayerDirective} from './animation-layer.directive';
 import {AnimationConfig} from './types';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class AnimationCreatorService {
   private readonly injector = inject(Injector);
 

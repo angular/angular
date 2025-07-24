@@ -1,6 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "sass_binary", "ts_project", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -13,14 +11,12 @@ ng_project(
         ":top-level-banner.component.css",
         "top-level-banner.component.html",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
     ],
     deps = [
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
         "//adev/shared-docs/components/icon:icon_rjs",
         "//adev/shared-docs/directives:directives_rjs",
         "//adev/shared-docs/providers:providers_rjs",
@@ -38,15 +34,14 @@ ts_project(
     srcs = glob(
         ["*.spec.ts"],
     ),
-    interop_deps = [
-        ":top-level-banner",
-        "//adev/shared-docs/providers",
-        "//packages/core",
-        "//packages/core/testing",
+    deps = [
+        ":top-level-banner_rjs",
+        "//adev:node_modules/@angular/core",
+        "//adev/shared-docs/providers:providers_rjs",
     ],
 )
 
-karma_web_test_suite(
+zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib"],
+    deps = [":test_lib_rjs"],
 )

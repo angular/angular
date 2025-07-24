@@ -1,8 +1,9 @@
-load("//tools:defaults.bzl", "rollup_bundle", "ts_library")
 load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("//tools:defaults.bzl", "rollup_bundle")
+load("//tools:defaults2.bzl", "ts_project")
 
 def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point):
-    ts_library(
+    ts_project(
         name = name + "_env",
         testonly = True,
         srcs = env_srcs,
@@ -21,7 +22,7 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
             "@npm//magic-string",
         ],
     )
-    ts_library(
+    ts_project(
         name = name + "_test",
         testonly = True,
         srcs = test_srcs,
@@ -72,7 +73,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                             ":" + name + "_env_rollup.umd",
                         ] + bootstrap +
                         _karma_test_required_dist_files,
-            browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
+            browsers = ["@devinfra//bazel/browsers/chromium:chromium"],
             static_files = [
                 ":assets/sample.json",
                 ":assets/worker.js",
@@ -96,7 +97,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                     "//packages/zone.js/bundles:zone.umd.js",
                     "//packages/zone.js/bundles:zone-testing.umd.js",
                 ] + _karma_test_required_dist_files,
-                browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
+                browsers = ["@devinfra//bazel/browsers/chromium:chromium"],
                 config_file = "//:karma-js.conf.js",
                 configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
                 data = [
@@ -108,7 +109,10 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                     ":assets/worker.js",
                     ":assets/import.html",
                 ],
-                tags = ["zone_karma_test"],
+                tags = [
+                    "zone_karma_test",
+                    "manual",
+                ],
                 # Visible to //:saucelabs_unit_tests_poc target
                 visibility = ["//:__pkg__"],
                 runtime_deps = [

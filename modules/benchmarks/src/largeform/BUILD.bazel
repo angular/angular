@@ -1,25 +1,25 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-ts_library(
+ts_project(
     name = "perf_tests_lib",
     testonly = 1,
     srcs = ["largeform.perf-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "@npm//protractor",
+        "//modules:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "e2e_tests_lib",
     testonly = 1,
     srcs = ["largeform.e2e-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "@npm//protractor",
+        "//modules:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
     ],
 )

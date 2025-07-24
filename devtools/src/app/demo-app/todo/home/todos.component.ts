@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectorRef, Component, inject, OnDestroy, OnInit, output} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  OnDestroy,
+  OnInit,
+  output,
+  input,
+} from '@angular/core';
 
 import {Todo} from './todo';
 import {TodoFilter, TodosFilter} from './todos.pipe';
@@ -23,11 +31,48 @@ const fib = (n: number): number => {
 };
 
 @Component({
+  selector: 'base-case',
+  template: `
+    <h2>Base Case</h2>
+  `,
+})
+export class BaseCaseComponent {
+  // This component serves as a base case for the recursive component.
+}
+
+@Component({
+  selector: 'recursive-component',
+  imports: [BaseCaseComponent],
+  template: `
+    <div class="recursive-component">
+      @if (level() === 0) {
+        <base-case/>
+      } @else {
+        <h3>Level {{ level() }}</h3>
+        <recursive-component [level]="level() - 1"/>
+      }
+    </div>
+  `,
+})
+export class RecursiveComponent {
+  level = input(5);
+}
+
+@Component({
   templateUrl: 'todos.component.html',
   selector: 'app-todos',
-  imports: [RouterLink, TodoComponent, TooltipDirective, SamplePipe, TodosFilter],
+  imports: [
+    RouterLink,
+    TodoComponent,
+    TooltipDirective,
+    SamplePipe,
+    TodosFilter,
+    RecursiveComponent,
+  ],
 })
 export class TodosComponent implements OnInit, OnDestroy {
+  title = 'Angular Todo';
+
   todos: Todo[] = [
     {
       label: 'Buy milk',

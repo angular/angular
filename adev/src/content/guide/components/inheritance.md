@@ -35,7 +35,7 @@ host bindings, inputs, outputs, lifecycle methods.
   },
 })
 export class ListboxBase {
-  @Input() value: string;
+  value = input.required<string>();
   handleKey(event: KeyboardEvent) {
     /* ... */
   }
@@ -51,7 +51,7 @@ export class ListboxBase {
   },
 })
 export class CustomListbox extends ListboxBase {
-  @Input() disabled = false;
+  disabled = input(false);
   focusActiveOption() {
     /* ... */
   }

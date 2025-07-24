@@ -62,7 +62,7 @@ describe('BabelAstFactory', () => {
     it('should create an assignment node using the target and value expressions', () => {
       const target = expression.ast`x`;
       const value = expression.ast`42`;
-      const assignment = factory.createAssignment(target, value);
+      const assignment = factory.createAssignment(target, '=', value);
       expect(generate(assignment).code).toEqual('x = 42');
     });
   });

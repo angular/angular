@@ -1,16 +1,10 @@
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools/esbuild:index.bzl", "LINKER_PROCESSED_FW_PACKAGES")
-load("//tools:defaults.bzl", "esbuild", "http_server")
+load("//devtools/tools:defaults.bzl", "copy_to_directory", "esbuild", "http_server", "ng_project", "pkg_web", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
     name = "demo_styles",
     src = "styles.scss",
-    include_paths = ["external/npm/node_modules"],
     sourcemap = False,
     deps = ["//devtools/projects/ng-devtools/src/styles:global"],
 )
@@ -41,14 +35,10 @@ copy_to_directory(
 ng_project(
     name = "demo",
     srcs = ["main.ts"],
-    interop_deps = [
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/core",
-        "//packages/core/src/util",
-        "//packages/platform-browser",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
         "//devtools/src/app:app_rjs",
     ],
@@ -56,7 +46,11 @@ ng_project(
 
 esbuild(
     name = "bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    srcs = [
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_esm_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
     entry_points = [":main.ts"],
     platform = "browser",
     splitting = True,
@@ -66,7 +60,10 @@ esbuild(
     # Targeting esnext or es2022 will cause the static initializer blocks that attach these static properties on class
     # constructors to reference a class constructor variable that they do not have access to.
     target = "es2020",
-    deps = LINKER_PROCESSED_FW_PACKAGES + [":demo"],
+    deps = [
+        ":demo_rjs",
+        "//:node_modules/@angular/cdk",
+    ],
 )
 
 exports_files(["index.html"])
@@ -79,7 +76,6 @@ filegroup(
         ":demo_styles",
         ":index.html",
         "//devtools/src/assets",
-        "//packages/zone.js/bundles:zone.umd.js",
     ],
 )
 
@@ -87,7 +83,6 @@ pkg_web(
     name = "devapp",
     srcs = [":dev_app_static_files"] + [
         ":bundle",
-        "@npm//:node_modules/tslib/tslib.js",
     ],
 )
 
@@ -95,6 +90,7 @@ http_server(
     name = "devserver",
     srcs = [":dev_app_static_files"],
     additional_root_paths = ["angular/devtools/src/devapp"],
+    port = 4200,
     tags = ["manual"],
     deps = [
         ":devapp",

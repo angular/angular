@@ -39,6 +39,9 @@ export interface CodeToken extends Tokens.Generic {
 
   /** The generated diff metadata if created in the code formating process. */
   diffMetadata?: DiffMetadata;
+
+  // additional classes for the element
+  classes?: string[];
 }
 
 export function formatCode(token: CodeToken) {
@@ -53,9 +56,7 @@ export function formatCode(token: CodeToken) {
   const containerEl = JSDOM.fragment(`
   <div class="docs-code">
     ${buildHeaderElement(token)}
-    <pre class="docs-mini-scroll-track">
-      ${token.code}
-    </pre>
+    ${token.code}
   </div>
   `).firstElementChild!;
 
@@ -96,5 +97,9 @@ function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
   // Classes
   if (token.language === 'shell') {
     el.classList.add('shell');
+  }
+
+  if (token.classes) {
+    el.classList.add(...token.classes);
   }
 }

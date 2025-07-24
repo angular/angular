@@ -18,16 +18,12 @@ import {
 
 import {Diagnostics} from '../../../diagnostics';
 
-import {TranslationParseError} from './translation_parse_error';
 import {ParseAnalysis, ParsedTranslationBundle} from './translation_parser';
 
 export function getAttrOrThrow(element: Element, attrName: string): string {
   const attrValue = getAttribute(element, attrName);
   if (attrValue === undefined) {
-    throw new TranslationParseError(
-      element.sourceSpan,
-      `Missing required "${attrName}" attribute:`,
-    );
+    throw new ParseError(element.sourceSpan, `Missing required "${attrName}" attribute:`);
   }
   return attrValue;
 }

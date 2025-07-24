@@ -74,7 +74,8 @@ describe('rxResource()', () => {
     expect(res.value()).toBe(3);
 
     response.error('fail');
-    expect(res.error()).toBe('fail');
+    expect(res.error()).toEqual(jasmine.objectContaining({cause: 'fail'}));
+    expect(res.error()!.message).toContain('Resource');
   });
 });
 

@@ -4,6 +4,10 @@
     "url": "https://next.angular.dev/overview"
   },
   {
+    "version": "v20",
+    "url": "https://v20.angular.dev/overview"
+  },
+  {
     "version": "v19",
     "url": "https://v19.angular.dev/overview"
   },

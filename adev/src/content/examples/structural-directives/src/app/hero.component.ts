@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {JsonPipe} from '@angular/common';
 
 import {IfLoadedDirective} from './if-loaded.directive';
 
@@ -12,7 +12,7 @@ import {Hero, heroes} from './hero';
     <button (click)="onLoadHero()">Load Hero</button>
     <p *appIfLoaded="heroLoadingState">{{ heroLoadingState.data | json }}</p>
   `,
-  imports: [CommonModule, IfLoadedDirective],
+  imports: [IfLoadedDirective, JsonPipe],
 })
 export class HeroComponent {
   heroLoadingState: LoadingState<Hero> = {type: 'loading'};

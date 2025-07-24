@@ -1,0 +1,48 @@
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "ssr_docs_lib",
+    srcs = [
+        "_index.ts",
+        "_node.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/ssr",
+    ],
+)
+
+filegroup(
+    name = "ssr_docs_lib_types",
+    srcs = [
+        ":ssr_docs_lib_rjs",
+    ],
+    output_group = "types",
+)
+
+### @angular/ssr package located in the Angular/CLI repository
+generate_api_docs(
+    name = "ssr_docs",
+    srcs = [
+        ":ssr_docs_lib_rjs",
+        ":ssr_docs_lib_types",
+        "//:node_modules/@angular/ssr",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":_index.d.ts",
+    module_name = "@angular/ssr",
+)
+
+generate_api_docs(
+    name = "ssr_node_docs",
+    srcs = [
+        ":ssr_docs_lib_rjs",
+        ":ssr_docs_lib_types",
+        "//:node_modules/@angular/ssr",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":_node.d.ts",
+    module_name = "@angular/ssr/node",
+)

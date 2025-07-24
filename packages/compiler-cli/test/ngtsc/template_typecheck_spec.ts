@@ -8492,5 +8492,51 @@ suppress
         expect(diags.length).toBe(0);
       });
     });
+
+    describe('DOM event target type inference', () => {
+      beforeEach(() => {
+        env.tsconfig({strictTemplates: true});
+      });
+
+      it('should infer the type of the event target when bound on a void element', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({template: '<input (input)="handleEvent($event.target)">'})
+          export class TestCmp {
+            handleEvent(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'HTMLInputElement' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should not infer the type of the event target when bound on a non-void element', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({template: '<div (click)="handleEvent($event.target)"></div>'})
+          export class TestCmp {
+            handleEvent(value: string) {}
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toBe(
+          `Argument of type 'EventTarget | null' is not assignable to parameter of type 'string'.`,
+        );
+      });
+    });
   });
 });

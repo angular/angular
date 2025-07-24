@@ -133,7 +133,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
 
   function makeConditionalFactory(nonCtorExpr: o.Expression): o.ReadVarExpr {
     const r = o.variable('__ngConditionalFactory__');
-    body.push(r.set(o.NULL_EXPR).toDeclStmt());
+    body.push(new o.DeclareVarStmt(r.name, o.NULL_EXPR, o.INFERRED_TYPE));
     const ctorStmt =
       ctorExpr !== null
         ? r.set(ctorExpr).toStmt()

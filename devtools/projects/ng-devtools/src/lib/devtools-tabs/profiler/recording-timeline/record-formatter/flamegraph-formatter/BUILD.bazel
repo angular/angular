@@ -1,0 +1,40 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "ts_test_library")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ng_project(
+    name = "flamegraph-formatter",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+        exclude = ["flamegraph-formatter.spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter:record-formatter_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "flamegraph-formatter.spec.ts",
+    ],
+    deps = [
+        ":flamegraph-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter:record-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter:record_formatter_spec_constants_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib_rjs",
+    ],
+)

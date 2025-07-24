@@ -7,6 +7,7 @@ copy_to_directory(
     name = "content",
     srcs = [
         "//adev/src/content",
+        "//adev/src/content/ai",
         "//adev/src/content/best-practices",
         "//adev/src/content/best-practices/runtime-performance",
         "//adev/src/content/cdk:cdk_docs",
@@ -40,6 +41,7 @@ copy_to_directory(
         "//adev/src/content/reference/migrations",
         "//adev/src/content/tools",
         "//adev/src/content/tools/cli",
+        "//adev/src/content/tools/devtools",
         "//adev/src/content/tools/libraries",
         "//adev/src/content/tutorials",
         "//adev/src/content/tutorials/deferrable-views:deferrable-views-guides",
@@ -73,8 +75,8 @@ copy_to_directory(
         "//packages/router/testing:router_testing_docs",
         "//packages/router/upgrade:router_upgrade_docs",
         "//packages/service-worker:service-worker_docs",
-        "//packages/ssr:ssr_docs",
-        "//packages/ssr:ssr_node_docs",
+        "//packages/ssr/docs:ssr_docs",
+        "//packages/ssr/docs:ssr_node_docs",
         "//packages/upgrade:upgrade_docs",
         "//packages/upgrade/static:upgrade_static_docs",
         "//packages/upgrade/static/testing:upgrade_static_testing_docs",
@@ -116,6 +118,16 @@ copy_to_directory(
     name = "api",
     srcs = [
         ":docs_api_manifest",
+    ],
+    replace_prefixes = {
+        "**/": "",
+    },
+)
+
+copy_to_directory(
+    name = "context",
+    srcs = [
+        "//adev/src/context",
     ],
     replace_prefixes = {
         "**/": "",

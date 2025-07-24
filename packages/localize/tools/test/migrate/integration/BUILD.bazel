@@ -1,22 +1,22 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
         ["**/*_spec.ts"],
     ),
     deps = [
-        "//packages:types",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/logging",
-        "//packages/compiler-cli/src/ngtsc/logging/testing",
-        "//packages/compiler-cli/src/ngtsc/testing",
-        "//packages/localize/tools",
-        "//packages/localize/tools/test:test_lib",
-        "//packages/localize/tools/test/helpers",
+        "//packages:types_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
+        "//packages/localize/tools:tools_rjs",
+        "//packages/localize/tools/test:test_lib_rjs",
+        "//packages/localize/tools/test/helpers:helpers_rjs",
     ],
 )
 
@@ -26,15 +26,12 @@ copy_to_bin(
     srcs = glob(["test_files/**/*"]),
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "integration",
-    bootstrap = ["//tools/testing:node_no_angular"],
     data = [
         ":test_files",
-    ],
-    deps = [
-        ":test_lib",
-        "@npm//tinyglobby",
-        "@npm//yargs",
+        ":test_lib_rjs",
+        "//:node_modules/tinyglobby",
+        "//:node_modules/yargs",
     ],
 )

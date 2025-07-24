@@ -1,6 +1,17 @@
-package(default_visibility = ["//visibility:public"])
+load("//tools:defaults2.bzl", "ts_config")
 
-exports_files([
-    "tsconfig-build.json",
-    "tsconfig-e2e.json",
-])
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig-build.json",
+)
+
+ts_config(
+    name = "tsconfig_e2e",
+    src = "tsconfig-e2e.json",
+    deps = [
+        "//modules:node_modules/@types/jasmine",
+        "//modules:node_modules/@types/node",
+    ],
+)

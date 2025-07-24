@@ -115,7 +115,7 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('const id = "test.ts%40Cmp";');
       expect(jsContents).toContain('function Cmp_HmrLoad(t) {');
       expect(jsContents).toContain(
-        'import(/* @vite-ignore */\nnew URL("./@ng/component?c=" + id + "&t=" + encodeURIComponent(t), import.meta.url).href)',
+        'import(/* @vite-ignore */\ni0.ɵɵgetReplaceMetadataURL(id, t, import.meta.url)',
       );
       expect(jsContents).toContain(
         ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0], ' +
@@ -183,7 +183,7 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('const id = "test.ts%40Cmp";');
       expect(jsContents).toContain('function Cmp_HmrLoad(t) {');
       expect(jsContents).toContain(
-        'import(/* @vite-ignore */\nnew URL("./@ng/component?c=" + id + "&t=" + encodeURIComponent(t), import.meta.url).href)',
+        'import(/* @vite-ignore */\ni0.ɵɵgetReplaceMetadataURL(id, t, import.meta.url)',
       );
       expect(jsContents).toContain(
         ').then(m => m.default && i0.ɵɵreplaceMetadata(Cmp, m.default, [i0, i1], ' +

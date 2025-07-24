@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, isPlatformServer} from '@angular/common';
+import {DOCUMENT} from '@angular/common';
 import {
   APP_ID,
   CSP_NONCE,
@@ -120,18 +120,14 @@ export class SharedStylesHost implements OnDestroy {
    */
   private readonly hosts = new Set<Node>();
 
-  /**
-   * Whether the application code is currently executing on a server.
-   */
-  private readonly isServer: boolean;
-
   constructor(
     @Inject(DOCUMENT) private readonly doc: Document,
     @Inject(APP_ID) private readonly appId: string,
     @Inject(CSP_NONCE) @Optional() private readonly nonce?: string | null,
+    // Cannot remove it due to backward compatibility
+    // (it seems some TGP targets might be calling this constructor directly).
     @Inject(PLATFORM_ID) platformId: object = {},
   ) {
-    this.isServer = isPlatformServer(platformId);
     addServerStyles(doc, appId, this.inline, this.external);
     this.hosts.add(doc.head);
   }
@@ -239,7 +235,7 @@ export class SharedStylesHost implements OnDestroy {
     }
 
     // Add application identifier when on the server to support client-side reuse
-    if (this.isServer) {
+    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
       element.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
     }
 

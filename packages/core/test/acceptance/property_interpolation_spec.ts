@@ -171,7 +171,7 @@ describe('property interpolation', () => {
     );
   });
 
-  it('should support the chained use cases of propertyInterpolate instructions', () => {
+  it('should support the chained use cases of property interpolations', () => {
     // The below *just happens* to have two attributes in a row that have the same interpolation
     // count.
     @Component({

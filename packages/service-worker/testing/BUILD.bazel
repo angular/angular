@@ -6,10 +6,8 @@ ng_project(
     name = "testing",
     testonly = True,
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
         "//:node_modules/rxjs",
+        "//packages/core:core_rjs",
     ],
 )

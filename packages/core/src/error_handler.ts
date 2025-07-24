@@ -70,8 +70,14 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
       const injector = inject(EnvironmentInjector);
       let userErrorHandler: ErrorHandler;
       return (e: unknown) => {
-        userErrorHandler ??= injector.get(ErrorHandler);
-        userErrorHandler.handleError(e);
+        if (injector.destroyed && !userErrorHandler) {
+          setTimeout(() => {
+            throw e;
+          });
+        } else {
+          userErrorHandler ??= injector.get(ErrorHandler);
+          userErrorHandler.handleError(e);
+        }
       };
     },
   },
@@ -100,7 +106,18 @@ const globalErrorListeners = new InjectionToken<void>(ngDevMode ? 'GlobalErrorLi
       e.preventDefault();
     };
     const errorListener = (e: ErrorEvent) => {
-      errorHandler(e.error);
+      if (e.error) {
+        errorHandler(e.error);
+      } else {
+        errorHandler(
+          new Error(
+            ngDevMode
+              ? `An ErrorEvent with no error occurred. See Error.cause for details: ${e.message}`
+              : e.message,
+            {cause: e},
+          ),
+        );
+      }
       e.preventDefault();
     };
 

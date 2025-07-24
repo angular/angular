@@ -15,6 +15,7 @@ import {
   NgZone,
   Provider,
   ɵConsole as Console,
+  ɵRuntimeError as RuntimeError,
   ɵformatRuntimeError as formatRuntimeError,
   ɵwithDomHydration as withDomHydration,
   ɵwithEventReplay,
@@ -242,8 +243,8 @@ export function provideClientHydration(
     featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) &&
     hasHttpTransferCacheOptions
   ) {
-    // TODO: Make this a runtime error
-    throw new Error(
+    throw new RuntimeError(
+      RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES,
       'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.',
     );
   }

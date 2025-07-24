@@ -254,6 +254,15 @@ export class SwTestHarnessImpl
     return event.ready;
   }
 
+  handleClose(notification: Object, action: string): Promise<void> {
+    if (!this.eventHandlers.has('notificationclose')) {
+      throw new Error('No notificationclose handler registered');
+    }
+    const event = new MockNotificationEvent(notification, action);
+    this.eventHandlers.get('notificationclose')!.call(this, event);
+    return event.ready;
+  }
+
   override timeout(ms: number): Promise<void> {
     const promise = new Promise<void>((resolve) => {
       this.timers.push({

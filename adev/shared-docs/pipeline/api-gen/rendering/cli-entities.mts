@@ -23,6 +23,7 @@ export interface CliCommand {
 export interface CliOption {
   name: string;
   type: 'boolean' | 'string' | 'number';
+  enum: string[] | undefined;
   default: string;
   description: string;
   positional?: number;

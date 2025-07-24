@@ -8,10 +8,8 @@ ts_project(
         "*.ts",
         "src/**/*.ts",
     ]),
-    interop_deps = [
-        "//packages/compiler",
-    ],
     deps = [
         "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
     ],
 )

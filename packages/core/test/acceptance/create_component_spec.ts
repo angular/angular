@@ -36,6 +36,7 @@ import {
 } from '../../src/core';
 import {stringifyForError} from '../../src/render3/util/stringify_utils';
 import {TestBed} from '../../testing';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 
 describe('createComponent', () => {
   it('should create an instance of a standalone component', () => {
@@ -1110,6 +1111,34 @@ describe('createComponent', () => {
       }).toThrowError(
         /Cannot call `setInput` on a component that is using the `inputBinding` or `twoWayBinding` functions/,
       );
+    });
+
+    it('should update view of component set with the onPush strategy after input change', () => {
+      @Component({
+        standalone: true,
+        changeDetection: ChangeDetectionStrategy.OnPush,
+        template: 'Value: {{ value }}',
+      })
+      class DisplayOnPushComponent {
+        @Input() value: number = -1;
+      }
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const valueSignal = signal(10);
+
+      const componentRef = createComponent(DisplayOnPushComponent, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('value', valueSignal)],
+      });
+
+      componentRef.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('Value: 10');
+
+      valueSignal.set(20);
+      componentRef.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('Value: 20');
     });
   });
 

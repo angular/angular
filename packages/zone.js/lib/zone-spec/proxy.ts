@@ -21,7 +21,7 @@ export class ProxyZoneSpec implements ZoneSpec {
 
   private tasks: Task[] = [];
 
-  static get(): ProxyZoneSpec {
+  static get(): ProxyZoneSpec | undefined {
     return Zone.current.get('ProxyZoneSpec');
   }
 
@@ -30,10 +30,11 @@ export class ProxyZoneSpec implements ZoneSpec {
   }
 
   static assertPresent(): ProxyZoneSpec {
-    if (!ProxyZoneSpec.isLoaded()) {
+    const spec = ProxyZoneSpec.get();
+    if (spec === undefined) {
       throw new Error(`Expected to be running in 'ProxyZone', but it was not found.`);
     }
-    return ProxyZoneSpec.get();
+    return spec;
   }
 
   constructor(private defaultSpecDelegate: ZoneSpec | null = null) {

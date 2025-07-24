@@ -105,6 +105,19 @@ async function main(packageName: string) {
   git.run(['add', '-A'], {cwd: tmpDir});
   git.run(['commit', '-m', 'Delete skipped files for diff'], {cwd: tmpDir});
 
+  // Remove all old content, so that e.g. potential file renames or new files are properly
+  // detected.
+  const removeAllOldContentTasks: Promise<void>[] = [];
+  for (const subentry of await glob('**/*', {
+    dot: true,
+    cwd: tmpDir,
+    onlyFiles: true,
+    ignore: ['.git'],
+  })) {
+    removeAllOldContentTasks.push(fs.promises.rm(path.join(tmpDir, subentry), {maxRetries: 3}));
+  }
+  await Promise.all(removeAllOldContentTasks);
+
   const copyTasks: Promise<void>[] = [];
   for (const subentry of await glob('**/*', {
     dot: true,
@@ -126,7 +139,9 @@ async function main(packageName: string) {
 
   git.run(['config', 'core.filemode', 'false'], {cwd: tmpDir});
 
-  const diff = git.run(['diff', '--color'], {cwd: tmpDir}).stdout;
+  // Add all files so that new untracked files are also visible in the diff.
+  git.run(['add', '-A'], {cwd: tmpDir});
+  const diff = git.run(['diff', 'HEAD', '--color'], {cwd: tmpDir}).stdout;
 
   console.info('\n\n----- Diff ------');
   console.info(diff);

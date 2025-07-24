@@ -7,6 +7,7 @@ ng_integration_test(
         "yarn ng build",
         "node ./dist/ssr-benchmarks/server/server.mjs",
     ],
+    tags = ["manual"],
 )
 
 ## This target is intended to run the benchmark in a browser
@@ -17,12 +18,11 @@ ng_integration_test(
     commands = [
         "yarn install --cache-folder ./.yarn_local_cache",
 
-        # The patch only applies for the browser target (to remove the DOM Emulation polyfills and browser incompatible code)
-        "yarn patch",
         #
         "NG_BUILD_MANGLE=0 yarn ng build --configuration production,browser",
         "yarn http-server ./dist",
     ],
+    tags = ["manual"],
 )
 
 # This target is mostly intended for investigating via the devTools using the flamechart
@@ -30,14 +30,12 @@ ng_integration_test(
     name = "run_browser_emulated_dom",
     commands = [
         "yarn install --cache-folder ./.yarn_local_cache",
-        # We keep the emulated dom in this target
-        # But still need to drop the node import which doesn't work in browsers.
-        "git apply patches/@angular-devkit+build-angular++@angular+build+19.0.0-next.6+require.patch",
 
         # We keep the symbols with the NG_BUILD_MANGLE flag
         "NG_BUILD_MANGLE=0 yarn ng build",
         "yarn http-server ./dist",
     ],
+    tags = ["manual"],
 )
 
 # This is a target to investigate with deopt explorer (https://github.com/microsoft/deoptexplorer-vscode)
@@ -58,4 +56,5 @@ ng_integration_test(
             --detailed-line-info \
             ./dist/ssr-benchmarks/server/server.mjs narrowRun",
     ],
+    tags = ["manual"],
 )

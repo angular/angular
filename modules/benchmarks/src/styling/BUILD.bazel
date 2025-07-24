@@ -1,14 +1,14 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-ts_library(
+ts_project(
     name = "tests_lib",
     testonly = True,
     srcs = ["styling_perf.spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "@npm//protractor",
+        "//modules:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
     ],
 )

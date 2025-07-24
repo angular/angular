@@ -16,6 +16,7 @@ import {
   afterRenderEffect,
   computed,
   inject,
+  input,
   linkedSignal,
   signal,
   viewChild,
@@ -51,6 +52,9 @@ export const LARGE_EDITOR_HEIGHT_BREAKPOINT = 550;
   providers: [EditorUiState],
 })
 export class EmbeddedEditor {
+  // Prevents from adding, removing or renaming files
+  restrictedMode = input<boolean>(false);
+
   readonly editorContainer = viewChild<ElementRef<HTMLDivElement>>('editorContainer');
   readonly matTabGroup = viewChild(MatTabGroup);
 

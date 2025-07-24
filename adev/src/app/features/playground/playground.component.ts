@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isPlatformBrowser, NgComponentOutlet} from '@angular/common';
+import {isPlatformServer, NgComponentOutlet} from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -40,11 +39,11 @@ import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playgro
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class PlaygroundComponent implements AfterViewInit {
+export default class PlaygroundComponent {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
   readonly templates = PLAYGROUND_ROUTE_DATA_JSON.templates;
   readonly defaultTemplate = PLAYGROUND_ROUTE_DATA_JSON.defaultTemplate;
@@ -54,8 +53,8 @@ export default class PlaygroundComponent implements AfterViewInit {
   protected embeddedEditorComponent?: Type<unknown>;
   protected selectedTemplate: PlaygroundTemplate = this.defaultTemplate;
 
-  ngAfterViewInit(): void {
-    if (!this.isBrowser) {
+  constructor() {
+    if (this.isServer) {
       return;
     }
 

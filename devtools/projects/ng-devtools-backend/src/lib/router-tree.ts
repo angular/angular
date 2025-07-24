@@ -7,9 +7,12 @@
  */
 
 import {Route} from '../../../protocol';
+import type {Route as AngularRoute} from '@angular/router';
 
-// todo(aleksanderbodurri): type these properly
-type AngularRoute = any;
+export type RoutePropertyType = RouteGuard | 'providers' | 'component';
+
+export type RouteGuard = 'canActivate' | 'canActivateChild' | 'canDeactivate' | 'canMatch';
+
 type Routes = any;
 type Router = any;
 
@@ -24,22 +27,24 @@ export function parseRoutes(router: Router): Route {
     children: rootChildren ? assignChildrenToParent(null, rootChildren, currentUrl) : [],
     isAux: false,
     isLazy: false,
+    data: [],
     isActive: currentUrl === '/',
   };
 
   return root;
 }
 
-function getGuardNames(child: AngularRoute): string[] | null {
-  const guards = child?.canActivate || [];
+function getGuardNames(child: AngularRoute, type: RouteGuard): string[] {
+  const guards = child?.[type] || [];
+
   const names = guards.map((g: any) => g.name);
-  return names || null;
+  return names || [];
 }
 
-function getProviderName(child: any): string[] | null {
+function getProviderName(child: any): string[] {
   const providers = child?.providers || [];
   const names = providers.map((p: any) => p.name);
-  return names || null;
+  return names || [];
 }
 
 function assignChildrenToParent(
@@ -58,15 +63,21 @@ function assignChildrenToParent(
     // only found in aux routes, otherwise property will be undefined
     const isAux = Boolean(child.outlet);
     const isLazy = Boolean(child.loadChildren || child.loadComponent);
-    const isActive = routePath === currentUrl;
+
+    const pathWithoutParams = routePath.split('/:')[0];
+    const isActive = currentUrl?.startsWith(pathWithoutParams);
 
     const routeConfig: Route = {
-      title: child.title,
+      title: typeof child.title === 'string' ? child.title : '[Function]',
       pathMatch: child.pathMatch,
       component: childName,
-      canActivateGuards: getGuardNames(child),
+      canActivateGuards: getGuardNames(child, 'canActivate'),
+      canActivateChildGuards: getGuardNames(child, 'canActivateChild'),
+      canMatchGuards: getGuardNames(child, 'canMatch'),
+      canDeactivateGuards: getGuardNames(child, 'canDeactivate'),
       providers: getProviderName(child),
       path: routePath,
+      data: [],
       isAux,
       isLazy,
       isActive,
@@ -101,4 +112,76 @@ function childRouteName(child: AngularRoute): string {
   } else {
     return 'no-name-route';
   }
+}
+
+/**
+ *  Get the element reference by type & name from the routes array. Called recursively to search through all children.
+ * @param type - type of element to search for (canActivate, canActivateChild, canDeactivate, canLoad, providers)
+ * @param routes - array of routes to search through
+ * @param name - name of the element to search for refers to the name of the guard or provider
+ * @returns - the element reference if found, otherwise null
+ */
+export function getElementRefByName(
+  type: RoutePropertyType,
+  routes: AngularRoute[],
+  name: string,
+): any | null {
+  for (const element of routes) {
+    const routeGuard = type as RouteGuard;
+    if (element[routeGuard]) {
+      for (const guard of element[routeGuard]) {
+        // TODO: improve this, not every guard has a name property
+        if ((guard as any).name === name) {
+          return guard;
+        }
+      }
+    }
+
+    // _loadedRoutes is internal, we can't acess it with the dot notation
+    const loadedRoutes = (element as any)?.['_loadedRoutes'] as AngularRoute[] | undefined;
+    if (loadedRoutes) {
+      const result = getElementRefByName(type, loadedRoutes, name);
+      if (result !== null) {
+        return result;
+      }
+    }
+
+    if (element?.children) {
+      const result = getElementRefByName(type, element.children, name);
+      if (result !== null) {
+        return result;
+      }
+    }
+  }
+}
+
+/**
+ *  Get the componet reference by name from the routes array. Called recursively to search through all children.
+ * @param routes - array of routes to search through
+ * @param name - name of the component to search for
+ * @returns - the element reference if found, otherwise null
+ */
+export function getComponentRefByName(routes: AngularRoute[], name: string): any | null {
+  for (const element of routes) {
+    if (element?.component?.name === name) {
+      return element.component;
+    }
+
+    // _loadedRoutes is internal, we can't acess it with the dot notation
+    const loadedRoutes = (element as any)?.['_loadedRoutes'] as AngularRoute[] | undefined;
+    if (loadedRoutes) {
+      const result = getComponentRefByName(loadedRoutes, name);
+      if (result !== null) {
+        return result;
+      }
+    }
+
+    if (element?.children) {
+      const result = getComponentRefByName(element.children, name);
+      if (result !== null) {
+        return result;
+      }
+    }
+  }
+  return null;
 }

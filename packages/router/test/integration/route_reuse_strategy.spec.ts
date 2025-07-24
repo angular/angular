@@ -20,7 +20,7 @@ import {
 } from '../../src';
 import {Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '@angular/platform-browser';
 import {
   BlankCmp,
   RootCmp,

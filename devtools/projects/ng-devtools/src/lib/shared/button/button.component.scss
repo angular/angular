@@ -1,0 +1,32 @@
+@use '../../../styles/typography';
+
+:host {
+  @extend %body-01;
+  border: none;
+  cursor: pointer;
+  padding: 0.375rem 0.75rem;
+
+  &.size-mid {
+    padding: 0.25rem 0.75rem;
+  }
+
+  &.size-compact {
+    padding: 0.1rem 0.5rem;
+  }
+
+  &.type-primary {
+    border-radius: 2rem;
+    background: var(--dynamic-blue-02);
+    color: var(--septenary-contrast);
+  }
+
+  &.type-icon {
+    background: transparent;
+    border: none;
+    padding: 0;
+
+    &.size-compact {
+      padding: 0;
+    }
+  }
+}

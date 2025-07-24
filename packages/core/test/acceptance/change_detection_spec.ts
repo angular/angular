@@ -30,13 +30,21 @@ import {
   QueryList,
   ɵRuntimeError as RuntimeError,
   ɵRuntimeErrorCode as RuntimeErrorCode,
+  signal,
   TemplateRef,
   Type,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
 } from '../../src/core';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '../../testing';
+import {
+  ComponentFixture,
+  ComponentFixtureAutoDetect,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '../../testing';
+import {By} from '@angular/platform-browser';
 
 describe('change detection', () => {
   it('can provide zone and zoneless (last one wins like any other provider) in TestBed', () => {
@@ -51,7 +59,6 @@ describe('change detection', () => {
     @Directive({
       selector: '[viewManipulation]',
       exportAs: 'vm',
-      standalone: false,
     })
     class ViewManipulation {
       constructor(
@@ -76,12 +83,11 @@ describe('change detection', () => {
       template: `
         <ng-template #vm="vm" viewManipulation>{{'change-detected'}}</ng-template>
       `,
-      standalone: false,
+      imports: [ViewManipulation],
     })
     class TestCmpt {}
 
     it('should detect changes for embedded views inserted through ViewContainerRef', () => {
-      TestBed.configureTestingModule({declarations: [TestCmpt, ViewManipulation]});
       const fixture = TestBed.createComponent(TestCmpt);
       const vm = fixture.debugElement.childNodes[0].references['vm'] as ViewManipulation;
 
@@ -92,7 +98,6 @@ describe('change detection', () => {
     });
 
     it('should detect changes for embedded views attached to ApplicationRef', () => {
-      TestBed.configureTestingModule({declarations: [TestCmpt, ViewManipulation]});
       const fixture = TestBed.createComponent(TestCmpt);
       const vm = fixture.debugElement.childNodes[0].references['vm'] as ViewManipulation;
 
@@ -145,7 +150,7 @@ describe('change detection', () => {
           <div>{{increment('componentView')}}</div>
           <ng-template #vm="vm" viewManipulation>{{increment('embeddedView')}}</ng-template>
         `,
-        standalone: false,
+        imports: [ViewManipulation],
       })
       class App {
         increment(counter: 'componentView' | 'embeddedView') {
@@ -153,7 +158,6 @@ describe('change detection', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [App, ViewManipulation]});
       const fixture = TestBed.createComponent(App);
       const vm: ViewManipulation = fixture.debugElement.childNodes[1].references['vm'];
       const viewRef = vm.insertIntoVcRef();
@@ -175,7 +179,7 @@ describe('change detection', () => {
       @Component({
         template: `<ng-template #vm="vm" viewManipulation></ng-template>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
-        standalone: false,
+        imports: [ViewManipulation],
       })
       class App {}
 
@@ -185,7 +189,6 @@ describe('change detection', () => {
           <div>{{increment()}}</div>
         `,
         changeDetection: ChangeDetectionStrategy.OnPush,
-        standalone: false,
       })
       class DynamicComp {
         increment() {
@@ -194,7 +197,6 @@ describe('change detection', () => {
         noop() {}
       }
 
-      TestBed.configureTestingModule({declarations: [App, ViewManipulation, DynamicComp]});
       const fixture = TestBed.createComponent(App);
       const vm: ViewManipulation = fixture.debugElement.childNodes[0].references['vm'];
       const componentRef = vm.vcRef.createComponent(DynamicComp);
@@ -219,6 +221,47 @@ describe('change detection', () => {
       fixture.detectChanges();
 
       expect(counter).toBe(3);
+    });
+
+    it('updating signal inside an EmbeddedView in a child component with OnPush inside a parent component with Default CD', async () => {
+      const data = signal('initial');
+
+      @Component({
+        selector: 'child',
+        template: '<ng-container *viewManipulation>{{data()}}</ng-container>',
+        imports: [ViewManipulation],
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class ChildComponent {
+        data = data;
+      }
+
+      @Component({
+        template: '<child/>',
+        changeDetection: ChangeDetectionStrategy.Default,
+        imports: [ChildComponent],
+      })
+      class ParentComponent {}
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ComponentFixtureAutoDetect, useValue: true}],
+      });
+
+      const fixture = TestBed.createComponent(ParentComponent);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toBe('');
+
+      fixture.debugElement
+        .queryAllNodes(By.directive(ViewManipulation))[0]
+        .injector.get(ViewManipulation)
+        .insertIntoVcRef();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toBe(data());
+
+      data.set('new');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toBe(data());
     });
   });
 
@@ -1654,15 +1697,6 @@ describe('change detection', () => {
       );
     });
 
-    it('should include field name in case of property interpolation', () => {
-      const message = `Previous value for 'id': 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'`;
-      expect(() =>
-        initWithTemplate(
-          '<div id="Expressions: {{ a }} and {{ unstableStringExpression }}!"></div>',
-        ),
-      ).toThrowError(new RegExp(message));
-    });
-
     it('should include field name in case of attribute binding', () => {
       const message = `Previous value for 'attr.id': 'initial'. Current value: 'changed'`;
       expect(() =>
@@ -1671,7 +1705,7 @@ describe('change detection', () => {
     });
 
     it('should include field name in case of attribute interpolation', () => {
-      const message = `Previous value for 'attr.id': 'Expressions: a and initial!'. Current value: 'Expressions: a and changed!'`;
+      const message = `Expression has changed after it was checked. Previous value: 'initial'. Current value: 'changed'`;
       expect(() =>
         initWithTemplate(
           '<div attr.id="Expressions: {{ a }} and {{ unstableStringExpression }}!"></div>',

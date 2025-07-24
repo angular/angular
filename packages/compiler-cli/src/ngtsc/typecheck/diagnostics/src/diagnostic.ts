@@ -18,8 +18,15 @@ import {
   SourceMapping,
 } from '../../api';
 
+interface DeprecatedDiagnosticInfo {
+  reportsDeprecated: {} | undefined;
+  relatedMessages: ts.DiagnosticRelatedInformation[] | undefined;
+}
+
 /**
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
+ *
+ * @param deprecatedDiagInfo Optional information about deprecation and related messages.
  */
 export function makeTemplateDiagnostic(
   id: TypeCheckId,
@@ -34,11 +41,11 @@ export function makeTemplateDiagnostic(
     end: number;
     sourceFile: ts.SourceFile;
   }[],
+  deprecatedDiagInfo?: DeprecatedDiagnosticInfo,
 ): TemplateDiagnostic {
   if (mapping.type === 'direct') {
-    let relatedInformation: ts.DiagnosticRelatedInformation[] | undefined = undefined;
+    let relatedInformation: ts.DiagnosticRelatedInformation[] | undefined = [];
     if (relatedMessages !== undefined) {
-      relatedInformation = [];
       for (const relatedMessage of relatedMessages) {
         relatedInformation.push({
           category: ts.DiagnosticCategory.Message,
@@ -50,6 +57,11 @@ export function makeTemplateDiagnostic(
         });
       }
     }
+
+    if (deprecatedDiagInfo !== undefined) {
+      relatedInformation.push(...(deprecatedDiagInfo.relatedMessages ?? []));
+    }
+
     // For direct mappings, the error is shown inline as ngtsc was able to pinpoint a string
     // constant within the `@Component` decorator for the template. This allows us to map the error
     // directly into the bytes of the source file.
@@ -64,6 +76,7 @@ export function makeTemplateDiagnostic(
       start: span.start.offset,
       length: span.end.offset - span.start.offset,
       relatedInformation,
+      reportsDeprecated: deprecatedDiagInfo?.reportsDeprecated,
     };
   } else if (mapping.type === 'indirect' || mapping.type === 'external') {
     // For indirect mappings (template was declared inline, but ngtsc couldn't map it directly
@@ -114,7 +127,23 @@ export function makeTemplateDiagnostic(
         start: mapping.node.getStart(),
         length: mapping.node.getEnd() - mapping.node.getStart(),
         relatedInformation,
+        reportsDeprecated: deprecatedDiagInfo?.reportsDeprecated,
       };
+    }
+
+    let typeForMessage: string;
+
+    if (category === ts.DiagnosticCategory.Warning) {
+      typeForMessage = 'Warning';
+    } else if (category === ts.DiagnosticCategory.Suggestion) {
+      typeForMessage = 'Suggestion';
+    } else if (category === ts.DiagnosticCategory.Message) {
+      typeForMessage = 'Message';
+    } else {
+      typeForMessage = 'Error';
+    }
+    if (deprecatedDiagInfo !== undefined) {
+      relatedInformation.push(...(deprecatedDiagInfo.relatedMessages ?? []));
     }
 
     relatedInformation.push({
@@ -125,7 +154,7 @@ export function makeTemplateDiagnostic(
       // and getEnd() are used because they don't include surrounding whitespace.
       start: mapping.node.getStart(),
       length: mapping.node.getEnd() - mapping.node.getStart(),
-      messageText: `Error occurs in the template of component ${componentName}.`,
+      messageText: `${typeForMessage} occurs in the template of component ${componentName}.`,
     });
 
     return {
@@ -140,6 +169,7 @@ export function makeTemplateDiagnostic(
       length: span.end.offset - span.start.offset,
       // Show a secondary message indicating the component whose template contains the error.
       relatedInformation,
+      reportsDeprecated: deprecatedDiagInfo?.reportsDeprecated,
     };
   } else {
     throw new Error(`Unexpected source mapping type: ${(mapping as {type: string}).type}`);

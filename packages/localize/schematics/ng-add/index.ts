@@ -96,7 +96,10 @@ function addTypeScriptConfigTypes(projectName: string): Rule {
         if (typeof value === 'string') {
           addTripleSlashType(host, value);
         }
-      } else if (target.builder === AngularBuilder.Application) {
+      } else if (
+        target.builder === AngularBuilder.Application ||
+        target.builder === AngularBuilder.BuildApplication
+      ) {
         const value = target.options?.['browser'];
         if (typeof value === 'string') {
           addTripleSlashType(host, value);

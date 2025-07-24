@@ -67,19 +67,11 @@ $transition: 200ms linear;
     .banners-layer {
       z-index: 10;
 
-      .adev-banner {
+      .adev-banner-container {
         display: flex;
-        align-items: center;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 0.5rem;
-        border: 1px solid var(--senary-contrast);
-        background: var(--page-background);
         position: absolute;
-        border-radius: 0.25rem;
-        padding: 10px;
-        max-width: 100%;
-        width: fit-content;
-        box-sizing: border-box;
         transition:
           background 0.3s ease,
           border 0.3s ease,
@@ -88,12 +80,10 @@ $transition: 200ms linear;
         left: calc(var(--layout-padding) + var(--primary-nav-width));
 
         @include mq.for-tablet-landscape-down {
-          & {
-            top: 6rem;
-            left: var(--layout-padding);
-            /* Assuming the container width is identical to the viewport width (mobile device). */
-            max-width: calc(100% - var(--layout-padding) * 2);
-          }
+          top: 6rem;
+          left: var(--layout-padding);
+          /* Assuming the container width is identical to the viewport width (mobile device). */
+          max-width: calc(100% - var(--layout-padding) * 2);
         }
 
         @include mq.for-phone-only {
@@ -101,6 +91,20 @@ $transition: 200ms linear;
             top: 5rem;
           }
         }
+      }
+
+      .adev-banner {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        border: 1px solid var(--senary-contrast);
+        background: var(--page-background);
+        border-radius: 0.25rem;
+        padding: 10px;
+        max-width: 100%;
+        width: fit-content;
+        box-sizing: border-box;
 
         h1,
         p {
@@ -198,7 +202,7 @@ $transition: 200ms linear;
           }
         }
 
-        @include mq.for-big-desktop-up {
+        @include mq.for-extra-large-desktop-up {
           & {
             transform: scale(0.5);
           }

@@ -18,13 +18,13 @@ function $MyApp_Conditional_3_Template$(rf, ctx) {
   …
   function MyApp_Template(rf, ctx) {
 	if (rf & 1) {
-	  $r3$.ɵɵelementStart(0, "div");
+	  $r3$.ɵɵdomElementStart(0, "div");
 	  $r3$.ɵɵtext(1);
 	  $r3$.ɵɵconditionalCreate(2, MyApp_Conditional_2_Template, 1, 0);
 	  $r3$.ɵɵpipe(3, "test");
 	  $r3$.ɵɵpipe(4, "test");
 	  $r3$.ɵɵconditionalBranchCreate(5, MyApp_Conditional_5_Template, 1, 0)(6, MyApp_Conditional_6_Template, 1, 0);
-	  $r3$.ɵɵelementEnd();
+	  $r3$.ɵɵdomElementEnd();
 	}
 	if (rf & 2) {
 	  $r3$.ɵɵadvance();

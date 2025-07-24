@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "lib": ["es2020", "dom"],
+    "types": ["node"],
+    "declaration": true,
+    "sourceMap": true,
+  }
+}

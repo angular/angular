@@ -1,7 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -22,12 +19,9 @@ ng_project(
         "devtools-tabs.component.html",
         ":devtools_tabs_component_styles",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/core/src/util",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/@types/chrome",
         "//:node_modules/rxjs",
@@ -39,6 +33,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler:profiler_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree:router-tree_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update:tab-update_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/transfer-state:transfer-state_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
@@ -46,31 +41,25 @@ ng_project(
 ts_test_library(
     name = "devtools_tabs_test",
     srcs = ["devtools-tabs.spec.ts"],
-    interop_deps = [
-        "//packages/core",
-        ":devtools-tabs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
-        "//packages/core/src/util",
-        "//packages/core/testing",
-        "//packages/common",
-        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
-        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
-    ],
     deps = [
+        ":devtools-tabs_rjs",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
         "//:node_modules/tslib",
         "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer:directive-explorer_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update:tab-update_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
     deps = [
-        ":devtools_tabs_test",
-        "//packages/common/http",
-        "//packages/platform-browser/animations",
+        ":devtools_tabs_test_rjs",
     ],
 )

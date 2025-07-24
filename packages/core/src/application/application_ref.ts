@@ -318,12 +318,17 @@ export class ApplicationRef {
 
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
-  private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
+  private allTestViews: Set<InternalViewRef<unknown>> = new Set();
+  private autoDetectTestViews: Set<InternalViewRef<unknown>> = new Set();
+  private includeAllTestViews = false;
   /** @internal */
   afterTick = new Subject<void>();
   /** @internal */
   get allViews(): Array<InternalViewRef<unknown>> {
-    return [...this.externalTestViews.keys(), ...this._views];
+    return [
+      ...(this.includeAllTestViews ? this.allTestViews : this.autoDetectTestViews).keys(),
+      ...this._views,
+    ];
   }
 
   /**

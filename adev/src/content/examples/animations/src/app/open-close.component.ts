@@ -1,5 +1,5 @@
 // #docplaster
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {trigger, transition, state, animate, style, AnimationEvent} from '@angular/animations';
 
 // #docregion component, events1
@@ -58,7 +58,7 @@ import {trigger, transition, state, animate, style, AnimationEvent} from '@angul
 // #docregion events
 export class OpenCloseComponent {
   // #enddocregion events1, events, component
-  @Input() logging = false;
+  logging = input(false);
   // #docregion component
   isOpen = true;
 

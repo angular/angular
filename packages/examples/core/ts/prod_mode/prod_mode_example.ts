@@ -7,8 +7,7 @@
  */
 
 import {enableProdMode, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {MyComponent} from './my_component';
 
@@ -17,4 +16,4 @@ enableProdMode();
 @NgModule({imports: [BrowserModule], declarations: [MyComponent], bootstrap: [MyComponent]})
 export class AppModule {}
 
-platformBrowserDynamic().bootstrapModule(AppModule);
+platformBrowser().bootstrapModule(AppModule);

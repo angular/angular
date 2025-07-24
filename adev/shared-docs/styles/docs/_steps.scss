@@ -8,16 +8,19 @@
     padding-inline-start: var(--gutter);
     counter-reset: code-steps-list;
     list-style-type: none;
+
     li {
       position: relative;
     }
   }
+
   .docs-steps li h3 {
     font-size: 1.75rem;
     margin-block-start: 0;
     margin-block-end: 0.5rem;
     line-height: 2.5rem;
   }
+
   .docs-step-number {
     counter-increment: code-steps-list;
     display: block;
@@ -26,6 +29,7 @@
     left: calc(var(--gutter) * -1);
     top: 2.7rem;
     bottom: 0;
+
     &::before {
       display: flex;
       align-items: center;
@@ -41,10 +45,12 @@
       background-clip: content-box, border-box;
       position: sticky;
       top: 2rem;
+
       // adjust for tablet nav bar height
       @include mq.for-tablet-landscape-down {
         top: calc(1rem + 75px);
       }
+
       // adjust for mobile nav bar height
       @include mq.for-phone-only {
         top: calc(1rem + 55px);

@@ -33,9 +33,9 @@ Angular's compiler produces a [dynamic import](https://developer.mozilla.org/en-
 
 ### `@defer`
 
-This is the primary block that defines the section of content that is lazily loaded. It is not rendered initially– deferred content loads and renders once the specified [trigger](/guide/defer#triggers) occurs or the `when` condition is met.
+This is the primary block that defines the section of content that is lazily loaded. It is not rendered initially– deferred content loads and renders once the specified [trigger](/guide/templates/defer#triggers) occurs or the `when` condition is met.
 
-By default, a @defer block is triggered when the browser state becomes [idle](/guide/defer#idle).
+By default, a @defer block is triggered when the browser state becomes [idle](/guide/templates/defer#idle).
 
 ```angular-html
 @defer {
@@ -57,7 +57,7 @@ The `@placeholder` is an optional block that declares what content to show befor
 }
 ```
 
-While optional, certain triggers may require the presence of either a `@placeholder` or a [template reference variable](/guide/templates/variables#template-reference-variables) to function. See the [Triggers](/guide/defer#triggers) section for more details.
+While optional, certain triggers may require the presence of either a `@placeholder` or a [template reference variable](/guide/templates/variables#template-reference-variables) to function. See the [Triggers](/guide/templates/defer#triggers) section for more details.
 
 Angular replaces placeholder content with the main content once loading is complete. You can use any content in the placeholder section including plain HTML, components, directives, and pipes. Keep in mind the _dependencies of the placeholder block are eagerly loaded_.
 
@@ -191,7 +191,7 @@ By default, the placeholder acts as the interaction element. Placeholders used t
 }
 ```
 
-Alternatively, you can specify a [template reference variable](/guide/templates/variables) in the same template as the `@defer` block as the element that is watched to enter the viewport. This variable is passed in as a parameter on the viewport trigger.
+Alternatively, you can specify a [template reference variable](/guide/templates/variables) in the same template as the `@defer` block as the element that is watched for interactions. This variable is passed in as a parameter on the viewport trigger.
 
 ```angular-html
 <div #greeting>Hello!</div>

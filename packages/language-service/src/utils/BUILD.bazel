@@ -1,18 +1,18 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//packages/language-service:__subpackages__"])
 
-ts_library(
+ts_project(
     name = "utils",
     srcs = glob(["*.ts"]),
     deps = [
-        "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/core",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/metadata",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/typecheck/api",
-        "@npm//typescript",
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/annotations:annotations_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:core_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/metadata:metadata_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
     ],
 )

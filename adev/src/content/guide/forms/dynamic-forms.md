@@ -86,7 +86,7 @@ The `DynamicFormQuestionComponent` creates form groups and populates them with c
 
 The goal of the `DynamicFormQuestionComponent` is to present question types defined in your model.
 You only have two types of questions at this point but you can imagine many more.
-The `ngSwitch` statement in the template determines which type of question to display.
+The `@switch` block in the template determines which type of question to display.
 The switch uses directives with the [`formControlName`](api/forms/FormControlName "FormControlName directive API reference") and [`formGroup`](api/forms/FormGroupDirective "FormGroupDirective API reference") selectors.
 Both directives are defined in `ReactiveFormsModule`.
 
@@ -98,7 +98,7 @@ In a real-world app, the service might fetch data from a backend system.
 The key point, however, is that you control the hero job-application questions entirely through the objects returned from `QuestionService`.
 To maintain the questionnaire as requirements change, you only need to add, update, and remove objects from the `questions` array.
 
-The `QuestionService` supplies a set of questions in the form of an array bound to `@Input()` questions.
+The `QuestionService` supplies a set of questions in the form of an array bound to `input()` questions.
 
 <docs-code header="src/app/question.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question.service.ts"/>
 

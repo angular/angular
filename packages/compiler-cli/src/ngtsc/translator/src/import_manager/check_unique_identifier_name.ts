@@ -29,12 +29,17 @@ export function createGenerateUniqueIdentifierHelper(): ImportManagerConfig['gen
 
   return (sourceFile: ts.SourceFile, symbolName: string) => {
     const sf = sourceFile as SourceFileWithIdentifiers;
-    if (sf.identifiers === undefined) {
+
+    // NOTE: Typically accesses to TS fields are not renamed because the 1P externs
+    // produced from TypeScript are ensuring public fields are considered "external".
+    // See: https://developers.google.com/closure/compiler/docs/externs-and-exports.
+    // This property is internal, so not part of the externs— so we need be cautious
+    if (sf['identifiers'] === undefined) {
       throw new Error('Source file unexpectedly lacks map of parsed `identifiers`.');
     }
 
     const isUniqueIdentifier = (name: string) =>
-      !sf.identifiers!.has(name) && !isGeneratedIdentifier(sf, name);
+      !sf['identifiers']!.has(name) && !isGeneratedIdentifier(sf, name);
 
     if (isUniqueIdentifier(symbolName)) {
       markIdentifierAsGenerated(sf, symbolName);

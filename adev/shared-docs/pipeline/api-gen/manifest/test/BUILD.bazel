@@ -1,7 +1,6 @@
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
 load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
 load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
-load("//tools:defaults.bzl", "jasmine_node_test")
 
 generate_api_manifest(
     name = "test",
@@ -27,19 +26,16 @@ ts_project(
     srcs = [
         "manifest.spec.mts",
     ],
-    interop_deps = [
-        "//packages/compiler-cli",
-    ],
     deps = [
+        "//adev:node_modules/@angular/compiler-cli",
         "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib_rjs",
     ],
 )
 
-jasmine_node_test(
+zoneless_jasmine_test(
     name = "unit_tests",
     data = [
-        "//packages:package_json",
-        "//packages/compiler-cli",
+        ":unit_test_lib_rjs",
+        "//packages/compiler-cli:compiler-cli_rjs",
     ],
-    deps = [":unit_test_lib"],
 )

@@ -10,10 +10,10 @@ import {
   AST,
   ASTWithName,
   ASTWithSource,
+  Binary,
   BindingPipe,
   ParseSourceSpan,
   PropertyRead,
-  PropertyWrite,
   R3Identifiers,
   SafePropertyRead,
   TmplAstBoundAttribute,
@@ -65,7 +65,7 @@ import {
   hasExpressionIdentifier,
 } from './comments';
 import {TypeCheckData} from './context';
-import {isAccessExpression} from './ts_util';
+import {isAccessExpression, isDirectiveDeclaration} from './ts_util';
 import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
 
 /**
@@ -212,15 +212,6 @@ export class SymbolBuilder {
     templateNode: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
   ): DirectiveSymbol[] {
     const elementSourceSpan = templateNode.startSourceSpan ?? templateNode.sourceSpan;
-    const tcbSourceFile = this.typeCheckBlock.getSourceFile();
-    // directives could be either:
-    // - var _t1: TestDir /*T:D*/ = null! as TestDir;
-    // - var _t1 /*T:D*/ = _ctor1({});
-    const isDirectiveDeclaration = (node: ts.Node): node is ts.TypeNode | ts.Identifier =>
-      (ts.isTypeNode(node) || ts.isIdentifier(node)) &&
-      ts.isVariableDeclaration(node.parent) &&
-      hasExpressionIdentifier(tcbSourceFile, node, ExpressionIdentifier.DIRECTIVE);
-
     const nodes = findAllMatchingNodes(this.typeCheckBlock, {
       withSpan: elementSourceSpan,
       filter: isDirectiveDeclaration,
@@ -261,6 +252,7 @@ export class SymbolBuilder {
           isStructural: meta.isStructural,
           isInScope: true,
           isHostDirective: false,
+          tsCompletionEntryInfos: null,
         };
 
         symbols.push(directiveSymbol);
@@ -309,6 +301,7 @@ export class SymbolBuilder {
           kind: SymbolKind.Directive,
           isStructural: meta.isStructural,
           isInScope: true,
+          tsCompletionEntryInfos: null,
         };
 
         symbols.push(directiveSymbol);
@@ -621,6 +614,7 @@ export class SymbolBuilder {
       ngModule,
       isHostDirective: false,
       isInScope: true, // TODO: this should always be in scope in this context, right?
+      tsCompletionEntryInfos: null,
     };
   }
 
@@ -800,13 +794,16 @@ export class SymbolBuilder {
 
     let withSpan = expression.sourceSpan;
 
-    // The `name` part of a `PropertyWrite` and `ASTWithName` do not have their own
+    // The `name` part of a property write and `ASTWithName` do not have their own
     // AST so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
     // Also skipping SafePropertyReads as it breaks nullish coalescing not nullable extended diagnostic
     if (
-      expression instanceof PropertyWrite ||
-      (expression instanceof ASTWithName && !(expression instanceof SafePropertyRead))
+      expression instanceof Binary &&
+      Binary.isAssignmentOperation(expression.operation) &&
+      expression.left instanceof PropertyRead
     ) {
+      withSpan = expression.left.nameSpan;
+    } else if (expression instanceof ASTWithName && !(expression instanceof SafePropertyRead)) {
       withSpan = expression.nameSpan;
     }
 

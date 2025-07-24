@@ -7,7 +7,7 @@
  */
 
 import {EmptyTree, Tree} from '@angular-devkit/schematics';
-import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
+import {SchematicTestRunner} from '@angular-devkit/schematics/testing/index.js';
 import {runfiles} from '@bazel/runfiles';
 import ts from 'typescript';
 

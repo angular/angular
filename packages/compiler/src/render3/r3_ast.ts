@@ -133,7 +133,7 @@ export class BoundEvent implements Node {
     const target: string | null =
       event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
     const phase: string | null =
-      event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
+      event.type === ParsedEventType.LegacyAnimation ? event.targetOrPhase : null;
     if (event.keySpan === undefined) {
       throw new Error(
         `Unexpected state: keySpan must be defined for bound event but was not for ${event.name}: ${event.sourceSpan}`,
@@ -169,6 +169,7 @@ export class Element implements Node {
     public sourceSpan: ParseSourceSpan,
     public startSourceSpan: ParseSourceSpan,
     public endSourceSpan: ParseSourceSpan | null,
+    readonly isVoid: boolean,
     public i18n?: I18nMeta,
   ) {}
   visit<Result>(visitor: Visitor<Result>): Result {

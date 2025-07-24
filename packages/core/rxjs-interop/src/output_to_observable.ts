@@ -24,9 +24,12 @@ export function outputToObservable<T>(ref: OutputRef<T>): Observable<T> {
     // Complete the observable upon directive/component destroy.
     // Note: May be `undefined` if an `EventEmitter` is declared outside
     // of an injection context.
-    destroyRef?.onDestroy(() => observer.complete());
+    const unregisterOnDestroy = destroyRef?.onDestroy(() => observer.complete());
 
     const subscription = ref.subscribe((v) => observer.next(v));
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      unregisterOnDestroy?.();
+    };
   });
 }

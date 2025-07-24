@@ -11,8 +11,8 @@ import {
   FileSystem,
   getFileSystem,
   setFileSystem,
+  InvalidFileSystem,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
-import {InvalidFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/src/invalid_file_system';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
 import path from 'path';
@@ -414,14 +414,14 @@ runInNativeFileSystem(() => {
             `        <context-group purpose="location">`,
             // These source file paths are due to how Bazel TypeScript compilation source-maps
             // work
-            `          <context context-type="sourcefile">../packages/localize/tools/test/extract/integration/test_files/src/a.ts</context>`,
+            `          <context context-type="sourcefile">test_files/src/a.ts</context>`,
             `          <context context-type="linenumber">3</context>`,
             `        </context-group>`,
             `      </trans-unit>`,
             `      <trans-unit id="7829869508202074508" datatype="html">`,
             `        <source>Message in <x id="b-file" equiv-text="file"/>!</source>`,
             `        <context-group purpose="location">`,
-            `          <context context-type="sourcefile">../packages/localize/tools/test/extract/integration/test_files/src/b.ts</context>`,
+            `          <context context-type="sourcefile">test_files/src/b.ts</context>`,
             `          <context context-type="linenumber">3</context>`,
             `        </context-group>`,
             `      </trans-unit>`,

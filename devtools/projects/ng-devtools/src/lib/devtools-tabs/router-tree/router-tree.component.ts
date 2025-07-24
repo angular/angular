@@ -6,13 +6,34 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
-import {afterNextRender, Component, effect, input, viewChild} from '@angular/core';
-import {MatInputModule} from '@angular/material/input';
-import {Route} from '../../../../../protocol';
-import {RouterTreeVisualizer} from './router-tree-visualizer';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {TreeVisualizerHostComponent} from '../tree-visualizer-host/tree-visualizer-host.component';
+import {JsonPipe} from '@angular/common';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
+import {TreeVisualizerHostComponent} from '../../shared/tree-visualizer-host/tree-visualizer-host.component';
+import {MatIconModule} from '@angular/material/icon';
+import {ApplicationOperations} from '../../application-operations/index';
+import {RouteDetailsRowComponent} from './route-details-row.component';
+import {FrameManager} from '../../application-services/frame_manager';
+import {Events, MessageBus, Route} from '../../../../../protocol';
+import {SvgD3Node, TreeVisualizer} from '../../shared/tree-visualizer-host/tree-visualizer';
+import {
+  RouterTreeVisualizer,
+  RouterTreeD3Node,
+  transformRoutesIntoVisTree,
+  RouterTreeNode,
+  getRouteLabel,
+} from './router-tree-fns';
+import {ButtonComponent} from '../../shared/button/button.component';
+import {SplitComponent} from '../../shared/split/split.component';
+import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
 
 const DEFAULT_FILTER = /.^/;
 
@@ -20,8 +41,16 @@ const DEFAULT_FILTER = /.^/;
   selector: 'ng-router-tree',
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
-  imports: [CommonModule, MatInputModule, MatCheckboxModule, TreeVisualizerHostComponent],
-  standalone: true,
+  imports: [
+    JsonPipe,
+    TreeVisualizerHostComponent,
+    SplitComponent,
+    SplitAreaDirective,
+    MatIconModule,
+    RouteDetailsRowComponent,
+    ButtonComponent,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RouterTreeComponent {
   private routerTree = viewChild.required<TreeVisualizerHostComponent>('routerTree');
@@ -29,16 +58,26 @@ export class RouterTreeComponent {
   private routerTreeVisualizer!: RouterTreeVisualizer;
   private showFullPath = false;
 
+  private readonly messageBus = inject(MessageBus) as MessageBus<Events>;
+  private readonly appOperations = inject(ApplicationOperations);
+  private readonly frameManager = inject(FrameManager);
+
+  protected selectedRoute = signal<RouterTreeD3Node | null>(null);
+
   routes = input<Route[]>([]);
   snapToRoot = input(false);
 
+  private readonly visualizerReady = signal<boolean>(false);
+
   constructor() {
-    effect(() => {
-      this.renderGraph(this.routes());
+    effect(async () => {
+      if (this.visualizerReady()) {
+        this.renderGraph(this.routes());
+      }
     });
 
-    effect(() => {
-      if (this.snapToRoot()) {
+    effect(async () => {
+      if (this.visualizerReady() && this.snapToRoot()) {
         this.routerTreeVisualizer.snapToRoot(0.6);
       }
     });
@@ -60,9 +99,12 @@ export class RouterTreeComponent {
     const group = this.routerTree().group().nativeElement;
 
     this.routerTreeVisualizer?.cleanup?.();
-    this.routerTreeVisualizer = new RouterTreeVisualizer(container, group, {
+    this.routerTreeVisualizer = new TreeVisualizer(container, group, {
       nodeSeparation: () => 1,
+      d3NodeModifier: (n) => this.d3NodeModifier(n),
     });
+
+    this.visualizerReady.set(true);
   }
 
   searchRoutes(event: Event) {
@@ -73,6 +115,50 @@ export class RouterTreeComponent {
   }
 
   renderGraph(routes: Route[]): void {
-    this.routerTreeVisualizer?.render(routes[0], this.filterRegex, this.showFullPath);
+    const root = transformRoutesIntoVisTree(routes[0], this.showFullPath);
+    this.routerTreeVisualizer?.render(root);
+    this.routerTreeVisualizer?.onNodeClick((_, node) => {
+      this.selectedRoute.set(node);
+      setTimeout(() => {
+        this.routerTreeVisualizer?.snapToNode(node, 0.7);
+      });
+    });
+  }
+
+  viewSourceFromRouter(className: string, type: string): void {
+    this.appOperations.viewSourceFromRouter(className, type, this.frameManager.selectedFrame()!);
+  }
+
+  viewComponentSource(component: string): void {
+    this.appOperations.viewSourceFromRouter(
+      component,
+      'component',
+      this.frameManager.selectedFrame()!,
+    );
+  }
+
+  navigateRoute(route: any): void {
+    this.messageBus.emit('navigateRoute', [route.data.path]);
+  }
+
+  private d3NodeModifier(d3Node: SvgD3Node<RouterTreeNode>) {
+    d3Node.attr('class', (node: RouterTreeD3Node) => {
+      const name = getRouteLabel(node.data, node.parent?.data, this.showFullPath);
+      const isMatched = this.filterRegex.test(name.toLowerCase());
+
+      const nodeClasses = [d3Node.attr('class')];
+      if (node.data.isActive) {
+        nodeClasses.push('node-element');
+      } else if (node.data.isLazy) {
+        nodeClasses.push('node-lazy');
+      } else {
+        nodeClasses.push('node-environment');
+      }
+
+      if (isMatched) {
+        nodeClasses.push('node-search');
+      }
+      return nodeClasses.join(' ');
+    });
   }
 }

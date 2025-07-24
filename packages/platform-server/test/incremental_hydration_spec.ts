@@ -20,6 +20,11 @@ import {
   signal,
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+  ɵDEHYDRATED_BLOCK_REGISTRY as DEHYDRATED_BLOCK_REGISTRY,
+  ɵJSACTION_BLOCK_ELEMENT_MAP as JSACTION_BLOCK_ELEMENT_MAP,
+  ɵJSACTION_EVENT_CONTRACT as JSACTION_EVENT_CONTRACT,
+  ɵgetDocument as getDocument,
+  ɵTimerScheduler as TimerScheduler,
 } from '@angular/core';
 
 import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
@@ -34,21 +39,20 @@ import {
   verifyNodeWasNotHydrated,
   withDebugConsole,
 } from './hydration_utils';
-import {getDocument} from '@angular/core/src/render3/interfaces/document';
-import {isPlatformServer, Location, PlatformLocation} from '@angular/common';
+import {
+  isPlatformServer,
+  Location,
+  PlatformLocation,
+  ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
+} from '@angular/common';
 import {
   provideClientHydration,
   withEventReplay,
   withIncrementalHydration,
 } from '@angular/platform-browser';
 import {TestBed} from '@angular/core/testing';
-import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {DEHYDRATED_BLOCK_REGISTRY} from '@angular/core/src/defer/registry';
-import {JSACTION_BLOCK_ELEMENT_MAP} from '@angular/core/src/hydration/tokens';
-import {JSACTION_EVENT_CONTRACT} from '@angular/core/src/event_delegation_utils';
 import {provideRouter, RouterLink, RouterOutlet, Routes} from '@angular/router';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {TimerScheduler} from '@angular/core/src/defer/timer_scheduler';
 
 /**
  * Emulates a dynamic import promise.
@@ -87,7 +91,7 @@ describe('platform-server partial hydration integration', () => {
 
   beforeAll(async () => {
     globalThis.window = globalThis as unknown as Window & typeof globalThis;
-    await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
+    await import('../../core/primitives/event-dispatch/contract_bundle_min.js' as string);
   });
 
   afterAll(() => {
@@ -2687,6 +2691,71 @@ describe('platform-server partial hydration integration', () => {
         `<button id="click-me">Click me I'm dehydrated?</button>`,
       );
       expect(appHostNode.outerHTML).toContain(`<p id="hydrated">yup</p>`);
+    });
+  });
+
+  describe('misconfiguration', () => {
+    it('should throw an error when `withIncrementalHydration()` is missing in SSR setup', async () => {
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate never) {
+            <div>Hydrate never block</div>
+          }
+        `,
+      })
+      class SimpleComponent {}
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+
+      // Empty list, `withIncrementalHydration()` is not included intentionally.
+      const hydrationFeatures = () => [];
+
+      let producedError;
+      try {
+        await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      } catch (error: unknown) {
+        producedError = error;
+      }
+      expect((producedError as Error).message).toContain('NG0508');
+    });
+
+    it('should throw an error when `withIncrementalHydration()` is missing in hydration setup', async () => {
+      @Component({
+        selector: 'app',
+        template: `
+          @defer (hydrate never) {
+            <div>Hydrate never block</div>
+          }
+        `,
+      })
+      class SimpleComponent {}
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+
+      // Internal cleanup before we do server->client transition in this test.
+      resetTViewsFor(SimpleComponent);
+
+      ////////////////////////////////
+
+      let producedError;
+      try {
+        const doc = getDocument();
+        await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+          // Empty list, `withIncrementalHydration()` is not included intentionally.
+          hydrationFeatures: () => [],
+        });
+      } catch (error: unknown) {
+        producedError = error;
+      }
+      expect((producedError as Error).message).toContain('NG0508');
     });
   });
 });
