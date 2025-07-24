@@ -50,7 +50,6 @@ ts_project(
     ],
     deps = [
         "//:node_modules/@angular-devkit/schematics",
-        "//:node_modules/@bazel/runfiles",
         "//:node_modules/typescript",
     ],
 )

@@ -30,7 +30,6 @@ ts_project(
     tsconfig = "//tools:tsconfig_test",
     deps = [
         ":lib_rjs",
-        "//:node_modules/@bazel/runfiles",
         "//:node_modules/typescript",
     ],
 )

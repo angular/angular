@@ -10,8 +10,8 @@ import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
-import {runfiles} from '@bazel/runfiles';
 import fs from 'fs';
+import {resolve} from 'path';
 import shx from 'shelljs';
 
 describe('all migrations', () => {
@@ -21,7 +21,7 @@ describe('all migrations', () => {
   let tmpDirPath: string;
   let previousWorkingDir: string;
 
-  const migrationCollectionPath = runfiles.resolvePackageRelative('../migrations.json');
+  const migrationCollectionPath = resolve('../migrations.json');
   const allMigrationSchematics = Object.keys(
     (JSON.parse(fs.readFileSync(migrationCollectionPath, 'utf8')) as any).schematics,
   );

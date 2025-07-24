@@ -15,7 +15,6 @@ ts_project(
     name = "generate-locales-tool",
     srcs = glob(["*.ts"]),
     deps = [
-        "//:node_modules/@bazel/runfiles",
         "//:node_modules/@types/cldrjs",
         "//:node_modules/@types/node",
         "//:node_modules/cldr",

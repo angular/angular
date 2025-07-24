@@ -10,7 +10,6 @@ ts_project(
     ]),
     module_name = "@angular/compiler-cli/src/ngtsc/testing",
     deps = [
-        "//:node_modules/@bazel/runfiles",
         "//:node_modules/typescript",
         "//packages:types_rjs",
         "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",

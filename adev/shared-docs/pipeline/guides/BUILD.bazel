@@ -61,7 +61,6 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        "//adev:node_modules/@bazel/runfiles",
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/@types/node",
         "//adev:node_modules/diff",
