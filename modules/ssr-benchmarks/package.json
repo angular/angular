@@ -7,7 +7,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@angular-devkit/build-angular": "20.1.1",
+    "@angular-devkit/build-angular": "20.1.2",
     "@angular/cli": "file:../../node_modules/@angular/cli",
     "@angular/common": "file:../../dist/packages-dist/common",
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
