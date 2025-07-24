@@ -161,7 +161,7 @@ export interface BaseResourceOptions<T, R> {
    * A reactive function which determines the request to be made. Whenever the request changes, the
    * loader will be triggered to fetch a new value for the resource.
    *
-   * If a request function isn't provided, the loader won't rerun unless the resource is reloaded.
+   * If a params function isn't provided, the loader won't rerun unless the resource is reloaded.
    */
   params?: () => R;
 
