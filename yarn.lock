@@ -15660,10 +15660,10 @@ typescript@5.8.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.2.tgz#8170b3702f74b79db2e5a96207c15e65807999e4"
   integrity sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==
 
-typescript@5.9.0-beta:
-  version "5.9.0-beta"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.9.0-beta.tgz#c99c8eaa4466875425f90f71d0ceb97a75245e7e"
-  integrity sha512-p91qoTdwWKj9YEBYavmGiBn0DF4OBElzw4pW4oPbK4HeCfr/SDz9+yviVWshZXGvGvFCJ3AVQ+J7F1UZXc23QQ==
+typescript@5.9.0-dev.20250724:
+  version "5.9.0-dev.20250724"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.9.0-dev.20250724.tgz#7cd8735b1c33c2bcc18f636245aa7ffbcb660946"
+  integrity sha512-VXgMFQyznCBEVvkoYGKc+OpBmBQq3wvanw6JGS6vVThLa+8YsUNCw4CJRlxJXuDvgls3bNjEvPozFUgRKf7Z/A==
 
 typescript@^5.8.3:
   version "5.8.3"
