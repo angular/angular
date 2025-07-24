@@ -118,6 +118,7 @@
       "KeyEventsPlugin",
       "LOCALE_ID",
       "LOCALE_ID",
+      "LegacyShadowDomRenderer",
       "MATH_ML_NAMESPACE",
       "MAXIMUM_REFRESH_RERUNS",
       "MAXIMUM_REFRESH_RERUNS",

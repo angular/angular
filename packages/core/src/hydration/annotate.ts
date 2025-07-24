@@ -793,7 +793,8 @@ function conditionallyAnnotateNodePath(
 function componentUsesShadowDomEncapsulation(lView: LView): boolean {
   const instance = lView[CONTEXT];
   return instance?.constructor
-    ? getComponentDef(instance.constructor)?.encapsulation === ViewEncapsulation.ShadowDom
+    ? getComponentDef(instance.constructor)?.encapsulation === ViewEncapsulation.ShadowDom ||
+        getComponentDef(instance.constructor)?.encapsulation === ViewEncapsulation.LegacyShadowDom
     : false;
 }
 

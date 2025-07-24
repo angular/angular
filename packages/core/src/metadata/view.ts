@@ -47,4 +47,6 @@ export enum ViewEncapsulation {
    * all the Component's styling.
    */
   ShadowDom = 3,
+  /** @deprecated Use ShadowDom instead which prevents styles leaking into the component. */
+  LegacyShadowDom = 4,
 }

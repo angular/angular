@@ -25,6 +25,7 @@
       "HOST_ATTR",
       "INTERNAL_BROWSER_PLATFORM_PROVIDERS",
       "KeyEventsPlugin",
+      "LegacyShadowDomRenderer",
       "MODIFIER_KEYS",
       "MODIFIER_KEY_GETTERS",
       "NAMESPACE_URIS",

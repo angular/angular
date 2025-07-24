@@ -172,7 +172,8 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     if (
       typeof ngServerMode !== 'undefined' &&
       ngServerMode &&
-      type.encapsulation === ViewEncapsulation.ShadowDom
+      (type.encapsulation === ViewEncapsulation.ShadowDom ||
+        type.encapsulation === ViewEncapsulation.LegacyShadowDom)
     ) {
       // Domino does not support shadow DOM.
       type = {...type, encapsulation: ViewEncapsulation.Emulated};
@@ -221,6 +222,18 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
         case ViewEncapsulation.ShadowDom:
           return new ShadowDomRenderer(
             eventManager,
+            element,
+            type,
+            doc,
+            ngZone,
+            this.nonce,
+            platformIsServer,
+            tracingService,
+            this.registry,
+          );
+        case ViewEncapsulation.LegacyShadowDom:
+          return new LegacyShadowDomRenderer(
+            eventManager,
             sharedStylesHost,
             element,
             type,
@@ -231,6 +244,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             tracingService,
             this.registry,
           );
+
         default:
           renderer = new NoneEncapsulationDomRenderer(
             eventManager,
@@ -506,6 +520,61 @@ function isTemplateNode(node: any): node is HTMLTemplateElement {
 }
 
 class ShadowDomRenderer extends DefaultDomRenderer2 {
+  private shadowRoot: any;
+
+  constructor(
+    eventManager: EventManager,
+    private hostEl: any,
+    component: RendererType2,
+    doc: Document,
+    ngZone: NgZone,
+    nonce: string | null,
+    platformIsServer: boolean,
+    tracingService: TracingService<TracingSnapshot> | null,
+    registry: AnimationRemovalRegistry,
+  ) {
+    super(eventManager, doc, ngZone, platformIsServer, tracingService, registry);
+    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+    let styles = component.styles;
+    if (ngDevMode) {
+      // We only do this in development, as for production users should not add CSS sourcemaps to components.
+      const baseHref = getDOM().getBaseHref(doc) ?? '';
+      styles = addBaseHrefToCssSourceMap(baseHref, styles);
+    }
+
+    styles = shimStylesContent(component.id, styles);
+
+    for (const style of styles) {
+      const styleEl = document.createElement('style');
+
+      if (nonce) {
+        styleEl.setAttribute('nonce', nonce);
+      }
+
+      styleEl.textContent = style;
+      this.shadowRoot.appendChild(styleEl);
+    }
+  }
+
+  private nodeOrShadowRoot(node: any): any {
+    return node === this.hostEl ? this.shadowRoot : node;
+  }
+
+  override appendChild(parent: any, newChild: any): void {
+    return super.appendChild(this.nodeOrShadowRoot(parent), newChild);
+  }
+  override insertBefore(parent: any, newChild: any, refChild: any): void {
+    return super.insertBefore(this.nodeOrShadowRoot(parent), newChild, refChild);
+  }
+  override removeChild(_parent: any, oldChild: any): void {
+    return super.removeChild(null, oldChild);
+  }
+  override parentNode(node: any): any {
+    return this.nodeOrShadowRoot(super.parentNode(this.nodeOrShadowRoot(node)));
+  }
+}
+
+/** @deprecated Use ShadowDom instead which prevents styles leaking into the component. */ class LegacyShadowDomRenderer extends DefaultDomRenderer2 {
   private shadowRoot: any;
 
   constructor(

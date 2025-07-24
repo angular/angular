@@ -184,7 +184,8 @@
       "enum": [
         "Emulated",
         "None",
-        "ShadowDom"
+        "ShadowDom",
+        "LegacyShadowDom"
       ],
       "description": "Sets the view encapsulation mode for components in the initial project. This determines how component styles are scoped and applied. Options include: `Emulated` (default, styles are scoped to the component), `None` (styles are global), and `ShadowDom` (styles are encapsulated using Shadow DOM)."
     },

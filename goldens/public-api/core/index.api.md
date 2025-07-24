@@ -2015,6 +2015,8 @@ export abstract class ViewContainerRef {
 // @public
 export enum ViewEncapsulation {
     Emulated = 0,
+    // @deprecated (undocumented)
+    LegacyShadowDom = 4,
     None = 2,
     ShadowDom = 3
 }
