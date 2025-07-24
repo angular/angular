@@ -405,6 +405,19 @@ describe('lexer', () => {
       );
     });
 
+    it('should tokenize assignment operators', () => {
+      expectOperatorToken(lex('=')[0], 0, 1, '=');
+      expectOperatorToken(lex('+=')[0], 0, 2, '+=');
+      expectOperatorToken(lex('-=')[0], 0, 2, '-=');
+      expectOperatorToken(lex('*=')[0], 0, 2, '*=');
+      expectOperatorToken(lex('/=')[0], 0, 2, '/=');
+      expectOperatorToken(lex('%=')[0], 0, 2, '%=');
+      expectOperatorToken(lex('**=')[0], 0, 3, '**=');
+      expectOperatorToken(lex('&&=')[0], 0, 3, '&&=');
+      expectOperatorToken(lex('||=')[0], 0, 3, '||=');
+      expectOperatorToken(lex('??=')[0], 0, 3, '??=');
+    });
+
     describe('template literals', () => {
       it('should tokenize template literal with no interpolations', () => {
         const tokens: Token[] = lex('`hello world`');
@@ -586,6 +599,20 @@ describe('lexer', () => {
         expectCharacterToken(tokens[6], 27, 28, ')');
         expectOperatorToken(tokens[7], 28, 29, '}');
         expectStringToken(tokens[8], 29, 33, '!!!', StringTokenKind.TemplateLiteralEnd);
+      });
+
+      it('should tokenize a template literal in an literal object value', () => {
+        const tokens: Token[] = lex('{foo: `${name}`}');
+        expect(tokens.length).toBe(9);
+        expectCharacterToken(tokens[0], 0, 1, '{');
+        expectIdentifierToken(tokens[1], 1, 4, 'foo');
+        expectCharacterToken(tokens[2], 4, 5, ':');
+        expectStringToken(tokens[3], 6, 7, '', StringTokenKind.TemplateLiteralPart);
+        expectOperatorToken(tokens[4], 7, 9, '${');
+        expectIdentifierToken(tokens[5], 9, 13, 'name');
+        expectOperatorToken(tokens[6], 13, 14, '}');
+        expectStringToken(tokens[7], 14, 15, '', StringTokenKind.TemplateLiteralEnd);
+        expectCharacterToken(tokens[8], 15, 16, '}');
       });
 
       it('should produce an error if a template literal is not terminated', () => {

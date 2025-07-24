@@ -61,11 +61,11 @@ Component properties and logic maps directly into HTML attributes and the browse
 * The creation API parses the component looking for input properties, and defines corresponding attributes for the custom element.
   It transforms the property names to make them compatible with custom elements, which do not recognize case distinctions.
   The resulting attribute names use dash-separated lowercase.
-  For example, for a component with `@Input('myInputProp') inputProp`, the corresponding custom element defines an attribute `my-input-prop`.
+  For example, for a component with `inputProp = input({alias: 'myInputProp'})`, the corresponding custom element defines an attribute `my-input-prop`.
 
 * Component outputs are dispatched as HTML [Custom Events](https://developer.mozilla.org/docs/Web/API/CustomEvent), with the name of the custom event matching the output name.
-    For example, for a component with `@Output() valueChanged = new EventEmitter()`, the corresponding custom element dispatches events with the name "valueChanged", and the emitted data is stored on the event's `detail` property.
-    If you provide an alias, that value is used; for example, `@Output('myClick') clicks = new EventEmitter<string>();` results in dispatch events with the name "myClick".
+    For example, for a component `with valueChanged = output()`, the corresponding custom element dispatches events with the name "valueChanged", and the emitted data is stored on the event's `detail` property.
+    If you provide an alias, that value is used; for example, `clicks = output<string>({alias: 'myClick'});` results in dispatch events with the name "myClick".
 
 For more information, see Web Component documentation for [Creating custom events](https://developer.mozilla.org/docs/Web/Guide/Events/Creating_and_triggering_events#Creating_custom_events).
 
@@ -113,7 +113,7 @@ Assume you create a `my-dialog` custom element based on the following component:
 
 @Component(…)
 class MyDialog {
-  @Input() content: string;
+  content =  input(string);
 }
 
 </docs-code>

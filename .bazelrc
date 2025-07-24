@@ -9,6 +9,9 @@ test --flaky_test_attempts=1
 common --@aspect_rules_ts//ts:skipLibCheck=always
 common --@aspect_rules_ts//ts:default_to_tsc_transpiler
 
+# Needed as otherwise `env` of TS actions would be ignored.
+common --incompatible_merge_fixed_and_default_shell_env
+
 ###############################
 # Filesystem interactions     #
 ###############################
@@ -106,9 +109,9 @@ build:remote --cpu=k8
 build:remote --host_cpu=k8
 
 # Toolchain and platform related flags
-build:remote --extra_execution_platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
-build:remote --host_platform=@npm//@angular/build-tooling/bazel/remote-execution:platform
-build:remote --platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
+build:remote --extra_execution_platforms=@devinfra//bazel/remote-execution:platform_with_network
+build:remote --host_platform=@devinfra//bazel/remote-execution:platform_with_network
+build:remote --platforms=@devinfra//bazel/remote-execution:platform_with_network
 
 # Remote instance and caching
 build:remote --remote_instance_name=projects/internal-200822/instances/primary_instance
@@ -139,7 +142,7 @@ common --experimental_allow_tags_propagation
 # Disable network access in the sandbox by default. To enable network access
 # for a particular target, use:
 #
-# load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+# load("@devinfra//bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 # my_target(
 #   ...,
 #   exec_properties = ENABLE_NETWORK,   # Enables network in remote exec

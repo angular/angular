@@ -1570,5 +1570,154 @@ runInEachFileSystem(() => {
           'CmpA => { i0.ɵsetClassMetadata(TestCmp',
       );
     });
+
+    describe('trigger validation', () => {
+      it('should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({template: '@defer (on viewport; hydrate on immediate) {hello}'})
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+        );
+      });
+
+      it('should report if reference-based trigger has no reference and there is no placeholder block but a hydrate trigger exists and it is also viewport', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({template: '@defer (on viewport; hydrate on viewport) {hello}'})
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+        );
+      });
+
+      it('should report if reference-based trigger has no reference and the placeholder is empty', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({template: '@defer (on viewport) {hello} @placeholder {}'})
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+        );
+      });
+
+      it('should report if reference-based trigger has no reference and the placeholder with text at the root', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({template: '@defer (on viewport) {hello} @placeholder {placeholder}'})
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+        );
+      });
+
+      it('should report if reference-based trigger has no reference and there is no placeholder block', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({template: '@defer (on viewport) {hello}'})
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+        );
+      });
+
+      it('should report if reference-based trigger has no reference and the placeholder has multiple root elements', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({template: '@defer (on viewport) {hello} @placeholder {<div></div><span></span>}'})
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+        );
+      });
+
+      it('should report if reference-based trigger has no reference and the placeholder has one root element and some text', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({template: '@defer (on viewport) {hello} @placeholder {<div></div> hi}'})
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+        );
+      });
+
+      it('should count whitespace as a root node when preserveWhitespaces is enabled', () => {
+        env.write(
+          '/test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            preserveWhitespaces: true,
+            template: '@defer (on viewport) {hello} @placeholder {<div></div>  }'
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+        );
+      });
+    });
   });
 });

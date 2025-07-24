@@ -1,22 +1,19 @@
 <div class="adev-page-content" [class.adev-nav-open]="showNavigationDropdown()">
   <ng-container *ngTemplateOutlet="tutorialNav" />
-    @if (shouldRenderContent()) {
-      <div
-        #content
-        class="docs-tutorial-content"
-        [class.adev-nav-open]="showNavigationDropdown()"
-      >
+  @if (shouldRenderContent()) {
+    <div #content class="docs-tutorial-content" [class.adev-nav-open]="showNavigationDropdown()">
       <!-- Tutorial Nav: Current Tutorial Title and Nav Buttons -->
       <ng-container *ngTemplateOutlet="tutorialNav" />
 
       <!-- Tutorial Content -->
       @if (documentContent(); as documentContent) {
-          <docs-viewer
-            [docContent]="documentContent"
-            class="docs-viewer docs-viewer-scroll-margin-large"
-          />
+        <docs-viewer
+          [docContent]="documentContent"
+          class="docs-viewer docs-viewer-scroll-margin-large"
+        />
       }
-  </div>}
+    </div>
+  }
 
   <!-- Split View Resizer -->
   <button
@@ -28,13 +25,11 @@
 
   <!-- Embedded Editor -->
   @if (shouldRenderEmbeddedEditor()) {
-    <div
-      #editor
-      class="docs-tutorial-editor"
-      [class.adev-split-tutorial]="shouldRenderContent()"
-    >
+    <div #editor class="docs-tutorial-editor" [class.adev-split-tutorial]="shouldRenderContent()">
       @if (embeddedEditorComponent) {
-        <ng-container *ngComponentOutlet="embeddedEditorComponent" />
+        <ng-container
+          *ngComponentOutlet="embeddedEditorComponent; inputs:{restrictedMode:restrictedMode()}"
+        />
       }
     </div>
   }
@@ -70,10 +65,7 @@
 
       <!-- Download code -->
       @if (localTutorialZipUrl()) {
-        <a
-          [download]="stepName() + '.zip'"
-          [href]="localTutorialZipUrl()"
-        >
+        <a [download]="stepName() + '.zip'" [href]="localTutorialZipUrl()">
           <button class="adev-download-button docs-primary-btn">
             <docs-icon>download</docs-icon>
           </button>
@@ -127,10 +119,7 @@
 
       <!-- Tutorial Nav: List -->
       @if (showNavigationDropdown()) {
-        <div
-          class="adev-tutorial-nav-list-dropdown"
-          (docsClickOutside)="hideNavigationDropdown()"
-        >
+        <div class="adev-tutorial-nav-list-dropdown" (docsClickOutside)="hideNavigationDropdown()">
           <docs-navigation-list
             [isDropdownView]="true"
             [navigationItems]="tutorialNavigationItems()"

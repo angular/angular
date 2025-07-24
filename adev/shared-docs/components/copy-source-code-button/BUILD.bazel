@@ -1,7 +1,4 @@
-load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
-
-package(default_visibility = ["//visibility:private"])
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project", "zoneless_web_test_suite")
 
 ng_project(
     name = "copy-source-code-button",
@@ -11,16 +8,14 @@ ng_project(
     assets = [
         "copy-source-code-button.component.html",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
         "//adev/shared-docs/components/viewers:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
         "//adev/shared-docs/components/icon:icon_rjs",
     ],
 )
@@ -31,18 +26,15 @@ ts_project(
     srcs = glob(
         ["*.spec.ts"],
     ),
-    interop_deps = [
-        ":copy-source-code-button",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-    ],
     deps = [
-        "//:node_modules/@angular/cdk",
+        ":copy-source-code-button_rjs",
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
     ],
 )
 
-karma_web_test_suite(
+zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib"],
+    deps = [":test_lib_rjs"],
 )

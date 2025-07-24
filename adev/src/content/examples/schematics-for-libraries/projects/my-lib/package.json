@@ -9,8 +9,8 @@
     "postbuild": "copyfiles schematics/*/schema.json schematics/*/files/** schematics/collection.json ../../dist/my-lib/"
   },
   "peerDependencies": {
-    "@angular/common": "^19.0.0",
-    "@angular/core": "^19.0.0"
+    "@angular/common": "^20.0.0",
+    "@angular/core": "^20.0.0"
   },
 // #docregion collection
   "schematics": "./schematics/collection.json",

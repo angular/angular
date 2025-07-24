@@ -9,15 +9,11 @@
 import {ChangeDetectorRef} from '@angular/core';
 import {
   DirEnt,
-  ErrorListener,
   FSWatchCallback,
   FSWatchOptions,
   FileSystemAPI,
   FileSystemTree,
   IFSWatcher,
-  PortListener,
-  PreviewMessageListener,
-  ServerReadyListener,
   Unsubscribe,
   WebContainer,
   WebContainerProcess,

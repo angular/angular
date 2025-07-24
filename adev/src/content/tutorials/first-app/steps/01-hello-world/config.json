@@ -2,5 +2,6 @@
   "title": "Hello world!",
   "type": "editor",
   "answerSrc": "../02-Home/src",
+  "answerRootDir": "../02-Home/",
   "openFiles": ["src/app/app.ts"]
 }

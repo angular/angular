@@ -41,12 +41,12 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   }
 
   function getSuggestionDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
+    const diagnostics: ts.DiagnosticWithLocation[] = [];
     if (!angularOnly && isTypeScriptFile(fileName)) {
-      return tsLS.getSuggestionDiagnostics(fileName);
+      diagnostics.push(...tsLS.getSuggestionDiagnostics(fileName));
     }
-
-    // Template files do not currently produce separate suggestion diagnostics
-    return [];
+    diagnostics.push(...ngLS.getSuggestionDiagnostics(fileName));
+    return diagnostics;
   }
 
   function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
@@ -129,6 +129,31 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     // See the comment in `findRenameLocations` explaining why we don't check the `angularOnly`
     // flag.
     return ngLS.getRenameInfo(fileName, position);
+  }
+
+  function getEncodedSemanticClassifications(
+    fileName: string,
+    span: ts.TextSpan,
+    format?: ts.SemanticClassificationFormat,
+  ): ts.Classifications {
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getEncodedSemanticClassifications(fileName, span, format);
+    } else {
+      const ngClassifications = ngLS.getEncodedSemanticClassifications(fileName, span, format);
+      const tsClassifications = tsLS.getEncodedSemanticClassifications(fileName, span, format);
+      const spans = [...ngClassifications.spans, ...tsClassifications.spans];
+      return {
+        spans,
+        endOfLineState: tsClassifications.endOfLineState,
+      };
+    }
+  }
+
+  function getTokenTypeFromClassification(classification: number): number | undefined {
+    return ngLS.getTokenTypeFromClassification(classification);
+  }
+  function getTokenModifierFromClassification(classification: number): number {
+    return ngLS.getTokenModifierFromClassification(classification);
   }
 
   function getCompletionsAtPosition(
@@ -352,6 +377,9 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getReferencesAtPosition,
     findRenameLocations,
     getRenameInfo,
+    getEncodedSemanticClassifications,
+    getTokenTypeFromClassification,
+    getTokenModifierFromClassification,
     getCompletionsAtPosition,
     getCompletionEntryDetails,
     getCompletionEntrySymbol,

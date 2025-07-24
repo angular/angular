@@ -52,35 +52,46 @@ export class VersionManager {
     };
   });
 
+  // This handle the fallback if the resource fails.
   versions = computed(() => {
     return this.remoteVersions.hasValue() ? this.remoteVersions.value() : this.localVersions;
   });
 
-  remoteVersions = httpResource(() => 'https://angular.dev/assets/others/versions.json', {
-    parse: (json) => {
-      if (!Array.isArray(json)) {
-        throw new Error('Invalid version data');
-      }
-      return json.map((v: unknown) => {
-        if (
-          v === undefined ||
-          v === null ||
-          typeof v !== 'object' ||
-          !('version' in v) ||
-          !('url' in v) ||
-          typeof v.version !== 'string' ||
-          typeof v.url !== 'string'
-        ) {
+  // Yes this will trigger a cors error on localhost
+  // but this is fine as we'll fallback to the local versions.json
+  // which is the most up-to-date anyway.
+  remoteVersions = httpResource(
+    () => ({
+      url: 'https://angular.dev/assets/others/versions.json',
+      transferCache: false,
+      cache: 'no-cache',
+    }),
+    {
+      parse: (json: unknown) => {
+        if (!Array.isArray(json)) {
           throw new Error('Invalid version data');
         }
+        return json.map((v: unknown) => {
+          if (
+            v === undefined ||
+            v === null ||
+            typeof v !== 'object' ||
+            !('version' in v) ||
+            !('url' in v) ||
+            typeof v.version !== 'string' ||
+            typeof v.url !== 'string'
+          ) {
+            throw new Error('Invalid version data');
+          }
 
-        return {
-          displayName: v.version,
-          url: v.url,
-        };
-      });
+          return {
+            displayName: v.version,
+            url: v.url,
+          };
+        });
+      },
     },
-  });
+  );
 
   currentDocsVersion = computed(() => {
     // In devmode the version is 0, so we'll target next (which is first on the list)

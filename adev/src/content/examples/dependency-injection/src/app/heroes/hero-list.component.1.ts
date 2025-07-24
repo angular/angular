@@ -9,7 +9,6 @@ import {HEROES} from './mock-heroes';
       <div>{{hero.id}} - {{hero.name}}</div>
     }
   `,
-  imports: [NgFor],
 })
 export class HeroListComponent {
   heroes = HEROES;

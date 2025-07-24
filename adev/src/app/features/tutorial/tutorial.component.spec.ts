@@ -8,7 +8,7 @@
 
 import {DOCS_VIEWER_SELECTOR, DocViewer, WINDOW, TutorialConfig, TutorialType} from '@angular/docs';
 
-import {Component, Input, signal} from '@angular/core';
+import {Component, input, Input, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
 import {of} from 'rxjs';
@@ -30,7 +30,7 @@ class FakeEmbeddedEditor {}
   template: '<div>FakeDocsViewer</div>',
 })
 class FakeDocViewer {
-  @Input('documentFilePath') documentFilePath: string | undefined;
+  documentFilePath = input<string | undefined>();
 }
 
 // TODO: export this class, it's a helpful mock we could you on other tests.
@@ -158,7 +158,9 @@ describe('Tutorial', () => {
       component['embeddedTutorialManager'],
       'revealAnswer',
     );
-    revealAnswerButton.nativeElement.click();
+
+    // Simulate a click on the reveal answer button
+    await component.handleRevealAnswer();
 
     expect(embeddedTutorialManagerRevealAnswerSpy).toHaveBeenCalled();
 

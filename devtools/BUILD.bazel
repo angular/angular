@@ -1,4 +1,4 @@
-load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
+load("//devtools/tools:defaults.bzl", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -7,12 +7,12 @@ exports_files([
     "cypress.json",
 ])
 
-rules_js_tsconfig(
+ts_config(
     name = "tsconfig_build",
     src = "tsconfig.json",
 )
 
-rules_js_tsconfig(
+ts_config(
     name = "tsconfig_test",
     src = "tsconfig-test.json",
     deps = [

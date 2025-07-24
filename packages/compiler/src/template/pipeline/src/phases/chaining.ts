@@ -12,6 +12,7 @@ import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
 const CHAIN_COMPATIBILITY = new Map<o.ExternalReference, o.ExternalReference>([
+  [R3.ariaProperty, R3.ariaProperty],
   [R3.attribute, R3.attribute],
   [R3.classProp, R3.classProp],
   [R3.element, R3.element],
@@ -26,15 +27,6 @@ const CHAIN_COMPATIBILITY = new Map<o.ExternalReference, o.ExternalReference>([
   [R3.listener, R3.listener],
   [R3.property, R3.property],
   [R3.styleProp, R3.styleProp],
-  [R3.stylePropInterpolate1, R3.stylePropInterpolate1],
-  [R3.stylePropInterpolate2, R3.stylePropInterpolate2],
-  [R3.stylePropInterpolate3, R3.stylePropInterpolate3],
-  [R3.stylePropInterpolate4, R3.stylePropInterpolate4],
-  [R3.stylePropInterpolate5, R3.stylePropInterpolate5],
-  [R3.stylePropInterpolate6, R3.stylePropInterpolate6],
-  [R3.stylePropInterpolate7, R3.stylePropInterpolate7],
-  [R3.stylePropInterpolate8, R3.stylePropInterpolate8],
-  [R3.stylePropInterpolateV, R3.stylePropInterpolateV],
   [R3.syntheticHostListener, R3.syntheticHostListener],
   [R3.syntheticHostProperty, R3.syntheticHostProperty],
   [R3.templateCreate, R3.templateCreate],
@@ -43,6 +35,18 @@ const CHAIN_COMPATIBILITY = new Map<o.ExternalReference, o.ExternalReference>([
   [R3.declareLet, R3.declareLet],
   [R3.conditionalCreate, R3.conditionalBranchCreate],
   [R3.conditionalBranchCreate, R3.conditionalBranchCreate],
+  [R3.domElement, R3.domElement],
+  [R3.domElementStart, R3.domElementStart],
+  [R3.domElementEnd, R3.domElementEnd],
+  [R3.domElementContainer, R3.domElementContainer],
+  [R3.domElementContainerStart, R3.domElementContainerStart],
+  [R3.domElementContainerEnd, R3.domElementContainerEnd],
+  [R3.domListener, R3.domListener],
+  [R3.domTemplate, R3.domTemplate],
+  [R3.animationEnter, R3.animationEnter],
+  [R3.animationLeave, R3.animationLeave],
+  [R3.animationEnterListener, R3.animationEnterListener],
+  [R3.animationLeaveListener, R3.animationLeaveListener],
 ]);
 
 /**

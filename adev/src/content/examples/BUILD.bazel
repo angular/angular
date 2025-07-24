@@ -1,3 +1,5 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+
 # All example files.
 filegroup(
     name = "examples",
@@ -6,7 +8,7 @@ filegroup(
 )
 
 # Example files that can be embedded as preview components.
-filegroup(
+copy_to_bin(
     name = "embeddable",
     srcs = glob(
         ["**/app/**"],

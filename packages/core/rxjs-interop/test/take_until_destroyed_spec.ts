@@ -12,13 +12,12 @@ import {
   EnvironmentInjector,
   inject,
   Injector,
-  OnDestroy,
   runInInjectionContext,
 } from '../../src/core';
-import {TestBed} from '../../testing';
 import {BehaviorSubject, finalize} from 'rxjs';
 
 import {takeUntilDestroyed} from '../src/take_until_destroyed';
+import {TestBed} from '@angular/core/testing';
 
 describe('takeUntilDestroyed', () => {
   it('should complete an observable when the current context is destroyed', () => {
@@ -94,7 +93,7 @@ describe('takeUntilDestroyed', () => {
     // `DestroyRef` would resolve to the root injector rather than to the
     // `NodeInjectorDestroyRef`, where `lView` is used.
     @Component({template: ''})
-    class TestComponent implements OnDestroy {
+    class TestComponent {
       destroyRef = inject(DestroyRef);
 
       source$ = new BehaviorSubject(0);

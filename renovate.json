@@ -1,10 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>angular/dev-infra//renovate-presets/default.json5"],
-  "baseBranches": ["main", "20.0.x"],
+  "extends": [
+    "github>angular/dev-infra//renovate-presets/default.json5"
+  ],
+  "baseBranches": [
+    "main",
+    "20.1.x"
+  ],
   "postUpgradeTasks": {
     "commands": [
-      "git clean -f && git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
+      "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
       "yarn install --frozen-lockfile --non-interactive",
       "yarn bazel sync --only=repo || true",
       "yarn bazel run //.github/actions/deploy-docs-site:main.update",
@@ -21,7 +26,6 @@
     "executionMode": "branch"
   },
   "ignoreDeps": [
-    "@angular/build-tooling",
     "@types/selenium-webdriver",
     "angular-1.5",
     "angular-1.6",
@@ -33,9 +37,26 @@
     "angular-mocks-1.8",
     "convert-source-map",
     "selenium-webdriver",
-    "systemjs"
+    "systemjs",
+    "patch-package"
   ],
   "packageRules": [
+    {
+      "matchBaseBranches": [
+        "main"
+      ],
+      "addLabels": [
+        "target: minor"
+      ]
+    },
+    {
+      "matchBaseBranches": [
+        "!main"
+      ],
+      "addLabels": [
+        "target: patch"
+      ]
+    },
     {
       "matchFileNames": [
         "integration/**",

@@ -55,8 +55,10 @@
     }
   }
 
+  .docs-mini-scroll-track,
+  .shiki > code 
   // used on docs-code blocks
-  .docs-mini-scroll-track {
+  {
     &::-webkit-scrollbar-track {
       background: transparent;
     }
@@ -73,6 +75,10 @@
 
     &::-webkit-scrollbar-thumb:hover {
       background-color: var(--quinary-contrast);
+    }
+
+    &::-webkit-scrollbar-corner {
+      background: transparent;
     }
   }
 }

@@ -44,7 +44,6 @@ let ngZoneInstanceId = 0;
  *
  * ```ts
  * import {Component, NgZone} from '@angular/core';
- * import {NgIf} from '@angular/common';
  *
  * @Component({
  *   selector: 'ng-zone-demo',
@@ -52,7 +51,9 @@ let ngZoneInstanceId = 0;
  *     <h2>Demo: NgZone</h2>
  *
  *     <p>Progress: {{progress}}%</p>
- *     <p *ngIf="progress >= 100">Done processing {{label}} of Angular zone!</p>
+ *     @if(progress >= 100) {
+ *        <p>Done processing {{label}} of Angular zone!</p>
+ *     }
  *
  *     <button (click)="processWithinAngularZone()">Process within Angular zone</button>
  *     <button (click)="processOutsideOfAngularZone()">Process outside of Angular zone</button>

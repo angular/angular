@@ -295,6 +295,11 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
   relativeTemplatePath: string | null;
 
   /**
+   * Whether any of the component's dependencies are directives.
+   */
+  hasDirectiveDependencies: boolean;
+
+  /**
    * The imports expression as appears on the component decorate for standalone component. This
    * field is currently needed only for local compilation, and so in other compilation modes it may
    * not be set. If component has empty array imports then this field is not set.

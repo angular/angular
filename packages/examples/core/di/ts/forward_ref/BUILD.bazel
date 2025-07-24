@@ -1,19 +1,19 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-# Note: The `forward_ref` example tests are built through this `ng_module` sub-target.
+# Note: The `forward_ref` example tests are built through this `ng_project` sub-target.
 # This is done so that DI decorator/type metadata is processed manually by the compiler
 # ahead of time. We cannot rely on the official TypeScript decorator downlevel emit (for JIT),
 # as the output is not compatible with `forwardRef` and ES2015+. More details here:
 # https://github.com/angular/angular/commit/323651bd38909b0f4226bcb6c8f5abafa91cf9d9.
 # https://github.com/microsoft/TypeScript/issues/27519.
-ng_module(
+ng_project(
     name = "forward_ref_tests_lib",
     testonly = True,
     srcs = ["forward_ref_spec.ts"],
     visibility = ["//packages/examples/core:__pkg__"],
-    deps = ["//packages/core"],
+    deps = ["//packages/core:core_rjs"],
 )
 
 filegroup(

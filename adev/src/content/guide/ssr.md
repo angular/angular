@@ -67,7 +67,7 @@ const serverConfig: ApplicationConfig = {
 };
 ```
 
-When using the [App shell pattern](ecosystem/service-workers/app-shell), you must specify the component to be used as the app shell for client-side rendered routes. To do this, use the [`withAppShell`](api/ssr/withAppShell 'API reference') fetaure:
+When using the [App shell pattern](ecosystem/service-workers/app-shell), you must specify the component to be used as the app shell for client-side rendered routes. To do this, use the [`withAppShell`](api/ssr/withAppShell 'API reference') feature:
 
 ```typescript
 import { provideServerRendering, withRoutes, withAppShell } from '@angular/ssr';

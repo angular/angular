@@ -7,9 +7,9 @@ export const format: FormatConfig = {
   'prettier': {
     'matchers': [
       '**/*.{yaml,yml}',
-      '**/*.{js,ts,mjs,mts,cjs,cts}',
+      '**/*.{js,ts,mjs,mts,cjs,cts,tsx}',
       'devtools/**/*.{js,ts,mjs,mts,cjs,cts,html,scss}',
-
+      'integration/**/size.json',
       // Do not format d.ts files as they are generated
       '!**/*.d.ts',
       // Both third_party and .yarn are directories containing copied code which should

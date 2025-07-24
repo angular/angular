@@ -1,35 +1,22 @@
 /* Global styles imported in the main styles.scss of the app wrapper (shell, demo apps). */
 
 @use 'sass:map';
-@use 'external/npm/node_modules/@angular/material/index' as mat;
+@use '@angular/material' as mat;
 @use './colors' as clr;
 @use './typography' as tg;
+@use './overrides' as ovr;
+@use './inputs';
+@use './tables';
 
 @include mat.all-component-typographies();
 @include mat.core();
 @include clr.root-colors();
-
 @include tg.fonts();
-
-body {
-  padding: 0;
-  margin: 0;
-  background: var(--color-background);
-  color: var(--color-text);
-  @extend %body-01;
-}
-
-input,
-select {
-  color: var(--primary-contrast);
-  background: var(--color-foreground);
-  @extend %body-01;
-}
 
 $body-tg-level: mat.m2-define-typography-level(
   $font-family: tg.$font-family,
   $font-weight: 400,
-  $font-size: 0.75rem,
+  $font-size: tg.$font-size,
   $line-height: 1rem,
   $letter-spacing: normal,
 );
@@ -43,13 +30,27 @@ $typography: mat.m2-define-typography-config(
 // Light theme
 $light-primary: mat.m2-define-palette(mat.$m2-grey-palette, 700, 200);
 $light-accent: mat.m2-define-palette(mat.$m2-blue-palette, 800);
-$light-theme: mat.m2-define-light-theme($light-primary, $light-accent);
+$light-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $light-primary,
+      accent: $light-accent,
+    ),
+  )
+);
 
 // Dark theme
 $dark-primary: mat.m2-define-palette(mat.$m2-blue-grey-palette, 50);
 $dark-accent: mat.m2-define-palette(mat.$m2-blue-palette, 200);
 $dark-theme: map.deep-merge(
-  mat.m2-define-dark-theme($dark-primary, $dark-accent),
+  mat.m2-define-dark-theme(
+    (
+      color: (
+        primary: $dark-primary,
+        accent: $dark-accent,
+      ),
+    )
+  ),
   (
     'color': (
       'background': (
@@ -74,46 +75,55 @@ $dark-theme: map.deep-merge(
 /* Keep class name in sync with ThemeService */
 .light-theme {
   @include mat.all-component-themes($light-theme);
-
-  .mat-mdc-chip.mat-mdc-standard-chip {
-    --mdc-chip-container-height: 24px;
-  }
 }
 
 /* Keep class name in sync with ThemeService */
 .dark-theme {
   color-scheme: dark;
   @include mat.all-component-themes($dark-theme);
-
-  .mat-mdc-chip.mat-mdc-standard-chip {
-    --mdc-chip-container-height: 24px;
-  }
 }
 
-ng-devtools {
-  .mdc-card {
-    padding: 4px;
-  }
+:root {
+  @include ovr.mat-cmp-overrides();
 }
 
-.mat-mdc-menu-content {
-  padding: 0 !important;
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  @extend %body-01;
 }
 
-mat-form-field {
-  @include mat.form-field-density(-5);
-  @include mat.form-field-overrides(
-    (
-      container-text-size: 0.8rem,
-      outlined-label-text-size: 0.8rem,
-    )
-  );
+a {
+  /*
+    There are some anchor instance inside mat elements
+    that inherit the mat parent font styles; hence, we
+    need to have an explicit override.
+  */
+  @extend %body-01;
+  color: var(--dynamic-blue-02);
+}
 
-  mat-select {
-    @include mat.select-overrides(
-      (
-        trigger-text-size: 0.8rem,
-      )
-    );
-  }
+.multiline-tooltip {
+  white-space: pre-line;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-separator);
+  border: none;
+  margin-block: 0.875rem;
+}
+
+.ver-ruler {
+  width: 1px;
+  height: 100%;
+  background-color: var(--color-separator);
+  margin-inline: 0.875rem;
 }

@@ -140,7 +140,9 @@ export function effect(
         'effect inside the component constructor.',
     );
 
-  !options?.injector && assertInInjectionContext(effect);
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(effect);
+  }
 
   if (ngDevMode && options?.allowSignalWrites !== undefined) {
     console.warn(

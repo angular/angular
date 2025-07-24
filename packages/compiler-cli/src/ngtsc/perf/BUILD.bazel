@@ -7,11 +7,9 @@ ts_project(
     srcs = ["index.ts"] + glob([
         "src/*.ts",
     ]),
-    interop_deps = [
-        "//packages:types",
-    ],
     deps = [
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
+        "//packages:types_rjs",
     ],
 )

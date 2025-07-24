@@ -2,6 +2,32 @@
   "$schema": "../../test_case_schema.json",
   "cases": [
     {
+      "description": "should generate attribute instructions for DOM-only ARIA bindings",
+      "inputFiles": [
+        "aria_dom_properties.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            "aria_dom_properties.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate ariaProperty instructions for ARIA bindings",
+      "inputFiles": [
+        "aria_properties.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            "aria_properties.js"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should generate bind instruction",
       "inputFiles": [
         "bind.ts"
@@ -44,15 +70,29 @@
       ]
     },
     {
-      "description": "should not remap property names whose names do not correspond to their attribute names",
+      "description": "should not remap special property names when outputting property instructions",
       "inputFiles": [
-        "special_property_remapping.ts"
+        "special_property_remapping_property.ts"
       ],
       "expectations": [
         {
           "failureMessage": "Incorrect template",
           "files": [
-            "special_property_remapping.js"
+            "special_property_remapping_property.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should remap special property names when outputting domProperty instructions",
+      "inputFiles": [
+        "special_property_remapping_dom_property.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "special_property_remapping_dom_property.js"
           ]
         }
       ]

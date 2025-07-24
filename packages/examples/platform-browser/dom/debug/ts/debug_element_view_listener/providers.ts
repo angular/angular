@@ -7,8 +7,7 @@
  */
 
 import {Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Component({
   selector: 'my-component',
@@ -18,4 +17,4 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 class MyAppComponent {}
 @NgModule({imports: [BrowserModule], bootstrap: [MyAppComponent]})
 class AppModule {}
-platformBrowserDynamic().bootstrapModule(AppModule);
+platformBrowser().bootstrapModule(AppModule);

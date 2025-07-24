@@ -148,7 +148,7 @@ export class TransferState {
   }
 }
 
-function retrieveTransferredState(
+export function retrieveTransferredState(
   doc: Document,
   appId: string,
 ): Record<string, unknown | undefined> {

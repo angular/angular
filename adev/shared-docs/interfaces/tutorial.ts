@@ -88,6 +88,8 @@ export interface TutorialConfigBase {
 
   /** The path to the tutorial answer folder when it's external to the tutorial */
   answerSrc?: string;
+  /** Root of the answer folder, so that proper relative paths can be computed, like in {@link openFiles}. */
+  answerRootDir?: string;
 
   /** An array of files to be open in the editor */
   openFiles?: string[];
@@ -140,6 +142,7 @@ export type TutorialNavigationData = {
   previousStep?: string;
   nextTutorial?: string;
   sourceCodeZipPath?: string;
+  restrictedMode: boolean;
 };
 
 export type PlaygroundRouteData = {

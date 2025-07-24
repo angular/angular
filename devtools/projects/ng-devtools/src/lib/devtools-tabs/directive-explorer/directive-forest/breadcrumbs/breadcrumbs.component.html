@@ -1,22 +1,30 @@
-<mat-card class="breadcrumb-card">
-  <button class="scroll-button" [class.hidden]="!showScrollLeftButton()" (click)="scroll(-100)">
-    <mat-icon> more_horiz </mat-icon>
-  </button>
-  <div class="breadcrumbs" #breadcrumbs (scroll)="updateScrollButtonVisibility()">
-    @for (node of parents(); track $index) {
-      <button
-        (mouseover)="mouseOverNode.emit(node)"
-        (mouseleave)="mouseLeaveNode.emit(node)"
-        mat-button
-        color="primary"
-        (click)="handleSelect.emit(node)"
-        [class.selected]="$last"
-      >
-        {{ node.original.component?.name || node.original.element }}
-      </button>
-    }
-  </div>
-  <button class="scroll-button" [class.hidden]="!showScrollRightButton()" (click)="scroll(100)">
-    <mat-icon> more_horiz </mat-icon>
-  </button>
-</mat-card>
+<button
+  class="scroll-button"
+  [class.hidden]="!showScrollLeftButton()"
+  (click)="scroll(-100)"
+  aria-label="Scroll left"
+>
+  <mat-icon> chevron_left </mat-icon>
+</button>
+<div class="breadcrumbs" #breadcrumbs (scroll)="updateScrollButtonVisibility()">
+  @for (node of parents(); track $index) {
+    <button
+      (mouseover)="mouseOverNode.emit(node)"
+      (mouseleave)="mouseLeaveNode.emit(node)"
+      color="primary"
+      (click)="handleSelect.emit(node)"
+      [class.selected]="$last"
+      class="breadcrumb"
+    >
+      {{ node.original.component?.name || node.original.element }}
+    </button>
+  }
+</div>
+<button
+  class="scroll-button"
+  [class.hidden]="!showScrollRightButton()"
+  (click)="scroll(100)"
+  aria-label="Scroll right"
+>
+  <mat-icon> chevron_right </mat-icon>
+</button>

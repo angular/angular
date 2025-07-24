@@ -248,7 +248,7 @@ export function patchAsyncTest(Zone: ZoneType): void {
               throw e;
             };
           }
-          runInTestZone(fn, this, done, (err: any) => {
+          runInTestZone(fn, this, undefined, done, (err: any) => {
             if (typeof err === 'string') {
               return done.fail(new Error(err));
             } else {
@@ -261,9 +261,9 @@ export function patchAsyncTest(Zone: ZoneType): void {
       // is finished. This will be correctly consumed by the Mocha framework with
       // it('...', async(myFn)); or can be used in a custom framework.
       // Not using an arrow function to preserve context passed from call site
-      return function (this: unknown) {
+      return function (this: unknown, ...args: unknown[]) {
         return new Promise<void>((finishCallback, failCallback) => {
-          runInTestZone(fn, this, finishCallback, failCallback);
+          runInTestZone(fn, this, args, finishCallback, failCallback);
         });
       };
     };
@@ -271,6 +271,7 @@ export function patchAsyncTest(Zone: ZoneType): void {
     function runInTestZone(
       fn: Function,
       context: any,
+      applyArgs: unknown[] | undefined,
       finishCallback: Function,
       failCallback: Function,
     ) {
@@ -329,7 +330,7 @@ export function patchAsyncTest(Zone: ZoneType): void {
         proxyZoneSpec.setDelegate(testZoneSpec);
         (testZoneSpec as any).patchPromiseForTest();
       });
-      return Zone.current.runGuarded(fn, context);
+      return Zone.current.runGuarded(fn, context, applyArgs);
     }
   });
 }

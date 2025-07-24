@@ -82,6 +82,10 @@ export function tryParseInitializerApi<Functions extends InitializerApiFunction[
   reflector: ReflectionHost,
   importTracker: ImportedSymbolsTracker,
 ): (InitializerFunctionMetadata & {api: Functions[number]}) | null {
+  if (ts.isAsExpression(expression) || ts.isParenthesizedExpression(expression)) {
+    return tryParseInitializerApi(functions, expression.expression, reflector, importTracker);
+  }
+
   if (!ts.isCallExpression(expression)) {
     return null;
   }

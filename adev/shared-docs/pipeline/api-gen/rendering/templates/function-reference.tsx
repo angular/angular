@@ -27,6 +27,7 @@ import {HighlightTypeScript} from './highlight-ts';
 import {SectionApi} from './section-api';
 import {SectionDescription} from './section-description';
 import {SectionUsageNotes} from './section-usage-notes';
+import {DeprecationWarning} from './deprecation-warning';
 
 export const signatureCard = (
   name: string,
@@ -70,6 +71,7 @@ export function FunctionReference(entry: FunctionEntryRenderable) {
   return (
     <div className={API_REFERENCE_CONTAINER}>
       <HeaderApi entry={entry} />
+      <DeprecationWarning entry={entry} />
       <SectionApi entry={entry} />
       <div className={REFERENCE_MEMBERS}>
         {entry.signatures.map((s, i) =>

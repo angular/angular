@@ -1,15 +1,26 @@
-load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm2//:rollup/package_json.bzl", rollup = "bin")
 
-rollup_bundle(
+rollup.rollup(
     name = "language-service",
-    config_file = "rollup.config.js",
-    entry_point = "//packages/language-service/src:ts_plugin.ts",
-    format = "amd",
-    silent = True,
-    visibility = ["//packages/language-service:__pkg__"],
-    deps = [
-        "//packages/language-service/src",
-        "@npm//@rollup/plugin-commonjs",
-        "@npm//@rollup/plugin-node-resolve",
+    srcs = [
+        "rollup.config.js",
+        "//:node_modules/@angular/compiler-cli",
+        "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/@rollup/plugin-node-resolve",
+        "//packages/language-service:tsconfig_build",
+        "//packages/language-service/src:src_rjs",
+        "//packages/language-service/src:ts_plugin.js",
+        "//tools/bazel/rollup:path-plugin",
     ],
+    outs = [
+        "language-service.js",
+    ],
+    args = [
+        "--format=amd",
+        "--config=$(rootpath rollup.config.js)",
+        "--input=packages/language-service/src/ts_plugin.js",
+        "--file=packages/language-service/bundles/language-service.js",
+        "--sourcemap=inline",
+    ],
+    visibility = ["//packages/language-service:__pkg__"],
 )

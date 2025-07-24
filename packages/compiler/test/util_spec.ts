@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {escapeRegExp, partitionArray, splitAtColon, stringify, utf8Encode} from '../src/util';
+import {escapeRegExp, splitAtColon, stringify, utf8Encode} from '../src/util';
 
 describe('util', () => {
   describe('splitAtColon', () => {
@@ -84,23 +84,6 @@ describe('util', () => {
   describe('stringify()', () => {
     it('should handle objects with no prototype.', () => {
       expect(stringify(Object.create(null))).toEqual('object');
-    });
-  });
-
-  describe('partitionArray()', () => {
-    it('should handle empty arrays', () => {
-      expect(partitionArray([], () => true)).toEqual([[], []]);
-    });
-
-    it('should handle arrays with primitive type values', () => {
-      expect(partitionArray([1, 2, 3], (el: number) => el < 2)).toEqual([[1], [2, 3]]);
-    });
-
-    it('should handle arrays of objects', () => {
-      expect(partitionArray([{id: 1}, {id: 2}, {id: 3}], (el: any) => el.id < 2)).toEqual([
-        [{id: 1}],
-        [{id: 2}, {id: 3}],
-      ]);
     });
   });
 });

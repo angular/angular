@@ -15,7 +15,6 @@
       -webkit-background-clip: text;
       color: transparent;
       transition: background-color 0.3s ease;
-      line-height: 1.1rem;
 
       &::before {
         content: '';
@@ -29,20 +28,24 @@
         transform: scaleY(0.7);
         transition: transform 0.3s ease, opacity 0.3s ease;
       }
+
       &:hover {
         background-color: var(--primary-contrast);
         &::before {
           opacity: 0.3;
         }
       }
+
       &.docs-faceted-list-item-active {
         // font gradient
         background-image: var(--pink-to-purple-vertical-gradient);
+
         &::before {
           opacity: 1;
           transform: scaleY(1);
           background: var(--pink-to-purple-vertical-gradient);
         }
+
         &:hover {
           &::before {
             opacity: 1;
@@ -52,5 +55,4 @@
       }
     }
   }
-  // a or button
 }

@@ -45,17 +45,17 @@ const routes: Routes = [
 When a user visits `/products`, Angular renders the following:
 
 ```angular-html
-<app-header></app-header>
-<app-products></app-products>
-<app-footer></app-footer>
+<app-header />
+<app-products />
+<app-footer />
 ```
 
 If the user goes back to the home page, then Angular renders:
 
 ```angular-html
-<app-header></app-header>
-<app-home></app-home>
-<app-footer></app-footer>
+<app-header />
+<app-home />
+<app-footer />
 ```
 
 When displaying a route, the `<router-outlet>` element remains present in the DOM as a reference point for future navigations. Angular inserts routed content just after the outlet element as a sibling.

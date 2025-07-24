@@ -12,10 +12,12 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../me
 import {throwError} from '../../util/assert';
 import {getComponentDef} from '../def_getters';
 import {ComponentDef} from '../interfaces/definition';
-import {TNodeType} from '../interfaces/node';
+import {TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer_dom';
-import {CONTEXT, DECLARATION_COMPONENT_VIEW, LView} from '../interfaces/view';
+import {isDirectiveHost} from '../interfaces/type_checks';
+import {CONTEXT, DECLARATION_COMPONENT_VIEW, LView, TVIEW} from '../interfaces/view';
 import {isAnimationProp} from '../util/attrs_utils';
+import {getNativeByTNode} from '../util/view_utils';
 
 let shouldThrowErrorOnUnknownElement = false;
 
@@ -65,27 +67,22 @@ export function ɵgetUnknownPropertyStrictMode() {
  * - the element matches any directive
  * - the element is allowed by one of the schemas
  *
- * @param element Element to validate
- * @param lView An `LView` that represents a current component that is being rendered
- * @param tagName Name of the tag to check
- * @param schemas Array of schemas
- * @param hasDirectives Boolean indicating that the element matches any directive
+ * @param lView An `LView` associated with a template is being rendered
+ * @param tNode TNode representing an element to be validated
  */
-export function validateElementIsKnown(
-  element: RElement,
-  lView: LView,
-  tagName: string | null,
-  schemas: SchemaMetadata[] | null,
-  hasDirectives: boolean,
-): void {
+export function validateElementIsKnown(lView: LView, tNode: TElementNode): void {
+  const tView = lView[TVIEW];
+
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
   // defined as an array (as an empty array in case `schemas` field is not defined) and we should
   // execute the check below.
-  if (schemas === null) return;
+  if (tView.schemas === null) return;
+
+  const tagName = tNode.value;
 
   // If the element matches any directive, it's considered as valid.
-  if (!hasDirectives && tagName !== null) {
+  if (!isDirectiveHost(tNode) && tagName !== null) {
     // The element is unknown if it's an instance of HTMLUnknownElement, or it isn't registered
     // as a custom element. Note that unknown elements with a dash in their name won't be instances
     // of HTMLUnknownElement in browsers that support web components.
@@ -94,12 +91,12 @@ export function validateElementIsKnown(
       // Domino doesn't expose HTMLUnknownElement globally.
       (typeof HTMLUnknownElement !== 'undefined' &&
         HTMLUnknownElement &&
-        element instanceof HTMLUnknownElement) ||
+        getNativeByTNode(tNode, lView) instanceof HTMLUnknownElement) ||
       (typeof customElements !== 'undefined' &&
         tagName.indexOf('-') > -1 &&
         !customElements.get(tagName));
 
-    if (isUnknown && !matchingSchemas(schemas, tagName)) {
+    if (isUnknown && !matchingSchemas(tView.schemas, tagName)) {
       const isHostStandalone = isHostComponentStandalone(lView);
       const templateLocation = getTemplateLocationDetails(lView);
       const schemas = `'${isHostStandalone ? '@Component' : '@NgModule'}.schemas'`;

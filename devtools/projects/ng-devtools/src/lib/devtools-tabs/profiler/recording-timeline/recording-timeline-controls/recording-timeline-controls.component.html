@@ -1,0 +1,9 @@
+<input
+  class="ng-input size-mid filter-input"
+  (keyup)="filter.emit($any($event.target).value)"
+  (focus)="filterPlaceholder.set('duration: >30 source: click')"
+  (blur)="filterPlaceholder.set(FILTER_PLACEHOLDER)"
+  [placeholder]="filterPlaceholder()"
+  aria-label="Frames filter"
+/>
+<button ng-button size="mid" (click)="exportProfile.emit()">Save Profile</button>

@@ -1,69 +1,62 @@
-.filter {
+@use '../../../../../styles/typography';
+
+:host {
   display: flex;
-  padding: 0px;
-  border-radius: 0px;
-  box-shadow: none !important;
-  border-bottom: 1px solid var(--color-separator);
   align-items: center;
+  flex-direction: row;
+  border-bottom: 1px solid var(--color-separator);
 
-  label {
+  .search-icon {
     display: flex;
+    align-items: center;
+    padding-right: 5px;
+    margin-left: 8px;
+    margin-top: 8px;
+
+    mat-icon {
+      font-size: 1.3em;
+    }
+  }
+
+  .filter-input {
+    @extend %body-01;
+    border: none;
+    padding: 1px;
     width: 100%;
+    height: 30px;
+    outline: none;
+    background: var(--color-background);
+    flex: 1;
+  }
 
-    .search-icon {
-      display: flex;
-      align-items: center;
-      padding-right: 5px;
-      margin-left: 8px;
-      margin-top: 8px;
+  .up-down-buttons {
+    display: flex;
+    gap: 0.25rem;
+    margin-right: 0.5rem;
 
-      mat-icon {
-        font-size: 1.3em;
+    button {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      opacity: 0.5;
+
+      &:hover {
+        opacity: 0.8;
+      }
+
+      &:active {
+        opacity: 1;
       }
     }
-
-    .filter-input {
-      border: none;
-      padding-left: 5px;
-      width: 100%;
-      height: 30px;
-      outline: none;
-      background: var(--color-background);
-    }
   }
-}
 
-.mdc-card {
-  flex-direction: row;
-}
-
-.up-down-buttons {
-  display: flex;
-  gap: 0.25rem;
-  margin-right: 0.5rem;
-
-  button {
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    background: none;
-    border: none;
-    cursor: pointer;
-    opacity: 0.5;
-
-    &:hover {
-      opacity: 0.8;
-    }
-
-    &:active {
-      opacity: 1;
-    }
+  .matches-count {
+    white-space: nowrap;
+    font-size: 11px;
+    color: var(--quaternary-contrast);
+    margin: 0 0.5rem;
   }
-}
-
-.matches-count {
-  white-space: nowrap;
-  font-size: 11px;
-  color: var(--quaternary-contrast);
-  margin: 0 0.5rem;
 }

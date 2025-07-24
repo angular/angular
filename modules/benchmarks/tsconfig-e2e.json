@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
     "lib": ["es2015"],
-    "types": ["node", "jasmine"]
+    "types": ["node", "jasmine"],
+    "module": "esnext",
+    "moduleResolution": "node10",
+    "strict": true,
+    "sourceMap": true,
+    "declaration": true,
   }
 }

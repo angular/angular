@@ -44,4 +44,4 @@ package rather than including the functionality in Angular helps with:
 
 - Keeping the framework's runtime smaller and simpler
 - Makes the learning journey of developers getting started with Angular smoother
-- Reduces maintainers burden and the complexity of the source code
+- Reduces maintainers' burden and the complexity of the source code

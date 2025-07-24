@@ -1,8 +1,10 @@
 # Add an input parameter to the component
 
-This tutorial lesson demonstrates how to create a component `@Input()` and use it to pass data to a component for customization.
+This tutorial lesson demonstrates how to create a component `input` and use it to pass data to a component for customization.
 
 <docs-video src="https://www.youtube.com/embed/eM3zi_n7lNs?si=WvRGFSkW_7_zDIFD&amp;start=241"/>
+
+NOTE: This video reflects an older syntax, but the main concepts remain valid.
 
 ## What you'll learn
 
@@ -10,41 +12,40 @@ Your app's `HousingLocation` template has a `HousingLocation` property to receiv
 
 ## Conceptual preview of Inputs
 
-[Inputs](api/core/Input) allow components to share data. The direction of the data sharing is from parent component to child component.
+[Inputs](api/core/input) allow components to specify data that can be passed to it from a parent component.
 
-In this lesson, you'll define `@Input()` properties in the `HousingLocation` component which will enable you to customize the data displayed in the component.
+In this lesson, you'll define an `input` property in the `HousingLocation` component that enables you to customize the data displayed in the component.
 
 Learn more in the [Accepting data with input properties](guide/components/inputs) and [Custom events with outputs](guide/components/outputs) guides.
 
 <docs-workflow>
 
-<docs-step title="Import the Input decorator">
-This step imports the `Input` decorator into the class.
+<docs-step title="Import the input() function">
+In the code editor, import the `input` helper method from `@angular/core` into the `HousingLocation` component.
 
-In the code editor:
-
-1. Navigate to `src/app/housing-location/housing-location.ts`
-1. Update the file imports to include `Input` and `HousingLocation`:
-
-    <docs-code header="Import HousingLocation and Input in src/app/housing-location/housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[1,3]"/>
+<docs-code header="Import input in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[1]"/>
 
 </docs-step>
 
 <docs-step title="Add the Input property">
-1.  In the same file, add a property called `housingLocation` of type `HousingLocation` to the `HousingLocation` class. Add an `!` after the property name and prefix it with the `@Input()` decorator:
+Add a required property called `housingLocation` and initialize it using `input.required()` with the type `HousingLocationInfo`.
 
-    <docs-code header="Import HousingLocation and Input in src/app/housing-location/housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[13,15]"/>
+  <docs-code header="Declare the input property in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[12]"/>
 
-    You have to add the `!` because the input is expecting the value to be passed. In this case, there is no default value. In our example application case we know that the value will be passed in - this is by design. The exclamation point is called the non-null assertion operator and it tells the TypeScript compiler that the value of this property won't be null or undefined.
+You have to invoke the `required` method on `input` to indicate that the parent component must provide a value. In our example application, we know this value will always be passed in — this is by design. The `.required()` call ensures that the TypeScript compiler enforces this and treats the property as non-nullable when this component is used in a template.
 
-1. Save your changes and confirm the app does not have any errors.
+</docs-step>
 
-1. Correct any errors before you continue to the next step.
+<docs-step title="Pass data to the input">
+Send the `housingLocation` value from the `Home` component to the `housingLocation` property of the HousingLocation component.
+
+<docs-code header="Declare the input property for HousingLocation in home.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/home/home.ts" visibleLines="[16]"/>
+
 </docs-step>
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you created a new property decorated with the `@Input()` decorator. You also used the non-null assertion operator to notify the compiler that the value of the new property won't be `null` or `undefined`.
+SUMMARY: In this lesson, you created a new `input` property. You also used the `.required` method to ensure the signal value is always defined.
 
 <docs-pill-row>
   <docs-pill href="guide/components/inputs" title="Accepting data with input properties"/>

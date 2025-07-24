@@ -1,4 +1,4 @@
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "esbuild", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -13,9 +13,9 @@ ts_project(
         ],
     ),
     deps = [
-        "//:node_modules/@types/node",
-        "//:node_modules/@webcontainer/api",
-        "//:node_modules/tinyglobby",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/@webcontainer/api",
+        "//adev:node_modules/tinyglobby",
         "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )
@@ -30,7 +30,22 @@ ts_project(
     ],
     deps = [
         ":lib_rjs",
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@types/node",
         "//adev/shared-docs/interfaces",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    entry_point = ":index.mts",
+    format = "esm",
+    output = "navigation.mjs",
+    platform = "node",
+    target = "es2022",
+    tsconfig = "//adev/shared-docs:tsconfig_build",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":navigation_rjs",
     ],
 )

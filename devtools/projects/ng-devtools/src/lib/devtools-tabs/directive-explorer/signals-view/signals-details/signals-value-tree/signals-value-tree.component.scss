@@ -1,0 +1,55 @@
+@use '../../../../../../styles/typography';
+
+:host {
+  width: 200px;
+  display: block;
+  overflow-x: auto;
+
+  /* FRAGILE */
+  ::ng-deep {
+    .mat-tree-node {
+      min-height: 20px !important;
+    }
+  }
+
+  .expandable-node,
+  .name,
+  .value {
+    @extend %monospaced;
+    white-space: nowrap;
+  }
+
+  .expandable-node,
+  .non-expandable-node {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .expandable-node {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+
+    mat-icon {
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+    }
+  }
+
+  .non-expandable-node {
+    margin: 0;
+    margin-left: 3px;
+  }
+
+  .name {
+    color: var(--color-tree-node-element-name);
+
+    &::after {
+      content: ':';
+      color: var(--color-text);
+    }
+  }
+}

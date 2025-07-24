@@ -1372,6 +1372,14 @@
           "jsdocTags": []
         },
         {
+          "name": "hasAnchor",
+          "type": "boolean",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "By default when an item leaves its initial container, its placeholder will be transferred\nto the new container. If that's not desirable for your use case, you can enable this option\nwhich will clone the placeholder and leave it inside the original container. If the item is\nreturned to the initial container, the anchor element will be removed automatically.\n\nThe cloned placeholder can be styled by targeting the `cdk-drag-anchor` class.\n\nThis option is useful in combination with `cdkDropListSortingDisabled` to implement copying\nbehavior in a drop list.",
+          "jsdocTags": []
+        },
+        {
           "name": "dropped",
           "type": "EventEmitter<CdkDragDrop<T, any, any>>",
           "memberType": "property",
@@ -1591,7 +1599,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drop-list.ts",
         "startLine": 36,
-        "endLine": 423
+        "endLine": 439
       }
     },
     {
@@ -2748,6 +2756,14 @@
           "jsdocTags": []
         },
         {
+          "name": "hasAnchor",
+          "type": "boolean",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether the items in the list should leave an anchor node when leaving the initial container.",
+          "jsdocTags": []
+        },
+        {
           "name": "enterPredicate",
           "type": "(drag: DragRef<any>, drop: DropListRef<any>) => boolean",
           "memberType": "property",
@@ -3859,6 +3875,70 @@
           "memberTags": []
         },
         {
+          "name": "getItemAtIndex",
+          "signatures": [
+            {
+              "name": "getItemAtIndex",
+              "entryType": "function",
+              "description": "Gets the item at a specific index.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [
+                {
+                  "name": "param",
+                  "comment": "Index at which to retrieve the item."
+                }
+              ],
+              "params": [
+                {
+                  "name": "index",
+                  "description": "Index at which to retrieve the item.",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/**\n   * Gets the item at a specific index.\n   * @param index Index at which to retrieve the item.\n   */",
+              "returnType": "DragRef<any> | null"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "index",
+                "description": "Index at which to retrieve the item.",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "DragRef<any> | null",
+            "generics": [],
+            "name": "getItemAtIndex",
+            "description": "Gets the item at a specific index.",
+            "entryType": "function",
+            "jsdocTags": [
+              {
+                "name": "param",
+                "comment": "Index at which to retrieve the item."
+              }
+            ],
+            "rawComment": "/**\n   * Gets the item at a specific index.\n   * @param index Index at which to retrieve the item.\n   */"
+          },
+          "entryType": "function",
+          "description": "Gets the item at a specific index.",
+          "jsdocTags": [
+            {
+              "name": "param",
+              "comment": "Index at which to retrieve the item."
+            }
+          ],
+          "rawComment": "/**\n   * Gets the item at a specific index.\n   * @param index Index at which to retrieve the item.\n   */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
           "name": "isReceiving",
           "signatures": [
             {
@@ -3905,7 +3985,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/drop-list-ref.ts",
         "startLine": 55,
-        "endLine": 772
+        "endLine": 787
       }
     },
     {
@@ -4472,7 +4552,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag.ts",
         "startLine": 61,
-        "endLine": 623
+        "endLine": 622
       }
     },
     {
@@ -4681,8 +4761,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-ref.ts",
-        "startLine": 99,
-        "endLine": 102
+        "startLine": 102,
+        "endLine": 105
       }
     },
     {
@@ -4695,8 +4775,8 @@
       "jsdocTags": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-ref.ts",
-        "startLine": 122,
-        "endLine": 122
+        "startLine": 125,
+        "endLine": 125
       }
     },
     {
@@ -5885,8 +5965,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-ref.ts",
-        "startLine": 127,
-        "endLine": 1588
+        "startLine": 130,
+        "endLine": 1631
       }
     }
   ],
@@ -6464,6 +6544,10 @@
       "@angular/cdk/drag-drop"
     ],
     [
+      "CdkDropList.hasAnchor",
+      "@angular/cdk/drag-drop"
+    ],
+    [
       "CdkDropList.dropped",
       "@angular/cdk/drag-drop"
     ],
@@ -6640,6 +6724,10 @@
       "@angular/cdk/drag-drop"
     ],
     [
+      "DropListRef.hasAnchor",
+      "@angular/cdk/drag-drop"
+    ],
+    [
       "DropListRef.enterPredicate",
       "@angular/cdk/drag-drop"
     ],
@@ -6733,6 +6821,10 @@
     ],
     [
       "DropListRef.getItemIndex",
+      "@angular/cdk/drag-drop"
+    ],
+    [
+      "DropListRef.getItemAtIndex",
       "@angular/cdk/drag-drop"
     ],
     [

@@ -1,13 +1,31 @@
-.meta-data-container {
-  display: flex;
-  flex-direction: column;
-  padding: 0.25rem 0.75rem;
-}
+@use '../../../../styles/typography';
 
-.meta-data-container a {
+:host {
   display: block;
+  padding-inline: 0.625rem;
 
-  &:not(:last-child) {
-    margin-bottom: 0.25rem;
+  hr {
+    margin: 0;
+  }
+
+  ul {
+    @extend %body-01;
+    list-style-type: none;
+    margin: 0;
+    padding: 0.5rem 0;
+
+    li {
+      &:not(:last-child) {
+        margin-bottom: 0.25rem;
+      }
+
+      .meta-data {
+        font-weight: bold;
+      }
+
+      ng-docs-ref-button {
+        margin-left: 0.125rem;
+      }
+    }
   }
 }

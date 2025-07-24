@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Output, EventEmitter, input} from '@angular/core';
 import {trigger, state, style, animate, transition} from '@angular/animations';
 
 import {Hero} from './hero';
@@ -17,7 +17,7 @@ import {Hero} from './hero';
   // #enddocregion auto-calc
 })
 export class HeroListAutoComponent {
-  @Input() heroes: Hero[] = [];
+  heroes = input<Hero[]>([]);
 
   @Output() remove = new EventEmitter<number>();
 

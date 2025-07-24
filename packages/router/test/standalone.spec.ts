@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Injectable, NgModule} from '@angular/core';
+import {Component, inject, Injectable, InjectionToken, NgModule} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {provideRoutes, Router, RouterModule, ROUTES} from '../index';
@@ -428,6 +428,121 @@ describe('standalone in Router API', () => {
       root.detectChanges();
 
       expect(root.nativeElement.innerHTML).toContain('default exported');
+    });
+  });
+
+  describe('injection context for loadComponent/loadChildren', () => {
+    it('should allow loadComponent to inject route-level providers', async () => {
+      @Injectable()
+      class RouteService {
+        value = 'route-service';
+      }
+      @Component({
+        template: ``,
+      })
+      class Cmp {}
+      TestBed.configureTestingModule({
+        imports: [
+          RouterModule.forRoot([
+            {
+              path: 'with-provider',
+              providers: [RouteService],
+              loadComponent: () => {
+                expect(inject(RouteService).value).toBe('route-service');
+                return Cmp;
+              },
+            },
+          ]),
+        ],
+      });
+      await TestBed.inject(Router).navigateByUrl('/with-provider');
+      expect(TestBed.inject(Router).url).toContain('with-provider');
+    });
+
+    it('should allow loadChildren to inject route-level providers', async () => {
+      @Injectable()
+      class RouteService {
+        value = 'route-service';
+      }
+      TestBed.configureTestingModule({
+        imports: [
+          RouterModule.forRoot([
+            {
+              path: 'with-provider',
+              providers: [RouteService],
+              loadChildren: () => {
+                expect(inject(RouteService).value).toEqual('route-service');
+                return [];
+              },
+            },
+          ]),
+        ],
+      });
+      await TestBed.inject(Router).navigateByUrl('/with-provider');
+      expect(TestBed.inject(Router).url).toContain('with-provider');
+    });
+
+    it('should use the injector for the route, not its parent, in loadComponent', async () => {
+      const TOKEN = new InjectionToken<string>('token');
+      @Component({
+        template: ``,
+        standalone: true,
+      })
+      class Cmp {
+        constructor(public service: any) {}
+      }
+      TestBed.configureTestingModule({
+        imports: [
+          RouterModule.forRoot([
+            {
+              path: 'parent',
+              providers: [{provide: TOKEN, useValue: 'parent'}],
+              children: [
+                {
+                  path: 'child',
+                  providers: [{provide: TOKEN, useValue: 'child'}],
+                  loadComponent: () => {
+                    expect(inject(TOKEN)).toBe('child');
+                    return Cmp;
+                  },
+                },
+              ],
+            },
+          ]),
+        ],
+      });
+      await TestBed.inject(Router).navigateByUrl('/parent/child');
+      expect(TestBed.inject(Router).url).toContain('parent/child');
+    });
+
+    it('should use the injector for the route, not its parent, in loadChildren', async () => {
+      const TOKEN = new InjectionToken<string>('token');
+      @Component({
+        template: ``,
+      })
+      class Cmp {}
+      TestBed.configureTestingModule({
+        imports: [
+          RouterModule.forRoot([
+            {
+              path: 'parent',
+              providers: [{provide: TOKEN, useValue: 'parent'}],
+              children: [
+                {
+                  path: 'child',
+                  providers: [{provide: TOKEN, useValue: 'child'}],
+                  loadChildren: () => {
+                    expect(inject(TOKEN)).toBe('child');
+                    return [{path: '', component: Cmp}];
+                  },
+                },
+              ],
+            },
+          ]),
+        ],
+      });
+      await TestBed.inject(Router).navigateByUrl('/parent/child');
+      expect(TestBed.inject(Router).url).toContain('parent/child');
     });
   });
 });

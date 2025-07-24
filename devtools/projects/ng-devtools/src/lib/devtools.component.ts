@@ -6,8 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {animate, style, transition, trigger} from '@angular/animations';
-import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import {Events, MessageBus, SupportedApis} from '../../../protocol';
 import {interval} from 'rxjs';
 
@@ -47,14 +53,9 @@ const LAST_SUPPORTED_VERSION = 9;
   selector: 'ng-devtools',
   templateUrl: './devtools.component.html',
   styleUrls: ['./devtools.component.scss'],
-  animations: [
-    trigger('enterAnimation', [
-      transition(':enter', [style({opacity: 0}), animate('200ms', style({opacity: 1}))]),
-      transition(':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))]),
-    ]),
-  ],
   imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
   providers: [WINDOW_PROVIDER, ThemeService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsComponent implements OnDestroy {
   readonly AngularStatus = AngularStatus;
@@ -66,6 +67,8 @@ export class DevToolsComponent implements OnDestroy {
     profiler: false,
     dependencyInjection: false,
     routes: false,
+    signals: false,
+    transferState: false,
   });
   readonly ivy = signal<boolean | undefined>(undefined);
 

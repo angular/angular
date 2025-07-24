@@ -105,6 +105,14 @@ describe('httpResource', () => {
           'fast': 'yes',
         },
         withCredentials: true,
+        keepalive: true,
+        cache: 'force-cache',
+        priority: 'high',
+        mode: 'cors',
+        redirect: 'follow',
+        credentials: 'include',
+        integrity: 'sha256-abc123',
+        referrer: 'https://example.com',
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -114,6 +122,14 @@ describe('httpResource', () => {
     expect(req.request.body).toEqual({message: 'Hello, backend!'});
     expect(req.request.headers.get('X-Special')).toBe('true');
     expect(req.request.withCredentials).toBe(true);
+    expect(req.request.keepalive).toBe(true);
+    expect(req.request.cache).toBe('force-cache');
+    expect(req.request.priority).toBe('high');
+    expect(req.request.mode).toBe('cors');
+    expect(req.request.redirect).toBe('follow');
+    expect(req.request.credentials).toBe('include');
+    expect(req.request.integrity).toBe('sha256-abc123');
+    expect(req.request.referrer).toBe('https://example.com');
 
     req.flush([]);
 
@@ -201,7 +217,9 @@ describe('httpResource', () => {
         reportProgress: true,
         context: new HttpContext().set(CTX_TOKEN, 'bar'),
         withCredentials: true,
+        keepalive: true,
         transferCache: {includeHeaders: ['Y-Tag']},
+        timeout: 1234,
       }),
       {
         injector: TestBed.inject(Injector),
@@ -215,7 +233,9 @@ describe('httpResource', () => {
     expect(req.request.withCredentials).toEqual(true);
     expect(req.request.context.get(CTX_TOKEN)).toEqual('bar');
     expect(req.request.reportProgress).toEqual(true);
+    expect(req.request.keepalive).toBe(true);
     expect(req.request.transferCache).toEqual({includeHeaders: ['Y-Tag']});
+    expect(req.request.timeout).toBe(1234);
   });
 
   it('should allow mapping data to an arbitrary type', async () => {
@@ -288,5 +308,19 @@ describe('httpResource', () => {
 
     await TestBed.inject(ApplicationRef).whenStable();
     expect(res.value()).toBe(buffer);
+  });
+
+  it('should send request on reload', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
+    TestBed.tick();
+    let req = backend.expectOne('/data');
+    req.flush([]);
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    res.reload();
+    TestBed.tick();
+    req = backend.expectOne('/data');
+    req.flush([]);
   });
 });

@@ -7,13 +7,13 @@
  */
 
 import {
+  AST,
   BindingPipe,
   CssSelector,
   ParseSourceFile,
   parseTemplate,
   ParseTemplateOptions,
   PropertyRead,
-  PropertyWrite,
   R3TargetBinder,
   SelectorlessMatcher,
   SelectorMatcher,
@@ -22,8 +22,11 @@ import {
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
+  TmplAstHoverDeferredTrigger,
+  TmplAstInteractionDeferredTrigger,
   TmplAstLetDeclaration,
   TmplAstTextAttribute,
+  TmplAstViewportDeferredTrigger,
 } from '@angular/compiler';
 import {readFileSync} from 'fs';
 import path from 'path';
@@ -1024,11 +1027,7 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   illegalForLoopTrackAccess(): void {}
   inaccessibleDeferredTriggerElement(): void {}
   controlFlowPreventingContentProjection(): void {}
-  illegalWriteToLetDeclaration(
-    id: TypeCheckId,
-    node: PropertyWrite,
-    target: TmplAstLetDeclaration,
-  ): void {}
+  illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration): void {}
   letUsedBeforeDefinition(
     id: TypeCheckId,
     node: PropertyRead,
@@ -1047,6 +1046,20 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   incorrectTemplateDependencyType(
     id: TypeCheckId,
     node: TmplAstComponent | TmplAstDirective,
+  ): void {}
+  deferImplicitTriggerMissingPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void {}
+  deferImplicitTriggerInvalidPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
   ): void {}
 }
 

@@ -14,10 +14,10 @@ To make a service eligible to be injected by the DI system use the `@Injectable`
 
 <docs-code language="ts" highlight="[1, 2, 3]">
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 class UserService {
-    // methods to retrieve and return data
+  // methods to retrieve and return data
 }
 </docs-code>
 

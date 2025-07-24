@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ValidationError} from '@angular/forms/experimental/src/api/validation_errors';
+import {ValidationError} from '../../../../src/api/validation_errors';
 import {MIN_LENGTH, form, minLength} from '../../../../public_api';
 
 describe('minLength validator', () => {

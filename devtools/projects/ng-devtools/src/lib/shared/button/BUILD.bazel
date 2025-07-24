@@ -1,0 +1,39 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_test_library")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "button_component_styles",
+    src = "button.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "button",
+    srcs = ["button.component.ts"],
+    angular_assets = [
+        ":button_component_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ts_test_library(
+    name = "button_test",
+    srcs = ["button.component.spec.ts"],
+    deps = [
+        ":button_rjs",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":button_test_rjs",
+    ],
+)

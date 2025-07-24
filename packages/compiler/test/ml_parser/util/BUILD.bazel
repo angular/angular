@@ -1,12 +1,12 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "util",
     testonly = True,
     srcs = glob(["**/*.ts"]),
     visibility = ["//visibility:public"],
     deps = [
-        "//packages:types",
-        "//packages/compiler",
+        "//packages:types_rjs",
+        "//packages/compiler:compiler_rjs",
     ],
 )

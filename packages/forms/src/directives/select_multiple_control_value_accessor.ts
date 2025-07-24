@@ -64,9 +64,9 @@ function _extractId(valueString: string): string {
  *
  * ```html
  * <select multiple name="countries" [formControl]="countryControl">
- *   <option *ngFor="let country of countries" [ngValue]="country">
- *     {{ country.name }}
- *   </option>
+ *   @for(country of countries; track $index) {
+ *      <option [ngValue]="country">{{ country.name }}</option>
+ *   }
  * </select>
  * ```
  *

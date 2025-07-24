@@ -10,5 +10,6 @@
       }
     ],
     "types": ["jasmine", "node"],
+    "paths": {}
   }
 }

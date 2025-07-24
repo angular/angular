@@ -7,7 +7,6 @@ ts_project(
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    interop_deps = [],
     deps = [
         "//:node_modules/typescript",
     ],

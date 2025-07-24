@@ -1,49 +1,32 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//devtools:__subpackages__"])
 
-_STYLE_SRCS = [
-    "profiler.component.scss",
-    "profiler-import-dialog.component.scss",
-]
-
-_STYLE_LABELS = [
-    src[:-len(".component.scss")].replace("-", "_") + "_styles"
-    for src in _STYLE_SRCS
-]
-
-[
-    sass_binary(
-        name = label,
-        src = src,
-        deps = [
-            "//devtools/projects/ng-devtools/src/styles:typography",
-        ],
-    )
-    for label, src in zip(_STYLE_LABELS, _STYLE_SRCS)
-]
+sass_binary(
+    name = "profiler_styles",
+    src = "profiler.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
 
 ng_project(
     name = "profiler",
     srcs = [
         "file-api-service.ts",
         "profiler.component.ts",
-        "profiler-import-dialog.component.ts",
     ],
     angular_assets = [
         "profiler.component.html",
-        "profiler-import-dialog.component.html",
-    ] + _STYLE_LABELS,
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/forms",
+        ":profiler_styles",
     ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline:timeline_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/profiler-import-dialog:profiler-import-dialog_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline:recording-timeline_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

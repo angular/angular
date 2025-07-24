@@ -7,12 +7,10 @@ ts_project(
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-    ],
     deps = [
         "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
     ],
 )

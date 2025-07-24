@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationConfig} from '@angular/core';
-import {provideAnimations} from '@angular/platform-browser/animations';
+import {ApplicationConfig, provideZonelessChangeDetection} from '@angular/core';
 import {provideRouter} from '@angular/router';
 import {ApplicationEnvironment, ApplicationOperations} from '../../projects/ng-devtools';
 
@@ -16,7 +15,7 @@ import {DemoApplicationOperations} from '../demo-application-operations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideAnimations(),
+    provideZonelessChangeDetection(),
     provideRouter([
       {
         path: '',

@@ -94,7 +94,7 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
               script.remove();
               resolve();
             };
-            script.src = `base/npm/node_modules/${scriptUrl}`;
+            script.src = `/node_modules/${scriptUrl}`;
             document.body.appendChild(script);
           });
         }

@@ -8,13 +8,13 @@
 
 import {
   Component,
+  effect,
   Injectable,
   Injector,
-  Input,
+  input,
   NgModule,
-  OnInit,
   TemplateRef,
-  ViewChild,
+  viewChild,
   ViewContainerRef,
 } from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
@@ -46,11 +46,11 @@ export class Greeter {
 
 @Component({
   selector: 'complete-component',
-  template: `{{ label }}: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`,
+  template: `{{ label() }}: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`,
   standalone: false,
 })
 export class CompleteComponent {
-  @Input() label!: string;
+  label = input.required<string>();
 
   constructor(public greeter: Greeter) {}
 }
@@ -69,15 +69,15 @@ export class CompleteComponent {
     ></ng-container>`,
   standalone: false,
 })
-export class NgComponentOutletCompleteExample implements OnInit {
+export class NgComponentOutletCompleteExample {
   // This field is necessary to expose CompleteComponent to the template.
   CompleteComponent = CompleteComponent;
 
   myInputs = {'label': 'Complete'};
 
   myInjector: Injector;
-  @ViewChild('ahoj', {static: true}) ahojTemplateRef!: TemplateRef<any>;
-  @ViewChild('svet', {static: true}) svetTemplateRef!: TemplateRef<any>;
+  ahojTemplateRef = viewChild.required<TemplateRef<any>>('ahoj');
+  svetTemplateRef = viewChild.required<TemplateRef<any>>('svet');
   myContent?: any[][];
 
   constructor(
@@ -88,14 +88,13 @@ export class NgComponentOutletCompleteExample implements OnInit {
       providers: [{provide: Greeter, deps: []}],
       parent: injector,
     });
-  }
 
-  ngOnInit() {
-    // Create the projectable content from the templates
-    this.myContent = [
-      this.vcr.createEmbeddedView(this.ahojTemplateRef).rootNodes,
-      this.vcr.createEmbeddedView(this.svetTemplateRef).rootNodes,
-    ];
+    effect(() => {
+      this.myContent = [
+        this.vcr.createEmbeddedView(this.ahojTemplateRef()).rootNodes,
+        this.vcr.createEmbeddedView(this.svetTemplateRef()).rootNodes,
+      ];
+    });
   }
 }
 // #enddocregion

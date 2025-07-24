@@ -1,5 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -18,10 +17,8 @@ ng_project(
         "defer-view.component.html",
         "defer_view.component.scss_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
         "//devtools/projects/protocol:protocol_rjs",

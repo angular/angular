@@ -11,6 +11,6 @@
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
     "rxjs": "file:../../node_modules/rxjs",
-    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+    "zone.js": "file:../../node_modules/zone.js"
   }
 }

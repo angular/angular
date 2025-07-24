@@ -99,7 +99,7 @@ Here is a simplified example:
 // './counter/counter.component.ts';
 import { Component, model } from '@angular/core';
 
-@Component({ // Omitted for brevity })
+@Component({ /* Omitted for brevity */ })
 export class CounterComponent {
   count = model<number>(0);
 

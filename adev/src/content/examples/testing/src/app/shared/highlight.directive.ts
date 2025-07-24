@@ -1,6 +1,6 @@
 /* eslint-disable @angular-eslint/directive-selector */
 // #docregion
-import {Directive, ElementRef, inject, Input, OnChanges} from '@angular/core';
+import {Directive, ElementRef, inject, input, OnChanges} from '@angular/core';
 
 @Directive({selector: '[highlight]'})
 /**
@@ -10,7 +10,7 @@ import {Directive, ElementRef, inject, Input, OnChanges} from '@angular/core';
 export class HighlightDirective implements OnChanges {
   defaultColor = 'rgb(211, 211, 211)'; // lightgray
 
-  @Input('highlight') bgColor = '';
+  bgColor = input('', {alias: 'highlight'});
 
   private el = inject(ElementRef);
 

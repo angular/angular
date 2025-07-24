@@ -2,8 +2,6 @@
 
 Angular templates support control flow blocks that let you conditionally show, hide, and repeat elements.
 
-NOTE: This was previously accomplished with the *ngIf, *ngFor, and \*ngSwitch directives.
-
 ## Conditionally display content with `@if`, `@else-if` and `@else`
 
 The `@if` block conditionally displays its content when its condition expression is truthy:

@@ -1,0 +1,26 @@
+load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "utils",
+    srcs = [
+        "debouncer.ts",
+        "formatting.ts",
+    ],
+)
+
+ts_test_library(
+    name = "utils_tests",
+    srcs = glob(["*.spec.ts"]),
+    deps = [
+        ":utils_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":utils_tests_rjs",
+    ],
+)

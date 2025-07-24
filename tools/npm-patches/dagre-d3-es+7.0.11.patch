@@ -1,0 +1,15 @@
+diff --git a/node_modules/dagre-d3-es/src/dagre-js/label/add-html-label.js b/node_modules/dagre-d3-es/src/dagre-js/label/add-html-label.js
+index 94ee8a3..1983f45 100644
+--- a/node_modules/dagre-d3-es/src/dagre-js/label/add-html-label.js
++++ b/node_modules/dagre-d3-es/src/dagre-js/label/add-html-label.js
+@@ -28,8 +28,8 @@ function addHtmlLabel(root, node) {
+   // Fix for firefox
+   div.style('white-space', 'nowrap');
+ 
+-  var client = div.node().getBoundingClientRect();
+-  fo.attr('width', client.width).attr('height', client.height);
++  var client = div.node();
++  fo.attr('width', client.offsetWidth).attr('height', client.offsetHeight);
+ 
+   return fo;
+ }

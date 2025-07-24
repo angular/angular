@@ -1,0 +1,14 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(default_visibility = [
+    "//packages/core:__subpackages__",
+])
+
+ts_project(
+    name = "triggers",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+)

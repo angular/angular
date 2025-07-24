@@ -1,5 +1,3 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
-
 def _generate_zip(ctx):
     """Implementation of the zip generator rule"""
 
@@ -35,12 +33,15 @@ def _generate_zip(ctx):
 
     ctx.runfiles(files = ctx.files.template_srcs)
 
-    run_node(
+    ctx.actions.run(
         ctx = ctx,
         inputs = depset(ctx.files.example_srcs + ctx.files.template_srcs),
-        executable = "_generate_zip",
+        executable = ctx.executable._generate_zip,
         outputs = [zip_output, tmp_directory],
         arguments = [args],
+        env = {
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     # The return value describes what the rule is producing. In this case we need to specify

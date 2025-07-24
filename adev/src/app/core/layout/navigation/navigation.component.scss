@@ -112,7 +112,7 @@
 
   &.adev-nav-primary--deprecated {
     // change nav background to indicate this is an outdated version of the docs
-    background-color: color-mix(in srgb, var(--symbolic-gray), transparent 30%);
+    background-color: var(--deprecated-docs-bg);
   }
 
   // div containing mobile close button and adev-nav_top

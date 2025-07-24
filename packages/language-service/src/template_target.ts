@@ -556,7 +556,7 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     // We allow the path to contain both the `TmplAstBoundAttribute` and `TmplAstBoundEvent` for
     // two-way bindings but do not want the path to contain both the `TmplAstBoundAttribute` with
     // its children when the position is in the value span because we would then logically create a
-    // path that also contains the `PropertyWrite` from the `TmplAstBoundEvent`. This early return
+    // path that also contains the write from the `TmplAstBoundEvent`. This early return
     // condition ensures we target just `TmplAstBoundAttribute` for this case and exclude
     // `TmplAstBoundEvent` children.
     if (

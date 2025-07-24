@@ -1,0 +1,41 @@
+<as-split unit="percent" [gutterSize]="9">
+  <as-split-area size="70">
+    @switch (visualizationMode()) {
+      @case (cmpVisualizationModes.FlameGraph) {
+        <ng-flamegraph-visualizer
+          [frame]="frame()"
+          [changeDetection]="changeDetection()"
+          (nodeSelect)="selectNode($event)"
+        />
+      }
+      @case (cmpVisualizationModes.TreeMap) {
+        <ng-tree-map-visualizer [frame]="frame()" />
+      }
+      @case (cmpVisualizationModes.BarGraph) {
+        <ng-bargraph-visualizer [frame]="frame()" (nodeSelect)="selectNode($event)" />
+      }
+    }
+  </as-split-area>
+
+  @if (selectedEntry(); as entry) {
+    <as-split-area size="30" minSize="25" class="selected-entry">
+      <p class="title">{{ entry.label }} details</p>
+      <div class="entry-statistics">
+        <p class="total-time">
+          Total time spent: <span>{{ entry.value | number }} ms</span>
+        </p>
+        @if (entry.value > 0) {
+          <ng-execution-details [data]="selectedDirectives()" />
+        }
+        @if (parentHierarchy().length > 0) {
+          <p class="subtitle">Parent Hierarchy</p>
+          <ul>
+            @for (parent of parentHierarchy(); track $index) {
+              <li>{{ parent.name }}</li>
+            }
+          </ul>
+        }
+      </div>
+    </as-split-area>
+  }
+</as-split>

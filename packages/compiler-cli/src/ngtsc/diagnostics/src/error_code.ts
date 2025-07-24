@@ -397,6 +397,32 @@ export enum ErrorCode {
   UNCLAIMED_DIRECTIVE_BINDING = 8018,
 
   /**
+   * An `@defer` block with an implicit trigger does not have a placeholder, for example:
+   *
+   * ```
+   * @defer(on viewport) {
+   *   Hello
+   * }
+   * ```
+   */
+  DEFER_IMPLICIT_TRIGGER_MISSING_PLACEHOLDER = 8019,
+
+  /**
+   * The `@placeholder` for an implicit `@defer` trigger is not set up correctly, for example:
+   *
+   * ```
+   * @defer(on viewport) {
+   *   Hello
+   * } @placeholder {
+   *   <!-- Multiple root nodes. -->
+   *   <button></button>
+   *   <div></div>
+   * }
+   * ```
+   */
+  DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER = 8020,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
@@ -568,6 +594,21 @@ export enum ErrorCode {
    * A structural directive is used in a template, but the directive is not imported.
    */
   MISSING_STRUCTURAL_DIRECTIVE = 8116,
+
+  /**
+   * A function in a text interpolation is not invoked.
+   *
+   * For example:
+   * ```html
+   * <p> {{ firstName }} </p>
+   * ```
+   *
+   * The `firstName` function is not invoked. Instead, it should be:
+   * ```html
+   * <p> {{ firstName() }} </p>
+   * ```
+   */
+  UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = 8117,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

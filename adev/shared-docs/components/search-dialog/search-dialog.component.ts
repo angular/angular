@@ -9,9 +9,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   Injector,
-  OnDestroy,
   afterNextRender,
   effect,
   inject,
@@ -22,7 +22,7 @@ import {
 
 import {WINDOW} from '../../providers/index';
 import {ClickOutside} from '../../directives/index';
-import {Search} from '../../services/index';
+import {Search, SearchHistory} from '../../services/index';
 
 import {TextField} from '../text-field/text-field.component';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
@@ -33,6 +33,7 @@ import {Router, RouterLink} from '@angular/router';
 import {fromEvent} from 'rxjs';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {RelativeLink} from '../../pipes/relative-link.pipe';
+import {SearchHistoryComponent} from '../search-history/search-history.component';
 
 @Component({
   selector: 'docs-search-dialog',
@@ -45,16 +46,18 @@ import {RelativeLink} from '../../pipes/relative-link.pipe';
     AlgoliaIcon,
     RelativeLink,
     RouterLink,
+    SearchHistoryComponent,
   ],
   templateUrl: './search-dialog.component.html',
   styleUrls: ['./search-dialog.component.scss'],
 })
-export class SearchDialog implements OnDestroy {
+export class SearchDialog {
   onClose = output();
   dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
   items = viewChildren(SearchItem);
   textField = viewChild(TextField);
 
+  readonly history = inject(SearchHistory);
   private readonly search = inject(Search);
   private readonly relativeLink = new RelativeLink();
   private readonly router = inject(Router);
@@ -66,6 +69,7 @@ export class SearchDialog implements OnDestroy {
   ).withWrap();
 
   searchQuery = this.search.searchQuery;
+  resultsResource = this.search.resultsResource;
   searchResults = this.search.searchResults;
 
   // We use a FormControl instead of relying on NgModel+signal to avoid
@@ -74,11 +78,13 @@ export class SearchDialog implements OnDestroy {
   searchControl = new FormControl(this.searchQuery(), {nonNullable: true});
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.keyManager.destroy());
+
     this.searchControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
       this.searchQuery.set(value);
     });
 
-    // Thinkig about refactoring this to a single afterRenderEffect ?
+    // Thinking about refactoring this to a single afterRenderEffect ?
     // Answer: It won't have the same behavior
     effect(() => {
       this.items();
@@ -117,17 +123,13 @@ export class SearchDialog implements OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.keyManager.destroy();
-  }
-
   closeSearchDialog() {
     this.dialog().nativeElement.close();
     this.onClose.emit();
   }
 
   private navigateToTheActiveItem(): void {
-    const activeItemLink: string | undefined = this.keyManager.activeItem?.item?.url;
+    const activeItemLink: string | undefined = this.keyManager.activeItem?.item()?.url;
 
     if (!activeItemLink) {
       return;

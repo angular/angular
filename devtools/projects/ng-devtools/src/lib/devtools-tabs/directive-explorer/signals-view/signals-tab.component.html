@@ -1,0 +1,26 @@
+<svg #component></svg>
+
+@let node = selectedNode();
+@let dataSource = this.dataSource();
+@if (node && dataSource) {
+  <ng-signals-details
+    [node]="node"
+    [dataSource]="dataSource"
+    [treeControl]="treeControl()"
+    (gotoSource)="gotoSource($event)"
+  />
+}
+
+@if (empty()) {
+  <div class="no-signals">No signals in this component</div>
+}
+
+<button
+  ng-button
+  btnType="icon"
+  (click)="close.emit()"
+  class="close"
+  aria-label="Close signal graph"
+>
+  <mat-icon>close</mat-icon>
+</button>

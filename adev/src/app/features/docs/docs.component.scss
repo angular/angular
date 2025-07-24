@@ -1,3 +1,5 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
 :host {
   display: block;
   padding-top: var(--layout-padding);
@@ -10,7 +12,7 @@
   }
 
   //applying styles when TOC position got translated to the top right 
-  @media only screen and (min-width: 1431px) {
+  @include mq.for-large-desktop-up{
     display: flex;
     justify-content: center;
   }

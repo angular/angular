@@ -24,8 +24,10 @@ function kindWithInterpolationTest(
 
 function basicListenerKindTest(op: ir.CreateOp): boolean {
   return (
-    (op.kind === ir.OpKind.Listener && !(op.hostListener && op.isAnimationListener)) ||
-    op.kind === ir.OpKind.TwoWayListener
+    (op.kind === ir.OpKind.Listener && !(op.hostListener && op.isLegacyAnimationListener)) ||
+    op.kind === ir.OpKind.TwoWayListener ||
+    op.kind === ir.OpKind.Animation ||
+    op.kind === ir.OpKind.AnimationListener
   );
 }
 
@@ -47,7 +49,7 @@ interface Rule<T extends ir.CreateOp | ir.UpdateOp> {
  * the groups in the order defined here.
  */
 const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
-  {test: (op) => op.kind === ir.OpKind.Listener && op.hostListener && op.isAnimationListener},
+  {test: (op) => op.kind === ir.OpKind.Listener && op.hostListener && op.isLegacyAnimationListener},
   {test: basicListenerKindTest},
 ];
 
@@ -85,6 +87,7 @@ const UPDATE_HOST_ORDERING: Array<Rule<ir.UpdateOp>> = [
 const handledOpKinds = new Set([
   ir.OpKind.Listener,
   ir.OpKind.TwoWayListener,
+  ir.OpKind.AnimationListener,
   ir.OpKind.StyleMap,
   ir.OpKind.ClassMap,
   ir.OpKind.StyleProp,
@@ -93,6 +96,7 @@ const handledOpKinds = new Set([
   ir.OpKind.TwoWayProperty,
   ir.OpKind.DomProperty,
   ir.OpKind.Attribute,
+  ir.OpKind.Animation,
 ]);
 
 /**

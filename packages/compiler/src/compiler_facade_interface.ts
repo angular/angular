@@ -216,6 +216,7 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   viewProviders: Provider[] | null;
   interpolation?: [string, string];
   changeDetection?: ChangeDetectionStrategy;
+  hasDirectiveDependencies: boolean;
 }
 
 // TODO(legacy-partial-output-inputs): Remove in v18.

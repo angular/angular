@@ -87,6 +87,7 @@ import {UrlHandlingStrategy} from './url_handling_strategy';
 import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
+import {getClosestRouteInjector} from './utils/config';
 
 /**
  * @description
@@ -693,9 +694,10 @@ export class NavigationTransitions {
           switchTap((t: NavigationTransition) => {
             const loadComponents = (route: ActivatedRouteSnapshot): Array<Observable<void>> => {
               const loaders: Array<Observable<void>> = [];
-              if (route.routeConfig?.loadComponent && !route.routeConfig._loadedComponent) {
+              if (route.routeConfig?.loadComponent) {
+                const injector = getClosestRouteInjector(route) ?? this.environmentInjector;
                 loaders.push(
-                  this.configLoader.loadComponent(route.routeConfig).pipe(
+                  this.configLoader.loadComponent(injector, route.routeConfig).pipe(
                     tap((loadedComponent) => {
                       route.component = loadedComponent;
                     }),

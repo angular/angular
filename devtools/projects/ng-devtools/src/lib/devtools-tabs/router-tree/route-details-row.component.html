@@ -1,0 +1,32 @@
+<th>{{label()}}</th>
+<td>
+  @switch (type()) {
+    @case ('chip') {
+      <button
+        ng-button
+        size="compact"
+        (click)="btnClick.emit('')"
+        [disabled]="isRouteWithoutComponent()"
+      >
+        {{ data() }}
+      </button>
+    }
+    @case ('flag') {
+      <span [class]="data() ? 'tag-active' : 'tag-inactive'">
+        {{ data() }}
+      </span>
+    }
+    @case ('list') {
+      <div class="chips-container">
+        @for (provider of dataArray(); track $index) {
+          <button ng-button size="compact" (click)="btnClick.emit(provider)">
+            {{ provider }}
+          </button>
+        }
+      </div>
+    }
+    @default {
+      <span class="row-data">{{ data() }}</span>
+    }
+  }
+</td>

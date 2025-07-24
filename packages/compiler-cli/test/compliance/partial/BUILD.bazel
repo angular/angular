@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "generate_golden_partial_lib",
     testonly = True,
     srcs = [
@@ -9,8 +9,8 @@ ts_library(
     ],
     visibility = ["//packages/compiler-cli/test/compliance:__subpackages__"],
     deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/test/compliance/test_helpers",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/test/compliance/test_helpers:test_helpers_rjs",
     ],
 )
 

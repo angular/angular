@@ -1,48 +1,47 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults.bzl", "esbuild_config")
+load("//devtools/tools:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-js_library(
+ts_project(
     name = "esbuild_base",
-    srcs = ["esbuild-base.config.mjs"],
+    srcs = ["esbuild-base.config.mts"],
     deps = [
+        "//:node_modules/@angular/compiler-cli",
+        "//devtools/tools/angular-optimization:js_lib",
         "//packages:package_json",
-        "//packages/compiler-cli/private",
-        "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
     ],
 )
 
-esbuild_config(
+ts_project(
     name = "esbuild_config_esm",
-    config_file = "esbuild-esm.config.mjs",
+    srcs = ["esbuild-esm.config.mts"],
     deps = [
-        ":esbuild_base",
-        "@npm//@angular/build-tooling/shared-scripts/angular-optimization:js_lib",
+        ":esbuild_base_rjs",
+        "//devtools/tools/angular-optimization:js_lib",
     ],
 )
 
-esbuild_config(
+ts_project(
     name = "esbuild_config_esm_prod",
-    config_file = "esbuild-esm-prod.config.mjs",
+    srcs = ["esbuild-esm-prod.config.mts"],
     deps = [
-        ":esbuild_base",
+        ":esbuild_base_rjs",
     ],
 )
 
-esbuild_config(
+ts_project(
     name = "esbuild_config_iife",
-    config_file = "esbuild-iife.config.mjs",
+    srcs = ["esbuild-iife.config.mts"],
     deps = [
-        ":esbuild_base",
+        ":esbuild_base_rjs",
     ],
 )
 
-esbuild_config(
+ts_project(
     name = "esbuild_config_spec",
     testonly = True,
-    config_file = "esbuild-spec.config.mjs",
+    srcs = ["esbuild-spec.config.mts"],
     deps = [
-        ":esbuild_base",
+        ":esbuild_base_rjs",
     ],
 )

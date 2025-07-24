@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/// <reference types="hammerjs" />
+
 import {DOCUMENT} from '@angular/common';
 import {
   Inject,

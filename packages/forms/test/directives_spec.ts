@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {SimpleChange, ɵWritable as Writable} from '@angular/core';
-import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {ChangeDetectorRef, SimpleChange, ɵWritable as Writable} from '@angular/core';
+import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {
   AbstractControl,
   CheckboxControlValueAccessor,
@@ -96,8 +96,15 @@ describe('Form Directives', () => {
       });
 
       it('should return select accessor when provided', () => {
-        const selectAccessor = new SelectControlValueAccessor(null!, null!);
-        expect(selectValueAccessor(dir, [defaultAccessor, selectAccessor])).toEqual(selectAccessor);
+        TestBed.configureTestingModule({
+          providers: [{provide: ChangeDetectorRef, useValue: null!}],
+        });
+        TestBed.runInInjectionContext(() => {
+          const selectAccessor = new SelectControlValueAccessor(null!, null!);
+          expect(selectValueAccessor(dir, [defaultAccessor, selectAccessor])).toEqual(
+            selectAccessor,
+          );
+        });
       });
 
       it('should return select multiple accessor when provided', () => {
@@ -108,9 +115,14 @@ describe('Form Directives', () => {
       });
 
       it('should throw when more than one build-in accessor is provided', () => {
-        const checkboxAccessor = new CheckboxControlValueAccessor(null!, null!);
-        const selectAccessor = new SelectControlValueAccessor(null!, null!);
-        expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
+        TestBed.configureTestingModule({
+          providers: [{provide: ChangeDetectorRef, useValue: null!}],
+        });
+        TestBed.runInInjectionContext(() => {
+          const checkboxAccessor = new CheckboxControlValueAccessor(null!, null!);
+          const selectAccessor = new SelectControlValueAccessor(null!, null!);
+          expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
+        });
       });
 
       it('should return custom accessor when provided', () => {

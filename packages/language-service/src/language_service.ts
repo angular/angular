@@ -47,8 +47,10 @@ import {
   getParentClassDeclaration,
   getPropertyAssignmentFromValue,
 } from './utils/ts_utils';
-import {getTypeCheckInfoAtPosition, isTypeScriptFile} from './utils';
+import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './utils';
 import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
+import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
+import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -100,34 +102,8 @@ export class LanguageService {
         const program = compiler.getCurrentProgram();
         const sourceFile = program.getSourceFile(fileName);
         if (sourceFile) {
-          let ngDiagnostics = compiler.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
-          // There are several kinds of diagnostics returned by `NgCompiler` for a source file:
-          //
-          // 1. Angular-related non-template diagnostics from decorated classes within that
-          // file.
-          // 2. Template diagnostics for components with direct inline templates (a string
-          // literal).
-          // 3. Template diagnostics for components with indirect inline templates (templates
-          // computed
-          //    by expression).
-          // 4. Template diagnostics for components with external templates.
-          //
-          // When showing diagnostics for a TS source file, we want to only include kinds 1 and
-          // 2 - those diagnostics which are reported at a location within the TS file itself.
-          // Diagnostics for external templates will be shown when editing that template file
-          // (the `else` block) below.
-          //
-          // Currently, indirect inline template diagnostics (kind 3) are not shown at all by
-          // the Language Service, because there is no sensible location in the user's code for
-          // them. Such templates are an edge case, though, and should not be common.
-          //
-          // TODO(alxhub): figure out a good user experience for indirect template diagnostics
-          // and show them from within the Language Service.
-          diagnostics.push(
-            ...ngDiagnostics.filter(
-              (diag) => diag.file !== undefined && diag.file.fileName === sourceFile.fileName,
-            ),
-          );
+          const ngDiagnostics = compiler.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
+          diagnostics.push(...filterNgDiagnosticsForFile(ngDiagnostics, sourceFile.fileName));
         }
       } else {
         const components = compiler.getComponentsWithTemplateFile(fileName);
@@ -144,6 +120,34 @@ export class LanguageService {
       }
       if (enableG3Suppression) {
         diagnostics = diagnostics.filter((diag) => !suppressDiagnosticsInG3.includes(diag.code));
+      }
+      return diagnostics;
+    });
+  }
+
+  getSuggestionDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsSuggestionDiagnostics, (compiler) => {
+      const diagnostics: ts.DiagnosticWithLocation[] = [];
+      if (isTypeScriptFile(fileName)) {
+        const program = compiler.getCurrentProgram();
+        const sourceFile = program.getSourceFile(fileName);
+        if (sourceFile) {
+          const ngDiagnostics = compiler
+            .getTemplateTypeChecker()
+            .getSuggestionDiagnosticsForFile(sourceFile, this.tsLS, OptimizeFor.SingleFile);
+          diagnostics.push(...filterNgDiagnosticsForFile(ngDiagnostics, sourceFile.fileName));
+        }
+      } else {
+        const components = compiler.getComponentsWithTemplateFile(fileName);
+        for (const component of components) {
+          if (ts.isClassDeclaration(component)) {
+            diagnostics.push(
+              ...compiler
+                .getTemplateTypeChecker()
+                .getSuggestionDiagnosticsForComponent(component, this.tsLS),
+            );
+          }
+        }
       }
       return diagnostics;
     });
@@ -288,6 +292,88 @@ export class LanguageService {
       node,
       positionDetails,
     );
+  }
+
+  getEncodedSemanticClassifications(
+    fileName: string,
+    span: ts.TextSpan,
+    format: ts.SemanticClassificationFormat | undefined,
+  ): ts.Classifications {
+    return this.withCompilerAndPerfTracing(PerfPhase.LSSemanticClassification, (compiler) => {
+      return this.getEncodedSemanticClassificationsImpl(fileName, span, format, compiler);
+    });
+  }
+
+  private getEncodedSemanticClassificationsImpl(
+    fileName: string,
+    span: ts.TextSpan,
+    format: ts.SemanticClassificationFormat | undefined,
+    compiler: NgCompiler,
+  ): ts.Classifications {
+    if (format == ts.SemanticClassificationFormat.Original) {
+      return {spans: [], endOfLineState: ts.EndOfLineState.None};
+    }
+
+    if (isTypeScriptFile(fileName)) {
+      const sf = compiler.getCurrentProgram().getSourceFile(fileName);
+      if (sf === undefined) {
+        return {spans: [], endOfLineState: ts.EndOfLineState.None};
+      }
+
+      const classDeclarations: ts.ClassDeclaration[] = [];
+      sf.forEachChild((node) => {
+        if (ts.isClassDeclaration(node)) {
+          classDeclarations.push(node);
+        }
+      });
+
+      const hasInlineTemplate = (classDecl: ts.ClassDeclaration) => {
+        const resources = compiler.getDirectiveResources(classDecl);
+        return resources && resources.template && !isExternalResource(resources.template);
+      };
+
+      const typeCheckInfos: TypeCheckInfo[] = [];
+      const templateChecker = compiler.getTemplateTypeChecker();
+
+      for (const classDecl of classDeclarations) {
+        if (!hasInlineTemplate(classDecl)) {
+          continue;
+        }
+        const template = templateChecker.getTemplate(classDecl);
+        if (template !== null) {
+          typeCheckInfos.push({
+            nodes: template,
+            declaration: classDecl,
+          });
+        }
+      }
+
+      const spans = [];
+      for (const templInfo of typeCheckInfos) {
+        const classifications = getClassificationsForTemplate(compiler, templInfo, span);
+        spans.push(...classifications.spans);
+      }
+
+      return {spans, endOfLineState: ts.EndOfLineState.None};
+    } else {
+      const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, span.start, compiler);
+      if (typeCheckInfo === undefined) {
+        return {spans: [], endOfLineState: ts.EndOfLineState.None};
+      }
+
+      return getClassificationsForTemplate(compiler, typeCheckInfo, span);
+    }
+  }
+
+  getTokenTypeFromClassification(classification: number): number | undefined {
+    if (classification > TokenEncodingConsts.modifierMask) {
+      return (classification >> TokenEncodingConsts.typeOffset) - 1;
+    }
+    return undefined;
+  }
+
+  getTokenModifierFromClassification(classification: number) {
+    return classification & TokenEncodingConsts.modifierMask;
   }
 
   getCompletionsAtPosition(
@@ -892,4 +978,36 @@ function getUniqueLocations<T extends ts.DocumentSpan>(locations: readonly T[]):
     uniqueLocations.set(createLocationKey(location), location);
   }
   return Array.from(uniqueLocations.values());
+}
+
+/**
+ * There are several kinds of diagnostics returned by `NgCompiler` for a source file:
+ *
+ * 1. Angular-related non-template diagnostics from decorated classes within that
+ *    file.
+ * 2. Template diagnostics for components with direct inline templates (a string
+ *    literal).
+ * 3. Template diagnostics for components with indirect inline templates (templates
+ *    computed by expression).
+ * 4. Template diagnostics for components with external templates.
+ *
+ * When showing diagnostics for a TS source file, we want to only include kinds 1 and
+ * 2 - those diagnostics which are reported at a location within the TS file itself.
+ * Diagnostics for external templates will be shown when editing that template file
+ * (the `else` block) below.
+ *
+ * Currently, indirect inline template diagnostics (kind 3) are not shown at all by
+ * the Language Service, because there is no sensible location in the user's code for
+ * them. Such templates are an edge case, though, and should not be common.
+ *
+ * TODO(alxhub): figure out a good user experience for indirect template diagnostics
+ * and show them from within the Language Service.
+ */
+function filterNgDiagnosticsForFile(
+  diagnostics: (ts.Diagnostic | ts.DiagnosticWithLocation)[],
+  fileName: string,
+): ts.DiagnosticWithLocation[] {
+  return diagnostics.filter((diag): diag is ts.DiagnosticWithLocation => {
+    return diag.file !== undefined && diag.file.fileName === fileName;
+  });
 }

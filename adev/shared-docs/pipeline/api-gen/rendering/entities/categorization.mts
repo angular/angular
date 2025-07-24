@@ -142,7 +142,10 @@ export function isDeprecatedEntry<T extends HasJsDocTags>(entry: T): boolean {
 }
 
 export function getDeprecatedEntry<T extends HasJsDocTags>(entry: T) {
-  return entry.jsdocTags.find((tag) => tag.name === 'deprecated')?.comment ?? null;
+  const comment = entry.jsdocTags.find((tag) => tag.name === 'deprecated')?.comment;
+
+  // Dropping the eventual version number in front of the comment.
+  return comment?.match(/(?:\d+(?:\.\d+)?\s*)?(.*)/s)?.[1] ?? null;
 }
 
 /** Gets whether the given entry has a given JsDoc tag. */

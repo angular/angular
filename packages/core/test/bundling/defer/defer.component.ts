@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '../../../src/core';
+import {Component} from '@angular/core';
 
 @Component({
   standalone: true,

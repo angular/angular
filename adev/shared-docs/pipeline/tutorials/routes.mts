@@ -47,6 +47,7 @@ export async function generateTutorialRoutes(
           title: config.title,
           type: config.type,
           step: idx + 1,
+          restrictedMode: true,
         },
       };
     });
@@ -75,6 +76,7 @@ export async function generateTutorialRoutes(
       title: introConfig.title,
       type: introConfig.type,
       nextStep: children[0].path,
+      restrictedMode: children[0].tutorialData.restrictedMode,
     },
     children: children,
   };

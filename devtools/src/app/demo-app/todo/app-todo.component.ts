@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject, Injectable} from '@angular/core';
+import {Component, inject, Injectable, viewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 
 import {DialogComponent} from './dialog.component';
@@ -24,6 +24,8 @@ export class MyServiceA {}
 export class AppTodoComponent {
   name!: string;
   animal!: string;
+
+  viewChildWillThrowAnError = viewChild.required('thisSignalWillThrowAnError');
 
   readonly dialog = inject(MatDialog);
 

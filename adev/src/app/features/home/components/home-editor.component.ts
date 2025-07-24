@@ -13,8 +13,7 @@ import {
   DestroyRef,
   EnvironmentInjector,
   inject,
-  Input,
-  OnInit,
+  input,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {forkJoin, switchMap} from 'rxjs';
@@ -29,18 +28,16 @@ import {
   selector: 'adev-code-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [EmbeddedEditor],
-  template: `
-    <embedded-editor />
-  `,
+  template: `<embedded-editor />`,
 })
-export class CodeEditorComponent implements OnInit {
+export class CodeEditorComponent {
   private readonly cdRef = inject(ChangeDetectorRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly destroyRef = inject(DestroyRef);
 
-  @Input({required: true}) tutorialFiles!: string;
+  tutorialFiles = input.required<string>();
 
-  ngOnInit(): void {
+  constructor() {
     this.loadEmbeddedEditor();
   }
 
@@ -55,7 +52,7 @@ export class CodeEditorComponent implements OnInit {
       .pipe(
         switchMap(([nodeRuntimeSandbox, embeddedTutorialManager]) =>
           embeddedTutorialManager
-            .fetchAndSetTutorialFiles(this.tutorialFiles)
+            .fetchAndSetTutorialFiles(this.tutorialFiles())
             .then(() => nodeRuntimeSandbox),
         ),
         takeUntilDestroyed(this.destroyRef),

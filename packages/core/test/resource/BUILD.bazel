@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -9,23 +8,22 @@ ng_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/testing",
-    ],
-)
-
-jasmine_node_test(
-    name = "resource",
-    bootstrap = ["//tools/testing:node"],
     deps = [
-        ":resource_lib",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
 )
 
-karma_web_test_suite(
+angular_jasmine_test(
+    name = "resource",
+    data = [
+        ":resource_lib_rjs",
+    ],
+)
+
+ng_web_test_suite(
     name = "resource_web",
     deps = [
-        ":resource_lib",
+        ":resource_lib_rjs",
     ],
 )

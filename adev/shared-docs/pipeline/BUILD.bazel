@@ -1,128 +1,10 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-
-# BEGIN-DEV-ONLY
-# This section is only used here in the dev-infra repo as the resulting bundle is published in
-# the package.
-load("//tools:defaults.bzl", "esbuild_esm_bundle")
+load("//adev/shared-docs:defaults.bzl", "js_binary", "js_library")
 
 package(default_visibility = ["//adev/shared-docs/pipeline:__subpackages__"])
 
-esbuild_esm_bundle(
-    name = "guides",
-    define = {
-        "HANDLE_MERMAID": "true",
-    },
-    entry_point = "//adev/shared-docs/pipeline/guides:index.mts",
-    # JSDOM should not be bundled because it has workers and dynamic imports.
-    # playwright-core cannot be bundled because of its cjs usage.
-    external = [
-        "jsdom",
-        "playwright-core",
-    ],
-    output = "guides.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/guides:index",
-    ],
-)
-
-esbuild_esm_bundle(
-    name = "guides_no_mermaid",
-    define = {
-        "HANDLE_MERMAID": "false",
-    },
-    entry_point = "//adev/shared-docs/pipeline/guides:index.mts",
-    # JSDOM should not be bundled because it has workers and dynamic imports.
-    external = [
-        "jsdom",
-    ],
-    output = "guides-no-mermaid.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/guides:index",
-    ],
-)
-
-esbuild_esm_bundle(
-    name = "stackblitz-bundle",
-    entry_point = "//adev/shared-docs/pipeline/examples/stackblitz:index.mts",
-    # JSDOM should not be bundled because it has workers and dynamic imports.
-    external = ["jsdom"],
-    output = "stackblitz.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/examples/stackblitz:index",
-    ],
-)
-
-esbuild_esm_bundle(
-    name = "previews-bundle",
-    entry_point = "//adev/shared-docs/pipeline/examples/previews:index.mts",
-    external = [
-        "typescript",
-    ],
-    output = "previews.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/examples/previews:index",
-        "@npm//typescript",
-    ],
-)
-
-esbuild_esm_bundle(
-    name = "zip-bundle",
-    entry_point = "//adev/shared-docs/pipeline/examples/zip:index.mts",
-    output = "zip.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/examples/zip:index",
-    ],
-)
-
-esbuild_esm_bundle(
-    name = "playground-bundle",
-    entry_point = "//adev/shared-docs/pipeline/tutorials:playground.mts",
-    output = "playground.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/tutorials:playground",
-    ],
-)
-
-esbuild_esm_bundle(
-    name = "tutorial-bundle",
-    entry_point = "//adev/shared-docs/pipeline/tutorials:tutorial.mts",
-    output = "tutorial.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/tutorials",
-    ],
-)
-
-esbuild_esm_bundle(
-    name = "navigation-bundle",
-    entry_point = "//adev/shared-docs/pipeline/navigation:index.mts",
-    output = "navigation.mjs",
-    platform = "node",
-    target = "es2022",
-    visibility = ["//visibility:public"],
-    deps = [
-        "//adev/shared-docs/pipeline/navigation",
-    ],
+js_library(
+    name = "esbuild-config",
+    srcs = ["esbuild.config.mjs"],
 )
 
 exports_files([
@@ -135,73 +17,69 @@ exports_files([
     "BUILD.bazel",
 ])
 
-# END-DEV-ONLY
-
-nodejs_binary(
+js_binary(
     name = "stackblitz",
     data = [
-        "@npm//jsdom",
+        "//adev:node_modules/jsdom",
     ],
-    entry_point = "//adev/shared-docs/pipeline:stackblitz.mjs",
+    entry_point = "//adev/shared-docs/pipeline/examples/stackblitz:stackblitz.mjs",
     visibility = ["//visibility:public"],
 )
 
-nodejs_binary(
+js_binary(
     name = "previews",
     data = [
-        "@npm//typescript",
+        "//adev:node_modules/typescript",
     ],
-    entry_point = "//adev/shared-docs/pipeline:previews.mjs",
+    entry_point = "//adev/shared-docs/pipeline/examples/previews:previews.mjs",
     visibility = ["//visibility:public"],
 )
 
-nodejs_binary(
+js_binary(
     name = "zip",
-    entry_point = "//adev/shared-docs/pipeline:zip.mjs",
+    entry_point = "//adev/shared-docs/pipeline/examples/zip:zip.mjs",
     visibility = ["//visibility:public"],
 )
 
-nodejs_binary(
+js_binary(
     name = "markdown",
     data = [
-        "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium-for-generation",
-        "@npm//jsdom",
-        "@npm//mermaid",
-        "@npm//playwright-core",
+        "//adev:node_modules/jsdom",
+        "//adev:node_modules/mermaid",
+        "//adev:node_modules/playwright-core",
+        "@rules_browsers//src/browsers/chromium",
     ],
-    entry_point = "//adev/shared-docs/pipeline:guides.mjs",
+    entry_point = "//adev/shared-docs/pipeline/guides:guides.mjs",
     env = {
-        "CHROME_BIN": "$(CHROMIUM)",
+        "CHROME_HEADLESS_BIN": "$(CHROME-HEADLESS-SHELL)",
     },
-    toolchains = [
-        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
-    ],
+    toolchains = ["@rules_browsers//src/browsers/chromium:toolchain_alias"],
     visibility = ["//visibility:public"],
 )
 
-nodejs_binary(
+js_binary(
     name = "markdown_no_mermaid",
     data = [
-        "@npm//jsdom",
+        "//adev:node_modules/jsdom",
     ],
-    entry_point = "//adev/shared-docs/pipeline:guides-no-mermaid.mjs",
+    entry_point = "//adev/shared-docs/pipeline/guides:guides-no-mermaid.mjs",
     visibility = ["//visibility:public"],
 )
 
-nodejs_binary(
+js_binary(
     name = "playground",
-    entry_point = "//adev/shared-docs/pipeline:playground.mjs",
+    entry_point = "//adev/shared-docs/pipeline/tutorials:playground.mjs",
     visibility = ["//visibility:public"],
 )
 
-nodejs_binary(
+js_binary(
     name = "tutorial",
-    entry_point = "//adev/shared-docs/pipeline:tutorial.mjs",
+    entry_point = "//adev/shared-docs/pipeline/tutorials:tutorial.mjs",
     visibility = ["//visibility:public"],
 )
 
-nodejs_binary(
+js_binary(
     name = "navigation",
-    entry_point = "//adev/shared-docs/pipeline:navigation.mjs",
+    entry_point = "//adev/shared-docs/pipeline/navigation:navigation.mjs",
     visibility = ["//visibility:public"],
 )

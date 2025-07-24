@@ -1,0 +1,15 @@
+@use '../../../../../../styles/typography' as tg;
+
+:host {
+  display: block;
+  user-select: text;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+
+  ngx-flamegraph {
+    position: relative;
+    --ngx-fg-bar-font-size: #{tg.$font-size};
+    --ngx-fg-bar-text-color: var(--septenary-contrast);
+  }
+}

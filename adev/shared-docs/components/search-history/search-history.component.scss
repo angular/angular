@@ -1,0 +1,63 @@
+:host {
+  display: block;
+  max-height: 50vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  i {
+    font-size: 1.2rem;
+  }
+
+  .title {
+    margin-inline: 1rem;
+    margin-block-start: 1rem;
+    margin-block-end: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .history-results {
+    list-style-type: none;
+    padding-inline: 0;
+    padding-block: 0.75rem;
+    margin: 0;
+
+    li {
+      border-inline-start: 2px solid var(--senary-contrast);
+      margin-inline-start: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-inline-end: 1rem;
+
+      &.active {
+        background-color: var(--octonary-contrast);
+        border-inline-start: 2px solid var(--primary-contrast);
+      }
+
+      a {
+        padding-inline: 0.75rem;
+        padding-block: 1rem;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--secondary-contrast);
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: var(--primary-contrast);
+        }
+      }
+
+      button {
+        color: var(--secondary-contrast);
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: var(--vivid-pink);
+        }
+      }
+    }
+  }
+}

@@ -7,10 +7,10 @@ ts_project(
     srcs = [
         "index.ts",
     ],
-    interop_deps = [
-        ":lib",
-    ],
     visibility = ["//adev/shared-docs:__subpackages__"],
+    deps = [
+        ":lib_rjs",
+    ],
 )
 
 ng_project(
@@ -24,12 +24,10 @@ ng_project(
             "**/*.spec.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
-    ],
     deps = [
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
         "//adev/shared-docs/interfaces:interfaces_rjs",
     ],
 )

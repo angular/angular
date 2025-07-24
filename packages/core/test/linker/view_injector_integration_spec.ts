@@ -689,7 +689,7 @@ describe('View injector', () => {
         set: {viewProviders: [{provide: 'service', useValue: 'service'}]},
       });
       expect(() => createComponent('<div simpleComponent needsService></div>')).toThrowError(
-        /No provider for service!/,
+        /NG0201: No provider found for `service`\./,
       );
     });
 
@@ -700,7 +700,7 @@ describe('View injector', () => {
       });
       expect(() =>
         createComponent('<div simpleComponent><div needsService></div></div>'),
-      ).toThrowError(/No provider for service!/);
+      ).toThrowError(/NG0201: No provider found for `service`\./);
     });
 
     it('should instantiate directives that depend on providers of other directives', () => {
@@ -769,7 +769,7 @@ describe('View injector', () => {
     it('should not instantiate a directive with cyclic dependencies', () => {
       TestBed.configureTestingModule({declarations: [CycleDirective]});
       expect(() => createComponent('<div cycleDirective></div>')).toThrowError(
-        'NG0200: Circular dependency in DI detected for CycleDirective. Find more at https://angular.dev/errors/NG0200',
+        'NG0200: Circular dependency detected for `CycleDirective`. Path: CycleDirective -> CycleDirective. Find more at https://angular.dev/errors/NG0200',
       );
     });
 
@@ -835,7 +835,7 @@ describe('View injector', () => {
       TestBed.configureTestingModule({declarations: [NeedsService]});
 
       expect(() => createComponent('<div needsService></div>')).toThrowError(
-        /No provider for service!/,
+        /NG0201: No provider found for `service`\./,
       );
     }));
 

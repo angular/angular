@@ -433,5 +433,39 @@ runInEachFileSystem(() => {
         expect(diagnostics.length).toBe(0);
       });
     });
+
+    it('should resolve input inside an `as` expression', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, input, Signal} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          data = input('test') as Signal<string>;
+        }
+      `,
+      );
+      env.driveMain();
+      const js = env.getContents('test.js');
+      expect(js).toContain('inputs: { data: [1, "data"] }');
+    });
+
+    it('should resolve input inside a parenthesized expression', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, input, Signal} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          data = ((input('test')));
+        }
+      `,
+      );
+      env.driveMain();
+      const js = env.getContents('test.js');
+      expect(js).toContain('inputs: { data: [1, "data"] }');
+    });
   });
 });

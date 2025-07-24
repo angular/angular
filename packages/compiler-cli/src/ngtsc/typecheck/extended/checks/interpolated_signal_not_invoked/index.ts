@@ -11,6 +11,7 @@ import {
   ASTWithSource,
   BindingType,
   Interpolation,
+  PrefixNot,
   PropertyRead,
   TmplAstBoundAttribute,
   TmplAstNode,
@@ -45,6 +46,7 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
     // interpolations like `{{ mySignal }}`
     if (node instanceof Interpolation) {
       return node.expressions
+        .map((item) => (item instanceof PrefixNot ? item.expression : item))
         .filter((item): item is PropertyRead => item instanceof PropertyRead)
         .flatMap((item) => buildDiagnosticForSignal(ctx, item, component));
     }
@@ -59,6 +61,7 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
         return [];
       }
       // otherwise, we check if the node is
+      const nodeAst = isPropertyReadNodeAst(node);
       if (
         // a bound property like `[prop]="mySignal"`
         (node.type === BindingType.Property ||
@@ -68,16 +71,30 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
           node.type === BindingType.Style ||
           // or an attribute binding like `[attr.role]="mySignal"`
           node.type === BindingType.Attribute ||
+          // or an animation binding like `[animate.enter]="mySignal"`
+          node.type === BindingType.Animation ||
           // or an animation binding like `[@myAnimation]="mySignal"`
-          node.type === BindingType.Animation) &&
-        node.value instanceof ASTWithSource &&
-        node.value.ast instanceof PropertyRead
+          node.type === BindingType.LegacyAnimation) &&
+        nodeAst
       ) {
-        return buildDiagnosticForSignal(ctx, node.value.ast, component);
+        return buildDiagnosticForSignal(ctx, nodeAst, component);
       }
     }
     return [];
   }
+}
+
+function isPropertyReadNodeAst(node: TmplAstBoundAttribute): PropertyRead | undefined {
+  if (node.value instanceof ASTWithSource === false) {
+    return undefined;
+  }
+  if (node.value.ast instanceof PrefixNot && node.value.ast.expression instanceof PropertyRead) {
+    return node.value.ast.expression;
+  }
+  if (node.value.ast instanceof PropertyRead) {
+    return node.value.ast;
+  }
+  return undefined;
 }
 
 function isFunctionInstanceProperty(name: string): boolean {

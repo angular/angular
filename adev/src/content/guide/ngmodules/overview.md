@@ -145,7 +145,7 @@ Some NgModules define a static `forRoot` method that accepts some configuration 
 Any providers included in this way are eagerly loaded, increasing the JavaScript bundle size of your initial page load.
 
 ```typescript
-boorstrapApplication(MyApplicationRoot, {
+bootstrapApplication(MyApplicationRoot, {
   providers: [
     CustomMenuModule.forRoot(/* some config */),
   ],

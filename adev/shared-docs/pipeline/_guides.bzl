@@ -1,5 +1,4 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
-load("@npm//@angular/build-tooling/bazel/private:path_relative_to_label.bzl", "path_relative_to_label")
+load("//adev/shared-docs:defaults.bzl", "path_relative_to_label")
 
 def _generate_guides(ctx):
     """Implementation of the markdown rule"""
@@ -33,20 +32,24 @@ def _generate_guides(ctx):
     # Define an action that runs the nodejs_binary executable. This is the main thing that this
     # rule does. If mermaid blocks are enabled then a different executable is used.
     if (ctx.attr.mermaid_blocks):
-        run_node(
-            ctx = ctx,
+        ctx.actions.run(
             inputs = depset(ctx.files.srcs + ctx.files.data),
-            executable = "_generate_guides",
+            executable = ctx.executable._generate_guides,
             outputs = html_outputs,
             arguments = [args],
+            env = {
+                "BAZEL_BINDIR": ".",
+            },
         )
     else:
-        run_node(
-            ctx = ctx,
+        ctx.actions.run(
             inputs = depset(ctx.files.srcs + ctx.files.data),
-            executable = "_generate_guides_no_mermaid",
+            executable = ctx.executable._generate_guides_no_mermaid,
             outputs = html_outputs,
             arguments = [args],
+            env = {
+                "BAZEL_BINDIR": ".",
+            },
         )
 
     # The return value describes what the rule is producing. In this case we need to specify

@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpClient} from '../../index';
+import {HttpClient, HttpRequest, HttpErrorResponse} from '../../index';
 import {HttpClientTestingBackend} from '../../testing/src/backend';
+import {TestRequest} from '../src/request';
+import {isBrowser} from '@angular/private/testing';
+import {Observer} from 'rxjs';
 
 describe('HttpClient TestRequest', () => {
   it('accepts a null body', () => {
@@ -107,6 +110,50 @@ describe('HttpClient TestRequest', () => {
         'Expected no open requests, found 2:' +
           ' GET /some-other-url?query=world, POST /and-another-url',
       );
+    }
+  });
+
+  describe('successful errors', () => {
+    let request: TestRequest;
+    let observer: Observer<any>;
+    let lastError: any;
+
+    beforeEach(() => {
+      const httpRequest = new HttpRequest('GET', '/test');
+      observer = {
+        next: jasmine.createSpy('next'),
+        error: (err: any) => {
+          lastError = err;
+        },
+        complete: jasmine.createSpy('complete'),
+      };
+      request = new TestRequest(httpRequest, observer);
+    });
+
+    if (isBrowser) {
+      it('should allow creating HttpErrorResponse with successful status', () => {
+        const error = new ProgressEvent('error');
+        request.error(error, {status: 200, statusText: 'OK'});
+
+        expect(lastError).toBeDefined();
+        expect(lastError).toBeInstanceOf(HttpErrorResponse);
+        expect(lastError.status).toBe(200);
+        expect(lastError.statusText).toBe('OK');
+      });
+
+      it('should allow creating HttpErrorResponse with any status code', () => {
+        const error = new ProgressEvent('error');
+        request.error(error, {status: 404, statusText: 'Not Found'});
+
+        expect(lastError).toBeDefined();
+        expect(lastError).toBeInstanceOf(HttpErrorResponse);
+        expect(lastError.status).toBe(404);
+        expect(lastError.statusText).toBe('Not Found');
+      });
+    } else {
+      it('dummy test for node tests', () => {
+        expect(true).toBe(true);
+      });
     }
   });
 });

@@ -9,7 +9,7 @@
 import * as o from '../../../../../../src/output/output_ast';
 import {ParseSourceSpan} from '../../../../../../src/parse_util';
 import {SecurityContext} from '../../../../../core';
-import {OpKind} from '../enums';
+import {BindingKind, OpKind} from '../enums';
 import {Op, XrefId} from '../operations';
 import {ConsumesVarsTrait, TRAIT_CONSUMES_VARS} from '../traits';
 
@@ -24,7 +24,7 @@ export interface DomPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
   kind: OpKind.DomProperty;
   name: string;
   expression: o.Expression | Interpolation;
-  isAnimationTrigger: boolean;
+  bindingKind: BindingKind;
 
   i18nContext: XrefId | null;
 
@@ -32,22 +32,22 @@ export interface DomPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
 
   sanitizer: o.Expression | null;
 
-  sourceSpan: ParseSourceSpan | null;
+  sourceSpan: ParseSourceSpan;
 }
 
 export function createDomPropertyOp(
   name: string,
   expression: o.Expression | Interpolation,
-  isAnimationTrigger: boolean,
+  bindingKind: BindingKind,
   i18nContext: XrefId | null,
   securityContext: SecurityContext | SecurityContext[],
-  sourceSpan: ParseSourceSpan | null,
+  sourceSpan: ParseSourceSpan,
 ): DomPropertyOp {
   return {
     kind: OpKind.DomProperty,
     name,
     expression,
-    isAnimationTrigger,
+    bindingKind,
     i18nContext,
     securityContext,
     sanitizer: null,

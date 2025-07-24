@@ -8,10 +8,7 @@ import {CarService} from './car.service';
   `,
 })
 export class App {
-  display = '';
   carService = inject(CarService);
 
-  constructor() {
-    this.display = this.carService.getCars().join(' ⭐️ ');
-  }
+  display = this.carService.getCars().join(' ⭐️ ');
 }

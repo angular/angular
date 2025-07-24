@@ -12,6 +12,6 @@
     "rxjs": "file:../../node_modules/rxjs",
     "terser": "file:../../node_modules/terser",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+    "zone.js": "file:../../node_modules/zone.js"
   }
 }

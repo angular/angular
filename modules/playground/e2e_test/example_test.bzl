@@ -1,37 +1,57 @@
-load("//tools:defaults.bzl", "protractor_web_test_suite", "ts_library")
+load("@devinfra//bazel/spec-bundling:index_rjs.bzl", "spec_bundle")
+load("@rules_browsers//src/protractor_test:index.bzl", "protractor_test")
+load("//tools:defaults2.bzl", "ts_project")
 
-def example_test(name, srcs, server, data = [], deps = [], use_legacy_webdriver_types = True, **kwargs):
-    ts_deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "//packages/private/testing",
-        "@npm//@types/selenium-webdriver",
-        "@npm//protractor",
-    ] + deps
-
+def example_test(
+        name,
+        srcs,
+        server,
+        data = [],
+        deps = [],
+        external = [],
+        tsconfig = "//modules/playground:tsconfig_e2e",
+        use_legacy_webdriver_types = True):
     # Reliance on the Control Flow in Selenium Webdriver is not recommended long-term,
     # especially with the deprecation of Protractor. New tests should not use the legacy
     # webdriver types but rather use the actual `@types/jasmine` types.
     if use_legacy_webdriver_types:
-        ts_deps.append("@npm//@types/jasminewd2")
+        tsconfig = "//modules/playground:tsconfig_e2e_legacy_wd2"
 
-    ts_library(
+    ts_project(
         name = "%s_lib" % name,
         testonly = True,
         srcs = srcs,
-        tsconfig = "//modules/playground:tsconfig-e2e.json",
-        deps = ts_deps,
+        tsconfig = tsconfig,
+        deps = deps + [
+            "//modules:node_modules/protractor",
+            "//modules:node_modules/@types/selenium-webdriver",
+            "//modules/utilities:utilities_rjs",
+        ],
     )
 
-    protractor_web_test_suite(
-        name = "protractor_tests",
-        data = data,
-        on_prepare = "//modules/playground/e2e_test:start-server.js",
-        server = server,
+    spec_bundle(
+        name = "%s_bundle" % name,
+        testonly = True,
+        srcs = ["//modules/playground:tsconfig_e2e"],
         deps = [
-            ":%s_lib" % name,
-            "@npm//selenium-webdriver",
-            "@npm//yargs",
-            "@npm//source-map",
+            "%s_lib_rjs" % name,
         ],
-        **kwargs
+        tags = [
+            "manual",
+        ],
+        config = {
+            "resolveExtensions": [".js", ".mjs"],
+            "tsconfig": "./modules/playground/tsconfig-e2e.json",
+        },
+        external = external + ["protractor", "selenium-webdriver"],
+    )
+
+    protractor_test(
+        name = name,
+        deps = [":%s_bundle" % name],
+        server = server,
+        data = data + [
+            "//modules:node_modules/selenium-webdriver",
+            "//modules:node_modules/yargs",
+        ],
     )

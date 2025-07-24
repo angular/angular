@@ -2,12 +2,10 @@
   .docs-api-item-label {
     display: flex;
     --label-theme: var(--symbolic-purple);
-
     font-weight: 500;
     color: var(--label-theme);
     background: color-mix(in srgb, var(--label-theme) 10%, white);
     border-radius: 0.25rem;
-
     cursor: default;
 
     &:first-letter {
@@ -18,7 +16,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-
       height: 22px;
       width: 22px;
       flex: 0 0 22px;

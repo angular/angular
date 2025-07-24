@@ -8,7 +8,7 @@
 
 import {Subscription} from 'rxjs';
 
-import {ApplicationRef} from '../../application/application_ref';
+import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
 import {
   ENVIRONMENT_INITIALIZER,
   EnvironmentInjector,
@@ -58,7 +58,8 @@ export class NgZoneChangeDetectionScheduler {
         }
         this.zone.run(() => {
           try {
-            this.applicationRef.tick();
+            this.applicationRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
+            this.applicationRef._tick();
           } catch (e) {
             this.applicationErrorHandler(e);
           }
@@ -138,8 +139,16 @@ export function internalProvideZoneChangeDetection({
         const injector = inject(EnvironmentInjector);
         let userErrorHandler: ErrorHandler;
         return (e: unknown) => {
-          userErrorHandler ??= injector.get(ErrorHandler);
-          zone.runOutsideAngular(() => userErrorHandler.handleError(e));
+          zone.runOutsideAngular(() => {
+            if (injector.destroyed && !userErrorHandler) {
+              setTimeout(() => {
+                throw e;
+              });
+            } else {
+              userErrorHandler ??= injector.get(ErrorHandler);
+              userErrorHandler.handleError(e);
+            }
+          });
         };
       },
     },

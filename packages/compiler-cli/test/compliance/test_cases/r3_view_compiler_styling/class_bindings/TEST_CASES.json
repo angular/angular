@@ -87,6 +87,34 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle bindings to classes with special characters in a template",
+      "inputFiles": [
+        "class_binding_special_chars.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "class_binding_special_chars.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle bindings to classes with special characters in a host context",
+      "inputFiles": [
+        "host_class_binding_special_chars.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "host_class_binding_special_chars.js"
+          ]
+        }
+      ]
     }
   ]
 }

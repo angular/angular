@@ -22,18 +22,16 @@ import {addRepo} from './repo.mjs';
 
 /** Given an unprocessed class entry, get the fully renderable class entry. */
 export async function getDecoratorRenderable(
-  classEntry: DecoratorEntry,
+  decoratorEntry: DecoratorEntry,
   moduleName: string,
   repo: string,
 ): Promise<DecoratorEntryRenderable> {
   return setEntryFlags(
     await addRenderableCodeToc(
-      addRenderableMembers(
-        addHtmlAdditionalLinks(
-          addHtmlUsageNotes(
-            addHtmlJsDocTagComments(
-              addHtmlDescription(addRepo(addModuleName(classEntry, moduleName), repo)),
-            ),
+      addHtmlAdditionalLinks(
+        addHtmlUsageNotes(
+          addHtmlJsDocTagComments(
+            addHtmlDescription(addRepo(addModuleName(decoratorEntry, moduleName), repo)),
           ),
         ),
       ),

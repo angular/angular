@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {setEnableTemplateSourceLocations} from '@angular/compiler';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
-import {setEnableTemplateSourceLocations} from '@angular/compiler/src/render3/view/config';
 
 const testFiles = loadStandardTestFiles({fakeCommon: true});
 
@@ -45,7 +45,7 @@ runInEachFileSystem(() => {
       );
       env.driveMain();
       const content = env.getContents('test.js');
-      expect(content).toContain('ɵɵelementStart(0, "div")(1, "span")(2, "strong");');
+      expect(content).toContain('ɵɵdomElementStart(0, "div")(1, "span")(2, "strong");');
       expect(content).toContain(
         'ɵɵattachSourceLocations("test.ts", [[0, 114, 5, 14], [1, 119, 5, 19], [2, 142, 6, 16]]);',
       );
@@ -72,7 +72,7 @@ runInEachFileSystem(() => {
       );
       env.driveMain();
       const content = env.getContents('test.js');
-      expect(content).toContain('ɵɵelementStart(0, "div")(1, "span")(2, "strong");');
+      expect(content).toContain('ɵɵdomElementStart(0, "div")(1, "span")(2, "strong");');
       expect(content).toContain(
         'ɵɵattachSourceLocations("test.html", [[0, 9, 1, 8], [1, 14, 1, 13], [2, 31, 2, 10]]);',
       );
@@ -128,10 +128,10 @@ runInEachFileSystem(() => {
       );
       env.driveMain();
       const content = env.getContents('test.js');
-      expect(content).toContain('ɵɵelementContainerStart(0);');
-      expect(content).toContain('ɵɵelementStart(1, "div");');
-      expect(content).toContain('ɵɵelementContainerStart(2);');
-      expect(content).toContain('ɵɵelement(3, "span");');
+      expect(content).toContain('ɵɵdomElementContainerStart(0);');
+      expect(content).toContain('ɵɵdomElementStart(1, "div");');
+      expect(content).toContain('ɵɵdomElementContainerStart(2);');
+      expect(content).toContain('ɵɵdomElement(3, "span");');
       expect(content).toContain(
         'ɵɵattachSourceLocations("test.ts", [[1, 145, 6, 16], [3, 204, 8, 20]]);',
       );

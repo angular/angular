@@ -1,34 +1,33 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library", "zone_compatible_jasmine_node_test")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/forms",
-        "//packages/platform-browser",
-        "//packages/platform-browser/testing",
-        "//packages/private/testing",
-        "@npm//rxjs",
+        "//:node_modules/rxjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/forms:forms_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
-# Tests rely on `async/await` for a `waitForAsync` test.
-# This syntax needs to be downleveled until ZoneJS supports it.
-zone_compatible_jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test_web",
     tags = [
         # disabled on 2020-04-14 due to failure on saucelabs monitor job
@@ -40,6 +39,6 @@ karma_web_test_suite(
         "fixme-saucelabs",
     ],
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )

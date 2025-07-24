@@ -1,0 +1,23 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "bar-chart_styles",
+    src = "bar-chart.component.scss",
+)
+
+ng_project(
+    name = "bar-chart",
+    srcs = [
+        "bar-chart.component.ts",
+    ],
+    angular_assets = [
+        "bar-chart.component.html",
+        ":bar-chart_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/bargraph-formatter:bargraph-formatter_rjs",
+    ],
+)

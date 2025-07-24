@@ -131,7 +131,11 @@ export function toSignal<T, U = undefined>(
     );
 
   const requiresCleanup = !options?.manualCleanup;
-  requiresCleanup && !options?.injector && assertInInjectionContext(toSignal);
+
+  if (ngDevMode && requiresCleanup && !options?.injector) {
+    assertInInjectionContext(toSignal);
+  }
+
   const cleanupRef = requiresCleanup
     ? (options?.injector?.get(DestroyRef) ?? inject(DestroyRef))
     : null;
@@ -164,6 +168,7 @@ export function toSignal<T, U = undefined>(
     next: (value) => state.set({kind: StateKind.Value, value}),
     error: (error) => {
       state.set({kind: StateKind.Error, error});
+      destroyUnregisterFn?.();
     },
     complete: () => {
       destroyUnregisterFn?.();

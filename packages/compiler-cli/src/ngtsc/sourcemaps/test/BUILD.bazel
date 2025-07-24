@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -9,23 +8,20 @@ ts_project(
     srcs = glob([
         "**/*.ts",
     ]),
-    interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/logging/testing",
-        "//packages/compiler-cli/src/ngtsc/sourcemaps",
-    ],
     deps = [
         "//:node_modules/@jridgewell/sourcemap-codec",
         "//:node_modules/@types/convert-source-map",
         "//:node_modules/convert-source-map",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging/testing:testing_rjs",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps:sourcemaps_rjs",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_no_angular"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )

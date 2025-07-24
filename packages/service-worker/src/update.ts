@@ -53,6 +53,8 @@ export class SwUpdate {
     return this.sw.isEnabled;
   }
 
+  private ongoingCheckForUpdate: Promise<boolean> | null = null;
+
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
       this.versionUpdates = NEVER;
@@ -81,8 +83,16 @@ export class SwUpdate {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
+    if (this.ongoingCheckForUpdate) {
+      return this.ongoingCheckForUpdate;
+    }
     const nonce = this.sw.generateNonce();
-    return this.sw.postMessageWithOperation('CHECK_FOR_UPDATES', {nonce}, nonce);
+    this.ongoingCheckForUpdate = this.sw
+      .postMessageWithOperation('CHECK_FOR_UPDATES', {nonce}, nonce)
+      .finally(() => {
+        this.ongoingCheckForUpdate = null;
+      });
+    return this.ongoingCheckForUpdate;
   }
 
   /**
