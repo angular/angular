@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {runfiles} from '@bazel/runfiles';
 import {readFile} from 'fs/promises';
 import {DocEntryRenderable} from '../entities/renderables.mjs';
 import {configureMarkedGlobally} from '../marked/configuration.mjs';
 import {getRenderable} from '../processing.mjs';
 import {initHighlighter} from '../shiki/shiki.mjs';
 import {setSymbols} from '../symbol-context.mjs';
+import {resolve} from 'path';
 
 // Note: The tests will probably break if the schema of the api extraction changes.
 // All entries in the fake-entries are extracted from Angular's api.
@@ -25,7 +25,7 @@ describe('renderable', () => {
     await initHighlighter();
     await configureMarkedGlobally();
 
-    const entryContent = await readFile(runfiles.resolvePackageRelative('fake-entries.json'), {
+    const entryContent = await readFile(resolve('./fake-entries.json'), {
       encoding: 'utf-8',
     });
     const entryJson = JSON.parse(entryContent) as any;

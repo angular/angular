@@ -23,7 +23,6 @@ ts_project(
     srcs = glob(["**/*.mts"]),
     deps = [
         "//adev:node_modules/@angular/compiler-cli",
-        "//adev:node_modules/@bazel/runfiles",
         "//adev:node_modules/@types/node",
     ],
 )

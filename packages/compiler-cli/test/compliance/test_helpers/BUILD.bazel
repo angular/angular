@@ -10,7 +10,6 @@ ts_project(
         "//packages/compiler-cli/test/compliance:__subpackages__",
     ],
     deps = [
-        "//:node_modules/@bazel/runfiles",
         "//:node_modules/typescript",
         "//packages:types_rjs",
         "//packages/compiler:compiler_rjs",

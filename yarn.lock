@@ -365,7 +365,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#978d5324645961844afc086ac61da96e395a597d":
   version "0.0.0-f71394b25149037558248a41a5a18a8e17a01c69"
-  uid "978d5324645961844afc086ac61da96e395a597d"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#978d5324645961844afc086ac61da96e395a597d"
   dependencies:
     "@google-cloud/spanner" "8.0.0"
@@ -1345,7 +1344,7 @@
   dependencies:
     "@bazel/worker" "5.8.1"
 
-"@bazel/runfiles@6.3.1", "@bazel/runfiles@^6.3.1":
+"@bazel/runfiles@^6.3.1":
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/@bazel/runfiles/-/runfiles-6.3.1.tgz#3f8824b2d82853377799d42354b4df78ab0ace0b"
   integrity sha512-1uLNT5NZsUVIGS4syuHwTzZ8HycMPyr6POA3FCE4GbMtc4rhoJk8aZKtNIRthJYfL+iioppi+rTfH3olMPr9nA==
@@ -7024,8 +7023,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b":
-  version "2.1.6+git"
-  uid "93e720f143d0296dd2726ffbcf4fc12283363a7b"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b"
 
 domutils@^3.0.1, domutils@^3.2.1:
