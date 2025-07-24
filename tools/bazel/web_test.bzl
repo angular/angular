@@ -1,7 +1,7 @@
 load("@devinfra//bazel/spec-bundling:index_rjs.bzl", "spec_bundle")
 load("@rules_browsers//src/wtr:index.bzl", "wtr_test")
 
-def _web_test(name, tags = [], deps = [], bootstrap = [], tsconfig = "//packages:tsconfig_build", **kwargs):
+def web_test(name, tags = [], deps = [], bootstrap = [], tsconfig = "//packages:tsconfig_build", **kwargs):
     spec_bundle(
         name = "%s_bundle" % name,
         testonly = True,
@@ -27,7 +27,7 @@ def _web_test(name, tags = [], deps = [], bootstrap = [], tsconfig = "//packages
     )
 
 def ng_web_test_suite(deps = [], bootstrap = [], **kwargs):
-    _web_test(
+    web_test(
         deps = deps,
         bootstrap = [
             "//tools/testing:browser_rjs",
@@ -36,7 +36,7 @@ def ng_web_test_suite(deps = [], bootstrap = [], **kwargs):
     )
 
 def zoneless_web_test_suite(deps = [], bootstrap = [], **kwargs):
-    _web_test(
+    web_test(
         deps = deps,
         bootstrap = [
             "//tools/testing:browser_zoneless_rjs",

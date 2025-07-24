@@ -31,7 +31,7 @@ xdescribe(
       asyncTest((done: Function) => {
         const zone: Zone = Zone.current.fork({name: 'worker'});
         zone.run(() => {
-          const worker = new Worker('/base/angular/packages/zone.js/test/assets/worker.js');
+          const worker = new Worker('/packages/zone.js/test/assets/worker.js');
           worker.onmessage = function (evt: MessageEvent) {
             expect(evt.data).toEqual('worker');
             expect(Zone.current.name).toEqual('worker');
