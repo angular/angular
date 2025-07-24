@@ -1,5 +1,4 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
-load("@npm//@bazel/concatjs:index.bzl", rules_node_js_ts_config = "ts_config")
 load("//:packages.bzl", "DOCS_ENTRYPOINTS")
 load("//tools:defaults2.bzl", "ts_config", "ts_project")
 
@@ -34,7 +33,7 @@ ts_project(
     ],
 )
 
-rules_node_js_ts_config(
+ts_config(
     name = "tsec_config",
     src = "tsconfig-tsec-base.json",
     deps = [

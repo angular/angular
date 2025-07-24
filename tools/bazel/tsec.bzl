@@ -1,10 +1,10 @@
 """Bazel rules and macros for running tsec over a ng_module or ts_library."""
 
 load("@aspect_rules_js//js:providers.bzl", "JsInfo")
+load("@aspect_rules_ts//ts:defs.bzl", "TsConfigInfo")
 load("@bazel_skylib//lib:new_sets.bzl", "sets")
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
 load("@build_bazel_rules_nodejs//:providers.bzl", "DeclarationInfo", "NpmPackageInfo")
-load("@npm//@bazel/concatjs/internal:ts_config.bzl", "TsConfigInfo")
 
 TsecInteropSrcs = provider("Sources used by an interop target", fields = ["srcs"])
 TsecTargetInfo = provider("Attributes required for tsec_test to generate tsconfig.json", fields = ["srcs", "deps", "module_name", "paths", "node_modules_root"])
@@ -151,7 +151,7 @@ def _tsec_config_impl(ctx):
     if base:
         if TsConfigInfo not in base:
             fail("`base` must be a ts_config target")
-        deps.extend(base[TsConfigInfo].deps)
+        deps.extend(base[TsConfigInfo].deps.to_list())
         base_tsconfig_src = ctx.attr.base.files.to_list()[0]
 
     out = ctx.outputs.out
