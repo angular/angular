@@ -25,7 +25,7 @@ const userResource = resource({
 
 // Create a computed signal based on the result of the resource's loader function.
 const firstName = computed(() => {
-  if (useResource.hasValue()) {
+  if (userResource.hasValue()) {
     // `hasValue` serves 2 purposes:
     // - It acts as type guard to strip `undefined` from the type
     // - If protects against reading a throwing `value` when the resource is in error state
