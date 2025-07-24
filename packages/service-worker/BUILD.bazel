@@ -1,10 +1,9 @@
-load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
 load("//tools:defaults.bzl", "generate_api_docs")
-load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
-rules_js_tsconfig(
+ts_config(
     name = "tsconfig_build",
     src = "tsconfig.json",
     deps = [

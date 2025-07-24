@@ -1,9 +1,8 @@
-load("@aspect_rules_ts//ts:defs.bzl", rules_js_tsconfig = "ts_config")
-load("//tools:defaults2.bzl", "ng_package", "npm_package", "ts_project")
+load("//tools:defaults2.bzl", "ng_package", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-rules_js_tsconfig(
+ts_config(
     name = "tsconfig_build",
     src = "tsconfig.json",
     deps = [

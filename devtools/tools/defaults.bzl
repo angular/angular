@@ -4,7 +4,6 @@ load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_to_directory")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
 load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
-load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@bazel_skylib//rules:common_settings.bzl", _string_flag = "string_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", _pkg_web = "pkg_web")
 load(
@@ -15,6 +14,7 @@ load(
     _npm_sass_library = "npm_sass_library",
     _sass_binary = "sass_binary",
     _sass_library = "sass_library",
+    _ts_config = "ts_config",
     _ts_project = "ts_project",
 )
 
