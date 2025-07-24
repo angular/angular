@@ -8,37 +8,20 @@
 
 import {Events, MessageBus, Parameters} from '../projects/protocol';
 
-type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E]>) => void;
-
 export class IFrameMessageBus extends MessageBus<Events> {
-  private _listeners: any[] = [];
+  private listeners: any[] = [];
 
   constructor(
-    private _source: string,
-    private _destination: string,
-    private _docWindow: () => Window,
+    private readonly source: string,
+    private readonly destination: string,
+    private readonly docWindow: () => Window,
   ) {
     super();
   }
 
-  onAny(cb: AnyEventCallback<Events>): () => void {
-    const listener = (e: MessageEvent) => {
-      if (!e.data || !e.data.topic || e.data.source !== this._destination) {
-        return;
-      }
-      cb(e.data.topic, e.data.args);
-    };
-    window.addEventListener('message', listener);
-    this._listeners.push(listener);
-    return () => {
-      this._listeners.splice(this._listeners.indexOf(listener), 1);
-      window.removeEventListener('message', listener);
-    };
-  }
-
   override on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
     const listener = (e: MessageEvent) => {
-      if (!e.data || e.data.source !== this._destination || !e.data.topic) {
+      if (!e.data || e.data.source !== this.destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
@@ -46,16 +29,16 @@ export class IFrameMessageBus extends MessageBus<Events> {
       }
     };
     window.addEventListener('message', listener);
-    this._listeners.push(listener);
+    this.listeners.push(listener);
     return () => {
-      this._listeners.splice(this._listeners.indexOf(listener), 1);
+      this.listeners.splice(this.listeners.indexOf(listener), 1);
       window.removeEventListener('message', listener);
     };
   }
 
   override once<E extends keyof Events>(topic: E, cb: Events[E]): void {
     const listener = (e: MessageEvent) => {
-      if (!e.data || e.data.source !== this._destination || !e.data.topic) {
+      if (!e.data || e.data.source !== this.destination || !e.data.topic) {
         return;
       }
       if (e.data.topic === topic) {
@@ -67,9 +50,9 @@ export class IFrameMessageBus extends MessageBus<Events> {
   }
 
   override emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
-    this._docWindow().postMessage(
+    this.docWindow().postMessage(
       {
-        source: this._source,
+        source: this.source,
         topic,
         args,
         // Since both the devtools app and the demo app use IframeMessageBus,
@@ -77,7 +60,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
         // prevent infinite change detection loops triggered by message
         // event listeners but also not prevent the NgZone in the devtools app
         // from updating its UI.
-        __ignore_ng_zone__: this._source === 'angular-devtools',
+        __ignore_ng_zone__: this.source === 'angular-devtools',
         __NG_DEVTOOLS_EVENT__: true,
       },
       '*',
@@ -86,7 +69,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
   }
 
   override destroy(): void {
-    this._listeners.forEach((l) => window.removeEventListener('message', l));
-    this._listeners = [];
+    this.listeners.forEach((l) => window.removeEventListener('message', l));
+    this.listeners = [];
   }
 }
