@@ -283,7 +283,6 @@ karma_tests = {
 karma_test(
     name = "browser_test",
     bootstraps = karma_tests,
-    ci = True,
     env_deps = env_deps,
     env_entry_point = env_entry_point,
     env_srcs = env_srcs,
@@ -299,7 +298,6 @@ karma_test(
         "//packages/zone.js/bundles:zone-testing.umd.min.js",
         "//packages/zone.js/bundles:webapis-shadydom.umd.js",
     ]},
-    ci = False,
     env_deps = [
         "//packages/zone.js/lib:lib_rjs",
     ],
@@ -321,7 +319,6 @@ karma_test(
         "//packages/zone.js/bundles:zone.umd.min.js",
         "//packages/zone.js/bundles:zone-testing.umd.min.js",
     ]},
-    ci = False,
     env_deps = [
         "//packages/zone.js/lib:lib_rjs",
     ],
