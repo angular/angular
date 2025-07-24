@@ -10,6 +10,7 @@ import {untracked} from '@angular/core';
 import {AggregateProperty} from './api/property';
 import {type FieldContext, type FieldPath, type LogicFn} from './api/types';
 import {FieldNode} from './field/node';
+import {isArray} from './util/is_array';
 
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
@@ -120,7 +121,7 @@ export class ArrayMergeIgnoreLogic<TElement, TIgnore = never> extends AbstractLo
 
       if (value === undefined || value === IGNORED) {
         return prev;
-      } else if (Array.isArray(value)) {
+      } else if (isArray(value)) {
         return [...prev, ...(this.ignore ? value.filter((e) => !this.ignore!(e)) : value)];
       } else {
         if (this.ignore && this.ignore(value as TElement | TIgnore | undefined)) {

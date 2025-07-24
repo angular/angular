@@ -9,6 +9,7 @@
 import {computed, Signal, untracked, WritableSignal} from '@angular/core';
 import {Field, FieldContext, FieldPath, FieldState} from '../api/types';
 import {FieldPathNode} from '../path_node';
+import {isArray} from '../util/is_array';
 import {FieldNode} from './node';
 
 let boundPathDepth = 0;
@@ -124,7 +125,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
     // Attempt to read the key first, this will throw an error if we're on a root field.
     const key = this.key();
     // Assert that the parent is actually an array.
-    if (!Array.isArray(untracked(this.node.structure.parent!.value))) {
+    if (!isArray(untracked(this.node.structure.parent!.value))) {
       throw new Error(`RuntimeError: cannot access index, parent field is not an array`);
     }
     // Return the key as a number if we are indeed inside an array field.

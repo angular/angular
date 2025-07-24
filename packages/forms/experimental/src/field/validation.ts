@@ -9,6 +9,7 @@
 import {computed, Signal} from '@angular/core';
 import type {ValidationResult} from '../api/types';
 import {stripField, WithField, type ValidationError} from '../api/validation_errors';
+import {isArray} from '../util/is_array';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitFalse} from './util';
 
@@ -151,12 +152,12 @@ export class FieldValidationState {
   }
 }
 
-function normalizeErrors(error: ValidationResult): ValidationError[] {
+function normalizeErrors(error: ValidationResult): readonly ValidationError[] {
   if (error === undefined) {
     return [];
   }
 
-  if (Array.isArray(error)) {
+  if (isArray(error)) {
     return error;
   }
 

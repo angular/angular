@@ -3,10 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {untracked} from '@angular/core';
+import {isArray} from '../util/is_array';
 import type {FieldNode} from './node';
 
 /**
@@ -33,7 +34,7 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
     const value = untracked(tgt.value);
 
     // TODO: does it make sense to just pass these through to reads of `value[p]` at this point?
-    if (Array.isArray(value)) {
+    if (isArray(value)) {
       switch (p) {
         case 'length':
           return (tgt.value() as Array<unknown>).length;

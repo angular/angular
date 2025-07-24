@@ -12,7 +12,7 @@ import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../path_node';
 import {assertPathIsCurrent} from '../schema';
 import {property} from './logic';
-import {FieldContext, FieldPath, PathKind, TreeValidationResult, ValidationResult} from './types';
+import {FieldContext, FieldPath, PathKind, TreeValidationResult} from './types';
 import {addDefaultField} from './validation_errors';
 
 /**
@@ -32,7 +32,7 @@ import {addDefaultField} from './validation_errors';
 export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind.Root> = (
   result: TResult,
   ctx: FieldContext<TValue, TPathKind>,
-) => ValidationResult | TreeValidationResult;
+) => TreeValidationResult;
 
 /**
  * Options that indicate how to create a resource for async validation for a field,

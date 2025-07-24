@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {isArray} from '../util/is_array';
 import {StandardSchemaV1} from './standard_schema_types';
-import {Field, Mutable} from './types';
+import {Field, Mutable, TreeValidationResult, TreeValidationResultWithField} from './types';
 
 /** Internal symbol used for class branding. */
 const BRAND = Symbol();
@@ -70,10 +71,10 @@ export function stripField<E extends ValidationError>(e: WithField<E> | E): E {
  * @returns The passed in error(s), with its field set.
  */
 export function addDefaultField<E extends ValidationError>(
-  errors: E | WithField<E> | readonly (E | WithField<E>)[] | false | null | undefined,
+  errors: TreeValidationResult<E>,
   field: Field<unknown>,
-): WithField<E> | WithField<E>[] | false | null | undefined {
-  if (Array.isArray(errors)) {
+): TreeValidationResultWithField<E> {
+  if (isArray(errors)) {
     for (const error of errors) {
       (error as Mutable<ValidationError | WithField<ValidationError>>).field ??= field;
     }
