@@ -5,8 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {runfiles} from '@bazel/runfiles';
-
 import {
   AbsoluteFsPath,
   NodeJSFileSystem,
@@ -16,10 +14,13 @@ import {
 
 export const fs = new NodeJSFileSystem();
 
-/** Path to the test case sources. */
-const basePath = fs.resolve(
-  runfiles.resolveWorkspaceRelative('packages/compiler-cli/test/compliance/test_cases'),
-);
+/**
+ * Path to the test case sources.
+ *
+ * Because the tests are executed from each //packages/compiler-cli/test/compliance/[test-name] location,
+ * we know that we need to look along side the compliance test locations for the test cases.
+ */
+const basePath = fs.resolve('../test_cases');
 
 /**
  * Search the `test_cases` directory, in the real file-system, for all the compliance tests.

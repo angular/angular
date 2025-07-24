@@ -8,7 +8,7 @@
 
 import {EmptyTree, Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing/index.js';
-import {runfiles} from '@bazel/runfiles';
+import {resolve} from 'node:path';
 import ts from 'typescript';
 
 interface TsConfig {
@@ -21,7 +21,7 @@ describe('ng-add schematic', () => {
   const defaultOptions = {project: 'demo'};
   const schematicRunner = new SchematicTestRunner(
     '@angular/localize',
-    runfiles.resolvePackageRelative('../collection.json'),
+    resolve('../collection.json'),
   );
   let host: Tree;
 

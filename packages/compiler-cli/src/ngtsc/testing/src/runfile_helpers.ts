@@ -7,7 +7,6 @@
  */
 /// <reference types="node" />
 
-import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -44,5 +43,5 @@ export function getAngularPackagesFromRunfiles() {
 
 /** Resolves a file or directory from the Bazel runfiles. */
 export function resolveFromRunfiles(manifestPath: string) {
-  return runfiles.resolve(manifestPath);
+  return path.resolve(process.env['RUNFILES']!, manifestPath);
 }

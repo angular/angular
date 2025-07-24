@@ -29,7 +29,6 @@ ts_project(
     enable_runtime_rnjs_interop = True,
     deps = [
         ":entities_rjs",
-        "//adev:node_modules/@bazel/runfiles",
         "//adev:node_modules/@types/node",
         "//adev:node_modules/html-entities",
         "//adev:node_modules/marked",

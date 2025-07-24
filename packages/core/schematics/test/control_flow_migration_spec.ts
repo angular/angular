@@ -10,7 +10,7 @@ import {getSystemPath, logging, normalize, virtualFs} from '@angular-devkit/core
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
-import {runfiles} from '@bazel/runfiles';
+import {resolve} from 'path';
 import shx from 'shelljs';
 
 describe('control flow migration (ng update)', () => {
@@ -29,9 +29,9 @@ describe('control flow migration (ng update)', () => {
   function runMigration(path: string | undefined = undefined, format: boolean = true) {
     return runner.runSchematic('control-flow-migration', {path, format}, tree);
   }
-
+  const migrationsJsonPath = resolve('../migrations.json');
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', runfiles.resolvePackageRelative('../migrations.json'));
+    runner = new SchematicTestRunner('test', migrationsJsonPath);
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -6849,8 +6849,9 @@ describe('control flow migration (ng generate)', () => {
     return runner.runSchematic('control-flow-migration', {path, format}, tree);
   }
 
+  const collectionJsonPath = resolve('../collection.json');
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', runfiles.resolvePackageRelative('../collection.json'));
+    runner = new SchematicTestRunner('test', collectionJsonPath);
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
