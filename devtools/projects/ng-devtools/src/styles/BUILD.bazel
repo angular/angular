@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "npm_sass_library", "sass_binary", "sass_library")
+load("//devtools/tools:defaults.bzl", "npm_sass_library", "sass_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -74,14 +74,4 @@ sass_library(
         ":material_sass_deps",
         ":typography",
     ],
-)
-
-sass_binary(
-    name = "firefox",
-    src = "firefox.scss",
-)
-
-sass_binary(
-    name = "chrome",
-    src = "chrome.scss",
 )
