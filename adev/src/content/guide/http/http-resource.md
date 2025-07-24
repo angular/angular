@@ -19,7 +19,7 @@ userId = input.required<string>();
 user = httpResource(() => `/api/user/${userId()}`); // A reactive function as argument
 ```
 
-`httResource` is reactive, meaning that whenever one of the signal it depends on changes (like `userId`), the resource will emit a new http request. 
+`httpResource` is reactive, meaning that whenever one of the signal it depends on changes (like `userId`), the resource will emit a new http request. 
 If a request is already pending, the resource cancels the outstanding request before issuing a new one.  
 
 HELPFUL: `httpResource` differs from the `HttpClient` as it initiates the request _eagerly_. In contrast, the `HttpClient` only initiates requests upon subscription to the returned `Observable`.
