@@ -6,7 +6,7 @@
 
 import { EnvironmentProviders } from '@angular/core';
 
-// @public
+// @public @deprecated
 export function provideAnimationsAsync(type?: 'animations' | 'noop'): EnvironmentProviders;
 
 // (No @packageDocumentation comment for this package)
