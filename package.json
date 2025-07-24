@@ -75,6 +75,7 @@
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@schematics/angular": "20.0.0-rc.2",
     "@stackblitz/sdk": "^1.11.0",
+    "@standard-schema/spec": "^1.0.0",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.20.5",
     "@types/babel__generator": "7.27.0",

@@ -18,5 +18,6 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/forms",
+        "@npm//@standard-schema/spec",
     ],
 )
