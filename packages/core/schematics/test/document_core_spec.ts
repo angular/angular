@@ -10,7 +10,7 @@ import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
-import {runfiles} from '@bazel/runfiles';
+import {resolve} from 'node:path';
 import shx from 'shelljs';
 
 describe('document-core migration', () => {
@@ -27,8 +27,9 @@ describe('document-core migration', () => {
     return runner.runSchematic('document-core', {}, tree);
   }
 
+  const migrationsJsonPath = resolve('../migrations.json');
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', runfiles.resolvePackageRelative('../migrations.json'));
+    runner = new SchematicTestRunner('test', migrationsJsonPath);
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
     tmpDirPath = getSystemPath(host.root);

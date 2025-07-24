@@ -67,7 +67,6 @@
     "@bazel/concatjs": "5.8.1",
     "@bazel/esbuild": "5.8.1",
     "@bazel/rollup": "5.8.1",
-    "@bazel/runfiles": "6.3.1",
     "@bazel/terser": "5.8.1",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "@microsoft/api-extractor": "^7.24.2",

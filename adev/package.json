@@ -16,7 +16,6 @@
     "@angular/platform-server": "workspace:*",
     "@angular/router": "workspace:*",
     "@angular/ssr": "20.2.0-next.1",
-    "@bazel/runfiles": "6.3.1",
     "@codemirror/autocomplete": "6.18.6",
     "@codemirror/commands": "6.8.1",
     "@codemirror/lang-angular": "0.1.4",

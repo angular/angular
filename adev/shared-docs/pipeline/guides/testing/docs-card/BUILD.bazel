@@ -5,7 +5,6 @@ ts_project(
     testonly = True,
     srcs = glob(["*.spec.mts"]),
     deps = [
-        "//adev:node_modules/@bazel/runfiles",
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/jsdom",
         "//adev/shared-docs/pipeline/guides:guides_lib_rjs",

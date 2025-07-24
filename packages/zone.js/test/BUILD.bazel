@@ -202,7 +202,6 @@ ts_project(
     testonly = True,
     srcs = ["npm_package/npm_package.spec.ts"],
     deps = [
-        "//:node_modules/@bazel/runfiles",
         "//:node_modules/@types/shelljs",
     ],
 )

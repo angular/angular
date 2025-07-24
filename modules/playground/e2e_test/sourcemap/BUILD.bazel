@@ -11,7 +11,6 @@ example_test(
     server = "//modules/playground/src/sourcemap:devserver",
     use_legacy_webdriver_types = False,
     deps = [
-        "//modules:node_modules/@bazel/runfiles",
         "//modules:node_modules/source-map",
     ],
 )

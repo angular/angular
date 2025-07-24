@@ -14,7 +14,6 @@ ts_project(
         # TODO(rules_js): Explore how this could work alternatively at runtime with the module names.
         "//adev/shared-docs/pipeline/api-gen:node_modules/@angular/compiler-cli",
         "//adev/shared-docs/pipeline/api-gen:node_modules/@angular/compiler",
-        "//adev:node_modules/@bazel/runfiles",
         "//adev:node_modules/@types/node",
         "//adev:node_modules/typescript",
     ],

@@ -12,7 +12,6 @@
     "@angular/platform-browser": "workspace:*",
     "@angular/router": "workspace:*",
     "@angular/upgrade": "workspace:*",
-    "@bazel/runfiles": "6.3.1",
     "@types/jasmine": "5.1.8",
     "@types/jasminewd2": "2.0.13",
     "@types/node": "24.1.0",
