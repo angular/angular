@@ -24,7 +24,7 @@ In your project's root, create a file named `.vscode/mcp.json` and add the follo
 ```
 
 ### JetBrains IDEs
-In JetBrains IDEs (like IntelliJ IDEA or WebStorm), after installing the MCP Server plugin, go to `Settings | Tools | AI Assistant | Model Context Protocol (MCP)`. Add a new server and select `As JSON`. Paste the following configuration, which does not use a top-level property for the server list.
+In JetBrains IDEs (like IntelliJ IDEA or WebStorm), after installing the JetBrains AI Assistant plugin, go to `Settings | Tools | AI Assistant | Model Context Protocol (MCP)`. Add a new server and select `As JSON`. Paste the following configuration, which does not use a top-level property for the server list.
 
 ```json
 {
