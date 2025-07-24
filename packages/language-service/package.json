@@ -14,6 +14,9 @@
       "types": "./index.d.ts",
       "default": "./index.js"
     },
+    "./bundles/language-service.js": {
+      "default": "./bundles/language-service.js"
+    },
     "./package.json": {
       "default": "./package.json"
     },
